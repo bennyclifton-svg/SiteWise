@@ -1,0 +1,915 @@
+{
+  "schema": "sitewise-synthetic-score/1",
+  "type_id": "T09",
+  "name": "Waterproofing remediation (balconies, podium)",
+  "scenario": {
+    "triggers": []
+  },
+  "procurement": {
+    "status": "scored",
+    "matched": [
+      {
+        "expected": "consultant.building",
+        "app": "Building Consultant",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.structural",
+        "app": "Structural",
+        "state": "package",
+        "matched_by": "discipline"
+      }
+    ],
+    "missed": [
+      {
+        "expected": "trade.main_works",
+        "built_in": "partial",
+        "need": null,
+        "trigger": null
+      }
+    ],
+    "extra": [],
+    "false_positive": [
+      {
+        "discipline": "consultant.hydraulic",
+        "app": "Hydraulic",
+        "state": "package",
+        "why": "Fires on the base hydraulic.roof-drainage upgrade item (balcony outlets and overflows). The remedial consultant details this and the builder installs it; no hydraulic engineer is needed unless a podium or roof drainage capacity is in question (podium trigger)."
+      },
+      {
+        "discipline": "consultant.mechanical",
+        "app": "Mechanical",
+        "state": "package",
+        "why": "Fires when AC condensers on balconies are in scope (balcony-services-relocation), or when 'bathroom' or 'kitchen' wording implies mechanical.local-exhaust. Condensers are lot-owner equipment moved by a licensed refrigeration tradesperson."
+      }
+    ],
+    "kind_mismatch": []
+  },
+  "cost_plan": {
+    "status": "scored",
+    "matched": [
+      {
+        "expected": "Remedial building consultant",
+        "app": "Building Consultant",
+        "code": "F01",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Structural engineer (remedial)",
+        "app": "Structural",
+        "code": "F04",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Balcony waterproofing membrane system incl. upturns, terminations and outlets",
+        "app": "Building envelope",
+        "code": "04",
+        "state": "item",
+        "matched_by": "source"
+      },
+      {
+        "expected": "Balcony tiling reinstatement",
+        "app": "Interiors and finishes",
+        "code": "05",
+        "state": "item",
+        "matched_by": "source"
+      },
+      {
+        "expected": "Balcony outlets, puddle flanges and overflows",
+        "app": "Hydraulic services",
+        "code": "09",
+        "state": "item",
+        "matched_by": "source"
+      },
+      {
+        "expected": "Design contingency",
+        "app": "Design contingency",
+        "code": "P01",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Construction contingency",
+        "app": "Construction contingency",
+        "code": "P02",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Escalation",
+        "app": "Escalation",
+        "code": "P03",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Exclusions",
+        "app": "Exclusions",
+        "code": "P07",
+        "state": "item",
+        "matched_by": "label"
+      }
+    ],
+    "missed": [
+      {
+        "expected": "Long service levy",
+        "section": "fees_and_charges",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Remedial building consultant: investigation stage incl. opening-up and make-good disbursements",
+        "section": "consultants",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Pre-construction condition surveys of lots",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Preliminaries, site establishment and occupied-building controls",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Access equipment: scaffold, swing stage or EWP and edge protection",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Remove balcony tiles, bedding, screed and failed membrane; dispose",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Substrate preparation and falls correction screed",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Door threshold flashings, sealants and movement joints",
+        "section": "construction",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Balustrades: remove, re-fix outside the membrane and certify",
+        "section": "construction",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Provisional sums: concrete, substrate and door-sill defects found on opening up",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Owners corporation costs: strata manager meetings and levy administration, legal review of the building contract",
+        "section": "contingency",
+        "built_in": "no",
+        "trigger": null
+      }
+    ],
+    "extra": [
+      {
+        "app": "Site works and external works",
+        "code": "01",
+        "section": "construction",
+        "state": "item"
+      },
+      {
+        "app": "Mechanical services",
+        "code": "08",
+        "section": "construction",
+        "state": "item"
+      },
+      {
+        "app": "Stairs, ramps, handrails and nosings",
+        "code": "13.9",
+        "section": "construction",
+        "state": "item"
+      },
+      {
+        "app": "DA fees and contributions",
+        "code": "P04",
+        "section": "fees_and_charges",
+        "state": "item"
+      }
+    ],
+    "false_positive": [
+      {
+        "expected": "Construction certificate and certifier fees",
+        "app": "Construction certificate and certifier fees",
+        "code": "P05",
+        "matched_by": "app_label",
+        "why": "Always suggested; an exempt remediation needs no construction certificate."
+      },
+      {
+        "expected": "Service authority connection fees",
+        "app": "Service authority connection fees",
+        "code": "P06",
+        "matched_by": "app_label",
+        "why": "Always suggested; no authority connection is made."
+      },
+      {
+        "expected": "Hydraulic (consultant fee)",
+        "app": "Hydraulic",
+        "code": "F02",
+        "matched_by": "label",
+        "why": "Adopted suggestion on cost-plan prepare (not_expected_procurement)."
+      },
+      {
+        "expected": "Mechanical (consultant fee)",
+        "app": "Mechanical",
+        "code": "F03",
+        "matched_by": "label",
+        "why": "Conditional: only when condenser or implied exhaust scope exists."
+      }
+    ],
+    "section_mismatch": [],
+    "groups": 1,
+    "fabricated": [],
+    "amounts": {
+      "document": 0,
+      "user": 0,
+      "fabricated": 0
+    }
+  },
+  "program": {
+    "status": "scored",
+    "skeleton": {
+      "expected": "missing",
+      "app": "sk.generic",
+      "match": false
+    },
+    "activities": {
+      "matched": [
+        {
+          "expected": "Confirm exempt pathway (no development consent)",
+          "app": "Confirm the exempt path",
+          "matched_by": "fragment"
+        }
+      ],
+      "missed": [
+        {
+          "expected": "Strata committee approves investigation brief and fee",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Collect strata records and leak history",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Visual inspection, leak mapping and water testing",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Intrusive investigation at representative balconies",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Structural assessment of balcony slabs and balustrade fixings",
+          "stage": "investigation",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Defect report with options and order-of-cost estimate",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Owners corporation selects the option and approves the design fee",
+          "stage": "concept_design",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Remedial specification, details and balcony schedule",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Balustrade re-fixing design",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Regulated designs and design compliance declarations",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Tender documents",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Tender period with site inspection",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Tender evaluation and recommendation",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "General meeting resolves contract award and special levy",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Contract award",
+          "stage": "procurement",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Lodge regulated designs and declarations before work starts",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Resident notices and balcony access schedule",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Site establishment, access equipment and protection",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Pre-commencement condition survey of affected lots",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Pay long service levy before work starts",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Strip tiles, bedding and failed membrane",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Substrate repair, falls screed and outlet upgrade",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Hold point: substrate and outlet inspection before membrane",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Install membrane, upturns and terminations",
+          "stage": "construction",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Hold point: membrane inspection and flood test before cover",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Re-fix balustrades, relay tiles and seal joints",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Balustrade fixing certification",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Lodge building compliance declaration (DBP Act)",
+          "stage": "completion",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Practical completion inspection",
+          "stage": "completion",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Handover: warranties, as-built details and maintenance schedule",
+          "stage": "completion",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Defects liability period and final inspection",
+          "stage": "defects",
+          "built_in": "partial",
+          "trigger": null
+        }
+      ],
+      "extra": [],
+      "false_positive": [],
+      "wrong_stage": []
+    },
+    "links": {
+      "holds": [],
+      "violated": [],
+      "unknown": [],
+      "unscored": [
+        {
+          "activity": "Collect strata records and leak history",
+          "after": "Strata committee approves investigation brief and fee",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Visual inspection, leak mapping and water testing",
+          "after": "Collect strata records and leak history",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Intrusive investigation at representative balconies",
+          "after": "Visual inspection, leak mapping and water testing",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Structural assessment of balcony slabs and balustrade fixings",
+          "after": "Intrusive investigation at representative balconies",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Defect report with options and order-of-cost estimate",
+          "after": "Intrusive investigation at representative balconies",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Defect report with options and order-of-cost estimate",
+          "after": "Structural assessment of balcony slabs and balustrade fixings",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Owners corporation selects the option and approves the design fee",
+          "after": "Defect report with options and order-of-cost estimate",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Confirm exempt pathway (no development consent)",
+          "after": "Owners corporation selects the option and approves the design fee",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Remedial specification, details and balcony schedule",
+          "after": "Owners corporation selects the option and approves the design fee",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Balustrade re-fixing design",
+          "after": "Structural assessment of balcony slabs and balustrade fixings",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Regulated designs and design compliance declarations",
+          "after": "Remedial specification, details and balcony schedule",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Regulated designs and design compliance declarations",
+          "after": "Balustrade re-fixing design",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender documents",
+          "after": "Regulated designs and design compliance declarations",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender documents",
+          "after": "Confirm exempt pathway (no development consent)",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender period with site inspection",
+          "after": "Tender documents",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender evaluation and recommendation",
+          "after": "Tender period with site inspection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "General meeting resolves contract award and special levy",
+          "after": "Tender evaluation and recommendation",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Contract award",
+          "after": "General meeting resolves contract award and special levy",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Lodge regulated designs and declarations before work starts",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Lodge regulated designs and declarations before work starts",
+          "after": "Regulated designs and design compliance declarations",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Resident notices and balcony access schedule",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Site establishment, access equipment and protection",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Pre-commencement condition survey of affected lots",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Pay long service levy before work starts",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Strip tiles, bedding and failed membrane",
+          "after": "Resident notices and balcony access schedule",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Strip tiles, bedding and failed membrane",
+          "after": "Site establishment, access equipment and protection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Strip tiles, bedding and failed membrane",
+          "after": "Lodge regulated designs and declarations before work starts",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Strip tiles, bedding and failed membrane",
+          "after": "Pre-commencement condition survey of affected lots",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Strip tiles, bedding and failed membrane",
+          "after": "Pay long service levy before work starts",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Substrate repair, falls screed and outlet upgrade",
+          "after": "Strip tiles, bedding and failed membrane",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Hold point: substrate and outlet inspection before membrane",
+          "after": "Substrate repair, falls screed and outlet upgrade",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install membrane, upturns and terminations",
+          "after": "Hold point: substrate and outlet inspection before membrane",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Hold point: membrane inspection and flood test before cover",
+          "after": "Install membrane, upturns and terminations",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Re-fix balustrades, relay tiles and seal joints",
+          "after": "Hold point: membrane inspection and flood test before cover",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Balustrade fixing certification",
+          "after": "Re-fix balustrades, relay tiles and seal joints",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Lodge building compliance declaration (DBP Act)",
+          "after": "Balustrade fixing certification",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Lodge building compliance declaration (DBP Act)",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Handover: warranties, as-built details and maintenance schedule",
+          "after": "Practical completion inspection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Defects liability period and final inspection",
+          "after": "Handover: warranties, as-built details and maintenance schedule",
+          "reason": "activity missed"
+        }
+      ]
+    },
+    "orphans": [
+      {
+        "app": "Confirm the exempt path",
+        "id": "cd6d99b3-d7b5-4117-a85f-b2e38fe18430",
+        "stage": "approvals"
+      }
+    ],
+    "cycles": [],
+    "cycle_labels": []
+  },
+  "rfps": [
+    {
+      "discipline": "consultant.building",
+      "template": null,
+      "built_in": "no",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "04ff7061-871b-40c9-80d8-3ea7dac952d9",
+      "app_template": null,
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": [
+          {
+            "key": "text.template",
+            "why": "No knowledge/rfp file lists consultant.building or consultant.waterproofing in discipline_ids"
+          }
+        ],
+        "awaiting_user": []
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Review of strata records, approved drawings, previous reports and leak history",
+          "Visual inspection, leak mapping, water testing and intrusive opening-up at representative balconies, with make-good",
+          "Defect report: cause, extent, options and an order-of-cost estimate for the levy",
+          "Remedial specification, details and balcony schedule (membrane system, upturns, outlets, overflows, falls)",
+          "Regulated design and design compliance declaration for waterproofing (NSW DBP Act applies to Class 2: owner ruling R3)",
+          "Tender documents, tender management, evaluation and recommendation report",
+          "Attendance at strata committee and general meetings",
+          "Superintendent / contract administration, including payment claims under the NSW Security of Payment Act",
+          "Hold-point inspections: substrate, membrane before cover, flood test",
+          "AS 4000 special conditions compliant with the Home Building Act 1989: written contract, deposit cap, statutory warranties (verified: false)",
+          "Review of the builder's building compliance declaration and the varied regulated designs (DBP Act, owner ruling R3; section numbers verified: false)",
+          "Practical completion, defects inspections and collation of warranties",
+          "Returnables: professional indemnity insurance, design practitioner registration, remedial experience on occupied strata buildings"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 5,
+        "present": [],
+        "unknown": [],
+        "known": []
+      }
+    },
+    {
+      "discipline": "consultant.structural",
+      "template": "structural",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "6492844b-d145-4875-bbe8-64c4249986cf",
+      "app_template": "structural",
+      "expect": {
+        "ok": 24,
+        "new_failure": [
+          {
+            "key": "blocking.fact:regulated_design",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.concept_schematic",
+            "want": "exclude",
+            "app": "include",
+            "why": "always included and inside the boundary; a remediation appointment starts with the existing assessment"
+          },
+          {
+            "key": "position.geotech_brief",
+            "want": "absent",
+            "app": "I",
+            "why": "always I; no ground works"
+          },
+          {
+            "key": "position.shared_model",
+            "want": "absent",
+            "app": "I",
+            "why": "service_level complex I because of the Class 2 part"
+          },
+          {
+            "key": "position.specialist_element_design",
+            "want": "absent",
+            "app": "I",
+            "why": "O whenever procurement is not design_construct"
+          },
+          {
+            "key": "position.services_fixings",
+            "want": "absent",
+            "app": "I",
+            "why": "always O"
+          },
+          {
+            "key": "position.super_flat_floor",
+            "want": "absent",
+            "app": "I",
+            "why": "client flag cannot be set; if_unknown option"
+          },
+          {
+            "key": "position.services_footings",
+            "want": "absent",
+            "app": "I",
+            "why": "always I; no footings"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [
+          {
+            "key": "text.regulated_design",
+            "why": "deliverable wording assumes a CC (see gaps)"
+          }
+        ],
+        "awaiting_user": [
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Existing structure assessment: balcony slabs, slab edges, cover and reinforcement condition",
+          "Balustrade fixing design and certification (re-fix outside the membrane)",
+          "Check of added screed or finish load on the balcony slabs",
+          "Concrete repair specification for defects found on opening up (provisional)",
+          "Confirm whether any structural work is a regulated building element (DBP Act, verified: false)",
+          "Construction-phase inspection of fixings and repairs"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 4,
+        "present": [
+          {
+            "phrase": "Super-flat floor design",
+            "where": "control:position.super_flat_floor",
+            "coverage": 1.0
+          },
+          {
+            "phrase": "Construction certificate certification",
+            "where": "role/rfp:stages#39",
+            "coverage": 1.0
+          }
+        ],
+        "unknown": [],
+        "known": [
+          {
+            "phrase": "Geotechnical brief",
+            "where": "control:position.geotech_brief"
+          },
+          {
+            "phrase": "Revit model shared with the design team",
+            "where": "control:position.shared_model"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.mechanical",
+      "template": "mechanical-services",
+      "status": "extra",
+      "found": true,
+      "report": "61f8a419-839d-40a2-90f8-53f49955ef2a"
+    },
+    {
+      "discipline": "consultant.hydraulic",
+      "template": "hydraulic-services",
+      "status": "extra",
+      "found": true,
+      "report": "9d580cef-03bc-45e4-9f68-f0b2afaac3ac"
+    }
+  ],
+  "summary": {
+    "procurement": {
+      "expected": 3,
+      "matched": 2,
+      "missed": 1,
+      "missed_built_in": 0,
+      "missed_known_gap": 1,
+      "extra": 0,
+      "false_positive": 2,
+      "kind_mismatch": 0
+    },
+    "cost_plan": {
+      "expected": 20,
+      "matched": 9,
+      "missed": 11,
+      "missed_built_in": 0,
+      "missed_known_gap": 11,
+      "extra": 4,
+      "false_positive": 4,
+      "section_mismatch": 0,
+      "fabricated": 0,
+      "amounts_document": 0,
+      "amounts_user": 0
+    },
+    "program": {
+      "expected": 32,
+      "matched": 1,
+      "missed": 31,
+      "missed_built_in": 0,
+      "missed_known_gap": 31,
+      "extra": 0,
+      "false_positive": 0,
+      "wrong_stage": 0,
+      "skeleton_match": false,
+      "links_holds": 0,
+      "links_violated": 0,
+      "links_unknown": 0,
+      "links_unscored": 39,
+      "orphans": 1,
+      "cycles": 0
+    },
+    "rfps": {
+      "expected": 2,
+      "found": 2,
+      "missing": 0,
+      "missing_built_in": 0,
+      "not_expected_present": 0,
+      "extra": 2,
+      "expect_ok": 24,
+      "expect_new_failure": 1,
+      "expect_known_difference": 7,
+      "expect_fixed": 0,
+      "expect_awaiting_user": 2,
+      "must_include_missing": 19,
+      "must_include_unknown": 0,
+      "must_not_include_present": 2,
+      "must_not_include_known": 2
+    }
+  }
+}

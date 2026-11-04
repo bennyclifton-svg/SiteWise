@@ -501,6 +501,17 @@ class RFPTests(unittest.TestCase):
         self.assertEqual(sorted(d["key"] for d in out["known_difference"]),
                          ["position.bim", "stage.as_built", "stage.post_novation"])
 
+    def test_scope_by_stage_shows_an_absent_position_as_x(self):
+        # A by-stage RFP prints every position, out-of-scope ones as X.
+        r = {"expect": {"positions": {"bim_model": "X", "court": "I"}},
+             "app_differs": [{"key": "position.norbe", "expect": "absent", "app": "absent", "why": "not in the brief"}]}
+        values = {"position.bim_model": "X", "position.court": "I", "position.norbe": "X", "position.signage": "X"}
+        out = s._compare_expect(r, values, set(), by_stage=True)
+        self.assertEqual(out["new_failure"], [])
+        r2 = {"expect": {"positions": {"signage": "absent"}}}
+        self.assertEqual(s._compare_expect(r2, {"position.signage": "X"}, set(), by_stage=True)["new_failure"], [])
+        self.assertTrue(s._compare_expect(r2, {"position.signage": "X"}, set(), by_stage=False)["new_failure"])
+
     def test_scope_by_stage_still_reports_a_real_fix(self):
         r = {"expect": {"stages_absent": ["post_novation"]},
              "app_differs": [{"key": "stage.post_novation", "expect": "absent", "app": "ask", "why": "rules ask"}]}

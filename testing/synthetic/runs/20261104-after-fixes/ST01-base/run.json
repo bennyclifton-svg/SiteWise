@@ -1,0 +1,337 @@
+{
+  "scenario": "ST01-base",
+  "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "b3c1ae2d8bc5b25fdba9b7d84ee617e771d9d78f",
+    "app_files_modified": 8
+  },
+  "started": "20261104-after-fixes",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.8
+    },
+    {
+      "wave": 2,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 5,
+      "seconds": 15.0
+    },
+    {
+      "wave": 3,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.9
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "055c0295-4650-4bf4-a35a-936a9c01de1e",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Owner brief - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:30.630483+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 14 DP 1302865.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c6dfdd13-3761-4f2f-8370-542b95bdd82d",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Planning certificate s10.7 - Lot 14 DP 1302865.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:30.643189+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "0eb4df21-4a62-4e24-9c88-b3893e6ca603",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Detail and boundary survey report - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:30.653415+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Timing for the build.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "55090fff-d58a-48bd-a0df-f390119b313a",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "RE Timing for the build.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:30.66465+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "41b23334-626d-4c83-b012-565df4032a3d",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Fee proposal - Architectural services - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:43.552144+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal TCE-2603.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "f8a8c183-8f10-40d4-9db7-451b79bc09eb",
+        "submission_id": "13dc4abe-d26f-4ee4-abfa-64f3777d8e2b"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Brennan Civil - stormwater fee - Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5c64bce2-313e-4488-94dc-99ce3c57099e",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Brennan Civil - stormwater fee - Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:43.645468+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Ridgeback.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c63e4b4d-1aba-4f4d-8152-24933467fd24",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Geotechnical investigation fee proposal - Ridgeback.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:43.66906+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "BASIX and NatHERS fee proposal - Thermacheck.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "00b7e11c-1539-4dcc-9a30-2eff796bc30e",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "BASIX and NatHERS fee proposal - Thermacheck.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:43.7023+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Geotechnical report RG-26-0388 - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b96bc2d8-26dc-420a-acd2-b098abca4979",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Geotechnical report RG-26-0388 - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:58.752807+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d11",
+      "filename": "Architectural design statement - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f7debe4e-29a2-454e-8604-85c9c5831fb8",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Architectural design statement - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:58.789453+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Site plan A-101 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "0659cabc-5256-4bae-b826-3a4e6b8741ec",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Site plan A-101 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:58.806353+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Site plan A-101 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9463d3ac-ed0c-4241-9f49-76527ce4f8e2",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Site plan A-101 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:58.81312+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Statement of environmental effects - 27 Corella Rise.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "94364a3f-786b-4de1-acc9-6028aea3db2c",
+        "project_id": "3e4705df-e287-4642-bf59-c71f0b639ca9",
+        "filename": "Statement of environmental effects - 27 Corella Rise.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:20:58.842194+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Tax invoice RG-0418.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "cfdbedb5-c2be-4ee4-94b9-a807ccc77b26",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice INV-2307 Harbourline.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "b08e4060-a585-48e2-8f00-549a74e2a2aa",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "TCE invoice 5521.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "9593f8fd-0197-4f73-8704-14c777ea6634",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

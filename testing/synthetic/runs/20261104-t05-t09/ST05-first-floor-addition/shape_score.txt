@@ -1,0 +1,19 @@
+T05 House alterations and additions (first-floor-addition)
+  Procurement [scored]: matched 6/9, missed 3 (2 built in, 1 known gaps), extra 0, false positives 4
+    missed built in: consultant.surveyor; consultant.certifier
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical; consultant.town_planner
+  Cost plan [scored]: matched 21/37, missed 16 (3 built in, 13 known gaps), extra 3, false positives 4, fabricated amounts 0 (from documents 0, typed 0)
+    missed built in: Surveyor; Certifier; Active fire protection
+    false positives: Electrical; Hydraulic; Mechanical; Town Planner
+  Program [scored]: skeleton sk.generic (expected sk.extend-traditional), matched 31/83, missed 52 (31 built in, 21 known gaps), extra 30, false positives 0, wrong stage 1; links holds 24, violated 1, unknown 0, unscored 72; orphans 4, cycles 0
+    missed built in: Connect temporary builders power; Install erosion and sediment controls; Isolate, demolish and clear; Lodge services applications; Lead-in connections; Cut, fill and trim levels (+25 more)
+    violated: Prepare construction documentation after DA assessment and determination
+  RFPs: found 6/8 (0 built-in missing), not expected present 0, extra 4; expect ok 113, new failures 16, known differences 13, fixed 0, awaiting user input 18; must_include missing 30 (unknown 0); must_not_include present 4 (known 1)
+    consultant.architect: stage.dnc_tender; stage.post_novation; position.water_asset; blocking.fact:budget; blocking.slot:project:intro; missing 'Measured drawings of the existing house, or reliance on a named measure-up' (+8 more)
+    consultant.structural: stage.authority_asset; stage.dnc_tender; stage.post_novation; blocking.fact:procurement; blocking.slot:project:intro; missing 'Existing structure assessment of the walls, footings and roof the works rely on' (+7 more)
+    consultant.surveyor: missing
+    consultant.certifier: missing
+    consultant.geotechnical: stage.g4_planning; blocking.slot:project:intro; missing 'Investigation plan for the addition footprint'; missing 'Boreholes or hand augers and one test pit at an existing footing (field)'; missing 'Site classification to AS 2870 and foundation advice for the addition footings'; missing 'Test pits at existing footings' (+2 more)
+    consultant.civil: stage.dnc_tender; stage.post_novation; blocking.fact:procurement; blocking.slot:project:intro; missing 'Stormwater concept plan for the DA: catchment change from the added roof and hard surfaces, discharge point, connection to the existing system or kerb'; missing 'Detailed stormwater design for the CC' (+2 more)
+    consultant.basix: missing 'BASIX certificate for alterations and additions (work valued at $50,000 or more, owner ruling R5), lodged with the DA'; missing 'Thermal comfort assessment of the addition (DIY method or NatHERS assessment)'; missing 'Commitments schedule for the plans and a revised certificate at CC if the design changes'
+    consultant.hazmat: missing 'Pre-demolition and refurbishment hazardous materials survey of every area affected by the works, including roof space, subfloor and eaves'; missing 'Sampling with NATA-accredited analysis; asbestos, lead paint and ceiling dust sampling where ceilings are removed'; missing 'Register and recommendations for the tender documents'; missing 'Clearance inspection and certificate after removal, as an option'

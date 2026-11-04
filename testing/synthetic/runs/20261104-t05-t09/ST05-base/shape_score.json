@@ -1479,7 +1479,7 @@
       "report": "69935882-7e06-4d4f-bd0f-0ed80652fd32",
       "app_template": "architecture",
       "expect": {
-        "ok": 32,
+        "ok": 41,
         "new_failure": [
           {
             "key": "stage.dnc_tender",
@@ -1497,60 +1497,6 @@
             "key": "position.water_asset",
             "want": "absent",
             "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.sustainability_docs",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.country",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.live_staging",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.mixed_use_map",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.bim_model",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.tenant_fitout",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.signage",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.facade_certification",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.community",
-            "want": "absent",
-            "app": "X",
             "app_differs_said": null
           },
           {
@@ -1634,7 +1580,7 @@
       "report": "2fdf5804-d522-457c-919b-5735f546cd5a",
       "app_template": "structural",
       "expect": {
-        "ok": 23,
+        "ok": 25,
         "new_failure": [
           {
             "key": "stage.authority_asset",
@@ -1652,18 +1598,6 @@
             "key": "stage.post_novation",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.retention_design",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.temporary_works_interfaces",
-            "want": "absent",
-            "app": "X",
             "app_differs_said": null
           },
           {
@@ -1972,7 +1906,7 @@
       "report": "7222c38f-b116-49b3-be77-b855b97acff1",
       "app_template": "civil",
       "expect": {
-        "ok": 27,
+        "ok": 36,
         "new_failure": [
           {
             "key": "stage.dnc_tender",
@@ -1984,60 +1918,6 @@
             "key": "stage.post_novation",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.norbe",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.osd_new",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.osd_existing",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.osd_replacement",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.earthworks_suitability",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.flood_report",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.flood_evacuation",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.public_road_approvals",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.civil_declarations",
-            "want": "absent",
-            "app": "X",
             "app_differs_said": null
           },
           {
@@ -2263,8 +2143,8 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 4,
-      "expect_ok": 93,
-      "expect_new_failure": 36,
+      "expect_ok": 113,
+      "expect_new_failure": 16,
       "expect_known_difference": 13,
       "expect_fixed": 0,
       "expect_awaiting_user": 18,

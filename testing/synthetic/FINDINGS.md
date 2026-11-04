@@ -8,6 +8,22 @@ yet traced in the code.
 Run `runs/20261031-pilot` (T01 base, CDC and trees variants; app at
 `e233aa6` plus the owner's uncommitted working tree), 31 October 2026.
 
+## Status after the fixes (4 November 2026)
+
+Fixed and confirmed by re-running all nine pilot scenarios
+(`runs/20261104-after-fixes/REPORT.md`): F1, F2 (LGA and address), F3, F4,
+F5, F7, F8, F13, F14, F15, F16, the care-of client and the table invoice
+date. F9 to F12 are fixed in the RFP knowledge and rules (unit tests and
+answer keys; inspection and BASIX clause numbers stay `verified: false`).
+F6 was fixed on 2 November but is fragile: in one of nine runs the BASIX
+proposal filed blank at Jev 0.59. Plan:
+`docs/plans/2026-11-04-synthetic-findings-fixes.md`.
+
+Still open (not confirmed as app defects): T01's missed "no" flags, gas
+supply, contract form and existing building; `flag.authority_asset`,
+`flag.community` and access constraints as conflicts; `proj.regulated_design`
+(no reading exists); remediation has no skeleton.
+
 ## App defects
 
 **F1. Update profile response cut off while the app is busy.** *(2 Nov: improved by an owner fix, still 3 of 12 waves, only the first Update on a new project; see `runs/20261102-fixes-1-4-6`.)* In 8 of 12

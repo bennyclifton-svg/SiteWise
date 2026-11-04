@@ -598,9 +598,14 @@ BY_STAGE = {"option": "include", "O": "I", "done": "exclude"}
 
 
 def _stage_view(key, v):
-    """The value a rules answer shows as in a by-stage RFP."""
+    """The value a rules answer shows as in a by-stage RFP. Such an RFP
+    prints every position, an out-of-scope one as X, so X means absent."""
+    if key.startswith("position."):
+        if v in ("ask", "O"):
+            return "I"
+        return "absent" if v in (None, "X") else v
     if v == "ask":
-        return "I" if key.startswith("position.") else "include"
+        return "include"
     return BY_STAGE.get(v, v)
 
 
@@ -629,6 +634,8 @@ def _compare_expect(r, values, checks, by_stage=False):
     for key, want in wanted.items():
         present = key in values
         got = values.get(key)
+        if by_stage and key.startswith("position."):
+            got = _stage_view(key, got)
         if key.startswith(("stage.", "element.")) and not present:
             out["new_failure"].append({"key": key, "want": want, "app": None, "why": "the app has no such key"})
             continue

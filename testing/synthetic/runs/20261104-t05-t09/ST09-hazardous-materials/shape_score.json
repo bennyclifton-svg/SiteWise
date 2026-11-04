@@ -946,26 +946,8 @@
       "report": "86ca1fcc-a060-4642-9294-6285f70b6e47",
       "app_template": "structural",
       "expect": {
-        "ok": 19,
+        "ok": 24,
         "new_failure": [
-          {
-            "key": "position.residential_framing",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.retention_design",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.temporary_works_interfaces",
-            "want": "absent",
-            "app": "X",
-            "app_differs_said": null
-          },
           {
             "key": "blocking.fact:regulated_design",
             "want": "not blocking",
@@ -1015,18 +997,6 @@
             "want": "absent",
             "app": "I",
             "why": "client flag cannot be set; if_unknown option"
-          },
-          {
-            "key": "position.compaction",
-            "want": "absent",
-            "app": "X",
-            "why": "always X; no ground works"
-          },
-          {
-            "key": "position.demolition_drawings",
-            "want": "absent",
-            "app": "X",
-            "why": "always X"
           },
           {
             "key": "position.services_footings",
@@ -1165,9 +1135,9 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 3,
-      "expect_ok": 19,
-      "expect_new_failure": 5,
-      "expect_known_difference": 9,
+      "expect_ok": 24,
+      "expect_new_failure": 2,
+      "expect_known_difference": 7,
       "expect_fixed": 0,
       "expect_awaiting_user": 2,
       "must_include_missing": 19,

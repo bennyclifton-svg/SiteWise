@@ -1,0 +1,19 @@
+T01 New detached house (cdc-pathway)
+  Procurement [scored]: matched 7/10, missed 3 (0 built in, 3 known gaps), extra 0, false positives 4
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical; consultant.town_planner
+  Cost plan [scored]: matched 23/34, missed 11 (0 built in, 11 known gaps), extra 0, false positives 6, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection; DA fees and contributions; Construction certificate and certifier fees
+  Program [scored]: skeleton sk.new-traditional-cdc (expected sk.new-traditional-da), matched 49/81, missed 32 (9 built in, 23 known gaps), extra 16, false positives 0, wrong stage 4; links holds 39, violated 4, unknown 0, unscored 47; orphans 3, cycles 0
+    missed built in: Lodge services applications; Excavate and inspect footings; Under-slab sanitary drainage; Reinforcement inspection before slab pour; Reinforce and pour slab; Stand wall frames (+3 more)
+    violated: Install erosion and sediment controls after Establish the site; Lay brick veneer after Install windows and external doors; Wrap and clad external walls after Install windows and external doors; Install stormwater drainage after Install gutters and downpipes
+  RFPs: found 7/9 (0 built-in missing), not expected present 1, extra 3; expect ok 137, new failures 15, known differences 23, fixed 4, awaiting user input 45; must_include missing 8 (unknown 0); must_not_include present 15 (known 0)
+    consultant.architect: stage.planning_response; stage.brief_masterplan; position.water_asset; position.sustainability_docs; blocking.slot:project:intro; has 'Green Star or NABERS'
+    consultant.structural: stage.authority_asset; blocking.slot:project:intro; missing 'Construction documents and design certificate for the CC'; missing 'Option: construction-phase inspections with an inspection schedule'; has 'Shared Revit model'; has 'Authority asset stage' (+1 more)
+    consultant.civil: position.earthworks_suitability; blocking.slot:project:intro; has 'MUSIC water quality modelling'; has '3D civil model'
+    consultant.geotechnical: blocking.slot:project:intro; has 'Groundwater monitoring wells'; has 'Acid sulfate soils assessment'; has 'Asset exposure'; has 'Novation or transfer'
+    consultant.surveyor: position.access; blocking.fact:flag.staged; blocking.slot:project:intro; has 'Interior scan'; has 'Movement monitoring'
+    consultant.certifier: stage.b2_construction_approval; blocking.slot:project:intro; missing 'Package B: CC assessment'; missing 'Occupation certificate with BASIX completion check'; missing 'CDC assessment and determination'; has 'Classification map' (+2 more)
+    consultant.basix: missing 'NatHERS thermal assessment with stamped plans'; missing 'BASIX certificate: water, energy, thermal comfort'; missing 'One revision for the CC design'
+    consultant.landscape: missing
+    consultant.quantity_surveyor: missing
+    consultant.town_planner: not_expected

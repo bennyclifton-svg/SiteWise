@@ -1,0 +1,318 @@
+{
+  "scenario": "ST09-base",
+  "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "b3c1ae2d8bc5b25fdba9b7d84ee617e771d9d78f",
+    "app_files_modified": 8
+  },
+  "started": "20261104-after-fixes",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.6
+    },
+    {
+      "wave": 2,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 10.8
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 16.9
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Consultant brief - Kurrajong Apartments balconies.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "139921af-309b-4e01-93ce-c70c48babecb",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Consultant brief - Kurrajong Apartments balconies.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:10.25264+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - SP 912345.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f000fde7-2d85-4fca-8689-f8b74400f4c6",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Planning certificate s10.7 - SP 912345.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:10.261723+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Building information and leak history - Kurrajong Apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9f9f7d95-a5b7-417b-8660-feaac8cf33ea",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Building information and leak history - Kurrajong Apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:10.271739+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Balcony works timing.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9acf293a-521a-4ff5-87b8-8b307572fb74",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "RE Balcony works timing.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:10.278547+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Parapet Building Consultants - Kurrajong Apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2e96b01b-69c1-4e59-a45d-1ae0505be798",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Fee proposal - Parapet Building Consultants - Kurrajong Apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:22.990154+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Halyard fee submission - Kurrajong Parade.md",
+      "drop": "row:consultant.building",
+      "http": 201,
+      "response": {
+        "document_id": "9685b2d8-a8c5-4d9d-bcc0-b2d817f8995b",
+        "submission_id": "173e12eb-0d8d-47c4-9f50-99793dfad505"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Structural engineering fee proposal KCE-Q-2611.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "7731dace-3624-4dba-b205-a1cd5af3a81e",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Structural engineering fee proposal KCE-Q-2611.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:23.094934+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Defect investigation report PBC-R-26014-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c8b63756-bf20-4412-a475-752e600585e6",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Defect investigation report PBC-R-26014-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:33.957449+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d09",
+      "filename": "Remedial specification PBC-SPEC-26014 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "61d81134-9125-4400-af58-b76aa40335ae",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Remedial specification PBC-SPEC-26014 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:33.965571+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d10",
+      "filename": "Structural assessment KCE-R-2611-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4e980220-95d9-40f4-beb0-a2baffaa6205",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Structural assessment KCE-R-2611-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:33.983581+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d11",
+      "filename": "RW-101 Rev A - Typical balcony waterproofing details.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5767fb0f-d9f3-4568-95af-609cbb86e167",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "RW-101 Rev A - Typical balcony waterproofing details.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:33.991308+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "RW-101 Rev B - Typical balcony waterproofing details.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ee12edf5-b917-43fd-9f51-0b097f15ec5d",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "RW-101 Rev B - Typical balcony waterproofing details.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:34.014163+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Conditions of tender PBC-T-26014.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "314f0ee0-7fb5-464e-a415-314e16e9cb2a",
+        "project_id": "3ca943f5-ba48-408f-98ec-872ce1163050",
+        "filename": "Conditions of tender PBC-T-26014.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T21:26:34.030305+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Tax invoice PBC-INV-1187.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "a00d385b-7e36-4281-90a1-60c5bb5cfb12",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d15",
+      "filename": "Karrak invoice 3307.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "3274b3f6-f1a7-47cd-bb20-427b51004a2c",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice PBC-INV-1192.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "744ea9ed-3aa6-4175-804f-138d6ca9526c",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

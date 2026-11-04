@@ -1,0 +1,11 @@
+T09 Waterproofing remediation (balconies, podium) (podium-over-basement)
+  Procurement [scored]: matched 4/5, missed 1 (0 built in, 1 known gaps), extra 0, false positives 1
+    false positives: consultant.mechanical
+  Cost plan [scored]: matched 9/24, missed 15 (0 built in, 15 known gaps), extra 6, false positives 4, fabricated amounts 0 (from documents 0, typed 0)
+    false positives: Construction certificate and certifier fees; Service authority connection fees; Hydraulic; Mechanical
+  Program [scored]: skeleton sk.generic (expected missing), matched 1/36, missed 35 (0 built in, 35 known gaps), extra 1, false positives 0, wrong stage 0; links holds 0, violated 0, unknown 0, unscored 39; orphans 2, cycles 0
+  RFPs: found 4/4 (0 built-in missing), not expected present 0, extra 1; expect ok 21, new failures 4, known differences 7, fixed 0, awaiting user input 2; must_include missing 24 (unknown 0); must_not_include present 3 (known 2)
+    consultant.building: missing 'Review of strata records, approved drawings, previous reports and leak history'; missing 'Visual inspection, leak mapping, water testing and intrusive opening-up at representative balconies, with make-good'; missing 'Defect report: cause, extent, options and an order-of-cost estimate for the levy'; missing 'Remedial specification, details and balcony schedule (membrane system, upturns, outlets, overflows, falls)'; missing 'Regulated design and design compliance declaration for waterproofing (NSW DBP Act applies to Class 2: owner ruling R3)'; missing 'Tender documents, tender management, evaluation and recommendation report' (+7 more)
+    consultant.structural: position.dilapidation; position.retention_design; position.temporary_works_interfaces; blocking.fact:regulated_design; missing 'Existing structure assessment: balcony slabs, slab edges, cover and reinforcement condition'; missing 'Balustrade fixing design and certification (re-fix outside the membrane)' (+7 more)
+    consultant.landscape: missing 'Planter and soil build-up reinstatement over the new membrane'; missing 'Planting replacement schedule'; missing 'Root barrier and drainage layer coordination'
+    consultant.hydraulic: missing 'Podium outlet and overflow capacity check'; missing 'Charged or gravity drainage through the car park'

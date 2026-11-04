@@ -965,18 +965,12 @@
       "report": "e87c680e-0d4a-4548-ae27-8c1dffdade64",
       "app_template": "structural",
       "expect": {
-        "ok": 18,
+        "ok": 21,
         "new_failure": [
           {
             "key": "position.dilapidation",
-            "want": "X",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.residential_framing",
             "want": "absent",
-            "app": "X",
+            "app": "I",
             "app_differs_said": null
           },
           {
@@ -1040,18 +1034,6 @@
             "want": "absent",
             "app": "I",
             "why": "client flag cannot be set; if_unknown option"
-          },
-          {
-            "key": "position.compaction",
-            "want": "absent",
-            "app": "X",
-            "why": "always X; no ground works"
-          },
-          {
-            "key": "position.demolition_drawings",
-            "want": "absent",
-            "app": "X",
-            "why": "always X"
           },
           {
             "key": "position.services_footings",
@@ -1248,9 +1230,9 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 1,
-      "expect_ok": 18,
-      "expect_new_failure": 6,
-      "expect_known_difference": 9,
+      "expect_ok": 21,
+      "expect_new_failure": 5,
+      "expect_known_difference": 7,
       "expect_fixed": 0,
       "expect_awaiting_user": 2,
       "must_include_missing": 24,
