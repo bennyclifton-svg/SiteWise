@@ -19,11 +19,19 @@ EXE="$TOOLS/sitewise-synth.exe"
 PIDFILE="$TOOLS/synth-server.pid"
 LOG="$TOOLS/synth-server.log"
 
-if [[ "${1:-}" == stop ]]; then
+# The pid file holds the Windows pid: `$!` in Git Bash is an MSYS pid that
+# taskkill does not know, which once left an old build serving :8091.
+stop_server() {
   if [[ -f "$PIDFILE" ]]; then
     taskkill //PID "$(cat "$PIDFILE")" //F >/dev/null 2>&1 || true
     rm -f "$PIDFILE"
   fi
+  # Belt and braces: this exe name is used only by this harness.
+  taskkill //IM "$(basename "$EXE")" //F >/dev/null 2>&1 || true
+}
+
+if [[ "${1:-}" == stop ]]; then
+  stop_server
   echo stopped
   exit 0
 fi
@@ -50,6 +58,7 @@ export SITEWISE_JEV_API_KEY="${SITEWISE_JEV_API_KEY:-${TYPESAFE_API_KEY:-}}"
 
 cd "$ROOT"
 export PATH="$TOOLS/go/bin:$PATH" GOCACHE="$TOOLS/go-cache" GOPATH="$TOOLS/go-path" GOTOOLCHAIN=local
+stop_server  # never let an older build answer the health check below
 go build -o "$EXE" ./cmd/sitewise
 
 SECRET="$TOOLS/synth-session-secret"
@@ -63,7 +72,7 @@ mkdir -p "$SITEWISE_FILE_DIR"
 
 # Same flags as tools/dev.ps1: provisional profile thresholds, dev login.
 "$EXE" serve -addr "$ADDR" -dev-login -profile-provisional >"$LOG" 2>&1 &
-echo $! > "$PIDFILE"
+cat "/proc/$!/winpid" > "$PIDFILE" 2>/dev/null || echo $! > "$PIDFILE"
 for _ in $(seq 1 240); do
   if curl -s -m 1 "http://$ADDR/health" >/dev/null 2>&1; then
     echo "SiteWise (synthetic) on http://$ADDR, log $LOG"
