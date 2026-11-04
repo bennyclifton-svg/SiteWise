@@ -607,14 +607,13 @@ triggers:
     negation:
       - "No asbestos-containing materials were detected in any sample."
       - "Samples 1-6 of the eaves and wet-area linings: no asbestos detected; the fibre-cement eaves date from the 1996 re-roof."
-    profile: [det.existing_building_year]
+    profile: []
     adds:
-      procurement: [consultant.hazmat]
-      cost_plan: ["Demolition, strip-out and hazardous materials removal", "Hazardous materials survey"]
+      cost_plan: ["Licensed asbestos removal and clearance"]
       program: ["Notify SafeWork NSW of licensed asbestos removal", "Remove asbestos and obtain a clearance certificate", "Lead paint management before sanding or removal"]
       rfps: [{discipline: consultant.hazmat, must_include: ["Clearance inspection and certificate after removal"]}]
       authority: ["SafeWork NSW notification of licensed asbestos removal work", "Waste disposal to a licensed facility with tracking"]
-    built_in: {procurement: "no", program: partial, cost_plan: partial, rfps: "no"}
+    built_in: {program: partial, cost_plan: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.existing-conditions"
   - id: heritage-conservation-area
     label: House is in a heritage conservation area or is a heritage item
@@ -641,7 +640,7 @@ triggers:
       - "We want to go up rather than out to keep the backyard."
     negation:
       - "Single-storey addition only; no change to the existing roof over the front rooms."
-    profile: [hdr.scale.storeys]
+    profile: [hdr.scale.storeys, hdr.scale.added_gfa_sqm, hdr.scale.gfa_sqm]
     adds:
       work_items: [{system: substructure.underpinning, action: new}, {system: access-egress.stairs-and-ramps, action: new}, {system: structure.temporary-works, action: new}, {system: access-egress.barriers, action: new}]
       cost_plan: ["Underpinning and footing strengthening", "Temporary roof and weatherproofing"]

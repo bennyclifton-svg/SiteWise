@@ -1,0 +1,313 @@
+{
+  "schema": "sitewise-synthetic-profile/1",
+  "values": {
+    "hdr.building_class": {
+      "value": "residential",
+      "sources": [
+        "d01",
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "hdr.subclass": {
+      "value": "apartments",
+      "sources": [
+        "d01",
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "hdr.work_type": {
+      "value": "remediation",
+      "sources": [
+        "d01",
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.planning": {
+      "value": "exempt",
+      "sources": [
+        "d08",
+        "d09"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.procurement_route": {
+      "value": "traditional",
+      "sources": [
+        "d01",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.stakeholder_complexity": {
+      "value": "strata",
+      "sources": [
+        "d01",
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.operational_constraints": {
+      "value": {
+        "accept": [
+          "24_7_occupied",
+          "live_environment",
+          "partial_occupation"
+        ]
+      },
+      "sources": [
+        "d01",
+        "d09"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.storeys": {
+      "value": 6,
+      "sources": [
+        "d01",
+        "d03",
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.units": {
+      "value": 42,
+      "sources": [
+        "d01",
+        "d03",
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "det.ncc_class": {
+      "value": [
+        "2"
+      ],
+      "sources": [
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "det.state": {
+      "value": "NSW",
+      "sources": [
+        "d01",
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building": {
+      "value": true,
+      "sources": [
+        "d08",
+        "d10",
+        "d18"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building_year": {
+      "value": 1986,
+      "sources": [
+        "d01",
+        "d03",
+        "d08",
+        "d10",
+        "d18"
+      ],
+      "read_by_design": true
+    },
+    "det.rise_in_storeys": {
+      "value": 6,
+      "sources": [
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "det.heritage_status": {
+      "value": "none",
+      "sources": [
+        "d02",
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "det.flood_hazard": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.potentially_contaminated_land": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_form": {
+      "value": "as4000",
+      "sources": [
+        "d09",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_basis": {
+      "value": "lump_sum",
+      "sources": [
+        "d01",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "proj.regulated_design": {
+      "value": "yes",
+      "sources": [],
+      "stated_in": [
+        "d05",
+        "d08",
+        "d09"
+      ],
+      "read_by_design": false
+    },
+    "proj.client": {
+      "value": "The Owners - Strata Plan No. 912345",
+      "sources": [
+        "d01",
+        "d05",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "proj.budget_stated": {
+      "value": 168000000,
+      "sources": [
+        "d08"
+      ],
+      "read_by_design": true
+    },
+    "proj.address": {
+      "value": "41 Kurrajong Parade, Hurstville NSW 2220",
+      "sources": [
+        "d01",
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.lga": {
+      "value": {
+        "accept": [
+          "Georges River",
+          "Georges River Council"
+        ]
+      },
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.lot": {
+      "value": {
+        "accept": [
+          "Lots 1 to 42 in Strata Plan 912345",
+          "Lots 1 to 42 SP 912345",
+          "SP 912345",
+          "Strata Plan 912345",
+          "Lots 1 to 42 in Strata Plan 912345 and common property (SP 912345)"
+        ]
+      },
+      "sources": [],
+      "read_by_design": false,
+      "stated_in": [
+        "d02"
+      ]
+    },
+    "proj.zone": {
+      "value": {
+        "accept": [
+          "R4 High Density Residential",
+          "R4"
+        ]
+      },
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.target_construction_start": {
+      "value": "2027-02-01",
+      "sources": [
+        "d04"
+      ],
+      "read_by_design": false
+    },
+    "flag.basement": {
+      "value": "no",
+      "sources": [
+        "d01",
+        "d07",
+        "d08",
+        "d10"
+      ],
+      "read_by_design": true
+    },
+    "flag.excavation_adjoining": {
+      "value": "no",
+      "sources": [
+        "d10"
+      ],
+      "read_by_design": true
+    },
+    "flag.authority_asset": {
+      "value": "no",
+      "sources": [
+        "d09"
+      ],
+      "read_by_design": true
+    },
+    "flag.rail": {
+      "value": "no",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.transfer_structures": {
+      "value": "no",
+      "sources": [
+        "d10"
+      ],
+      "read_by_design": true
+    },
+    "flag.osd_existing": {
+      "value": "no",
+      "sources": [
+        "d09"
+      ],
+      "read_by_design": true
+    },
+    "flag.staged": {
+      "value": "no",
+      "sources": [
+        "d09"
+      ],
+      "read_by_design": true
+    }
+  },
+  "conflicts": [],
+  "derived": [
+    {
+      "key": "det.ncc_class",
+      "value": [
+        "2"
+      ]
+    },
+    {
+      "key": "det.existing_building",
+      "value": true
+    }
+  ]
+}

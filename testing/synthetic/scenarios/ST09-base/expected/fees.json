@@ -1,0 +1,163 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.building",
+      "firm": {
+        "name": "Parapet Building Consultants Pty Ltd",
+        "abn": "66 049 460 444",
+        "contact": "Joel Marchetti",
+        "email": "joel.parapet@example.com",
+        "phone": "02 9570 3184",
+        "address": "Suite 6, 120 Forest Road, Hurstville NSW 2220"
+      },
+      "stated_total_cents": 8100000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Investigation and defect report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2450000
+        },
+        {
+          "label": "Stage 2 Remedial specification, details and regulated design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Stage 3 Tender and recommendation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Stage 4 Contract administration and hold-point inspections",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3200000
+        },
+        {
+          "label": "Opening-up and make-good at four balconies (disbursement at cost, estimate)",
+          "kind": "reimbursable",
+          "state": "priced",
+          "amount_cents": 680000
+        },
+        {
+          "label": "Additional general meeting attendance, per meeting",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 65000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 21000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.building",
+      "firm": {
+        "name": "Halyard Remedial Consultants Pty Ltd",
+        "abn": "41 434 467 555",
+        "contact": "Sinead Okoro",
+        "email": "sinead.halyard@example.com",
+        "phone": "02 9587 6620",
+        "address": "Level 2, 7 Railway Parade, Kogarah NSW 2217"
+      },
+      "stated_total_cents": 9000000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Investigation and defect report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2700000
+        },
+        {
+          "label": "Specification and documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2000000
+        },
+        {
+          "label": "Tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Contract administration",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3500000
+        },
+        {
+          "label": "Opening-up and make-good",
+          "kind": "reimbursable",
+          "state": "included",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Karrak Consulting Engineers Pty Ltd",
+        "abn": "77 650 369 205",
+        "contact": "Lachlan Pyne",
+        "email": "lachlan.karrak@example.com",
+        "phone": "02 9546 1209",
+        "address": "14 Belmore Road, Peakhurst NSW 2210"
+      },
+      "stated_total_cents": 1700000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Existing structure assessment of balcony slabs and slab edges",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Balustrade re-fixing design and certification, screed load check, concrete repair specification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 580000
+        },
+        {
+          "label": "Tender queries",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 70000
+        },
+        {
+          "label": "Construction-phase inspections and fixing certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 400000
+        },
+        {
+          "label": "Additional inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 48000
+        }
+      ]
+    }
+  ]
+}

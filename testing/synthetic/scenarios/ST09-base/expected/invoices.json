@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d14",
+      "kind": "invoice",
+      "number": "PBC-INV-1187",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "66 049 460 444",
+      "supplier_discipline": "consultant.building",
+      "ex_gst_cents": 2450000,
+      "gst_cents": 245000,
+      "total_cents": 2695000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stage 1 Investigation and defect report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d15",
+      "kind": "invoice",
+      "number": "3307",
+      "invoice_date": "2026-05-05",
+      "issuer_abn": "77 650 369 250",
+      "supplier_discipline": "consultant.structural",
+      "ex_gst_cents": 650000,
+      "gst_cents": 65000,
+      "total_cents": 715000,
+      "flags": [
+        "abn_invalid"
+      ],
+      "unsupported": {
+        "claim_stage": "Existing structure assessment (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "PBC-INV-1192",
+      "invoice_date": "2026-05-15",
+      "issuer_abn": "66 049 460 444",
+      "supplier_discipline": "consultant.building",
+      "ex_gst_cents": 680000,
+      "gst_cents": 68000,
+      "total_cents": 748000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Disbursement: opening-up and make-good at four balconies",
+        "retention": null
+      }
+    }
+  ]
+}

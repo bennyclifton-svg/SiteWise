@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "KHA-INV-0412",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "33 017 265 706",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 950000,
+      "gst_cents": 95000,
+      "total_cents": 1045000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stage 1 Measure-up and concept design (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "CS-2291",
+      "invoice_date": "2026-04-24",
+      "issuer_abn": "66 060 342 772",
+      "supplier_discipline": "consultant.hazmat",
+      "ex_gst_cents": 230000,
+      "gst_cents": 34500,
+      "total_cents": 264500,
+      "flags": [
+        "gst_rate"
+      ],
+      "unsupported": {
+        "claim_stage": "Survey, sampling and report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d19",
+      "kind": "invoice",
+      "number": "1088",
+      "invoice_date": "2026-06-12",
+      "issuer_abn": "20 748 603 875",
+      "supplier_discipline": "consultant.civil",
+      "ex_gst_cents": 220000,
+      "gst_cents": 22000,
+      "total_cents": 242000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stormwater concept plan for the DA",
+        "retention": null
+      }
+    }
+  ]
+}

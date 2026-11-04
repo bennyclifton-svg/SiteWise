@@ -1,0 +1,888 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST05-first-floor-addition",
+  "type_id": "T05",
+  "base": "ST05-base",
+  "triggers": [
+    "first-floor-addition"
+  ],
+  "project": {
+    "name": "Ferreira house, 41 Tallowwood Avenue",
+    "address": "41 Tallowwood Avenue, Concord NSW 2137",
+    "lga": "Canada Bay",
+    "summary": "A 30 m2 rear kitchen, living and dining addition and a 25 m2 first-floor main bedroom and ensuite over the rear of a 140 m2 brick house built in 1958, making it two storeys, with the bathroom and laundry redone and two loadbearing walls removed, on a 557 m2 R2 lot in Concord. DA to the City of Canada Bay, owners move out, architect-led tender to builders under an HIA lump-sum contract."
+  },
+  "invented": {
+    "lots": [
+      "Lot 23 DP 30418"
+    ],
+    "abns": [
+      "33 017 265 706",
+      "64 547 904 519",
+      "20 748 603 875",
+      "66 215 706 502",
+      "66 060 342 772",
+      "59 106 324 135",
+      "20 409 763 692"
+    ],
+    "firms": [
+      "Kestrel Hill Architects Pty Ltd",
+      "Ironbark Structural Engineers Pty Ltd",
+      "Lindqvist Civil & Stormwater Pty Ltd",
+      "Sandstone Geotechnical Pty Ltd",
+      "ClearSample Hazmat Services Pty Ltd",
+      "Northlight Energy Ratings Pty Ltd",
+      "Pemberton & Rao Surveyors Pty Ltd"
+    ],
+    "emails": [
+      "tomas.ferreira@example.com",
+      "nadia.kestrelhill@example.com",
+      "hamish.ironbark@example.com",
+      "erik.lindqvistcivil@example.com",
+      "priya.sandstonegeo@example.com",
+      "daniel.clearsample@example.com",
+      "jess.northlight@example.com",
+      "arjun.pembertonrao@example.com"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Owner brief - 41 Tallowwood Avenue.md",
+      "title": "Owner's brief: alterations and additions at 41 Tallowwood Avenue",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date: 9 February 2026, Client, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "The project comprises alterations and additions to our family house"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "The project comprises alterations and additions to our family house"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "a smaller rear addition (new kitchen, living and dining) and a first-floor addition over the rear of the existing house, plus alterations to the existing house"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The works are alterations and additions to an existing building (a brick dwelling)"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The house was built in 1958"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "We want to go up rather than out to keep the backyard. New first-floor addition over the existing house containing the main bedroom and ensuite. The house will be two storeys."
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "We will move out of the house for the duration of the main works. The owners will vacate the house for the duration of the works."
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "We are the sole owners and the only decision makers"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "Mid-range finishes: good quality and durable, nothing high end"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "A development application will be lodged with council"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Architect-led traditional lump-sum tender to three or four licensed builders"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The builder will be engaged under the HIA NSW Lump Sum building contract"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $640,000 excluding GST"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Tomas and Leah Ferreira"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 41 Tallowwood Avenue, Concord NSW 2137"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 41 Tallowwood Avenue, Concord NSW 2137"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "The house has natural gas from the street main, and we want to keep a gas cooktop"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement or cellar"
+        },
+        {
+          "key": "flag.staged",
+          "says": "No staged construction: one builder, one contract, one continuous job"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "There are not multiple buildings: just the one house"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or similar rating target beyond BASIX"
+        },
+        {
+          "key": "flag.country",
+          "says": "We do not need any Connecting with Country input for this lot"
+        }
+      ],
+      "traps": [],
+      "content": "The owners' brief to the architect in plain first-person prose. Sections: '## Project description' (first passage: 'The project comprises alterations and additions to our family house'; existing building sentence; built in 1958; go up rather than out to keep the backyard; first-floor main bedroom and ensuite over the rear of the house plus a smaller rear kitchen and living addition; we move out; sole owners), '## What we want' (kitchen, living, dining to the garden, main bedroom and ensuite upstairs, bathroom and laundry redone, two internal walls out, a stair), '## Scope, budget and quality', '## Contract and procurement' (traditional lump-sum tender; the sentence 'The builder will be engaged under the HIA NSW Lump Sum building contract'; single continuous job), '## Services and sustainability' (natural gas kept, heat-pump hot water, BASIX only, no Connecting with Country). Avoid the words 'renovation', 'reno' and any bedroom or bathroom count."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 23 DP 30418.md",
+      "title": "Planning certificate under section 10.7",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-16",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-00942 | | Issue date | 16/02/2026 | | Applicant | Tomas Ferreira |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: City of Canada Bay."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 23 DP 30418"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R2 Low Density Residential under Canada Bay Local Environmental Plan 2013"
+        },
+        {
+          "key": "proj.address",
+          "says": "41 Tallowwood Avenue, Concord NSW 2137"
+        },
+        {
+          "key": "det.state",
+          "says": "Concord NSW 2137"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-land-eligible",
+          "what": "Item 4 says complying development under the Housing Code may be carried out on the land.",
+          "expect": "hdr.cond.planning comes from the documents that state the chosen pathway (brief, SEE), not from land eligibility; it stays da"
+        }
+      ],
+      "content": "A council s10.7(2) and (5) planning certificate, numbered items in the usual order: zoning and LEP/DCP, complying development (may be carried out under the Housing Code), heritage, bush fire, flood, acid sulfate soils, contamination, coastal, rail corridor, road widening (none). Fixed council wording; identity sits in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line (F2)."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 41 Tallowwood Avenue.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Pemberton & Rao Surveyors Pty Ltd",
+      "date": "2026-03-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: PR-26-0217, Date: 2 March 2026, Prepared by; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 557.4 m2"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Narrow 12.2 m frontage with street parking only, no rear lane, and side access to the rear yard along a 1.0 m path"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "Sydney Water's asset search shows no sewer main within the property; the sewer is in the street"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "The house drains to the Sydney Water sewer main in the street; the junction is at the front boundary"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Water main in Tallowwood Avenue; the house is connected to it"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention system on the lot; roof water drains by gravity to the kerb"
+        }
+      ],
+      "traps": [
+        {
+          "id": "sewer-main-in-street",
+          "what": "'drains to the Sydney Water sewer main in the street' matches the authority_asset trigger '(sewer|water) main' (DOMAIN.md §10 'Build over' family).",
+          "expect": "flag.authority_asset stays no: the main is in the street, and the report says no sewer main is within the property"
+        },
+        {
+          "id": "trees-listed-not-affected",
+          "what": "Lists a frangipani in the rear yard and a street tree (brush box) on the verge.",
+          "expect": "d03 alone sets neither arborist flag: presence is not an impact"
+        }
+      ],
+      "content": "Surveyor's report with the detail, level and boundary survey on AHD. Sections: '## Site description' (557.4 m2, 12.2 m frontage, generally level falling about 300 mm to the rear, side access path 1.0 m, no rear lane), '## Boundaries and easements' (no easements), '## Existing house levels' (floor, eave and ridge levels; suspended timber floor about 450 mm above ground), '## Trees' (frangipani near the back fence, about 16 m from the rear wall of the house; brush box street tree on the verge), '## Services' (sewer and water mains in the street, gas main in the street, underground electricity supply, meters on the front elevation, no solar panels, no on-site detention). Do not describe the house by its number of storeys."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Timing for the building work.md",
+      "title": "RE: Timing for the building work",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-03-04",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "We'd like the builder to start by 1 March 2027 so we can line up a 6-month lease"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread between Tomas Ferreira and the architect. Tomas states the target start and the rental lease; the architect replies that it depends on DA determination and the tender. Tomas writes on 3 March 2026; the architect replies on 4 March 2026."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural services - 41 Tallowwood Avenue.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Kestrel Hill Architects Pty Ltd",
+      "date": "2026-03-10",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: KHA-FP-2604, Date: 10 March 2026, Client; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.architect_lodges",
+          "says": "The architect's services run from concept design through to DA lodgement on the NSW Planning Portal"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "This is a Class 1a house, so the Design and Building Practitioners Act registered-design obligations do not apply"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Stage 2: DA documentation and lodgement"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $44,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's fee proposal. Scope by stage: Stage 1 measure-up of the existing house, including roof space and wall thicknesses for the first-floor addition, and concept design $9,500; Stage 2 DA documentation and lodgement, including the statement of environmental effects and shadow diagrams $12,500; Stage 3 construction documentation (one CC and tender set) $19,000; Stage 4 tender $3,000; total $44,000 ex GST. Optional contract administration $11,000 ex GST; additional services at $210 per hour; exclusions (other consultants, council fees). The 'Stage 1 … Stage 4' fee stages are not construction stages."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal ISE-2611.md",
+      "title": "Structural engineering fee proposal",
+      "author_role": "consultant.structural",
+      "firm": "Ironbark Structural Engineers Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: ISE-2611, Date: 12 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "No transfer structures are required; the first floor is carried on new steel beams bearing on the underpinned existing brick walls"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $9,600 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's quote: existing structure assessment, including the capacity of the existing walls and footings for the new first floor, $2,400; concept and DA structural advice $800; detailed design and CC documentation (first-floor framing and steel beams, underpinning design, beams over the rear opening and removed loadbearing walls, footings, tie-down) $6,400; total $9,600 ex GST; site inspections at $330 per visit. Temporary propping and temporary roof design are by the builder. Dropped on the structural row."
+    },
+    {
+      "id": "d07",
+      "filename": "Lindqvist Civil - stormwater fee - Tallowwood Ave.md",
+      "title": "Fee proposal: civil and stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Lindqvist Civil & Stormwater Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | LCS-P-0311 | | Date | 13/03/2026 | | Attention | Nadia Okonkwo |; # heading 'Fee proposal: civil and stormwater engineering'",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "Roof water from the addition connects to the existing gravity system discharging to the kerb; OSD is not required"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "No stormwater quality treatment or MUSIC modelling is required for a single dwelling addition"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "No NorBE assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No public road works are required"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $7,260 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "osd-negated",
+          "what": "'OSD is not required' matches the osd_required trigger \\bosd\\b, and 'existing gravity system … OSD' matches the osd_existing trigger (DOMAIN.md §9 osd-or-drainage-easement negation).",
+          "expect": "flag.osd_required and flag.osd_existing both stay no"
+        }
+      ],
+      "content": "Civil engineer's fee proposal for the changed catchment: 'The rear addition adds about 30 m² of new roof and the first floor replaces about 35 m² of the existing rear roof; all roof water is drained to the existing system', plus the new paved terrace. Stages: stormwater concept plan for the DA $2,420 inc GST; detailed stormwater design and erosion and sediment control plan for the CC $3,520 inc GST; works-as-executed review and stormwater certificate for the OC $1,320 inc GST. Every figure is GST-inclusive. Exclusions: CCTV of the retained drainage is at cost if needed."
+    },
+    {
+      "id": "d08",
+      "filename": "Geotechnical investigation fee proposal - Sandstone.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Sandstone Geotechnical Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal ref: SG-P-0742, Date: 16 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $3,900 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical fee proposal for an AS 2870 site classification and foundation advice: investigation plan and fieldwork (two hand-auger boreholes and test pits at three existing footings, to confirm the founding of the walls that will carry the first floor) $2,600; laboratory reactivity testing $450; report $850; total $3,900 ex GST; optional footing inspection at $420 per visit."
+    },
+    {
+      "id": "d09",
+      "filename": "Hazardous materials survey proposal - ClearSample.md",
+      "title": "Fee proposal: pre-demolition hazardous materials survey",
+      "author_role": "consultant.hazmat",
+      "firm": "ClearSample Hazmat Services Pty Ltd",
+      "date": "2026-03-18",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: CS-Q-1187, Date: 18 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $2,300 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Hazardous materials surveyor's fee proposal: pre-demolition and refurbishment survey of every area affected by the works, including roof space, subfloor and eaves, with sampling $1,450; NATA-accredited laboratory analysis of up to six samples $480; register and report for the tender documents $370; total $2,300 ex GST. Option: clearance inspection and certificate after any removal $650 ex GST."
+    },
+    {
+      "id": "d10",
+      "filename": "BASIX fee proposal - Northlight.md",
+      "title": "Fee proposal: BASIX certificate for alterations and additions",
+      "author_role": "consultant.basix",
+      "firm": "Northlight Energy Ratings Pty Ltd",
+      "date": "2026-03-20",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: NER-0519, Date: 20 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5."
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $1,200 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Assessor's fee proposal: BASIX certificate for alterations and additions with the thermal comfort assessment of the addition, for the DA, $950; one revised certificate for the CC design $250; total $1,200 ex GST."
+    },
+    {
+      "id": "d11",
+      "filename": "Hazardous materials survey report CS-26-0388.md",
+      "title": "Pre-demolition hazardous materials survey report",
+      "author_role": "consultant.hazmat",
+      "firm": "ClearSample Hazmat Services Pty Ltd",
+      "date": "2026-04-14",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: CS-26-0388, Revision: 0, Report date: 14 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building_year",
+          "says": "The house was built in 1958"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "Survey of the areas of the existing building affected by the proposed alterations and additions"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fibre-cement-not-asbestos",
+          "what": "Uses the hazardous-materials-found negation: 'Samples 1-6 of the eaves and wet-area linings: no asbestos detected; the fibre-cement eaves date from the 1996 re-roof.' and 'No asbestos-containing materials were detected in any sample.' Fibre cement in a 1958 house reads like asbestos (DOMAIN.md §10 'Asbestos').",
+          "expect": "No hazardous-materials trigger; det.existing_building_year stays 1958; the hazmat package stays a survey only (no removal scope)"
+        },
+        {
+          "id": "loose-fill-register-negative",
+          "what": "States 'The register search returned no listing for the property.' for the NSW loose-fill asbestos insulation register.",
+          "expect": "No loose-fill asbestos consequence"
+        }
+      ],
+      "content": "Hazmat report. Sections: '## Introduction' (built in 1958; areas surveyed: rear skillion, laundry lean-to, bathroom, kitchen, two internal walls, roof space, subfloor, eaves), '## Sampling' (table of six samples, none positive), '## Findings' (the negation sentences; lead paint test of window frames below the threshold; loose-fill register search negative), '## Recommendations' (register in the tender documents; unexpected-finds procedure). Do not describe the house by its number of storeys."
+    },
+    {
+      "id": "d12",
+      "filename": "Geotechnical report SG-26-0742 - 41 Tallowwood Avenue.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Sandstone Geotechnical Pty Ltd",
+      "date": "2026-04-22",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: SG-26-0742, Revision: 0, Report date: 22 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.site_class",
+          "says": "Site classification: Class M in accordance with AS 2870"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "Groundwater is not expected above the base of the footing excavations, and no dewatering is needed"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "No excavation is proposed next to the neighbouring dwellings; the addition footings are shallow strip and pad footings"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed; the addition is a slab on ground"
+        }
+      ],
+      "traps": [
+        {
+          "id": "excavate-to-depth",
+          "what": "Recommends 'excavate to a depth of 300 mm to remove topsoil under the addition slab', which matches the basement trigger 'excavat\\w* to a depth'.",
+          "expect": "flag.basement stays no"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (two hand augers, test pits at three existing footings, which are brick strip footings on stiff clay at 0.5 m), subsurface profile (fill and topsoil over stiff silty clay), laboratory shrink-swell results, AS 2870 site classification Class M, allowable bearing pressure for underpinning the walls that carry the first floor, recommendation to found the rear addition footings to match the existing house, earthworks and site drainage advice."
+    },
+    {
+      "id": "d13",
+      "filename": "Architectural design statement - 41 Tallowwood Avenue.md",
+      "title": "Architectural design statement",
+      "author_role": "consultant.architect",
+      "firm": "Kestrel Hill Architects Pty Ltd",
+      "date": "2026-05-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: KHA-DS-01, Revision: A, Date: 20 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: Class 1a dwelling"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "New first-floor addition over the existing house containing the main bedroom and ensuite. The house becomes two storeys; the existing roof over the front rooms is unchanged."
+        },
+        {
+          "key": "hdr.scale.existing_gfa_sqm",
+          "says": "Existing gross floor area: 140 m2"
+        },
+        {
+          "key": "hdr.scale.added_gfa_sqm",
+          "says": "Added gross floor area: 55 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Proposed gross floor area after the works: 195 m2"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "Climate zone 5"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "A standard suburban lot with no environmental sensitivities"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees within 5 m of the works; no trees on the site are affected by the works"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "No neighbouring or street trees are affected by the works"
+        },
+        {
+          "key": "flag.arborist_pruning",
+          "says": "No tree removal or pruning is proposed"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The design complies with the height and floor space ratio standards, so no clause 4.6 variation is sought"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application will be determined by council staff under delegation, not the local planning panel"
+        },
+        {
+          "key": "flag.community",
+          "says": "No public exhibition or community consultation is proposed"
+        }
+      ],
+      "traps": [
+        {
+          "id": "dulux-heritage",
+          "what": "Materials: 'Dulux Heritage colour range to be used for the external paintwork' (heritage-conservation-area negation; DOMAIN.md §10 'Heritage').",
+          "expect": "det.heritage_status stays none"
+        },
+        {
+          "id": "flood-test-shower",
+          "what": "Wet areas: 'Flood test the shower recess before tiling' (flood-affected negation; DOMAIN.md §10 'Flood').",
+          "expect": "det.flood_hazard stays false"
+        },
+        {
+          "id": "build-over-footprint",
+          "what": "'The addition will build over the footprint of the demolished skillion' matches the authority_asset trigger 'build(ing)? over' (DOMAIN.md §10 'Build over').",
+          "expect": "flag.authority_asset stays no"
+        }
+      ],
+      "content": "Architect's design statement for the DA. Sections: '## Project description' (existing 140 m2, added 55 m2, proposed 195 m2; the first-floor evidence sentence; two storeys; Class 1a), '## Site description and context' (standard suburban lot; free-standing detached house with side setbacks on both boundaries; minimum side setback to the addition is 1.5 m), '## Design' (rear addition builds over the demolished skillion footprint; new paved terrace and rear deck to the garden; two internal walls removed on steel beams; a first-floor main bedroom and ensuite over the rear rooms, described without floor areas; existing rear roof removed for the first floor, with a temporary roof; stair from the living area with balustrades; existing walls underpinned), '## Materials' (face brick to match, Dulux Heritage colour range), '## Wet areas' (flood test sentence), '## Trees' (the three tree sentences), '## Services' (the existing underground supply has the capacity for the new loads), '## Planning' (cl 4.6, delegation, notification). Climate zone 5 and BASIX approach."
+    },
+    {
+      "id": "d14",
+      "filename": "Proposed ground floor plan A-201 Rev A.md",
+      "title": "Proposed ground floor plan",
+      "author_role": "consultant.architect",
+      "firm": "Kestrel Hill Architects Pty Ltd",
+      "date": "2026-05-06",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-201, Revision: A, Title: Proposed ground floor plan, Date: 6 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.added_gfa_sqm",
+          "says": "Addition 55 m2 (ground 30 m2, first floor 25 m2)"
+        },
+        {
+          "key": "hdr.scale.existing_gfa_sqm",
+          "says": "Existing house 140 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for demolition outline (skillion, lean-to, two internal walls, existing rear roof), the new rear opening on steel beams, the stair to the first floor, wet areas, setbacks and the area schedule. Issue: preliminary."
+    },
+    {
+      "id": "d15",
+      "filename": "Proposed ground floor plan A-201 Rev B.md",
+      "title": "Proposed ground floor plan",
+      "author_role": "consultant.architect",
+      "firm": "Kestrel Hill Architects Pty Ltd",
+      "date": "2026-05-27",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-201, Revision: B, Title: Proposed ground floor plan, Date: 27 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.added_gfa_sqm",
+          "says": "Addition 55 m2 (ground 30 m2, first floor 25 m2)"
+        },
+        {
+          "key": "hdr.scale.existing_gfa_sqm",
+          "says": "Existing house 140 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of the ground floor plan: laundry moved, terrace steps relocated and the stair turned; revision note says 'Amended for DA lodgement'."
+    },
+    {
+      "id": "d16",
+      "filename": "Statement of environmental effects - 41 Tallowwood Avenue.md",
+      "title": "Statement of environmental effects",
+      "author_role": "consultant.architect",
+      "firm": "Kestrel Hill Architects Pty Ltd",
+      "date": "2026-05-28",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Ref: KHA-SEE-01, Date: 28 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "This statement accompanies a development application to the City of Canada Bay. A DA is required because the addition does not meet the Housing Code rear setback standard."
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The proposal is alterations and additions to an existing building, a brick dwelling"
+        },
+        {
+          "key": "hdr.scale.existing_gfa_sqm",
+          "says": "Existing gross floor area 140 m2"
+        },
+        {
+          "key": "hdr.scale.added_gfa_sqm",
+          "says": "Added gross floor area 55 m2"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "The proposal adds a first floor over the rear of the existing house; the dwelling becomes two storeys"
+        },
+        {
+          "key": "proj.zone",
+          "says": "R2 Low Density Residential"
+        },
+        {
+          "key": "proj.address",
+          "says": "41 Tallowwood Avenue, Concord NSW 2137"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land on the planning certificate"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not flood affected"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "No clause 4.6 variation is required"
+        },
+        {
+          "key": "flag.panel",
+          "says": "Determination under delegation; no local planning panel referral is expected"
+        },
+        {
+          "key": "flag.community",
+          "says": "Neighbour notification under council's community participation plan; no public exhibition"
+        }
+      ],
+      "traps": [],
+      "content": "SEE prepared by the architect: site and proposal description, council records ('Council's records hold the 1958 building approval and the 1987 approval for the rear skillion and laundry lean-to'), LEP and DCP compliance tables, s4.15 matters, building height, privacy from the first-floor windows and overshadowing, stormwater (connection to the existing system), heritage, hazards, waste, conclusion."
+    },
+    {
+      "id": "d17",
+      "filename": "Tax invoice KHA-INV-0412.md",
+      "title": "Tax invoice KHA-INV-0412",
+      "author_role": "consultant.architect",
+      "firm": "Kestrel Hill Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice number: KHA-INV-0412, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $10,450.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$9,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$950.00"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's invoice for Stage 1 measure-up and concept design, 100% complete."
+    },
+    {
+      "id": "d18",
+      "filename": "Tax invoice CS-2291 ClearSample.md",
+      "title": "Tax invoice CS-2291",
+      "author_role": "consultant.hazmat",
+      "firm": "ClearSample Hazmat Services Pty Ltd",
+      "date": "2026-04-24",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: CS-2291, Date: 24 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $2,645.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $2,300.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $345.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "gst-rate",
+          "what": "GST is stated as $345.00 on a $2,300.00 subtotal (15%, not 10%); the total $2,645.00 adds up.",
+          "expect": "The ledger flags gst_rate, not arithmetic"
+        }
+      ],
+      "content": "Hazmat surveyor's invoice for the survey, sampling and report, 100% of the proposal. The GST line is wrong."
+    },
+    {
+      "id": "d19",
+      "filename": "LCS invoice 1088.md",
+      "title": "Tax invoice 1088",
+      "author_role": "consultant.civil",
+      "firm": "Lindqvist Civil & Stormwater Pty Ltd",
+      "date": "2026-06-12",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 1088 | | Date | 12/06/2026 | | ABN | 20 748 603 875 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $2,420.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$2,200.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$220.00"
+        }
+      ],
+      "traps": [],
+      "content": "Civil engineer's invoice for the stormwater concept plan for the DA."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief carries the trigger evidence ('go up rather than out to keep the backyard'; first-floor main bedroom and ensuite) in place of the single-storey addition; the existing-building sentence drops 'single-storey'"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Architect's measure-up covers the roof space and walls for the first floor"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "Structural scope adds the capacity check of existing walls and footings and underpinning design; fee $9,600"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "Civil proposal's roof-area sentence describes 30 m2 of new rear roof plus the first-floor roof in place of 55 m2 of new roof"
+    },
+    {
+      "doc": "d08",
+      "change": "changed",
+      "why": "Geotechnical scope adds test pits at three existing footings; fee $3,900"
+    },
+    {
+      "doc": "d12",
+      "change": "changed",
+      "why": "Geotechnical report covers the existing footings and underpinning bearing pressure"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "Design statement carries the first-floor evidence in place of 'Single-storey addition only'; adds roof removal, temporary roof, stair, balustrades and underpinning"
+    },
+    {
+      "doc": "d14",
+      "change": "changed",
+      "why": "Ground floor plan shows the stair and the removed rear roof; area schedule split ground/first"
+    },
+    {
+      "doc": "d15",
+      "change": "changed",
+      "why": "Rev B notes the turned stair; area schedule split ground/first"
+    },
+    {
+      "doc": "d16",
+      "change": "changed",
+      "why": "SEE states two storeys and assesses height and first-floor privacy in place of 'The addition is single storey'"
+    }
+  ]
+}

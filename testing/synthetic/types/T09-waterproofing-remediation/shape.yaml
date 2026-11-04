@@ -30,7 +30,7 @@ profile:
   fact.contract_form: as4000
   fact.contract_basis: lump_sum
   proj.regulated_design: "yes"      # DBP Act applies to Class 2 (and 9c) work, including remedial work: owner ruling R3; section numbers verified: false (DOMAIN.md §5)
-  proj.client: "The Owners - Strata Plan 912345 (fictional)"
+  proj.client: "The Owners - Strata Plan No. 912345"
   # RFP flags set explicitly so unknowns do not turn excluded rows into priced options
   # (structural retention, dilapidation, authority asset, scale rules).
   flag.basement: "no"              # the works include no basement or excavation (see the basement trap)
@@ -50,9 +50,9 @@ expected_derived:
 
 # Facts the scenario documents must state; the scenario author picks the values.
 scenario_inputs:
-  - {key: det.existing_building_year, note: "Stated in the strata or defect report. It gates the hazmat and defects-claim triggers.", phrasing: "The building was completed in <year>."}
+  - {key: det.existing_building_year, note: "Stated in the strata or defect report. It gates the hazmat and defects-claim triggers.", phrasing: "The building was constructed in <year>."}
   - {key: hdr.scale.storeys, note: "Also gives det.rise_in_storeys, which decides the HBCF exemption (low-rise-hbcf).", phrasing: "a <n>-storey residential flat building"}
-  - {key: hdr.scale.units, note: "The units trigger matches 'units', 'apartments' or 'dwellings', not 'lots'.", phrasing: "<n> residential units"}
+  - {key: hdr.scale.units, note: "The units trigger is a number directly before 'units', 'apartments' or 'dwellings' (an adjective between them breaks it; 'lots' never matches).", phrasing: "<n> apartments"}
   - {key: proj.client, note: "The owners corporation is the client; the strata manager is its agent, not the client.", phrasing: "Client: The Owners - Strata Plan No. <number>"}
   - {key: proj.regulated_design, note: "Needs an explicit statement in a read document; the class alone does not decide it (project_details.yaml help).", phrasing: "The works are building work under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required."}
   - {key: hdr.cond.planning, note: "Exempt or no-consent wording, in the defect report or specification.", phrasing: "The works are like-for-like repair and maintenance and do not require development consent."}
@@ -232,7 +232,7 @@ triggers:
     negation:
       - "The building has no podium; the car park is a separate at-grade slab."
       - "Podium waterproofing was renewed in 2021 and is excluded from this scope."
-    profile: []
+    profile: [det.ncc_class, proj.budget_stated]   # the basement car park is a Class 7a part; the podium adds cost
     adds:
       procurement: [consultant.landscape, consultant.hydraulic]
       work_items:
@@ -249,12 +249,12 @@ triggers:
   - id: hazardous-materials
     label: Building old enough to contain asbestos in the balcony build-up or soffits
     evidence:
-      - "The building was completed in 1986."
+      - "The building was constructed in 1986."
       - "The common property asbestos register lists bonded fibre cement in the balcony soffits."
       - "The original bituminous membrane and mastic sealants are of unknown composition."
     negation:
       - "The 2019 hazardous materials survey found no asbestos in balcony build-ups."
-      - "Construction completed in 2012."
+      - "The building was constructed in 2008."
     profile: [det.existing_building_year]
     adds:
       procurement: [consultant.hazmat]
@@ -452,7 +452,7 @@ triggers:
       - "Stage 1 (north elevation) in 2027; Stage 2 subject to the next special levy."
       - "The works will be delivered in three stages with separable portions."
     negation:
-      - "All balconies will be done in one continuous stage."
+      - "There will be no staged delivery; all balconies are done in one continuous stage."
     profile: [flag.staged]
     adds:
       cost_plan: ["Escalation between stages", "Re-establishment preliminaries per stage"]
