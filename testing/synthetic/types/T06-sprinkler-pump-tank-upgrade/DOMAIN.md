@@ -149,7 +149,9 @@ both contracts touch a system (sprinklers, ventilation, cabling) they share one 
 - **comms-security.** `structured-cabling` **new** (level 3). Out: CCTV, access control (tenant's).
 - **vertical-transport.** Out of scope. The lifts are not touched, but goods-lift and dock bookings are a
   preliminaries cost [D].
-- **access-egress.** Out of scope in the base: an open-plan refit with no amenities change. Exits and
+- **access-egress.** Out of scope in the base: an open-plan refit with no amenities change, and the
+  affected part from the principal entrance already complies (stated in the base documents; Premises
+  Standards 2010, verified: false). The owner is the applicant, so this must be stated. Exits and
   egress paths must stay usable during the works; that is an impairment and site-management matter, not a
   work item.
 
@@ -175,8 +177,8 @@ both contracts touch a system (sprinklers, ventilation, cabling) they share one 
   knowledge/clusters/electrical-comms/consequences.yaml cq.existing-electrical-shutdown-plan-review]. Also
   the fire service isolation while the backflow device is changed, and the level 3 floor sprinkler valve
   isolated for the fit-out.
-- **Hazardous materials.** The building is from 1988, so an asbestos register should exist (WHS Regulation,
-  verified: false). A pre-refurbishment survey covers the pump room, the store, the risers and level 3
+- **Hazardous materials.** The building is from 1988, so an asbestos register should exist (WHS Regulation
+  2025 (NSW; clause numbers verified: false)). A pre-refurbishment survey covers the pump room, the store, the risers and level 3
   before any strip-out [K: knowledge/program/fragments.yaml fr.existing-conditions hazmat activity;
   knowledge/clusters/delivery/consequences.yaml cq.nsw-disturbance-information-review is an Implication].
 - **Structure.** The tank's operating weight goes on the basement slab. The engineer checks the slab and
@@ -273,9 +275,9 @@ Regulation 2021; all clause numbers verified: false):
    essential fire safety measures and their standards of performance. The Fire Safety Code CDC may be
    exempt from the schedule and the fire safety certificate (Info Sheet 8.1, citing the 2000 Regulation;
    2021 provision verified: false).
-4. Long service levy paid before the CDC issues: 0.25% of works of $250,000 or more including GST (Long
-   Service Corporation, About the levy; threshold and rate verified: false; not held in the repo;
-   CONVENTIONS C4).
+4. Long service levy: 0.25% of the cost of building work of $250,000 or more, including GST (CONVENTIONS
+   C4, checked). C4 records it as paid before work starts; paying it before the CDC issues is verified:
+   false.
 5. Principal certifier appointed, and a notice of commencement given before work starts (period verified:
    false).
 6. Sydney Water approval of the fire service and backflow alterations (product name verified: false); the
@@ -331,8 +333,8 @@ knowledge/costs/starter_lines.yaml lines].
 
 - CDC and certifier fees (two CDCs). The app has P05 "Construction certificate and certifier fees",
   which is the wrong label on a CDC.
-- Long service levy. No line, and the repo holds no rate (Long Service Corporation, About the levy;
-  threshold and rate verified: false).
+- Long service levy: 0.25% of the cost of building work of $250,000 or more, including GST (CONVENTIONS
+  C4, checked). No line.
 - Sydney Water: statement of available pressure and flow, fire service alteration approval and backflow
   registration (product names verified: false). Only the generic P06 exists.
 - No DA fees in the base. The app correctly drops `da-fees` on a CDC.
@@ -453,7 +455,7 @@ knowledge/program/skeletons.yaml]. That is right for this job.
   before any design.
 - The tank selection comes before the structural design.
 - The practitioner's endorsement of the fire services plans comes before both CDC lodgements.
-- The CDC and the contract award come before the start; the submittal review comes before the pumpset
+- Both CDC determinations and the contract award come before the start; the submittal review comes before the pumpset
   order.
 - The impairment notices, the hydrostatic test, the electrical supply, the backflow device and the
   ventilation all come before the cut-over.
@@ -598,7 +600,7 @@ Each trigger is in `shape.yaml` with evidence and negation phrasing. Summary:
 | `heritage-item` | "local heritage item in Schedule 5 of the LEP" | "not a heritage item" | Heritage consultant, referral; CDC unavailable (verified: false) |
 | `strata-office` | "The Owners - Strata Plan … (commercial)"; "pump room is common property" | "single ownership" | General meeting and levy |
 | `roof-or-crane-tank` | "tank on the roof plant deck"; "panels lifted by crane from George Street" | "carried in through the car park entry" | Roof assessment, crane, road occupancy |
-| `affected-part-access` | "the path of travel from the principal pedestrian entrance to level 3 is an affected part"; "the owner, not a lessee, is the applicant" | "lodged by the tenant (lessee concession)"; "no affected-part upgrade" | Access consultant, accessible-access upgrade, "13.1 Accessible paths, TGSIs and braille/tactile signage" (Premises Standards 2010, verified: false) |
+| `affected-part-access` | "the path of travel from the principal pedestrian entrance to level 3 is an affected part and must be upgraded" | "the certifier confirmed the existing path of travel already complies; no affected-part upgrade" | Access consultant, accessible-access upgrade, "13.1 Accessible paths, TGSIs and braille/tactile signage" (Premises Standards 2010, verified: false) |
 | `existing-fire-engineered-building` | "operates under a 2006 fire engineering report that relies on the sprinklers for extended travel distances" | "approved to the deemed-to-satisfy provisions; no performance solutions" | Fire engineer review of the existing report (never suggested) |
 | `da-fire-upgrade` | "council's consent requires the fire safety measures to be upgraded"; "a fire safety upgrade report is required with the DA" | "proceeds as complying development" | BCA fire safety upgrade report and upgrade works (former cl 94, number verified: false) |
 | `interim-occupation` | "tenant requires level 3 before the pump upgrade is complete"; "an interim OC is sought" | "level 3 occupied only after commissioning" | Interim fire safety certificate and interim OC (verified: false), only if level 3 can run on the old supply |
@@ -741,14 +743,15 @@ What is missing, and what the app will probably produce wrongly as a result:
   conditions in Schedule 10 (reviewer's reading).
 - FRNSW, "Lodge a fire safety certificate" (fire.nsw.gov.au/page.php?id=9158), citing s 85 of the EP&A
   (DCFS) Regulation 2021; FRNSW position statement on hydraulic fire safety system design.
-- Long Service Corporation, About the levy (longservice.nsw.gov.au/bci/levy/about-the-levy).
+- Long Service Corporation, About the levy (longservice.nsw.gov.au/bci/levy/about-the-levy); the levy
+  itself is now cited as checked under CONVENTIONS C4.
 - Standards Australia store: AS 2941-2013 current, superseding 2008.
 
 **Unverified (owner or primary source to confirm):**
 
-- AS 2118.1 and AS 2941 clause content, and the pump room separation and access requirements. The AS 2941
-  edition is ruled 2013; `rule.as2941.fire-pumps` cites AS 2941:2014; the current edition is AS
-  2941-2013 (Standards Australia store). Correct the instrument; clauses stay `clause_verified: false`;
+- AS 2118.1 and AS 2941 clause content, and the pump room separation and access requirements. The current
+  edition is AS 2941-2013 (Standards Australia store), not the 2014 that `rule.as2941.fire-pumps` cites;
+  clauses stay `clause_verified: false`;
 - the Codes SEPP part numbers: the Fire Safety Code as Part 8, and the fit-out code (the Codes SEPP code
   for internal alterations to commercial buildings: historically Part 5 Commercial and Industrial
   Alterations Code; now possibly Part 5A Industrial and Business Buildings Code); whether one CDC can
@@ -764,9 +767,9 @@ What is missing, and what the app will probably produce wrongly as a result:
 - the Sydney Water product names (statement of available pressure and flow through Tap in is the
   reviewer's ruling; the fire service and backflow approval product name is not named), backflow
   registration and testing, listed providers, and that no Section 73 certificate is needed;
-- the long service levy threshold and rate (not held in the repo);
+- whether the long service levy must be paid before the CDC issues (C4 says before work starts);
 - AS/NZS 3000 supply-side connection and fire-rated cabling for fire pumps; AS/NZS 3013;
-- the WHS Regulation asbestos register duty for pre-2004 workplaces, and the SafeWork NSW notification
+- the WHS Regulation 2025 (NSW; clause numbers verified: false) asbestos register duty for pre-2004 workplaces, and the SafeWork NSW notification
   period;
 - the fire safety order provisions, and whether work under an order needs a CDC or CC;
 - the AS 4000 defects liability period length.

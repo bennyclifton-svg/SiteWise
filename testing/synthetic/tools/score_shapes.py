@@ -594,7 +594,14 @@ def _by_stage(view):
 
 # Scope by stage reads an option or an open question as included. The shapes
 # keep the answer the rules give, so translate it here rather than rewrite them.
-BY_STAGE = {"option": "include", "O": "I"}
+BY_STAGE = {"option": "include", "O": "I", "done": "exclude"}
+
+
+def _stage_view(key, v):
+    """The value a rules answer shows as in a by-stage RFP."""
+    if v == "ask":
+        return "I" if key.startswith("position.") else "include"
+    return BY_STAGE.get(v, v)
 
 
 def _compare_expect(r, values, checks, by_stage=False):
@@ -617,9 +624,8 @@ def _compare_expect(r, values, checks, by_stage=False):
             continue  # compared per check below
         elif key not in wanted:
             wanted[key] = d.get("expect")
-    if by_stage:
-        wanted = {k: ("I" if k.startswith("position.") and v == "ask" else "include" if v == "ask" else BY_STAGE.get(v, v))
-                  for k, v in wanted.items()}
+    view = (lambda k, v: _stage_view(k, v)) if by_stage else (lambda k, v: v)
+    wanted = {k: view(k, v) for k, v in wanted.items()}
     for key, want in wanted.items():
         present = key in values
         got = values.get(key)
@@ -627,12 +633,14 @@ def _compare_expect(r, values, checks, by_stage=False):
             out["new_failure"].append({"key": key, "want": want, "app": None, "why": "the app has no such key"})
             continue
         d = differs.get(key)
+        # app_differs records the rules' answer; compare it in the same view.
+        said = view(key, d.get("app")) if d else None
         if _same(key, got, want):
-            if d:
+            if d and not _same(key, said, want):
                 out["fixed"].append({"key": key, "want": want, "app": got, "was": d.get("app")})
             else:
-                out["ok"] += 1
-        elif d and _same(key, got, d.get("app")):
+                out["ok"] += 1  # with d: the layout hides the difference
+        elif d and _same(key, got, said):
             out["known_difference"].append({"key": key, "want": want, "app": got, "why": d.get("why")})
         else:
             out["new_failure"].append({"key": key, "want": want, "app": got if present else "absent", "app_differs_said": d.get("app") if d else None})

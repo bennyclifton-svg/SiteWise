@@ -484,6 +484,29 @@ class RFPTests(unittest.TestCase):
         self.assertTrue(s._by_stage(view))
         self.assertFalse(s._by_stage({"draft": {"sections": []}}))
 
+    def test_scope_by_stage_translates_app_differs_too(self):
+        # The layout hides an option-vs-include difference: that is not a fix.
+        r = {"expect": {"stages_include": ["concept"], "stages_absent": ["post_novation"], "positions": {"bim": "X"}},
+             "app_differs": [
+                 {"key": "stage.concept", "expect": "include", "app": "option", "why": "rules price it as an option"},
+                 {"key": "stage.post_novation", "expect": "absent", "app": "ask", "why": "rules ask the client"},
+                 {"key": "position.bim", "expect": "X", "app": "O", "why": "rules offer it"},
+                 {"key": "stage.as_built", "expect": "include", "app": "done", "why": "rules mark it done"},
+             ]}
+        values = {"stage.concept": "include", "stage.post_novation": "include", "position.bim": "I", "stage.as_built": "exclude"}
+        out = s._compare_expect(r, values, set(), by_stage=True)
+        self.assertEqual(out["new_failure"], [])
+        self.assertEqual(out["fixed"], [])
+        self.assertEqual(out["ok"], 1)  # concept: hidden by the layout
+        self.assertEqual(sorted(d["key"] for d in out["known_difference"]),
+                         ["position.bim", "stage.as_built", "stage.post_novation"])
+
+    def test_scope_by_stage_still_reports_a_real_fix(self):
+        r = {"expect": {"stages_absent": ["post_novation"]},
+             "app_differs": [{"key": "stage.post_novation", "expect": "absent", "app": "ask", "why": "rules ask"}]}
+        out = s._compare_expect(r, {"stage.post_novation": "exclude"}, set(), by_stage=True)
+        self.assertEqual([d["key"] for d in out["fixed"]], ["stage.post_novation"])
+
 
 class TriggerTests(unittest.TestCase):
     def test_cdc_variant_adds_and_removes(self):

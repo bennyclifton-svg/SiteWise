@@ -25,9 +25,9 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 | T01 | New detached house (pilot) | ok | ok | ok | ok | ok | ok | ok |
 | T02 | Apartments | ok | ok | ok | gate | — | — | — |
 | T03 | Office fit-out | ok | ok | ok | gate | — | — | — |
-| T04 | Warehouse | ok | ok | fix | — | — | — | — |
+| T04 | Warehouse | ok | ok | ok | gate | — | — | — |
 | T05 | House alterations and additions (pilot) | ok | ok | ok | ok | ok | ok | ok |
-| T06 | Sprinkler pump and tank upgrade | ok | ok | fix | — | — | — | — |
+| T06 | Sprinkler pump and tank upgrade | ok | ok | ok | gate | — | — | — |
 | T07 | Mechanical plant upgrade | ok | ok | ok | gate | — | — | — |
 | T08 | Roof remediation | ok | ok | ok | gate | — | — | — |
 | T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | ok | ok | ok |
@@ -374,3 +374,6 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 - 2026-11-04: T06 round 1 fixes in: 18 applied, 0 disputed. Most were already in the committed shape; the last two are added, and DOMAIN.md §1–12 is rewritten. A throwaway program.Generate run confirmed findings 2, 7 and 15. Counts are now 18 triggers, 9 packages, 36 cost lines, 85 activities, 7 RFPs, 26 gaps. Validator ok. Round 2 review launched.
 - 2026-11-04: T03 round 2 items applied (9, 0 disputed): "core drilling" is out of the base, the levy cites C4, and the exempt variant removes the certifier appointment, commencement inspection, final fire safety certificate and CDC contributions. heritage-item counts contributions once. Counts unchanged. Validator ok. T03 is ready for owner review.
 - 2026-11-04: T04 round 1 fixes in: 14 applied, F1 partly disputed (both CCs now sit in construction documentation after award, but per C5 the app's CC row stays matched to the early-works CC, and the building CC is built_in no). A read-only Go run confirms F5 to F8, and all 17 templated RFPs now match the app. Counts are now 15 triggers, 20 packages, 49 cost lines, 95 activities, 19 RFPs, 26 gaps. Validator ok. The author reports that since 3 November rfp.Resolve's scope-by-stage layout reads every option and ask stage as include, which would affect every shape's RFP expectations. Round 2 review launched; it is also asked to confirm or refute this from the code.
+- 2026-11-04: T06 round 2 review: FIX, 5 findings plus 2 optional. The fit-out CDC row gated nothing; tank-needs-consent rows were linked to the removed CDC rows; the affected-part-access evidence was true in the base; plus C4 wording and an unexplained removal. All applied, 0 disputed. The orchestrator removed one scenario_inputs entry the author had keyed to hdr.cond.planning for an access statement (no app key covers access; the trigger's negation already carries it). Validator ok. Counts: 18 triggers, 9 packages, 36 cost lines, 85 activities, 7 RFPs, 26 gaps. T06 is ready for owner review.
+- 2026-11-04: T04 round 2 review: PASS; the F1 dispute holds under C5. Optional: the first-footing inspection comes before the excavation row (left for the owner's review). T04 is ready for owner review. The review confirmed from the code that scope by stage shows option and ask as include. The scorer translated expect but not app_differs, so it is fixed in score_shapes.py (2 new tests; 80 tool and 11 harness tests pass). The six T05 and T09 runs are re-scored: T05 RFP new failures 48 to 36, T09 7–9 to 4–6, and no false "fixed". Owner question in FINDINGS: an open client question is now issued as included.
+- 2026-11-04: Owner asked to start no new types. Every type already started is now at an owner gate: T01, T05 and T09 at gate 3 (pilot run); T02, T03, T04, T06, T07, T08, T10 to T14 and T17 at map review. T15, T16, T18, T19 and T20 are not started.

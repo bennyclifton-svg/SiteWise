@@ -946,19 +946,13 @@
       "report": "86ca1fcc-a060-4642-9294-6285f70b6e47",
       "app_template": "structural",
       "expect": {
-        "ok": 15,
+        "ok": 19,
         "new_failure": [
           {
             "key": "position.residential_framing",
             "want": "absent",
             "app": "X",
             "app_differs_said": null
-          },
-          {
-            "key": "position.specialist_element_design",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": "O"
           },
           {
             "key": "position.retention_design",
@@ -971,18 +965,6 @@
             "want": "absent",
             "app": "X",
             "app_differs_said": null
-          },
-          {
-            "key": "position.services_fixings",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": "O"
-          },
-          {
-            "key": "position.super_flat_floor",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": "O"
           },
           {
             "key": "blocking.fact:regulated_design",
@@ -1017,6 +999,24 @@
             "why": "service_level complex I because of the Class 2 part"
           },
           {
+            "key": "position.specialist_element_design",
+            "want": "absent",
+            "app": "I",
+            "why": "O whenever procurement is not design_construct"
+          },
+          {
+            "key": "position.services_fixings",
+            "want": "absent",
+            "app": "I",
+            "why": "always O"
+          },
+          {
+            "key": "position.super_flat_floor",
+            "want": "absent",
+            "app": "I",
+            "why": "client flag cannot be set; if_unknown option"
+          },
+          {
             "key": "position.compaction",
             "want": "absent",
             "app": "X",
@@ -1035,32 +1035,7 @@
             "why": "always I; no footings"
           }
         ],
-        "fixed": [
-          {
-            "key": "stage.construction_phase",
-            "want": "include",
-            "app": "include",
-            "was": "option"
-          },
-          {
-            "key": "stage.regulated_design",
-            "want": "include",
-            "app": "include",
-            "was": "include"
-          },
-          {
-            "key": "position.metalwork",
-            "want": "I",
-            "app": "I",
-            "was": "O"
-          },
-          {
-            "key": "position.inspection_schedule",
-            "want": "I",
-            "app": "I",
-            "was": "O"
-          }
-        ],
+        "fixed": [],
         "not_checked": [
           {
             "key": "text.regulated_design",
@@ -1190,10 +1165,10 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 3,
-      "expect_ok": 15,
-      "expect_new_failure": 8,
-      "expect_known_difference": 6,
-      "expect_fixed": 4,
+      "expect_ok": 19,
+      "expect_new_failure": 5,
+      "expect_known_difference": 9,
+      "expect_fixed": 0,
       "expect_awaiting_user": 2,
       "must_include_missing": 19,
       "must_include_unknown": 0,

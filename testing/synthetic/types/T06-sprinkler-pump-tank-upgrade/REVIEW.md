@@ -500,3 +500,206 @@ and "Install"; and `pump-tank-only` gets neither hold point.
 
 Validator: `python testing/synthetic/tools/validate_shape.py testing/synthetic/types/T06-sprinkler-pump-tank-upgrade/shape.yaml`
 → `ok`.
+
+## Round 2 review (4 November 2026)
+
+I re-read `shape.yaml`, `DOMAIN.md` §1–12 and the Round 1 response, and checked them against `OWNER_RULINGS.md` and
+`CONVENTIONS.md`.
+
+- **Validator**, run from the repo root: `ok`, exit 0.
+- **Script check:** 85 activities, 85 unique labels, and no dangling `after` reference in the base. It also
+  listed the kept rows whose `after` names a row the trigger removes. R2-2 and R2-5 use that list.
+- **Counts** match the response: 18 triggers, 9 packages, 36 cost lines and 7 RFPs.
+
+### Verdict: **FIX**
+
+Every round 1 finding is applied, and none was disputed. Three problems remain:
+
+- two of the fixes left the program logic half-joined;
+- one trigger I wrote in round 1 cannot be tested as worded;
+- the levy and WHS wording do not yet follow CONVENTIONS C4.
+
+There are five findings in all. Each is a small edit in place.
+
+### Round 1 fixes checked
+
+- **F1 ✔.**
+  - The pump works go under the Fire Safety Code and the fit-out under the alterations code.
+  - The exemption caveat is on the schedule row, the FFSC row and `pump-tank-only`.
+  - `tank-needs-consent` has its new label and evidence, and the DA list is rewritten.
+  - The certifier RFP says "each code", and the FFSC rows are kept for the owner.
+- **F2 ✔.**
+  - The work item is `mechanical.local-exhaust` new. Its row is `fragment: null`, built_in no, and the
+    cut-over follows it.
+  - The mechanical RFP has `local: I` with an `app_differs` row.
+  - The gap list and DOMAIN §2, §10 and §11 agree.
+- **F3 ✔.** AS 2941-2013 is in the gap, §11 item 18 and §12. The §12 bullet now says it twice (remaining
+  item 2).
+- **F4 ✔.** The fit-out code wording is used everywhere. The row "Prepare and lodge the fit-out CDC" is
+  added and is in `pump-tank-only` `removes`. Its links are incomplete (R2-1).
+- **F5 ✔.** The CFSP endorsement row is in construction documentation, and both CDC lodgements follow it.
+- **F6 ✔.** The FFSC row is relabelled, the program gap is corrected, and §5 step 7 is right.
+- **F7 ✔.** The DA, wet-area and tiling labels match the app; the author's Go run confirms them.
+  `electrical-supply-upgrade` program is `no`.
+- **F8 ✔, with one defect.** All four triggers are in the shape and in §9. The `affected-part-access`
+  evidence and negation clash with the base (R2-3).
+- **F9 ✔.** BCA stays out of the base and is added to `tank-needs-consent`. §12 is closed.
+- **F10 ✔.** The Sydney Water wording is in the cost line, the RFP, the program row and §5. No product name
+  is invented.
+- **F11 ✔, overtaken by C4** (R2-4).
+- **F12, F13, F14, F16, F17 and F18 ✔.**
+- **F15 ✔.** Both hold points are removed, and the floor-finishes link falls away. The `why` needs one more
+  note (R2-5).
+- **Owner rulings:** R3, R4, R5, R7 and R8 are still followed, and no ruling is broken. C2 and C3 are
+  followed too.
+
+### Findings
+
+**R2-1. The fit-out CDC holds nothing back (program logic).**
+
+- **Where:** `shape.yaml` program rows "Prepare and lodge the fit-out CDC" and "Fire safety schedule issued
+  with the fit-out CDC"; `DOMAIN.md` §7 "Logic links that matter".
+- **What is wrong:**
+  - No row follows "Fire safety schedule issued with the fit-out CDC". That row is the only stand-in for
+    the fit-out CDC determination.
+  - So the fit-out CDC never holds back the level 3 award or start.
+  - "Award the contract" follows only "Certifier determination", which is the Fire Safety Code CDC.
+  - As keyed, the level 3 strip-out can start with no fit-out approval.
+- **Exact change:**
+  - Add "Fire safety schedule issued with the fit-out CDC" to the `after` list of "Appoint the principal
+    certifier and give notice of commencement". The `after` list of "Award the contract" also works.
+  - In that row's `why`, add: "Also stands for the fit-out CDC determination; the app has one CDC
+    fragment."
+  - DOMAIN §7: change "The CDC and the contract award come before the start" to "Both CDC determinations
+    and the contract award come before the start."
+
+**R2-2. `tank-needs-consent` keeps CDC rows that are wrong under a DA.**
+
+- **Where:** `triggers[tank-needs-consent]` `adds.program`, `removes.program` and `why`.
+- **What is wrong:** The trigger removes both CDC lodgements and "Certifier determination". Three kept rows
+  now link to rows that are gone:
+  - "Fire safety schedule issued with the fit-out CDC". Under a DA the schedule is issued with the
+    construction certificate, and there is no fit-out CDC.
+  - "Pay the long service levy". It follows the removed CDC lodgement. Under a DA it is paid before the
+    CC issues.
+  - "Award the contract". It follows the removed determination.
+
+  The trigger also removes the fit-out CDC without saying why. That assumes the owner folds the level 3
+  fit-out into the one DA, but a separate fit-out CDC is also possible.
+- **Exact change:**
+  - Add "Fire safety schedule issued with the fit-out CDC" to `removes.program`.
+  - Add "Fire safety schedule issued with the construction certificate" to `adds.program`. Set
+    `built_in.program: "partial"`, because the app has no schedule row.
+  - Append to `why`: "Assumes the fit-out is folded into the DA (a separate fit-out CDC is possible). The
+    levy and the award re-link to 'Construction certificate'."
+
+**R2-3. The `affected-part-access` evidence is true in the base, so the trigger cannot be tested.**
+
+- **Where:**
+  - `triggers[affected-part-access]` `evidence[1]` and `negation[0]`;
+  - `not_expected_procurement[consultant.access].why`;
+  - `DOMAIN.md` §2 access-egress and the §9 row.
+
+  This is my own wording from round 1 (8a).
+- **What is wrong:**
+  - In the base, the owner fits out level 3 for a new tenant. So "The owner, not a lessee, is the applicant
+    for the level 3 fit-out CDC" is true in the base. Base documents would fire the trigger.
+  - The negation "lodged by the tenant (lessee concession)" contradicts the base. It belongs to
+    `tenant-procured-fitout`.
+  - Because the owner is the applicant, the base needs a stated reason why no affected-part upgrade
+    applies. Neither the shape nor DOMAIN §2 gives one.
+- **Exact change:**
+  - Delete `evidence[1]`.
+  - Replace `negation[0]` with: "The certifier confirmed the existing path of travel from the principal
+    pedestrian entrance to level 3 already complies; no affected-part upgrade is required."
+  - Add a `scenario_inputs` entry with that phrasing. Its note: "The owner is the applicant, so the base
+    must state that the affected part already complies."
+  - DOMAIN §2 access-egress: add "the affected part from the principal entrance already complies (stated
+    in the base documents; Premises Standards 2010, verified: false)".
+  - `not_expected_procurement[consultant.access].why`: change "Access joins under fit-out-amenities" to
+    "Access joins under fit-out-amenities or affected-part-access".
+  - Update the §9 row to match.
+
+**R2-4. CONVENTIONS C4 is not applied to the levy and the WHS Regulation.**
+
+- **Where:**
+  - Levy: `cost_plan["Long service levy"].why`; DOMAIN §5 step 4, §6, and the §12 list of unverified
+    claims.
+  - WHS: `procurement[consultant.hazmat].why`; the hazmat RFP `must_include[2]`; DOMAIN §3 and §12.
+- **What is wrong:**
+  - C4 lets maps cite the levy as checked: 0.25% of building work of $250,000 or more, including GST. The
+    map still says "threshold and rate verified: false; not held in the repo". §5 step 4 cites C4 and
+    contradicts it in the same sentence.
+  - The WHS Regulation is cited with no year. C4 records that the NSW WHS Regulation 2025 has replaced the
+    2017 Regulation.
+- **Exact change:**
+  - Levy: write "0.25% of the cost of building work of $250,000 or more, including GST (CONVENTIONS C4,
+    checked)". Take the levy off the §12 list of unverified claims.
+  - Keep "before the CDC issues" as `verified: false`, because C4 records only "paid before work starts".
+  - WHS: write "WHS Regulation 2025 (NSW; clause numbers verified: false)" in all four places.
+
+**R2-5. `pump-tank-only` removes strip-out rows that the app still prints, and does not say so.**
+
+- **Where:** `triggers[pump-tank-only]` `removes.program` and `why`.
+- **What is wrong:**
+  - The variant keeps `site.demolition` remove, because the old pump is still removed.
+  - So `fr.strip-out-fitout` still fires: it needs `site.demolition` remove, Class 5 and refurb
+    (`knowledge/program/fragments.yaml`).
+  - "Alter and protect retained structure" still attaches after it.
+  - Removing the three strip-out rows is right for the real job, which has its own row "Remove the old
+    pump and redundant pipework".
+  - But the `why` lists the electrical, sprinkler and detection rows that still fire, and not these
+    three. Someone reading a score would take them for an error in the key.
+- **Exact change:** Append to `why`: "fr.strip-out-fitout still fires on the pump-removal demolition item,
+  so the app prints the three strip-out rows; they are expected noise, like the fit-out concept rows."
+
+### Remaining items (optional, not blocking)
+
+1. Six fit-out finishing rows have no successor:
+   - "Electrical fit-off";
+   - "Sanitary fit-off";
+   - "Commission the altered system";
+   - "Install luminaires";
+   - "Hang doors";
+   - "Install structured cabling".
+
+   Practical completion follows only "Lay floor finishes". This predates round 1. If the scorer checks
+   float, add these rows to the `after` list of the practical completion row.
+2. DOMAIN §12, first bullet of the unverified list: the AS 2941 sentence repeats itself ("ruled 2013; …
+   cites 2014; the current edition is AS 2941-2013 …"). Keep one sentence.
+
+## Round 2 response (author, 4 November 2026)
+
+All five findings and both optional items are applied; none is disputed.
+
+- **R2-1 applied.** "Appoint the principal certifier and give notice of commencement" now follows "Fire
+  safety schedule issued with the fit-out CDC". That row's `why` says it also stands for the fit-out CDC
+  determination. DOMAIN §7 now says "Both CDC determinations and the contract award come before the
+  start".
+- **R2-2 applied.**
+  - "Fire safety schedule issued with the fit-out CDC" is added to `removes.program`.
+  - "Fire safety schedule issued with the construction certificate" is added to `adds.program`, with
+    `built_in.program: "partial"`.
+  - The `why` names the folded-fit-out assumption and the levy and award re-link.
+- **R2-3 applied.**
+  - `evidence[1]` is deleted. A second evidence line that is false in the base replaces it, because the
+    validator needs two: an access report finds the entrance doors and lift lobby non-compliant.
+  - The negation is replaced with the reviewer's wording.
+  - A `scenario_inputs` entry carries that phrasing. No app row key covers access, so the entry is keyed
+    to `hdr.cond.planning`, because the statement comes with the certifier's CDC advice. The validator
+    rejected `affected-part-access` as a key.
+  - The access `why`, DOMAIN §2 and the §9 row are updated.
+- **R2-4 applied.**
+  - Levy: "0.25% of the cost of building work of $250,000 or more, including GST (CONVENTIONS C4,
+    checked)" is in the cost line and in §5 and §6. "Before the CDC issues" stays verified: false. The
+    levy rate is off the §12 unverified list.
+  - WHS: "WHS Regulation 2025 (NSW; clause numbers verified: false)" is in the hazmat `why`, the hazmat
+    RFP, and DOMAIN §3 and §12.
+- **R2-5 applied.** The `pump-tank-only` `why` now says the three strip-out rows are expected noise.
+- **Optional 1 applied.** The six fit-out finishing rows are added to the practical completion `after`
+  list.
+- **Optional 2 applied.** The §12 AS 2941 sentence is now one sentence.
+
+**Counts:** 18 triggers, 9 packages, 36 cost lines, 85 activities, 7 RFPs, 26 gaps, 10 scenario inputs.
+
+**Validator:** `ok`.

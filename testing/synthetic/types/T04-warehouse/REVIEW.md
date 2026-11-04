@@ -398,3 +398,104 @@ commencement and the first-footing inspection are now two rows), 19 RFPs, 26 gap
 
 **Validator:** `python testing/synthetic/tools/validate_shape.py testing/synthetic/types/T04-warehouse/shape.yaml`
 → `ok`.
+
+## Round 2 review (4 November 2026)
+
+Reviewer: the round 1 reviewer. Re-read `shape.yaml`, `DOMAIN.md` and the Round 1 response; neither file
+was edited. Validator: `ok`, exit 0. A script check found no dangling `after` references, no duplicate
+activity labels and no duplicate aliases across the 95 activities.
+
+### Verdict: **PASS**
+
+### Fixes checked
+
+- **F1 ✔ (dispute upheld).** Both CCs are `stage: construction_documentation`, after award and the
+  contractor's documentation, and the gap row has the round 1 wording. Leaving
+  `fr.construction-certificate` and the alias "Construction certificate" on the **early-works** CC, with
+  the building CC `fragment: null`, `built_in: "no"`, is exactly what C5 says ("The app's CC fragment row
+  corresponds to the early-works CC … record the building CC as built_in no"). C5 postdates round 1 and
+  binds the maps to each other, so it overrides my round 1 suggestion. The scorer reports the app's
+  approvals placement through `wrong_stage` (`score_shapes.py` line 521), so nothing else is needed. The
+  order matches my ruling: levy → early-works CC → PC appointment → notice of commencement → site
+  establishment → earthworks; building CC after the principal's review, the FRNSW consultation and the
+  early-works CC. DOMAIN §1 Pathway, §5 item 1 and §7 agree and cite C5.
+- **F2 ✔.** "Excavate and pour pad footings" follows "Construction certificate: building"; frame
+  fabrication and precast manufacture stay off it.
+- **F3 ✔.** Notice of commencement and the first-footing inspection are separate rows; the footings
+  follow the inspection; cl 61 stays `verified: false`; DOMAIN §5 cites Bega Valley and notes the CC lists
+  the inspections; the certifier `must_include` names all three.
+- **F4 ✔.** `verified: true` with the ABCB URLs in DOMAIN §1, §9, §12 and the trigger `why`. Phrase 2
+  now distinguishes the variant from the base. The fire control centre is tied to floor area only
+  (E1D15(b), C4). The negation and the `det.floor_area` `scenario_inputs` row give a base inside both
+  limits. The base sprinkler `why` cites C3D4(1)(b) and E1D13. "Fire control centre" per C4 is right.
+- **F5, F6 ✔.** The 41 entries and the two corrections are in. They were verified against the rules'
+  own answers (`ScopeByStage` off); see the cross-cutting section for what that means at scoring time.
+- **F7 ✔.** Architect `blocking: []`, sources line reworded.
+- **F8 ✔.** All three `expected_derived` notes say "Returns unknown today: rule/table unreviewed".
+- **F9 ✔.** Hold-point wording and the fire-stopping note.
+- **F10 ✔ (correction accepted).** The author's run is right and my round 1 claim about scale was wrong:
+  `knowledge/rfp/architecture.yaml` `scale` goes complex on "a budget over $20 million" as well as on a
+  Class 2–6 part, so dropping class 5 leaves this budget complex, and `specification` and
+  `typical_interiors` stay I. The text now says only what the run showed.
+- **F11, F12 ✔.** `traditional-lump-sum` program `"partial"`; `aboriginal-heritage` cost plan
+  `"partial"`.
+- **F13 ✔.** The 12 aliases are the work-item titles of single-activity fragments.
+- **F14 ✔.** The staged-CC sentence is in DOMAIN §1 and §5.
+- **C4 extras ✔.** Long service levy cost line, program row (before the early-works CC) and DOMAIN text;
+  WHS Regulation 2025 with the clause `verified: false`.
+
+### Remaining items (optional, not blocking)
+
+1. **The first-footing inspection precedes the row that excavates.** "Inspection after excavation, before
+   the first footing" sits before "Excavate and pour pad footings", so the excavation it inspects is
+   inside the following row. Scoring is unaffected (the footings row matches by fragment), but a reader
+   of the answer key sees the inspection before the dig. If wanted: relabel the footings row "Pour pad
+   footings after the excavation inspection", keeping its alias "Pad and strip footings".
+2. **Smoke exhaust at a 12 m haunch.** E2D10(2) allows smoke-and-heat vents where the ceiling is ≤ 12 m.
+   With a 12 m haunch and a higher apex, "smoke exhaust" is defensible but not certain. The cost line
+   could read "Smoke exhaust (or smoke-and-heat vents)" so a scenario stating vents is not a miss.
+3. **DOMAIN §11 gap 4** now runs the new wording into the old sentence on one long line; cosmetic.
+
+### Cross-cutting: `rfp.Resolve` and scope by stage
+
+**Confirmed, with three exceptions.** `Resolve` calls `placeServices` (`internal/rfp/resolve.go` line
+309), which returns at once unless the discipline has `scope_by_stage: true`. Since 3 November all 18
+`knowledge/rfp/*.yaml` disciplines set it. Then (lines 992–1068):
+
+- a stage at `option` or `ask` becomes `include`; **except** an `option` set by the boundary when the
+  user set the boundary, which becomes `exclude`; and `done` becomes `exclude`;
+- an element at `option` or `ask` becomes `include`;
+- a position at `O` or `ask` becomes `I`; **except** a position whose home stage (the first listed stage
+  the project has) is excluded, which becomes `X` (an `I` position moves to the next included stage
+  instead, unless the user excluded the stage).
+
+So the issued RFP has only I/X and include/exclude, and the rules' `option`/`ask` answers are no longer
+visible in it.
+
+**What it means for the shapes.** The `expect` blocks and the `app_differs.app` values in every shape
+record the rules' answers (option, ask, O). That is the right thing to record and the shapes should
+**not** change: the owner direction changed the layout, not the rules, and the T04 author's check
+(`ScopeByStage` off) confirms the recorded values are what the rules give.
+
+**The scorer is half translated, and should change.** `score_shapes.py` `_compare_expect` already maps
+`expect` through `BY_STAGE` when the view has a `stage_scope` block (lines 595–622). It does **not**
+map `app_differs.app`. So for every entry where `app` is `ask`, `option` or `O`:
+
+- if the translated `expect` equals the translated app value (e.g. expect `include`, app `option`), the
+  key is reported as **fixed**, though nothing in the app changed;
+- if not (e.g. expect `absent`, app `ask`, now shown as `include`), the app value no longer equals the
+  untranslated `app`, so the key is a **new_failure**, though `app_differs` explains it.
+
+A static simulation over the 15 shapes (`app_differs` entries with app ask/option/O, translated as the
+scorer does) gives about **401 false new failures and 482 false "fixed"** keys (T04: 65 and 71; T02: 51
+and 87; T03: 55 and 42). Every live score of an RFP's `expect` since 3 November is noise until this is
+fixed.
+
+**Recommended scorer change (no app change, no shape change):** when `by_stage`, translate `d["app"]`
+with the same map before comparing; add `done → exclude`; and for a `position.*` whose
+home stage resolves to `exclude`, expect `X` (or read the app's own home stage from the view). A key whose
+translated `app` equals its translated `expect` should count as `ok` (the difference is hidden by the
+layout), not `fixed`; a key whose translated `app` differs from the translated `expect` stays a
+`known_difference`, which keeps visible that the issued RFP now prices an `ask` service the answer key
+calls absent. That last group is a real product question for the owner: under scope by stage, an open
+client question is priced as included.

@@ -219,6 +219,19 @@ The predicted cut at " - " did not happen.
   knock-ons of blank profile values (14 from F4). The real RFP defects are
   F9 to F12.
 
+- **RFP scores after scope by stage.** *(Fixed 4 Nov, in the scorer.)*
+  Since 3 November every RFP discipline sets `scope_by_stage`, and
+  `placeServices` (`internal/rfp`) shows a rules `option` or `ask` as
+  `include` (positions `O`/`ask` as `I`; `done` as `exclude`). The scorer
+  translated `expect` but not `app_differs.app`, which a static check over
+  the 15 shapes put at about 401 false new failures and 482 false
+  "fixed". `score_shapes.py` now translates both; a difference the layout
+  hides counts as ok. Not yet handled: a position whose home stage is
+  excluded shows as X. The shapes keep the rules' answers and need no
+  change. **Owner question:** under scope by stage, an open client
+  question (`ask`) is issued as included and priced; a key that calls it
+  absent now stays a known difference.
+
 ## What worked
 
 - Kind and title: 100% across 43 filed documents. Status 100%.

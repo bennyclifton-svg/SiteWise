@@ -76,3 +76,23 @@ hazmat).
 - `proj.client` in T09 was predicted to be cut at " - "; instead the app
   kept the care-of party ("…, c/- Rhiannon Teale, Northgate Strata
   Management"). The key stays the owners corporation's name.
+
+## RFP scores (re-scored after the scorer fix, 4 November)
+
+The first scoring overstated RFP failures. Since the scope-by-stage change
+(3 November), the app shows an `option` or `ask` answer as included, and
+the scorer translated the shapes' `expect` into that view but not their
+`app_differs`. Fixed in `tools/score_shapes.py` (`_stage_view`, two new
+tests); `shape_score.json` files are re-scored.
+
+| Scenario | RFPs found | expect ok | new failures | known differences | awaiting user input |
+|---|---|---|---|---|---|
+| ST05-base | 6/8 | 93 | 36 | 13 | 18 |
+| ST05-heritage-conservation-area | 7/9 | 93 | 36 | 13 | 18 |
+| ST05-first-floor-addition | 6/8 | 93 | 36 | 13 | 18 |
+| ST09-base | 2/2 | 19 | 4 | 9 | 2 |
+| ST09-podium-over-basement | 4/4 | 18 | 6 | 9 | 2 |
+| ST09-hazardous-materials | 2/2 | 19 | 5 | 9 | 2 |
+
+The T05 surveyor and certifier RFPs are missing because those packages are
+not proposed (procurement "missed built in").
