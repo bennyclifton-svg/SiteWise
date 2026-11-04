@@ -64,7 +64,7 @@ Structural investigation of an existing office building before a purchase; no de
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| structural | Building class; Work to an existing building; Planning pathway; Regulated design applies; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Novation; Procurement route |
+| structural | Building class; Work to an existing building; Planning pathway; Regulated design applies; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Novation; Procurement route |
 
 ## arborist-access-conflict
 
@@ -138,7 +138,7 @@ New residential development lacks offsite extent, tree-impact and pruning eviden
 |---|---|---|---|
 | architecture | Building class; Building over or next to a water authority asset; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
 | civil | Building class; Work to an existing building; Existing on-site detention to keep or modify; Novation; Procurement route; Regulated design applies; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling |
-| structural | Building class; Building over or next to a water authority asset; Work to an existing building; Existing on-site detention to keep or modify; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
+| structural | Building class; Building over or next to a water authority asset; Work to an existing building; Existing on-site detention to keep or modify; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
 | town-planning | Planning pathway; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
 | traffic | Use generates heavy vehicle movements; Intersection counts and modelling required; Planning pathway; Work type | — | Green travel plan required by a condition or the DCP; Works in a public road or intersection; Site fronts or affects a state road; Traffic-generating development referred to TfNSW |
 
@@ -148,7 +148,7 @@ Advice-only has no certification or planning-submission appointment; tender boun
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-approval-boundary
 
@@ -156,7 +156,7 @@ Certification appointment ends at construction approval; later principal-certifi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-combined-boundary-unconfirmed
 
@@ -164,7 +164,7 @@ Requesting both packages still requires appointment confirmation; suggested A te
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-combined-mixed-use
 
@@ -172,7 +172,7 @@ Separate A/B packages, mixed-use occupied fit-out and D&C transfer request; all 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-conflicting-decisions
 
@@ -180,7 +180,7 @@ Conflicting statutory appointment and existing-extent records block issue even w
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Classification map required; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | Certification requested; Existing BCA extent agreed |
+| bca-certification | Building class; BCA advisory requested; Classification map required; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | Certification requested; Existing BCA extent agreed |
 
 ## bca-extend
 
@@ -188,7 +188,7 @@ Agreed affected existing extent for extend with occupied staging; does not appoi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-refurb
 
@@ -196,7 +196,7 @@ Agreed affected existing extent for refurb with occupied staging; does not appoi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-remediation
 
@@ -204,7 +204,7 @@ Agreed affected existing extent for remediation with occupied staging; does not 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-statutory-only
 
@@ -212,7 +212,7 @@ New office CC/principal-certifier package has no advisory appointment; certifica
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## bca-unknown-decisions
 
@@ -220,15 +220,15 @@ Unknown package and extent decisions stay ask states, not exclusions or optional
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Planning pathway | — | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment |
+| bca-certification | Building class; Planning pathway | — | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment |
 
 ## bca-unsupported-cdc
 
-CDC must receive its own scope; existing CC stages cannot be relabelled.
+A CDC receives its own written stage: the CDC determination replaces the CC stage, and the PC, inspection and OC stages stay (synthetic finding F9, 4 November 2026; the CC stage is never relabelled). The file name is kept from when a CDC was unsupported.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
 
 ## cost-advisory-capex
 
@@ -365,7 +365,7 @@ Remediation of an existing residential care building (Class 9c), DA, traditional
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
 | architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
-| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
+| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
 ## existing-9c-repair-decided
 
@@ -815,7 +815,7 @@ New mixed-use building: apartments (Class 2) over retail (Class 6) and a car par
 |---|---|---|---|
 | architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set; Regulated design applies |
 | civil | Building class; Work to an existing building; Novation; Procurement route; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); Existing on-site detention to keep or modify; On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling; Regulated design applies; Site area |
-| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
+| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures; Regulated design applies |
 
 ## planning-advice-only
 
@@ -832,7 +832,7 @@ Office building (Class 5), DA. The client buys design only to planning approval;
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
 | architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
-| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
+| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
 
 ## ref-town-planning
 
@@ -849,7 +849,7 @@ Rear extension to a detached house (Class 1a) under a CDC, traditional contract.
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
 | architecture | Construction budget; Building class; Architect lodges the planning application; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
-| structural | Construction budget; Building class; Work to an existing building; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
+| structural | Construction budget; Building class; Work to an existing building; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Neighbouring or street trees affected; Works affect trees roots or canopy; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
 
 ## survey-advice-only
 
@@ -940,7 +940,7 @@ New warehouse (Class 7b), DA, design and construct without novation.
 |---|---|---|---|
 | architecture | Building class; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
 | civil | Building class; Work to an existing building; Novation; Procurement route; Regulated design applies; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); Existing on-site detention to keep or modify; On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling |
-| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
+| structural | Building class; Work to an existing building; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Building over or next to a water authority asset; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Existing on-site detention to keep or modify; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
 
 ## waste-advisory-only
 

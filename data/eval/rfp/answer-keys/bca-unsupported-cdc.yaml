@@ -55,8 +55,9 @@ settings:
 sources:
 - docs/rfp-golden/bca-certification/rfp.md Sections 2-7
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
+- testing/synthetic/FINDINGS.md F9 and docs/plans/2026-11-04-synthetic-findings-fixes.md
 scenario: bca-unsupported-cdc
-description: CDC must receive its own scope; existing CC stages cannot be relabelled.
+description: "A CDC receives its own written stage: the CDC determination replaces the CC stage, and the PC, inspection and OC stages stay (synthetic finding F9, 4 November 2026; the CC stage is never relabelled). The file name is kept from when a CDC was unsupported."
 expect:
   bca-certification:
     stages_absent:
@@ -64,9 +65,11 @@ expect:
     - a2_planning
     - a3_tender
     - a4_construction
-    - b1_preliminary
     - b2_construction_approval
+    stages_include:
+    - b1_preliminary
+    - b2_cdc
     - b3_construction
     - b4_occupation
-    checks:
+    no_checks:
     - pathway_unsupported

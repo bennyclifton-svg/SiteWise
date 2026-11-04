@@ -8,6 +8,7 @@ package rfp
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -292,22 +293,58 @@ func deriveFlags(facts map[string]Fact, parts []Part) {
 		}
 	}
 	classes := map[string]bool{}
+	uses := 0
 	missing := false
 	for _, p := range parts {
 		if len(p.Classes) == 0 {
 			missing = true
 		}
 		for _, c := range p.Classes {
+			if !classes[c] && !isClassTen(c) {
+				uses++
+			}
 			classes[c] = true
 		}
 	}
+	// A Class 10 outbuilding (garage, carport, pool, fence) serves the
+	// building beside it, so it is not a second use: a house with a garage
+	// is a house (modules.yaml; synthetic finding F11).
 	switch {
-	case len(classes) > 1:
+	case uses > 1:
 		facts["flag.mixed_use"] = Fact{Values: []string{"yes"}, State: Known, Source: "derived", Detail: "parts with different classes"}
-	case len(classes) == 1 && !missing:
-		facts["flag.mixed_use"] = Fact{Values: []string{"no"}, State: Known, Source: "derived", Detail: "one class"}
+	case len(classes) > 0 && !missing:
+		facts["flag.mixed_use"] = Fact{Values: []string{"no"}, State: Known, Source: "derived", Detail: "one class, besides any Class 10"}
 	}
 	deriveRegulatedDesign(facts, classes, missing)
+	deriveHouseCertification(facts, classes, missing)
+}
+
+func isClassTen(c string) bool { return strings.HasPrefix(c, "10") }
+
+// houseClasses mirror the house module (knowledge/rfp/modules.yaml): Class 1,
+// with any Class 10 outbuilding.
+var houseClasses = []string{"1a", "1b", "10a", "10b"}
+
+// deriveHouseCertification defaults a house's certifier package to the
+// principal-certifier appointment: a house cannot be built without one, and
+// a separate BCA adviser is not part of a house's default scope (owner
+// direction F10, docs/plans/2026-11-04-synthetic-findings-fixes.md). A saved
+// answer always wins; other classes keep both choices open.
+func deriveHouseCertification(facts map[string]Fact, classes map[string]bool, missing bool) {
+	if missing || !(classes["1a"] || classes["1b"]) {
+		return
+	}
+	for c := range classes {
+		if !slices.Contains(houseClasses, c) {
+			return
+		}
+	}
+	for flag, v := range map[string]string{"bca_certification": "yes", "bca_advisory": "no"} {
+		if f, ok := facts["flag."+flag]; ok && f.State != Unknown {
+			continue
+		}
+		facts["flag."+flag] = Fact{Values: []string{v}, State: Known, Source: "derived", Detail: "a Class 1 house needs a principal certifier"}
+	}
 }
 
 // regulatedClasses are the classes the NSW Design and Building Practitioners
