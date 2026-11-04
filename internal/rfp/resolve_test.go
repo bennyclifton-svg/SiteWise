@@ -17,6 +17,14 @@ func skeleton(t *testing.T) knowledge.RFPSkeleton {
 	return sk
 }
 
+// ruled is a discipline with scope by stage switched off, for tests of what
+// the rules select before every choice becomes included or excluded.
+func ruled(t *testing.T, id string) knowledge.RFPDiscipline {
+	d := discipline(t, id)
+	d.ScopeByStage = false
+	return d
+}
+
 func discipline(t *testing.T, id string) knowledge.RFPDiscipline {
 	t.Helper()
 	d, ok := loadCatalog(t).RFP(id)
@@ -91,7 +99,7 @@ func TestUserSettingBeatsRule(t *testing.T) {
 }
 
 func TestScaleOnlyMovesServiceLevels(t *testing.T) {
-	d := discipline(t, "structural")
+	d := ruled(t, "structural")
 	base := facts(t, "class=7b", "procurement=traditional", "pathway=da", "flag.basement=no", "flag.excavation_adjoining=no")
 	simple := Resolve(d, skeleton(t), base, set("scale", `"simple"`))
 	complex := Resolve(d, skeleton(t), base, set("scale", `"complex"`))
@@ -168,8 +176,10 @@ func TestStageSettingOverridesBoundary(t *testing.T) {
 	if s := r.Stage("construction_support"); s.State != Include || s.Source != "user" {
 		t.Fatalf("%+v", s)
 	}
-	if r.Stage("concept").State != Done {
-		t.Fatal("a stage completed by others is recorded as done")
+	// The architect is scope by stage: work done by others is simply
+	// excluded from this appointment (owner direction, 3 November 2026).
+	if r.Stage("concept").State != Exclude {
+		t.Fatal("a stage completed by others is excluded")
 	}
 }
 
@@ -186,7 +196,7 @@ func TestDefaultBoundaryReadyForReview(t *testing.T) {
 }
 
 func TestOptionsNeverEnterTheBaseFee(t *testing.T) {
-	d := discipline(t, "architecture")
+	d := ruled(t, "structural")
 	r := Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=traditional", "pathway=da"), nil)
 	secs, err := Sections(r, consultantTemplate(t))
 	if err != nil {

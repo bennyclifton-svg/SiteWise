@@ -56,6 +56,9 @@ type ProgramExtras struct {
 	// HoldPoints are hold points with release evidence or a release
 	// (plan 10.4; program_holdpoints.go).
 	HoldPoints []ProgramHoldPointView `json:"hold_points"`
+	// Targets are the owner's targets and a builder's estimate beside the
+	// computed program (program_targets.go).
+	Targets []ProgramTarget `json:"targets"`
 }
 
 // ProgramCatalogueStage is one delivery catalogue stage offered for a remap.
@@ -82,13 +85,15 @@ var errNoProgramChange = errors.New("no program change")
 type programInputs struct {
 	gi     engine.GenInput
 	hashes map[string]string
-	years  []int // years with a reviewed calendar for the project's state
-	cal    []ProgramCalendarDay
+	// targets are the owner targets the Program compares (program_targets.go).
+	targets map[string]string
+	years   []int // years with a reviewed calendar for the project's state
+	cal     []ProgramCalendarDay
 }
 
 const programProfileSQL = `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state,COALESCE(r.projection_hash,''),p.kind='whole'
 FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id
-WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR (p.kind='whole' AND (r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%' OR r.key LIKE 'plan.%' OR r.key LIKE 'fact.%' OR r.key LIKE 'sys.%.presence' OR r.key LIKE 'sys.%.existing')))
+WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND (r.key='hdr.work_type' OR (p.kind='whole' AND (r.key LIKE 'det.%' OR r.key LIKE 'hdr.cond.%' OR r.key LIKE 'plan.%' OR r.key LIKE 'fact.%' OR r.key LIKE 'sys.%.presence' OR r.key LIKE 'sys.%.existing' OR r.key IN ('hdr.scale.gfa_sqm','hdr.scale.added_gfa_sqm','proj.target_da_lodgement','proj.target_construction_start','proj.max_construction_months','proj.preliminary_construction_months'))))
 ORDER BY r.key,r.part_id`
 
 // Work items in the Profile's order (readWorkItems); groups are containers
@@ -107,7 +112,7 @@ ORDER BY p.title,p.id,s.ordinal,s.label,s.id`
 // construction budget is not read: it only feeds the time_cost basis, which
 // stays unknown without a cost index (owner answer Q7 defers both).
 func readProgramGenInput(ctx context.Context, q programQuerier, org, project string, cat *knowledge.Catalog) (programInputs, error) {
-	in := programInputs{hashes: map[string]string{}, gi: engine.GenInput{Values: map[string]string{}, Conditions: map[string]string{},
+	in := programInputs{hashes: map[string]string{}, targets: map[string]string{}, gi: engine.GenInput{Values: map[string]string{}, Conditions: map[string]string{},
 		Planning: map[string]string{}, Present: map[string]bool{}, Existing: map[string]bool{}}}
 	b := &pgx.Batch{}
 	b.Queue(programProfileSQL, org, project)
@@ -121,6 +126,7 @@ func readProgramGenInput(ctx context.Context, q programQuerier, org, project str
 		return in, err
 	}
 	workTypes := map[string]bool{}
+	scale := map[string]string{}
 	present, existing := map[string]bool{}, map[string]bool{}
 	for rows.Next() {
 		var key, value, band, origin, meaning, review, state, hash string
@@ -150,6 +156,10 @@ func readProgramGenInput(ctx context.Context, q programQuerier, org, project str
 				in.gi.Planning[strings.TrimPrefix(key, knowledge.PlanningPrefix)] = value
 			}
 		case !applied:
+		case strings.HasPrefix(key, "hdr.scale."):
+			scale[key] = value
+		case strings.HasPrefix(key, "proj."):
+			in.targets[key] = value
 		case strings.HasSuffix(key, ".assertion"):
 		case strings.HasPrefix(key, "det."):
 			in.gi.Values[strings.TrimPrefix(key, "det.")] = value
@@ -209,6 +219,9 @@ func readProgramGenInput(ctx context.Context, q programQuerier, org, project str
 		return in, err
 	}
 	in.gi.Present, in.gi.Existing = present, existing
+	if area := profileFloorArea(in.gi.WorkTypes, scale); area != "" && strings.TrimSpace(in.gi.Planning["gross_floor_area"]) == "" {
+		in.gi.Planning["gross_floor_area"] = area
+	}
 	in.cal, in.years = libraryCalendar(cat, in.gi.Values["state"])
 	return in, br.Close()
 }
@@ -489,7 +502,7 @@ func (s *Store) ResultView(ctx context.Context, org, project string, r ProgramRe
 }
 
 func (s *Store) programExtras(ctx context.Context, q programQuerier, org, project string, st ProgramState, cat *knowledge.Catalog) (ProgramExtras, error) {
-	ex := ProgramExtras{Checks: []engine.Check{}, Skeleton: ProgramSkeleton{ID: st.Program.SkeletonID}, CatalogueStages: []ProgramCatalogueStage{}}
+	ex := ProgramExtras{Checks: []engine.Check{}, Targets: []ProgramTarget{}, Skeleton: ProgramSkeleton{ID: st.Program.SkeletonID}, CatalogueStages: []ProgramCatalogueStage{}}
 	if cat != nil {
 		for _, c := range cat.DeliveryStages() {
 			ex.CatalogueStages = append(ex.CatalogueStages, ProgramCatalogueStage{ID: c.ID, Label: c.Label})
@@ -556,6 +569,12 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 	// read skips the undo log.
 	ci.RemovedPackageRows = engine.RemovedPackageRows(engine.Diff(liveRows(st.Activities), liveLinks(st.Links), plan, engine.UserRetired{}))
 	ex.Checks = append(ex.Checks, engine.Checks(ci)...)
+	ex.Targets = ownerTargets(st, in.targets)
+	for _, t := range ex.Targets {
+		if t.Status == "later" || t.Status == "longer" || t.Status == "shorter" {
+			ex.Checks = append(ex.Checks, engine.Check{Code: "owner_target", Message: t.Message})
+		}
+	}
 	// Generation notes (an unknown lag, a library link that could not be
 	// placed) still describe the stored rows they name; the skeleton tie is
 	// already a check.
@@ -690,6 +709,8 @@ func liveRows(acts []ProgramActivity) []engine.LiveRow {
 		out[i] = engine.LiveRow{ID: a.ID, SourceKey: string(a.SourceKey), ParentID: string(a.ParentID), Kind: a.Kind, Label: a.Label,
 			CatalogueStageID: string(a.CatalogueStageID), PackageID: string(a.PackageID), Duration: a.DurationDays, Low: a.DurationLow,
 			High: a.DurationHigh, DurationOrigin: string(a.DurationOrigin), Origin: a.Origin, ReviewStatus: a.ReviewStatus}
+		// Unreadable or empty source: the review just cannot name a cause.
+		_ = json.Unmarshal(a.DurationSource, &out[i].DurationSource)
 	}
 	return out
 }
@@ -890,4 +911,17 @@ func setGeneratedDuration(a *ProgramActivity, o generatedOp) {
 	if len(o.DurationSource) > 0 && string(o.DurationSource) != "null" {
 		a.DurationSource = o.DurationSource
 	}
+}
+
+// profileFloorArea is the floor area the Profile states for the works, used
+// when no planning value is set (durations.yaml assumes 250 m² until the
+// Profile states it): for an extension, the area the works add; otherwise
+// the proposed GFA. Empty when the Profile states neither.
+func profileFloorArea(workTypes []string, scale map[string]string) string {
+	for _, w := range workTypes {
+		if w == "extend" && strings.TrimSpace(scale["hdr.scale.added_gfa_sqm"]) != "" {
+			return strings.TrimSpace(scale["hdr.scale.added_gfa_sqm"])
+		}
+	}
+	return strings.TrimSpace(scale["hdr.scale.gfa_sqm"])
 }

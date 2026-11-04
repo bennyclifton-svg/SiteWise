@@ -69,18 +69,8 @@ description: Camp accommodation/kitchen with separately evidenced carted, rain a
 snapshot: true
 expect:
   hydraulic-services:
-    stages_include:
-    - inception
-    - investigation
-    - concept
-    - planning
-    - design
-    - tender
-    stages_option:
-    - continuation
-    - construction
-    - handover
-    - defects
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, investigation, concept, planning, design, tender]
     positions:
       domestic: I
       rainwater: I
@@ -93,5 +83,6 @@ expect:
       process: absent
       gas: I
       declarations: I
-      continuation: O
-      witness: O
+      continuation: X
+      witness: X
+    stages_absent: [continuation, construction, handover, defects]

@@ -1,3 +1,4 @@
+import type { TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
 // Procurement is one table with one row per package, grouped Consultants and
 // Trades (docs/plans/2026-10-10-procurement-table.md). Choosing a discipline
@@ -34,7 +35,7 @@ interface Row {
 
 interface Loaded { overview: PackageOverview; reports: SavedReport[]; board: Board }
 
-export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan }: { projectId: string; tick: number; onSignedOut: () => void; onOpenCostPlan?: () => void }) {
+export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, transmittal }: { transmittal?: TransmittalSelection; projectId: string; tick: number; onSignedOut: () => void; onOpenCostPlan?: () => void }) {
   const [view, setView] = useState<View>({ at: "table" });
   const [data, setData] = useState<Loaded | null>(null);
   const [disciplines, setDisciplines] = useState<Option[]>([]);
@@ -171,7 +172,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan }: { 
     catch (err) { fail(err); } finally { setBusyRow(""); }
   }
 
-  if (view.at === "report") return <Reports key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
+  if (view.at === "report") return <Reports transmittal={transmittal} key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
   if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} />;
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
@@ -283,12 +284,17 @@ function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen:
   const description = [c.filename, `received ${c.received_on}`, STATUS_WORDS[c.status],
     c.needs_review ? "Check proposal" : "",
     c.not_priced ? `${c.not_priced} not priced` : "",
+    c.pi_expires_on ? `Professional indemnity${c.pi_limit_cents ? ` $${(c.pi_limit_cents / 100).toLocaleString("en-AU")}` : ""} ${c.pi_expired ? "expired" : "to"} ${c.pi_expires_on}${c.pi_expired ? ": request a current certificate" : ""}` : "",
     c.base_total == null && (!c.known_base || c.known_base === "0.00") && c.stated_total != null
       ? "Firm's stated total, ex GST; the fee schedule is not priced yet" : "",
   ].filter(Boolean).join(" · ");
   return <div className="firm-card"><button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
     title={description} aria-description={description}>
     <span className="firm-chip-name">{c.firm_name || c.filename}</span>
+    {c.status === "not_proposal" && <span className="firm-chip-status">Named in a document</span>}
+    {c.pi_expired && <span className="firm-chip-status warn" title={`Professional indemnity expired ${c.pi_expires_on}: request a current certificate`}>PI expired</span>}
+    {/* Shown, not spoken: the description already says the firm is awarded. */}
+    {c.status === "awarded" && <span className="firm-chip-status firm-awarded" aria-hidden="true">Awarded</span>}
     <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? `$${fmt(c.stated_total).replace(/\.00$/, "")}` : "—"}</span>
   </button>
     <button type="button" className="firm-detach" aria-label={`Detach proposal for ${c.firm_name || c.filename}`}

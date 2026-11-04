@@ -111,11 +111,15 @@ boundary:
   end: advisory
 - start: inception
   end: design
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: inception
   name: S1 Evidence
-  deliverable: Brief/system-space register; accessible review, observed/tested/assumed condition/capacity/life;
-    gaps/owners
+  lines:
+  - {key: brief_system_space, text: "Brief/system-space register"}
+  - {key: accessible_review_observed, text: "accessible review, observed/tested/assumed condition/capacity/life"}
+  - {key: gaps_owners, text: "gaps/owners"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -129,8 +133,10 @@ stages:
       scope or current requirements.
 - key: investigation
   name: S2 Investigation
-  deliverable: Surveys/logging/tests, retained capacity/options; intrusion/safety/isolation/operator/reinstatement;
-    upgrades separate
+  lines:
+  - {key: surveys_logging_tests, text: "Surveys/logging/tests, retained capacity/options"}
+  - {key: intrusion_safety_isolation, text: "intrusion/safety/isolation/operator/reinstatement"}
+  - {key: upgrades_separate, text: "upgrades separate"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -148,8 +154,8 @@ stages:
   if_unknown: ask
 - key: concept
   name: S3 Concept
-  deliverable: Options/preliminary loads/zones, plant/routes/replacement access, intakes/discharges/acoustics/cost
-    inputs
+  lines:
+  - {key: options_preliminary_loads, text: "Options/preliminary loads/zones, plant/routes/replacement access, intakes/discharges/acoustics/cost inputs"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -163,8 +169,9 @@ stages:
       scope or current requirements.
 - key: planning
   name: S4 Planning
-  deliverable: Listed spatial sketches or formal plans/reports; screening/noise/energy inputs, submissions
-    and bounded responses
+  lines:
+  - {key: listed_spatial_sketches, text: "Listed spatial sketches or formal plans/reports"}
+  - {key: screening_noise_energy, text: "screening/noise/energy inputs, submissions and bounded responses"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -182,8 +189,9 @@ stages:
   if_unknown: ask
 - key: design
   name: S5 Design
-  deliverable: Load/airflow/pressure/selection calculations, layouts/schedules, refrigerant/condensate, energy/controls/fire
-    modes; structure/envelope/power/access coordination
+  lines:
+  - {key: load_airflow_pressure, text: "Load/airflow/pressure/selection calculations, layouts/schedules, refrigerant/condensate, energy/controls/fire modes"}
+  - {key: structure_envelope_power, text: "structure/envelope/power/access coordination"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -197,8 +205,10 @@ stages:
       scope or current requirements.
 - key: tender
   name: S6 Documentation
-  deliverable: Traditional design/calculations/specs; D&C performance/intent, retained/delegated design/test
-    criteria; RFIs/addenda/comparison
+  lines:
+  - {key: traditional_design_calculations, text: "Traditional design/calculations/specs"}
+  - {key: d_c_performance, text: "D&C performance/intent, retained/delegated design/test criteria"}
+  - {key: rfis_addenda_comparison, text: "RFIs/addenda/comparison"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -212,7 +222,9 @@ stages:
       scope or current requirements.
 - key: continuation
   name: S7 Post-contract
-  deliverable: Retained design/substitutions/declarations; settle novation duties/fee
+  lines:
+  - {key: retained_design_substitutions, text: "Retained design/substitutions/declarations"}
+  - {key: settle_novation_duties, text: "settle novation duties/fee"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -227,7 +239,8 @@ stages:
   default: option
 - key: construction
   name: S8 Construction
-  deliverable: RFIs/submittals/equipment, hold-point reports/concealed-work limits, test plans/defects
+  lines:
+  - {key: rfis_submittals_equipment, text: "RFIs/submittals/equipment, hold-point reports/concealed-work limits, test plans/defects"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -242,8 +255,10 @@ stages:
   default: option
 - key: handover
   name: S9 Commissioning
-  deliverable: Scripts/results; balancing/controls/fire/failure/recovery witnesses, expected/actual/defects/retests;
-    as-builts/O&M/settings/trends/training/residuals
+  lines:
+  - {key: scripts_results, text: "Scripts/results"}
+  - {key: balancing_controls_fire, text: "balancing/controls/fire/failure/recovery witnesses, expected/actual/defects/retests"}
+  - {key: as_builts_o, text: "as-builts/O&M/settings/trends/training/residuals"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -258,7 +273,8 @@ stages:
   default: option
 - key: seasonal
   name: S10 Seasonal
-  deliverable: Deferred seasonal/tuning/defect reviews, weather/operation prerequisites, closure
+  lines:
+  - {key: deferred_seasonal_tuning, text: "Deferred seasonal/tuning/defect reviews, weather/operation prerequisites, closure"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -273,8 +289,10 @@ stages:
   default: option
 - key: advisory
   name: S11 Advisory
-  deliverable: Decision/extent/cutoff/reliance/method/confidence/actions; separate diagnosis/remedy/verification;
-    reviewer is not designer
+  lines:
+  - {key: decision_extent_cutoff, text: "Decision/extent/cutoff/reliance/method/confidence/actions"}
+  - {key: separate_diagnosis_remedy, text: "separate diagnosis/remedy/verification"}
+  - {key: reviewer_is_not, text: "reviewer is not designer"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -404,6 +422,7 @@ allowances:
       scope or current requirements.
 positions:
 - key: hvac
+  stage: [design, tender]
   group: Heating, cooling and ventilation
   label: 'Selected detailed HVAC design: duties/air paths/outdoor air; loads/hours/reserve'
   kind: technical
@@ -430,6 +449,7 @@ positions:
     - tender
     - continuation
 - key: local
+  stage: [design, tender]
   group: Heating, cooling and ventilation
   label: Toilet/laundry/refuse/car-park/charging exhaust; make-up air/discharge separation
   kind: technical
@@ -459,6 +479,7 @@ positions:
     - mech_local
   if_unknown: ask
 - key: kitchen
+  stage: [design, tender]
   group: Heating, cooling and ventilation
   label: Kitchen/process exhaust; equipment brief/specialist, not kitchenette
   kind: technical
@@ -488,6 +509,7 @@ positions:
     - mech_kitchen
   if_unknown: ask
 - key: smoke
+  stage: [design, tender]
   group: Smoke control and building systems
   label: Smoke fans/shafts/dampers/pressurisation under fire-engineer strategy; wet fire separate
   kind: technical
@@ -517,6 +539,7 @@ positions:
     - mech_smoke
   if_unknown: ask
 - key: controls
+  stage: [design, tender]
   group: Smoke control and building systems
   label: BMS sequences/points/alarms/metering; programming/licences/commissioning owners
   kind: technical
@@ -546,6 +569,7 @@ positions:
     - mech_controls
   if_unknown: ask
 - key: energy
+  stage: [design, planning]
   group: Smoke control and building systems
   label: Whole-building energy/rating only; mechanical inputs remain in appointed design
   kind: technical
@@ -561,6 +585,7 @@ positions:
   value: X
   responsible: energy assessor
 - key: acoustic
+  stage: [design, planning]
   group: Smoke control and building systems
   label: Acoustic/envelope design only; mechanical noise inputs remain in appointed design
   kind: technical
@@ -576,6 +601,7 @@ positions:
   value: X
   responsible: acoustic consultant / architect
 - key: interfaces
+  stage: [design, tender]
   group: Smoke control and building systems
   label: Coordinate supports/plinths/openings/power/refrigerant leak/condensate; respective specialists design
   kind: technical
@@ -605,6 +631,7 @@ positions:
     - mech_interfaces
   if_unknown: ask
 - key: existing
+  stage: [investigation, inception]
   group: Existing systems and specialist design
   label: Condition/capacity/controls investigation; operation is not proof; upgrade separate
   kind: technical
@@ -630,6 +657,7 @@ positions:
     - mech_investigation
   if_unknown: ask
 - key: staging
+  stage: [design, tender]
   group: Existing systems and specialist design
   label: Occupied/phased temporary ventilation/isolation/handback by use/phase
   kind: technical
@@ -644,6 +672,7 @@ positions:
       scope or current requirements.
   value: O
 - key: remediation
+  stage: [advisory, investigation]
   group: Existing systems and specialist design
   label: Diagnosis/trial/verification; no whole-building conclusion from samples
   kind: technical
@@ -656,6 +685,7 @@ positions:
       scope or current requirements.
   value: O
 - key: specialist
+  stage: [design, tender]
   group: Existing systems and specialist design
   label: Laboratory/clean-room/medical gases/process refrigeration/hazardous areas
   kind: technical
@@ -671,6 +701,7 @@ positions:
   value: X
   responsible: competent specialist
 - key: declarations
+  stage: [tender, continuation, design]
   group: Existing systems and specialist design
   label: Declarations/lodgement; verify jurisdiction/competence, no approval guarantee
   kind: technical
@@ -700,6 +731,7 @@ positions:
     - mech_declarations
   if_unknown: ask
 - key: continuation
+  stage: [continuation]
   group: Later design and verification
   label: Separate continued design/novation
   kind: technical
@@ -722,6 +754,7 @@ positions:
   - stage:
     - continuation
 - key: construction
+  stage: [construction]
   group: Later design and verification
   label: Quantified construction support
   kind: technical
@@ -744,6 +777,7 @@ positions:
   - stage:
     - construction
 - key: witness
+  stage: [handover]
   group: Later design and verification
   label: Selected witnessing/handover
   kind: technical
@@ -766,6 +800,7 @@ positions:
   - stage:
     - handover
 - key: seasonal
+  stage: [seasonal]
   group: Later design and verification
   label: Seasonal/defects reviews
   kind: technical
@@ -788,6 +823,7 @@ positions:
   - stage:
     - seasonal
 - key: execution
+  stage: [handover, construction]
   group: Later design and verification
   label: Test execution separately priced to named contractors
   kind: technical

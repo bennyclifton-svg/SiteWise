@@ -1,0 +1,247 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Harbourline Architects Pty Ltd",
+        "abn": "95 471 173 493",
+        "contact": "Priya Ramanathan",
+        "email": "priya.harbourline@example.com",
+        "phone": "02 9811 4402",
+        "address": "Level 1, 18 Blaxland Road, Ryde NSW 2112"
+      },
+      "stated_total_cents": 8000000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Concept design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Stage 2 DA documentation and lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2200000
+        },
+        {
+          "label": "Stage 3 Construction documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3400000
+        },
+        {
+          "label": "Stage 4 Tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 600000
+        },
+        {
+          "label": "Option: contract administration",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 1500000
+        },
+        {
+          "label": "Additional services: principal architect hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 22000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Tallow Consulting Engineers Pty Ltd",
+        "abn": "25 999 583 278",
+        "contact": "Marcus Feld",
+        "email": "marcus.feld.tallow@example.com",
+        "phone": "02 9874 1150",
+        "address": "Suite 4, 9 Rowe Street, Eastwood NSW 2122"
+      },
+      "stated_total_cents": 800000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept and DA structural advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        },
+        {
+          "label": "Detailed design and CC documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Design certificate for the CC",
+          "kind": "stage",
+          "state": "included",
+          "amount_cents": null
+        },
+        {
+          "label": "Site inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 35000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Brennan Civil Engineering Pty Ltd",
+        "abn": "31 864 452 323",
+        "contact": "Aoife Brennan",
+        "email": "aoife.brennancivil@example.com",
+        "phone": "02 9858 3307",
+        "address": "22 Victoria Road, West Ryde NSW 2114"
+      },
+      "stated_total_cents": 900000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Stormwater concept plan for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        },
+        {
+          "label": "Detailed stormwater, driveway and sediment control design for the CC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 450000
+        },
+        {
+          "label": "Works-as-executed review and stormwater certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Ridgeback Geotechnics Pty Ltd",
+        "abn": "84 022 765 333",
+        "contact": "Tom Okafor",
+        "email": "tom.okafor.ridgeback@example.com",
+        "phone": "02 9630 2218",
+        "address": "Unit 7, 41 Carrington Road, Castle Hill NSW 2154"
+      },
+      "stated_total_cents": 380000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Investigation plan and fieldwork",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 220000
+        },
+        {
+          "label": "Laboratory reactivity testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 60000
+        },
+        {
+          "label": "Geotechnical report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 100000
+        },
+        {
+          "label": "Footing inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 44000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.basix",
+      "firm": {
+        "name": "Thermacheck Energy Assessments Pty Ltd",
+        "abn": "98 925 810 340",
+        "contact": "Lena Vos",
+        "email": "lena.thermacheck@example.com",
+        "phone": "0412 660 391",
+        "address": "PO Box 318, Epping NSW 1710"
+      },
+      "stated_total_cents": 200000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "NatHERS assessment and BASIX certificate for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 165000
+        },
+        {
+          "label": "Revision for the CC design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 35000
+        }
+      ]
+    },
+    {
+      "doc": "d18",
+      "kind": "fee_proposal",
+      "discipline": "consultant.arborist",
+      "firm": {
+        "name": "Canopy Line Arboriculture Pty Ltd",
+        "abn": "41 118 499 628",
+        "contact": "Sam Whitlock",
+        "email": "sam.canopyline@example.com",
+        "phone": "0423 118 207",
+        "address": "12 Agincourt Road, Marsfield NSW 2122"
+      },
+      "stated_total_cents": 340000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "AS 4970 arboricultural impact assessment",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 190000
+        },
+        {
+          "label": "Tree protection plan and specification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 70000
+        },
+        {
+          "label": "Construction supervision hold points (two visits)",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 80000
+        }
+      ]
+    }
+  ]
+}

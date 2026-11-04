@@ -86,8 +86,9 @@ export function orphanEvidence(groups: readonly ReadingGroup[]): ReadingGroup[] 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
 /**
- * The review banner (plan 7.4): "Scope and procurement changed: 3 to add,
- * 1 to remove, 2 renamed." Without counts yet, the pending total.
+ * What waits behind Update program (plan 7.4): "Profile or Procurement
+ * changed: 3 to add, 1 to remove, 2 renamed." Without counts yet, the
+ * pending total.
  */
 export function reviewWords(counts: Record<string, number> | null | undefined, pending: number): string {
   const parts: string[] = [];
@@ -99,7 +100,7 @@ export function reviewWords(counts: Record<string, number> | null | undefined, p
     if (counts.link) parts.push(plural(counts.link, "link changed", "links changed"));
   }
   if (!parts.length) parts.push(plural(pending, "change", "changes"));
-  return `Scope and procurement changed: ${parts.join(", ")}.`;
+  return `Profile or Procurement changed: ${parts.join(", ")}.`;
 }
 
 /** Why a file could not be read, in plain words. */

@@ -338,6 +338,9 @@ class RFPCheckTests(unittest.TestCase):
             (knowledge / 'rfp').mkdir(parents=True)
             (root / 'docs').mkdir()
             (root / 'docs' / 'golden.md').write_text('# Golden\n', encoding='utf-8')
+            ledger = root / 'docs' / 'rfp-golden' / 'architecture'
+            ledger.mkdir(parents=True)
+            (ledger / 'ledger.md').write_text('| 1 | Source one |\n| 2 | Source two |\n', encoding='utf-8')
             (knowledge / 'rfp' / 'architecture.yaml').write_text(yaml.safe_dump(discipline), encoding='utf-8')
             keys = root / 'keys'
             keys.mkdir()

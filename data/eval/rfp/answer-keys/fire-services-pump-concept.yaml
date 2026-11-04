@@ -61,20 +61,13 @@ description: Extension pump/tank concept cannot buy full hydraulic/upgrade desig
 snapshot: true
 expect:
   fire-services:
-    stages_include:
-    - inception
-    - investigation
-    - concept
-    stages_option:
-    - design
-    - tender
-    - continuation
-    - construction
-    - handover
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, investigation, concept]
     positions:
       wet: I
-      supply: O
-      upgrade: O
+      supply: X
+      upgrade: X
       existing: I
       dry: I
-      witness: O
+      witness: X
+    stages_absent: [design, tender, continuation, construction, handover]

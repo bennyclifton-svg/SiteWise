@@ -122,3 +122,46 @@ func assumed(r Row) string {
 	s, _ := r.DurationSource["assumed"].(string)
 	return s
 }
+
+// A floor area change names itself in the review line, and the line only
+// appears when the days shown change (owner, 2026-11-03).
+func TestReviewNamesFloorAreaChange(t *testing.T) {
+	cat := testCatalog(t, nil, "")
+	before := mustGenerate(t, cat, chenHouse())
+	rows, links := liveFrom(before)
+	for i := range rows {
+		r, _ := before.Row(rows[i].SourceKey)
+		rows[i].DurationSource = r.DurationSource
+	}
+	in := chenHouse()
+	in.Planning = map[string]string{"gross_floor_area": "300"}
+	cs := Diff(rows, links, mustGenerate(t, cat, in), UserRetired{})
+	durations := 0
+	for _, c := range cs {
+		if c.Kind != ChangeDuration {
+			continue
+		}
+		durations++
+		if !strings.Contains(c.Summary, "(Gross floor area 250 m² to 300 m²)") {
+			t.Fatalf("no cause: %s", c.Summary)
+		}
+		from, to, _ := strings.Cut(strings.SplitN(c.Summary, ": duration ", 2)[1], " to ")
+		if strings.HasPrefix(to, from) {
+			t.Fatalf("days unchanged: %s", c.Summary)
+		}
+	}
+	if durations == 0 {
+		t.Fatal("a 250 to 300 m² change moved no duration")
+	}
+}
+
+func TestDurationCauseWithoutRecordedDriver(t *testing.T) {
+	r := Row{DurationSource: map[string]any{"driver": map[string]any{"key": "gross_floor_area", "label": "Gross floor area", "value": "300", "unit": "m2"}}}
+	if got := durationCause(LiveRow{}, r); got != " (Gross floor area now 300 m²)" {
+		t.Fatalf("cause %q", got)
+	}
+	three, five, nine := 3, 5, 9
+	if !sameDuration(LiveRow{Duration: &three, Low: &three, High: &five}, Row{Duration: &three, Low: &three, High: &nine}) {
+		t.Fatal("a range move under the same days is not a change")
+	}
+}

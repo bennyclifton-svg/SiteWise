@@ -23,7 +23,9 @@ func TestElectricalPricingDefaultsAndLegacyCounts(t *testing.T) {
 		}
 	}
 	for _, p := range r.Positions {
-		if (p.Key == "generation" || p.Key == "ict") && p.Value != "O" {
+		// An unconfirmed specialist service is included by stage (owner
+		// direction, 3 November 2026), with its pricing basis printed.
+		if (p.Key == "generation" || p.Key == "ict") && (p.Value != "I" || p.Assumption == "") {
 			t.Fatalf("unknown specialist service: %+v", p)
 		}
 	}
@@ -47,10 +49,14 @@ func TestElectricalPricingDefaultsAndLegacyCounts(t *testing.T) {
 	}
 	drivers.Facts["flag.elec_generation"] = Fact{State: Conflict, Values: []string{"yes", "no"}}
 	r = Resolve(d, sk, drivers, settings)
-	for _, p := range r.Positions {
-		if p.Key == "generation" && p.Value != Ask {
-			t.Fatalf("conflict treated as optional: %+v", p)
-		}
+	// By stage the service reads included, but conflicting evidence still
+	// blocks issue until someone settles it.
+	blocked := false
+	for _, c := range r.Checks {
+		blocked = blocked || (c.Blocking && c.Control == "fact:flag.elec_generation")
+	}
+	if !blocked {
+		t.Fatalf("conflict does not block issue: %+v", r.Position("generation"))
 	}
 	settings["boundary:range"] = set("x", `{"start":"inception","end":"construction"}`)["x"]
 	settings["stage:construction"] = set("x", `"include"`)["x"]

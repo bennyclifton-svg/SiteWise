@@ -57,26 +57,20 @@ description: Advisory aged-care review ends at report/response; no full FER, con
   peer appointment implied.
 expect:
   fire-engineering:
-    stages_include:
-    - s9_advisory
-    stages_absent:
-    - s1_strategy
-    - s3_brief
-    - s4_report
-    - s7_verification
-    stages_option:
-    - s9_peer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s9_advisory]
+    stages_absent: [s1_strategy, s3_brief, s4_report, s7_verification, s9_peer]
     positions:
       wet_design: X
       dry_design: X
       matrix_design: X
-      peer: O
-      remediation: O
-      interim: O
+      peer: X
+      remediation: I
+      interim: X
       brief: absent
       fer: absent
       existing: I
       occupants: I
-      witnessing: O
+      witnessing: X
     blocking_only: true
     blocking: []

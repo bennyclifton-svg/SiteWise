@@ -18,7 +18,7 @@ export interface Invoice {
 export interface LedgerLine { id: string; label: string; section: string; category: string; archived: boolean; budget: Money; invoiced: Money; remaining: Money; percent_spent: string; over_budget: boolean; invoices: number }
 export interface LedgerSummary { lines: LedgerLine[]; unallocated: LedgerLine; invoiced: Money; budget: Money; budget_unknown: number; remaining: Money; percent_spent: string; counted: number; excluded: number; comparable: boolean; sections: Record<string, Money> }
 export interface LedgerPackage { id: string; title: string; kind: string; discipline: string; abn: string }
-export interface Ledger { project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[] }
+export interface Ledger { groups?: Record<string, LedgerLine & { line_ids: string[] }>; project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[] }
 export interface InvoiceFilter { supplier: string; month: string; line: string; status: string }
 export interface Uploaded { id: string; status: InvoiceStatus; created: boolean }
 

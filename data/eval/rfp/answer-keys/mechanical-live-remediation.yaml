@@ -63,15 +63,12 @@ description: Occupied mixed-use investigation, support and witnessing purchased 
 snapshot: false
 expect:
   mechanical-services:
-    stages_include:
-    - investigation
-    - construction
-    - handover
-    - seasonal
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [investigation, construction, handover, seasonal]
     positions:
       existing: I
       construction: I
       witness: I
       seasonal: I
-      execution: O
-      remediation: O
+      execution: I
+      remediation: X

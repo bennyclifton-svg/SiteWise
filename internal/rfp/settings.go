@@ -9,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	"sitewise/internal/knowledge"
+	"sitewise/internal/reports"
 )
 
 var ErrInvalidSetting = errors.New("invalid RFP setting")
@@ -95,7 +96,7 @@ func slotLabel(sk knowledge.RFPSkeleton, name string) string {
 func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, key string) bool {
 	prefix, name, _ := strings.Cut(key, ":")
 	switch key {
-	case "scale", "boundary:range", "parts:affected":
+	case "scale", "boundary:range", "parts:affected", "transmittal":
 		return true
 	}
 	switch prefix {
@@ -135,12 +136,28 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 				return true
 			}
 		}
+	case "line":
+		stage, line, _ := strings.Cut(name, ".")
+		for _, s := range d.Stages {
+			for _, l := range s.Lines {
+				if d.ScopeByStage && s.Key == stage && l.Key == line {
+					return true
+				}
+			}
+		}
+	case "custom":
+		for _, s := range d.Stages {
+			if d.ScopeByStage && s.Key == name {
+				return true
+			}
+		}
 	}
 	return false
 }
 
 var (
-	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
+	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight|line|custom):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
+	customIDRE   = regexp.MustCompile(`^u[a-z0-9]{1,15}$`)
 	dateRE       = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 	numberRE     = regexp.MustCompile(`^[0-9]{1,12}(\.[0-9]{1,2})?$`)
 )
@@ -149,6 +166,26 @@ var (
 // names nothing in the current rules is refused for writing; existing orphans
 // can still be deleted.
 func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, key string, raw json.RawMessage) error {
+	if key == "transmittal" {
+		var docs []reports.BriefValue
+		if len(raw) > 2000000 || json.Unmarshal(raw, &docs) != nil || docs == nil || len(docs) > 5000 {
+			return ErrInvalidSetting
+		}
+		seen := map[string]bool{}
+		for _, doc := range docs {
+			if doc.ID == "" || seen[doc.ID] {
+				return ErrInvalidSetting
+			}
+			seen[doc.ID] = true
+		}
+		return nil
+	}
+	if strings.HasPrefix(key, "custom:") {
+		if !settingKeyRE.MatchString(key) || !validKey(d, sk, drivers, key) {
+			return ErrInvalidSetting
+		}
+		return validCustomLines(raw)
+	}
 	if !settingKeyRE.MatchString(key) || !validKey(d, sk, drivers, key) || len(raw) == 0 || len(raw) > 2000 || !json.Valid(raw) {
 		return ErrInvalidSetting
 	}
@@ -215,6 +252,8 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 		return nil
 	case prefix == "position":
 		return oneOf("I", "O", "X", Ask)
+	case prefix == "line":
+		return oneOf("I", "X")
 	case prefix == "responsible":
 		s, ok := str()
 		if !ok || strings.TrimSpace(s) == "" || utf8.RuneCountInString(s) > 120 || !printable(s) {
@@ -250,6 +289,28 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 		return nil
 	}
 	return ErrInvalidSetting
+}
+
+// MaxCustomLines bounds the lines a user adds to one stage.
+const MaxCustomLines = 40
+
+// validCustomLines checks a stage's own lines: each with a fresh id, wording
+// of up to 300 characters that cannot be read as a {slot}, and I or X.
+func validCustomLines(raw json.RawMessage) error {
+	var lines []CustomLine
+	if len(raw) == 0 || len(raw) > 20000 || json.Unmarshal(raw, &lines) != nil || lines == nil || len(lines) > MaxCustomLines {
+		return ErrInvalidSetting
+	}
+	seen := map[string]bool{}
+	for _, l := range lines {
+		text := strings.TrimSpace(l.Text)
+		if !customIDRE.MatchString(l.ID) || seen[l.ID] || text == "" || text != l.Text || utf8.RuneCountInString(text) > 300 ||
+			!printable(text) || strings.ContainsAny(text, "{}\n") || (l.Value != "I" && l.Value != "X") {
+			return ErrInvalidSetting
+		}
+		seen[l.ID] = true
+	}
+	return nil
 }
 
 func printable(s string) bool {

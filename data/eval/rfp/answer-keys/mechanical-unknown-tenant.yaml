@@ -56,8 +56,9 @@ description: Unknown exhaust and fire/control allocation cannot silently exclude
 snapshot: false
 expect:
   mechanical-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      local: ask
-      kitchen: ask
-      smoke: ask
-      controls: ask
+      local: I
+      kitchen: I
+      smoke: I
+      controls: I

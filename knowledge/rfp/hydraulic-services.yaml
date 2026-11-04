@@ -116,11 +116,16 @@ boundary:
   end: advisory
 - start: inception
   end: design
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: inception
   name: S1 Evidence
-  deliverable: Brief/system map; accessible asset/record review; connections/levels/capacity/easements; evidence
-    gaps
+  lines:
+  - {key: brief_system_map, text: "Brief/system map"}
+  - {key: accessible_asset_record, text: "accessible asset/record review"}
+  - {key: connections_levels_capacity, text: "connections/levels/capacity/easements"}
+  - {key: evidence_gaps, text: "evidence gaps"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -134,7 +139,10 @@ stages:
       or purchase later stages.
 - key: investigation
   name: S2 Investigation
-  deliverable: Selected tracing/CCTV/flow/logging/sampling; access/isolation/reinstatement, limits; upgrades separate
+  lines:
+  - {key: selected_tracing_cctv, text: "Selected tracing/CCTV/flow/logging/sampling"}
+  - {key: access_isolation_reinstatement, text: "access/isolation/reinstatement, limits"}
+  - {key: upgrades_separate, text: "upgrades separate"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -152,7 +160,9 @@ stages:
   if_unknown: ask
 - key: concept
   name: S3 Concept
-  deliverable: Brief/options/preliminary demands; source/storage/treatment, spatial/access and cost inputs
+  lines:
+  - {key: brief_options_preliminary, text: "Brief/options/preliminary demands"}
+  - {key: source_storage_treatment, text: "source/storage/treatment, spatial/access and cost inputs"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -166,7 +176,9 @@ stages:
       or purchase later stages.
 - key: planning
   name: S4 Authority
-  deliverable: Selected servicing plans/water-efficiency inputs; applications/roles/tracker and bounded responses
+  lines:
+  - {key: selected_servicing_plans, text: "Selected servicing plans/water-efficiency inputs"}
+  - {key: applications_roles_tracker, text: "applications/roles/tracker and bounded responses"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -184,7 +196,9 @@ stages:
   if_unknown: ask
 - key: design
   name: S5 Design
-  deliverable: Selected calculations/schedules; levels/routes/plant/controls/penetrations/access/overflow/safety
+  lines:
+  - {key: selected_calculations_schedules, text: "Selected calculations/schedules"}
+  - {key: levels_routes_plant, text: "levels/routes/plant/controls/penetrations/access/overflow/safety"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -198,7 +212,10 @@ stages:
       or purchase later stages.
 - key: tender
   name: S6 Tender
-  deliverable: Traditional complete design; D&C intent/remaining design owner; drawings/specs/calculations/RFIs/addenda
+  lines:
+  - {key: traditional_complete_design, text: "Traditional complete design"}
+  - {key: d_c_intent, text: "D&C intent/remaining design owner"}
+  - {key: drawings_specs_calculations, text: "drawings/specs/calculations/RFIs/addenda"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -212,7 +229,9 @@ stages:
       or purchase later stages.
 - key: continuation
   name: S7 Later design
-  deliverable: Complete design/alternatives/construction issue; retained duties and separate novation terms
+  lines:
+  - {key: complete_design_alternatives, text: "Complete design/alternatives/construction issue"}
+  - {key: retained_duties_separate, text: "retained duties and separate novation terms"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -227,8 +246,10 @@ stages:
   default: option
 - key: construction
   name: S8 Support
-  deliverable: Submittal/RFI reviews; before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points;
-    records
+  lines:
+  - {key: submittal_rfi_reviews, text: "Submittal/RFI reviews"}
+  - {key: before_backfill_lining, text: "before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points"}
+  - {key: records, text: "records"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -243,8 +264,11 @@ stages:
   default: option
 - key: handover
   name: S9 Witness
-  deliverable: Review selected tests, flushing/disinfection, as-builts/O&M and training; witness retests. Trades
-    execute tests; no unseen-work certification.
+  lines:
+  - {key: review_selected_tests, text: "Review selected tests, flushing/disinfection, as-builts/O&M and training"}
+  - {key: witness_retests, text: "witness retests"}
+  - {key: trades_execute_tests, text: "Trades execute tests"}
+  - {key: no_unseen_work, text: "no unseen-work certification."}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -259,7 +283,9 @@ stages:
   default: option
 - key: defects
   name: S10 Defects
-  deliverable: Deferred tests/visits/monitoring; operating prerequisites/period, closure/residual items
+  lines:
+  - {key: deferred_tests_visits, text: "Deferred tests/visits/monitoring"}
+  - {key: operating_prerequisites_period, text: "operating prerequisites/period, closure/residual items"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -274,8 +300,10 @@ stages:
   default: option
 - key: advisory
   name: S11 Advice
-  deliverable: Decision/cutoff/reliance/confidence/actions; diagnosis/remedy/verification separate; review transfers
-    no design
+  lines:
+  - {key: decision_cutoff_reliance, text: "Decision/cutoff/reliance/confidence/actions"}
+  - {key: diagnosis_remedy_verification, text: "diagnosis/remedy/verification separate"}
+  - {key: review_transfers_no, text: "review transfers no design"}
   fee_basis: fixed
   shown_when: Selected appointment stage
   provenance:
@@ -409,6 +437,7 @@ allowances:
       or purchase later stages.
 positions:
 - key: concept
+  stage: [concept]
   label: Concept options and spatial advice
   kind: technical
   provenance:
@@ -436,6 +465,7 @@ positions:
   group: Design basis
   detail: Preliminary demands, plant space and cost inputs; detailed design follows the selected stages.
 - key: existing
+  stage: [investigation, inception]
   label: Retained-system investigation
   kind: technical
   provenance:
@@ -467,6 +497,7 @@ positions:
   detail: Record evidence and assumptions separately; identify access, isolation and reinstatement. Upgrades separately
     agreed.
 - key: advice
+  stage: [advisory]
   label: Diagnosis and advice
   kind: technical
   provenance:
@@ -494,6 +525,7 @@ positions:
   group: Design basis
   detail: Remedy design and verification separately appointed.
 - key: domestic
+  stage: [design, tender, continuation]
   label: Design potable and hot water services
   kind: technical
   provenance:
@@ -521,6 +553,7 @@ positions:
   group: Water supply and storage
   detail: Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature control and metering.
 - key: pumps
+  stage: [design, tender, continuation]
   label: Design and select domestic tanks and pumps
   kind: technical
   provenance:
@@ -556,6 +589,7 @@ positions:
   detail: Size and select domestic storage tanks, pumps, boosters, controls and refill connections. Fire tanks and pumps are separate.
   assumption: Allow for domestic storage and boosting design where demand and available supply require it.
 - key: rainwater
+  stage: [design, tender, continuation]
   label: Design rainwater collection and reuse
   kind: technical
   provenance:
@@ -591,6 +625,7 @@ positions:
   detail: Design collection, storage and reuse connections; agree quality, demand and irrigation supply point with the landscape designer.
   assumption: Allow for rainwater collection and irrigation reuse design; confirm extent with the brief.
 - key: alternative_sources
+  stage: [design, tender, continuation]
   label: Design connections for alternative water supplies
   kind: technical
   provenance:
@@ -627,6 +662,7 @@ positions:
   assumption: Price only the alternative sources identified in the proposal; agree source and treatment owner before
     design.
 - key: sanitary
+  stage: [design, tender, continuation]
   label: Design sanitary plumbing and sewer connections
   kind: technical
   provenance:
@@ -654,6 +690,7 @@ positions:
   group: Sewerage and trade waste
   detail: Size sanitary pipework and vents, set grades and coordinate sewer connections. Treatment and trade waste are separate.
 - key: treatment
+  stage: [design, tender, continuation]
   label: Design onsite sewage treatment
   kind: technical
   provenance:
@@ -682,6 +719,7 @@ positions:
   group: Sewerage and trade waste
   detail: Design the treatment system to agreed inflows, effluent quality and capacity; coordinate the boundary with hydraulic reticulation.
 - key: trade
+  stage: [design, tender, continuation]
   label: Design trade-waste drainage and discharge controls
   kind: technical
   provenance:
@@ -717,6 +755,7 @@ positions:
   detail: Identify contaminants; design arrestors and pretreatment and prepare discharge-approval inputs. Confirm the receiving system requirements.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: process
+  stage: [design, tender, continuation]
   label: Design specialist process-waste treatment
   kind: technical
   provenance:
@@ -745,6 +784,7 @@ positions:
   group: Sewerage and trade waste
   detail: Design nominated industrial or process-waste treatment; agree performance targets and boundaries. Ordinary grease arrestors are separate.
 - key: roof
+  stage: [design, tender, continuation]
   label: Design roof and terrace drainage
   kind: technical
   provenance:
@@ -780,6 +820,7 @@ positions:
   detail: Size primary and overflow drainage; coordinate levels, capacity and the handover from downpipes to below-ground civil drainage.
   assumption: Allow for primary and overflow drainage design for affected roofs and terraces.
 - key: civil
+  stage: [design, tender, continuation]
   label: Design site stormwater and detention
   kind: technical
   provenance:
@@ -808,6 +849,7 @@ positions:
   group: Stormwater drainage
   detail: Design site pits, detention and overland flow paths, including easements and discharge points. Agree the boundary with the civil engineer.
 - key: gas
+  stage: [design, tender, continuation]
   label: Design gas and specialist-fluid services
   kind: technical
   provenance:
@@ -841,6 +883,7 @@ positions:
   detail: Design pipework, connections and controls for specified demand; medical, laboratory and process systems require a competent specialist.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: fixtures
+  stage: [design, tender, continuation]
   label: Select plumbing fixtures
   kind: technical
   provenance:
@@ -866,6 +909,7 @@ positions:
   group: Coordination and approvals
   detail: Select fixtures and fittings; coordinate hydraulic demands and connections. Normally selected by the architect.
 - key: fire
+  stage: [design, tender, continuation]
   label: Design fire-water systems and fire strategy
   kind: technical
   provenance:
@@ -891,6 +935,7 @@ positions:
   group: Coordination and approvals
   detail: Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections.
 - key: interfaces
+  stage: [design, tender, continuation]
   label: Coordinate hydraulic design with other disciplines
   kind: technical
   provenance:
@@ -927,6 +972,7 @@ positions:
   assumption: Include coordination of hydraulic connections with the appointed designers; specialist design stays
     with its owner.
 - key: utility
+  stage: [planning, design, tender, continuation]
   label: Coordinate utility connections and approvals
   kind: technical
   provenance:
@@ -964,6 +1010,7 @@ positions:
   detail: Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water Services Coordinator services are separately appointed.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: staging
+  stage: [design, tender, continuation]
   label: Design staged and temporary hydraulic services
   kind: technical
   provenance:
@@ -999,6 +1046,7 @@ positions:
   detail: Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and acceptance arrangements.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: declarations
+  stage: [tender, continuation, design]
   label: Prepare hydraulic design declarations
   kind: technical
   provenance:
@@ -1033,6 +1081,7 @@ positions:
   group: Coordination and approvals
   detail: Prepare and lodge applicable design declarations; confirm jurisdiction, competent author and lodgement responsibilities.
 - key: continuation
+  stage: [continuation]
   label: Later design and novation
   kind: technical
   provenance:
@@ -1060,6 +1109,7 @@ positions:
   group: Later services
   detail: Separately appointed design completion and novation terms.
 - key: construction
+  stage: [construction]
   label: Review construction and respond to site queries
   kind: technical
   provenance:
@@ -1087,6 +1137,7 @@ positions:
   group: Later services
   detail: Review submittals and requests for information; attend the visits and hold points stated in Allowances and record design responses.
 - key: witness
+  stage: [handover]
   label: Testing review and handover
   kind: technical
   provenance:
@@ -1114,6 +1165,7 @@ positions:
   group: Later services
   detail: Contractors execute tests; consultant review and selected witnessing do not certify unseen work.
 - key: defects
+  stage: [defects]
   label: Defects and operational verification
   kind: technical
   provenance:

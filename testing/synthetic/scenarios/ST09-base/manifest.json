@@ -1,0 +1,687 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST09-base",
+  "type_id": "T09",
+  "base": null,
+  "triggers": [],
+  "project": {
+    "name": "Kurrajong Apartments balcony waterproofing, 41 Kurrajong Parade",
+    "address": "41 Kurrajong Parade, Hurstville NSW 2220",
+    "lga": "Georges River",
+    "summary": "The owners corporation of a fully occupied 6-storey, 42-unit Class 2 strata building in Hurstville, constructed in 2008 and out of warranty, renews the waterproofing of all 42 leaking balconies like for like. A remedial building consultant investigates, specifies and tenders one AS 4000 lump sum contract to remedial builders, with a remedial structural engineer for the slabs and balustrade fixings; the works are exempt from consent."
+  },
+  "invented": {
+    "lots": [
+      "SP 912345",
+      "Lots 1 to 42 in Strata Plan 912345"
+    ],
+    "abns": [
+      "66 049 460 444",
+      "41 434 467 555",
+      "77 650 369 205",
+      "85 580 443 561",
+      "77 650 369 250"
+    ],
+    "firms": [
+      "Parapet Building Consultants Pty Ltd",
+      "Halyard Remedial Consultants Pty Ltd",
+      "Karrak Consulting Engineers Pty Ltd",
+      "Northgate Strata Management Pty Ltd"
+    ],
+    "emails": [
+      "rhiannon.teale.northgate@example.com",
+      "vikram.desai@example.com",
+      "joel.parapet@example.com",
+      "sinead.halyard@example.com",
+      "lachlan.karrak@example.com"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Consultant brief - Kurrajong Apartments balconies.md",
+      "title": "Consultant brief: balcony waterproofing investigation and remediation",
+      "author_role": "owner",
+      "firm": "Northgate Strata Management Pty Ltd",
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Ref: NSM-912345-RFP1, Date: 2 February 2026, Client, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: The Owners - Strata Plan No. 912345"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 41 Kurrajong Parade, Hurstville NSW 2220"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 41 Kurrajong Parade, Hurstville NSW 2220"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "Kurrajong Apartments is a 6-storey residential flat building of 42 apartments"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "Kurrajong Apartments is a 6-storey residential flat building of 42 apartments"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "a 6-storey residential flat building"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "Kurrajong Apartments is a 6-storey residential flat building of 42 apartments"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "The owners corporation seeks a remedial building consultant to investigate and rectify the leaking balcony waterproofing of the existing building"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 2008"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "The building is a strata scheme of 42 lots; the owners corporation acts through its strata committee, with Northgate Strata Management as its strata managing agent"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The building will remain fully occupied throughout the works"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "the consultant investigates and documents the works, which are then tendered to remedial builders for a lump sum contract that the consultant administers"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "tendered to remedial builders for a lump sum contract"
+        },
+        {
+          "key": "flag.basement",
+          "says": "The building has no basement; residents park on a separate at-grade car park at the rear"
+        }
+      ],
+      "traps": [
+        {
+          "id": "rfp-cued-as-proposal",
+          "what": "The brief asks consultants to 'submit a fee proposal by 27 February 2026'; proposals.Cue matches 'fee proposal' anywhere in the text.",
+          "expect": "d01 files as design_brief and opens no submission and no procurement package"
+        }
+      ],
+      "content": "The strata manager's brief, written for the strata committee, inviting remedial building consultants to propose. Sections: ## The building (6 storeys, 42 apartments, constructed in 2008, reinforced concrete, tiled balconies with aluminium-framed glass balustrades, at-grade car park at the rear, no basement), ## The problem (all 42 balconies leak at door sills and slab edges), ## Scope of services (investigation, defect report with options and order of cost, specification, tender, contract administration; lump sum contract with a remedial builder), ## Constraints (fully occupied throughout; committee approval gates), ## Submission (submit a fee proposal by 27 February 2026 to Rhiannon Teale). Plain prose."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - SP 912345.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-00418 | | Issue date | 9/02/2026 | | Applicant | Northgate Strata Management |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Georges River Council"
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lots 1 to 42 in Strata Plan 912345 and common property (SP 912345)"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R4 High Density Residential under Georges River Local Environmental Plan 2021"
+        },
+        {
+          "key": "proj.address",
+          "says": "41 Kurrajong Parade, Hurstville NSW 2220"
+        },
+        {
+          "key": "det.state",
+          "says": "Hurstville NSW 2220"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not in a heritage conservation area"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-eligible-land",
+          "what": "The complying development item says 'Complying development may be carried out on the land under the Codes SEPP'; the certificate is read.",
+          "expect": "hdr.cond.planning stays exempt (d08, d09); land eligibility is not the works' pathway"
+        }
+      ],
+      "content": "A council s10.7(2) planning certificate for the strata land, numbered items in the usual order: zoning and LEP, DCP, complying and exempt development ('Complying development may be carried out on the land under the Codes SEPP'), heritage, bush fire (not bush fire prone), flood, acid sulfate soils, contamination, rail corridor, road widening (none). Fixed council wording; identity sits in a table, not label lines."
+    },
+    {
+      "id": "d03",
+      "filename": "Building information and leak history - Kurrajong Apartments.md",
+      "title": "Building information and leak history",
+      "author_role": "owner",
+      "firm": "Northgate Strata Management Pty Ltd",
+      "date": "2026-02-16",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: NSM-912345-LH, Date: 16 February 2026, Prepared by: Rhiannon Teale, Northgate Strata Management",
+      "carries": [
+        {
+          "key": "hdr.scale.units",
+          "says": "42 apartments in a 6-storey building"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "6 storeys"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 2008 and the strata plan was registered the same year"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "Strata Plan 912345, 42 lots, managed by Northgate Strata Management for the owners corporation"
+        }
+      ],
+      "traps": [
+        {
+          "id": "bathroom-below",
+          "what": "The leak log records: 'Unit 203 reported water in the bathroom below balcony 303 in 2024; the plumber traced it to Unit 203's own shower, so it is not a balcony leak.' The wet-room implied_by pattern fires in code on 'bathroom' (DOMAIN.md §10).",
+          "expect": "No internal wet-area waterproofing, tiling, sanitary, hot or cold water or local exhaust scope; no Hydraulic or Mechanical consultant suggested from this passage"
+        },
+        {
+          "id": "bedroom-sill",
+          "what": "The log says 'Unit 404 reports water ponding against the bedroom sliding door sill on the balcony side'. 'bedroom' implies internal doors (DOMAIN.md §10).",
+          "expect": "No interiors internal-doors scope; the sill is the balcony door threshold"
+        }
+      ],
+      "content": "The strata manager's summary for consultants: ## Building (constructed in 2008, 6 storeys, 42 apartments, strata plan registered 2008, out of statutory warranty), ## Records held (strata plan, by-laws, 2008 approved drawings, 2019 hazardous materials survey, capital works fund plan), ## Leak history (a dated log of 23 leak reports by balcony: water at door sills, drips from balcony soffits and slab edges onto the balconies below; includes the bathroom and bedroom entries in the traps). States 'No internal damage has been reported in any lot' and 'No plant or services are located on the balconies.'"
+    },
+    {
+      "id": "d04",
+      "filename": "RE Balcony works timing.md",
+      "title": "RE: Balcony works timing",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-19",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread between the committee chair and the strata manager)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "The committee would like the builder to start on site by 1 February 2027, after the levy is raised"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Vikram Desai (strata committee chair) asks when work could start and states the target start; Rhiannon Teale replies that a general meeting must first approve the design fee and later the contract and special levy."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Parapet Building Consultants - Kurrajong Apartments.md",
+      "title": "Fee proposal: remedial building consultancy",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-02-23",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Proposal no: PBC-FP-26014, Date: 23 February 2026, Client; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: The Owners - Strata Plan No. 912345"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "Stage 2 includes the regulated design and the design compliance declaration for the waterproofing: the works are building work under the Design and Building Practitioners Act 2020"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee, Stages 1 to 4: $81,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fee-stages-not-staged-works",
+          "what": "The fee table is headed 'Stage 1' to 'Stage 4', which matches the staged trigger \\bstages? [1-9a-c]\\b.",
+          "expect": "flag.staged stays no: these are fee stages, not construction stages"
+        }
+      ],
+      "content": "Remedial building consultant's proposal, signed by Joel Marchetti, registered design practitioner. Sections: understanding, methodology, fee table (Stage 1 Investigation and defect report $24,500; Stage 2 Remedial specification, details and regulated design $18,000; Stage 3 Tender and recommendation $6,500; Stage 4 Contract administration and hold-point inspections $32,000; total $81,000 ex GST), opening-up and make-good at four balconies as a disbursement at cost (estimated $6,800 ex GST), additional general meetings at $650 per meeting, hourly rate $210 ex GST, exclusions (structural engineer, builder's work)."
+    },
+    {
+      "id": "d06",
+      "filename": "Halyard fee submission - Kurrajong Parade.md",
+      "title": "Fee proposal: remedial consultancy services",
+      "author_role": "consultant.building",
+      "firm": "Halyard Remedial Consultants Pty Ltd",
+      "date": "2026-02-25",
+      "wave": 2,
+      "drop": "row:consultant.building",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | HRC-0226-31 | | Date | 25/02/2026 | | Attention | Strata committee, SP 912345 |; one # heading 'Fee proposal: remedial consultancy services'",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $99,000 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "A competing remedial building consultant's proposal, dropped on the remedial building consultant row. Same four stages priced GST-inclusive: investigation and defect report $29,700; specification and documentation $22,000; tender $8,800; contract administration $38,500; total $99,000 inc GST. Opening-up and make-good are included in the investigation stage. Every figure is GST-inclusive."
+    },
+    {
+      "id": "d07",
+      "filename": "Structural engineering fee proposal KCE-Q-2611.md",
+      "title": "Fee proposal: remedial structural engineering",
+      "author_role": "consultant.structural",
+      "firm": "Karrak Consulting Engineers Pty Ltd",
+      "date": "2026-02-26",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Quote no: KCE-Q-2611, Date: 26 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.basement",
+          "says": "No excavation, basement or ground works are included, so no geotechnical input is required"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $17,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fire-stairs",
+          "what": "States 'inspections will reach the balconies through the lift and the fire stairs'. 'stairs' implies stairs and ramps scope (DOMAIN.md §10).",
+          "expect": "No access-egress stairs and ramps work item"
+        }
+      ],
+      "content": "Remedial structural engineer's quote: existing structure assessment of balcony slabs and slab edges $6,500; balustrade re-fixing design and certification, screed load check and provisional concrete repair specification $5,800; tender queries $700; construction-phase inspections of fixings and repairs and the fixing certificate $4,000; total $17,000 ex GST; additional inspections at $480 per visit."
+    },
+    {
+      "id": "d08",
+      "filename": "Defect investigation report PBC-R-26014-01.md",
+      "title": "Balcony waterproofing defect investigation report",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-04-14",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: PBC-R-26014-01, Revision: 0, Report date: 14 April 2026, Client; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.work_type",
+          "says": "This report covers the remediation of failed balcony waterproofing at an existing residential building"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "a 6-storey residential flat building of 42 apartments"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "a 6-storey residential flat building of 42 apartments"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "6 storeys"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "a 6-storey residential flat building of 42 apartments"
+        },
+        {
+          "key": "det.ncc_class",
+          "says": "NCC building classification: Class 2"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "The building has a rise in storeys of 6"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "Existing building; these are remedial works"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 2008"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The property is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The works are like-for-like repair and maintenance with no change to the external appearance and do not require development consent"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The works are building work under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "We recommend the owners corporation adopts a construction budget of $1,680,000 excluding GST for Option B (construction cost of the works including preliminaries and provisional sums)"
+        },
+        {
+          "key": "flag.basement",
+          "says": "The building has no podium and no basement; residents park on a separate at-grade car park at the rear"
+        }
+      ],
+      "traps": [
+        {
+          "id": "remediation-not-contamination",
+          "what": "Uses 'remediation' and 'remedial works' throughout; site.contamination is labelled 'Contaminated land and remediation' (DOMAIN.md §10).",
+          "expect": "det.potentially_contaminated_land stays false; no environmental consultant or contamination scope"
+        },
+        {
+          "id": "flood-test",
+          "what": "Describes 'flood tests at four representative balconies' and 'ponding at the outlets'; matches the flood_hazard trigger \\bflood.",
+          "expect": "det.flood_hazard is not true (d02 states it false)"
+        }
+      ],
+      "content": "The remedial building consultant's report after visual inspection, leak mapping, flood tests and opening-up at four representative balconies. Sections: ## Building description (existing building constructed in 2008, Class 2, rise in storeys 6, 42 apartments, no podium and no basement, pitched metal roof outside the scope), ## Findings (membrane stops short of the door sills though set-down is adequate at all thresholds and door frames are retained; reversed falls; outlets with no puddle flange and no overflow; balustrade posts core-drilled through the membrane; tiles bonded to the membrane; the 2019 hazardous materials survey found no asbestos in balcony build-ups; no spalling, cracking or exposed reinforcement on any balcony; no plant or services on the balconies), ## Options (A patch repair, B full renewal like for like, recommended), ## Recommended budget (a construction budget of $1,680,000 ex GST for Option B), ## Approvals (exempt; DBP Act applies; not a heritage item), ## Warranty (the building is out of warranty and no claim is being pursued), ## Next steps (all work from within the balconies, no external access equipment; one continuous stage)."
+    },
+    {
+      "id": "d09",
+      "filename": "Remedial specification PBC-SPEC-26014 Rev A.md",
+      "title": "Remedial specification: balcony waterproofing",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-06-02",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: PBC-SPEC-26014, Revision: A, Date: 2 June 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fact.contract_form",
+          "says": "AS 4000-1997 General conditions of contract, with special conditions"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The building will remain fully occupied throughout the works"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The works are exempt development: like-for-like repair with no change to the external appearance; no development consent or construction certificate is required"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "This specification and drawing RW-101 are regulated designs under the Design and Building Practitioners Act 2020; a design compliance declaration accompanies them"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "The works do not build over or next to any sewer main or water main"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "The existing building stormwater system, which has no on-site detention, is not altered"
+        },
+        {
+          "key": "flag.staged",
+          "says": "There will be no staged delivery: all 42 balconies are renewed under one contract in one continuous stage"
+        }
+      ],
+      "traps": [
+        {
+          "id": "flood-test-hold-point",
+          "what": "Hold point 3 is 'membrane flood test: 50 mm of water for 24 hours before screed'; matches \\bflood.",
+          "expect": "det.flood_hazard is not true"
+        },
+        {
+          "id": "strip-out",
+          "what": "Section 'Strip-out' says 'demolish the tiles, bedding and failed membrane'; matches the implied strip-out pattern.",
+          "expect": "No site.demolition work item: this is membrane replacement"
+        }
+      ],
+      "content": "The tender specification. Sections: ## General (exempt, fully occupied, AS 4000 with special conditions, regulated design, no staged delivery), ## Strip-out, ## Substrate and falls screed, ## Outlets and overflows (puddle flanges, clamping rings, new overflows through the balustrade line discharging clear of the slab edge; the existing stormwater system, with no on-site detention, is not altered), ## Membrane system (external liquid membrane to AS 4654.2, upturns behind the door sills), ## Balustrades (posts re-fixed to the slab edge outside the membrane, certified by the structural engineer), ## Tiling, ## Hold points (1 substrate, 2 outlets, 3 membrane flood test, 4 before cover), ## Provisional quantities and schedule of rates (concrete and substrate repairs found on opening up), ## Resident access and protection."
+    },
+    {
+      "id": "d10",
+      "filename": "Structural assessment KCE-R-2611-01.md",
+      "title": "Structural assessment of balcony slabs and balustrade fixings",
+      "author_role": "consultant.structural",
+      "firm": "Karrak Consulting Engineers Pty Ltd",
+      "date": "2026-04-21",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: KCE-R-2611-01, Revision: 0, Report date: 21 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building",
+          "says": "The balconies are reinforced concrete slabs of the existing building"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 2008"
+        },
+        {
+          "key": "flag.transfer_structures",
+          "says": "The building has no transfer slabs or transfer beams; the balcony slabs cantilever from the floor plates"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "no excavation, basement or ground works are involved, and nothing is done near the adjoining boundaries or neighbouring structures"
+        },
+        {
+          "key": "flag.basement",
+          "says": "The works are confined to the balconies; no excavation, basement or ground works are involved"
+        }
+      ],
+      "traps": [],
+      "content": "Remedial structural engineer's report from the four opened balconies: slab thickness and cover, no spalling, cracking or exposed reinforcement, balustrade post fixings core-drilled through the membrane, recommended side-fixed brackets outside the membrane, barrier height check against the raised finished level (still at least 1 m), screed load acceptable, provisional concrete repair method."
+    },
+    {
+      "id": "d11",
+      "filename": "RW-101 Rev A - Typical balcony waterproofing details.md",
+      "title": "Typical balcony waterproofing details",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-05-18",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: RW-101, Revision: A, Title: Typical balcony waterproofing details, Date: 18 May 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: RW-101"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: A"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then detail notes for the door sill upturn, outlet with puddle flange, balustrade bracket outside the membrane, falls screed and tile bed. Revision note 'Preliminary, for structural coordination'."
+    },
+    {
+      "id": "d12",
+      "filename": "RW-101 Rev B - Typical balcony waterproofing details.md",
+      "title": "Typical balcony waterproofing details",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-06-02",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: RW-101, Revision: B, Title: Typical balcony waterproofing details, Date: 2 June 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: RW-101"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: B"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of RW-101: an overflow detail added through the balustrade line and the bracket set-out amended to the engineer's design; revision note 'Issued for tender'."
+    },
+    {
+      "id": "d13",
+      "filename": "Conditions of tender PBC-T-26014.md",
+      "title": "Conditions of tender and contract particulars",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-06-09",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: PBC-T-26014, Date: 9 June 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "traditional procurement; the owners corporation's consultant has completed the design and the works are tendered to five remedial builders"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "AS 4000-1997 General conditions of contract, with special conditions"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "Lump sum contract"
+        },
+        {
+          "key": "proj.client",
+          "says": "Principal: The Owners - Strata Plan No. 912345"
+        }
+      ],
+      "traps": [
+        {
+          "id": "schedule-of-rates",
+          "what": "States 'A schedule of rates is tendered for the provisional quantities only' next to 'Lump sum contract'; matches the schedule_of_rates option trigger.",
+          "expect": "fact.contract_basis is lump_sum"
+        }
+      ],
+      "content": "The conditions of tender and contract particulars. Sections: ## Contract and procurement (traditional, AS 4000 with special conditions, lump sum, schedule of rates for provisional quantities only), ## Tenderer eligibility (NSW contractor licence, DBP Act registered building practitioner, licensed waterproofer), ## Returnables, ## Insurance (HBCF cover is not required: the multi-storey building exemption applies (rise in storeys of 6)), ## Site inspection, ## Tender close 10 July 2026."
+    },
+    {
+      "id": "d14",
+      "filename": "Tax invoice PBC-INV-1187.md",
+      "title": "Tax invoice PBC-INV-1187",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: PBC-INV-1187, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $24,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $2,450.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $26,950.00"
+        }
+      ],
+      "traps": [],
+      "content": "Parapet's invoice for Stage 1 Investigation and defect report, 100% complete."
+    },
+    {
+      "id": "d15",
+      "filename": "Karrak invoice 3307.md",
+      "title": "Tax invoice 3307",
+      "author_role": "consultant.structural",
+      "firm": "Karrak Consulting Engineers Pty Ltd",
+      "date": "2026-05-05",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 3307 | | Date | 05/05/2026 | | ABN | 77 650 369 250 |",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "$6,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$650.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $7,150.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "abn-typo",
+          "what": "The ABN is printed 77 650 369 250 (last two digits swapped); the quote d07 shows 77 650 369 205.",
+          "expect": "The ledger flags abn_invalid"
+        }
+      ],
+      "content": "Structural engineer's invoice for the existing structure assessment."
+    },
+    {
+      "id": "d16",
+      "filename": "Tax invoice PBC-INV-1192.md",
+      "title": "Tax invoice PBC-INV-1192",
+      "author_role": "consultant.building",
+      "firm": "Parapet Building Consultants Pty Ltd",
+      "date": "2026-05-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: PBC-INV-1192, Date: 15 May 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $6,800.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $680.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $7,480.00"
+        }
+      ],
+      "traps": [],
+      "content": "Parapet's invoice passing through the opening-up and make-good contractor's cost at four balconies as a disbursement, at cost."
+    }
+  ],
+  "changed_from_base": []
+}

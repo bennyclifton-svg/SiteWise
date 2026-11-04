@@ -75,18 +75,29 @@ type RFPRow struct {
 	Provenance []RFPProvenance `yaml:"provenance" json:"provenance,omitempty"`
 }
 
+// RFPLine is one scope line of a stage. Its key keeps a saved choice on the
+// right line when the wording is edited later.
+type RFPLine struct {
+	Key  string `yaml:"key" json:"key"`
+	Text string `yaml:"text" json:"text"`
+}
+
 type RFPStage struct {
-	Key            string   `yaml:"key" json:"key"`
-	Name           string   `yaml:"name" json:"name"`
-	Deliverable    string   `yaml:"deliverable" json:"deliverable"`
-	Responsibility string   `yaml:"design_responsibility" json:"design_responsibility,omitempty"`
-	FeeBasis       string   `yaml:"fee_basis" json:"fee_basis"`
-	DeliveryStage  string   `yaml:"delivery_stage" json:"delivery_stage,omitempty"`
-	Items          []string `yaml:"items" json:"items,omitempty"`
-	When           RFPWhen  `yaml:"when" json:"when,omitempty"`
-	Suggest        RFPWhen  `yaml:"suggest" json:"suggest,omitempty"`
-	IfUnknown      string   `yaml:"if_unknown" json:"if_unknown,omitempty"`
-	Assumption     string   `yaml:"assumption" json:"assumption,omitempty"`
+	Key  string `yaml:"key" json:"key"`
+	Name string `yaml:"name" json:"name"`
+	// Lines are the deliverable as separate scope lines, each included or
+	// excluded on its own (owner direction, 3 November 2026). A stage with
+	// lines has its deliverable built from them.
+	Lines          []RFPLine `yaml:"lines" json:"lines,omitempty"`
+	Deliverable    string    `yaml:"deliverable" json:"deliverable"`
+	Responsibility string    `yaml:"design_responsibility" json:"design_responsibility,omitempty"`
+	FeeBasis       string    `yaml:"fee_basis" json:"fee_basis"`
+	DeliveryStage  string    `yaml:"delivery_stage" json:"delivery_stage,omitempty"`
+	Items          []string  `yaml:"items" json:"items,omitempty"`
+	When           RFPWhen   `yaml:"when" json:"when,omitempty"`
+	Suggest        RFPWhen   `yaml:"suggest" json:"suggest,omitempty"`
+	IfUnknown      string    `yaml:"if_unknown" json:"if_unknown,omitempty"`
+	Assumption     string    `yaml:"assumption" json:"assumption,omitempty"`
 	// Default is include or option: an option stage is priced separately so
 	// the client can commission it later. IncludeWhen promotes it.
 	Default     string  `yaml:"default" json:"default,omitempty"`
@@ -133,9 +144,12 @@ type RFPAllowance struct {
 // items are selected by facts about systems and risks; only service-level
 // items may follow the simple/complex scale.
 type RFPPosition struct {
-	Key         string          `yaml:"key" json:"key"`
-	Label       string          `yaml:"label" json:"label"`
-	Group       string          `yaml:"group" json:"group,omitempty"`
+	Key   string `yaml:"key" json:"key"`
+	Label string `yaml:"label" json:"label"`
+	Group string `yaml:"group" json:"group,omitempty"`
+	// Stage lists the service's home stages in preference order; the first
+	// that applies to the project holds it. None means across all stages.
+	Stage       []string        `yaml:"stage" json:"stage,omitempty"`
 	Detail      string          `yaml:"detail" json:"detail,omitempty"`
 	Kind        string          `yaml:"kind" json:"kind"` // technical | service_level
 	Value       *RFPCell        `yaml:"value" json:"value,omitempty"`
@@ -191,17 +205,21 @@ type RFPDiscipline struct {
 	ProjectRows         []RFPRow       `yaml:"project_rows" json:"project_rows"`
 	Role                []RFPRow       `yaml:"role" json:"role"`
 	StageIntro          string         `yaml:"stage_intro" json:"stage_intro"`
-	Boundary            []RFPBoundary  `yaml:"boundary" json:"boundary"`
-	Stages              []RFPStage     `yaml:"stages" json:"stages"`
-	ElementIntro        string         `yaml:"element_intro" json:"element_intro,omitempty"`
-	Elements            []RFPElement   `yaml:"elements" json:"elements,omitempty"`
-	Allowances          []RFPAllowance `yaml:"allowances" json:"allowances"`
-	Positions           []RFPPosition  `yaml:"positions" json:"positions"`
-	ScopeSchedule       []RFPRow       `yaml:"scope_schedule" json:"scope_schedule,omitempty"`
-	Terms               []RFPRow       `yaml:"terms" json:"terms"`
-	Evaluation          []RFPWeight    `yaml:"evaluation" json:"evaluation,omitempty"`
-	EvaluationNote      string         `yaml:"evaluation_note" json:"evaluation_note,omitempty"`
-	AllowancesNote      string         `yaml:"allowances_note" json:"allowances_note,omitempty"`
+	// ScopeByStage prints one table: each stage with its lines and services
+	// beneath it (owner direction, 2-3 November 2026). Every stage then needs
+	// lines.
+	ScopeByStage   bool           `yaml:"scope_by_stage" json:"scope_by_stage,omitempty"`
+	Boundary       []RFPBoundary  `yaml:"boundary" json:"boundary"`
+	Stages         []RFPStage     `yaml:"stages" json:"stages"`
+	ElementIntro   string         `yaml:"element_intro" json:"element_intro,omitempty"`
+	Elements       []RFPElement   `yaml:"elements" json:"elements,omitempty"`
+	Allowances     []RFPAllowance `yaml:"allowances" json:"allowances"`
+	Positions      []RFPPosition  `yaml:"positions" json:"positions"`
+	ScopeSchedule  []RFPRow       `yaml:"scope_schedule" json:"scope_schedule,omitempty"`
+	Terms          []RFPRow       `yaml:"terms" json:"terms"`
+	Evaluation     []RFPWeight    `yaml:"evaluation" json:"evaluation,omitempty"`
+	EvaluationNote string         `yaml:"evaluation_note" json:"evaluation_note,omitempty"`
+	AllowancesNote string         `yaml:"allowances_note" json:"allowances_note,omitempty"`
 	// Returnables holds this discipline's line for a shared schedule (r2..r9).
 	Returnables map[string]string `yaml:"returnables" json:"returnables"`
 	// ReturnableNotes add a line to a schedule only when their condition holds.
@@ -225,6 +243,9 @@ type RFPFieldDefaults struct {
 
 // requiredFacts is the closed list of facts a discipline may require.
 var requiredFacts = []string{"budget"}
+
+// lineKeyRE keeps a line key inside a report setting key (line:<stage>.<line>).
+var lineKeyRE = regexp.MustCompile(`^[a-z0-9_]{1,40}$`)
 
 type RFPOption struct {
 	Provenance []RFPProvenance `yaml:"provenance" json:"provenance,omitempty"`
@@ -670,6 +691,26 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	for _, p := range d.Positions {
 		positions[p.Key] = p
 	}
+	for i := range d.Stages {
+		st := &d.Stages[i]
+		if len(st.Lines) == 0 {
+			continue
+		}
+		if st.Deliverable != "" {
+			return d, fmt.Errorf("stage %s has lines and a deliverable; keep one", st.Key)
+		}
+		texts := []string{}
+		for _, l := range st.Lines {
+			if !lineKeyRE.MatchString(l.Key) || strings.TrimSpace(l.Text) == "" {
+				return d, fmt.Errorf("stage %s line %q needs a key and text", st.Key, l.Key)
+			}
+			texts = append(texts, l.Text)
+		}
+		if err := uniqueKeys("stage "+st.Key+" lines", len(st.Lines), func(j int) string { return st.Lines[j].Key }); err != nil {
+			return d, err
+		}
+		st.Deliverable = strings.Join(texts, "; ")
+	}
 	for i, st := range d.Stages {
 		where := "stage " + st.Key
 		if st.Name == "" || st.Deliverable == "" || st.ShownWhen == "" {
@@ -741,6 +782,18 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	for _, p := range d.Positions {
 		if err := checkPosition(p, thresholds, s); err != nil {
 			return d, err
+		}
+		for _, key := range p.Stage {
+			if !stageKeys[key] {
+				return d, fmt.Errorf("position %s names unknown stage %s", p.Key, key)
+			}
+		}
+	}
+	if d.ScopeByStage {
+		for _, st := range d.Stages {
+			if len(st.Lines) == 0 {
+				return d, fmt.Errorf("stage %s needs lines when scope is by stage", st.Key)
+			}
 		}
 	}
 	for _, b := range d.Boundary {

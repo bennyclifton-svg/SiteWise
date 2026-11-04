@@ -60,7 +60,17 @@ func TestQuotedComparisonFiveFirmsBudget(t *testing.T) {
 		m.getJSON(t, base+"/prices", &table)
 		samples["price_table"] = append(samples["price_table"], time.Since(start).Microseconds())
 		start = time.Now()
-		m.call(t, http.MethodPut, "/api/projects/"+project+"/submissions/"+sub+"/cells/comparison:appointment", []byte(`{"state":"priced","amount":"12000","note":"Concept and documentation appointment, source lump sum"}`), http.StatusOK, &table)
+		if i%2 == 0 {
+			m.call(t, http.MethodPut, "/api/projects/"+project+"/submissions/"+sub+"/cells/comparison:appointment", []byte(`{"state":"priced","amount":"12000","note":"Concept and documentation appointment, source lump sum"}`), http.StatusOK, &table)
+		} else {
+			var version int64
+			for _, c := range table.Columns {
+				if c.Submission.ID == sub {
+					version = c.Submission.Version
+				}
+			}
+			m.call(t, http.MethodPut, "/api/projects/"+project+"/submissions/"+sub+"/appointment-row", []byte(fmt.Sprintf(`{"id":"fee","included":true,"version":%d}`, version)), http.StatusOK, &table)
+		}
 		samples["submission_write"] = append(samples["submission_write"], time.Since(start).Microseconds())
 	}
 	code, report := latency.Gate(scoped, samples, true)

@@ -55,35 +55,23 @@ description: 'Office fit-out with no load/ground disturbance: evidence review/re
   service clearance assumed.'
 expect:
   geotechnical:
-    stages_include:
-    - g1_plan
-    - g3_report
-    stages_absent:
-    - g2_field
-    - g4_planning
-    stages_option:
-    - g5_design
-    - g6_construction
-    - g7_transfer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [g1_plan, g3_report]
+    stages_absent: [g2_field, g4_planning, g5_design, g6_construction, g7_transfer]
     positions:
       plan: I
       foundation: absent
       civil_parameters: absent
-      monitoring: O
+      monitoring: I
       asset_exposure: absent
       clearance: absent
       access: X
-      defects: O
+      defects: I
       environment: X
       ass: absent
       handback: absent
-      construction: O
-      transfer: O
+      construction: X
+      transfer: X
     blocking_only: true
     blocking: []
-    allowances_absent:
-    - mobilisation
-    - boreholes
-    - pits
-    - tests
-    - handback
+    allowances_absent: [mobilisation, boreholes, pits, tests, handback]

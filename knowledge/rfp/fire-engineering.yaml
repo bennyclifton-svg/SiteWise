@@ -120,11 +120,14 @@ boundary:
   end: s9_advisory
 - start: s1_strategy
   end: s4_report
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_strategy
   name: S1 Evidence / strategy
-  deliverable: 'Records/inspection, gaps/departures and strategy/markups: active/passive measures, egress/brigade
-    access, options/operating consequences; existing extent'
+  lines:
+  - {key: records_inspection_gaps, text: "Records/inspection, gaps/departures and strategy/markups: active/passive measures, egress/brigade access, options/operating consequences"}
+  - {key: existing_extent, text: "existing extent"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -137,8 +140,10 @@ stages:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: s2_early
   name: S2 Early approval support
-  deliverable: Defined preliminary letter/report and bounded responses; partial-upgrade needs. Not final brief/FER
-    or construction authority
+  lines:
+  - {key: defined_preliminary_letter, text: "Defined preliminary letter/report and bounded responses"}
+  - {key: partial_upgrade_needs, text: "partial-upgrade needs"}
+  - {key: not_final_brief, text: "Not final brief/FER or construction authority"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -150,8 +155,9 @@ stages:
   default: option
 - key: s3_brief
   name: S3 Performance design brief
-  deliverable: 'PBDB/FEB: IDs/departures, verified requirements, methods/scenarios/criteria, inputs/limits; consultation
-    and team/operator/certifier comment closure'
+  lines:
+  - {key: pbdb_feb_ids, text: "PBDB/FEB: IDs/departures, verified requirements, methods/scenarios/criteria, inputs/limits"}
+  - {key: consultation_team_operator, text: "consultation and team/operator/certifier comment closure"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -168,8 +174,9 @@ stages:
   if_unknown: ask
 - key: s4_report
   name: S4 Analysis / FER
-  deliverable: Analysis/calculations/models/sensitivity, draft/final FER/plans and limits; owned construction/system/commissioning/management
-    requirements, acceptance/open items
+  lines:
+  - {key: analysis_calculations_models, text: "Analysis/calculations/models/sensitivity, draft/final FER/plans and limits"}
+  - {key: owned_construction_system, text: "owned construction/system/commissioning/management requirements, acceptance/open items"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -186,8 +193,10 @@ stages:
   if_unknown: ask
 - key: s5_integration
   name: S5 Tender / integration
-  deliverable: Design-package review/closure and tender queries; D&C intent, contractor duties/substitution evidence;
-    services design separate
+  lines:
+  - {key: design_package_review, text: "Design-package review/closure and tender queries"}
+  - {key: d_c_intent, text: "D&C intent, contractor duties/substitution evidence"}
+  - {key: services_design_separate, text: "services design separate"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -201,8 +210,10 @@ stages:
   default: option
 - key: s6_construction
   name: S6 Construction support
-  deliverable: Bounded RFIs, changes/shop interfaces, concealed-work hold points and evidence/departures; accepted-solution
-    impacts. New solutions/staging separately authorised
+  lines:
+  - {key: bounded_rfis_changes, text: "Bounded RFIs, changes/shop interfaces, concealed-work hold points and evidence/departures"}
+  - {key: accepted_solution_impacts, text: "accepted-solution impacts"}
+  - {key: new_solutions_staging, text: "New solutions/staging separately authorised"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -216,8 +227,10 @@ stages:
   default: option
 - key: s7_verification
   name: S7 Verification / occupation
-  deliverable: Evidence/test plan, certificates/scripts, accessible inspections/witnessing, defects/retests and
-    scoped FEIR; unseen work/occupation dependencies; strategy/operations handover
+  lines:
+  - {key: evidence_test_plan, text: "Evidence/test plan, certificates/scripts, accessible inspections/witnessing, defects/retests and scoped FEIR"}
+  - {key: unseen_work_occupation, text: "unseen work/occupation dependencies"}
+  - {key: strategy_operations_handover, text: "strategy/operations handover"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -231,8 +244,9 @@ stages:
   default: option
 - key: s8_specialist
   name: S8a Specialist investigation
-  deliverable: 'Scheduled investigation/CFD/egress/heat-transfer questions: methods/scenarios/iterations, insured
-    competence, access/evidence, acceptance/output; price individually'
+  lines:
+  - {key: scheduled_investigation_cfd, text: "Scheduled investigation/CFD/egress/heat-transfer questions: methods/scenarios/iterations, insured competence, access/evidence, acceptance/output"}
+  - {key: price_individually, text: "price individually"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -246,8 +260,9 @@ stages:
   default: option
 - key: s8_staging
   name: S8b Interim / staged strategy
-  deliverable: Phase/building/shutdown/occupation strategies; temporary measures, operator/contractor duties, impairment/restoration
-    and acceptance dependencies
+  lines:
+  - {key: phase_building_shutdown, text: "Phase/building/shutdown/occupation strategies"}
+  - {key: temporary_measures_operator, text: "temporary measures, operator/contractor duties, impairment/restoration and acceptance dependencies"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -261,8 +276,10 @@ stages:
   default: option
 - key: s9_advisory
   name: S9a Defined advisory
-  deliverable: Defined question/cutoff/reliance, evidence limits, confidence/findings/actions/response end; continued
-    design/novation duration/handover; annual operation separate
+  lines:
+  - {key: defined_question_cutoff, text: "Defined question/cutoff/reliance, evidence limits, confidence/findings/actions/response end"}
+  - {key: continued_design_novation, text: "continued design/novation duration/handover"}
+  - {key: annual_operation_separate, text: "annual operation separate"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -281,8 +298,10 @@ stages:
     - advice_only
 - key: s9_peer
   name: S9b Independent peer review
-  deliverable: 'Independent review: named solutions/report, evidence cutoff, method/rounds; designer retains duty;
-    advisory does not buy peer review'
+  lines:
+  - {key: independent_review_named, text: "Independent review: named solutions/report, evidence cutoff, method/rounds"}
+  - {key: designer_retains_duty, text: "designer retains duty"}
+  - {key: advisory_does_not, text: "advisory does not buy peer review"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -400,6 +419,7 @@ allowances:
   owner: client
 positions:
 - key: brief
+  stage: [s3_brief]
   group: Fire strategy and evidence
   label: Brief for scheduled solutions
   kind: technical
@@ -420,6 +440,7 @@ positions:
     - fe_solutions
   if_unknown: ask
 - key: fer
+  stage: [s4_report]
   group: Fire strategy and evidence
   label: FER for scheduled solutions
   kind: technical
@@ -440,6 +461,7 @@ positions:
     - fe_solutions
   if_unknown: ask
 - key: existing
+  stage: [s1_strategy]
   group: Fire strategy and evidence
   label: Scheduled existing FER/evidence reconciliation; BCA/certifier upgrade interface; adjacent buildings by
     schedule
@@ -467,6 +489,7 @@ positions:
     - fe_existing_reconciliation
   if_unknown: ask
 - key: interim
+  stage: [s8_staging]
   group: Fire strategy and evidence
   label: Interim strategies/shutdowns/staged occupation; each phase priced separately
   kind: technical
@@ -485,6 +508,7 @@ positions:
     ref: fire-engineering#45
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: occupants
+  stage: [s1_strategy]
   group: Fire strategy and evidence
   label: 'Mixed/vulnerable/assisted occupants: population/evacuation/staffing basis at purchased stages'
   kind: technical
@@ -509,6 +533,7 @@ positions:
     - fire_vulnerable_occupants
   if_unknown: ask
 - key: wet_design
+  stage: [s5_integration]
   group: Design ownership and verification
   label: Sprinklers, hydrants, pumps, tanks and pipework design
   kind: technical
@@ -523,6 +548,7 @@ positions:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   responsible: fire-services designer
 - key: dry_design
+  stage: [s5_integration]
   group: Design ownership and verification
   label: Detection, alarm and warning design
   kind: technical
@@ -537,6 +563,7 @@ positions:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   responsible: fire-services or electrical designer
 - key: strategy_review
+  stage: [s4_report, s5_integration]
   group: Systems and specialist assessments
   label: Smoke-control/cause-and-effect and selected services strategy review
   kind: technical
@@ -556,6 +583,7 @@ positions:
     ref: fire-engineering#47,48
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: witnessing
+  stage: [s7_verification]
   group: Design ownership and verification
   label: Selected script review/test witnessing; evidence/defects/retests, trades close defects
   kind: technical
@@ -574,6 +602,7 @@ positions:
     ref: fire-engineering#47
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: matrix_design
+  stage: [s7_verification]
   group: Design ownership and verification
   label: Matrix design, controls programming and test execution
   kind: technical
@@ -586,6 +615,7 @@ positions:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   responsible: matrix designer, controls programmer and test contractors
 - key: specialist
+  stage: [s8_specialist]
   group: Systems and specialist assessments
   label: Scheduled facade/timber/modular/tested-system/structural-fire assessment; insured competence, assembly
     acceptance checked
@@ -609,6 +639,7 @@ positions:
     - fire_specialist_systems
   if_unknown: ask
 - key: hazards
+  stage: [s8_specialist]
   group: Systems and specialist assessments
   label: Scheduled hazard/storage/EV/battery scenarios; inventory/insurer targets and process specialist
   kind: technical
@@ -631,6 +662,7 @@ positions:
     - fire_special_hazards
   if_unknown: ask
 - key: remediation
+  stage: [s9_advisory]
   group: Systems and specialist assessments
   label: 'Orders/defects: preserve evidence, diagnose extent, temporary controls, insured rectification designer/verifier
     and closure evidence'
@@ -645,6 +677,7 @@ positions:
     ref: fire-engineering#45
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
 - key: peer
+  stage: [s9_peer]
   group: Design ownership and verification
   label: Independent peer review; designer retains duty
   kind: technical

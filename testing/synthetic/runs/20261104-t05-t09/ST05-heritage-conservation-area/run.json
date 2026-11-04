@@ -1,0 +1,437 @@
+{
+  "scenario": "ST05-heritage-conservation-area",
+  "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "852137d1dc3eec3a4a597250b7cc85dae72d19e9",
+    "app_files_modified": 0
+  },
+  "started": "20261104-t05-t09",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 14.5
+    },
+    {
+      "wave": 2,
+      "documents": 8,
+      "idle": true,
+      "profile_queued": 8,
+      "seconds": 19.2
+    },
+    {
+      "wave": 3,
+      "documents": 7,
+      "idle": true,
+      "profile_queued": null,
+      "seconds": 17.0
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "1e30e8ee-2b43-4192-b8a5-cca5b10e7912",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Owner brief - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:02:55.767351+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 23 DP 30418.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a13a131c-2f52-4486-9d72-f6b67ec9ad84",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Planning certificate s10.7 - Lot 23 DP 30418.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:02:55.795776+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "6e2a1428-59f9-4a70-ab59-c6e628b71193",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Detail and boundary survey report - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:02:55.800769+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Timing for the building work.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "726f761b-4d06-498d-9586-5331be258e1f",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "RE Timing for the building work.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:02:55.82654+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4ce472a0-136a-4a3a-b762-6fe241eecebc",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Fee proposal - Architectural services - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.507057+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal ISE-2611.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "e0dc520f-58d5-4294-a498-9bb2fa2c36f4",
+        "submission_id": "edcc16e9-b360-452a-ae12-2a61e590ea39"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Lindqvist Civil - stormwater fee - Tallowwood Ave.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "55626076-70e0-47ab-b408-27b02f1fd69f",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Lindqvist Civil - stormwater fee - Tallowwood Ave.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.530651+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Sandstone.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ac38c39b-bf56-4bf1-9050-bc16dfec340d",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Geotechnical investigation fee proposal - Sandstone.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.536135+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Hazardous materials survey proposal - ClearSample.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "55390005-b305-44c6-898b-25da553cfe04",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Hazardous materials survey proposal - ClearSample.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.55289+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "BASIX fee proposal - Northlight.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "eeae2176-bb5c-4daa-81b2-176e1eef2dd3",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "BASIX fee proposal - Northlight.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.558517+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d20",
+      "filename": "Heritage consultant fee proposal - Morrow Heritage.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a6e081db-9a9c-4423-a163-89193fd48b3d",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Heritage consultant fee proposal - Morrow Heritage.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.564069+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d21",
+      "filename": "Town planning fee proposal - Carrick Planning.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "1e7ef71f-aca2-4683-b4c4-a25637cdeba1",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Town planning fee proposal - Carrick Planning.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:10.570731+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Hazardous materials survey report CS-26-0388.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ee01e80d-bfef-41e7-bf27-6d3607619a57",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Hazardous materials survey report CS-26-0388.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.857938+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Geotechnical report SG-26-0742 - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "99af6b49-a00d-48e4-95b7-55cf9375056d",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Geotechnical report SG-26-0742 - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.863951+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Architectural design statement - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "eea0e509-5a87-47fd-8285-23727aff790e",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Architectural design statement - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.887401+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Proposed ground floor plan A-201 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5ddc669d-9df8-4eb5-87a5-78495e58bfdf",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Proposed ground floor plan A-201 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.917963+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Proposed ground floor plan A-201 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c4dcdece-af33-4d08-a6a7-fe9b089c31d4",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Proposed ground floor plan A-201 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.923325+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Statement of environmental effects - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "7716f609-e9da-4759-9c52-9445f54257a7",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Statement of environmental effects - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.9287+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d22",
+      "filename": "Heritage impact statement - 41 Tallowwood Avenue.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ef1d7bc2-1573-4685-b796-765522760553",
+        "project_id": "5b2d9dcd-aa8a-4ba0-8846-f203ddd05eb2",
+        "filename": "Heritage impact statement - 41 Tallowwood Avenue.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-04T19:03:29.934549+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d17",
+      "filename": "Tax invoice KHA-INV-0412.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "31a9a782-ee92-400a-add9-0eeac0de4fea",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "Tax invoice CS-2291 ClearSample.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "feec6389-5052-402a-9e96-7b665fc6b6cd",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d19",
+      "filename": "LCS invoice 1088.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "a46aad24-e5b1-462f-9a11-8697e0913d01",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": [
+    {
+      "wave": 3,
+      "error": "ConnectionResetError"
+    }
+  ]
+}

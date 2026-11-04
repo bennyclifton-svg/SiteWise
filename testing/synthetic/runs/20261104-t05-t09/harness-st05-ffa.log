@@ -1,0 +1,45 @@
+ST05-first-floor-addition: project 484cad67-05cf-4674-bb8e-a1c2fd5cdc65
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: 3 documents in profile reading
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued None, 14.6 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 6 documents filing, proposals reading, 6 jobs queued
+    waiting: settling
+    waiting: 6 documents in profile reading, 6 jobs queued
+    waiting: 7 documents in profile reading, 6 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 6 dropped, profile queued 6, 16.8 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued None, 16.8 s
+    waiting: 3 invoices reading
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: settling
+  wave 4: 3 dropped, profile queued None, 6.5 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for BASIX -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hazmat -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Town Planner -> 201
+done: testing\synthetic\runs\20261104-t05-t09

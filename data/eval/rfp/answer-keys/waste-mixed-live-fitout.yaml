@@ -58,22 +58,15 @@ description: Occupied mixed-use fit-out buys separately scoped plans and shared 
   does not novate.
 expect:
   waste-management:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    - s3_operational
-    - s3_cd
-    stages_option:
-    - s4_review
-    - s5_tender
-    - s6_contractor
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept, s3_operational, s3_cd]
     positions:
       operational: I
       cd: I
       shared: I
-      interim: O
-      completion: O
+      interim: I
+      completion: X
       swept_paths: X
       equipment: X
+    stages_absent: [s4_review, s5_tender, s6_contractor, s7_completion]
 snapshot: true

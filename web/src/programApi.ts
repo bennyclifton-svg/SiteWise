@@ -160,6 +160,15 @@ export interface ProgramChangeList {
   counts: Record<string, number>;
 }
 
+export interface ProgramTarget {
+  key: string;
+  label: string;
+  stated: string;
+  programmed: string;
+  status: "met" | "later" | "longer" | "shorter" | "within" | "unknown";
+  message: string;
+}
+
 export interface ProgramView {
   program: ProgramHead;
   activities: ProgramActivity[];
@@ -175,6 +184,8 @@ export interface ProgramView {
   readings?: ProgramReading[] | null;
   imports?: ProgramImport[] | null;
   hold_points?: ProgramHoldPoint[] | null;
+  /** Owner targets and a builder's estimate beside the computed program; they never move a date. */
+  targets?: ProgramTarget[] | null;
   /** The delivery stage catalogue, for remapping a user-made stage (owner answer Q5). */
   catalogue_stages?: { id: string; label: string }[];
   /** Present on write responses only (plan 8.1 feedback). */
@@ -190,6 +201,7 @@ export interface ProgramView {
 /** One edit of an ops batch (plan 8.1). Any id may name an earlier temp_id. */
 export interface ProgramOp {
   op: string;
+  working_week?: number;
   temp_id?: string;
   id?: string;
   ids?: string[];

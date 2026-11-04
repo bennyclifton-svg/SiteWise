@@ -57,12 +57,10 @@ scenario: waste-conflicting-packages
 description: Conflicting operational scope stays a decision despite known new warehouse use.
 expect:
   waste-management:
-    stages_ask:
-    - s2_concept
-    - s3_operational
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      operational: ask
-      collection: ask
-      rooms: ask
-    blocking:
-    - fact:flag.waste_operational
+      operational: I
+      collection: I
+      rooms: I
+    blocking: ['fact:flag.waste_operational']
+    stages_include: [s2_concept, s3_operational]

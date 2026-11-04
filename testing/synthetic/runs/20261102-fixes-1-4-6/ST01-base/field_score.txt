@@ -1,0 +1,46 @@
+ST01-base
+  Register (per field):
+    status      correct 14
+    kind        correct 14
+    discipline  correct 13, wrong 1
+    lifecycle   correct 6, missed 8
+    number      correct 10, correct_blank 2, missed 2
+    revision    correct 4, correct_blank 10
+    title       correct 14
+    date        correct 12, missed 2
+    supersedes  missed 1
+  Profile: conflict_true 5, correct 43, missed 10, missed_by_design 1, wrong 1
+    missed           hdr.cond.procurement_route: expected 'traditional', app ''
+    conflict_true    hdr.cond.access_constraints: expected 'unrestricted', app ''
+    conflict_true    hdr.scale.site_sqm: expected {'accept': [650, 650.2]}, app ''
+    conflict_true    hdr.scale.gfa_sqm: expected {'accept': [300, 298]}, app ''
+    missed           det.existing_building: expected False, app ''
+    missed           det.gas_supply: expected 'none', app ''
+    missed           fact.contract_form: expected 'domestic_hia', app ''
+    missed           proj.regulated_design: expected 'no', app ''
+    conflict_true    proj.client: expected {'accept': ['Dan and Mai Nguyen', 'Dan Nguyen and Mai Nguyen']}, app ''
+    missed           proj.address: expected '27 Corella Rise, Denistone NSW 2114', app ''
+    wrong            proj.lga: expected {'accept': ['Ryde', 'City of Ryde']}, app 'City of Ryde Section'
+    missed_by_design proj.target_construction_start: expected '2027-02-01', app ''
+    conflict_true    flag.authority_asset: expected 'no', app ''
+    missed           flag.sustainability_target: expected 'no', app ''
+    missed           flag.groundwater: expected 'no', app ''
+    missed           flag.staged: expected 'no', app ''
+    missed           flag.multi_building: expected 'no', app ''
+  Invoices (per field):
+    kind               correct 3
+    number             correct 3
+    invoice_date       correct 2, missed 1
+    issuer_abn         correct 3
+    ex_gst_cents       correct 2, wrong 1
+    gst_cents          correct 3
+    total_cents        correct 3
+    supplier           missed 3
+    flag.arithmetic    missed 1
+    flag.no_supplier   correct 3
+    flag.period        correct 2
+    flag.unmapped      correct 3
+    flag.gst_rate      hallucinated 1
+  Fees (per field):
+    stated_total_cents correct 4, wrong 1
+    firm_name          correct 5

@@ -108,7 +108,7 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 			}
 		}
 	}
-	if len(visible) < 2 || visible[0] != "" || visible[1] != "1. Project" {
+	if len(visible) < 2 || visible[0] != "1. Project" || visible[len(visible)-1] != "Proposal dates" {
 		t.Fatalf("first visible section %v", visible)
 	}
 	if !strings.Contains(blockText(d, "rfp:role"), "Civil (to be appointed)") {
@@ -180,7 +180,9 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 		t.Fatal("the override excludes the item")
 	}
 	restored, err := s.SetReportSetting(ctx, orgA, r.ID, userA, "position:consultant_selection", nil, draft.Version)
-	if err != nil || scopeValue(restored, "consultant_selection") != "O" {
+	// The rule prices it as an option; the architect is scope by stage, so
+	// an option reads as included (owner direction, 3 November 2026).
+	if err != nil || scopeValue(restored, "consultant_selection") != "I" {
 		t.Fatalf("delete restores the rule: %v", err)
 	}
 }
@@ -352,17 +354,20 @@ func TestConsultantRFPIssueFreezesAndCarriesForward(t *testing.T) {
 func scopeValue(d store.ReportDraft, key string) string {
 	for _, section := range d.Sections {
 		for _, block := range section.Blocks {
-			if block.ID != "rfp:positions" {
+			// Scope by stage keeps its services in the stage table.
+			if block.ID != "rfp:positions" && block.ID != "rfp:stages" {
 				continue
 			}
+			type position struct {
+				Key   string `json:"key"`
+				Value string `json:"value"`
+			}
 			var basis struct {
-				Positions []struct {
-					Key   string `json:"key"`
-					Value string `json:"value"`
-				} `json:"positions"`
+				Positions []position `json:"positions"`
+				Services  []position `json:"services"`
 			}
 			_ = json.Unmarshal(block.Basis, &basis)
-			for _, p := range basis.Positions {
+			for _, p := range append(basis.Positions, basis.Services...) {
 				if p.Key == key {
 					return p.Value
 				}

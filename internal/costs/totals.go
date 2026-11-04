@@ -13,6 +13,7 @@ type Total struct {
 	Basis         map[string]int `json:"basis,omitempty"`
 }
 type Totals struct {
+	Rollups        map[string]Rollup           `json:"rollups"`
 	Sections       map[string]map[string]Total `json:"sections"`
 	SectionItems   map[string]string           `json:"section_items"`
 	SectionFigures map[string]Derived          `json:"section_figures"`
@@ -200,6 +201,7 @@ func Summarize(plan Plan, by string) (Totals, error) {
 		addMetrics(out.Groups[key], item, under)
 	}
 	groupFigures(plan.Items, groups, out.Items)
+	out.Rollups = GroupRollups(plan.Items)
 	for key, bucket := range out.Sections {
 		for metric, total := range bucket {
 			if total.Lines == 0 {

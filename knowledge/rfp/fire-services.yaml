@@ -124,11 +124,15 @@ boundary:
   end: advisory
 - start: inception
   end: design
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: inception
   name: S1 Evidence
-  deliverable: Basis/system register; accessible survey, observed/tested/assumed gaps; supply/capacity investigation
-    brief and inputs/owners
+  lines:
+  - {key: basis_system_register, text: "Basis/system register"}
+  - {key: accessible_survey_observed, text: "accessible survey, observed/tested/assumed gaps"}
+  - {key: supply_capacity_investigation, text: "supply/capacity investigation brief and inputs/owners"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -142,8 +146,10 @@ stages:
       establish universal requirements.
 - key: investigation
   name: S2 Investigation
-  deliverable: Defined surveys/tests/operator/reinstatement; retained supply/plant/network suitability, uncertainty/options;
-    upgrade design separate
+  lines:
+  - {key: defined_surveys_tests, text: "Defined surveys/tests/operator/reinstatement"}
+  - {key: retained_supply_plant, text: "retained supply/plant/network suitability, uncertainty/options"}
+  - {key: upgrade_design_separate, text: "upgrade design separate"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -161,8 +167,11 @@ stages:
   if_unknown: ask
 - key: concept
   name: S3 Concept
-  deliverable: Demand/options/indicative duties; plant/booster/valve space, routes/access/power/drainage/brigade;
-    listed planning notes/responses; unresolved pipework
+  lines:
+  - {key: demand_options_indicative, text: "Demand/options/indicative duties"}
+  - {key: plant_booster_valve, text: "plant/booster/valve space, routes/access/power/drainage/brigade"}
+  - {key: listed_planning_notes, text: "listed planning notes/responses"}
+  - {key: unresolved_pipework, text: "unresolved pipework"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -176,8 +185,10 @@ stages:
       establish universal requirements.
 - key: design
   name: S4 Developed design
-  deliverable: Demand/hydraulics/supply cases/storage/pumps/zones/equipment; existing/new, controls/power/loads/maintenance
-    coordination; listed authority tasks
+  lines:
+  - {key: demand_hydraulics_supply, text: "Demand/hydraulics/supply cases/storage/pumps/zones/equipment"}
+  - {key: existing_new_controls, text: "existing/new, controls/power/loads/maintenance coordination"}
+  - {key: listed_authority_tasks, text: "listed authority tasks"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -191,8 +202,10 @@ stages:
       establish universal requirements.
 - key: tender
   name: S5 Documentation
-  deliverable: Traditional drawings/calculations/schedules/specification; D&C intent/performance/test criteria and
-    contractor-design handover; RFIs/addenda/comparison
+  lines:
+  - {key: traditional_drawings_calculations, text: "Traditional drawings/calculations/schedules/specification"}
+  - {key: d_c_intent, text: "D&C intent/performance/test criteria and contractor-design handover"}
+  - {key: rfis_addenda_comparison, text: "RFIs/addenda/comparison"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -206,7 +219,9 @@ stages:
       establish universal requirements.
 - key: continuation
   name: S6 Post-contract
-  deliverable: Retained design/substitutions/updates; agree novation, client/liability, program/duties
+  lines:
+  - {key: retained_design_substitutions, text: "Retained design/substitutions/updates"}
+  - {key: agree_novation_client, text: "agree novation, client/liability, program/duties"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -221,8 +236,9 @@ stages:
   default: option
 - key: construction
   name: S7 Construction
-  deliverable: RFIs/submittals, hold-point inspection/findings, changes/test-plan records; inaccessible work/defect
-    closure
+  lines:
+  - {key: rfis_submittals_hold, text: "RFIs/submittals, hold-point inspection/findings, changes/test-plan records"}
+  - {key: inaccessible_work_defect, text: "inaccessible work/defect closure"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -237,8 +253,10 @@ stages:
   default: option
 - key: handover
   name: S8 Commissioning
-  deliverable: Scripts/results; water/integrated failure/recovery test witness, expected/actual results/defects/retests;
-    scoped statements/as-builts/O&M/settings/training/residuals
+  lines:
+  - {key: scripts_results, text: "Scripts/results"}
+  - {key: water_integrated_failure, text: "water/integrated failure/recovery test witness, expected/actual results/defects/retests"}
+  - {key: scoped_statements_as, text: "scoped statements/as-builts/O&M/settings/training/residuals"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -253,8 +271,10 @@ stages:
   default: option
 - key: advisory
   name: S9 Advisory
-  deliverable: Defined question/cutoff/reliance, method/confidence/actions; peer review retains design duty; remedy/annual
-    services separate
+  lines:
+  - {key: defined_question_cutoff, text: "Defined question/cutoff/reliance, method/confidence/actions"}
+  - {key: peer_review_retains, text: "peer review retains design duty"}
+  - {key: remedy_annual_services, text: "remedy/annual services separate"}
   fee_basis: fixed
   shown_when: Selected stage within appointment
   provenance:
@@ -372,6 +392,7 @@ allowances:
       establish universal requirements.
 positions:
 - key: wet
+  stage: [design]
   group: Water supply and wet fire
   label: Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent
   kind: technical
@@ -403,6 +424,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: supply
+  stage: [design]
   group: Water supply and wet fire
   label: Demand/storage calculations; pressure statement is not installed performance
   kind: technical
@@ -432,6 +454,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: authority
+  stage: [design]
   group: Water supply and wet fire
   label: Listed enquiry/test/meter/backflow/connection/augmentation duties; operator/payer named
   kind: technical
@@ -463,6 +486,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: dry
+  stage: [design]
   group: Detection and systems coordination
   label: Allocated detection/alarms/smoke alarms/monitoring/warning; one designer each
   kind: technical
@@ -494,6 +518,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: controls
+  stage: [design]
   group: Detection and systems coordination
   label: Matrix coordination; name author/programmer/point-checker/test leader/witness
   kind: technical
@@ -525,6 +550,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: plant
+  stage: [design]
   group: Detection and systems coordination
   label: Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations
   kind: technical
@@ -556,6 +582,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: existing
+  stage: [investigation, inception]
   group: Existing systems and special hazards
   label: Defined investigation; records are not condition proof; upgrade separate
   kind: technical
@@ -581,6 +608,7 @@ positions:
     - investigation
   if_unknown: ask
 - key: upgrade
+  stage: [design]
   group: Existing systems and special hazards
   label: Existing upgrade design subject to investigation/accepted strategy
   kind: technical
@@ -610,6 +638,7 @@ positions:
     - continuation
   if_unknown: ask
 - key: staging
+  stage: [design]
   group: Existing systems and special hazards
   label: Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy
   kind: technical
@@ -622,6 +651,7 @@ positions:
       establish universal requirements.
   value: O
 - key: remediation
+  stage: [advisory]
   group: Existing systems and special hazards
   label: 'Orders/defects: evidence, diagnosis, separate remedy/verification; no whole-building conclusion'
   kind: technical
@@ -634,6 +664,7 @@ positions:
       establish universal requirements.
   value: O
 - key: hazards
+  stage: [design]
   group: Existing systems and special hazards
   label: Special hazards/high storage/process/batteries/special suppression
   kind: technical
@@ -649,6 +680,7 @@ positions:
   value: X
   responsible: hazard / suppression specialist
 - key: strategy
+  stage: [concept]
   group: Detection and systems coordination
   label: Fire strategy and performance solutions
   kind: technical
@@ -662,6 +694,7 @@ positions:
   value: X
   responsible: fire engineer
 - key: declarations
+  stage: [tender, handover]
   group: Declarations and later services
   label: Scoped declarations/lodgement/certification; verify jurisdiction/competence; no approval guarantee
   kind: technical
@@ -693,6 +726,7 @@ positions:
     - handover
   if_unknown: ask
 - key: continuation
+  stage: [continuation]
   group: Declarations and later services
   label: Express continued design/novation
   kind: technical
@@ -712,6 +746,7 @@ positions:
       - continuation
     else: O
 - key: construction
+  stage: [construction]
   group: Declarations and later services
   label: Quantified construction support
   kind: technical
@@ -731,6 +766,7 @@ positions:
       - construction
     else: O
 - key: witness
+  stage: [handover]
   group: Declarations and later services
   label: Selected test witnessing/handover evidence
   kind: technical
@@ -750,6 +786,7 @@ positions:
       - handover
     else: O
 - key: execution
+  stage: [handover]
   group: Declarations and later services
   label: Test execution separately priced to named trades
   kind: technical

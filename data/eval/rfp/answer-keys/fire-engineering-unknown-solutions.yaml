@@ -53,17 +53,12 @@ description: Industrial label alone does not settle solution need/count or hazar
   raises decisions.
 expect:
   fire-engineering:
-    stages_ask:
-    - s3_brief
-    - s4_report
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      brief: ask
-      fer: ask
-      hazards: ask
-      specialist: ask
-      occupants: ask
-    blocking:
-    - fact:flag.fe_solutions
-    - fact:flag.fire_special_hazards
-    - fact:flag.fire_specialist_systems
-    - fact:flag.fire_vulnerable_occupants
+      brief: I
+      fer: I
+      hazards: X
+      specialist: X
+      occupants: I
+    blocking: ['fact:flag.fe_solutions', 'fact:flag.fire_special_hazards', 'fact:flag.fire_specialist_systems', 'fact:flag.fire_vulnerable_occupants']
+    stages_include: [s3_brief, s4_report]

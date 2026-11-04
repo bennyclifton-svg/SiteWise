@@ -57,20 +57,9 @@ description: Requesting both packages still requires appointment confirmation; s
   A tender boundary prices B as options.
 expect:
   bca-certification:
-    stages_include:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    stages_option:
-    - a4_construction
-    - b1_preliminary
-    - b2_construction_approval
-    - b3_construction
-    - b4_occupation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
     positions:
-      statutory_functions: O
-    role:
-    - advisory
-    - statutory
-    blocking:
-    - boundary
+      statutory_functions: I
+    role: [advisory, statutory]
+    blocking: [boundary]

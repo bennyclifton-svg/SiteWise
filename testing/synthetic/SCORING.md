@@ -115,6 +115,12 @@ is also accepted.
   for that area.
 - **Links follow the removals.** An `after` link to a removed activity is
   dropped.
+- **Removing an RFP or only its phrases.** A `removes.rfps` item that is a
+  discipline id drops the whole RFP, and that RFP becomes not expected. An
+  item `{discipline, must_include, must_not_include}` drops only those
+  phrases, matched by text, from that RFP's lists. The RFP stays expected,
+  and a dropped `must_not_include` is no longer checked. Removals apply
+  before additions.
 - **RFP additions merge.** Added `must_include` phrases join the existing
   RFP for that discipline, or create one.
 
@@ -254,8 +260,16 @@ proposal (`proposed_works`). The shape's `need` is copied onto each miss.
   - **fixed**: `app_differs` predicted a difference, and the app now equals
     `expect`. That is good news, and the shape should be updated;
   - **new_failure**: anything else. That includes a stage or element key
-    the app does not have, which signals template drift, and every
-    `blocking` id that is missing or unexpected.
+    the app does not have, which signals template drift.
+
+  **Blocking checks** are compared one check id at a time, as the key
+  `blocking.<id>` (for example `blocking.fact:budget`), with the value
+  `blocking` or `not blocking`. Every id in `expect.blocking` and every id
+  the app blocks on (`rfp.checks[]` with `blocking: true`) is classified
+  ok, known_difference, fixed or new_failure, like any other key. An
+  `app_differs` entry `{key: blocking.<id>, app: blocking | not blocking,
+  expect: blocking | not blocking, why}` marks a check the app is known to
+  raise or omit. Its difference is then known, not a new failure.
 
   `text.*` keys in `app_differs` cannot be checked mechanically, and are
   listed under `not_checked`.

@@ -8,7 +8,7 @@ state: NSW
 # 1950s brick house on a suburban Sydney lot, plus internal alterations to the
 # existing house (bathroom and laundry renovated, two internal walls removed,
 # rear wall opened up). DA to council, not heritage, not bushfire or flood
-# prone, owners move out for the main works, architect plus lump-sum builder
+# prone, owners move out for the whole of the works, architect plus lump-sum builder
 # under a domestic contract. The added roof and the reinstated rear paving change
 # the stormwater catchment, so a civil (stormwater) engineer is in the base
 # (owner ruling R1, 30 October 2026). See DOMAIN.md section 1.
@@ -607,14 +607,13 @@ triggers:
     negation:
       - "No asbestos-containing materials were detected in any sample."
       - "Samples 1-6 of the eaves and wet-area linings: no asbestos detected; the fibre-cement eaves date from the 1996 re-roof."
-    profile: [det.existing_building_year]
+    profile: []
     adds:
-      procurement: [consultant.hazmat]
-      cost_plan: ["Demolition, strip-out and hazardous materials removal", "Hazardous materials survey"]
+      cost_plan: ["Licensed asbestos removal and clearance"]
       program: ["Notify SafeWork NSW of licensed asbestos removal", "Remove asbestos and obtain a clearance certificate", "Lead paint management before sanding or removal"]
       rfps: [{discipline: consultant.hazmat, must_include: ["Clearance inspection and certificate after removal"]}]
       authority: ["SafeWork NSW notification of licensed asbestos removal work", "Waste disposal to a licensed facility with tracking"]
-    built_in: {procurement: "no", program: partial, cost_plan: partial, rfps: "no"}
+    built_in: {program: partial, cost_plan: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.existing-conditions"
   - id: heritage-conservation-area
     label: House is in a heritage conservation area or is a heritage item
@@ -641,7 +640,7 @@ triggers:
       - "We want to go up rather than out to keep the backyard."
     negation:
       - "Single-storey addition only; no change to the existing roof over the front rooms."
-    profile: [hdr.scale.storeys]
+    profile: [hdr.scale.storeys, hdr.scale.added_gfa_sqm, hdr.scale.gfa_sqm]
     adds:
       work_items: [{system: substructure.underpinning, action: new}, {system: access-egress.stairs-and-ramps, action: new}, {system: structure.temporary-works, action: new}, {system: access-egress.barriers, action: new}]
       cost_plan: ["Underpinning and footing strengthening", "Temporary roof and weatherproofing"]
@@ -961,4 +960,4 @@ scenario_inputs:
   - {key: det.existing_building, note: "the determinant triggers only on the words 'existing building'; state it in a read report or brief", phrasing: "The works are alterations and additions to an existing building (a single-storey brick dwelling)"}
   - {key: det.existing_building_year, note: "the trigger needs 'built in <year>' or 'year built'", phrasing: "The house was built in <year>"}
   - {key: det.heritage_status, note: "stated as the enumerated none on the s10.7 planning certificate", phrasing: "The land is not a heritage item and is not within a heritage conservation area"}
-  - {key: hdr.cond.operational_constraints, note: "base value vacant; the owners' brief must say they move out", phrasing: "We will move out of the house for the duration of the main works"}
+  - {key: hdr.cond.operational_constraints, note: "base value vacant; the owners' brief must say they move out", phrasing: "We will move out of the house for the whole of the works"}

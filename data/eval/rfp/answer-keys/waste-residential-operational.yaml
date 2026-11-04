@@ -53,15 +53,9 @@ scenario: waste-residential-operational
 description: Residential operational-only appointment excludes C&D plan and leaves later support optional.
 expect:
   waste-management:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    - s3_operational
-    stages_absent:
-    - s3_cd
-    stages_option:
-    - s4_review
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept, s3_operational]
+    stages_absent: [s3_cd, s4_review, s7_completion]
     positions:
       operational: I
       cd: absent
@@ -69,4 +63,4 @@ expect:
       rooms: I
       shared: absent
       hazardous: X
-      completion: O
+      completion: X

@@ -60,20 +60,10 @@ description: Certification appointment ends at construction approval; later prin
   and occupation services are priced options.
 expect:
   bca-certification:
-    stages_include:
-    - b1_preliminary
-    - b2_construction_approval
-    stages_option:
-    - b3_construction
-    - b4_occupation
-    stages_absent:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    - a4_construction
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [b1_preliminary, b2_construction_approval]
+    stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b3_construction, b4_occupation]
     positions:
       statutory_functions: I
-    role:
-    - statutory
-    role_absent:
-    - advisory
+    role: [statutory]
+    role_absent: [advisory]

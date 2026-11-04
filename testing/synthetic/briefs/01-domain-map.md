@@ -164,15 +164,25 @@ rfps:
       stages_absent: [tender_traditional]   # a stage may be in only one of the three lists
       positions: {coordination: I}          # plus elements_*, blocking, sources where the template has them
     app_differs:             # where you expect the app's output to differ from `expect`, and why
-      - {key: stage.bidding, app: option, expect: include, why: "..."}   # key starts with stage., position., element. or text.
+      - {key: stage.bidding, app: option, expect: include, why: "..."}   # key starts with stage., position., element., text. or blocking.
+      - {key: blocking.fact:budget, app: blocking, expect: not blocking, why: "..."}   # the app raises (or omits) this blocking check; values blocking / not blocking
 triggers:
   - id: cdc-pathway
     removes:                 # what this trigger takes out of the base, if anything
       procurement: [consultant.town_planner]
       cost_plan: ["DA fees and contributions"]
       program: ["Lodge the DA"]
-      rfps: [consultant.town_planner]
+      rfps: [consultant.town_planner]   # drops the whole RFP
+  - id: contaminated-fill
+    removes:
+      rfps:                  # or drop only some phrases of a base RFP; the RFP stays expected
+        - {discipline: consultant.geotechnical, must_include: ["Laboratory reactivity testing"], must_not_include: ["Contamination or waste classification"]}
 ```
+
+A `removes.rfps` item is either a discipline id, which drops the whole RFP,
+or `{discipline, must_include, must_not_include}`, which drops only those
+phrases for the variant. Each phrase (a string or `{text, key}`) must
+already be in that discipline's base RFP lists; the validator checks this.
 
 Two optional forms, adopted 30 October 2026 (provisional until the owner
 confirms). The validator checks both, and `tools/score_shapes.py` uses them

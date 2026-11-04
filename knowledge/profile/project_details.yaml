@@ -62,6 +62,79 @@ details:
       construction or occupation targets? Keep the whole candidate, including qualifications
       such as aspiration or subject to approval. Select none for consultant fee or service deadlines,
       report issue dates, past completion records, or dates for another project.
+  # Owner targets and a builder's preliminary estimate (Walsh review,
+  # 2026-10-27). Code offers dates, month counts and money ranges; Jev picks
+  # one or none; Go reads the latest date or the month count. The Program
+  # shows each target beside its programmed date, and the Cost Plan shows
+  # the estimate beside the budget. Neither changes a date or a budget.
+  - key: target_da_lodgement
+    label: Target DA lodgement
+    value: text
+    scope: project
+    help: "When the owner or the brief wants the development application lodged. The Program shows it beside the programmed lodgement."
+    extraction: pre_parsed
+    triggers:
+      - '\b(?:da|development application)\b[^.\n]{0,60}\blodg'
+      - '\blodg\w*\b[^.\n]{0,60}\b(?:da|development application)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as when this project's development
+      application is to be lodged (a target or aspiration)? Select none when absent, or when the candidate is a council
+      assessment period, the date of a letter or report, a consultant's fee trigger, or another project's date.
+  - key: target_construction_start
+    label: Target construction start
+    value: text
+    scope: project
+    help: "When the owner or the brief wants construction to start. The Program shows it beside the programmed start."
+    extraction: pre_parsed
+    triggers:
+      - '\bconstruction\b[^.\n]{0,30}\b(?:start|commence)'
+      - '\b(?:start|commence)\w*\b[^.\n]{0,30}\b(?:construction|on site|works)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as when construction of this project is
+      to start (a target or aspiration)? Select none when absent, or when the candidate is a lodgement or approval date,
+      a completion date, the date of a letter, or another project's date.
+  - key: max_construction_months
+    label: Maximum time on site (months)
+    value: text
+    scope: project
+    help: "The longest construction period the owner accepts. The Program compares its construction stage."
+    extraction: pre_parsed
+    triggers:
+      - '\bmonths?\b[^.\n]{0,30}\bon site\b'
+      - '\bmaximum\b[^.\n]{0,40}\bmonths?\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the longest construction period on
+      site the owner accepts for this project? Select none when absent, or when the candidate is a builder's estimate,
+      a consultant's service period, a defects period, or another project's figure.
+  - key: preliminary_estimate
+    label: Builder's preliminary estimate
+    value: text
+    scope: project
+    help: "A builder's or estimator's preliminary cost advice, kept as stated. The Cost Plan shows it beside the budget; it is not a budget or a price."
+    extraction: pre_parsed
+    triggers:
+      - '\bROM\b'
+      - 'rough order'
+      - 'order of magnitude'
+      - 'preliminary (?:cost|estimate|pricing|price)'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as a builder's or estimator's preliminary
+      estimate of this project's construction cost? Select none when absent, or when the candidate is the owner's
+      budget, a tender price, a fee, an allowance for one item, or another project's figure.
+  - key: preliminary_construction_months
+    label: Builder's estimated time on site
+    value: text
+    scope: project
+    help: "A builder's preliminary estimate of the construction period, kept as stated. The Program compares its construction stage."
+    extraction: pre_parsed
+    triggers:
+      - '\bROM\b'
+      - 'rough order'
+      - 'preliminary (?:programme|program)'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as a builder's preliminary estimate of
+      the construction period on site for this project? Select none when absent, or when the candidate is the owner's
+      maximum, a consultant's service period, a defects period, or another project's figure.
   - key: sustainability
     label: Sustainability target
     value: text
@@ -78,7 +151,7 @@ details:
       Using `excerpt` and `candidates`, which candidate does the passage state as the sustainability target or
       rating this project must achieve? Select none when absent, when it only names a tool or standard
       without a target, or when it describes a different project.
-  - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project, help: "Record the professional advice or verified rule you relied on. The class alone does not decide it."}
+  - {key: regulated_design, label: Regulated design applies, value: yes_no, scope: project, help: "The NSW regime covers Class 2, 3 and 9c work only, so a project without those classes reads No. Otherwise record the professional advice you relied on."}
   # The budget a brief or report states, kept as its verbatim span. It is
   # the one construction budget: the cost plan reads its amount in Go,
   # shows it in its totals, writes edits back here and spreads it over the

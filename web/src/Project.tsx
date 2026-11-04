@@ -1,4 +1,8 @@
+import { PageActions } from "./PageActions";
+import { specificationApi } from "./specificationApi";
+import { emptySelection, selectAll as selectDocumentRows, type Selection } from "./table/selection";
 import { Pending } from "./Activity";
+import { readLocationChoice, writeLocationChoice } from "./workbenchLocation";
 // A chosen project: drop files anywhere on the page, watch each become a title
 // block, correct any box. Live updates come from the durable event stream and
 // never move focus.
@@ -6,6 +10,7 @@ import { Pending } from "./Activity";
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type DragEvent } from "react";
 import {
   api,
+  request,
   ApiError,
   EVENT_KINDS,
   upload,
@@ -64,6 +69,7 @@ interface State {
 }
 
 type Action =
+  | { type: "renamed"; name: string }
   | { type: "loaded"; list: DocumentList }
   | { type: "failed"; missing: boolean; error: string }
   | { type: "uploadStart"; items: { key: string; filename: string }[] }
@@ -105,6 +111,7 @@ function without<T>(rec: Record<string, T>, key: string): Record<string, T> {
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
+    case "renamed": return { ...state, projectName: action.name };
     case "loaded": {
       const docs: Record<string, Doc> = {};
       for (const d of action.list.documents) docs[d.id] = d;
@@ -224,6 +231,7 @@ function reducer(state: State, action: Action): State {
 }
 
 interface Props {
+  onRenamed: (id: string, name: string) => void;
   projectId: string;
   catalog: Catalog | null;
   projects: { id: string; name: string }[] | null;
@@ -232,7 +240,7 @@ interface Props {
   onHome: () => void;
 }
 
-export function Project({ projectId, catalog, projects, navigate, onSignedOut, onHome }: Props) {
+export function Project({ projectId, catalog, projects, navigate, onSignedOut, onHome, onRenamed }: Props) {
   const [state, dispatch] = useReducer(reducer, initial);
   const [cursor, setCursor] = useState<number | null>(null);
   const [live, setLive] = useState<"live" | "reconnecting" | "offline">("reconnecting");
@@ -243,16 +251,19 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [now, setNow] = useState(() => Date.now());
   const [profileTick, setProfileTick] = useState(0);
   const [profileFeedbackTarget, setProfileFeedbackTarget] = useState<HTMLDivElement | null>(null);
-  const [showReports, setShowReports] = useState(false);
-  const [showCosts, setShowCosts] = useState(false);
-  const [showSpecifications, setShowSpecifications] = useState(false);
-  const [specificationsOpened, setSpecificationsOpened] = useState(false);
+  const [initialView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program"], "profile"));
+  const [repositoryOpenRequest, setRepositoryOpenRequest] = useState(0);
+  const [documentSelection, setDocumentSelection] = useState<Selection>(emptySelection);
+  const [showReports, setShowReports] = useState(initialView === "procurement");
+  const [showCosts, setShowCosts] = useState(initialView === "costs");
+  const [showSpecifications, setShowSpecifications] = useState(initialView === "specifications");
+  const [specificationsOpened, setSpecificationsOpened] = useState(initialView === "specifications");
   const [specificationTick, setSpecificationTick] = useState(0);
   const [invoiceTick, setInvoiceTick] = useState(0);
-  const [costsOpened, setCostsOpened] = useState(false);
-  const [reportsOpened, setReportsOpened] = useState(false);
-  const [showProgram, setShowProgram] = useState(false);
-  const [programOpened, setProgramOpened] = useState(false);
+  const [costsOpened, setCostsOpened] = useState(initialView === "costs");
+  const [reportsOpened, setReportsOpened] = useState(initialView === "procurement");
+  const [showProgram, setShowProgram] = useState(initialView === "program");
+  const [programOpened, setProgramOpened] = useState(initialView === "program");
   // Newest program version announced on the stream (plan 8.3), with the
   // program it belongs to: a recreated program starts its versions again.
   const [programVersion, setProgramVersion] = useState<RemoteProgram>({ programId: "", version: 0 });
@@ -632,6 +643,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         : "profile";
 
   const showView = (next: WorkbenchView) => {
+    writeLocationChoice("view", next);
     setOpenDocument(null);
     setShowProgram(next === "program");
     if (next === "program") {
@@ -671,6 +683,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const repository = (
     <Register
       rows={rows}
+      selection={documentSelection}
+      onSelectionChange={setDocumentSelection}
       catalog={catalog}
       live={live}
       onCorrect={correct}
@@ -723,9 +737,12 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   return (
     <CockpitFrame
       nav={nav}
+      actionSurface={viewingRow ? "" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
+      onRename={async name => { await request("PATCH", `/projects/${projectId}`, { name }); dispatch({ type: "renamed", name }); onRenamed(projectId, name); }}
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
+      repositoryOpenRequest={repositoryOpenRequest}
       wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram)}
       profileFeedbackRef={setProfileFeedbackTarget}
       showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram}
@@ -737,13 +754,16 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
+      <PageActions surface="profile"><button type="button" onClick={() => window.print()}>Print project profile</button></PageActions>
+      <PageActions surface="procurement"><button type="button" onClick={() => window.print()}>Print procurement</button></PageActions>
+      <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
       <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget} />
       </section>
       {costsOpened && <div className="project-reports" hidden={!!viewingRow || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!!viewingRow || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onSelectAllDocuments: () => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(Object.keys(state.docs))); } }} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} /></div>}
       {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });

@@ -56,6 +56,9 @@ type LiveRow struct {
 	// the row carries a label the user typed. A rename back to it is the
 	// user's own edit undone, never a difference (plan section 2 rule 2).
 	GenLabel string
+	// DurationSource is the row's stored duration_source; its "driver"
+	// names the value the duration was sized from.
+	DurationSource map[string]any
 }
 
 // Edited is true once the user has created, edited or accepted the row.
@@ -186,7 +189,7 @@ func Diff(live []LiveRow, liveLinks []LiveLink, plan Plan, gone UserRetired) []C
 		}
 		if !sameDuration(lr, r) {
 			c := Change{Kind: ChangeDuration, Source: SourceOf(r.SourceKey), SourceKey: r.SourceKey, TargetActivityID: lr.ID,
-				Summary: fmt.Sprintf("%s: duration %s to %s.", lr.Label, days(lr.Duration), days(r.Duration)),
+				Summary: fmt.Sprintf("%s: duration %s to %s%s.", lr.Label, days(lr.Duration), days(r.Duration), durationCause(lr, r)),
 				Ops: []Op{{"op": "update", "id": lr.ID, "duration_days": r.Duration, "duration_low": r.Low,
 					"duration_high": r.High, "duration_origin": r.DurationOrigin, "duration_source": r.DurationSource}}}
 			changes = append(changes, withDefault(c, lr))
@@ -383,8 +386,51 @@ func addOp(r Row, plan Plan, i int, ref func(string) string, held map[string]boo
 	return op
 }
 
+// sameDuration compares the days the user sees. When both rows have a
+// typical duration only that counts: a range that moved under an unchanged
+// typical value read as "3 days to 3 days" (owner, 2026-11-03).
 func sameDuration(lr LiveRow, r Row) bool {
+	if lr.Duration != nil && r.Duration != nil {
+		return *lr.Duration == *r.Duration
+	}
 	return eqInt(lr.Duration, r.Duration) && eqInt(lr.Low, r.Low) && eqInt(lr.High, r.High)
+}
+
+// durationCause says which driver value moved, e.g. " (Gross floor area
+// 250 m² to 300 m²)", or " (Gross floor area now 300 m²)" when the live
+// row was sized before drivers were recorded. "" when no driver moved.
+func durationCause(lr LiveRow, r Row) string {
+	now, ok := r.DurationSource["driver"].(map[string]any)
+	if !ok {
+		return ""
+	}
+	label, _ := now["label"].(string)
+	value, _ := now["value"].(string)
+	unit := unitText(now["unit"])
+	if label == "" || value == "" {
+		return ""
+	}
+	was, _ := lr.DurationSource["driver"].(map[string]any)
+	if was == nil || was["key"] != now["key"] {
+		return fmt.Sprintf(" (%s now %s%s)", label, value, unit)
+	}
+	old, _ := was["value"].(string)
+	if old == value {
+		return ""
+	}
+	return fmt.Sprintf(" (%s %s%s to %s%s)", label, old, unit, value, unit)
+}
+
+// unitText puts a driver unit after a number: " m²" for m2, "" for none.
+func unitText(u any) string {
+	s, _ := u.(string)
+	switch s {
+	case "":
+		return ""
+	case "m2":
+		return " m²"
+	}
+	return " " + s
 }
 
 func eqInt(a, b *int) bool {

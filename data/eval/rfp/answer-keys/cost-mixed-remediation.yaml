@@ -59,19 +59,12 @@ scenario: cost-mixed-remediation
 description: Mixed-use remediation prices specialist-defined extent and allocation, with a concept endpoint.
 expect:
   cost-planning:
-    stages_include:
-    - s1_basis
-    - s2_concept
-    stages_absent:
-    - s3_authority
-    - s4_design
-    stages_option:
-    - s5_tender
-    - s6_construction
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_basis, s2_concept]
+    stages_absent: [s3_authority, s4_design, s5_tender, s6_construction, s7_completion]
     positions:
       remediation: I
       allocation: I
-      tender: O
+      tender: X
     blocking_only: true
     blocking: []

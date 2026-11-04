@@ -1,0 +1,494 @@
+{
+  "schema": "sitewise-synthetic-profile/1",
+  "values": {
+    "hdr.building_class": {
+      "value": "residential",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.subclass": {
+      "value": "house",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.work_type": {
+      "value": "extend",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.planning": {
+      "value": "da",
+      "sources": [
+        "d01",
+        "d05",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.procurement_route": {
+      "value": "traditional",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.operational_constraints": {
+      "value": "vacant",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.quality_level": {
+      "value": "mid",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.stakeholder_complexity": {
+      "value": "single_owner",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.access_constraints": {
+      "value": "urban_constrained",
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.environmental_sensitivity": {
+      "value": "standard",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.storeys": {
+      "value": 1,
+      "sources": [
+        "d01",
+        "d13",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.existing_gfa_sqm": {
+      "value": 140,
+      "sources": [
+        "d13",
+        "d14",
+        "d15",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.added_gfa_sqm": {
+      "value": 55,
+      "sources": [
+        "d13",
+        "d14",
+        "d15",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.gfa_sqm": {
+      "value": 195,
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.site_sqm": {
+      "value": {
+        "accept": [
+          557.4,
+          557
+        ]
+      },
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.ncc_class": {
+      "value": [
+        "1a"
+      ],
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "det.state": {
+      "value": "NSW",
+      "sources": [
+        "d01",
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building": {
+      "value": true,
+      "sources": [
+        "d01",
+        "d11",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building_year": {
+      "value": 1958,
+      "sources": [
+        "d01",
+        "d11",
+        "d22"
+      ],
+      "read_by_design": true
+    },
+    "det.heritage_status": {
+      "value": "conservation_area",
+      "sources": [
+        "d02",
+        "d13",
+        "d16",
+        "d22"
+      ],
+      "read_by_design": true
+    },
+    "det.bushfire_prone_land": {
+      "value": false,
+      "sources": [
+        "d02",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "det.flood_hazard": {
+      "value": false,
+      "sources": [
+        "d02",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "det.climate_zone": {
+      "value": "5",
+      "sources": [
+        "d10",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "det.sewer_connection": {
+      "value": "reticulated",
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.water_supply_source": {
+      "value": "reticulated",
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.gas_supply": {
+      "value": "natural_gas_main",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "det.potentially_contaminated_land": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.acid_sulfate_soils_mapped": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.site_class": {
+      "value": "M",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_form": {
+      "value": "domestic_hia",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "proj.regulated_design": {
+      "value": "no",
+      "sources": [
+        "d05"
+      ],
+      "read_by_design": true
+    },
+    "proj.budget_stated": {
+      "value": 64000000,
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "proj.client": {
+      "value": {
+        "accept": [
+          "Tomas and Leah Ferreira",
+          "Tomas Ferreira and Leah Ferreira"
+        ]
+      },
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "proj.address": {
+      "value": "41 Tallowwood Avenue, Concord NSW 2137",
+      "sources": [
+        "d01",
+        "d02",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "proj.lga": {
+      "value": {
+        "accept": [
+          "Canada Bay",
+          "City of Canada Bay"
+        ]
+      },
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.lot": {
+      "value": "Lot 23 DP 30418",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.zone": {
+      "value": {
+        "accept": [
+          "R2 Low Density Residential",
+          "R2"
+        ]
+      },
+      "sources": [
+        "d02",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "proj.target_construction_start": {
+      "value": "2027-03-01",
+      "sources": [
+        "d04"
+      ],
+      "read_by_design": false
+    },
+    "flag.basement": {
+      "value": "no",
+      "sources": [
+        "d01",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.excavation_adjoining": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.authority_asset": {
+      "value": "no",
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "flag.arborist_tree_impacts": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.arborist_offsite_trees": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.arborist_pruning": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.osd_required": {
+      "value": "no",
+      "sources": [
+        "d07"
+      ],
+      "read_by_design": true
+    },
+    "flag.osd_existing": {
+      "value": "no",
+      "sources": [
+        "d03",
+        "d07"
+      ],
+      "read_by_design": true
+    },
+    "flag.cl46": {
+      "value": "no",
+      "sources": [
+        "d13",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "flag.panel": {
+      "value": "no",
+      "sources": [
+        "d13",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "flag.public_road": {
+      "value": "no",
+      "sources": [
+        "d07"
+      ],
+      "read_by_design": true
+    },
+    "flag.norbe": {
+      "value": "no",
+      "sources": [
+        "d07"
+      ],
+      "read_by_design": true
+    },
+    "flag.stormwater_quality": {
+      "value": "no",
+      "sources": [
+        "d07"
+      ],
+      "read_by_design": true
+    },
+    "flag.sustainability_target": {
+      "value": "no",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "flag.community": {
+      "value": "no",
+      "sources": [
+        "d13",
+        "d16"
+      ],
+      "read_by_design": true
+    },
+    "flag.groundwater": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.rail": {
+      "value": "no",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.transfer_structures": {
+      "value": "no",
+      "sources": [
+        "d06"
+      ],
+      "read_by_design": true
+    },
+    "flag.coastal": {
+      "value": "no",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.country": {
+      "value": "no",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "flag.staged": {
+      "value": "no",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "flag.multi_building": {
+      "value": "no",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "flag.architect_lodges": {
+      "value": "yes",
+      "sources": [
+        "d05"
+      ],
+      "read_by_design": true
+    }
+  },
+  "conflicts": [],
+  "derived": [
+    {
+      "key": "det.basix_required",
+      "value": true
+    },
+    {
+      "key": "det.energy_compliance_pathway",
+      "value": "basix"
+    }
+  ]
+}

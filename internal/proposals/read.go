@@ -70,6 +70,8 @@ const (
 	FlagNoText       = "no_text"
 	FlagNoSchedule   = "no_schedule"
 	FlagResponseForm = "response_form"
+	FlagABNInvalid   = "abn_invalid"
+	FlagMonthlyFee   = "monthly_fee"
 )
 
 const (
@@ -175,7 +177,7 @@ func NewDraft(ev Evidence, pc Context, users map[string]Decision) *Draft {
 	for f, u := range users {
 		d.by[f] = u
 	}
-	d.rule(FieldKind, kindRule(ev, pc.Discipline))
+	d.rule(FieldKind, kindRule(ev, kindDiscipline(pc)))
 	d.settlePackage()
 	d.settleFirm()
 	d.settleGST()
@@ -204,13 +206,18 @@ func (d *Draft) rule(field, value string) {
 // kindRule settles the kind when the document calls itself a proposal or a
 // quote and the filed discipline says which: a consultant's quotation is a
 // fee proposal, a trade's is a tender. "Fee" or "tender" alone is not
-// enough: a tender evaluation report says both.
+// enough: a tender evaluation report says both. A document titled as an
+// invoice is never a proposal: it claims against one, and read as one it
+// would supersede the firm's real proposal.
 func kindRule(ev Evidence, discipline string) string {
+	if ev.InvoiceTitle {
+		return KindNone
+	}
 	has := map[string]bool{}
 	for _, w := range ev.KindWords {
 		has[w] = true
 	}
-	strong := ev.Form != nil || has["fee proposal"] || has["fee submission"] || has["fee estimate"] || has["fee quote"] || has["fee schedule"] || has["quotation"] || has["quote"] || has["tender submission"]
+	strong := ev.Form != nil || ev.AppointmentFee || has["fee proposal"] || has["fee submission"] || has["fee estimate"] || has["fee quote"] || has["fee schedule"] || has["quotation"] || has["quote"] || has["tender submission"]
 	if !strong || (len(ev.Amounts) == 0 && ev.Form == nil) {
 		return ""
 	}
@@ -219,6 +226,20 @@ func kindRule(ev Evidence, discipline string) string {
 		return KindFeeProposal
 	case strings.HasPrefix(discipline, "trade.") || strings.HasPrefix(discipline, "supplier."):
 		return KindTender
+	}
+	return ""
+}
+
+// kindDiscipline is the filed discipline, or the discipline of the package
+// the user put the document on: that drop says whose fee it is.
+func kindDiscipline(pc Context) string {
+	if pc.Discipline != "" || pc.PackageID == "" {
+		return pc.Discipline
+	}
+	for _, p := range pc.Packages {
+		if p.ID == pc.PackageID {
+			return p.Discipline
+		}
 	}
 	return ""
 }
@@ -241,6 +262,15 @@ func (d *Draft) settlePackage() {
 	}
 }
 
+// ownFirm is the firm a document names as its author without an ABN: the
+// sign-off's firm, else the one registered name in its header.
+func (d *Draft) ownFirm() string {
+	if d.ev.SignatureFirm != "" {
+		return d.ev.SignatureFirm
+	}
+	return d.ev.HeaderFirm
+}
+
 // settleFirm matches the directory by ABN or name. A match fills every firm
 // field from the directory, so no firm question is asked.
 func (d *Draft) settleFirm() {
@@ -253,6 +283,12 @@ func (d *Draft) settleFirm() {
 		if k := NameKey(n); k != "" {
 			keys = append(keys, k)
 		}
+	}
+	// The firm that signs, or the one registered name in the header, is the
+	// author. A forwarded email also carries the forwarder's domain, which
+	// must not match the directory first (Walsh builder email, 2026-10-27).
+	if own := d.ownFirm(); own != "" {
+		keys = []string{NameKey(own)}
 	}
 	if u := d.by[FieldFirmName]; u.DecidedBy == ByUser && u.Value != "" {
 		keys = []string{NameKey(u.Value)}
@@ -269,6 +305,11 @@ func (d *Draft) settleFirm() {
 	if len(d.ev.ABNs) == 1 {
 		d.rule(FieldFirmABN, d.ev.ABNs[0])
 	}
+	// "We have appointed X Pty Ltd" names the engaged firm even when the
+	// letter is the owner's, whose own letterhead is not the firm.
+	if len(d.ev.Appointed) == 1 {
+		d.rule(FieldFirmName, d.ev.Appointed[0])
+	}
 	// A response form names its firm in labelled cells; that rule follows.
 	if l := d.ev.Letterhead; l != nil && d.ev.FormFirm == nil {
 		d.rule(FieldFirmName, l.Name)
@@ -277,6 +318,9 @@ func (d *Draft) settleFirm() {
 		}
 	}
 	d.rule(FieldFirmName, d.corroboratedName())
+	// A letter with no letterhead names its firm in the sign-off, or prints
+	// its one registered name in the header.
+	d.rule(FieldFirmName, d.ownFirm())
 	if f := d.ev.FormFirm; f != nil {
 		for field, label := range map[string]string{FieldFirmName: "Firm", FieldFirmContact: "Contact", FieldFirmEmail: "Email", FieldFirmPhone: "Phone", FieldFirmAddress: "Address"} {
 			d.rule(field, strings.TrimSpace(f[label]))
@@ -424,13 +468,17 @@ func (d *Draft) settleTotal() {
 			return
 		}
 	}
+	// An inclusive total is the stated total only when the whole proposal is
+	// quoted inc GST; Finish takes the GST off. Beside ex-GST fees it is a
+	// copy with GST added.
+	incOK := d.by[FieldGSTBasis].Value == "inc"
 	var totals []Amount
 	var largest int64
 	for _, a := range d.ev.Amounts {
 		if a.PerHour || a.Kind != "" || a.Unit || a.GSTPart || a.IncTwin {
 			continue
 		}
-		if a.Total && a.GST != "inc" {
+		if a.Total && (a.GST != "inc" || incOK) {
 			totals = append(totals, a)
 		}
 		largest = max(largest, a.Cents)
@@ -894,6 +942,8 @@ type Reading struct {
 	Decisions   []Decision
 	// Dated is the proposal's printed date (YYYY-MM-DD), or "".
 	Dated string
+	// PI is the professional indemnity cover the document states, or nil.
+	PI *Insurance
 }
 
 var departureHeading = regexp.MustCompile(`(?i)exclusion|assumption|departure|qualification|not included|limitation|clarification`)
@@ -901,14 +951,15 @@ var departureHeading = regexp.MustCompile(`(?i)exclusion|assumption|departure|qu
 // Finish computes every figure from the decisions: ex GST, percentage fees,
 // other items, the sum check and the flags.
 func (d *Draft) Finish() Reading {
-	r := Reading{Kind: d.by[FieldKind].Value, PackageID: d.by[FieldPackage].Value, Firm: d.firm, GSTBasis: d.by[FieldGSTBasis].Value, FirmFields: map[string]string{}, Dated: d.ev.Dated}
+	r := Reading{Kind: d.by[FieldKind].Value, PackageID: d.by[FieldPackage].Value, Firm: d.firm, GSTBasis: d.by[FieldGSTBasis].Value, FirmFields: map[string]string{}, Dated: d.ev.Dated, PI: d.ev.PI}
 	for _, f := range FirmFields {
 		if v := d.by[f].Value; v != "" {
 			r.FirmFields[f] = v
 		}
 	}
+	// The stated total is stored ex GST, like every price.
 	if v := d.by[FieldStatedTotal].Value; v != "" {
-		if c, ok := d.centsOf(v); ok {
+		if c, ok := d.statedExGST(v, r.GSTBasis); ok {
 			r.StatedTotal = &c
 		}
 	}
@@ -1005,13 +1056,15 @@ func (d *Draft) Finish() Reading {
 		}
 	}
 	if r.StatedTotal != nil && baseKnown && len(d.items) > 0 {
-		total := *r.StatedTotal
-		if r.GSTBasis == "inc" {
-			total = exGST(total)
-		}
-		if gap := total - base; gap > 100 || gap < -100 {
+		if gap := *r.StatedTotal - base; gap > 100 || gap < -100 {
 			r.Flags = append(r.Flags, FlagTotalGap)
 		}
+	}
+	if len(d.ev.InvalidABNs) > 0 && d.by[FieldFirmABN].Value == "" {
+		d.flags[FlagABNInvalid] = true
+	}
+	if len(d.ev.MonthlyFees) > 0 {
+		d.flags[FlagMonthlyFee] = true
 	}
 	for f := range d.flags {
 		r.Flags = append(r.Flags, f)
@@ -1110,6 +1163,22 @@ func (d *Draft) centsOf(v string) (int64, bool) {
 	}
 	c, err := strconv.ParseInt(strings.TrimPrefix(v, "cents:"), 10, 64)
 	return c, err == nil
+}
+
+// statedExGST reads a stated total decision as ex GST cents: an amount by
+// its own GST wording or the proposal's basis, a form cell by the basis.
+func (d *Draft) statedExGST(v, docBasis string) (int64, bool) {
+	for _, a := range d.ev.Amounts {
+		if a.ID == v && a.Kind == "" {
+			c, _, _ := d.amountExGST(a, docBasis)
+			return c, true
+		}
+	}
+	c, ok := d.centsOf(v)
+	if ok && docBasis == "inc" {
+		c = exGST(c)
+	}
+	return c, ok
 }
 
 // exGST removes 10 % GST from an inclusive amount, to the cent.

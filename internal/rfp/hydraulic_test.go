@@ -6,7 +6,7 @@ import (
 )
 
 func TestHydraulicPilotSelectionsAndLegacyChoices(t *testing.T) {
-	d, sk := discipline(t, "hydraulic-services"), skeleton(t)
+	d, sk := ruled(t, "hydraulic-services"), skeleton(t)
 	drivers := facts(t, "class=2", "work_type=new", "procurement=traditional", "pathway=da")
 	r := Resolve(d, sk, drivers, nil)
 	if r.HasCheck("boundary") || r.Stage("design").State != Include || r.Stage("tender").State != Option {
@@ -75,18 +75,22 @@ func TestHydraulicPilotCombinedScheduleAndDates(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if sections[0].ID != "issue_dates" || sections[2].ID != "positions" {
-		t.Fatal("dates and scope are not first")
+	order := []string{}
+	for _, s := range sections {
+		order = append(order, s.ID)
+	}
+	if strings.Join(order, ",") != "project,role,transmittal,allowances,terms,returnables,issue_dates,pre_issue_review" {
+		t.Fatalf("section order = %v", order)
 	}
 	for _, section := range sections {
-		if section.ID == "role" || section.ID == "evaluation" {
+		if section.ID == "evaluation" {
 			t.Fatalf("redundant section: %s", section.ID)
 		}
 		for _, block := range section.Blocks {
 			if block.ID == "rfp:returnables:r1" {
 				t.Fatal("duplicate pricing schedule")
 			}
-			if block.ID == "rfp:stages" && (block.Table == nil || len(block.Table.Columns) != 5) {
+			if block.ID == "rfp:stages" && (block.Table == nil || len(block.Table.Columns) != 4) {
 				t.Fatal("stage summary and pricing not combined")
 			}
 		}

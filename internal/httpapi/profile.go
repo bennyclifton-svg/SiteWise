@@ -143,6 +143,8 @@ type profileJSON struct {
 	Systems     []systemGroupJSON     `json:"systems"`
 	Compliance  []complianceGroupJSON `json:"compliance"`
 	Presets     []presetJSON          `json:"presets"`
+	// Appointed are the packages awarded to a firm, with the firm's contact.
+	Appointed []store.AppointedFirm `json:"appointed"`
 }
 
 func getProfile(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -220,6 +222,10 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 	}
 	body := profileBody(projectID, view, deps)
 	body.Queued = queued
+	if body.Appointed, err = deps.Store.AppointedFirms(r.Context(), orgID, projectID); err != nil {
+		http.Error(w, "read failed", http.StatusInternalServerError)
+		return
+	}
 	// Encode before the status line: a failure is then a 500 the client
 	// can see, not a 200 with a short body, and Content-Length lets the
 	// client tell a complete profile from a cut one.

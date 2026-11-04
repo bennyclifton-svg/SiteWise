@@ -55,29 +55,22 @@ scenario: survey-new-residential
 description: New housing detail survey does not automatically buy boundary/services packages or builder support.
 expect:
   land-surveying:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      titling: O
+      titling: X
       control: I
       records: I
       exposure: X
-      interior: O
-      monitoring: O
-      setout: O
-      asbuilt: O
+      interior: I
+      monitoring: X
+      setout: X
+      asbuilt: X
       boundary: absent
       adjoining: absent
       buried: absent
       sewer: absent
       access: absent
-    stages_include:
-    - s1_plan
-    - s2_detail
-    stages_option:
-    - s5_support
-    - s6_construction
-    - s7_completion
+    stages_include: [s1_plan, s2_detail]
     blocking_only: true
     blocking: []
-    stages_absent:
-    - s3_boundary
-    - s4_services
+    stages_absent: [s3_boundary, s4_services, s5_support, s6_construction, s7_completion]

@@ -55,22 +55,12 @@ description: Commercial advice-only appointment ends at its report; no developme
   ongoing monitoring or independent peer review appointed.
 expect:
   arborist:
-    stages_include:
-    - s1_inventory
-    - s7_advisory
-    stages_absent:
-    - s2_impact
-    - s3_protection
-    - s4_tender
-    - s5_construction
-    stages_option:
-    - s6_investigation
-    - s6_risk
-    - s7_monitoring
-    - s7_peer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inventory, s7_advisory, s6_investigation, s6_risk]
+    stages_absent: [s2_impact, s3_protection, s4_tender, s5_construction, s7_monitoring, s7_peer]
     positions:
-      risk: O
-      investigation: O
-      monitoring: O
+      risk: I
+      investigation: I
+      monitoring: X
     blocking_only: true
     blocking: []

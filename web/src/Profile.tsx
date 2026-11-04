@@ -1,4 +1,5 @@
 import { Pending } from "./Activity";
+import { PagePrimaryAction } from "./PageActions";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
@@ -11,7 +12,7 @@ import { Pending } from "./Activity";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ProfileSources } from "./ProfileSources";
-import { ChoiceGroup, FieldRow, type Setter } from "./ProfileFields";
+import { FieldRow, type Setter } from "./ProfileFields";
 import { PLANNING, ScopeWorks, entryInputs } from "./ScopeWorks";
 import { ApiError } from "./api";
 import { profileApi, type Profile as ProfileData, type ProfileField, type ScopeChoice, type Site } from "./profileApi";
@@ -54,7 +55,7 @@ const TIERS: Record<Tier, string[]> = {
   // Pairs that look alike but follow different definitions sit together.
   scale: [
     "hdr.scale.site_sqm", "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "det.rise_in_storeys",
-    "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
+    "hdr.scale.existing_gfa_sqm", "hdr.scale.added_gfa_sqm", "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
     "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units",
     "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces",
     "det.existing_building", "det.existing_building_year",
@@ -204,9 +205,16 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
 
   const site = useSiteFields(projectId, tick, data?.site_details ?? [], fail);
   const addressLine = site.fields.find((f) => f.key === "site.address")?.value ?? "";
+  // The banner reads client, lot, area and address, as a title block does.
+  const fact = (key: string) => {
+    const f = [...(data?.facts ?? []), ...(data?.details ?? []), ...(data?.header ?? []), ...site.fields].find((x) => x.key === key && x.value !== "");
+    return f ? f.options?.find((o) => o.id === f.value)?.label ?? f.value : "";
+  };
+  const area = [fact("proj.lga"), fact("det.state")].filter(Boolean).join(", ");
+  const identity = data ? [fact("proj.client"), fact("site.lot"), area, addressLine || "Site address not stated"].filter(Boolean).join("  ·  ") : addressLine;
   useEffect(() => {
-    onIdentity?.(addressLine);
-  }, [addressLine, onIdentity]);
+    onIdentity?.(identity);
+  }, [identity, onIdentity]);
 
   if (!data) {
     return <ProfileFeedback target={feedbackTarget}><p className="muted" role={error ? "alert" : "status"}>{error || <Pending delayed>Loading the profile…</Pending>}</p></ProfileFeedback>;
@@ -336,11 +344,28 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
 
       {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 
-      <div className="profile-toolbar">
-        <button type="button" className="btn btn-primary" onClick={update} disabled={requesting}>
+      <PagePrimaryAction surface="profile">
+        <button type="button" className="btn" onClick={update} disabled={requesting}>
           {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
         </button>
-      </div>
+      </PagePrimaryAction>
+      <section className="pf-lede" aria-label="Summary">
+        <ProjectSummary fields={cardFields} />
+        <SourcesNote
+          filed={data.read_documents + data.skipped_documents}
+          read={data.read_documents}
+          skipped={data.skipped_documents}
+          skippedKind={data.skipped_kind ? KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ") : ""}
+          unresolved={unresolved}
+          checks={checks}
+          thresholds={!data.thresholds.applied ? "Not yet applied" : data.thresholds.provisional ? "Provisional" : "Approved"}
+          updated={builtAt ? builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
+          onShowNotRead={onShowNotRead}
+          onSources={() => setSourcesOpen(true)}
+          onCheck={goToCheck}
+        />
+      </section>
+
       <section className="pf-section" aria-labelledby="pf-project">
         <div className="pf-head">
           <h2 id="pf-project">Project</h2>
@@ -349,6 +374,20 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
           </div>
         </div>
         <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} />
+        {(data.appointed ?? []).length > 0 && (
+          <dl className="pf-appointed" data-testid="profile-appointed">
+            {(data.appointed ?? []).map((a) => (
+              <div key={`${a.package_id}-${a.firm}`}>
+                <dt>{a.package}</dt>
+                <dd>
+                  {a.firm}
+                  {a.contact && <> ({a.contact})</>}
+                  {[a.email, a.phone].filter(Boolean).length > 0 && <span className="pf-appointed-contact"> · {[a.email, a.phone].filter(Boolean).join(" · ")}</span>}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </section>
 
       <ScopeWorks
@@ -385,67 +424,118 @@ function ProfileFeedback({ target, children }: { target?: HTMLDivElement | null;
   );
 }
 
+// The Project card is a drawing title block: five ruled columns, each value
+// beneath its label, how it was decided at the label's end. Every key lands in
+// a column; one the layout does not place falls to approvals and delivery.
+const COLUMNS: { title: string; keys: string[]; tiers: Tier[] }[] = [
+  { title: "Place", keys: ["proj.client", "site.address", "site.lot", "proj.lga", "proj.zone", "det.state"], tiers: ["identity", "place"] },
+  { title: "Building", keys: ["hdr.building_class", "hdr.subclass", "det.ncc_class", "hdr.work_type", "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "hdr.cond.quality_level"], tiers: ["class", "work", "subclass"] },
+  { title: "Scale", keys: [], tiers: ["scale", "budget"] },
+  { title: "Approvals and delivery", keys: ["hdr.cond.planning", "hdr.cond.procurement_route", "hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints"], tiers: ["approvals", "delivery"] },
+  { title: "Site conditions", keys: ["hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity", "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status"], tiers: ["complexity"] },
+];
+
 function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
   const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact stacked />;
-  const one = (t: Tier, key: string) => card[t].shown.find((f) => f.key === key);
-  const chips = (f: ProfileField | undefined, title: string) =>
-    f && (f.options?.length ? <ChoiceGroup field={f} title={title} variant="chips" onSet={onSet} onJump={onJump} /> : row(f));
-  const subclass = one("subclass", "hdr.subclass");
-  // Before a category is chosen the subclass options span every category;
-  // a dropdown keeps that long list out of the way until then.
-  const listSubclass = !!one("class", "hdr.building_class")?.value && (subclass?.options?.length ?? 0) > 0 && (subclass?.options?.length ?? 0) <= 14;
+  const tiers = Object.keys(card) as Tier[];
+  const shown = tiers.flatMap((t) => card[t].shown);
+  const placed = new Set<ProfileField>();
+  const take = (f: ProfileField) => (placed.add(f), f);
+  const columns = COLUMNS.map((c) => ({ ...c, fields: c.keys.flatMap((k) => shown.filter((f) => f.key === k && !placed.has(f)).map(take)) }));
+  for (const c of columns) c.fields.push(...shown.filter((f) => !placed.has(f) && c.tiers.includes(tierOf(f.key))).map(take));
+  columns[3].fields.push(...shown.filter((f) => !placed.has(f)).map(take));
   return (
-    <div className="pf-card pf-tiers">
-      <div className="pf-identity-grid" role="group" aria-label="Who and where">
-        {card.identity.shown.map(row)}
-      </div>
-      <div className="pf-place-grid" role="group" aria-label="Lot and council">
-        {card.place.shown.map(row)}
-      </div>
-      {chips(one("class", "hdr.building_class"), "Class")}
-      <div className="pf-work-line">
-        {chips(one("work", "hdr.work_type"), "Work type")}
-        <div className="pf-budget">{card.budget.shown.map(row)}</div>
-      </div>
-      <div className="pf-cards">
-        <Panel title="Subclass">
-          {subclass && (listSubclass ? <ChoiceGroup field={subclass} title={subclass.label} variant="list" onSet={onSet} onJump={onJump} /> : row(subclass))}
-          {card.subclass.shown.filter((f) => f !== subclass).map(row)}
-        </Panel>
-        <Panel title="Scale" more={card.scale.more} render={row}>
-          {card.scale.shown.length > 0 ? card.scale.shown.map(row) : <p className="muted">Choose a subclass to see its measures.</p>}
-        </Panel>
-        <Panel title="Complexity" className="pf-panel-wide">
-          {card.complexity.shown.map(row)}
-        </Panel>
-      </div>
-      <div className="pf-strips">
-        <Panel title="Approvals" more={card.approvals.more} render={row} flat>
-          {card.approvals.shown.map(row)}
-        </Panel>
-        <Panel title="Delivery" more={card.delivery.more} render={row} flat>
-          {card.delivery.shown.map(row)}
-        </Panel>
-      </div>
+    <div className="pf-card pf-tiers pf-titleblock pencil-rule">
+      {columns.map((c) => (
+        <TitleColumn key={c.title} title={c.title} more={c.tiers.flatMap((t) => card[t].more)} render={row}>
+          {c.fields.length > 0 ? c.fields.map(row) : <p className="muted pf-tb-empty">Choose a subclass to see its measures.</p>}
+        </TitleColumn>
+      ))}
     </div>
   );
 }
 
-function Panel({ title, className = "", more = [], render, flat, children }: { title: string; className?: string; more?: ProfileField[]; render?: (f: ProfileField) => ReactNode; flat?: boolean; children: ReactNode }) {
+function TitleColumn({ title, more, render, children }: { title: string; more: ProfileField[]; render: (f: ProfileField) => ReactNode; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={`pf-panel${flat ? " pf-panel-flat" : ""}${className ? ` ${className}` : ""}`} role="group" aria-label={title}>
-      <h3 className="pf-rule">{title}</h3>
-      <div className="pf-panel-body">
-        {children}
-        {open && render && more.map(render)}
-      </div>
+    <div className="pf-tb-col" role="group" aria-label={title}>
+      <h3 className="pf-tb-head">{title}</h3>
+      {children}
+      {open && more.map(render)}
       {more.length > 0 && (
         <button type="button" className="cell-link pf-col-more" aria-expanded={open} onClick={() => setOpen(!open)}>
           {open ? "Fewer" : `+ ${more.length} more`}
         </button>
       )}
     </div>
+  );
+}
+
+// The project in one sentence, built in code from the card's values. Each
+// value is underlined the way it was decided: ember pencil from documents,
+// dotted blue for a Jev reading, graphite for the user's own word.
+const WORDS = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
+function ProjectSummary({ fields }: { fields: ProfileField[] }) {
+  const get = (...keys: string[]) => keys.map((k) => fields.find((f) => f.key === k && f.value !== "")).find(Boolean);
+  const text = (f: ProfileField) => f.options?.find((o) => o.id === f.value)?.label ?? f.value;
+  const soft = (t: string) => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
+  const an = (t: string) => (/^[aeiou]/i.test(t) && !/^[A-Z]{2}/.test(t) ? "an" : "a");
+  const token = (f: ProfileField | undefined, show: (t: string) => string = (t) => t) => {
+    if (!f) return null;
+    const how = f.band === "user" ? "pencil-user" : f.band === "amber" ? "pencil-jev" : f.band === "red" ? "mark-check" : "pencil-doc";
+    const said = f.band === "user" ? "Set by you" : f.band === "amber" ? "Picked by Jev" : f.band === "red" ? "Sources differ" : "From documents";
+    return (
+      <button type="button" className={`pf-t ${how}`} title={`${f.label}: ${said}`}
+        onClick={() => document.getElementById(`pf-${f.key}-${f.part_id}`)?.focus()}>
+        {show(text(f))}
+      </button>
+    );
+  };
+  const work = get("hdr.work_type"), sub = get("hdr.subclass"), storeys = get("hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels");
+  const gfa = get("hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm"), site = get("hdr.scale.site_sqm"), lga = get("proj.lga"), zone = get("proj.zone");
+  const quality = get("hdr.cond.quality_level"), client = get("proj.client"), planning = get("hdr.cond.planning"), budget = get("proj.budget_stated");
+  if (!work && !sub && !client && !gfa) return <p className="pf-summary pf-summary-empty">The summary appears once the documents are read.</p>;
+  const n = storeys ? Number(storeys.value) : 0;
+  const storeyWords = (t: string) => `${WORDS[n] ?? t} ${n === 1 ? "storey" : "storeys"}`;
+  return (
+    <p className="pf-summary">
+      A {work ? token(work, soft) : "project"}
+      {sub && <>: {an(soft(text(sub)))} {token(sub, soft)}</>}
+      {storeys && <>, of {token(storeys, storeyWords)}</>}
+      {gfa && <>{storeys ? " and " : ", "}{token(gfa, (t) => `${t} m²`)}</>}
+      {site && <> on a {token(site, (t) => `${t} m²`)} site</>}
+      {lga && <> in {token(lga)}</>}
+      {zone && <>, zoned {token(zone)}</>}.
+      {(quality || client || planning || budget) && (
+        <>
+          {" "}{quality ? <>{an(soft(text(quality))) === "an" ? "An" : "A"} {token(quality, soft)}</> : "It is"}
+          {client && <> for {token(client)}</>}
+          {planning && <>, approved as {an(text(planning))} {token(planning)}</>}
+          {budget && <>, with a construction budget of {token(budget)}</>}.
+        </>
+      )}
+    </p>
+  );
+}
+
+function SourcesNote({ filed, read, skipped, skippedKind, unresolved, checks, thresholds, updated, onShowNotRead, onSources, onCheck }: {
+  filed: number; read: number; skipped: number; skippedKind: string; unresolved: number; checks: number; thresholds: string; updated: string;
+  onShowNotRead: () => void; onSources: () => void; onCheck: () => void;
+}) {
+  return (
+    <aside className="pf-notes" aria-label="Sources">
+      <h2>Sources</h2>
+      <dl>
+        <div><dt>Documents filed</dt><dd>{filed}</dd></div>
+        <div><dt>Read for this profile</dt><dd>{read}</dd></div>
+        {skipped > 0 && <div><dt>Not used{skippedKind ? `, mostly ${skippedKind}` : ""}</dt><dd>{skipped} <button type="button" className="cell-link" onClick={onShowNotRead}>Show</button></dd></div>}
+        <div><dt>Passages to review</dt><dd>{unresolved} <button type="button" className="cell-link" onClick={onSources}>Review</button></dd></div>
+        {checks > 0 && <div><dt><span className="mark-check">Marked</span> to check</dt><dd>{checks} <button type="button" className="cell-link" onClick={onCheck}>Go</button></dd></div>}
+        <div><dt>Thresholds</dt><dd className={thresholds === "Approved" ? "" : "pf-notes-soft"}>{thresholds}</dd></div>
+        {updated && <div><dt>Updated</dt><dd>{updated}</dd></div>}
+      </dl>
+    </aside>
   );
 }
 

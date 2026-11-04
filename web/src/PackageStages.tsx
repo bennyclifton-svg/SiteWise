@@ -106,6 +106,6 @@ export function RfpStages({ reportId, tick, onChanged, onSignedOut }: { reportId
   return <section className="rfp-stages" aria-label="Program stages">
     {error && <p className="stage-error" role="alert">{error}</p>}
     <StageSyncNotice sync={sync} what={sync.document === "issued_rfp" ? "issued RFP" : "RFP draft"} busy={busy} onChoose={c => void choose(c)} />
-    {sync.rows.length > 0 && <p className="report-muted">Program stages: <span className="rfp-stage-rows">{sync.rows.map(r => <span key={r.program_stage_id} className={r.removed_from_program ? "stage-kept" : undefined}>{r.label}{r.removed_from_program ? " (removed from program)" : ""}</span>)}</span></p>}
+
   </section>;
 }

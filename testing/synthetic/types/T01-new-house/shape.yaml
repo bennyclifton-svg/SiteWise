@@ -29,6 +29,7 @@ profile:
   det.bushfire_prone_land: false
   det.flood_hazard: false
   det.climate_zone: "5"
+  det.site_class: M          # owner, 31 Oct: class M is the normal base case for a new house
   det.sewer_connection: reticulated
   det.water_supply_source: reticulated
   det.gas_supply: none
@@ -39,6 +40,7 @@ profile:
   flag.excavation_adjoining: "no"
   flag.authority_asset: "no"
   flag.arborist_tree_impacts: "no"
+  flag.arborist_offsite_trees: "no"   # owner, 31 Oct: no neighbouring trees affected is the normal base case
   flag.osd_required: "no"
   flag.cl46: "no"
   flag.public_road: "no"
@@ -281,7 +283,7 @@ rfps:
     built_in: "partial"
     source: "knowledge/rfp/architecture.yaml house_documents"
     why: "House module rows exist; blocks on fact:budget until the budget is stated (required_facts)"
-    must_include: ["Concept and schematic design", "DA planning approval documentation", "Planning response to council requests", "Design development", "House tender and construction documents (house_documents)", "Kitchen, bathroom, laundry and joinery design", "Finishes, fixtures and appliances selections schedule", "Specification", "Tender (bidding) support", "Certifier liaison", "Lodging the DA through the NSW Planning Portal", "Option: construction-phase support", "Option: contract administration"]
+    must_include: [{"text": "Concept design", "key": "stage.concept"}, {"text": "Schematic design", "key": "stage.schematic"}, {"text": "DA planning approval documentation", "key": "stage.planning_approval"}, "Planning response to council requests", "Design development", "House tender and construction documents (house_documents)", "Kitchen, bathroom, laundry and joinery design", "Finishes, fixtures and appliances selections schedule", "Specification", {"text": "Tender (bidding) support", "key": "stage.bidding"}, "Certifier liaison", {"text": "Lodging the DA through the NSW Planning Portal", "key": "position.lodgement"}, {"text": "Option: construction-phase support", "key": "stage.construction_support"}, "Option: contract administration"]   # keys: RFP triage 2 Nov
     must_not_include: ["BIM coordination or clash detection", "Tenant fit-out", "Signage and wayfinding", "Facade certification", "Apartment design-quality submission", "Green Star or NABERS", "Regulated-design declarations", "D&C tender documents", "Post-novation stage", "Community consultation", "Connecting with Country input"]
     expect:
       stages_include: [concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
@@ -299,13 +301,13 @@ rfps:
     template: structural
     built_in: "partial"
     source: "knowledge/rfp/structural.yaml residential_framing"
-    must_include: ["Design basis with site class and AS 4055 wind class", "AS 2870 footing and slab design", "Framing, bracing and tie-down incl. review of supplier truss and frame design (covers beams and lintels)", "Construction documents and design certificate for the CC", "Option: construction-phase inspections with an inspection schedule"]
-    must_not_include: ["Shared Revit model", "Shoring or retention design", "Dilapidation surveys", "Existing structure assessment", "Authority asset stage", "Regulated design", "D&C or post-novation stages", "Super-flat floor"]
+    must_include: [{"text": "Design basis with site class and AS 4055 wind class", "key": "position.design_basis"}, {"text": "AS 2870 footing and slab design", "key": "position.residential_framing"}, "Framing, bracing and tie-down incl. review of supplier truss and frame design (covers beams and lintels)", "Construction documents and design certificate for the CC", "Option: construction-phase inspections with an inspection schedule"]
+    must_not_include: ["Shared Revit model", "Shoring or retention design", "Dilapidation surveys", "Existing structure assessment", {"text": "Authority asset stage", "key": "stage.authority_asset"}, "Regulated design", "D&C or post-novation stages", "Super-flat floor"]
     expect:
       stages_include: [concept_schematic, design_development, tender_traditional, construction_documents]
       stages_option: [construction_phase, planning_approval]
       stages_absent: [existing_assessment, authority_asset, dnc_tender, regulated_design, post_novation]
-      positions: {design_basis: I, geotech_brief: I, residential_framing: I, safety_in_design: I, delegated_design: I, services_footings: I, value_management: I, inspection_schedule: O, metalwork: O, services_fixings: O, temporary_works_design: X, dilapidation: X, compaction: X, demolition_drawings: X, shared_model: absent, retention_design: absent, temporary_works_interfaces: absent, super_flat_floor: absent, strengthening: absent, specialist_element_design: absent}
+      positions: {design_basis: I, geotech_brief: I, residential_framing: I, safety_in_design: I, delegated_design: I, services_footings: I, value_management: I, inspection_schedule: I, metalwork: O, services_fixings: O, temporary_works_design: X, dilapidation: X, compaction: X, demolition_drawings: X, shared_model: absent, retention_design: absent, temporary_works_interfaces: absent, super_flat_floor: absent, strengthening: absent, specialist_element_design: absent}
       blocking: []
     app_differs:
       - {key: position.shared_model, app: O, expect: absent, why: "service_level simple O"}
@@ -316,7 +318,7 @@ rfps:
     template: civil
     built_in: "partial"
     source: "knowledge/rfp/civil.yaml"
-    must_include: ["Stormwater concept plan for the DA with discharge point confirmed", "Detailed stormwater design for the CC incl. rainwater tank overflow", "Driveway long section and boundary levels for the vehicle crossing", "Erosion and sediment control plan", "Works-as-executed review and stormwater certificate for the OC"]
+    must_include: [{"text": "Stormwater concept plan for the DA with discharge point confirmed", "key": "position.discharge"}, {"text": "Detailed stormwater design for the CC incl. rainwater tank overflow", "key": "stage.detailed_tender"}, {"text": "Driveway long section and boundary levels for the vehicle crossing", "key": "element.roads"}, {"text": "Erosion and sediment control plan", "key": "element.earthworks"}, {"text": "Works-as-executed review and stormwater certificate for the OC", "key": "stage.as_built"}]
     must_not_include: ["Public road works", "MUSIC water quality modelling", "NorBE assessment", "Flood report", "3D civil model", "Design criteria document", "Road safety audit", "Trunk drainage", "Regulated-design declarations", "D&C stages", "Existing OSD feasibility"]
     expect:
       stages_include: [schematic, detailed_tender, for_construction, as_built]
@@ -332,6 +334,8 @@ rfps:
     app_differs:
       - {key: position.water_quality, app: O, expect: absent, why: "I when flags, else O"}
       - {key: position.civil_model, app: O, expect: absent, why: "service_level simple O"}
+      - {key: text.roads, app: "no driveway long section or crossing levels named", expect: "named", why: "civil.yaml roads element is generic (RFP triage 2 Nov)"}
+      - {key: text.detailed_tender, app: "no rainwater tank overflow named", expect: "named", why: "domain-only deliverable (RFP triage 2 Nov)"}
       - {key: position.pavement_design, app: O, expect: absent, why: "always O"}
       - {key: stage.for_construction, app: option, expect: include, why: "the traditional boundary ends at detailed_tender, so resolveStages prices the later for_construction stage as an option; the stormwater construction set is needed for the CC"}
       - {key: stage.as_built, app: option, expect: include, why: "follows construction_phase, which is an option; WAE certification is needed for the OC"}
@@ -339,8 +343,8 @@ rfps:
     template: geotechnical
     built_in: "partial"
     source: "knowledge/rfp/geotechnical.yaml"
-    must_include: ["Investigation plan", "Field work: boreholes or test pits with DCP tests", "Laboratory reactivity testing", "Report with AS 2870 site classification, founding depth and footing recommendations", "Option: pier and footing inspections"]
-    must_not_include: ["Contamination or waste classification", "Groundwater monitoring wells", "Acid sulfate soils assessment", "Asset exposure", "Novation or transfer"]
+    must_include: ["Investigation plan", {"text": "Field work: boreholes or test pits with DCP tests", "key": "stage.g2_field"}, {"text": "Laboratory reactivity testing", "key": "stage.g2_field"}, {"text": "Report with AS 2870 site classification, founding depth and footing recommendations", "key": "stage.g3_report"}, {"text": "Option: pier and footing inspections", "key": "stage.g6_construction"}]
+    must_not_include: ["Contamination or waste classification", {"text": "Groundwater monitoring wells", "key": "position.monitoring"}, "Acid sulfate soils assessment", "Asset exposure", "Novation or transfer"]
     expect:
       stages_include: [g1_plan, g2_field, g3_report]
       stages_option: [g5_design, g6_construction]
@@ -350,6 +354,8 @@ rfps:
     app_differs:
       - {key: position.monitoring, app: O, expect: absent, why: "always O"}
       - {key: stage.g7_transfer, app: option, expect: absent, why: "default option"}
+      - {key: stage.g4_planning, app: option, expect: absent, why: "client flag geotech_planning unset; after the g3 boundary it is priced as an option (RFP triage 2 Nov)"}
+      - {key: text.g2_field, app: "no DCP or reactivity tests named", expect: "named", why: "house-specific tests the template does not list (RFP triage 2 Nov)"}
       - {key: position.transfer, app: O, expect: absent, why: "O unless g7 included"}
       - {key: position.defects, app: O, expect: absent, why: "always O"}
       - {key: stage.g2_field, app: ask, expect: include, why: "client flag geotech_intrusive cannot be keyed"}
@@ -361,7 +367,7 @@ rfps:
     template: land-surveying
     built_in: "partial"
     source: "knowledge/rfp/land-surveying.yaml"
-    must_include: ["Detail and contour survey on AHD with trees and street features", "Boundary identification with easements", "Adjoining windows, ridge heights and trees for the DA", "Sewer location from records", "Option: building set-out", "Option: identification surveys at slab and frame or roof stage", "Option: final survey for the OC"]
+    must_include: [{"text": "Detail and contour survey on AHD with trees and street features", "key": "stage.s2_detail"}, "Boundary identification with easements", {"text": "Adjoining windows, ridge heights and trees for the DA", "key": "position.adjoining"}, {"text": "Sewer location from records", "key": "position.records"}, {"text": "Option: building set-out", "key": "position.setout"}, {"text": "Option: identification surveys at slab and frame or roof stage", "key": "stage.s6_construction"}, {"text": "Option: final survey for the OC", "key": "stage.s7_completion"}]
     must_not_include: ["Subdivision or strata titling", "Interior scan", "Movement monitoring", "Occupied-site access"]
     expect:
       stages_include: [s1_plan, s2_detail, s3_boundary, s4_services]
@@ -397,6 +403,7 @@ rfps:
       - {key: stage.a1_inception, app: ask, expect: absent, why: "boundary falls back to a1..a3 without the client flag bca_certification"}
       - {key: stage.a2_planning, app: ask, expect: absent, why: "as above"}
       - {key: stage.a3_tender, app: ask, expect: absent, why: "as above"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "after the a1..a3 boundary that applies without the client flag bca_certification (RFP triage 2 Nov)"}
       - {key: stage.b2_construction_approval, app: option, expect: include, why: "after the a1..a3 boundary"}
       - {key: stage.b3_construction, app: option, expect: include, why: "after the boundary"}
       - {key: stage.b4_occupation, app: option, expect: include, why: "after the boundary"}
@@ -481,7 +488,7 @@ triggers:
       procurement: [consultant.town_planner]
       cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees"]
       program: ["Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
-      rfps: [consultant.town_planner]
+      rfps: [consultant.town_planner, {discipline: consultant.architect, must_include: ["Planning response to council requests"]}]   # no council requests under a CDC
     why: "Town planner not needed; the app still suggests it through baselines[0] and its RFP then blocks on cdc. Contributions stay payable, so DA fees and contributions is replaced by the CDC fee and contributions lines"
     built_in: {program: "yes", cost_plan: "partial", procurement: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"
@@ -535,7 +542,7 @@ triggers:
       work_items: [{system: site.trees, action: retain}]
       cost_plan: ["Arborist", "Tree protection"]
       program: ["Arborist impact assessment", "Install tree protection"]
-      rfps: [{discipline: consultant.arborist, must_include: ["AS 4970 impact assessment", "Tree protection plan", "Construction supervision hold points"]}]
+      rfps: [{discipline: consultant.arborist, must_include: [{text: "AS 4970 impact assessment", key: stage.s2_impact}, "Tree protection plan", "Construction supervision hold points"]}, {discipline: consultant.structural, must_include: ["Footing design and location that avoid the structural root zone"]}]   # R9
       authority: ["Council tree permit or DA approval for removal or pruning"]
     built_in: {procurement: "no", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
     source: "knowledge/rfp/arborist.yaml s2_impact"

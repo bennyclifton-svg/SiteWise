@@ -58,11 +58,9 @@ description: Unknown dry, control and authority allocations remain issue decisio
 snapshot: false
 expect:
   fire-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      dry: ask
-      authority: ask
-      controls: ask
-    blocking:
-    - fact:flag.fs_dry
-    - fact:flag.fs_authority
-    - fact:flag.fs_controls
+      dry: I
+      authority: I
+      controls: I
+    blocking: ['fact:flag.fs_dry', 'fact:flag.fs_authority', 'fact:flag.fs_controls']

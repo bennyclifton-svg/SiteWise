@@ -58,6 +58,7 @@ func releaseKnowledge(t *testing.T) *knowledge.Catalog {
 	if err != nil {
 		t.Fatal(err)
 	}
+	body = bytes.ReplaceAll(body, []byte("\r\n"), []byte("\n"))
 	anchor := "    evidence: " + holdEvidence + "\n"
 	if !bytes.Contains(body, []byte(anchor)) {
 		t.Fatal("fixture hold point moved")

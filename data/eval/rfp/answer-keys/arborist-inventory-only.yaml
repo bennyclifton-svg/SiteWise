@@ -55,17 +55,13 @@ description: Inventory-only remediation appointment with affected trees and deni
   assessment; no impact report or protection plan purchased.
 expect:
   arborist:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
       offsite: I
       existing: I
-      investigation: O
-      impacts: O
+      investigation: X
+      impacts: X
     blocking_only: true
     blocking: []
-    stages_include:
-    - s1_inventory
-    stages_option:
-    - s2_impact
-    - s3_protection
-    - s4_tender
-    - s5_construction
+    stages_include: [s1_inventory]
+    stages_absent: [s2_impact, s3_protection, s4_tender, s5_construction]

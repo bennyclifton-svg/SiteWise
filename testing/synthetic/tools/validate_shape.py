@@ -156,6 +156,33 @@ def _discipline_aliases_errors(where, item, ids):
     return [f"{where}: alias {a} is not in disciplines.json" for a in aliases if a not in ids["disciplines"]]
 
 
+def _phrase_text(p):
+    return (p.get("text") if isinstance(p, dict) else str(p) if p is not None else "").strip()
+
+
+def _removes_rfp_errors(where, item, base_rfps, ids):
+    """A removes.rfps item drops a whole RFP (a discipline id) or only the named
+    phrases of a base RFP: {discipline, must_include: [...], must_not_include: [...]}."""
+    if isinstance(item, str):
+        return [] if item in ids["disciplines"] else [f"{where}: discipline {item} is not in disciplines.json"]
+    if not isinstance(item, dict) or set(item) - {"discipline", "must_include", "must_not_include"}:
+        return [f"{where}: must be a discipline id or {{discipline, must_include, must_not_include}}"]
+    d = item.get("discipline")
+    if d not in ids["disciplines"]:
+        return [f"{where}: discipline {d} is not in disciplines.json"]
+    base = next((r for r in base_rfps if r.get("discipline") == d), None)
+    if base is None:
+        return [f"{where}: {d} has no base RFP to remove phrases from"]
+    out = []
+    for name in ("must_include", "must_not_include"):
+        have = {_phrase_text(p) for p in base.get(name) or []}
+        out += _phrase_errors(f"{where} {name}", item.get(name))
+        for p in item.get(name) or []:
+            if _phrase_text(p) and _phrase_text(p) not in have:
+                out.append(f"{where}: {name} phrase '{_phrase_text(p)}' is not in the base {d} RFP")
+    return out
+
+
 def validate(path, ids):
     path = Path(path)
     errors, warnings = [], []
@@ -277,8 +304,13 @@ def validate(path, ids):
                             err(f"{where}: expect stage {stage} is in both {seen[stage]} and {lst} (both include/option/absent)")
                         seen[stage] = lst
         for j, d in enumerate(r.get("app_differs") or []):
-            if not re.match(r"^(stage|position|element|text)\.", str(d.get("key", ""))):
-                err(f"{where} app_differs[{j}]: key {d.get('key')} must start with stage., position., element. or text.")
+            if not re.match(r"^(stage|position|element|text|blocking)\.", str(d.get("key", ""))):
+                err(f"{where} app_differs[{j}]: key {d.get('key')} must start with stage., position., element., text. or blocking.")
+            elif str(d["key"]).startswith("blocking."):
+                # blocking.<check id>: the app raises or omits that blocking check.
+                for side in ("app", "expect"):
+                    if d.get(side) not in ("blocking", "not blocking"):
+                        err(f"{where} app_differs[{j}]: {d['key']} {side} must be 'blocking' or 'not blocking'")
             if not d.get("why"):
                 err(f"{where} app_differs[{j}]: why is required")
 
@@ -307,10 +339,11 @@ def validate(path, ids):
         for j, w in enumerate(adds.get("work_items") or []):
             work_item(f"{where} adds.work_items[{j}]", w)
         removes = t.get("removes") or {}
-        for area in ("procurement", "rfps"):
-            for d in removes.get(area) or []:
-                if d not in ids["disciplines"]:
-                    err(f"{where}: removes.{area} discipline {d} is not in disciplines.json")
+        for d in removes.get("procurement") or []:
+            if d not in ids["disciplines"]:
+                err(f"{where}: removes.procurement discipline {d} is not in disciplines.json")
+        for j, item in enumerate(removes.get("rfps") or []):
+            errors.extend(_removes_rfp_errors(f"{where} removes.rfps[{j}]", item, shape["rfps"], ids))
         claims = {area: _claim(c) for area, c in (t.get("built_in") or {}).items()}
         for area, claim in claims.items():
             if claim not in BUILT_IN:

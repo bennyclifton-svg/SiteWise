@@ -118,7 +118,7 @@ test("answer the strip question: the range narrows and the Profile shows the val
 
   // The answer was written through the Profile.
   await page.getByRole("button", { name: "Profile", exact: true }).click();
-  await expect(page.locator(".pf-work-line").getByRole("radio", { name: option })).toBeChecked();
+  await expect(page.getByRole("combobox", { name: "Work type", exact: true }).locator("option:checked")).toHaveText(option);
 });
 
 test("a work item changed in the Profile raises the review: an edited row defaults to Keep, Adopt all, Undo (step 13)", async ({ page }) => {
@@ -134,7 +134,7 @@ test("a work item changed in the Profile raises the review: an edited row defaul
   // The user edits one of the two rows the work item brought.
   v = await ops(page, project, [{ op: "update", id: rough.id, label: "Gas rough-in, level 1" }]);
   expect(v.changes_pending).toBe(0);
-  await expect(page.locator(".pg-banner")).toHaveCount(0);
+  await expect(page.locator(".pg-update")).toHaveText("Update program");
 
   // Exclude the gas work in the Profile (the system row's tick is its inclusion).
   await page.getByRole("button", { name: "Profile", exact: true }).click();
@@ -146,14 +146,15 @@ test("a work item changed in the Profile raises the review: an edited row defaul
 
   // The review runs in the background; the open Program hears of it.
   await openProgram(page);
-  const banner = page.locator(".pg-banner");
-  await expect(banner).toContainText(/^Scope and procurement changed: (.*, )?2 to remove(, .*)?\.\s*Review$/, { timeout: 20_000 });
+  // Only the Update program button lights up; no banner opens by itself.
+  const update = page.locator(".pg-update");
+  await expect(update).toHaveClass(/is-pending/, { timeout: 20_000 });
+  await expect(update).toHaveAttribute("title", /^Profile or Procurement changed: (.*, )?2 to remove(, .*)?\.$/);
   // Nothing changed on the program until a choice is made.
   expect((await read(page, project)).activities.some((a) => a.id === fitOff.id)).toBe(true);
-  await expect(page.getByRole("button", { name: /^Review changes \(\d+\)$/ })).toBeVisible();
-  await banner.getByRole("button", { name: "Review", exact: true }).click();
+  await update.click();
 
-  const panel = page.getByRole("region", { name: "Review changes" });
+  const panel = page.getByRole("region", { name: "Update program" });
   const item = (label: string) => panel.locator(".pg-review-item", { hasText: label });
   const choice = (label: string, c: "Adopt" | "Keep") => item(label).getByRole("radio", { name: c, exact: true });
   // The edited row defaults to Keep and says why; the untouched one to Adopt.

@@ -55,20 +55,14 @@ scenario: cost-authority-only
 description: Industrial extension buys current authority report only; DA/D&C do not imply design/tender/novation.
 expect:
   cost-planning:
-    stages_include:
-    - s1_basis
-    - s3_authority
-    stages_absent:
-    - s2_concept
-    - s4_design
-    stages_option:
-    - s5_tender
-    - s6_construction
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_basis, s3_authority]
+    stages_absent: [s2_concept, s4_design, s5_tender, s6_construction]
     positions:
       existing_costs: I
       total_budget: absent
-      tender: O
-      claims: O
-      lender: O
+      tender: X
+      claims: X
+      lender: X
     blocking_only: true
     blocking: []

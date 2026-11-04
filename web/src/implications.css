@@ -7,21 +7,21 @@
 .implications-head .report-actions { flex-shrink: 0; margin: 0; }
 .implications-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.implications-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+.implications-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--fs-lg); }
 .implications-table .col-kind { width: 120px; }
 .implications-table .col-where { width: 150px; }
 .implications-table .col-status { width: 170px; }
 .implications-table .col-actions { width: 160px; }
-.implications-table thead th { padding: 8px; text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-muted); border-bottom: 1px solid var(--line-strong); }
+.implications-table thead th { padding: 8px; text-align: left; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); border-bottom: 1px solid var(--line-strong); }
 .implications-table td { padding: 6px 8px; vertical-align: top; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
-.implications-group th { padding: 22px 8px 8px; text-align: left; font-size: 15px; color: var(--ink); border-bottom: 1px solid var(--line-strong); }
+.implications-group th { padding: 22px 8px 8px; text-align: left; font-size: var(--fs-lg); color: var(--ink); border-bottom: 1px solid var(--line-strong); }
 .implication-row.is-decided { color: var(--ink-muted); }
 .implication-toggle { display: flex; gap: 8px; width: 100%; padding: 2px 0; text-align: left; font: inherit; color: inherit; border: 0; background: transparent; cursor: pointer; }
 .implication-toggle > span { flex-shrink: 0; width: 1em; color: var(--ink-muted); }
 .implication-toggle:hover { text-decoration: underline; }
-.implication-system { display: block; padding-left: calc(1em + 8px); font-size: 12px; color: var(--ink-muted); }
+.implication-system { display: block; padding-left: calc(1em + 8px); font-size: var(--fs-sm); color: var(--ink-muted); }
 .implication-actions > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.implication-badge { display: inline-block; margin: 0 6px; padding: 1px 6px; font-size: 11px; font-weight: 600; color: var(--ink-muted); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.implication-badge { display: inline-block; margin: 0 6px; padding: 1px 6px; font-size: var(--fs-xs); font-weight: 600; color: var(--ink-muted); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .implication-badge.is-critical { margin-left: 0; color: var(--warn); background: var(--warn-soft); border-color: transparent; }
 
 .implication-expanded > td { padding: 0 8px 16px 32px; background: var(--ground); }
@@ -30,9 +30,9 @@
 .implication-note { padding: 6px 10px; background: var(--warn-soft); }
 .implication-signals { padding-left: 18px; }
 .implication-detail details summary { cursor: pointer; color: var(--ink-muted); }
-.implication-ref { font-size: 12px; color: var(--ink-muted); }
+.implication-ref { font-size: var(--fs-sm); color: var(--ink-muted); }
 .implication-decision { padding-top: 8px; border-top: 1px solid var(--line-strong); }
-.implication-decision h3 { margin: 0; font-size: 15px; }
+.implication-decision h3 { margin: 0; font-size: var(--fs-lg); }
 
 @media (max-width: 720px) {
   .reports.implications { padding: 20px 16px 48px; }

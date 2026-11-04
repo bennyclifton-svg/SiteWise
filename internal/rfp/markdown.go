@@ -20,7 +20,7 @@ func Markdown(sections []reports.Section) string {
 		for _, block := range s.Blocks {
 			text := strings.TrimSpace(block.Text)
 			if block.Label != "" {
-				text = "**" + block.Label + "**: " + text
+				text = strings.TrimSpace("**" + block.Label + "**: " + text)
 			}
 			if text != "" {
 				b.WriteString(text + "\n\n")

@@ -93,6 +93,23 @@ RETURNING id::text, byte_size`, orgID, newID(), projectID, in.SHA256, in.Size, i
 	var out InvoiceCreated
 	err = tx.QueryRow(ctx, `SELECT id::text, status FROM invoices WHERE org_id=$1::uuid AND project_id=$2::uuid AND file_id=$3::uuid`, orgID, projectID, fileID).Scan(&out.ID, &out.Status)
 	if err == nil {
+		// Re-dropping a format we can now read recovers the original row.
+		// A user correction, split, void or successful reading is never reset.
+		if out.Status == invoices.StatusNotRead && in.NotRead == "" && in.Size > 0 && invoices.FormatOf(in.Filename) != "" {
+			tag, err := tx.Exec(ctx, `UPDATE invoices SET status='reading', not_read_reason='', filename=$4, updated_at=$5, version=version+1
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid AND not_read_reason='unsupported_format'
+AND NOT EXISTS (SELECT 1 FROM invoice_decisions d WHERE d.org_id=$1::uuid AND d.invoice_id=$3::uuid AND d.decided_by='user')
+AND NOT EXISTS (SELECT 1 FROM invoice_allocations a WHERE a.org_id=$1::uuid AND a.invoice_id=$3::uuid AND a.decided_by='user')`, orgID, projectID, out.ID, in.Filename, now)
+			if err != nil {
+				return InvoiceCreated{}, err
+			}
+			if tag.RowsAffected() == 1 {
+				out.Status = invoices.StatusReading
+				if err := invoiceEvent(ctx, tx, s, orgID, projectID, out.ID, out.Status); err != nil {
+					return InvoiceCreated{}, err
+				}
+			}
+		}
 		return out, tx.Commit(ctx)
 	}
 	if !errors.Is(err, pgx.ErrNoRows) {
@@ -265,6 +282,7 @@ ORDER BY title, id`, orgID, projectID)
 		return pc, plan, err
 	}
 	plan.taxBasis = cp.TaxBasis
+	plan.items = cp.Items
 	sections := costs.CostSections(cp.Items)
 	cat := s.workCatalog()
 	holds, err := awardHolds(ctx, tx, orgID, projectID)
@@ -336,6 +354,7 @@ WHERE a.org_id=$1::uuid AND a.project_id=$2::uuid AND a.decided_by='user' AND a.
 }
 
 type invoicePlan struct {
+	items         []costs.Item
 	taxBasis      string
 	lines         []invoices.BudgetLine
 	packageTitles map[string]string
@@ -552,6 +571,7 @@ WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.id=$3::uuid`, orgID, pro
 // LedgerView is the Cost plan panel's data: every invoice, its rows and
 // flags, the summary and the names a view needs, from one read.
 type LedgerView struct {
+	Groups   map[string]invoices.GroupSummary
 	Invoices []invoices.Invoice
 	Flags    map[string][]invoices.Flag
 	Status   map[string]string
@@ -649,6 +669,7 @@ FROM invoice_allocations WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY 
 		v.Lines = append(v.Lines, invoices.BudgetLine{ID: id, Label: label, Archived: true})
 	}
 	v.Summary = invoices.Summarize(v.Lines, v.Invoices, plan.taxBasis)
+	v.Groups = invoices.GroupSummaries(plan.items, v.Invoices, plan.taxBasis)
 	v.Flags = invoices.Check(v.Invoices, plan.packageABN, today)
 	v.Status = map[string]string{}
 	for _, inv := range v.Invoices {

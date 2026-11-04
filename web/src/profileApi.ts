@@ -119,7 +119,11 @@ export interface Profile {
   systems: { id: string; label: string; rows: SystemRow[] }[];
   compliance: { group: string; rows: ProfileField[] }[];
   presets: Preset[];
+  /** Packages awarded to a firm, with the firm's contact as the directory holds it. */
+  appointed?: AppointedFirm[] | null;
 }
+
+export interface AppointedFirm { package_id: string; package: string; firm: string; contact?: string; email?: string; phone?: string; pi_expires_on?: string }
 
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   let res: Response;

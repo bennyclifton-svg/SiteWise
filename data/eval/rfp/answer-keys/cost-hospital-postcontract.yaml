@@ -58,16 +58,12 @@ scenario: cost-hospital-postcontract
 description: Explicit institutional post-contract appointment promotes claim advice but leaves lender separate.
 expect:
   cost-planning:
-    stages_include:
-    - s1_basis
-    - s4_design
-    - s5_tender
-    - s6_construction
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_basis, s4_design, s5_tender, s6_construction, s7_completion]
     positions:
       tender: I
       claims: I
-      lender: O
+      lender: I
       operator: I
       allocation: I
     blocking_only: true

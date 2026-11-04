@@ -57,18 +57,14 @@ description: Occupied fit-out separately selects owner equipment and whole-proje
   designer input.
 expect:
   cost-planning:
-    stages_include:
-    - s1_basis
-    - s4_design
-    stages_option:
-    - s5_tender
-    - s6_construction
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_basis, s4_design]
     positions:
       existing_costs: I
       total_budget: I
       operator: I
       allocation: absent
-      claims: O
+      claims: X
     blocking_only: true
     blocking: []
+    stages_absent: [s5_tender, s6_construction, s7_completion]

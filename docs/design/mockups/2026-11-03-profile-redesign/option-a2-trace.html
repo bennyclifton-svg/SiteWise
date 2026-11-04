@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>SiteWise · Project Profile · Trace, round 2</title>
+<style>
+@font-face { font-family: "Instrument Sans"; font-weight: 400; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 500; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 600; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 700; src: url("../../../../web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 400; src: url("../../../../web/node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("../../../../web/node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); }
+
+:root {
+  --table: #E8E7E3;
+  --sheet: #FBFAF8;
+  --ink: #1F1B17;
+  --ink-2: #4A433C;
+  --ink-3: #6B625A;
+  --ink-4: #9A9188;
+  --rule: #E6E2DC;
+  --rule-2: #D6D1C9;
+  --heavy: #2A241F;
+  --ember: #A85E2C;
+  --azure: #2D5E9E;
+  --amber: #B07A2A;
+  --amber-ink: #6E4117;
+  --ok: #2D7149;
+  --sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .16  0 0 0 0 .14  0 0 0 0 .12  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { position: relative; font-family: var(--sans); color: var(--ink); background: var(--table); -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1; }
+body::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: var(--grain); opacity: .05; mix-blend-mode: multiply; }
+
+.app { position: relative; z-index: 1; display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+/* ---------- Navigation ---------- */
+nav.side { padding: 30px 14px 26px 20px; display: flex; flex-direction: column; }
+.logo { height: 25px; width: auto; filter: brightness(0); opacity: .86; display: block; }
+.switcher { margin-top: 38px; height: 42px; border: 1px solid var(--rule-2); border-radius: 12px; background: rgba(255,255,255,.42); display: flex; align-items: center; gap: 10px; padding: 0 12px; font: 600 13.5px/1 var(--sans); }
+.switcher .code { font: 500 11px/1 var(--mono); color: var(--ink-3); border: 1px solid var(--rule-2); border-radius: 5px; padding: 3px 5px; }
+.switcher svg { margin-left: auto; color: var(--ink-3); }
+.navlist { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.navlist li { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: 10px; font-size: 14.5px; color: var(--ink-2); }
+.navlist li svg { color: var(--ink-3); flex: none; }
+.navlist li.on { background: var(--sheet); color: var(--ink); font-weight: 600; box-shadow: 0 1px 1px rgba(40,32,24,.06), 0 2px 6px -2px rgba(40,32,24,.10); }
+.navlist li.on svg { color: var(--ink); }
+.v2 .navlist li.on { background: transparent; box-shadow: none; }
+.navlist li.off, .navlist li.off svg { color: var(--ink-4); }
+.navlist li .soon { margin-left: auto; font-size: 11.5px; color: var(--ink-4); }
+.side-foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 0 4px; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--heavy); color: var(--sheet); display: grid; place-items: center; font: 600 11.5px/1 var(--sans); }
+.side-foot .who { font-size: 13px; color: var(--ink-2); }
+.iconbtn { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--ink-3); border: 1px solid var(--rule-2); }
+
+/* ---------- Sheet ---------- */
+main { padding: 16px 16px 16px 0; }
+.sheet { position: relative; background: var(--sheet); border-radius: 3px; min-height: calc(100vh - 32px); padding-bottom: 56px; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(40,32,24,.05), 0 1px 1px rgba(40,32,24,.05), 0 12px 32px -14px rgba(40,32,24,.22); }
+.sheet::after { content: ""; position: absolute; inset: 0; background-image: var(--grain); opacity: .035; mix-blend-mode: multiply; pointer-events: none; }
+
+/* Header across the full width */
+header.head { position: relative; height: 214px; padding: 48px 40px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+header.head > *:not(.paper) { position: relative; z-index: 2; }
+.paper { position: absolute; left: 0; top: 0; z-index: 1; pointer-events: none; overflow: visible; }
+h1 { margin: 0; font-weight: 600; font-size: 52px; line-height: 1; letter-spacing: -.03em; }
+.ident { margin-top: 16px; display: flex; align-items: center; gap: 10px; font-size: 15.5px; color: var(--ink-2); }
+.ident .sep { color: var(--ink-4); }
+.ident .mono { font: 400 14px/1 var(--mono); }
+.ident .unknown { color: var(--ink-3); }
+.head-right { display: flex; flex-direction: column; align-items: flex-end; gap: 16px; padding-top: 4px; }
+.reading { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+.reading svg { color: var(--ok); }
+.actions { display: flex; gap: 10px; }
+.btn { height: 38px; border-radius: 999px; padding: 0 18px; display: inline-flex; align-items: center; gap: 8px; font: 500 14px/1 var(--sans); border: 1px solid var(--rule-2); background: rgba(255,255,255,.6); color: var(--ink); }
+.btn.primary { background: var(--heavy); color: #F7F5F1; border-color: var(--heavy); font-weight: 600; }
+.btn.sm { height: 32px; padding: 0 14px; font-size: 13px; }
+
+/* Body: work on the left, documents on the right */
+.body { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 40px; padding: 0 40px; }
+.lede { display: grid; grid-template-columns: 1fr 268px; gap: 48px; padding-top: 38px; align-items: start; }
+.sentence { margin: 0; font-size: 27px; line-height: 1.6; letter-spacing: -.012em; color: var(--ink-3); text-wrap: pretty; }
+.t { color: var(--ink); font-weight: 500; }
+.legend { margin-top: 24px; display: flex; gap: 22px; font-size: 12.5px; color: var(--ink-3); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.mk { width: 7px; height: 7px; border-radius: 50%; background: var(--ember); display: inline-block; flex: none; }
+.mk.j { background: transparent; box-shadow: inset 0 0 0 1.5px var(--azure); }
+.mk.u { border-radius: 1.5px; background: var(--ink); }
+
+.notes h2 { margin: 8px 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .01em; }
+.notes dl { margin: 0; border-top: 1.5px solid var(--heavy); }
+.notes dl div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.notes dt { color: var(--ink-3); display: inline-flex; align-items: center; gap: 8px; }
+.notes dd { margin: 0; font-weight: 600; display: flex; gap: 10px; align-items: baseline; }
+.notes dd a { font-weight: 400; font-size: 12.5px; color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+.notes dd.soft { font-weight: 500; color: var(--amber-ink); }
+.swatch { position: relative; isolation: isolate; display: inline-block; padding: 0 2px; color: var(--ink-3); }
+
+/* Project title block */
+.block { padding-top: 54px; }
+.block-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+h2.sec { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -.012em; }
+h2.sec small { font-size: 14px; font-weight: 400; color: var(--ink-3); margin-left: 10px; }
+.parts { display: flex; align-items: center; font-size: 13px; color: var(--ink-3); }
+.seg { display: inline-flex; padding: 3px; border-radius: 999px; background: #F1EFEB; box-shadow: inset 0 0 0 1px var(--rule); margin-left: 8px; }
+.seg span { height: 26px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 999px; font-size: 12.5px; color: var(--ink-3); }
+.seg span.on { background: #fff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(40,32,24,.12); }
+.titleblock { position: relative; display: grid; grid-template-columns: 1.12fr 1fr .94fr 1fr .98fr; border-bottom: 1px solid var(--rule-2); }
+.titleblock .rule-top { position: absolute; left: 0; right: 0; top: 0; height: 1.5px; background: var(--heavy); }
+.v1 .titleblock .rule-top, .v2 .titleblock .rule-top { background: transparent; } /* drawn in pencil */
+.col { border-left: 1px solid var(--rule); min-width: 0; }
+.col:first-child { border-left: 0; }
+.col h3 { margin: 0; height: 34px; display: flex; align-items: center; padding: 0 12px; font-size: 12px; font-weight: 600; letter-spacing: .01em; border-bottom: 1px solid var(--rule-2); }
+.col:first-child h3, .col:first-child .cell { padding-left: 0; }
+.cell { position: relative; height: 56px; padding: 9px 12px 0; border-bottom: 1px solid var(--rule); }
+.cell:last-child { border-bottom: 0; }
+.cell .l { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--ink-3); line-height: 14px; }
+.cell .v { margin-top: 7px; display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; line-height: 18px; white-space: nowrap; }
+.cell .v .u { color: var(--ink-4); font-weight: 400; font-size: 13.5px; }
+.cell .v.unk { color: var(--ink-3); font-weight: 400; }
+.cell .v.unk a { color: var(--ink); font-weight: 500; font-size: 13px; text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 3px; }
+.chev { color: var(--ink-4); flex: none; margin-top: 1px; }
+.cell.open { background: #F3F1EC; }
+.src { display: inline-flex; align-items: center; gap: 5px; font: 400 10.5px/1 var(--mono); color: var(--ink-4); }
+.src .mk { width: 6px; height: 6px; }
+.cell.empty { background: repeating-linear-gradient(135deg, transparent 0 6px, rgba(40,32,24,.035) 6px 7px); }
+.hl { position: relative; isolation: isolate; display: inline-flex; align-items: center; gap: 6px; }
+svg.brush { position: absolute; z-index: -1; pointer-events: none; mix-blend-mode: multiply; overflow: visible; }
+
+/* Dropdown */
+.pop { position: absolute; z-index: 20; top: calc(100% - 6px); left: 4px; width: 268px; background: #fff; border-radius: 12px; padding: 6px;
+  box-shadow: 0 0 0 1px rgba(40,32,24,.09), 0 2px 4px rgba(40,32,24,.06), 0 18px 40px -12px rgba(40,32,24,.32); }
+.pop .opt { height: 32px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; color: var(--ink); }
+.pop .opt .tick { width: 14px; flex: none; color: var(--ink); }
+.pop .opt.sel { background: #F3F1EC; font-weight: 600; }
+.pop .opt.unk { color: var(--ink-3); }
+.pop .opt .n { margin-left: auto; font: 400 11px/1 var(--mono); color: var(--ink-4); display: inline-flex; gap: 5px; align-items: center; }
+.pop hr { border: 0; border-top: 1px solid var(--rule); margin: 5px 4px; }
+.pop .foot { padding: 6px 10px 4px; font-size: 11.5px; color: var(--ink-3); }
+.pop .hd { padding: 6px 10px 6px; font-size: 11.5px; font-weight: 600; color: var(--ink-3); }
+
+/* Scope and works: systems matrix */
+.scope { padding-top: 64px; }
+.scope-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.scope-tools { display: flex; align-items: center; gap: 18px; font-size: 13px; color: var(--ink-3); }
+.toggle { width: 30px; height: 18px; border-radius: 999px; background: #E2DED8; position: relative; display: inline-block; vertical-align: -4px; margin-right: 8px; }
+.toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+.key { display: flex; gap: 20px; font-size: 12.5px; color: var(--ink-3); margin: 0 0 12px; }
+.key span { display: inline-flex; align-items: center; gap: 8px; }
+.cellk { width: 9px; height: 13px; border-radius: 1.5px; display: inline-block; }
+.c-in { background: #35302A; }
+.c-out { box-shadow: inset 0 0 0 1px #CFC9C0; background: #fff; }
+.c-chk { background: var(--amber); }
+.matrix { position: relative; list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--heavy); }
+.matrix > li { border-bottom: 1px solid var(--rule); }
+.mrow { display: grid; grid-template-columns: 300px 1fr 70px; align-items: center; height: 38px; padding: 0 4px 0 0; font-size: 14px; color: var(--ink-2); }
+.mrow .cells { display: flex; gap: 4px; }
+.mrow .cells i { width: 10px; height: 15px; border-radius: 1.5px; display: block; }
+.mrow .n { text-align: right; font-size: 13px; color: var(--ink-3); }
+.mrow .n b { color: var(--ink); font-weight: 500; }
+.mrow .nm { display: inline-flex; align-items: center; gap: 8px; }
+.zero .mrow, .zero .mrow .n, .zero .mrow .n b { color: var(--ink-4); font-weight: 400; }
+li.open .mrow { color: var(--ink); font-weight: 600; }
+li.open .mrow .n b { font-weight: 600; }
+.workup { position: relative; margin: 2px 0 18px; padding: 6px 0 10px; }
+.workup > table { position: relative; z-index: 2; }
+.v1 .workup { padding: 4px 16px 8px; background: #F5F3EF; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--rule); }
+.v2 header.head { height: 184px; }
+.v2 .workup { padding: 26px 26px 26px; margin: 4px -14px 22px; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 11.5px; font-weight: 600; color: var(--ink-3); height: 32px; border-bottom: 1px solid var(--rule-2); padding: 0 10px; letter-spacing: .01em; }
+td { height: 40px; border-bottom: 1px solid var(--rule); padding: 0 10px; font-size: 13.5px; vertical-align: middle; }
+.v2 td { border-bottom-color: rgba(120,100,60,.14); }
+.v2 th { border-bottom-color: rgba(120,100,60,.24); }
+tr:last-child td { border-bottom: 0; }
+th:first-child, td:first-child { padding-left: 0; }
+td.sys { font-weight: 500; }
+td.sys .flag { display: block; font-size: 12px; font-weight: 400; color: var(--amber-ink); margin-top: 2px; }
+td.basis, td.by { color: var(--ink-3); font-size: 13px; }
+td .dd { display: inline-flex; align-items: center; gap: 6px; }
+td.ev, th.ev { text-align: right; padding-right: 0; }
+tr.tall td { height: 56px; }
+tr.more td { color: var(--ink-3); height: 42px; }
+tr.more b { color: var(--ink-2); font-weight: 500; }
+
+/* ---------- Documents: same columns and order as the app ---------- */
+aside.docs { margin-top: 38px; align-self: start; background: #fff; border: 1px solid var(--rule-2); border-radius: 10px; overflow: hidden; }
+.dh { height: 42px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13px; color: var(--ink-2); border-bottom: 1px solid var(--rule-2); }
+.dh svg { color: var(--ink-3); }
+.dr { display: grid; grid-template-columns: 84px minmax(0, 1fr) 28px 64px 86px 14px; gap: 0 8px; align-items: center; height: 29px; padding: 0 10px 0 10px; border-bottom: 1px solid var(--rule); font-size: 12px; color: var(--ink); }
+.dr:last-child { border-bottom: 0; }
+.dr.th { height: 30px; font-size: 11.5px; color: var(--ink-3); background: #FAF9F7; border-bottom: 1px solid var(--rule-2); }
+.dr .no, .dr .rev, .dr .dt { font: 400 11.5px/1 var(--mono); color: var(--ink-2); letter-spacing: -.01em; }
+.dr .no, .dr .ti { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dr .ti { display: flex; align-items: center; gap: 6px; }
+.dr .ti span { overflow: hidden; text-overflow: ellipsis; }
+.dr .ti.off { color: var(--ink-3); }
+.dr .ti.warn { color: #B2553A; }
+.dr .ti svg { flex: none; color: var(--ink-4); }
+.dr .ds { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dr .km { color: var(--ink-4); display: grid; place-items: center; }
+
+svg#ink { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 6; overflow: visible; }
+</style>
+</head>
+<body class="v1">
+<!--
+THESIS: The profile reads like a drawing sheet worked over by hand: the building in one sentence, its facts in a ruled title block, scope as a matrix of systems. Three hand marks, used sparingly: torn butter paper, a dry brush stroke, pencil line work.
+OWN-WORLD: Drafting table grey, warm sheet, butter paper with a soft torn edge, graphite pencil, ochre brush, ember for evidence, azure for Jev. Instrument Sans, Plex Mono for identifiers.
+STORY: A manager reads the building in one line, changes any fact where it sits, sees how much of each system is in scope, and keeps the document register beside the work.
+FIRST VIEWPORT: Full-width header; sentence, sources and documents in one band; title block below; systems matrix under it.
+FORM: Drawing-sheet grammar, brief-pinned. Variant 1 (#v1) and variant 2 (#v2) differ only in where the three hand marks sit.
+-->
+<div class="app">
+
+  <nav class="side" aria-label="Workbench">
+    <img class="logo" src="../../../../web/public/brand/sitewise-lockup-dark.png" alt="Sitewise">
+    <div class="switcher"><span class="code">ST01</span>House CDC
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+    </div>
+    <ul class="navlist">
+      <li class="on"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 9.2 10 3.5l7 5.7V16.5H3z"/><path d="M8 16.5v-4.5h4v4.5"/></svg><span id="nav-on">Project profile</span></li>
+      <li class="off"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 2.5v3M13 2.5v3"/></svg>Project plan<span class="soon">Planned</span></li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 16.5V8.5M8 16.5V4M12 16.5v-6M16 16.5V6.5"/></svg>Cost plan</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 5h7M6 10h8M10 15h7"/></svg>Program</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 7l7-3.5L17 7v7l-7 3.5L3 14z"/><path d="M3 7l7 3.5L17 7M10 10.5v7"/></svg>Procurement</li>
+      <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3.5 3.5v11.5H5z"/><path d="M12 2.5V6h3.5M7.5 10h5M7.5 13h5"/></svg>Specifications</li>
+    </ul>
+    <div class="side-foot">
+      <span class="avatar">BC</span><span class="who">Sign out</span>
+      <span class="iconbtn"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4"/></svg></span>
+    </div>
+  </nav>
+
+  <main>
+    <div class="sheet" id="sheet">
+      <header class="head" id="head">
+        <svg class="paper" id="headpaper" aria-hidden="true"></svg>
+        <div>
+          <h1>ST01 House CDC</h1>
+          <div class="ident">
+            Dan and Mai Nguyen <span class="sep">·</span>
+            <span class="mono">Lot 14 DP 1302865</span> <span class="sep">·</span>
+            City of Ryde, NSW <span class="sep">·</span>
+            <span class="unknown">Site address not stated</span>
+          </div>
+        </div>
+        <div class="head-right">
+          <div class="reading"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.2l2.4 2.4 4.6-4.9"/></svg>Reading complete · 6:44 pm</div>
+          <div class="actions">
+            <span class="btn"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10M6 9.5l4 4 4-4M4 16.5h12"/></svg>Download</span>
+            <span class="btn primary">Update profile</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="work">
+          <section class="lede">
+            <div>
+              <p class="sentence" id="sentence">
+                A <span class="t j">new build</span>: a <span class="t j">house, Class&nbsp;1a</span>, of
+                <span class="t j">two storeys</span> and <span class="t d">300&nbsp;m²</span> on a
+                <span class="t d">650&nbsp;m²</span> site in the <span class="t j">City of Ryde</span>, zoned
+                <span class="t d">R2 Low Density Residential</span>. A <span class="t j">high-end custom home</span>
+                for <span class="t j">Dan and Mai Nguyen</span>, approved as a <span class="t j">CDC</span>,
+                with a construction budget of <span class="t d">$1,450,000</span> excluding GST.
+              </p>
+              <div class="legend">
+                <span><i class="mk"></i>From documents</span>
+                <span><i class="mk j"></i>Picked by Jev</span>
+                <span><i class="mk u"></i>Set by you</span>
+              </div>
+            </div>
+            <aside class="notes" aria-label="Sources">
+              <h2>Sources</h2>
+              <dl>
+                <div><dt>Documents filed</dt><dd>13</dd></div>
+                <div><dt>Read for this profile</dt><dd>10</dd></div>
+                <div><dt>Not used, mostly drawings</dt><dd>3 <a>Show</a></dd></div>
+                <div><dt>Passages to review</dt><dd>146 <a>Review</a></dd></div>
+                <div><dt><span class="swatch" id="swatch">Marked</span> to check</dt><dd>4</dd></div>
+                <div><dt>Thresholds</dt><dd class="soft">Provisional</dd></div>
+              </dl>
+            </aside>
+          </section>
+
+          <section class="block">
+            <div class="block-head">
+              <h2 class="sec">Project</h2>
+              <div class="parts">Applies to<span class="seg"><span class="on">Whole project</span><span>+ Part</span></span></div>
+            </div>
+            <div class="titleblock" id="titleblock">
+                            <div class="col">
+                <h3>Place</h3>
+                <div class="cell"><div class="l">Client<span class="src"><i class="mk j"></i>6</span></div><div class="v">Dan and Mai Nguyen</div></div>
+                <div class="cell"><div class="l">Site address</div><div class="v unk"><span class="hl chk" data-n="4">Not stated</span> <a>Add</a></div></div>
+                <div class="cell"><div class="l">Lot and DP<span class="src"><i class="mk"></i>2</span></div><div class="v">Lot 14 DP 1302865</div></div>
+                <div class="cell"><div class="l">Local government area<span class="src"><i class="mk j"></i>2</span></div><div class="v">City of Ryde</div></div>
+                <div class="cell"><div class="l">Zone<span class="src"><i class="mk"></i>1</span></div><div class="v">R2 Low Density Residential</div></div>
+                <div class="cell"><div class="l">State<span class="src"><i class="mk"></i>10</span></div><div class="v">NSW<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+              </div>
+              <div class="col">
+                <h3>Building</h3>
+                <div class="cell"><div class="l">Class<span class="src"><i class="mk j"></i>10</span></div><div class="v">Residential<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell" id="cell-subclass"><div class="l">Subclass<span class="src"><i class="mk j"></i>10</span></div><div class="v">House (Class 1a)<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">NCC class<span class="src"><i class="mk"></i>3</span></div><div class="v">1a, 10a</div></div>
+                <div class="cell"><div class="l">Work type<span class="src"><i class="mk j"></i>10</span></div><div class="v">New build<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Storeys<span class="src"><i class="mk j"></i>9</span></div><div class="v">2</div></div>
+                <div class="cell"><div class="l">Quality level<span class="src"><i class="mk j"></i>1</span></div><div class="v">High-end custom home<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+              </div>
+              <div class="col">
+                <h3>Scale</h3>
+                <div class="cell"><div class="l">Site area<span class="src"><i class="mk"></i>2</span></div><div class="v">650 <span class="u">m²</span></div></div>
+                <div class="cell"><div class="l">Existing GFA</div><div class="v unk">Unknown</div></div>
+                <div class="cell"><div class="l">Added GFA</div><div class="v unk">Unknown</div></div>
+                <div class="cell"><div class="l">Proposed GFA<span class="src"><i class="mk"></i>2</span></div><div class="v">300 <span class="u">m²</span></div></div>
+                <div class="cell" id="cell-gfa"><div class="l">Total GFA<span class="src">2 readings</span></div><div class="v"><span class="hl chk" data-n="1">298 <span class="u">or</span> 300 <span class="u">m²</span></span><svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Construction budget<span class="src"><i class="mk"></i>2</span></div><div class="v">$1,450,000 <span class="u">ex GST</span></div></div>
+              </div>
+              <div class="col">
+                <h3>Approvals and delivery</h3>
+                <div class="cell"><div class="l">Planning pathway<span class="src"><i class="mk j"></i>10</span></div><div class="v">CDC<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Procurement route</div><div class="v unk">Unknown<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Stakeholder complexity<span class="src"><i class="mk j"></i>10</span></div><div class="v">Single owner<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Operational constraints<span class="src"><i class="mk j"></i>5</span></div><div class="v">Vacant, unoccupied<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell empty"></div>
+                <div class="cell empty"></div>
+              </div>
+              <div class="col">
+                <h3>Site conditions</h3>
+                <div class="cell"><div class="l">Access constraints<span class="src">2 readings</span></div><div class="v"><span class="hl chk" data-n="2">Two readings</span><svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Environmental sensitivity<span class="src"><i class="mk j"></i>2</span></div><div class="v">Standard<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Flood hazard area<span class="src"><i class="mk"></i>1</span></div><div class="v">No<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Bushfire-prone land<span class="src"><i class="mk"></i>1</span></div><div class="v">No<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell"><div class="l">Heritage<span class="src"><i class="mk"></i>1</span></div><div class="v">None<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></div></div>
+                <div class="cell empty"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="scope">
+            <div class="scope-head">
+              <h2 class="sec">Scope and works<small>50 systems in scope</small></h2>
+              <div class="scope-tools">
+                <span><i class="toggle"></i>Show unused inputs</span>
+                <span class="btn sm">Typical fit-out <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg></span>
+              </div>
+            </div>
+            <div class="key"><span><i class="cellk c-in"></i>In scope</span><span><i class="cellk c-out"></i>Not in scope</span><span><i class="cellk c-chk"></i>To check</span><span style="margin-left:auto">One cell per system, in building order</span></div>
+            <ul class="matrix" id="matrix"></ul>
+          </section>
+        </div>
+
+        <aside class="docs" aria-label="Documents">
+          <div class="dh"><span>Documents 13</span>
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13V3M6 7l4-4 4 4M3.5 13v3.5h13V13"/></svg></div>
+          <div id="doclist"></div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="graphite" x="-5%" y="-40%" width="110%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="2" seed="5" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.1" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.4 -.62" result="grain"/>
+      <feComposite in="d" in2="grain" operator="in"/>
+    </filter>
+    <filter id="brushEdge" x="-10%" y="-30%" width="120%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency=".05 .55" numOctaves="2" seed="11" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".012 .9" numOctaves="2" seed="4" result="s"/>
+      <feColorMatrix in="s" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.5 -.02" result="sa"/>
+      <feComposite in="d" in2="sa" operator="in"/>
+    </filter>
+    <filter id="fuzz" x="-2%" y="-20%" width="104%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="2" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation=".45"/>
+    </filter>
+    <filter id="lift" x="-2%" y="-10%" width="104%" height="130%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.8" flood-color="#2d2618" flood-opacity=".075"/>
+    </filter>
+    <filter id="butter" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".0028 .009" numOctaves="4" seed="9" result="mott"/>
+      <feColorMatrix in="mott" type="matrix" values="0 0 0 0 .62  0 0 0 0 .55  0 0 0 0 .36  0 0 0 .34 -.12" result="mottA"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".018 .7" numOctaves="2" seed="3" result="fib"/>
+      <feColorMatrix in="fib" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 .97  0 0 0 .7 -.36" result="fibA"/>
+      <feTurbulence type="turbulence" baseFrequency=".008 .03" numOctaves="3" seed="21" result="crk"/>
+      <feColorMatrix in="crk" type="matrix" values="0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .3  0 0 0 -.9 .1" result="crkA"/>
+      <feMerge result="tex"><feMergeNode in="mottA"/><feMergeNode in="crkA"/><feMergeNode in="fibA"/></feMerge>
+      <feComposite in="tex" in2="SourceGraphic" operator="in" result="texIn"/>
+      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="texIn"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+<svg id="ink" aria-hidden="true"></svg>
+
+<script>
+const V = (location.hash || "#v1").slice(1);
+document.body.className = V;
+
+function rng(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function wave(seed) { const r = rng(seed); const p = [r(), r(), r(), r()].map(v => v * 6.283); return x => Math.sin(x / 53 + p[0]) * .5 + Math.sin(x / 23 + p[1]) * .3 + Math.sin(x / 131 + p[2]) * .7 + Math.sin(x / 9 + p[3]) * .12; }
+const chev = `<svg class="chev" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>`;
+const tick = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>`;
+
+/* ---------- Pencil ---------- */
+function pencilD(x1, y1, x2, y2, seed, wob, bow) {
+  const r = rng(seed), w = wave(seed + 3), len = Math.hypot(x2 - x1, y2 - y1) || 1;
+  const nx = -(y2 - y1) / len, ny = (x2 - x1) / len, steps = Math.max(4, Math.round(len / 12));
+  let d = "";
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps, off = w(t * len * 2.4) * (wob ?? .6) + (r() - .5) * .25 + Math.sin(Math.PI * t) * (bow ?? 0);
+    d += (i ? " L" : "M") + (x1 + (x2 - x1) * t + nx * off).toFixed(1) + " " + (y1 + (y2 - y1) * t + ny * off).toFixed(1);
+  }
+  return d;
+}
+let gid = 0;
+function pencil(x1, y1, x2, y2, opts) {
+  const o = Object.assign({ color: "#3a332c", width: 1.2, seed: 7, alpha: .85, dash: null }, opts);
+  const id = "pg" + (gid++);
+  const grad = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"><stop offset="0" stop-color="${o.color}" stop-opacity="${o.alpha * .55}"/><stop offset=".25" stop-color="${o.color}" stop-opacity="${o.alpha}"/><stop offset=".8" stop-color="${o.color}" stop-opacity="${o.alpha * .9}"/><stop offset="1" stop-color="${o.color}" stop-opacity="${o.alpha * .45}"/></linearGradient>`;
+  return `<defs>${grad}</defs><path d="${pencilD(x1, y1, x2, y2, o.seed, o.wob, o.bow)}" fill="none" stroke="url(#${id})" stroke-width="${o.width}" stroke-linecap="round" ${o.dash ? `stroke-dasharray="${o.dash}"` : ""} filter="url(#graphite)"/>`;
+}
+function cloudD(x, y, w, h, seed) {
+  const r = rng(seed), pts = [], step = 12;
+  const edge = (x0, y0, x1, y1) => { const n = Math.max(2, Math.round(Math.hypot(x1 - x0, y1 - y0) / step)); for (let i = 0; i < n; i++) { const t = i / n; pts.push([x0 + (x1 - x0) * t + (r() - .5), y0 + (y1 - y0) * t + (r() - .5)]); } };
+  edge(x, y, x + w, y); edge(x + w, y, x + w, y + h); edge(x + w, y + h, x, y + h); edge(x, y + h, x, y);
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 1; i <= pts.length; i++) { const p = pts[i % pts.length], q = pts[i - 1], rad = Math.hypot(p[0] - q[0], p[1] - q[1]) * (.58 + r() * .08); d += ` A${rad.toFixed(1)} ${rad.toFixed(1)} 0 0 1 ${p[0].toFixed(1)} ${p[1].toFixed(1)}`; }
+  return d + "Z";
+}
+function deltaG(n, x, y, s) {
+  return `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(s || 18) / 20})"><path d="M10 1.8 18.6 17.6H1.4z" fill="#FBFAF8" stroke="#93601C" stroke-width="1.35" stroke-linejoin="round"/><text x="10" y="15.3" text-anchor="middle" font-family="Instrument Sans" font-weight="700" font-size="9.5" fill="#6E4117">${n}</text></g>`;
+}
+
+/* ---------- Dry brush ---------- */
+function brush(w, h, seed, rgb, alpha) {
+  const r = rng(seed), pad = 8, W = w + pad * 2, H = h + pad * 2;
+  const top = wave(seed + 1), bot = wave(seed + 2);
+  const x0 = pad + r() * 2, x1 = pad + w - r() * 2, pts = [];
+  for (let x = x0; x <= x1; x += 3) pts.push([x, pad + h * .1 + top(x * 3) * h * .07]);
+  pts.push([x1 + 4 + r() * 4, pad + h * .3], [x1 + r() * 2, pad + h * .48], [x1 + 6 + r() * 5, pad + h * .62], [x1 + 1, pad + h * .8]);
+  for (let x = x1; x >= x0; x -= 3) pts.push([x, pad + h * .9 + bot(x * 3) * h * .07]);
+  pts.push([x0 - 2.5, pad + h * .62], [x0 - 1, pad + h * .28]);
+  const d = "M" + pts.map(p => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L") + "Z";
+  let streaks = "";
+  const k = 7;
+  for (let i = 0; i < k; i++) {
+    const y = pad + h * (.16 + .68 * i / (k - 1)) + (r() - .5) * 1.4, xs = x0 + r() * w * .06, xe = x1 - r() * w * .1 + 3;
+    streaks += `<path d="M${xs.toFixed(1)} ${y.toFixed(1)} C ${(xs + w * .35).toFixed(1)} ${(y + (r() - .5) * 1.6).toFixed(1)}, ${(xs + w * .65).toFixed(1)} ${(y + (r() - .5) * 1.6).toFixed(1)}, ${xe.toFixed(1)} ${(y + (r() - .5) * 1.4).toFixed(1)}" stroke="rgb(${rgb})" stroke-opacity="${(.1 + r() * .2).toFixed(2)}" stroke-width="${(h / k * .75).toFixed(1)}" stroke-linecap="round" fill="none"/>`;
+  }
+  let gaps = "";
+  for (let i = 0; i < 6; i++) { const y = pad + h * (.18 + .64 * r()), xs = x0 + w * (.45 + r() * .35); gaps += `<path d="M${xs.toFixed(1)} ${y.toFixed(1)} L${(x1 + 12).toFixed(1)} ${(y + (r() - .5) * 2).toFixed(1)}" stroke="#000" stroke-opacity="${(.3 + r() * .45).toFixed(2)}" stroke-width="${(.6 + r() * 1.3).toFixed(1)}"/>`; }
+  const id = "bm" + seed;
+  return { pad, svg: `<svg class="brush" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs><mask id="${id}"><rect width="${W}" height="${H}" fill="#fff"/>${gaps}</mask></defs><g mask="url(#${id})"><g filter="url(#brushEdge)"><path d="${d}" fill="rgb(${rgb})" fill-opacity="${alpha}"/>${streaks}</g></g></svg>` };
+}
+function brushOn(el, seed, rgb, alpha, opts) {
+  el.classList.add("hl");
+  const o = Object.assign({ ext: 6, cover: .74, drop: .2, tilt: -.6 }, opts);
+  const b = el.getBoundingClientRect();
+  const w = b.width + o.ext * 2, h = b.height * o.cover;
+  const { pad, svg } = brush(w, h, seed, rgb, alpha);
+  el.insertAdjacentHTML("afterbegin", svg);
+  const s = el.firstElementChild;
+  s.style.left = (-o.ext - pad) + "px";
+  s.style.top = (b.height * o.drop - pad) + "px";
+  s.style.transform = `rotate(${o.tilt}deg)`;
+}
+
+/* ---------- Torn butter paper ---------- */
+function edgePts(x0, x1, y, seed, amp, jag) {
+  const w = wave(seed), r = rng(seed + 50), out = [];
+  for (let x = x0; x <= x1 + .1; x += 2) out.push([x, y + w(x) * amp + (r() - .5) * jag]);
+  return out;
+}
+// Paper with torn top and/or bottom; the fringe is the paler fibrous band where it tore.
+function tornPaper(w, h, o) {
+  const band = o.band || 6, s = o.seed || 3;
+  const topP = o.top ? edgePts(0, w, o.top, s, 2.2, .7) : [[0, 0], [w, 0]];
+  const botP = edgePts(0, w, h - (o.bottom || 0), s + 9, 2.4, .7).reverse();
+  const topF = o.top ? edgePts(0, w, o.top - band, s + 21, 2.6, 2.4) : [[0, 0], [w, 0]];
+  const botF = edgePts(0, w, h - (o.bottom || 0) + band, s + 33, 2.8, 2.6).reverse();
+  const path = (a, b) => "M" + a.concat(b).map(p => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L") + "Z";
+  return `<g filter="url(#lift)">
+    <path d="${path(topF, botF)}" fill="#FFFEFA" fill-opacity=".92" filter="url(#fuzz)"/>
+    <path d="${path(topP, botP)}" fill="${o.fill || "#F3EDD7"}" fill-opacity="${o.alpha || .9}" filter="url(#butter)"/>
+  </g>`;
+}
+
+/* ---------- Content builders ---------- */
+const docs = [
+  ["A-101", "Site plan", "A", "04/05/26", "Architect", "off"],
+  ["A-101", "Site plan", "B", "25/05/26", "Architect", "off"],
+  ["CM-26-04-SRV", "Detail and boundary survey report", "", "24/02/26", "Surveyor"],
+  ["HLA-DS-01", "Architectural design statement", "A", "18/05/26", "Architect"],
+  ["HLA-FP-2603", "Fee proposal: architectural services", "", "09/03/26", "Architect"],
+  ["RG-26-03-GEO", "Geotechnical investigation report", "0", "21/04/26", "Geotechnical"],
+  ["RG-P-0388", "Fee proposal: geotechnical investigation test", "", "16/03/26", "Geotechnical", "warn"],
+  ["TCE-2603", "Structural engineering fee proposal", "", "12/03/26", "Structural"],
+  ["TEA-3391", "Fee proposal: NatHERS assessment and BASIX certificate", "", "18/03/26", ""],
+  ["", "Owner’s brief: new house at 27 Corella Rise", "", "03/02/26", ""],
+  ["", "Fee proposal: civil and stormwater engineering", "", "", "Civil"],
+  ["", "Planning Certificate", "", "", "Town Planner"],
+  ["", "RE: Timing for the build", "", "02/03/26", "", "off"]
+];
+const eyeOff = `<svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 3l14 14M8.2 8.3a2.5 2.5 0 0 0 3.5 3.5M5.5 5.6C3.9 6.7 2.8 8.3 2.3 10c1.2 3.5 4.3 6 7.7 6 1.5 0 2.9-.5 4.1-1.3M8.4 4.2c.5-.1 1-.2 1.6-.2 3.4 0 6.5 2.5 7.7 6-.3 1-.8 1.9-1.4 2.7"/></svg>`;
+const kebab = `<svg width="4" height="14" viewBox="0 0 4 14" fill="currentColor"><circle cx="2" cy="2" r="1.3"/><circle cx="2" cy="7" r="1.3"/><circle cx="2" cy="12" r="1.3"/></svg>`;
+document.getElementById("doclist").innerHTML =
+  `<div class="dr th"><span>Doc No. ▴</span><span>Title</span><span>Rev</span><span>Date</span><span>Discipline</span><span></span></div>` +
+  docs.map(([no, ti, rev, dt, ds, st]) => `<div class="dr"><span class="no">${no}</span><span class="ti${st ? " " + st : ""}">${st === "off" ? eyeOff : ""}<span>${ti}</span></span><span class="rev">${rev}</span><span class="dt">${dt}</span><span class="ds">${ds}</span><span class="km">${kebab}</span></div>`).join("");
+
+const groups = [
+  ["Planning and approvals", 8, 9], ["Site, ground and external works", 9, 21], ["Substructure", 3, 8], ["Structure", 3, 8],
+  ["Building envelope", 9, 14], ["Hydraulic services", 5, 9], ["Mechanical services", 3, 12], ["Electrical services", 5, 12],
+  ["Active fire protection", 1, 11], ["Communications and security", 2, 8], ["Vertical transport", 0, 6],
+  ["Passive fire protection", 0, 7], ["Interiors and finishes", 9, 12], ["Access and egress", 1, 9]
+];
+const site = [0,0,0,2,1,1,0,1,0,1,0,0,0,0,1,0,1,1,0,1,0];
+const siteRows = [
+  ["Demolition and hazardous building materials", "Typical", "New", "Contractor", 1, true],
+  ["Earthworks, cut and fill", "From documents", "New", "Contractor", 2],
+  ["Erosion, sediment and dust control", "Typical", "New", "Contractor", 1],
+  ["Geotechnical ground conditions", "From documents", "Investigate", "Contractor", 8],
+  ["Landscape, planting and external grading", "From documents", "Retain", "Contractor", 2],
+  ["Site services connections and utility infrastructure", "Typical", "Investigate", "Contractor", 2],
+  ["Site stormwater, detention and water quality", "From documents", "New", "Contractor", 3],
+  ["Survey, boundaries, datum and set-out", "From documents", "Investigate", "Surveyor", 4],
+  ["Vehicle access, pavements and parking layout", "Typical", "New", "Contractor", 1]
+];
+function pattern(n, t, seed) {
+  const r = rng(seed), idx = [...Array(t).keys()];
+  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const on = new Set(idx.slice(0, n)); return idx.map((_, i) => on.has(i) ? 1 : 0);
+}
+const m = document.getElementById("matrix");
+groups.forEach(([label, n, t], gi) => {
+  const cells = gi === 1 ? site : pattern(n, t, 40 + gi * 7);
+  let html = `<div class="mrow"><span class="nm"${gi === 1 ? ' id="open-name"' : ""}>${label}</span><span class="cells">${cells.map(c => `<i class="${c === 2 ? "c-chk" : c ? "c-in" : "c-out"}"></i>`).join("")}</span><span class="n"><b>${n}</b> / ${t}</span></div>`;
+  if (gi === 1) {
+    html += `<div class="workup" id="workup"><svg class="paper" id="workpaper" aria-hidden="true"></svg><table><thead><tr><th>System</th><th>Basis</th><th>Works</th><th>By</th><th class="ev">Sources</th></tr></thead><tbody>`;
+    siteRows.forEach(([nm, basis, works, by, ev, chk]) => {
+      html += `<tr${chk ? ' class="tall"' : ""}><td class="sys">${chk ? `<span class="hl chk" data-n="3" id="demo">${nm}</span><span class="flag">Documents say not included</span>` : nm}</td><td class="basis">${basis}</td><td><span class="dd">${works}${chev}</span></td><td class="by"><span class="dd">${by}${chev}</span></td><td class="ev"><span class="src"><i class="mk"></i>${ev}</span></td></tr>`;
+    });
+    html += `<tr class="more"><td colspan="5"><b>12 not in scope</b> · Show</td></tr></tbody></table></div>`;
+  }
+  const li = document.createElement("li");
+  if (gi === 1) li.className = "open"; else if (n === 0) li.className = "zero";
+  li.innerHTML = html; m.appendChild(li);
+});
+
+/* Dropdown shown open: subclass in variant 1, the GFA readings in variant 2 */
+const subclassPop = `<div class="pop">
+  <div class="opt unk"><span class="tick"></span>Unknown</div><hr>
+  <div class="opt sel"><span class="tick">${tick}</span>House (Class 1a)<span class="n"><i class="mk j"></i>10</span></div>
+  <div class="opt"><span class="tick"></span>Apartments (Class 2)</div>
+  <div class="opt"><span class="tick"></span>Townhouses (Class 1a)</div>
+  <div class="opt"><span class="tick"></span>BTR (Build-to-Rent)</div>
+  <div class="opt"><span class="tick"></span>Student Housing (PBSA)</div>
+  <div class="opt"><span class="tick"></span>Retirement Living / ILUs</div>
+  <div class="opt"><span class="tick"></span>Residential Aged Care (Class 9c)</div>
+  <div class="opt"><span class="tick"></span>Social/Affordable Housing</div>
+  <div class="opt"><span class="tick"></span>Other</div><hr>
+  <div class="foot">Picked by Jev from 10 passages. Your choice is kept.</div></div>`;
+const gfaPop = `<div class="pop" style="width:280px">
+  <div class="hd">The documents give two figures</div>
+  <div class="opt"><span class="tick"></span>298 m²<span class="n">1 source</span></div>
+  <div class="opt"><span class="tick"></span>300 m²<span class="n">1 source</span></div><hr>
+  <div class="opt"><span class="tick"></span>Enter a figure…</div>
+  <div class="opt unk"><span class="tick"></span>Unknown</div></div>`;
+const host = document.getElementById(V === "v1" ? "cell-subclass" : "cell-gfa");
+host.classList.add("open");
+host.insertAdjacentHTML("beforeend", V === "v1" ? subclassPop : gfaPop);
+
+/* ---------- Hand marks, placed per variant ---------- */
+function abs(el) { const b = el.getBoundingClientRect(); return { x: b.left + scrollX, y: b.top + scrollY, w: b.width, h: b.height, r: b.right + scrollX, b: b.bottom + scrollY }; }
+
+function draw() {
+  const ink = document.getElementById("ink");
+  ink.setAttribute("width", document.documentElement.scrollWidth);
+  ink.setAttribute("height", document.documentElement.scrollHeight);
+  let out = "";
+
+  // Pencil underlines in the sentence: ember pencil for documents, blue pencil dotted for Jev.
+  let k = 0;
+  document.querySelectorAll("#sentence .t").forEach(t => {
+    [...t.getClientRects()].forEach(rc => {
+      const y = rc.bottom + scrollY - 1.5, x1 = rc.left + scrollX - 1, x2 = rc.right + scrollX + 2;
+      out += t.classList.contains("j")
+        ? pencil(x1, y, x2, y + .4, { color: "#2D5E9E", width: 1.5, alpha: .8, dash: "1.4 4.2", seed: 30 + k++, wob: .5 })
+        : pencil(x1, y, x2, y + .6, { color: "#A85E2C", width: 1.35, alpha: .85, seed: 30 + k++, wob: .55 });
+    });
+  });
+
+  // Title block's heavy top rule, ruled by hand with a drafter's overshoot.
+  const tb = abs(document.getElementById("titleblock"));
+  out += pencil(tb.x - 12, tb.y + .5, tb.r + 14, tb.y + .2, { color: "#2A241F", width: 1.7, alpha: .9, seed: 3, wob: .35 });
+  // Corner ticks where the rule meets the frame.
+  out += pencil(tb.x - 1, tb.y - 7, tb.x - .4, tb.y + 12, { color: "#2A241F", width: 1, alpha: .45, seed: 4, wob: .2 });
+  out += pencil(tb.r + .5, tb.y - 8, tb.r + 1, tb.y + 11, { color: "#2A241F", width: 1, alpha: .45, seed: 5, wob: .2 });
+
+  const flags = [...document.querySelectorAll(".hl.chk")];
+  if (V === "v1") {
+    // Butter paper torn across the header, with loose pencil work on it.
+    const head = document.getElementById("head"), hp = document.getElementById("headpaper");
+    const hw = head.getBoundingClientRect().width, hh = 200;
+    hp.setAttribute("width", hw); hp.setAttribute("height", hh + 20);
+    hp.innerHTML = tornPaper(hw, hh + 10, { bottom: 10, band: 7, seed: 5, fill: "#F3EEDA", alpha: .9 }) + sketch(hw);
+    // Ochre dry brush over the values that need a decision.
+    flags.forEach((el, i) => brushOn(el, 70 + i * 13, "226,170,72", .52, { ext: 7, cover: .8, drop: .16 }));
+    brushOn(document.getElementById("swatch"), 61, "226,170,72", .5, { ext: 4 });
+  } else {
+    // Clean header with a hand-ruled line under it.
+    const hd = abs(document.getElementById("head"));
+    out += pencil(hd.x + 28, hd.b - 6, hd.r - 26, hd.b - 7, { color: "#2A241F", width: 1.1, alpha: .5, seed: 9, wob: .5 });
+    // Butter paper laid over the open group, torn top and bottom.
+    const wu = document.getElementById("workup"), wp = document.getElementById("workpaper");
+    const ww = wu.getBoundingClientRect().width, wh = wu.getBoundingClientRect().height;
+    wp.setAttribute("width", ww); wp.setAttribute("height", wh + 20);
+    wp.style.top = "-6px";
+    wp.innerHTML = tornPaper(ww, wh + 10, { top: 12, bottom: 12, band: 7, seed: 13, fill: "#F4F0DF", alpha: .86 });
+    // Pencil clouds and delta tags on the values that need a decision.
+    flags.forEach((el, i) => {
+      const a = abs(el), px = 9, py = 5;
+      const note = el.nextElementSibling;
+      if (note && note.classList.contains("flag")) { const n = abs(note); a.w = Math.max(a.r, n.r) - a.x; a.h = n.b - a.y; a.r = a.x + a.w; }
+      out += `<path d="${cloudD(a.x - px, a.y - py, a.w + px * 2, a.h + py * 2, 101 + i * 17)}" fill="none" stroke="#93601C" stroke-opacity=".78" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" filter="url(#graphite)"/>`;
+    });
+    const sw = abs(document.getElementById("swatch"));
+    out += `<path d="${cloudD(sw.x - 3, sw.y - 2, sw.w + 6, sw.h + 4, 88)}" fill="none" stroke="#93601C" stroke-opacity=".7" stroke-width="1" filter="url(#graphite)"/>`;
+    // Brush marks where you are: the open page and the open group.
+    brushOn(document.getElementById("nav-on"), 41, "232,200,118", .55, { ext: 8, cover: .8, drop: .16 });
+    brushOn(document.getElementById("open-name"), 47, "232,200,118", .5, { ext: 4, cover: .78, drop: .18 });
+  }
+  ink.insertAdjacentHTML("beforeend", out);
+}
+
+// Loose graphite sketch on the butter paper: a two-storey thumbnail and a datum.
+function sketch(W) {
+  const ox = W * .52, oy = 0;
+  const L = (a, b, c, d, s, o) => pencil(ox + a, oy + b, ox + c, oy + d, Object.assign({ color: "#4a443d", width: .9, alpha: .26, seed: s, wob: .5 }, o));
+  let g = "";
+  g += L(-40, 168, 360, 167, 201, { alpha: .3 });          // ground datum with overshoot
+  g += L(40, 172, 46, 66, 202); g += L(44, 70, 236, 62, 203); g += L(232, 58, 236, 172, 204);   // walls and roof
+  g += L(30, 116, 250, 114, 205, { alpha: .2 });          // floor line
+  g += L(64, 84, 108, 84, 206, { alpha: .18 }); g += L(64, 104, 108, 104, 207, { alpha: .18 }); g += L(64, 84, 64, 104, 208, { alpha: .18 }); g += L(108, 84, 108, 104, 209, { alpha: .18 });
+  g += L(150, 132, 200, 132, 210, { alpha: .18 }); g += L(150, 132, 150, 167, 211, { alpha: .18 }); g += L(200, 132, 200, 167, 212, { alpha: .18 });
+  for (let i = 0; i < 9; i++) g += L(-20 + i * 14, 176, -12 + i * 14, 168, 220 + i, { alpha: .16, width: .8 });   // ground hatch
+  g += L(10, 66, 10, 172, 240, { alpha: .18, width: .8 }); g += L(4, 66, 16, 66, 241, { alpha: .18 }); g += L(4, 172, 16, 172, 242, { alpha: .18 });   // height dimension
+  return g;
+}
+
+document.fonts.ready.then(() => { draw(); document.body.dataset.ready = "1"; });
+</script>
+</body>
+</html>

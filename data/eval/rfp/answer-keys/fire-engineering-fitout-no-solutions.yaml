@@ -57,18 +57,16 @@ description: Small shop fitout explicitly requires no performance solution or sp
   not applicable, not named-party exclusion.
 expect:
   fire-engineering:
-    stages_include:
-    - s1_strategy
-    stages_absent:
-    - s3_brief
-    - s4_report
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_strategy]
+    stages_absent: [s3_brief, s4_report]
     positions:
       wet_design: X
       dry_design: X
       matrix_design: X
-      peer: O
-      remediation: O
-      interim: O
+      peer: X
+      remediation: X
+      interim: X
       brief: absent
       fer: absent
       existing: absent

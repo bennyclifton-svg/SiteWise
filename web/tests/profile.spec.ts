@@ -55,7 +55,7 @@ test("profile update clears its pending state when completion SSE is missed", as
   await page.getByRole("button", { name: "Update project profile", exact: true }).click();
   await expect(page.getByRole("button", { name: "Updating project profile…", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible({ timeout: 10000 });
-  await expect(page.getByRole("radiogroup", { name: "Work type" }).getByRole("radio", { name: "New build" })).toBeChecked();
+  await expect(page.getByRole("combobox", { name: "Work type", exact: true }).locator("option:checked")).toHaveText("New build");
   expect(completionReads).toBeGreaterThan(0);
 });
 
@@ -117,9 +117,9 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
 
-  await page.getByRole("radiogroup", { name: "Building category" }).getByText("Residential", { exact: true }).click();
-  await page.getByRole("radiogroup", { name: "Building class" }).getByText("House (Class 1a)", { exact: true }).click();
-  await page.getByRole("radiogroup", { name: "Work type" }).getByText("New build", { exact: true }).click();
+  await page.getByRole("combobox", { name: "Building category", exact: true }).selectOption({ label: "Residential" });
+  await page.getByRole("combobox", { name: "Building class", exact: true }).selectOption({ label: "House (Class 1a)" });
+  await page.getByRole("combobox", { name: "Work type", exact: true }).selectOption({ label: "New build" });
 
   // Typical systems are ticked in scope, marked as suggestions rather than evidence.
   await scope.locator(".sw-entry", { hasText: "Hydraulic" }).click();
@@ -154,20 +154,27 @@ test("choose which documents the profile reads, in bulk", async ({ browser }) =>
   await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
   const rows = page.locator("tbody.reg-doc");
   await expect(rows).toHaveCount(3);
-  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"] .reg-sel input`)).toBeVisible();
+  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"]`)).toHaveAttribute("id", /^doc-/);
 
-  // Click the first checkbox, Shift-click the last: a range of three.
-  const boxes = page.locator("tbody.reg-doc .reg-sel input");
-  await boxes.nth(0).click();
-  await boxes.nth(2).click({ modifiers: ["Shift"] });
-  const bulk = page.getByRole("toolbar", { name: "Selected documents" });
-  await expect(bulk).toContainText("3 selected");
-
-  await bulk.getByRole("button", { name: "Exclude from profile" }).click();
+  // Click the first row, Shift-click the last: a range of three. The row
+  // menu (right-click or ⋮) acts on the whole selection.
+  const lines = page.locator("tbody.reg-doc .reg-no");
+  await lines.nth(0).click();
+  await lines.nth(2).click({ modifiers: ["Shift"] });
+  await expect(page.locator("tbody.reg-doc[data-selected]")).toHaveCount(3);
+  const menu = page.getByRole("menu");
+  const act = async (row: number, action: string, how: "right" | "more" = "right") => {
+    if (how === "right") await lines.nth(row).click({ button: "right" });
+    else await rows.nth(row).getByRole("button", { name: /^More actions for / }).click();
+    await menu.getByRole("menuitem", { name: action, exact: true }).click();
+  };
+  await lines.nth(1).click({ button: "right" });
+  await expect(menu).toContainText("3 documents selected");
+  await menu.getByRole("menuitem", { name: "Exclude from profile", exact: true }).click();
+  // Not-read rows are marked by a struck-through eye beside the title.
   for (let i = 0; i < 3; i++) {
-    const read = rows.nth(i).locator(".reg-read");
-    await expect(read).toHaveAttribute("aria-pressed", "false");
-    await expect(read).toHaveAttribute("data-override", "true");
+    await expect(rows.nth(i)).toHaveAttribute("data-excluded", "true");
+    await expect(rows.nth(i).locator(".reg-unread")).toHaveAttribute("title", /your choice/);
   }
   await expect(page.locator(".profile-reading")).toContainText("Included for profile: 0 of 3 documents");
 
@@ -177,18 +184,22 @@ test("choose which documents the profile reads, in bulk", async ({ browser }) =>
   await expect(rows).toHaveCount(3);
   await page.locator(".reg-filter").getByRole("button", { name: "Show all" }).click();
 
-  // One row's own toggle reads it; Reset returns everything to automatic.
-  await rows.nth(0).locator(".reg-read").click();
-  await expect(rows.nth(0).locator(".reg-read")).toHaveAttribute("aria-pressed", "true");
+  // A menu on an unselected row acts on that row alone; Reset returns the
+  // whole selection to automatic.
+  await page.locator("tbody.reg-doc .reg-no").nth(0).click();
+  await act(0, "Include in profile", "more");
+  await expect(rows.nth(0)).not.toHaveAttribute("data-excluded", "true");
   await expect(page.locator(".profile-reading")).toContainText("Included for profile: 1 of 3 documents");
-  await bulk.getByRole("button", { name: "Reset to automatic" }).click();
-  for (let i = 0; i < 3; i++) await expect(rows.nth(i).locator(".reg-read")).not.toHaveAttribute("data-override", "true");
+  await lines.nth(0).click();
+  await lines.nth(2).click({ modifiers: ["Shift"] });
+  await act(2, "Reset profile reading to automatic");
+  for (let i = 0; i < 3; i++) await expect(rows.nth(i).locator('.reg-unread[title*="your choice"]')).toHaveCount(0);
 
-  // Ctrl-click selects without opening; Clear empties the selection.
-  await bulk.getByRole("button", { name: "Clear" }).click();
-  await expect(bulk).toBeHidden();
+  // Escape clears the selection; Ctrl-click selects without opening.
+  await lines.nth(0).press("Escape");
+  await expect(page.locator("tbody.reg-doc[data-selected]")).toHaveCount(0);
   await rows.nth(1).locator("tr.reg-line").click({ modifiers: ["Control"] });
-  await expect(page.getByRole("toolbar", { name: "Selected documents" })).toContainText("1 selected");
+  await expect(page.locator("tbody.reg-doc[data-selected]")).toHaveCount(1);
   await expect(rows.nth(1)).not.toHaveAttribute("data-open", "true");
 });
 
@@ -202,14 +213,14 @@ test("delete documents from the register after confirming", async ({ browser }) 
   await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
   const rows = page.locator("tbody.reg-doc");
   await expect(rows).toHaveCount(3);
-  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"] .reg-sel input`)).toBeVisible();
+  for (const n of names) await expect(page.locator(`tbody.reg-doc[data-filename="${n}"]`)).toHaveAttribute("id", /^doc-/);
 
-  const headerBin = page.getByRole("button", { name: "Delete selected documents" });
-  await expect(headerBin).toBeDisabled();
-  const boxes = page.locator("tbody.reg-doc .reg-sel input");
-  await boxes.nth(0).click();
-  await boxes.nth(1).click({ modifiers: ["Shift"] });
-  await headerBin.click();
+  const lines = page.locator("tbody.reg-doc .reg-no");
+  const menu = page.getByRole("menu");
+  await lines.nth(0).click();
+  await lines.nth(1).click({ modifiers: ["Shift"] });
+  await lines.nth(1).click({ button: "right" });
+  await menu.getByRole("menuitem", { name: "Delete 2 documents…", exact: true }).click();
 
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText("Delete 2 documents, including");
@@ -220,13 +231,15 @@ test("delete documents from the register after confirming", async ({ browser }) 
   await expect(dialog).toBeHidden();
   await expect(rows).toHaveCount(3);
 
-  await page.getByRole("toolbar", { name: "Selected documents" }).getByRole("button", { name: "Delete" }).click();
+  await lines.nth(0).click({ button: "right" });
+  await menu.getByRole("menuitem", { name: "Delete 2 documents…", exact: true }).click();
   await dialog.getByRole("button", { name: "Delete" }).click();
   await expect(rows).toHaveCount(1);
-  await expect(page.getByRole("toolbar", { name: "Selected documents" })).toBeHidden();
+  await expect(page.locator("tbody.reg-doc[data-selected]")).toHaveCount(0);
 
-  // A row's own bin deletes just that row; the list stays empty after reload.
-  await rows.nth(0).getByRole("button", { name: /^Delete / }).click();
+  // The ⋮ menu deletes just its row; the list stays empty after reload.
+  await rows.nth(0).getByRole("button", { name: /^More actions for / }).click();
+  await menu.getByRole("menuitem", { name: "Delete…", exact: true }).click();
   await expect(dialog).toContainText("Delete ");
   await dialog.getByRole("button", { name: "Delete" }).click();
   await expect(rows).toHaveCount(0);
@@ -241,9 +254,9 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await page.getByRole("button", { name: "Create project" }).click();
   await expect(page.getByRole("heading", { name: "Scope and works" })).toBeVisible();
 
-  await page.getByRole("radiogroup", { name: "Building category" }).getByText("Industrial", { exact: true }).click();
-  await page.getByRole("radiogroup", { name: "Building class" }).getByText(/^Warehouse/).click();
-  await page.getByRole("radiogroup", { name: "Work type" }).getByText("Refurbishment / fit-out / upgrade", { exact: true }).click();
+  await page.getByRole("combobox", { name: "Building category", exact: true }).selectOption({ label: "Industrial" });
+  { const cls = page.getByRole("combobox", { name: "Building class", exact: true }); await cls.selectOption({ label: (await cls.locator("option", { hasText: /^Warehouse/ }).first().textContent())!.trim() }); }
+  await page.getByRole("combobox", { name: "Work type", exact: true }).selectOption({ label: "Refurbishment / fit-out / upgrade" });
   const scope = page.getByRole("region", { name: "Scope and works" });
   await expect(scope).toContainText("0 systems");
   // Nothing in scope yet: no basis to hide a compliance input.
@@ -380,7 +393,7 @@ test("profile distinguishes inclusion, queued reading, progress and completion",
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.getByRole("button", { name: "Costs", exact: true }).click();
   await expect(updates).toBeHidden();
-  await expect(page.getByPlaceholder("Ask about your project documents")).toBeVisible();
+  await expect(page.getByPlaceholder("Ask about your project documents")).toHaveCount(0);
   await page.getByRole("button", { name: "Profile", exact: true }).click();
   await expect(updates).toContainText("Reading complete");
   await page.context().close();

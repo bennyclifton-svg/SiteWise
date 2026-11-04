@@ -1,0 +1,2709 @@
+{
+  "schema": "sitewise-synthetic-score/1",
+  "type_id": "T01",
+  "name": "New detached house",
+  "scenario": {
+    "triggers": [
+      "cdc-pathway"
+    ]
+  },
+  "procurement": {
+    "status": "scored",
+    "matched": [
+      {
+        "expected": "consultant.architect",
+        "app": "Architect",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.surveyor",
+        "app": "Surveyor",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.geotechnical",
+        "app": "Geotechnical",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.structural",
+        "app": "Structural",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.civil",
+        "app": "Civil",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.certifier",
+        "app": "Certifier",
+        "state": "package",
+        "matched_by": "discipline"
+      }
+    ],
+    "missed": [
+      {
+        "expected": "consultant.basix",
+        "built_in": "no",
+        "need": "always",
+        "trigger": null
+      },
+      {
+        "expected": "consultant.landscape",
+        "built_in": "no",
+        "need": "usually",
+        "trigger": null
+      },
+      {
+        "expected": "consultant.quantity_surveyor",
+        "built_in": "no",
+        "need": "optional",
+        "trigger": null
+      },
+      {
+        "expected": "trade.main_works",
+        "built_in": "partial",
+        "need": "always",
+        "trigger": null
+      }
+    ],
+    "extra": [],
+    "false_positive": [
+      {
+        "discipline": "consultant.electrical",
+        "app": "Electrical",
+        "state": "package",
+        "why": "House electrical is design-and-install by the electrician"
+      },
+      {
+        "discipline": "consultant.hydraulic",
+        "app": "Hydraulic",
+        "state": "package",
+        "why": "House plumbing is design-and-install by the plumber; stormwater is the civil engineer's"
+      },
+      {
+        "discipline": "consultant.mechanical",
+        "app": "Mechanical",
+        "state": "package",
+        "why": "Ducted AC is design-and-install by the AC subcontractor"
+      },
+      {
+        "discipline": "consultant.town_planner",
+        "app": "Town Planner",
+        "state": "package",
+        "why": "removed by trigger cdc-pathway"
+      }
+    ],
+    "kind_mismatch": []
+  },
+  "cost_plan": {
+    "status": "scored",
+    "matched": [
+      {
+        "expected": "Service authority connection fees (Sydney Water, DNSP, NBN)",
+        "app": "Service authority connection fees",
+        "code": "P06",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Architect",
+        "app": "Architect",
+        "code": "F01",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Structural engineer",
+        "app": "Structural",
+        "code": "F08",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Civil (stormwater) engineer",
+        "app": "Civil",
+        "code": "F03",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Geotechnical engineer",
+        "app": "Geotechnical",
+        "code": "F05",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Surveyor",
+        "app": "Surveyor",
+        "code": "F09",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Certifier",
+        "app": "Certifier",
+        "code": "F02",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Town planner (optional)",
+        "app": "Town Planner",
+        "code": "F10",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Site works and external works",
+        "app": "Site works and external works",
+        "code": "01",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Substructure",
+        "app": "Substructure",
+        "code": "02",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Structure",
+        "app": "Structure",
+        "code": "03",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Building envelope",
+        "app": "Building envelope",
+        "code": "04",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Interiors and finishes",
+        "app": "Interiors and finishes",
+        "code": "05",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Mechanical services",
+        "app": "Mechanical services",
+        "code": "08",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Hydraulic services",
+        "app": "Hydraulic services",
+        "code": "09",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Electrical services",
+        "app": "Electrical services",
+        "code": "10",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Communications and security",
+        "app": "Communications and security",
+        "code": "11",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Stairs, ramps, handrails and nosings",
+        "app": "Stairs, ramps, handrails and nosings",
+        "code": "13.9",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Design contingency",
+        "app": "Design contingency",
+        "code": "P01",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Construction contingency",
+        "app": "Construction contingency",
+        "code": "P02",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Escalation",
+        "app": "Escalation",
+        "code": "P03",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Exclusions",
+        "app": "Exclusions: GST",
+        "code": "P07",
+        "state": "item",
+        "matched_by": "source"
+      }
+    ],
+    "missed": [
+      {
+        "expected": "Long service levy",
+        "section": "fees_and_charges",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Council road-reserve fees and damage security deposit (s138 crossing, footpath occupancy)",
+        "section": "fees_and_charges",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Home Building Compensation Fund insurance",
+        "section": "fees_and_charges",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "BASIX and NatHERS assessor",
+        "section": "consultants",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Landscape designer",
+        "section": "consultants",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Quantity surveyor (optional)",
+        "section": "consultants",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Preliminaries and builder's margin",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Compliant balustrades and barriers",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Provisional sums and PC items",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Owner supply items (loose furniture, window furnishings)",
+        "section": "contingency",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "CDC fee",
+        "section": null,
+        "built_in": "partial",
+        "trigger": "cdc-pathway"
+      },
+      {
+        "expected": "Contributions still payable under the CDC",
+        "section": null,
+        "built_in": "partial",
+        "trigger": "cdc-pathway"
+      }
+    ],
+    "extra": [],
+    "false_positive": [
+      {
+        "expected": "Electrical (consultant fee)",
+        "app": "Electrical",
+        "code": "F04",
+        "matched_by": "app_label",
+        "why": "Adopted suggestion on cost-plan prepare"
+      },
+      {
+        "expected": "Hydraulic (consultant fee)",
+        "app": "Hydraulic",
+        "code": "F06",
+        "matched_by": "app_label",
+        "why": "Adopted suggestion on cost-plan prepare"
+      },
+      {
+        "expected": "Mechanical (consultant fee)",
+        "app": "Mechanical",
+        "code": "F07",
+        "matched_by": "app_label",
+        "why": "Adopted suggestion on cost-plan prepare"
+      },
+      {
+        "expected": "Active fire protection",
+        "app": "Active fire protection",
+        "code": "07",
+        "matched_by": "app_label",
+        "why": "Made from the smoke-alarm item; a QS carries smoke alarms in electrical"
+      },
+      {
+        "expected": "DA fees and contributions",
+        "app": "DA fees and contributions",
+        "code": "P04",
+        "matched_by": "label",
+        "why": "removed by trigger cdc-pathway"
+      },
+      {
+        "expected": "Construction certificate and certifier fees",
+        "app": "Construction certificate and certifier fees",
+        "code": "P05",
+        "matched_by": "label",
+        "why": "removed by trigger cdc-pathway"
+      }
+    ],
+    "section_mismatch": [],
+    "groups": 1,
+    "fabricated": [],
+    "amounts": {
+      "document": 10,
+      "user": 0,
+      "fabricated": 0
+    }
+  },
+  "program": {
+    "status": "scored",
+    "skeleton": {
+      "expected": "sk.new-traditional-da",
+      "app": "sk.generic",
+      "match": false
+    },
+    "activities": {
+      "matched": [
+        {
+          "expected": "Services search and locating",
+          "app": "Site services connections and utility infrastructure",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Geotechnical investigation",
+          "app": "Geotechnical ground conditions",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Confirm the brief",
+          "app": "Confirm the brief",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Prepare the concept design",
+          "app": "Prepare the concept design",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Client review of the concept",
+          "app": "Client review of the concept",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Develop the design",
+          "app": "Develop the design",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Prepare approval documentation",
+          "app": "Prepare approval documentation",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Client sign-off for lodgement",
+          "app": "Client sign-off for lodgement",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Prepare construction documentation",
+          "app": "Prepare construction documentation",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Coordinate consultant documentation",
+          "app": "Coordinate consultant documentation",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Client sign-off for tender",
+          "app": "Client sign-off for tender",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Assemble the tender package",
+          "app": "Assemble the tender package",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Tender period",
+          "app": "Tender period",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Evaluate tenders",
+          "app": "Evaluate tenders",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Award the contract",
+          "app": "Award the contract",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Establish the site",
+          "app": "Establish the site",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Install erosion and sediment controls",
+          "app": "Erosion, sediment and dust control",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Lodge the supply application",
+          "app": "Lodge the supply application",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Cut, fill and trim levels",
+          "app": "Earthworks, cut and fill",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Install termite management system",
+          "app": "Termite management",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Frame inspection before roof cladding",
+          "app": "Hold point: Frame inspection release before roof cladding.",
+          "matched_by": "interface"
+        },
+        {
+          "expected": "Install roof cover",
+          "app": "Install roof cover",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Install gutters and downpipes",
+          "app": "Roof and building stormwater drainage",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Deliver windows and external doors",
+          "app": "Deliver windows and external doors",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Install windows and external doors",
+          "app": "Install windows and external doors",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Lay brick veneer",
+          "app": "Loadbearing masonry",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Wrap and clad external walls",
+          "app": "External walls and cladding",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Rough-in sanitary, water and electrical services",
+          "app": "Rough-in above-slab sanitary plumbing",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Install air-conditioning",
+          "app": "Air-conditioning and space heating",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Install wall and ceiling insulation",
+          "app": "Thermal insulation",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Sheet and set plasterboard",
+          "app": "Sheet and set plasterboard",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Install ceilings",
+          "app": "Ceilings and room heights",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Hang internal doors",
+          "app": "Internal doors and hardware",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Waterproof wet areas",
+          "app": "Wet-area waterproofing",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Tile wet areas",
+          "app": "Wall and floor tiling",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Manufacture joinery",
+          "app": "Manufacture joinery",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Install joinery",
+          "app": "Install joinery",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Fit off services, luminaires, switchboard and smoke alarms",
+          "app": "Fit off",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Paint internally",
+          "app": "Internal painting and coatings",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Lay floor finishes",
+          "app": "Floor finishes (non-tile)",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Install stormwater drainage",
+          "app": "Site stormwater, detention and water quality",
+          "matched_by": "fragment"
+        },
+        {
+          "expected": "Authority connection",
+          "app": "Authority connection",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Practical completion inspection",
+          "app": "Practical completion inspection",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Occupation certificate",
+          "app": "Occupation certificate",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Handover",
+          "app": "Handover",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Defects inspection",
+          "app": "Defects inspection",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Defects liability period",
+          "app": "Defects liability period",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Prepare and lodge the complying development certificate",
+          "app": "Prepare and lodge the complying development certificate",
+          "matched_by": "label"
+        },
+        {
+          "expected": "Certifier determination",
+          "app": "Certifier determination",
+          "matched_by": "label"
+        }
+      ],
+      "missed": [
+        {
+          "expected": "Planning certificate and title search",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Sydney Water asset and sewer diagram check",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Detail and boundary survey",
+          "stage": "investigation",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "NatHERS assessment and BASIX certificate",
+          "stage": "approval_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Stormwater concept plan",
+          "stage": "approval_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Landscape plan",
+          "stage": "approval_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Statement of environmental effects",
+          "stage": "approval_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Sydney Water Tap in approval",
+          "stage": "approvals",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Pay long service levy",
+          "stage": "approvals",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Builder provides HBCF insurance certificate",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Appoint principal certifier and give notice of commencement",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Pre-commencement inspection by the principal certifier",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Connect temporary builders power",
+          "stage": "construction",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Building set-out survey",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Lodge services applications",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Excavate and inspect footings",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Under-slab sanitary drainage",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Reinforcement inspection before slab pour",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Reinforce and pour slab",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Identification survey at slab",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Stand wall frames",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Install roof trusses and bracing",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Critical-stage frame inspection before linings",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Waterproofing inspection before tiling",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Install internal stair and balustrades",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Stormwater drainage inspection before covering",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Install rainwater tank and pump",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Lead-in connections",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Driveway, vehicle crossing and paths",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Pave, turf and plant",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Stormwater works-as-executed and engineers' certificates",
+          "stage": "completion",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Final inspection by the principal certifier",
+          "stage": "completion",
+          "built_in": "no",
+          "trigger": null
+        }
+      ],
+      "extra": [
+        {
+          "app": "Timber structure and framing",
+          "fragment": null,
+          "stage": "investigation"
+        },
+        {
+          "app": "Pad and strip footings",
+          "fragment": null,
+          "stage": "investigation"
+        },
+        {
+          "app": "Slabs on ground",
+          "fragment": null,
+          "stage": "investigation"
+        },
+        {
+          "app": "Coordinate consultant reports",
+          "fragment": "fr.approval-docs-1a",
+          "stage": "approval_documentation"
+        },
+        {
+          "app": "If Procurement route: Novate the design consultants",
+          "fragment": "fr.novation",
+          "stage": "procurement"
+        },
+        {
+          "app": "Install sarking",
+          "fragment": "fr.roof-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Frame internal partitions",
+          "fragment": "fr.linings-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Fit off sanitary fixtures",
+          "fragment": "fr.hydraulic-sanitary-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Rough-in",
+          "fragment": "fr.hydraulic-cold-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Fit off",
+          "fragment": "fr.hydraulic-cold-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Rough-in",
+          "fragment": "fr.hydraulic-hot-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Install hot-water unit",
+          "fragment": "fr.hydraulic-hot-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Rough-in",
+          "fragment": "fr.electrical-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "General lighting and lighting controls",
+          "fragment": "fr.lighting-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Switchboards, switchrooms and protection",
+          "fragment": "fr.switchboard-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Smoke alarms in dwellings and SOUs",
+          "fragment": "fr.smoke-alarms-1a",
+          "stage": "construction"
+        },
+        {
+          "app": "Final defects inspection",
+          "fragment": "fr.defects-liability-end",
+          "stage": "defects"
+        }
+      ],
+      "false_positive": [],
+      "wrong_stage": [
+        {
+          "expected": "Frame inspection before roof cladding",
+          "want_stage": "construction",
+          "app_stage": "investigation"
+        }
+      ]
+    },
+    "links": {
+      "holds": [
+        {
+          "activity": "Prepare the concept design",
+          "after": "Confirm the brief"
+        },
+        {
+          "activity": "Client review of the concept",
+          "after": "Prepare the concept design"
+        },
+        {
+          "activity": "Develop the design",
+          "after": "Client review of the concept"
+        },
+        {
+          "activity": "Develop the design",
+          "after": "Geotechnical investigation"
+        },
+        {
+          "activity": "Prepare approval documentation",
+          "after": "Develop the design"
+        },
+        {
+          "activity": "Client sign-off for lodgement",
+          "after": "Prepare approval documentation"
+        },
+        {
+          "activity": "Client sign-off for tender",
+          "after": "Prepare construction documentation"
+        },
+        {
+          "activity": "Client sign-off for tender",
+          "after": "Coordinate consultant documentation"
+        },
+        {
+          "activity": "Assemble the tender package",
+          "after": "Client sign-off for tender"
+        },
+        {
+          "activity": "Tender period",
+          "after": "Assemble the tender package"
+        },
+        {
+          "activity": "Evaluate tenders",
+          "after": "Tender period"
+        },
+        {
+          "activity": "Award the contract",
+          "after": "Evaluate tenders"
+        },
+        {
+          "activity": "Lodge the supply application",
+          "after": "Award the contract"
+        },
+        {
+          "activity": "Cut, fill and trim levels",
+          "after": "Install erosion and sediment controls"
+        },
+        {
+          "activity": "Install roof cover",
+          "after": "Frame inspection before roof cladding"
+        },
+        {
+          "activity": "Install gutters and downpipes",
+          "after": "Install roof cover"
+        },
+        {
+          "activity": "Deliver windows and external doors",
+          "after": "Award the contract"
+        },
+        {
+          "activity": "Install windows and external doors",
+          "after": "Deliver windows and external doors"
+        },
+        {
+          "activity": "Rough-in sanitary, water and electrical services",
+          "after": "Install roof cover"
+        },
+        {
+          "activity": "Install air-conditioning",
+          "after": "Install roof cover"
+        },
+        {
+          "activity": "Sheet and set plasterboard",
+          "after": "Install wall and ceiling insulation"
+        },
+        {
+          "activity": "Install ceilings",
+          "after": "Sheet and set plasterboard"
+        },
+        {
+          "activity": "Hang internal doors",
+          "after": "Sheet and set plasterboard"
+        },
+        {
+          "activity": "Waterproof wet areas",
+          "after": "Sheet and set plasterboard"
+        },
+        {
+          "activity": "Manufacture joinery",
+          "after": "Sheet and set plasterboard"
+        },
+        {
+          "activity": "Install joinery",
+          "after": "Manufacture joinery"
+        },
+        {
+          "activity": "Install joinery",
+          "after": "Tile wet areas"
+        },
+        {
+          "activity": "Fit off services, luminaires, switchboard and smoke alarms",
+          "after": "Install joinery"
+        },
+        {
+          "activity": "Paint internally",
+          "after": "Install joinery"
+        },
+        {
+          "activity": "Paint internally",
+          "after": "Install ceilings"
+        },
+        {
+          "activity": "Paint internally",
+          "after": "Hang internal doors"
+        },
+        {
+          "activity": "Lay floor finishes",
+          "after": "Paint internally"
+        },
+        {
+          "activity": "Authority connection",
+          "after": "Lodge the supply application"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Lay floor finishes"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Authority connection"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Fit off services, luminaires, switchboard and smoke alarms"
+        },
+        {
+          "activity": "Handover",
+          "after": "Occupation certificate"
+        },
+        {
+          "activity": "Defects inspection",
+          "after": "Handover"
+        },
+        {
+          "activity": "Defects liability period",
+          "after": "Defects inspection"
+        }
+      ],
+      "violated": [
+        {
+          "activity": "Install erosion and sediment controls",
+          "after": "Establish the site",
+          "starts": 235,
+          "predecessor_finishes": 240
+        },
+        {
+          "activity": "Lay brick veneer",
+          "after": "Install windows and external doors",
+          "starts": 246,
+          "predecessor_finishes": 253
+        },
+        {
+          "activity": "Wrap and clad external walls",
+          "after": "Install windows and external doors",
+          "starts": 235,
+          "predecessor_finishes": 253
+        },
+        {
+          "activity": "Install stormwater drainage",
+          "after": "Install gutters and downpipes",
+          "starts": 242,
+          "predecessor_finishes": 244
+        }
+      ],
+      "unknown": [],
+      "unscored": [
+        {
+          "activity": "Prepare the concept design",
+          "after": "Detail and boundary survey",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "NatHERS assessment and BASIX certificate",
+          "after": "Develop the design",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Stormwater concept plan",
+          "after": "Develop the design",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Landscape plan",
+          "after": "Develop the design",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Statement of environmental effects",
+          "after": "Develop the design",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Client sign-off for lodgement",
+          "after": "NatHERS assessment and BASIX certificate",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Client sign-off for lodgement",
+          "after": "Stormwater concept plan",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Client sign-off for lodgement",
+          "after": "Landscape plan",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Client sign-off for lodgement",
+          "after": "Statement of environmental effects",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Sydney Water Tap in approval",
+          "after": "Coordinate consultant documentation",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Builder provides HBCF insurance certificate",
+          "after": "Award the contract",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Appoint principal certifier and give notice of commencement",
+          "after": "Builder provides HBCF insurance certificate",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Pre-commencement inspection by the principal certifier",
+          "after": "Appoint principal certifier and give notice of commencement",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Establish the site",
+          "after": "Pre-commencement inspection by the principal certifier",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Connect temporary builders power",
+          "after": "Establish the site",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Building set-out survey",
+          "after": "Establish the site",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Lodge services applications",
+          "after": "Award the contract",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Cut, fill and trim levels",
+          "after": "Building set-out survey",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Excavate and inspect footings",
+          "after": "Cut, fill and trim levels",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Under-slab sanitary drainage",
+          "after": "Excavate and inspect footings",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install termite management system",
+          "after": "Excavate and inspect footings",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Reinforcement inspection before slab pour",
+          "after": "Under-slab sanitary drainage",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Reinforcement inspection before slab pour",
+          "after": "Install termite management system",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Reinforce and pour slab",
+          "after": "Reinforcement inspection before slab pour",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Identification survey at slab",
+          "after": "Reinforce and pour slab",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Stand wall frames",
+          "after": "Identification survey at slab",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install roof trusses and bracing",
+          "after": "Stand wall frames",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Frame inspection before roof cladding",
+          "after": "Install roof trusses and bracing",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Install windows and external doors",
+          "after": "Install roof trusses and bracing",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Critical-stage frame inspection before linings",
+          "after": "Rough-in sanitary, water and electrical services",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Critical-stage frame inspection before linings",
+          "after": "Install windows and external doors",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install wall and ceiling insulation",
+          "after": "Critical-stage frame inspection before linings",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Waterproofing inspection before tiling",
+          "after": "Waterproof wet areas",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tile wet areas",
+          "after": "Waterproofing inspection before tiling",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Install internal stair and balustrades",
+          "after": "Sheet and set plasterboard",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Stormwater drainage inspection before covering",
+          "after": "Install stormwater drainage",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install rainwater tank and pump",
+          "after": "Stormwater drainage inspection before covering",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Lead-in connections",
+          "after": "Lodge services applications",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Driveway, vehicle crossing and paths",
+          "after": "Stormwater drainage inspection before covering",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Driveway, vehicle crossing and paths",
+          "after": "Lead-in connections",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Pave, turf and plant",
+          "after": "Driveway, vehicle crossing and paths",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Pave, turf and plant",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Install rainwater tank and pump",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Stormwater works-as-executed and engineers' certificates",
+          "after": "Install stormwater drainage",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Final inspection by the principal certifier",
+          "after": "Practical completion inspection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Occupation certificate",
+          "after": "Final inspection by the principal certifier",
+          "reason": "predecessor missed"
+        },
+        {
+          "activity": "Occupation certificate",
+          "after": "Stormwater works-as-executed and engineers' certificates",
+          "reason": "predecessor missed"
+        }
+      ]
+    },
+    "orphans": [
+      {
+        "app": "Geotechnical ground conditions",
+        "id": "29b758d9-1802-418f-9f39-03e7c7908936",
+        "stage": "investigation"
+      },
+      {
+        "app": "Site services connections and utility infrastructure",
+        "id": "b37dd6a1-2fc0-4f24-a682-69ccc380fc15",
+        "stage": "investigation"
+      },
+      {
+        "app": "Establish the site",
+        "id": "8b932697-3d1d-4e78-b6d0-6b532d53b869",
+        "stage": "construction"
+      }
+    ],
+    "cycles": [],
+    "cycle_labels": []
+  },
+  "rfps": [
+    {
+      "discipline": "consultant.architect",
+      "template": "architecture",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "56cdb6c6-c577-408a-ba9a-b4e6e7d4709a",
+      "app_template": "architecture",
+      "expect": {
+        "ok": 26,
+        "new_failure": [
+          {
+            "key": "stage.planning_response",
+            "want": "include",
+            "app": "exclude",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.house_documents",
+            "want": "include",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.brief_masterplan",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.dnc_tender",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.regulated_design",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.post_novation",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.water_asset",
+            "want": "absent",
+            "app": "O",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.sustainability_docs",
+            "want": "absent",
+            "app": "O",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.country",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.bim_model",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.tenant_fitout",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.signage",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.facade_certification",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.community",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:client_presentations",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.slot:project:intro",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.bidding",
+            "want": "include",
+            "app": "option",
+            "why": "bidding comes after the house boundary end (house_documents), so resolveStages prices it as an option"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [
+          {
+            "key": "text.planning_approval",
+            "why": "domain-only deliverables the template does not list"
+          }
+        ]
+      },
+      "must_include": {
+        "present": 7,
+        "missing": [
+          "Concept and schematic design",
+          "DA planning approval documentation",
+          "Planning response to council requests",
+          "Tender (bidding) support",
+          "Lodging the DA through the NSW Planning Portal",
+          "Option: construction-phase support"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 8,
+        "present": [
+          {
+            "phrase": "Green Star or NABERS",
+            "where": "control:position.sustainability_docs",
+            "coverage": 1.0
+          },
+          {
+            "phrase": "Regulated-design declarations",
+            "where": "stages/rfp:stages#8",
+            "coverage": 1.0
+          },
+          {
+            "phrase": "D&C tender documents",
+            "where": "control:stage.dnc_tender",
+            "coverage": 1.0
+          }
+        ],
+        "unknown": [],
+        "known": []
+      }
+    },
+    {
+      "discipline": "consultant.structural",
+      "template": "structural",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "4043f12d-1948-4b6d-821b-3a93b76b30e9",
+      "app_template": "structural",
+      "expect": {
+        "ok": 18,
+        "new_failure": [
+          {
+            "key": "stage.tender_traditional",
+            "want": "include",
+            "app": "ask",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.construction_documents",
+            "want": "include",
+            "app": "ask",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.authority_asset",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.dnc_tender",
+            "want": "exclude",
+            "app": "ask",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.post_novation",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.inspection_schedule",
+            "want": "O",
+            "app": "I",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.retention_design",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.temporary_works_interfaces",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.strengthening",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:procurement",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.slot:project:intro",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.planning_approval",
+            "want": "option",
+            "app": "include",
+            "why": "included on any DA; a house DA rarely needs structural input"
+          },
+          {
+            "key": "position.shared_model",
+            "want": "absent",
+            "app": "O",
+            "why": "service_level simple O"
+          },
+          {
+            "key": "position.super_flat_floor",
+            "want": "absent",
+            "app": "O",
+            "why": "client flag cannot be set; if_unknown option"
+          },
+          {
+            "key": "position.specialist_element_design",
+            "want": "absent",
+            "app": "O",
+            "why": "O whenever procurement is not design_construct"
+          }
+        ],
+        "fixed": [],
+        "not_checked": []
+      },
+      "must_include": {
+        "present": 3,
+        "missing": [
+          "Design basis with site class and AS 4055 wind class",
+          "AS 2870 footing and slab design"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 5,
+        "present": [
+          {
+            "phrase": "Authority asset stage",
+            "where": "stages/rfp:stages",
+            "coverage": 1.0
+          }
+        ],
+        "unknown": [],
+        "known": [
+          {
+            "phrase": "Shared Revit model",
+            "where": "control:position.shared_model"
+          },
+          {
+            "phrase": "Super-flat floor",
+            "where": "control:position.super_flat_floor"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.civil",
+      "template": "civil",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "bb0c0f37-5875-40c5-8b5c-10719c4a1ad3",
+      "app_template": "civil",
+      "expect": {
+        "ok": 24,
+        "new_failure": [
+          {
+            "key": "stage.detailed_tender",
+            "want": "include",
+            "app": "ask",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.dnc_tender",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.post_novation",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.norbe",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.osd_new",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.osd_existing",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.osd_replacement",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.retained_services",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.earthworks_suitability",
+            "want": "absent",
+            "app": "I",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.flood_report",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.flood_evacuation",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.public_road_approvals",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.civil_declarations",
+            "want": "absent",
+            "app": "X",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:procurement",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.slot:project:intro",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.for_construction",
+            "want": "include",
+            "app": "option",
+            "why": "the traditional boundary ends at detailed_tender, so resolveStages prices the later for_construction stage as an option; the stormwater construction set is needed for the CC"
+          },
+          {
+            "key": "stage.as_built",
+            "want": "include",
+            "app": "option",
+            "why": "follows construction_phase, which is an option; WAE certification is needed for the OC"
+          },
+          {
+            "key": "position.water_quality",
+            "want": "absent",
+            "app": "O",
+            "why": "I when flags, else O"
+          },
+          {
+            "key": "position.pavement_design",
+            "want": "absent",
+            "app": "O",
+            "why": "always O"
+          },
+          {
+            "key": "position.civil_model",
+            "want": "absent",
+            "app": "O",
+            "why": "service_level simple O"
+          }
+        ],
+        "fixed": [],
+        "not_checked": []
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Stormwater concept plan for the DA with discharge point confirmed",
+          "Detailed stormwater design for the CC incl. rainwater tank overflow",
+          "Driveway long section and boundary levels for the vehicle crossing",
+          "Erosion and sediment control plan",
+          "Works-as-executed review and stormwater certificate for the OC"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 9,
+        "present": [],
+        "unknown": [],
+        "known": [
+          {
+            "phrase": "MUSIC water quality modelling",
+            "where": "control:position.water_quality"
+          },
+          {
+            "phrase": "3D civil model",
+            "where": "control:position.civil_model"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.geotechnical",
+      "template": "geotechnical",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "2f9237c9-dc23-47af-b9e3-9d18e61645e4",
+      "app_template": "geotechnical",
+      "expect": {
+        "ok": 8,
+        "new_failure": [
+          {
+            "key": "stage.g4_planning",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:groundwater",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:reports",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.geotech_ass",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.geotech_asset_exposure",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.geotech_civil_parameters",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.geotech_foundation",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.geotech_handback",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.geotech_intrusive",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.slot:project:intro",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.g2_field",
+            "want": "include",
+            "app": "ask",
+            "why": "client flag geotech_intrusive cannot be keyed"
+          },
+          {
+            "key": "stage.g7_transfer",
+            "want": "exclude",
+            "app": "option",
+            "why": "default option"
+          },
+          {
+            "key": "position.foundation",
+            "want": "I",
+            "app": "ask",
+            "why": "client flag geotech_foundation"
+          },
+          {
+            "key": "position.clearance",
+            "want": "I",
+            "app": "ask",
+            "why": "client flag geotech_intrusive"
+          },
+          {
+            "key": "position.monitoring",
+            "want": "absent",
+            "app": "O",
+            "why": "always O"
+          },
+          {
+            "key": "position.asset_exposure",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag geotech_asset_exposure"
+          },
+          {
+            "key": "position.ass",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag geotech_ass"
+          },
+          {
+            "key": "position.defects",
+            "want": "absent",
+            "app": "O",
+            "why": "always O"
+          },
+          {
+            "key": "position.transfer",
+            "want": "absent",
+            "app": "O",
+            "why": "O unless g7 included"
+          }
+        ],
+        "fixed": [],
+        "not_checked": []
+      },
+      "must_include": {
+        "present": 1,
+        "missing": [
+          "Field work: boreholes or test pits with DCP tests",
+          "Laboratory reactivity testing",
+          "Report with AS 2870 site classification, founding depth and footing recommendations",
+          "Option: pier and footing inspections"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 1,
+        "present": [
+          {
+            "phrase": "Groundwater monitoring wells",
+            "where": "allowances/rfp:allowances#0",
+            "coverage": 1.0
+          }
+        ],
+        "unknown": [
+          {
+            "phrase": "Acid sulfate soils assessment",
+            "where": "control:position.ass"
+          },
+          {
+            "phrase": "Asset exposure",
+            "where": "control:position.asset_exposure"
+          }
+        ],
+        "known": [
+          {
+            "phrase": "Novation or transfer",
+            "where": "control:position.transfer"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.surveyor",
+      "template": "land-surveying",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "1757d7d8-f427-41b3-8a7f-76c7f9462911",
+      "app_template": "land-surveying",
+      "expect": {
+        "ok": 8,
+        "new_failure": [
+          {
+            "key": "position.access",
+            "want": "absent",
+            "app": "ask",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:control",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:features",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:issues",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:visits",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.staged",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.survey_adjoining",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.survey_boundary",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.survey_buried",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.survey_detail",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.survey_services",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.survey_sewer",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.slot:project:intro",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.s2_detail",
+            "want": "include",
+            "app": "ask",
+            "why": "client flag survey_detail"
+          },
+          {
+            "key": "stage.s3_boundary",
+            "want": "include",
+            "app": "ask",
+            "why": "client flag survey_boundary"
+          },
+          {
+            "key": "stage.s4_services",
+            "want": "include",
+            "app": "ask",
+            "why": "client flag survey_services"
+          },
+          {
+            "key": "stage.s5_support",
+            "want": "exclude",
+            "app": "option",
+            "why": "after the boundary"
+          },
+          {
+            "key": "position.boundary",
+            "want": "I",
+            "app": "ask",
+            "why": "client flag survey_boundary"
+          },
+          {
+            "key": "position.adjoining",
+            "want": "I",
+            "app": "ask",
+            "why": "client flag survey_adjoining"
+          },
+          {
+            "key": "position.titling",
+            "want": "absent",
+            "app": "O",
+            "why": "always O"
+          },
+          {
+            "key": "position.interior",
+            "want": "absent",
+            "app": "O",
+            "why": "always O"
+          },
+          {
+            "key": "position.monitoring",
+            "want": "absent",
+            "app": "O",
+            "why": "always O"
+          },
+          {
+            "key": "position.buried",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag survey_buried"
+          },
+          {
+            "key": "position.sewer",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag survey_sewer"
+          }
+        ],
+        "fixed": [],
+        "not_checked": []
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Detail and contour survey on AHD with trees and street features",
+          "Adjoining windows, ridge heights and trees for the DA",
+          "Sewer location from records",
+          "Option: building set-out",
+          "Option: identification surveys at slab and frame or roof stage",
+          "Option: final survey for the OC"
+        ],
+        "unknown": [
+          {
+            "phrase": "Boundary identification with easements",
+            "where": "control:position.boundary"
+          }
+        ],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 2,
+        "present": [],
+        "unknown": [],
+        "known": [
+          {
+            "phrase": "Interior scan",
+            "where": "control:position.interior"
+          },
+          {
+            "phrase": "Movement monitoring",
+            "where": "control:position.monitoring"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.certifier",
+      "template": "bca-certification",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "d8de668d-f1ed-4ba5-995f-1d7204019489",
+      "app_template": "bca-certification",
+      "expect": {
+        "ok": 6,
+        "new_failure": [
+          {
+            "key": "stage.b2_construction_approval",
+            "want": "include",
+            "app": "exclude",
+            "app_differs_said": "option"
+          },
+          {
+            "key": "stage.b3_construction",
+            "want": "include",
+            "app": "exclude",
+            "app_differs_said": "option"
+          },
+          {
+            "key": "stage.b4_occupation",
+            "want": "include",
+            "app": "exclude",
+            "app_differs_said": "option"
+          },
+          {
+            "key": "stage.b1_preliminary",
+            "want": "option",
+            "app": "exclude",
+            "app_differs_said": null
+          },
+          {
+            "key": "stage.a4_construction",
+            "want": "exclude",
+            "app": "option",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:duration_months",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:meetings",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:plan_sets",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:reports",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:rfi_hours",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:solution_versions",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:visits",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.allowance:witness_events",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_advisory",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_certification",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_classification_map",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_existing_assessment",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_fire_referrals",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_residential_evidence",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:flag.bca_staged_occupation",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.pathway_unsupported",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.slot:project:intro",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.a1_inception",
+            "want": "exclude",
+            "app": "ask",
+            "why": "boundary falls back to a1..a3 without the client flag bca_certification"
+          },
+          {
+            "key": "stage.a3_tender",
+            "want": "exclude",
+            "app": "ask",
+            "why": "as above"
+          },
+          {
+            "key": "position.statutory_functions",
+            "want": "I",
+            "app": "ask",
+            "why": "row needs the client flag bca_certification"
+          },
+          {
+            "key": "position.residential_evidence",
+            "want": "I",
+            "app": "ask",
+            "why": "client flag bca_residential_evidence"
+          },
+          {
+            "key": "position.existing_assessment",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag bca_existing_assessment"
+          },
+          {
+            "key": "position.classification_map",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag bca_classification_map"
+          },
+          {
+            "key": "position.staged_occupation",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag bca_staged_occupation"
+          },
+          {
+            "key": "position.fire_referrals",
+            "want": "absent",
+            "app": "ask",
+            "why": "client flag bca_fire_referrals"
+          }
+        ],
+        "fixed": [
+          {
+            "key": "stage.a2_planning",
+            "want": "exclude",
+            "app": "exclude",
+            "was": "ask"
+          }
+        ],
+        "not_checked": []
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Package B: CC assessment",
+          "Principal certifier services",
+          "Every NSW critical-stage inspection the CC lists for Class 1 and 10: pre-commencement, footings, slab, frame, wet-area waterproofing, stormwater connections, final before the OC (owner ruling R7)",
+          "Occupation certificate with BASIX completion check",
+          "CDC assessment and determination"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 3,
+        "present": [],
+        "unknown": [
+          {
+            "phrase": "Design",
+            "where": "control:stage.a3_tender"
+          },
+          {
+            "phrase": "Classification map",
+            "where": "control:position.classification_map"
+          },
+          {
+            "phrase": "Staged occupation",
+            "where": "control:position.staged_occupation"
+          },
+          {
+            "phrase": "Fire referrals",
+            "where": "control:position.fire_referrals"
+          }
+        ],
+        "known": []
+      }
+    },
+    {
+      "discipline": "consultant.basix",
+      "template": null,
+      "built_in": "no",
+      "trigger": null,
+      "status": "missing",
+      "found": false,
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "NatHERS thermal assessment with stamped plans",
+          "BASIX certificate: water, energy, thermal comfort",
+          "One revision for the CC design"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 0,
+        "present": [],
+        "unknown": [],
+        "known": []
+      },
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": []
+      }
+    },
+    {
+      "discipline": "consultant.landscape",
+      "template": "landscape-architecture",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "missing",
+      "found": false,
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Concept",
+          "DA landscape plan to the council DCP: planting schedule, landscaped area and deep soil",
+          "Option: tender documentation",
+          "Option: completion inspection"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 0,
+        "present": [],
+        "unknown": [],
+        "known": []
+      },
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": []
+      }
+    },
+    {
+      "discipline": "consultant.quantity_surveyor",
+      "template": "cost-planning",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "missing",
+      "found": false,
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Cost basis",
+          "Concept estimate",
+          "Pre-tender estimate",
+          "Tender comparison"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 0,
+        "present": [],
+        "unknown": [],
+        "known": []
+      },
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": []
+      }
+    },
+    {
+      "discipline": "consultant.town_planner",
+      "template": "town-planning",
+      "status": "not_expected",
+      "found": true,
+      "report": "5648e8eb-b2b0-4984-9a09-b8691f417896",
+      "why": "removed by trigger cdc-pathway"
+    },
+    {
+      "discipline": "consultant.hydraulic",
+      "template": "hydraulic-services",
+      "status": "extra",
+      "found": true,
+      "report": "0d2fcf3f-2495-473f-bee0-b42c4cb20fab"
+    },
+    {
+      "discipline": "consultant.mechanical",
+      "template": "mechanical-services",
+      "status": "extra",
+      "found": true,
+      "report": "0e6c470c-afb4-430d-9e22-7db60668202b"
+    },
+    {
+      "discipline": "consultant.electrical",
+      "template": "electrical-services",
+      "status": "extra",
+      "found": true,
+      "report": "c488fe98-8971-42a4-8a33-cf43c23704f0"
+    }
+  ],
+  "summary": {
+    "procurement": {
+      "expected": 10,
+      "matched": 6,
+      "missed": 4,
+      "missed_built_in": 0,
+      "missed_known_gap": 4,
+      "extra": 0,
+      "false_positive": 4,
+      "kind_mismatch": 0
+    },
+    "cost_plan": {
+      "expected": 34,
+      "matched": 22,
+      "missed": 12,
+      "missed_built_in": 0,
+      "missed_known_gap": 12,
+      "extra": 0,
+      "false_positive": 6,
+      "section_mismatch": 0,
+      "fabricated": 0,
+      "amounts_document": 10,
+      "amounts_user": 0
+    },
+    "program": {
+      "expected": 81,
+      "matched": 49,
+      "missed": 32,
+      "missed_built_in": 9,
+      "missed_known_gap": 23,
+      "extra": 17,
+      "false_positive": 0,
+      "wrong_stage": 1,
+      "skeleton_match": false,
+      "links_holds": 39,
+      "links_violated": 4,
+      "links_unknown": 0,
+      "links_unscored": 47,
+      "orphans": 3,
+      "cycles": 0
+    },
+    "rfps": {
+      "expected": 9,
+      "found": 6,
+      "missing": 3,
+      "missing_built_in": 0,
+      "not_expected_present": 1,
+      "extra": 3,
+      "expect_ok": 90,
+      "expect_new_failure": 99,
+      "expect_known_difference": 38,
+      "expect_fixed": 1,
+      "must_include_missing": 28,
+      "must_include_unknown": 1,
+      "must_not_include_present": 5,
+      "must_not_include_known": 7
+    }
+  }
+}

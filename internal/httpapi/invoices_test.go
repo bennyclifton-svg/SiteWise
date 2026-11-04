@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -12,6 +14,42 @@ import (
 	"sitewise/internal/invoices/sample"
 	"sitewise/internal/procurement"
 )
+
+func TestMarkdownInvoiceUpload(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Markdown invoices")
+	raw, err := os.ReadFile("../invoices/testdata/quoin.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var times []time.Duration
+	for i := 0; i < 20; i++ {
+		body := append(append([]byte{}, raw...), []byte(strings.Repeat("\n", i))...)
+		name := "quoin.md"
+		if i%2 == 1 {
+			name = "quoin.MARKDOWN"
+		}
+		began := time.Now()
+		var created struct{ ID, Status string }
+		m.call(t, http.MethodPost, "/api/projects/"+project+"/invoices?name="+name, body, http.StatusCreated, &created)
+		if created.Status != "reading" {
+			t.Fatalf("upload: %+v", created)
+		}
+		v := m.waitInvoices(t, project, i+1)
+		times = append(times, time.Since(began))
+		for _, inv := range v.Invoices {
+			if inv.ID == created.ID && (inv.Number != "QUA-2601" || inv.Ex == nil || *inv.Ex != "24000.00" || inv.Status == "not_read") {
+				t.Fatalf("ledger: %+v", inv)
+			}
+		}
+	}
+	sort.Slice(times, func(i, j int) bool { return times[i] < times[j] })
+	t.Logf("Markdown upload-to-ledger p50=%s p90=%s (test Jev)", times[9], times[17])
+	if times[9] > time.Second || times[17] > 2*time.Second {
+		t.Fatal("invoice intake budget exceeded")
+	}
+}
 
 type invoiceLedger struct {
 	Summary struct {

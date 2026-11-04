@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"sitewise/internal/knowledge"
+	"sitewise/internal/reports"
 )
 
 // Stage states. An option is priced separately and not in the base fee; ask
@@ -57,6 +58,25 @@ type StageResult struct {
 	Assumption     string   `json:"assumption,omitempty"`
 	Locked         bool     `json:"locked"`
 	Unknown        []string `json:"unknown,omitempty"`
+	// Lines are the stage's scope lines, the user's own last.
+	Lines []LineResult `json:"lines,omitempty"`
+}
+
+// LineResult is one scope line of a stage: I included, X excluded. Custom
+// lines are the user's own, added to this RFP only.
+type LineResult struct {
+	Key    string `json:"key"`
+	Text   string `json:"text"`
+	Value  string `json:"value"`
+	Source string `json:"source"` // rule | user
+	Custom bool   `json:"custom,omitempty"`
+}
+
+// CustomLine is a line the user added to a stage, saved as custom:<stage>.
+type CustomLine struct {
+	ID    string `json:"id"`
+	Text  string `json:"text"`
+	Value string `json:"value"`
 }
 
 type ElementResult struct {
@@ -83,6 +103,7 @@ type PositionResult struct {
 	Key        string   `json:"key"`
 	Label      string   `json:"label"`
 	Group      string   `json:"group,omitempty"`
+	Stage      string   `json:"stage,omitempty"` // home stage when scope is by stage; "" is across all stages
 	Detail     string   `json:"detail,omitempty"`
 	Kind       string   `json:"kind"`
 	Value      string   `json:"value"` // I | O | X | ask
@@ -124,6 +145,7 @@ type Boundary struct {
 }
 
 type Resolved struct {
+	Transmittal   []reports.BriefValue  `json:"transmittal"`
 	Discipline    string                `json:"discipline"`
 	Version       int                   `json:"version"`
 	Status        string                `json:"status"`
@@ -149,6 +171,7 @@ type Resolved struct {
 	Appointment   []Row                 `json:"appointment"`
 	Role          []Row                 `json:"role"`
 	StageIntro    string                `json:"stage_intro"`
+	ScopeByStage  bool                  `json:"scope_by_stage,omitempty"`
 	ElementNote   string                `json:"element_intro,omitempty"`
 	Terms         []Row                 `json:"terms"`
 	Returnables   []Row                 `json:"returnables"`
@@ -258,12 +281,16 @@ type resolver struct {
 // It is a pure function: the same inputs always give the same RFP.
 func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, settings Settings) Resolved {
 	r := &resolver{d: d, sk: sk, drivers: drivers, settings: settings, asks: map[string][]string{}, assumptions: map[string][]string{}, used: map[string]bool{}, skipped: map[string][]string{}}
-	r.out = Resolved{Discipline: d.ID, Version: d.Version, Status: d.Status, Title: d.Title, Heading: d.Heading, Modules: map[string]string{}, Fields: map[string]FieldValue{}, Checks: []Check{}, Orphans: []string{}, Durations: d.Durations, Legend: sk.Legend, AllowNote: sk.Allowances, Departures: sk.Departures, EvalNote: sk.Evaluate, StageIntro: d.StageIntro, ElementNote: d.ElementIntro}
+	r.out = Resolved{Discipline: d.ID, Version: d.Version, Status: d.Status, Title: d.Title, Heading: d.Heading, Modules: map[string]string{}, Fields: map[string]FieldValue{}, Checks: []Check{}, Orphans: []string{}, Durations: d.Durations, Legend: sk.Legend, AllowNote: sk.Allowances, Departures: sk.Departures, EvalNote: sk.Evaluate, StageIntro: d.StageIntro, ElementNote: d.ElementIntro, ScopeByStage: d.ScopeByStage}
 	if d.AllowancesNote != "" {
 		r.out.AllowNote = d.AllowancesNote
 	}
 	if d.EvaluationNote != "" {
 		r.out.EvalNote = d.EvaluationNote
+	}
+	r.out.Transmittal = drivers.DocumentSchedule
+	if raw, ok := r.setting("transmittal"); ok {
+		_ = json.Unmarshal(raw, &r.out.Transmittal)
 	}
 	r.applyFacts()
 	if d.ID == "hydraulic-services" {
@@ -279,6 +306,7 @@ func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Driver
 	r.resolveElements()
 	r.resolveAllowances()
 	r.resolvePositions()
+	r.placeServices()
 	r.checkConsistency()
 	r.resolveRows()
 	// Evaluation is not part of the consultant RFP template.
@@ -729,7 +757,41 @@ func (r *resolver) resolveStages() {
 	// deliverable may name an allowance whose condition tests a stage.
 	for i, st := range r.d.Stages {
 		r.out.Stages[i].Text = st.Deliverable
+		if r.d.ScopeByStage {
+			r.resolveLines(&r.out.Stages[i], st)
+		}
 	}
+}
+
+// resolveLines sets each scope line from its saved choice (included unless
+// excluded), adds the user's own lines, and makes the stage's deliverable
+// the included lines, so an excluded line is priced by nobody.
+func (r *resolver) resolveLines(s *StageResult, st knowledge.RFPStage) {
+	s.Lines = []LineResult{}
+	for _, l := range st.Lines {
+		line := LineResult{Key: l.Key, Text: l.Text, Value: "I", Source: "rule"}
+		if raw, ok := r.setting("line:" + st.Key + "." + l.Key); ok {
+			if v := settingString(raw); v == "I" || v == "X" {
+				line.Value, line.Source = v, "user"
+			}
+		}
+		s.Lines = append(s.Lines, line)
+	}
+	if raw, ok := r.setting("custom:" + st.Key); ok {
+		var own []CustomLine
+		if json.Unmarshal(raw, &own) == nil {
+			for _, l := range own {
+				s.Lines = append(s.Lines, LineResult{Key: l.ID, Text: l.Text, Value: l.Value, Source: "user", Custom: true})
+			}
+		}
+	}
+	included := []string{}
+	for _, l := range s.Lines {
+		if l.Value == "I" {
+			included = append(included, l.Text)
+		}
+	}
+	s.Text = strings.Join(included, "; ")
 }
 
 // unknownState applies a row's if_unknown. A suggest rule that is false
@@ -920,6 +982,88 @@ func (r *resolver) resolvePositions() {
 		}
 		r.out.Positions = append(r.out.Positions, res)
 		r.out.Scope = append(r.out.Scope, res)
+	}
+}
+
+// placeServices puts each service under its home stage: the first listed
+// stage the project has (one a rule leaves out does not count). A service
+// follows its stage, so a stage left out of this RFP or done by others
+// buys none of its services, whatever their own position says.
+func (r *resolver) placeServices() {
+	if !r.d.ScopeByStage {
+		return
+	}
+	// By stage, a stage or service is only included or excluded (owner
+	// direction, 3 November 2026): an option or an open question is
+	// included, and work done by others is excluded. A stage after an
+	// appointment range the user set stays out, so a planning-only
+	// appointment is not priced for the whole job.
+	for i := range r.out.Stages {
+		s := &r.out.Stages[i]
+		switch {
+		case s.State == Option && s.Source == "boundary" && r.out.Boundary.Source == "user":
+			s.State = Exclude
+		case s.State == Option || s.State == Ask:
+			s.State = Include
+		case s.State == Done:
+			s.State = Exclude
+		}
+	}
+	for i := range r.out.Elements {
+		if e := &r.out.Elements[i]; e.State == Option || e.State == Ask {
+			e.State = Include
+		}
+	}
+	stages := map[string]StageResult{}
+	for _, s := range r.out.Stages {
+		stages[s.Key] = s
+	}
+	listed := map[string][]string{}
+	for _, p := range r.d.Positions {
+		listed[p.Key] = p.Stage
+	}
+	// A service sits in the first listed stage the project has. When that
+	// stage is out of the appointment, an included service moves on to the
+	// next listed stage that is in it (or across all stages), unless the
+	// user left the stage out themselves; an option or open question
+	// follows its stage out.
+	place := func(p *PositionResult) {
+		p.Stage = ""
+		applies := []string{}
+		for _, key := range listed[p.Key] {
+			if s, ok := stages[key]; ok && !(s.State == Exclude && s.Source == "rule") {
+				applies = append(applies, key)
+			}
+		}
+		if len(applies) > 0 {
+			p.Stage = applies[0]
+		}
+		first, ok := stages[p.Stage]
+		if !ok || p.Inactive || first.State != Exclude {
+			return
+		}
+		if p.Value != "I" || first.Source == "user" {
+			p.Value, p.Assumption = "X", ""
+			return
+		}
+		p.Stage = ""
+		for _, key := range applies[1:] {
+			if stages[key].State != Exclude {
+				p.Stage = key
+				break
+			}
+		}
+	}
+	for _, list := range [][]PositionResult{r.out.Positions, r.out.Scope} {
+		for i := range list {
+			place(&list[i])
+			if v := list[i].Value; v == "O" || v == Ask {
+				list[i].Value = "I"
+			}
+			// An excluded service is simply not this consultant's; who does
+			// it instead is not asked here.
+			list[i].Party = ""
+		}
 	}
 }
 
@@ -1232,6 +1376,9 @@ func (r *resolver) resolveRows() {
 	}
 	for i := range r.out.Stages {
 		s := &r.out.Stages[i]
+		for j := range s.Lines {
+			s.Lines[j].Text = r.fillQuiet(s.Lines[j].Text)
+		}
 		if s.State == Exclude {
 			s.Text = r.fillQuiet(s.Text)
 			continue

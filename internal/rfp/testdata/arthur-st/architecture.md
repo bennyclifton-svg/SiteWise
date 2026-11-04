@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Hale Capital intends to extend Warehouse (Class 7b) and Mezzanine office (Class 5) at 145-151 Arthur St, Homebush West NSW (Strathfield).
@@ -8,88 +6,95 @@ Hale Capital intends to extend Warehouse (Class 7b) and Mezzanine office (Class 
 |---|---|---|
 | Work type: Extension / addition | Site address: 145-151 Arthur St, Homebush West NSW | Client: Hale Capital |
 | Building: Warehouse: Class 7b, 2,135 m² GFA; Mezzanine office: Class 5, 215 m² GFA | Local government area: Strathfield | Procurement route: Traditional lump sum |
-| Gross floor area: To be confirmed | Site area: 31,720 m² | Regulated design applies: Not known |
+| Gross floor area: To be confirmed | Site area: 31,720 m² | Regulated design applies: No |
 |  | Planning pathway: Development application (DA) |  |
 
 Conditions that apply: Work to an existing building; Parts with different NCC classes; Building over or next to a water authority asset; Existing on-site detention to keep or modify; Use generates heavy vehicle movements.
 Conditions that do not apply: Delivered in stages; Several buildings or a campus.
 Conditions not yet known: Heritage item or conservation area; Connecting with Country input required; Site stays occupied or operating during the works; Community consultation required; Green Star or NABERS target set; Client wants the consultant to administer the construction contract.
 
-Information provided: 12 current documents in the project register, listed in the issue record
-
 ### 2. Scope of services
 
 Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. The client engages the other consultants directly: Structural (to be appointed), Civil (to be appointed), Traffic (to be appointed), Town Planner (to be appointed).
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| Concept |  | Included |  |
+|  | Site inspection | Included |  |
+|  | Review of existing information and brief gaps | Included |  |
+|  | Up to 2 options | Included |  |
+|  | Preferred concept | Included |  |
+|  | Area schedule | Included |  |
+|  | Check against budget | Included |  |
+|  | Brief gaps, required-input schedule, responsibility matrix and decisions register | Included |  |
+|  | Help selecting other consultants | Included |  |
+|  | Connecting with Country input | Included |  |
+|  | Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces | Included |  |
+| Schematic design |  | Included |  |
+|  | Preferred scheme resolved for planning and the cost plan | Included |  |
+|  | Outline materials and systems | Included |  |
+|  | Pre-application meeting where the pathway has one | Included |  |
+|  | Photoreal renders, marketing CGI, models | Included |  |
+|  | Community consultation | Included |  |
+|  | Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables | Included |  |
+| Planning approval |  | Included |  |
+|  | Architectural drawings and input to the Statement of Environmental Effects: one preliminary and one final issue | Included |  |
+|  | Who lodges is set in section 2 | Included |  |
+|  | Modification applications after approval | Included |  |
+| Planning response | Fee ceiling: hours × R3 rate. | Included |  |
+|  | Authority information requests and design changes during assessment | Included |  |
+|  | Actual time at R3 rates up to 20 hours | Included |  |
+|  | Court appeals | Excluded |  |
+| Design development |  | Included |  |
+|  | Coordinated design to the approval and consent conditions | Included |  |
+|  | Finishes and typical details | Included |  |
+|  | BCA strategy with the BCA consultant | Included |  |
+|  | Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | Included |  |
+|  | BIM model issued to the design team (level in section 4) | Included |  |
+|  | BIM coordination meetings, clash detection | Included |  |
+|  | Value management redesign (at R3 rates) | Included |  |
+|  | Performance solutions (fire, access, weatherproofing) | Excluded |  |
+|  | Green Star or NABERS documentation | Included |  |
+|  | Signage and wayfinding | Included |  |
+| Interiors |  | Included |  |
+|  | Interior layouts, finishes and joinery for the base building and common areas | Included |  |
+|  | Interior layouts for typical rooms | Included |  |
+|  | Base-building and common-area interiors | Included |  |
+|  | Tenant fit-out design | Included |  |
+|  | Loose furniture and FF&E selection | Included |  |
+| Tender documents | You hold the whole architectural design. | Included |  |
+|  | Documents complete enough to price as a lump sum: drawings, schedules and specification | Included |  |
+|  | One tender issue | Included |  |
+|  | Architectural specification | Included |  |
+|  | Door schedule; hardware schedule by the supplier | Included |  |
+|  | External and base-building finishes schedules | Included |  |
+| Bidding | Fee ceiling: hours × R3 rate. | Included |  |
+|  | Tenderer questions and addenda | Included |  |
+|  | Actual time at R3 rates up to 40 hours | Included |  |
+|  | Tender evaluation input | Included |  |
+| For-construction documents | You hold the whole architectural design. | Included |  |
+|  | Negotiated changes incorporated | Included |  |
+|  | Non-typical details | Included |  |
+|  | One for-construction issue and one construction certificate issue | Included |  |
+|  | Design certification for the construction certificate | Included |  |
+|  | Façade performance certification (NCC Part F3) | Excluded |  |
+| Design support during construction | Not part of this appointment | Excluded | — |
+| Contract administration | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Coordinating and integrating consultants' work | Included |  |
+|  | Liaison with the certifier | Included |  |
+|  | Uploading to the client's document system | Included |  |
+|  | Work outside the site boundary; external hardstands | Excluded |  |
+|  | Authority and other consultants' fees | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Brief and design coordination — Coordinating and integrating consultants' work | X |  |  |  |
-| Brief gaps, required-input schedule, responsibility matrix and decisions register | X |  |  |  |
-| Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | X |  |  |  |
-| Help selecting other consultants |  | X |  |  |
-| Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces | X |  |  |  |
-| Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables | X |  |  |  |
-| Design documentation and models — BIM model issued to the design team (level in section 4) | X |  |  |  |
-| BIM coordination meetings, clash detection |  | X |  |  |
-| Architectural specification | X |  |  |  |
-| Door schedule; hardware schedule by the supplier | X |  |  |  |
-| External and base-building finishes schedules | X |  |  |  |
-| Interior layouts for typical rooms | X |  |  |  |
-| Base-building and common-area interiors | X |  |  |  |
-| Tenant fit-out design |  | X |  |  |
-| Loose furniture and FF&E selection |  | X |  |  |
-| Photoreal renders, marketing CGI, models |  | X |  |  |
-| Signage and wayfinding |  | X |  |  |
-| Procurement and approvals — Value management redesign (at R3 rates) |  | X |  |  |
-| Tender evaluation input |  | X |  |  |
-| Liaison with the certifier | X |  |  |  |
-| Uploading to the client's document system | X |  |  |  |
-| Modification applications after approval |  | X |  |  |
-| Specialist and additional services — Court appeals. By client (separate engagement) |  |  | X |  |
-| Community consultation Basis: Price as an option: needed only if community consultation is required. |  | X |  |  |
-| Connecting with Country input Basis: Price as an option: needed only if Connecting with Country input is required. |  | X |  |  |
-| Façade performance certification (NCC Part F3). By façade engineer, not yet engaged |  |  | X |  |
-| Performance solutions (fire, access, weatherproofing). By fire and access engineers, not yet engaged |  |  | X |  |
-| Green Star or NABERS documentation Basis: Price as an option: needed only if a Green Star or NABERS target is set. |  | X |  |  |
-| Work outside the site boundary; external hardstands. By civil engineer, to be appointed |  |  | X |  |
-| As-built or record drawings |  | X |  |  |
-| Authority and other consultants' fees. By the client |  |  | X |  |
-
-### 3. Scope by stage and fee proposal
-
-Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5).  R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| Concept — Included | Site inspection; review of existing information and brief gaps; up to 2 options; preferred concept; area schedule; check against budget |  |  |  |
-| Schematic design — Included | Preferred scheme resolved for planning and the cost plan; outline materials and systems; pre-application meeting where the pathway has one |  |  |  |
-| Planning approval — Included | Architectural drawings and input to the Statement of Environmental Effects: one preliminary and one final issue; who lodges is set in section 2 |  |  |  |
-| Planning response — Included | Authority information requests and design changes during assessment; actual time at R3 rates up to 20 hours. Fee ceiling: hours × R3 rate |  |  |  |
-| Design development — Included | Coordinated design to the approval and consent conditions; finishes and typical details; BCA strategy with the BCA consultant |  |  |  |
-| Interiors — Included | Interior layouts, finishes and joinery for the base building and common areas |  |  |  |
-| Tender documents — Included | Documents complete enough to price as a lump sum: drawings, schedules and specification; one tender issue. You hold the whole architectural design. |  |  |  |
-| Bidding — Included | Tenderer questions and addenda; actual time at R3 rates up to 40 hours. Fee ceiling: hours × R3 rate |  |  |  |
-| For-construction documents — Included | Negotiated changes incorporated; non-typical details; one for-construction issue and one construction certificate issue; design certification for the construction certificate. You hold the whole architectural design. |  |  |  |
-| Design support during construction — Option | 6 site inspections; RFIs; shop drawing review; practical completion and defects inspections |  |  |  |
-| Contract administration — Option | Superintendent or contract administrator under the construction contract: progress claims and variations assessed, practical completion and defects certification. Price as an option: the client has not decided who administers the construction contract. |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Help selecting other consultants |  |  |  |
-| Service option | BIM coordination meetings, clash detection |  |  |  |
-| Service option | Tenant fit-out design |  |  |  |
-| Service option | Loose furniture and FF&E selection |  |  |  |
-| Service option | Photoreal renders, marketing CGI, models |  |  |  |
-| Service option | Value management redesign (at R3 rates) |  |  |  |
-| Service option | Tender evaluation input |  |  |  |
-| Service option | Modification applications after approval |  |  |  |
-| Service option | Community consultation |  |  |  |
-| Service option | Connecting with Country input |  |  |  |
-| Service option | Green Star or NABERS documentation |  |  |  |
-| Service option | Signage and wayfinding |  |  |  |
-| Service option | As-built or record drawings |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -135,6 +140,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
 | R8 Insurance and compliance | PI $20 million and PL $20 million with insurer and expiry; workers compensation; quality, safety and environmental systems (ISO 9001, 45001, 14001 or an equivalent you describe); conflicts of interest. |
 | R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

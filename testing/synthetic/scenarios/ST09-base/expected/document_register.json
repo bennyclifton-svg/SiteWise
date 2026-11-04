@@ -1,0 +1,279 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": "NSM-912345-RFP1",
+      "revision": null,
+      "title": "Consultant brief: balcony waterproofing investigation and remediation",
+      "date": "2026-02-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Northgate Strata Management Pty Ltd"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-00418",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Georges River Council"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": {
+        "accept": [
+          "report",
+          "schedule"
+        ]
+      },
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "brief",
+          "project",
+          "reporting"
+        ]
+      },
+      "number": "NSM-912345-LH",
+      "revision": null,
+      "title": "Building information and leak history",
+      "date": "2026-02-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Northgate Strata Management Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Balcony works timing",
+      "date": "2026-02-19",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": "consultant",
+      "number": "PBC-FP-26014",
+      "revision": null,
+      "title": "Fee proposal: remedial building consultancy",
+      "date": "2026-02-23",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Parapet Building Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": "consultant",
+      "number": "HRC-0226-31",
+      "revision": null,
+      "title": "Fee proposal: remedial consultancy services",
+      "date": "2026-02-25",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Halyard Remedial Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "KCE-Q-2611",
+      "revision": null,
+      "title": "Fee proposal: remedial structural engineering",
+      "date": "2026-02-26",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Karrak Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "report",
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "PBC-R-26014-01",
+      "revision": "0",
+      "title": "Balcony waterproofing defect investigation report",
+      "date": "2026-04-14",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Parapet Building Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "specification",
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": "design",
+      "number": "PBC-SPEC-26014",
+      "revision": "A",
+      "title": "Remedial specification: balcony waterproofing",
+      "date": "2026-06-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for tender",
+        "originating_org": "Parapet Building Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.structural",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "KCE-R-2611-01",
+      "revision": "0",
+      "title": "Structural assessment of balcony slabs and balustrade fixings",
+      "date": "2026-04-21",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Karrak Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": "design",
+      "number": "RW-101",
+      "revision": "A",
+      "title": "Typical balcony waterproofing details",
+      "date": "2026-05-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Parapet Building Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": "design",
+      "number": "RW-101",
+      "revision": "B",
+      "title": "Typical balcony waterproofing details",
+      "date": "2026-06-02",
+      "supersedes": "d11",
+      "unsupported": {
+        "issue_status": "for tender",
+        "originating_org": "Parapet Building Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": {
+        "accept": [
+          "contract",
+          "specification"
+        ]
+      },
+      "discipline": {
+        "accept": [
+          "consultant.building",
+          "consultant.waterproofing"
+        ]
+      },
+      "lifecycle": "procurement",
+      "number": "PBC-T-26014",
+      "revision": null,
+      "title": "Conditions of tender and contract particulars",
+      "date": "2026-06-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for tender",
+        "originating_org": "Parapet Building Consultants Pty Ltd"
+      }
+    }
+  ]
+}

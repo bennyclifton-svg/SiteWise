@@ -191,6 +191,18 @@ type Evidence struct {
 	// Dated is the proposal's own header date, YYYY-MM-DD, or "".
 	Dated    string
 	Contacts []string
+	// InvalidABNs are printed after "ABN" but fail the checksum; they are
+	// never decided, only reported (Walsh letter, 2026-10-27).
+	InvalidABNs []string
+	// SignatureFirm is the firm a sign-off names ("Director, Atelier North")
+	// under a person's name, for a letter with no letterhead.
+	SignatureFirm string
+	// HeaderFirm is the one registered company name in the header.
+	HeaderFirm string
+	// MonthlyFees are fee rows worded per month ("Monthly × est. 9 months").
+	MonthlyFees []string
+	// PI is the professional indemnity cover the document states, or nil.
+	PI       *Insurance
 	Sections []Section
 	// Form holds a SiteWise response form's cells by schedule key, read
 	// verbatim; FormFirm its labelled firm fields.
@@ -198,6 +210,12 @@ type Evidence struct {
 	FormFirm map[string]string
 	// KindWords are the proposal cues printed in the filename or a heading.
 	KindWords []string
+	// InvoiceTitle is true when the document's title says it is an invoice.
+	InvoiceTitle bool
+	// AppointmentFee is true for an appointment that states its fee;
+	// Appointed are the companies it names as appointed.
+	AppointmentFee bool
+	Appointed      []string
 	// OptionsAB is true when the proposal prices "Option A" and "Option B".
 	OptionsAB bool
 	Excerpt   string
@@ -302,7 +320,28 @@ func Harvest(filename string, text identity.Text) Evidence {
 		for _, m := range abnRe.FindAllString(abnGlued.ReplaceAllString(t, "ABN $1"), -1) {
 			if d := invoices.NormalizeABN(m); d != "" && invoices.ValidABN(d) {
 				addUnique(&ev.ABNs, d)
+			} else if d != "" && abnLabel.MatchString(t) {
+				addUnique(&ev.InvalidABNs, d)
 			}
+		}
+		if m := signatureRole.FindStringIndex(stripEmphasis(t)); m != nil && i > 0 && personName(stripEmphasis(lines[i-1].Text)) {
+			// "Director, Registered Architect NSW #9104" is a title, not a firm.
+			if firm := cleanFirmCandidate(stripEmphasis(t)[m[1]:]); firm != "" && len(strings.Fields(firm)) <= 6 && !strings.ContainsAny(firm, "0123456789#@$") && !signatureTitle.MatchString(firm) {
+				if ev.SignatureFirm == "" {
+					ev.SignatureFirm = firm
+				}
+				person := stripEmphasis(lines[i-1].Text)
+				known := false
+				for _, c := range ev.Contacts {
+					known = known || strings.EqualFold(stripEmphasis(c), person)
+				}
+				if !known {
+					addUnique(&ev.Contacts, person)
+				}
+			}
+		}
+		if monthlyFee.MatchString(t) && moneyRe.MatchString(t) {
+			ev.MonthlyFees = append(ev.MonthlyFees, strings.TrimSpace(strings.Trim(stripEmphasis(t), "|")))
 		}
 		if companyRe.MatchString(t) && len(strings.Fields(t)) <= 8 && !moneyRe.MatchString(t) && !emailRe.MatchString(t) {
 			addUnique(&ev.Names, cleanFirmCandidate(strings.Trim(t, " ,.-|")))
@@ -328,7 +367,11 @@ func Harvest(filename string, text identity.Text) Evidence {
 				}
 				label := rowLabel(l.Cells, j, m.before)
 				if markdown && len(l.Cells) > 1 && j > 0 {
-					label = l.Cells[0]
+					// The row's words are its first filled cell: a total row
+					// often leaves the Item column empty ("| | Total $7,000 |").
+					if first := firstFilled(l.Cells[:j]); first != "" {
+						label = first
+					}
 				}
 				above, localHeading := amountColumnContext(lines, i, j, m.before)
 				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
@@ -386,6 +429,8 @@ func Harvest(filename string, text identity.Text) Evidence {
 	markUnitRates(ev.Amounts, lines)
 	ev.Letterhead = letterhead(lines, ev.ABNs)
 	ev.Dated = headerDate(lines)
+	ev.PI = readInsurance(lines)
+	ev.HeaderFirm = headerFirm(lines)
 	// Keep table structure with a subtotal: the headings above its component
 	// rows explain the scope a single bundled figure covers.
 	for i := range ev.Amounts {
@@ -412,6 +457,11 @@ func Harvest(filename string, text identity.Text) Evidence {
 		ev.Amounts[i].ID = "a" + strconv.Itoa(i+1)
 	}
 	markRepeatedReferences(ev.Amounts)
+	ev.AppointmentFee = appointmentFee(filename, lines)
+	ev.Appointed = appointees(lines)
+	for _, n := range ev.Appointed {
+		addUnique(&ev.Names, n)
+	}
 	ev.Printed = len(ev.Names)
 	for _, n := range filenameNames(filename) {
 		ev.Hints = append(ev.Hints, n)
@@ -424,6 +474,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 		}
 	}
 	ev.KindWords = cueWords(filename, lines)
+	ev.InvoiceTitle = invoiceTitled(lines)
 	ev.OptionsAB = optionAB.MatchString(sectionHeadings(ev.Sections))
 	ev.Excerpt = feeExcerpt(lines, ev.Amounts, 9000)
 	return ev
@@ -626,6 +677,15 @@ func rowLabel(cells []string, j int, prefix string) string {
 	return ""
 }
 
+func firstFilled(cells []string) string {
+	for _, c := range cells {
+		if c = strings.TrimSpace(c); c != "" {
+			return c
+		}
+	}
+	return ""
+}
+
 // columnHeading is the table heading printed above a figure's cell: the
 // nearest line above, on the same page and before the next heading, whose
 // cells hold no figures and one of which sits over this cell.
@@ -770,6 +830,25 @@ func domainName(email string) string {
 }
 
 var cuePhrases = []string{"fee proposal", "fee submission", "fee estimate", "fee quote", "fee schedule", "proposal for", "tender submission", "tender", "quotation", "quote", "proposal", "response form", "fee"}
+
+// invoiceTitle is a title line that names the document an invoice: "Tax
+// invoice", "# Tax invoice", "Title: Tax invoice", "Invoice 5521". Only the
+// title counts: a proposal's payment terms mention invoices too.
+var invoiceTitle = regexp.MustCompile(`^(title:\s*)?(tax\s+)?invoice(\s*(no\.?|number|#|:)?\s*[a-z0-9/-]*\d[a-z0-9/-]*)?$`)
+
+// invoiceTitled looks at the first few lines only, where a title sits.
+func invoiceTitled(lines []Line) bool {
+	for _, l := range lines[:min(len(lines), 5)] {
+		t := strings.ToLower(strings.TrimSpace(l.Text))
+		if len(l.Cells) > 1 {
+			t = strings.ToLower(strings.TrimSpace(strings.Join(l.Cells, " ")))
+		}
+		if invoiceTitle.MatchString(strings.Join(strings.Fields(t), " ")) {
+			return true
+		}
+	}
+	return false
+}
 
 // cueWords are proposal phrases in the filename and the leading lines.
 func cueWords(filename string, lines []Line) []string {
@@ -942,6 +1021,9 @@ func Cue(filename string, text identity.Text, kind string) bool {
 		if words[strong] {
 			return true
 		}
+	}
+	if appointmentFee(filename, Lines(text)) {
+		return true
 	}
 	return kind == "commercial" && (words["fee"] || words["proposal"] || words["quote"] || words["tender"])
 }

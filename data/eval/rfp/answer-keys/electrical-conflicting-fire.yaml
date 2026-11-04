@@ -60,9 +60,10 @@ description: Contradictory electrical/fire responsibility remains unresolved; kn
 snapshot: false
 expect:
   electrical-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      dry_fire: ask
-      controls: ask
+      dry_fire: I
+      controls: I
       generation: absent
       lighting: I
       declarations: I

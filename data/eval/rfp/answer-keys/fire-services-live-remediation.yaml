@@ -64,16 +64,12 @@ description: Occupied mixed-use retrofit separates investigation/upgrade, staged
 snapshot: false
 expect:
   fire-services:
-    stages_include:
-    - investigation
-    - construction
-    - handover
-    stages_option:
-    - continuation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [investigation, construction, handover, continuation]
     positions:
       existing: I
       upgrade: I
-      staging: O
-      remediation: O
+      staging: I
+      remediation: X
       witness: I
-      execution: O
+      execution: I

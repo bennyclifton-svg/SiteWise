@@ -60,26 +60,13 @@ description: Advice-only has no certification or planning-submission appointment
   tender boundary leaves construction advice optional.
 expect:
   bca-certification:
-    stages_include:
-    - a1_inception
-    - a3_tender
-    stages_option:
-    - a4_construction
-    stages_absent:
-    - a2_planning
-    - b1_preliminary
-    - b2_construction_approval
-    - b3_construction
-    - b4_occupation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [a1_inception, a3_tender]
+    stages_absent: [a2_planning, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation, a4_construction]
     positions:
       statutory_functions: absent
-      performance_assessment: O
+      performance_assessment: I
       specialist_design: X
-    role:
-    - advisory
-    - independence
-    role_absent:
-    - statutory
-    allowances_absent:
-    - cc_packages
-    - oc_packages
+    role: [advisory, independence]
+    role_absent: [statutory]
+    allowances_absent: [cc_packages, oc_packages]
