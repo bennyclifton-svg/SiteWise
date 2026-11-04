@@ -287,3 +287,151 @@ Spot checks of `no` claims (knowledge really has nothing):
 | N6 | `structure.steel` has no Class 5 fragment (`fr.steel-7b`, `fr.steel-9b` only, new or extend) | ✔ |
 | N7 | `classified-road-crane-lift` cost and program no | ✔ |
 | N8 | no interface hold point resolves for any base system (`if.fire-stopping-before-concealment` needs interiors) | ✔ |
+
+## Round 1 response (author, 4 November 2026)
+
+Most edits were already in the committed `shape.yaml` and `DOMAIN.md` (applied before the tree was
+committed, without a response here). I checked each one against the finding and finished the rest. I ran
+the real `rfp.Resolve` again through a scratchpad test passed with `go test -overlay` (nothing written in
+the repo). Drivers: class 5, refurb, traditional, NSW, regulated design no, novation no, the shape's flags,
+`heritage` no, `live_operations` yes, pathway exempt and then cdc. Results: mechanical and electrical
+`existing` = `X inactive=true` on both pathways; structural `inspection_schedule` = `I`; bca-certification
+blocks with `pathway_unsupported` on cdc only.
+
+| # | finding | response |
+|---|---|---|
+| 1 | mechanical and electrical `app_differs[position.existing]` | **Applied.** Both are `app: absent` with the inactive-until-answered why. DOMAIN §8 mechanical and electrical "App:" bullets say the row is hidden until the investigation stage is answered. Go confirmed. |
+| 2 | structural `app_differs[position.inspection_schedule]` | **Applied.** Entry deleted; `expect.positions.inspection_schedule: I` agrees with the app. Go confirmed. |
+| 3 | `complying-development` RFPs and Certifier fee | **Applied.** `built_in.rfps: "no"`; "Certifier (consultant fee)" in `adds.cost_plan`; the `why` names both blocked RFPs and the missing scorer hook; new `gaps` entry (area `rfp`) for the blocked BCA RFP; `adds.authority` names the Commercial and Industrial Alterations Code (Part 5, verified: false) per ruling 1. Go confirmed the cdc block. |
+| 4 | `heritage-item` Certifier fee and skeleton | **Applied.** Certifier fee line added; the `why` says the scorer will report a skeleton mismatch (`sk.refurb-traditional-da` is correct). The scorer hook is for the orchestrator. |
+| 5 | `heating-electrification` P06 | **Applied.** "Service authority connection fees" added; the augmentation line kept separate. |
+| 6 | `nabers-target.evidence[1]` | **Applied.** Replaced with the 3.5-to-5-star lift. The CBD-certificate sentence is a §10 trap. Ruling 2: the `why` now notes sub-metering would sit under Part J9 (verified: false). |
+| 7 | `temporary-cooling.evidence[1]` | **Applied.** "The replacement must proceed over summer, when the remaining chiller cannot carry the building load." |
+| 8 | `fire-engineered-smoke-control.evidence[2]` | **Applied** (first option). Replaced with the performance-solution sentence; no taller building needed. |
+| 9 | 25 m threshold | **Applied.** Header comment and DOMAIN §1 rest the fire mode on the fire safety schedule; DOMAIN §5 and §12 attribute the 25 m trigger to NCC Part E2 (verified: false), with AS 1668.1 setting how the fire mode works. |
+| 10 | Occupation certificate not scorable | **Accepted, no change here** (orchestrator: `not_expected_program` and a skeleton hook). The `gaps` entry stays the record. |
+| 11 | hold point and links | **Applied.** Structural hold point activity added before the Stage 1 lift; submains and switchboards added to the `after` of chiller 1 start-up and AHU commissioning; delivery renamed "Manufacture and deliver chillers, AHUs and mechanical services switchboards" in every `after`, and it precedes the submains row. DOMAIN §7 logic updated. |
+| 12 | base negations | **Applied.** `scenario_inputs[flag.staged].phrasing` carries the no-temporary-cooling sentence; DOMAIN §1 has "Base documents must also state" with the cooling-tower and commercial-neighbours sentences. |
+| 13 | Kitchen trap | **Applied.** DOMAIN §10 uses "tenant kitchens on each floor" and "bathroom exhaust fans", and notes that "kitchenettes" and "toilet" do not match. |
+| 14 | asbestos negation | **Applied.** Replaced with the sampled-and-not-detected sentence. |
+| 15 | missing triggers | **Applied.** `capacity-increase`, `crane-oversails-neighbour` and `flammable-refrigerant` added to `shape.yaml` and DOMAIN §9. Not added to `variants`. |
+| 16 | small corrections | **Applied.** Access why carries AS 1657 (verified: false); Stage 1 lift why is "A single planned crane lift, usually at a weekend", and Stage 2 now says "a second planned crane lift" rather than "crane day"; DOMAIN §4 sentence fixed; DOMAIN §5 makes Section J a condition of the exemption (verified: false). |
+
+Disputed: none.
+
+New counts: 15 work items, 6 packages (6 not expected), 28 cost lines (8 not expected), 45 activities,
+5 RFPs (4 with a template plus hazmat), 18 triggers, 28 gaps, 8 variants.
+
+Validator: `python testing/synthetic/tools/validate_shape.py testing/synthetic/types/T07-mechanical-plant-upgrade/shape.yaml`
+prints `ok` and exits 0.
+
+## Round 2 review (4 November 2026)
+
+Re-read `shape.yaml`, `DOMAIN.md` and the Round 1 response, against `OWNER_RULINGS.md` and
+`CONVENTIONS.md`. Validator, run from the repo root: `ok`, exit 0. A script check found 45 activities,
+28 cost lines, 18 triggers and 28 gaps, matching the response. It found no dangling `after` reference,
+no duplicate activity label, and no trigger `removes` entry that misses a base label.
+
+### Verdict: **FIX**
+
+Every round 1 finding is applied correctly. Four new items: one comes from the round 1 hold-point fix,
+two come from conventions recorded since round 1 (C4), and one comes from a new trigger.
+
+### Fixes checked
+
+- **F1 ✔.** Both `position.existing` entries are `app: absent`, with the inactive-until-answered why.
+  DOMAIN §8 matches.
+- **F2 ✔.** The structural `inspection_schedule` entry is gone, and `expect` is `I`.
+- **F3 ✔.** `rfps: "no"`, the Certifier fee is in `adds.cost_plan`, and the `why` names both blocked RFPs
+  and the missing scorer hook. The new `gaps` entry is in place, and so is the Part 5 code name
+  (verified: false).
+- **F4 ✔.** The Certifier fee is added, and the skeleton mismatch is stated in the `why`.
+- **F5 ✔.** "Service authority connection fees" is added, and the augmentation line is kept separate.
+- **F6 ✔.** The evidence now describes the 3.5-to-5-star lift. The CBD sentence is a §10 trap, and J9
+  is noted (verified: false).
+- **F7 ✔, F8 ✔.** Both evidence lines are replaced. Neither holds in the base.
+- **F9 ✔.** The header comment, §1, §5, §11 and §12 rest the fire mode on the fire safety schedule.
+  They attribute the 25 m trigger to NCC Part E2 (verified: false).
+- **F10 ✔ (accepted, orchestrator).** The `gaps` entry stays as the record.
+- **F11 ✔ as written**, but see new finding 1.
+- **F12 ✔.** The `flag.staged` phrasing and the §1 "Base documents must also state" list are in place.
+- **F13 ✔, F14 ✔, F16 ✔.** No "crane day" is left. DOMAIN §4 is fixed. §5 makes Section J a condition
+  of the exemption (verified: false).
+- **F15 ✔.** All three triggers are added to `shape.yaml` and §9 (see new finding 4).
+
+### Findings
+
+1. **The frame hold point sits before the old chiller is out, which cannot happen.**
+   - **Where.** `program.activities`, "Fabricate and install chiller support frames", the hold point and
+     "Stage 1: crane out chiller 1 and lift in new chiller 1".
+   - **What is wrong.** `work_items[structure.steel]` and DOMAIN §2 put the new frames "on the existing
+     plinths". The old chiller 1 sits on those plinths until the Stage 1 lift removes it. As keyed, the
+     frames are installed and inspected before the lift that takes the old chiller off, so the plinths
+     are still occupied when the frames go on. The same holds for chiller 2 inside the Stage 2 row. My
+     round 1 F11 added the hold point to this chain and made the conflict a hard link.
+   - **Change.**
+     - Rename "Fabricate and install chiller support frames" to "Fabricate chiller support frames".
+     - Split the Stage 1 lift into "Stage 1: crane out chiller 1", after the isolate row, the council
+       approval and the lift plan, and "Stage 1: lift in new chiller 1".
+     - Add "Stage 1: install support frame on the chiller 1 plinths", after "Stage 1: crane out
+       chiller 1" and "Fabricate chiller support frames".
+     - Point the hold point's `after` at the install row, and put the hold point and the delivery row
+       in the `after` of "Stage 1: lift in new chiller 1". Point the flushing hold point at that row.
+     - Add to the Stage 2 `why`: "including frame install and its hold point between the two lifts".
+     - In DOMAIN §7, rewrite the Stage 1 chain as: isolate and recover → crane out → install frame →
+       hold point → lift in → flushing → start-up. Note: the crane often stays for the weekend, so
+       both lifts may be one booking.
+     - The activity count becomes 47.
+
+2. **The WHS Regulation is cited as 2017, against CONVENTIONS C4.** C4 records that the NSW WHS
+   Regulation 2025 has replaced the 2017 Regulation.
+   - **Where.** `procurement[consultant.hazmat].why`, `rfps[consultant.hazmat].must_include[0]`, DOMAIN
+     §4 (l.161), §5 pressure equipment (l.272) and §12 (l.670).
+   - **Change.** Write "WHS Regulation 2025 (NSW), verified: false" in each place.
+
+3. **The long service levy figures are now a checked fact (CONVENTIONS C4), but the map keeps them
+   unverified.**
+   - **Where.** `cost_plan["Long service levy"].why`, DOMAIN §5 (l.283–285) and §12 (l.679).
+   - **Change.** Write "0.25% of the cost of building work of $250,000 or more, including GST, paid
+     before work starts (CONVENTIONS C4)". Keep only "whether like-for-like plant replacement is
+     building work for the levy" as verified: false.
+
+4. **`triggers[capacity-increase]` expects a conditional cost and duplicates a base activity.**
+   - **Cost lines.** `adds.cost_plan` expects "Electricity supply augmentation and DNSP connection" and
+     "Service authority connection fees" outright. The trigger's own `why` says they apply "only if the
+     demand check shows the supply must grow". None of the evidence says it does, so an app that
+     correctly omits them scores two misses.
+     - **Change.** Either add evidence that settles it ("The maximum demand assessment shows the
+       building supply must be augmented for the added chiller"), or drop both lines from
+       `adds.cost_plan` and leave the condition in the `why`.
+     - If you drop them, `heating-electrification` stays the only trigger that lifts P06.
+   - **Activity.** `adds.program` "Structural check of the deck for the heavier or added plant" repeats
+     the base row "Structural assessment of the roof plant deck and plant room slabs". It will pair
+     with nothing or double-count.
+     - **Change.** Drop it, and keep the structural RFP `must_include`, which carries the change.
+
+### Optional, not blocking
+
+- `flammable-refrigerant` and `basement-plant-room` add `mechanical.refrigerant-condensate` `upgrade`
+  without removing the base `replace`. `score_shapes.py` does not score `work_items` today, so nothing
+  fails. For consistency with `bms-replacement` and `capacity-increase`, add `removes.work_items:
+  [{system: mechanical.refrigerant-condensate, action: replace}]` to both.
+
+## Round 2 response (author, 4 November 2026)
+
+| # | finding | response |
+|---|---|---|
+| 1 | frame hold point before the old chiller is out | **Applied.** "Fabricate chiller support frames" (renamed). The Stage 1 lift is split into "Stage 1: crane out chiller 1" (after isolate, council approval, lift plan) and "Stage 1: lift in new chiller 1" (after the hold point and the delivery row). The new row "Stage 1: install support frame on the chiller 1 plinths" sits between them, and the hold point now follows it. The flushing hold point follows the lift in. The Stage 2 why names the frame and hold point between its two lifts. `basement-plant-room.removes.program` names both new lift rows. DOMAIN §7 chain and logic are rewritten, with the one-weekend booking note. |
+| 2 | WHS Regulation 2017 | **Applied.** "WHS Regulation 2025 (NSW), verified: false" is in the hazmat procurement why, the hazmat RFP must_include, DOMAIN §3 and §5, and §12 (which also notes that it replaced 2017, C4). |
+| 3 | long service levy | **Applied.** The cost line why, DOMAIN §5 and §12 give 0.25% of building work of $250,000 or more, including GST, paid before work starts (CONVENTIONS C4). Only whether like-for-like plant replacement is levied stays verified: false. |
+| 4 | `capacity-increase` | **Applied.** I dropped both supply cost lines, so `adds.cost_plan` is gone and `built_in.cost_plan` with it. The condition stays in the `why`; `heating-electrification` is the only trigger that lifts P06. I also dropped the duplicate structural activity; the structural RFP must_include carries the change. Source is now `electrical-services.yaml positions utility`. DOMAIN §9 row updated. |
+| opt | refrigerant `removes` | **Applied.** `basement-plant-room` and `flammable-refrigerant` now remove `mechanical.refrigerant-condensate` `replace`. |
+
+Disputed: none.
+
+New counts: 15 work items, 6 packages (6 not expected), 28 cost lines (8 not expected), 47 activities,
+5 RFPs (4 with a template plus hazmat), 18 triggers, 28 gaps, 8 variants. A script check finds no
+dangling `after` and no trigger `removes.program` label missing from the base.
+
+Validator: `python testing/synthetic/tools/validate_shape.py testing/synthetic/types/T07-mechanical-plant-upgrade/shape.yaml`
+prints `ok`.

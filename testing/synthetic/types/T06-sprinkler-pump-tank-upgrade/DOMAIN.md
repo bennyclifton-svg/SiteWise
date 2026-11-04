@@ -1,7 +1,7 @@
 # T06 Sprinkler pump and tank upgrade, with fit-out: domain map
 
-Draft for owner review, 30 October 2026. The machine key is `shape.yaml` in this folder; it passes
-`validate_shape.py`.
+Draft for owner review, 30 October 2026; round 1 review findings applied 4 November 2026 (see
+`REVIEW.md`). The machine key is `shape.yaml` in this folder; it passes `validate_shape.py`.
 
 Tags: `[K: path anchor]` means SiteWise's knowledge says it and I opened the file to check. `[D]` means
 professional domain knowledge that is not in the repo. Any statute or standard clause not confirmed from
@@ -46,8 +46,10 @@ are `clause_verified: false`, and no clause number is used in this map.
 - the owner also fits out level 3 for a new tenant. That fit-out's sprinkler layout is calculated against
   the new supply, so its sprinkler commissioning and its occupation certificate wait on the new pumps.
   This is the "link";
-- complying development (one principal certifier), traditional procurement, and two AS 4000 lump-sum
-  contracts: a fire protection contractor for the upgrade, and a fit-out builder for level 3 [D].
+- complying development with one principal certifier and two CDCs (the Fire Safety Code for the pump
+  works, the commercial internal alterations code for level 3; §5), traditional procurement, and two
+  AS 4000 lump-sum contracts: a fire protection contractor for the upgrade, and a fit-out builder for
+  level 3 [D].
 
 **Scale.** $0.2–2 M [K: testing/synthetic/PROJECT_TYPES.md T06 row]. The cost is driven by the pumpset
 and tank, the pump room builder's works, and the out-of-hours cut-over, not by floor area [D].
@@ -130,9 +132,14 @@ both contracts touch a system (sprinklers, ventilation, cabling) they share one 
   - `emergency-lighting` **alter**: level 3 exit signs and luminaires.
   - Out: smoke control, special suppression, smoke alarms (Class 5 has none), and `fire-control` (the
     pump signals are FIP inputs, not a new cause-and-effect matrix).
-- **mechanical.** `ventilation` **upgrade** (diesel combustion and cooling air for the pump room);
-  `air-distribution` **alter** (level 3 VAV boxes and diffusers); `air-conditioning` **new** (comms room
-  split system). Out: central plant, BMS beyond new points, exhaust, smoke modes.
+- **mechanical.** `local-exhaust` **new** (pump room ventilation: diesel combustion and cooling make-up
+  air, plant room exhaust and the engine exhaust flue discharge). Plant room exhaust is local exhaust:
+  `mechanical.ventilation` is outdoor air for occupied rooms and its `excludes` names plant rooms, while
+  `mechanical.local-exhaust` lists plant rooms, their make-up air and discharge points [K:
+  knowledge/clusters/services-wet-air/systems.yaml mechanical.ventilation excludes,
+  mechanical.local-exhaust]. `air-distribution` **alter** (level 3 VAV boxes and diffusers);
+  `air-conditioning` **new** (comms room split system). Out: outdoor-air `ventilation`, central plant,
+  BMS beyond new points, smoke modes.
 - **hydraulic.** `backflow-prevention` **upgrade** (the fire service containment device brought to
   current requirements; Sydney Water registration, verified: false). `cold-water` **alter**, `hot-water`
   **new**, `sanitary` **alter** (tea point). Out: gas, trade waste, rainwater, roof drainage.
@@ -194,8 +201,10 @@ both contracts touch a system (sprinklers, ventilation, cabling) they share one 
 | Certifier (`consultant.certifier`) | Before documentation ends | Always: CDC, fire safety schedule, principal certifier, OC | Suggested [K: baselines[2]]; its RFP blocks (§8) |
 | Interior designer (`consultant.interior_design`) | Concept (fit-out) | Always, with the fit-out | Suggested [K: baselines[4]], **and Architect too** [K: baselines[2]] |
 | Hazmat consultant (`consultant.hazmat`) | Investigation | Always for a pre-2004 building | Never suggested |
-| Fire engineer, BCA consultant | Concept | Only with a performance solution | Fire engineer never suggested; BCA always suggested |
-| Access consultant, hydraulic engineer | Concept | Only if amenities change | Both always suggested |
+| Fire engineer | Concept | Only with a performance solution, or where existing performance solutions rely on the sprinklers | Never suggested |
+| BCA consultant | Concept | Only with a performance solution or a DA fire safety upgrade | Always suggested [K: baselines[3]] |
+| Access consultant | Concept | Only if amenities change or an affected-part upgrade applies | Always suggested [K: baselines[3]] |
+| Hydraulic engineer | Concept | Only if amenities change | Always suggested [K: baselines[2]] |
 | Acoustic consultant | Concept | Only if diesel noise affects tenants or neighbours | Never suggested |
 | Town planner | Concept | Only if the tank needs a DA | Suggested only on DA [K: complexity_additions[0]] |
 | Heritage consultant | Concept | Only on a heritage item | Suggested on heritage [K: complexity_additions[1]] |
@@ -207,51 +216,88 @@ Not separately procured [D]:
   is no discipline id for it.
 - **A quantity surveyor.** Optional at this scale; the PM and the engineer's estimate usually suffice.
 - **A BCA consultant.** On a deemed-to-satisfy CDC, the certifier's assessment and the engineers' design
-  certificates cover compliance. This is a judgement the owner should confirm (§12).
+  certificates cover compliance. A registered certifier acting as principal certifier may not also author
+  the design-side compliance advice (conflict-of-interest rules, verified: false), so a BCA consultant
+  appears exactly when design-side compliance work exists: a performance solution (`performance-solution`)
+  or a DA fire safety upgrade (`da-fire-upgrade`, and with it `tank-needs-consent`). Reviewer ruling: not
+  in the base (§12).
+
+**Two NCC classes.** `det.ncc_class: ["5","7a"]` also adds the industrial category to the package facts
+[K: testing/synthetic/reference/KNOWLEDGE_INDEX.md §2.1]. It changes nothing here: `baselines[3]` already
+covers commercial, and a fragment's `any_of` matches either class [K: internal/knowledge/relevance.go].
 
 ---
 
 ## 5. Approvals and authorities
 
-**Pathway.** Complying development under the Codes SEPP: the fire safety works under the Fire Safety Code,
-and the level 3 fit-out under the Commercial and Industrial Alterations Code [D; part numbers and the
-question of one CDC or two: verified: false]. The app models one pathway value, `hdr.cond.planning: cdc`,
-which gives `sk.refurb-traditional-cdc` and `fr.cdc-application` [K: knowledge/program/skeletons.yaml
-sk.refurb-traditional-cdc; knowledge/program/fragments.yaml fr.cdc-application]. The CDC comes after full
-documentation, which that skeleton's stage order respects (construction documentation before approvals).
+**Pathway.** Complying development under the Codes SEPP. The pump, tank, pump room and fire service works
+go under the Fire Safety Code (Part 8, from EPI 2013 No 706; in-force text not read, verified: false).
+That Code covers alterations to hydraulic fire safety systems for water-pressure management: fire mains,
+fire water storage tanks, on-site fire pumps, booster connections and the pump house or enclosure. General
+sprinkler modifications that are not about water pressure are outside it. So the level 3 fit-out,
+including its sprinkler, detection and EWIS changes, goes under the Codes SEPP code for internal
+alterations to commercial buildings (historically Part 5 Commercial and Industrial Alterations Code; now
+possibly Part 5A Industrial and Business Buildings Code; verified: false). Two CDCs is the default;
+whether one CDC can rely on both codes: verified: false [D; NSW Planning & Environment Information Sheet
+8.1 "Fire Safety Code", January 2015, citing the 2000 Regulation].
+
+The app models one pathway value, `hdr.cond.planning: cdc`, which gives `sk.refurb-traditional-cdc` and
+one `fr.cdc-application` [K: knowledge/program/skeletons.yaml sk.refurb-traditional-cdc;
+knowledge/program/fragments.yaml fr.cdc-application]. The second (fit-out) CDC has no row. Each CDC
+comes after full documentation, which that skeleton's stage order respects (construction documentation
+before approvals).
 
 The pathway moves to a DA plus a construction certificate when [D, verified: false]:
 
-- the tank sits outside the building;
+- the tank or pump house fails a Fire Safety Code development standard (for example, it sits over a
+  registered easement). The Code has standards for water storage tanks and external pump houses, so a
+  tank outside the building is not, by that fact alone, a DA trigger;
 - the tank takes car spaces that a consent requires;
-- the building is a heritage item;
+- the land is excluded from complying development, or the building is a heritage item;
 - a performance solution is not allowed under the code.
+
+On a DA for alterations the consent authority may require the existing building's fire safety to be
+upgraded (the old cl 94, now in the 2021 Regulation; number verified: false; trigger `da-fire-upgrade`).
 
 **Certificates and statutory steps** (NSW, EP&A Act and the Development Certification and Fire Safety
 Regulation 2021; all clause numbers verified: false):
 
-1. Sydney Water statement of available pressure and flow, before design is fixed [D, name verified: false].
-2. CDC determination, with a **fire safety schedule** listing the existing and proposed essential fire
-   safety measures and their standards of performance.
-3. Long service levy paid before the CDC issues ($250,000 threshold and 0.25% as recorded in T12, both
-   verified: false).
-4. Principal certifier appointed, and a notice of commencement given before work starts (period verified:
+1. Sydney Water **statement of available pressure and flow**, requested through Sydney Water Tap in,
+   before design is fixed. FRNSW requires one for any design or alteration of a hydraulic fire safety
+   system (FRNSW position statement on hydraulic fire safety system design; product name verified: false).
+2. Plans and specifications of the altered sprinkler system and its water supply endorsed by a competent
+   fire safety practitioner, lodged with the CDC application (EP&A (DCFS) Regulation 2021, verified:
+   false). The Regulation also lists documentation that must accompany an application for an alteration
+   to a hydraulic fire safety system (Info Sheet 8.1).
+3. CDC determinations. **Fire safety schedule with the fit-out CDC**, listing the existing and proposed
+   essential fire safety measures and their standards of performance. The Fire Safety Code CDC may be
+   exempt from the schedule and the fire safety certificate (Info Sheet 8.1, citing the 2000 Regulation;
+   2021 provision verified: false).
+4. Long service levy paid before the CDC issues: 0.25% of works of $250,000 or more including GST (Long
+   Service Corporation, About the levy; threshold and rate verified: false; not held in the repo;
+   CONVENTIONS C4).
+5. Principal certifier appointed, and a notice of commencement given before work starts (period verified:
    false).
-5. Sydney Water approval of the fire service and backflow alterations; the testable device registered and
-   tested (process verified: false).
-6. **Final fire safety certificate** from the owner, based on a competent fire safety practitioner's
-   assessment of each new and altered measure. It goes to the certifier, council and the FRNSW
-   Commissioner, and is displayed in the building (verified: false).
-7. **Occupation certificate** for the altered parts, needing the final fire safety certificate (verified:
+6. Sydney Water approval of the fire service and backflow alterations (product name verified: false); the
+   testable device registered and tested. A Section 73 compliance certificate is not expected for this
+   work (verified: false).
+7. **Final fire safety certificate** from the owner, based on a competent fire safety practitioner's
+   assessment of each new and altered measure. The owner gives FRNSW a copy with the current fire safety
+   schedule and displays both in the building (s 85 per FRNSW "Lodge a fire safety certificate"; verified:
+   false). The council receives it with the OC, from the principal certifier. It is needed for the level 3
+   measures; the Fire Safety Code works may be exempt (step 3, verified: false). The FFSC rows stay in the
+   key until the owner confirms the exemption.
+8. **Occupation certificate** for the altered parts, needing the final fire safety certificate (verified:
    false).
-8. The **annual fire safety statement** continues each year and from now on covers the new measures. If
+9. The **annual fire safety statement** continues each year and from now on covers the new measures. If
    the works span the AFSS due date, a statement still has to be made; the impaired system cannot be
    certified, which is often how these jobs start [D, verified: false].
-9. SafeWork NSW notification before any licensed asbestos removal (trigger only; period verified: false).
+10. SafeWork NSW notification before any licensed asbestos removal (trigger only; period verified: false).
 
 **FRNSW** [D, verified: false]:
 
-- receives the final fire safety certificate;
+- receives a copy of the final fire safety certificate and the fire safety schedule from the owner;
+- requires a statement of available pressure and flow for the design;
 - is consulted on any booster or hydrant change (trigger `hydrant-system-upgrade`);
 - gets a referral (initial and final fire safety reports) only when a performance solution is proposed
   against a Category 2 fire safety provision (trigger `performance-solution`).
@@ -283,11 +329,12 @@ knowledge/costs/starter_lines.yaml lines].
 
 **Fees and charges:**
 
-- CDC and certifier fees. The app has P05 "Construction certificate and certifier fees", which is the
-  wrong label on a CDC.
-- Long service levy. No line.
-- Sydney Water fees: pressure and flow statement, fire service application, backflow registration. Only
-  the generic P06 exists.
+- CDC and certifier fees (two CDCs). The app has P05 "Construction certificate and certifier fees",
+  which is the wrong label on a CDC.
+- Long service levy. No line, and the repo holds no rate (Long Service Corporation, About the levy;
+  threshold and rate verified: false).
+- Sydney Water: statement of available pressure and flow, fire service alteration approval and backflow
+  registration (product names verified: false). Only the generic P06 exists.
 - No DA fees in the base. The app correctly drops `da-fees` on a CDC.
 
 **Consultants:** fire services engineer, structural engineer, electrical engineer, mechanical engineer,
@@ -303,11 +350,13 @@ the job does not need [K: testing/synthetic/reference/KNOWLEDGE_INDEX.md §3.2].
 - the tank;
 - pump room pipework and the connection to the valve sets;
 - diesel fuel tank, bunding and exhaust;
-- pump room ventilation;
+- pump room ventilation (local exhaust, still '08 Mechanical services');
 - plinths, strengthening and core holes;
 - the fire-rated pump room enclosure and fire stopping;
 - the fire pump electrical supply;
-- the backflow device;
+- the backflow device ('09 Hydraulic services'; mapped to `trade.hydraulic_plumbing` only if that works
+  package exists, else the head contract [K: KNOWLEDGE_INDEX §3.2 mappedCostPackage]; in practice the
+  fire contractor carries it);
 - temporary fire protection during the impairment;
 - testing and commissioning;
 - preliminaries and occupied-building controls.
@@ -327,7 +376,9 @@ Where the app falls short:
 - **Plant removal is filed as site works.** It prices under "01 Site works and external works".
 - **The budget split is wrong for this job.** The `commercial_fitout` split gives active fire protection
   4% and interiors 50% [K: knowledge/costs/budget_splits.yaml commercial_fitout], so a stated budget for
-  a pump-and-tank job is spread mostly into interiors.
+  a pump-and-tank job is spread mostly into interiors. It also has no `structure` or `site` share, so the
+  "03 Structure" (plinths, cores) and "01 Site works" (pump removal, soft strip) lines receive nothing
+  from a stated budget.
 - **Missing lines:** temporary fire protection, testing and commissioning, preliminaries and provisional
   sums.
 
@@ -354,24 +405,28 @@ knowledge/program/skeletons.yaml]. That is right for this job.
    - the owner's approval of the option;
    - in parallel, the fit-out brief, concept and design development [K: fr.concept-design-fitout,
      fr.design-development-fitout].
-3. Documentation: fire services design and calculations; structural and electrical design; fit-out
+3. Documentation: fire services design and calculations; the competent fire safety practitioner's
+   endorsement of the fire services plans and specifications; structural and electrical design; fit-out
    documentation and sign-off [K: fr.fitout-documentation].
 4. Approvals:
-   - CDC lodgement;
+   - Fire Safety Code CDC lodgement [K: fr.cdc-application] and fit-out CDC lodgement (no fragment);
    - the long service levy;
-   - CDC determination with the fire safety schedule [K: fr.cdc-application];
+   - CDC determination [K: fr.cdc-application], and the fire safety schedule with the fit-out CDC;
    - Sydney Water approval of the fire service alterations.
 5. Procurement:
    - two tenders and two awards [K: fr.tender-docs-fitout, fr.tender-period-fitout,
      fr.tender-evaluation-fitout and fr.contract-award each give one];
-   - **ordering the long-lead pumpsets, controllers and tank** straight after award.
+   - the fire services engineer's review of the pumpset, controller and tank submittals: pump curves
+     against the duty points, the commonest cause of a failed acceptance test [K:
+     knowledge/clusters/fire/failure_modes.yaml fm.fire-pump-fails-flow-test];
+   - then **ordering the long-lead pumpsets, controllers and tank**.
 6. Construction, upgrade:
    - principal certifier appointment and notice of commencement;
    - site establishment and the impairment notices;
    - plinths and cores [K: fr.structure-alterations];
    - pump room enclosure;
    - tank assembly and pump installation;
-   - ventilation [K: fr.ventilation-fitout, partial];
+   - pump room ventilation and the diesel exhaust flue (`mechanical.local-exhaust`; no fragment);
    - the fire pump electrical supply;
    - fire stopping and its hold point [K: fr.fire-stopping; if.fire-stopping-before-concealment];
    - the backflow device;
@@ -382,7 +437,10 @@ knowledge/program/skeletons.yaml]. That is right for this job.
 7. Construction, fit-out: the fit-out fragments for partitions, mechanical, electrical, hydraulic,
    sprinklers, ceilings, detection, lighting, comms, doors, joinery, painting and floors [K:
    knowledge/program/fragments.yaml suffix fitout], plus the sprinkler pressure-test hold point [K:
-   if.sprinkler-pressure-test-before-ceilings].
+   if.sprinkler-pressure-test-before-ceilings]. One-activity fragments print the work item title (the
+   system label), not the fragment's activity label [K: internal/program/generate.go instantiate]: for
+   example `fr.ceilings-fitout` prints "Ceilings and room heights" (checked by running `program.Generate`
+   on the base profile, 4 November 2026). The scorer still matches them by fragment.
 8. Joint: the integrated fire system test, then the fire safety practitioner's assessment, the **final fire
    safety certificate**, PC, the certifier's final inspection, the OC and handover. Handover includes
    as-builts, the block plan, the pump logbook and the handover to the AS 1851 contractor.
@@ -394,7 +452,9 @@ knowledge/program/skeletons.yaml]. That is right for this job.
 - The flow test and the Sydney Water statement come before the options report, and the options report
   before any design.
 - The tank selection comes before the structural design.
-- The CDC and the contract award come before the start.
+- The practitioner's endorsement of the fire services plans comes before both CDC lodgements.
+- The CDC and the contract award come before the start; the submittal review comes before the pumpset
+  order.
 - The impairment notices, the hydrostatic test, the electrical supply, the backflow device and the
   ventilation all come before the cut-over.
 - The cut-over comes before pump commissioning, and commissioning before both the old pump's removal and
@@ -429,7 +489,8 @@ fire-water row]. No durations in weeks are given here.
 - *Must carry:*
   - evidence review (fire safety schedule, AFSS, AS 1851 records);
   - investigation of the existing supply with a flow test;
-  - the Sydney Water statement and applications;
+  - the Sydney Water statement of available pressure and flow (Tap in), and approval of the fire service
+    and backflow alterations;
   - demand and storage calculations;
   - pumpset and tank design;
   - upgrade design;
@@ -474,15 +535,20 @@ so this RFP appears only once the user adds it.
 
 **Mechanical** (template `mechanical-services`).
 
-- *Must carry:* investigation of AHU capacity and the existing pump room ventilation; diesel combustion
-  air and the exhaust route (`interfaces`); level 3 HVAC; BMS points; tender; commissioning.
+- *Must carry:* investigation of AHU capacity and the existing pump room ventilation; pump room local
+  exhaust: diesel combustion and cooling make-up air, plant room exhaust and the engine flue discharge
+  (`local`, expected I); coordination of plinths, openings and power for pump room plant
+  (`interfaces`); level 3 HVAC; BMS points; tender; commissioning.
 - *Must not carry:* smoke control, kitchen exhaust, a planning stage.
-- *App differences:* the boundary and the `mech_*` flags, as for electrical.
+- *App differences:* the boundary and the `mech_*` flags, as for electrical; `local` is `ask` on the
+  client flag `mech_local`.
 
 **Certifier** (template `bca-certification`). *Must carry:*
 
-- CDC eligibility and assessment under both codes;
-- the fire safety schedule;
+- CDC eligibility and assessment under each code: the Fire Safety Code (Part 8) for the pump works and
+  the commercial internal alterations code for level 3 (verified: false);
+- the fire safety schedule with the fit-out CDC, and whether the Fire Safety Code CDC needs one
+  (verified: false);
 - principal certifier services and inspections;
 - review of the final fire safety certificate;
 - the OC.
@@ -493,6 +559,10 @@ so this RFP appears only once the user adds it.
 blocks with `pathway_unsupported` [K: knowledge/rfp/bca-certification.yaml unsupported_pathways;
 data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml, which is itself a Class 5 CDC case]. The key
 expects the block, as T12 does.
+
+**Live-site rows (all templates).** `partial_occupation` sets the RFP `live_operations` flag to yes [K:
+internal/rfp/drivers.go readFlags], so the live-site module rows appear in every RFP. That is correct
+for an occupied building.
 
 **Interior designer** (no template; the app issues the generic `tpl.rfp-capex`).
 
@@ -514,20 +584,24 @@ Each trigger is in `shape.yaml` with evidence and negation phrasing. Summary:
 
 | id | Shows up as (incl. indirectly) | Denied by | Adds |
 |---|---|---|---|
-| `tank-needs-consent` | "tanks in the rear car park"; "two car spaces lost"; "council advised a DA" | "fits within the basement store" | DA, CC, town planner; CDC rows out. App: yes through `hdr.cond.planning` |
+| `tank-needs-consent` | "two car spaces lost"; "council advised a DA"; "external pump house over a registered easement fails the Fire Safety Code standards" | "fits within the basement store"; "certifier confirmed the Code standards are met" | DA, CC, town planner, BCA; both CDC rows out. App: yes through `hdr.cond.planning`, printing "Lodge the application", "Public exhibition", "Assessment", "Construction certificate" |
 | `performance-solution` | "pump room not directly accessible from outside; a performance solution is proposed"; "fire engineering brief" | "complies with the deemed-to-satisfy provisions" | Fire engineer, BCA consultant, FRNSW referral (Category 2, verified: false) |
 | `town-main-inadequate` | "the 100 mm main cannot meet the refill rate"; "new connection in George Street with a road opening permit" | "existing connection retained, main adequate" | New connection, road opening, augmentation provisional sum |
 | `hydrant-system-upgrade` | "new pumps serve sprinklers and hydrants"; "booster relocated to the frontage" | "hydrants unaffected" | Hydrant upgrade, FRNSW booster consultation, block plan |
 | `asbestos-found` | "asbestos gaskets in the pump room"; "vinyl tiles under the level 3 carpet" | "survey found no asbestos" | Licensed removal, SafeWork notice, clearance |
-| `diesel-noise-exhaust` | "weekly diesel test run audible in the ground-floor tenancy"; "residential building adjoins the lane" | "two electric pumpsets, no diesel" | Acoustic consultant, treatment, flue |
-| `electrical-supply-upgrade` | "MSB has no space for a supply-side connection"; "an Ausgrid application is required" | "MSB has capacity" | MSB section, DNSP application; `fr.switchboard-major` fires on upgrade |
-| `pump-tank-only` | "scope limited to the pump and tank"; "level 3 remains leased" | "fit-out delivered with the upgrade" | Removes the fit-out; tests that the fit-out project fragments wrongly still fire |
+| `diesel-noise-exhaust` | "weekly diesel test run audible in the ground-floor tenancy"; "residential building adjoins the lane" | "two electric pumpsets, no diesel" | Acoustic consultant, `interiors.acoustic-separation` (sound insulation between uses, not room acoustics), treatment, flue |
+| `electrical-supply-upgrade` | "MSB has no space for a supply-side connection"; "an Ausgrid application is required" | "MSB has capacity" | MSB section, DNSP application; `fr.switchboard-major` fires on upgrade but prints the generic "Procure and deliver" and "Install", which clash with joinery, so the key scores its program as no |
+| `pump-tank-only` | "scope limited to the pump and tank"; "level 3 remains leased" | "fit-out delivered with the upgrade" | Removes the fit-out, the fit-out CDC, the fit-out fire safety schedule and both hold points (no interiors row to hold); tests that the fit-out project fragments wrongly still fire. The schedule and FFSC may not be needed (verified: false) |
 | `tenant-procured-fitout` | "tenant will carry out its fit-out under the agreement for lease" | "landlord delivers the fit-out" | Landlord design review; removes the interior designer and fit-out builder |
 | `fire-safety-order` | "notice of intention to give a fire safety order"; "AFSS could not be issued for the sprinkler system" | "voluntary capital works" | Order response and compliance period (verified: false) |
-| `fit-out-amenities` | "new accessible toilet and two showers" | "toilets not altered" | Access and hydraulic consultants, wet-area fragments |
+| `fit-out-amenities` | "new accessible toilet and two showers" | "toilets not altered" | Access and hydraulic consultants, wet-area and tiling fragments, printed as "Wet-area waterproofing" and "Wall and floor tiling" |
 | `heritage-item` | "local heritage item in Schedule 5 of the LEP" | "not a heritage item" | Heritage consultant, referral; CDC unavailable (verified: false) |
 | `strata-office` | "The Owners - Strata Plan … (commercial)"; "pump room is common property" | "single ownership" | General meeting and levy |
 | `roof-or-crane-tank` | "tank on the roof plant deck"; "panels lifted by crane from George Street" | "carried in through the car park entry" | Roof assessment, crane, road occupancy |
+| `affected-part-access` | "the path of travel from the principal pedestrian entrance to level 3 is an affected part"; "the owner, not a lessee, is the applicant" | "lodged by the tenant (lessee concession)"; "no affected-part upgrade" | Access consultant, accessible-access upgrade, "13.1 Accessible paths, TGSIs and braille/tactile signage" (Premises Standards 2010, verified: false) |
+| `existing-fire-engineered-building` | "operates under a 2006 fire engineering report that relies on the sprinklers for extended travel distances" | "approved to the deemed-to-satisfy provisions; no performance solutions" | Fire engineer review of the existing report (never suggested) |
+| `da-fire-upgrade` | "council's consent requires the fire safety measures to be upgraded"; "a fire safety upgrade report is required with the DA" | "proceeds as complying development" | BCA fire safety upgrade report and upgrade works (former cl 94, number verified: false) |
+| `interim-occupation` | "tenant requires level 3 before the pump upgrade is complete"; "an interim OC is sought" | "level 3 occupied only after commissioning" | Interim fire safety certificate and interim OC (verified: false), only if level 3 can run on the old supply |
 
 ---
 
@@ -558,8 +632,11 @@ the wrong question:
 - **"egress via the fire stairs during the impairment"** → `implied_by stair` →
   `access-egress.stairs-and-ramps` scope → a "Stairs, ramps, handrails and nosings" cost line [K:
   knowledge/profile/scope_defaults.yaml implied_by stair]. Listed in `not_expected_cost_plan`.
-- **"tea kitchen"** → `implied_by kitchen`: joinery and hydraulic (correct here) plus
-  `mechanical.local-exhaust` (not in scope). "Kitchenette" does not match `\bkitchens?\b`.
+- **"tea kitchen"** → `implied_by kitchen`: joinery, hydraulic and `mechanical.local-exhaust`. Local
+  exhaust is now in scope (the pump room), so the trap is harmless for the system list; it may still add
+  a kitchen-exhaust reading to the level 3 item. "Kitchenette" does not match `\bkitchens?\b`.
+- **"Sydney Water asset"** in a Tap in or building-plan letter → `flag.authority_asset` (trigger
+  `sydney water asset`) [K: knowledge/profile/flag_readings.yaml authority_asset]. Expected: **no**.
 - **"sprinkler"** → `det.sprinklered` (trigger `sprinkler`). It is correctly true here, but every page
   will trigger the question; only an explicit statement should answer it.
 - **"lodge"** → `flag.architect_lodges`. CDC lodgement wording will trigger it; no template here reads
@@ -610,14 +687,24 @@ What is missing, and what the app will probably produce wrongly as a result:
     and prices services fixings as an option.
 12. **Fit-out project fragments fire on any Class 5 refurb**, so a pump-only job gets fit-out concept and
     design rows.
-13. **Missing fragments.** `mechanical.air-distribution`, `fire-active.occupant-warning`,
-    `fire-active.emergency-lighting`, `hydraulic.backflow-prevention` and `fire-passive.rated-elements`
-    have none, and `fr.switchboard-major` ignores `alter`.
-14. **The flow-test Implication misses a fire-water-only job.** `uc.existing-fire-water-fails-flow-test`
-    fires only on sprinkler or hydrant works, not on fire-water works.
-15. **Missing discipline ids:** the fire safety practitioner, the AS 1851 contractor, the alarm monitoring
+13. **Missing fragments.** `mechanical.air-distribution`, `mechanical.local-exhaust` (pump room
+    ventilation), `fire-active.occupant-warning`, `fire-active.emergency-lighting`,
+    `hydraulic.backflow-prevention` and `fire-passive.rated-elements` have none, and
+    `fr.switchboard-major` ignores `alter`. Running `program.Generate` on the base profile (4 November
+    2026) confirmed that no ventilation row fires.
+14. **The flow-test Implication is keyed to the wrong system.** `uc.existing-fire-water-fails-flow-test`
+    attaches to fire-water but is triggered by sprinkler or hydrant works [K:
+    knowledge/clusters/fire/unforeseen.yaml uc.existing-fire-water-fails-flow-test when]. It fires here
+    only because the sprinkler connection is `alter`. A pump job that leaves sprinklers and hydrants
+    untouched gets none.
+15. **Two CDCs cannot be modelled.** One project has one planning value, and the Fire Safety Code's scope,
+    its possible schedule and certificate exemption, and the practitioner's endorsement of plans are not
+    encoded.
+16. **Missing discipline ids:** the fire safety practitioner, the AS 1851 contractor, the alarm monitoring
     provider and a Sydney Water listed provider.
-16. **Keyword traps** in §10, chiefly basement, authority asset, special hazards and stairs.
+17. **Keyword traps** in §10, chiefly basement, authority asset, special hazards and stairs.
+18. **Wrong AS 2941 edition.** `rule.as2941.fire-pumps` cites AS 2941:2014; the current edition is AS
+    2941-2013 (Standards Australia store). Correct the instrument; clauses stay `clause_verified: false`.
 
 ---
 
@@ -637,22 +724,47 @@ What is missing, and what the app will probably produce wrongly as a result:
 - `knowledge/clusters/services-wet-air/systems.yaml`, `rules.yaml`;
 - `data/intake/disciplines.json`;
 - `data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml`;
-- Go: `internal/program/generate.go` (holdPointRows, holdPointLinks, addGuarded),
-  `internal/rfp/drivers.go` (deriveFlags), `internal/profile/reconcile.go` (derive);
+- Go: `internal/program/generate.go` (instantiate, holdPointRows, holdPointLinks, addGuarded),
+  `internal/rfp/drivers.go` (deriveFlags, readFlags), `internal/profile/reconcile.go` (derive),
+  `internal/profile/works.go` (work item title is the system label);
+- Go run (4 November 2026, read-only; a throwaway program deleted after use): `program.Generate` on the
+  base, `pump-tank-only`, `fit-out-amenities`, `electrical-supply-upgrade` and `tank-needs-consent`
+  profiles. It confirmed the DA, wet-area, tiling and switchboard labels, that no ventilation row fires,
+  and that `pump-tank-only` gets no hold point;
 - the reference index files under `testing/synthetic/reference/`.
+
+**Secondary sources (support a ruling; do not set `verified: true`):**
+
+- NSW Planning & Environment, Information Sheet 8.1 "Fire Safety Code" (January 2015): the Code's scope
+  and the schedule and certificate exemption (cites the 2000 Regulation; the 2021 equivalent is not
+  confirmed). The Part 8 number comes from the as-made amending instrument EPI 2013 No 706, Sch 1, with
+  conditions in Schedule 10 (reviewer's reading).
+- FRNSW, "Lodge a fire safety certificate" (fire.nsw.gov.au/page.php?id=9158), citing s 85 of the EP&A
+  (DCFS) Regulation 2021; FRNSW position statement on hydraulic fire safety system design.
+- Long Service Corporation, About the levy (longservice.nsw.gov.au/bci/levy/about-the-levy).
+- Standards Australia store: AS 2941-2013 current, superseding 2008.
 
 **Unverified (owner or primary source to confirm):**
 
-- AS 2118.1 and AS 2941 clause content, the AS 2941 edition (the knowledge says 2014; the author recalls
-  2013), and the pump room separation and access requirements;
-- the Codes SEPP part numbers for the Fire Safety Code and the Commercial and Industrial Alterations Code,
-  whether one CDC can cover both, and when an external tank or lost car spaces force a DA;
-- the Development Certification and Fire Safety Regulation 2021: fire safety schedule, final fire safety
-  certificate, AFSS, competent fire safety practitioner, Category 2 fire safety provisions, FRNSW
-  referral, notice of commencement and critical-stage inspections for Class 5;
-- the Sydney Water product names (statement of available pressure and flow, fire service application),
-  backflow registration and testing, and listed providers;
-- the long service levy threshold and rate;
+- AS 2118.1 and AS 2941 clause content, and the pump room separation and access requirements. The AS 2941
+  edition is ruled 2013; `rule.as2941.fire-pumps` cites AS 2941:2014; the current edition is AS
+  2941-2013 (Standards Australia store). Correct the instrument; clauses stay `clause_verified: false`;
+- the Codes SEPP part numbers: the Fire Safety Code as Part 8, and the fit-out code (the Codes SEPP code
+  for internal alterations to commercial buildings: historically Part 5 Commercial and Industrial
+  Alterations Code; now possibly Part 5A Industrial and Business Buildings Code); whether one CDC can
+  rely on both codes; and when lost car spaces or a failed Code standard force a DA;
+- the Development Certification and Fire Safety Regulation 2021: fire safety schedule and its exemption
+  for a Fire Safety Code alteration, final fire safety certificate (s 85), AFSS, competent fire safety
+  practitioner and the endorsement of plans, Category 2 fire safety provisions, FRNSW referral, notice of
+  commencement, critical-stage inspections for Class 5, interim certificates, and the former cl 94
+  upgrade power;
+- the Disability (Access to Premises — Buildings) Standards 2010 affected-part provisions and the lessee
+  concession;
+- certifier conflict-of-interest rules on design-side compliance advice;
+- the Sydney Water product names (statement of available pressure and flow through Tap in is the
+  reviewer's ruling; the fire service and backflow approval product name is not named), backflow
+  registration and testing, listed providers, and that no Section 73 certificate is needed;
+- the long service levy threshold and rate (not held in the repo);
 - AS/NZS 3000 supply-side connection and fire-rated cabling for fire pumps; AS/NZS 3013;
 - the WHS Regulation asbestos register duty for pre-2004 workplaces, and the SafeWork NSW notification
   period;
@@ -661,8 +773,11 @@ What is missing, and what the app will probably produce wrongly as a result:
 
 **Judgement calls for the owner:**
 
-- **BCA consultant not in the base.** Many Sydney fit-out CDCs do carry one. If the owner says it is
-  usual, move `consultant.bca` from `not_expected_procurement` into `procurement` with `built_in: yes`.
+- **BCA consultant not in the base.** Reviewer ruling: not in the base. Owner may overrule. Many Sydney
+  fit-out CDCs do carry one; if the owner says it is usual, move `consultant.bca` from
+  `not_expected_procurement` into `procurement` with `built_in: yes`.
+- **Fire Safety Code exemption.** The FFSC and schedule rows stay for the pump works until the owner
+  confirms the exemption.
 - **Two works contracts.** Some owners let one fit-out builder carry the fire upgrade as a subcontract.
 - **Diesel standby in the base.** A second electric pumpset on a separate supply is a common alternative;
   `diesel-noise-exhaust` covers its effects.

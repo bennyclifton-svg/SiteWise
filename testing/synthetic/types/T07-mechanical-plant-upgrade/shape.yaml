@@ -89,7 +89,7 @@ procurement:
   - {discipline: consultant.mechanical, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", aliases: [consultant.services], why: "Lead consultant: investigation of the existing plant, options and replacement strategy, design, specification and tender documents, construction-phase reviews, commissioning witness and seasonal review. Also suggested by scope_additions[2] once mechanical items exist. A multi-services firm (consultant.services) may hold this package."}
   - {discipline: consultant.structural, kind: services, built_in: "no", why: "Plant deck and plinth capacity for the new operating weights, support frame and seismic restraint design, and inspection before plant is set down. Refurb baselines (package_defaults.yaml baselines[2], [3]) do not name Structural; baselines[0] covers new and extend only."}
   - {discipline: consultant.electrical, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", aliases: [consultant.services], why: "Supply and main switchboard capacity check against the new plant demand, submain and protection design, staged isolation. Often the mechanical engineer's sister discipline in one firm. Also scope_additions[4]."}
-  - {discipline: consultant.hazmat, kind: services, built_in: "no", why: "A pre-2004 workplace: a refurbishment survey of the plant rooms, risers and ceiling voids the works disturb is needed before work starts (asbestos gaskets, lagging, flexible duct connections, PCB capacitors; WHS Regulation 2017, verified: false). No package rule names Hazmat; fr.existing-conditions schedules the survey without a consultant."}
+  - {discipline: consultant.hazmat, kind: services, built_in: "no", why: "A pre-2004 workplace: a refurbishment survey of the plant rooms, risers and ceiling voids the works disturb is needed before work starts (asbestos gaskets, lagging, flexible duct connections, PCB capacitors; WHS Regulation 2025 (NSW), verified: false). No package rule names Hazmat; fr.existing-conditions schedules the survey without a consultant."}
   - {discipline: consultant.bca, kind: services, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Written advice confirming the exempt pathway (or that a CDC or DA is needed), the essential fire safety measures affected and the Section J Part J6 basis for the new plant (verified: false). Limited scope; no certification."}
   - {discipline: trade.mechanical, kind: works, built_in: partial, source: "internal/procurement/proposed.go ProposeHeadContract", aliases: [trade.main_works], why: "The mechanical contractor is the head contractor and principal contractor under the WHS Act, with crane, electrical, structural steel, roofing, BMS and fire subcontractors. The app proposes only a trade.main_works head contract, and only from gaps on accepted work items; trade.mechanical is a trade package only (internal/procurement/discipline.go DisciplinePackage)."}
 
@@ -102,7 +102,7 @@ not_expected_procurement:
   - {discipline: consultant.certifier, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "No certificate on the exempt path. Becomes expected under the complying-development and heritage-item triggers."}
 
 cost_plan:
-  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "NSW Long Service Corporation levy on building and construction work above the threshold, paid before work starts; with no CC it is paid directly (threshold, rate and whether plant replacement is levied: verified: false). No starter line exists."}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "NSW long service levy: 0.25% of the cost of building work of $250,000 or more, including GST, paid before work starts (CONVENTIONS C4); with no CC it is paid directly. Whether like-for-like plant replacement is building work for the levy: verified: false. No starter line exists."}
   - {line: "Council and road occupancy permits for the crane lifts", section: fees_and_charges, built_in: "no", why: "Council approval under the Roads Act 1993 s 138 to stand a mobile crane on the road and close the footpath, and any road occupancy licence (verified: false). Often carried by the contractor; the owner must know who pays."}
   - {line: "Mechanical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line for the adopted Mechanical package (internal/costs/suggest.go Suggest). Staged: investigation and options, design and tender, construction and commissioning, seasonal."}
   - {line: "Structural engineer", section: consultants, built_in: partial, source: "internal/costs/suggest.go Suggest", why: "A fee line is made per live services package, but Structural is never suggested for refurb, so the line appears only after the user adds the package."}
@@ -169,13 +169,15 @@ program:
     - {label: "Tenant notices and shutdown schedule agreed with building management", stage: construction, fragment: null, after: ["Award the contract"], built_in: "no", why: "Shutdown windows, after-hours access and tenant lease obligations (uc.agreed-shutdown-or-cutover-window-shorter-than-changeover)."}
     - {label: "Council approval and traffic control plan for the crane lifts", stage: construction, fragment: null, after: ["Award the contract"], built_in: "no", why: "Roads Act s 138 approval for the crane on the road and the footpath closure, traffic control plan by an accredited practitioner (verified: false). Council processing can hold the lift date."}
     - {label: "Contractor's lift plan and crane temporary works design", stage: construction, fragment: null, after: ["Shop drawings and submittals for chillers, AHUs, frames and switchboards"], built_in: "no", why: "Crane selection for the heaviest pick at radius, outrigger loads, exclusion zones and overswing (uc.neighbour-boundary-risks-from-crane-and-falling-objects)."}
-    - {label: "Fabricate and install chiller support frames", stage: construction, fragment: null, after: ["Shop drawings and submittals for chillers, AHUs, frames and switchboards"], built_in: "no", why: "No structure.steel fragment exists for Class 5 (fr.steel-7b and fr.steel-9b only)."}
-    - {label: "Hold point: structural engineer inspects support frames before plant is set down", stage: construction, fragment: null, after: ["Fabricate and install chiller support frames"], built_in: "no", why: "Contract hold point; no interface hold point resolves for structure.steel (KNOWLEDGE_INDEX section 4.4)."}
+    - {label: "Fabricate chiller support frames", stage: construction, fragment: null, after: ["Shop drawings and submittals for chillers, AHUs, frames and switchboards"], built_in: "no", why: "Off-site fabrication and galvanising. No structure.steel fragment exists for Class 5 (fr.steel-7b and fr.steel-9b only)."}
     - {label: "Stage 1: isolate chiller 1 and recover refrigerant", stage: construction, fragment: null, after: ["Establish the site", "Tenant notices and shutdown schedule agreed with building management"], built_in: "no", why: "The remaining chiller carries the load (N-1, cooler months). Refrigerant recovered before cutting out (uc.refrigerant-in-old-plant-needs-recovery-before-removal)."}
-    - {label: "Stage 1: crane out chiller 1 and lift in new chiller 1", stage: construction, fragment: null, after: ["Stage 1: isolate chiller 1 and recover refrigerant", "Council approval and traffic control plan for the crane lifts", "Contractor's lift plan and crane temporary works design", "Hold point: structural engineer inspects support frames before plant is set down", "Manufacture and deliver chillers, AHUs and mechanical services switchboards"], built_in: "no", why: "A single planned crane lift, usually at a weekend."}
-    - {label: "Hold point: chilled water flushing and water treatment before commissioning", stage: construction, fragment: null, after: ["Stage 1: crane out chiller 1 and lift in new chiller 1"], built_in: "no", why: "Implication only (uc.chilled-water-flushing-delays-commissioning); no interface hold point for it."}
+    - {label: "Stage 1: crane out chiller 1", stage: construction, fragment: null, after: ["Stage 1: isolate chiller 1 and recover refrigerant", "Council approval and traffic control plan for the crane lifts", "Contractor's lift plan and crane temporary works design"], built_in: "no", why: "A single planned crane lift, usually at a weekend; the crane often stays for the weekend, so the lift out and the lift in may be one booking."}
+    - {label: "Stage 1: install support frame on the chiller 1 plinths", stage: construction, fragment: null, after: ["Stage 1: crane out chiller 1", "Fabricate chiller support frames"], built_in: "no", why: "The new frame goes on the existing plinths, which the old chiller occupies until it is lifted out."}
+    - {label: "Hold point: structural engineer inspects support frames before plant is set down", stage: construction, fragment: null, after: ["Stage 1: install support frame on the chiller 1 plinths"], built_in: "no", why: "Contract hold point; no interface hold point resolves for structure.steel (KNOWLEDGE_INDEX section 4.4)."}
+    - {label: "Stage 1: lift in new chiller 1", stage: construction, fragment: null, after: ["Hold point: structural engineer inspects support frames before plant is set down", "Manufacture and deliver chillers, AHUs and mechanical services switchboards"], built_in: "no", why: "Set down on the inspected frame, with vibration isolation and seismic restraint."}
+    - {label: "Hold point: chilled water flushing and water treatment before commissioning", stage: construction, fragment: null, after: ["Stage 1: lift in new chiller 1"], built_in: "no", why: "Implication only (uc.chilled-water-flushing-delays-commissioning); no interface hold point for it."}
     - {label: "Stage 1: connect, start up and commission chiller 1", stage: construction, fragment: null, after: ["Hold point: chilled water flushing and water treatment before commissioning", "Install submains and mechanical services switchboards"], built_in: "no", why: "Manufacturer's start-up, then control and capacity tests before chiller 2 is taken out."}
-    - {label: "Stage 2: replace and commission chiller 2", stage: construction, fragment: null, after: ["Stage 1: connect, start up and commission chiller 1"], built_in: "no", why: "Repeats Stage 1; a second crane day."}
+    - {label: "Stage 2: replace and commission chiller 2", stage: construction, fragment: null, after: ["Stage 1: connect, start up and commission chiller 1"], built_in: "no", why: "Repeats Stage 1, including frame install and its hold point between the two lifts, with a second planned crane booking."}
     - {label: "Replace floor AHUs floor by floor, out of hours", stage: construction, fragment: fr.mechanical-fitout, after: ["Manufacture and deliver chillers, AHUs and mechanical services switchboards", "Tenant notices and shutdown schedule agreed with building management"], built_in: partial, source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "The replace item on mechanical.air-conditioning fires fr.mechanical-fitout, labelled 'Alter ductwork and pipework', with a GFA-scaled duration."}
     - {label: "Commission AHUs and balance air", stage: construction, fragment: fr.mechanical-fitout, after: ["Replace floor AHUs floor by floor, out of hours", "Install submains and mechanical services switchboards"], built_in: partial, source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "App row 'Commission the altered system'."}
     - {label: "Install submains and mechanical services switchboards", stage: construction, fragment: fr.electrical-fitout, after: ["Establish the site", "Manufacture and deliver chillers, AHUs and mechanical services switchboards"], built_in: partial, source: "knowledge/program/fragments.yaml fr.electrical-fitout", why: "App rows are fit-out 'Rough-in' and 'Fit off'. Staged so the existing chiller stays energised."}
@@ -373,7 +375,7 @@ rfps:
     template: null
     built_in: "no"
     must_include:
-      - "Refurbishment asbestos survey of the roof plant room, floor plant rooms, risers and ceiling voids the works disturb (WHS Regulation 2017, verified: false)"
+      - "Refurbishment asbestos survey of the roof plant room, floor plant rooms, risers and ceiling voids the works disturb (WHS Regulation 2025 (NSW), verified: false)"
       - "Sampling with NATA-accredited laboratory analysis"
       - "PCBs in capacitors of old mechanical switchboards and starters; synthetic mineral fibre insulation; lead paint on old plant and steel"
       - "Update of the asbestos register and a hazardous materials report with the removal scope for the tender"
@@ -505,9 +507,9 @@ triggers:
         - {discipline: consultant.mechanical, must_include: ["Refrigerating machinery room design to AS/NZS 5149.3 (verified: false)", "Plant removal and delivery route through the building"]}
         - {discipline: consultant.structural, must_include: ["Check of slabs and the hatch along the plant route for the plant and handling loads"]}
     removes:
-      work_items: [{system: structure.temporary-works, action: new}]
+      work_items: [{system: structure.temporary-works, action: new}, {system: mechanical.refrigerant-condensate, action: replace}]
       cost_plan: ["Crane hire, lift plan and traffic control for the plant lifts", "Council and road occupancy permits for the crane lifts"]
-      program: ["Council approval and traffic control plan for the crane lifts", "Contractor's lift plan and crane temporary works design", "Stage 1: crane out chiller 1 and lift in new chiller 1"]
+      program: ["Council approval and traffic control plan for the crane lifts", "Contractor's lift plan and crane temporary works design", "Stage 1: crane out chiller 1", "Stage 1: lift in new chiller 1"]
     why: "rule.asnzs5149.machinery-room exists as a draft rule (Implications only). 'Basement' wording here will set flag.basement (see gaps)."
     built_in: {cost_plan: partial, rfps: partial, program: "no"}
     source: "knowledge/costs/elements.yaml elements code 08"
@@ -551,7 +553,7 @@ triggers:
       rfps:
         - {discipline: consultant.esd, must_include: ["Energy model of the options against the NABERS Energy target", "Metering and monitoring strategy", "Post-occupancy rating support"]}
         - {discipline: consultant.mechanical, must_include: ["Plant selection and controls to the ESD consultant's energy model", "Metering and trend points for NABERS and tuning"]}
-    why: "C2: NABERS on a non-residential building is consultant.esd. 'nabers' sets flag.sustainability_target, which only changes an architecture position. The 12-month rating basis is the NABERS rule (verified: false)."
+    why: "C2: NABERS on a non-residential building is consultant.esd. 'nabers' sets flag.sustainability_target, which only changes an architecture position. The 12-month rating basis is the NABERS rule (verified: false). The sub-metering would sit under NCC 2022 Part J9 (verified: false)."
     built_in: {procurement: "no", cost_plan: partial, program: "no", rfps: "no"}
     source: "knowledge/costs/elements.yaml elements code 10"
   - id: complying-development
@@ -710,16 +712,15 @@ triggers:
     adds:
       work_items:
         - {system: mechanical.central-plant, action: upgrade}
-      cost_plan: ["Service authority connection fees", "Electricity supply augmentation and DNSP connection"]
-      program: ["Maximum demand assessment for the added plant load", "Structural check of the deck for the heavier or added plant"]
+      program: ["Maximum demand assessment for the added plant load"]
       rfps:
         - {discipline: consultant.electrical, must_include: [{text: "Maximum demand assessment and any DNSP application for the added load", key: position.utility}]}
         - {discipline: consultant.structural, must_include: ["Deck capacity for the heavier or added plant"]}
     removes:
       work_items: [{system: mechanical.central-plant, action: replace}]
-    why: "A stated capacity increase is upgrade, not replace (knowledge/works/actions.yaml). A larger footprint or extra unit may also take the job off the exempt path (see complying-development). The supply line applies only if the demand check shows the supply must grow."
-    built_in: {cost_plan: partial, program: "no", rfps: partial}
-    source: "knowledge/costs/starter_lines.yaml service-authority"
+    why: "A stated capacity increase is upgrade, not replace (knowledge/works/actions.yaml). A larger footprint or extra unit may also take the job off the exempt path (see complying-development). Supply augmentation and P06 Service authority connection fees apply only if the demand check shows the supply must grow; no evidence here settles that, so neither is expected (heating-electrification is the trigger that lifts P06). The deck check is the base structural assessment row; the structural RFP must_include carries the change."
+    built_in: {program: "no", rfps: partial}
+    source: "knowledge/rfp/electrical-services.yaml positions utility"
   - id: crane-oversails-neighbour
     label: Crane jib oversails an adjoining property during the lift
     evidence:
@@ -749,6 +750,8 @@ triggers:
       program: ["Refrigerant safety-group and charge-limit check before selection is fixed"]
       rfps:
         - {discipline: consultant.mechanical, must_include: ["Refrigerant safety group, charge limits and leak detection to AS/NZS 5149 (verified: false)"]}
+    removes:
+      work_items: [{system: mechanical.refrigerant-condensate, action: replace}]
     why: "rule.asnzs5149.refrigerant-charge-limits and rule.asnzs5149.machinery-room are draft rules that reach Implications only. Optional variant; current as HFCs are phased down."
     built_in: {cost_plan: partial, rfps: partial, program: "no"}
     source: "knowledge/costs/elements.yaml elements code 08"

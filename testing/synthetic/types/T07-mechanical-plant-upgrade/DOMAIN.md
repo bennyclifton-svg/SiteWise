@@ -158,7 +158,7 @@ The whole job is an existing-building interface [D].
   - The knowledge's rule for occupied cut-overs [K: knowledge/clusters/services-wet-air/rules.yaml
     rule.project.occupied-services-cutover] reaches Implications only.
 - **Hazardous materials.** A 1988 workplace must hold an asbestos register, and a refurbishment survey of
-  the areas the works disturb is needed before work starts (WHS Regulation 2017, verified: false). Typical
+  the areas the works disturb is needed before work starts (WHS Regulation 2025 (NSW), verified: false). Typical
   finds in plant rooms [D]:
   - asbestos gaskets and rope seals at flanges;
   - lagging on old heating pipework;
@@ -269,7 +269,7 @@ keyed in `shape.yaml not_expected_procurement`.
   handling licence, and returned for destruction. Venting is an offence. The Ozone Protection and
   Synthetic Greenhouse Gas Management Act 1989 (Cth) and its Regulations are verified: false.
 - **Pressure equipment.** Chillers and their receivers may be plant whose design must be registered
-  under the WHS Regulation 2017, by AS 4343 hazard level [K: rules.yaml
+  under the WHS Regulation 2025 (NSW, verified: false), by AS 4343 hazard level [K: rules.yaml
   rule.whs.pressure-equipment-registration, clause_verified false].
 - **Crane and road.** The crane on the street and the footpath closure need council approval under the
   Roads Act 1993 s 138, with a traffic control plan. A classified road or a full closure adds a Road
@@ -280,9 +280,9 @@ keyed in `shape.yaml not_expected_procurement`.
 - **Electrical.** The licensed electrician issues a Certificate of Compliance for Electrical Work for
   the new submains (NSW, verified: false). There is no DNSP application unless the maximum demand rises
   (trigger).
-- **Long service levy.** The NSW building and construction long service levy is paid before work starts.
-  With no CC it is paid directly. Its threshold and rate, and whether plant replacement counts as
-  building work for the levy, are verified: false.
+- **Long service levy.** The NSW long service levy is 0.25% of the cost of building work of $250,000 or
+  more, including GST, paid before work starts (CONVENTIONS C4). With no CC it is paid directly. Whether
+  like-for-like plant replacement is building work for the levy is verified: false.
 - **Not involved in the base:** Sydney Water (unless cooling-tower bleed-off needs a trade waste consent;
   trigger), BASIX, DBP Act (Class 5 is outside it: owner ruling R3), Home Building Act.
 - **Hold points** (the contract's, set by the mechanical engineer) [D]:
@@ -350,7 +350,7 @@ App behaviour:
 
 ## 7. Program shape
 
-The base has 45 activities; see `shape.yaml program`. The app's skeleton, `sk.refurb-traditional-cdc`, is
+The base has 47 activities; see `shape.yaml program`. The app's skeleton, `sk.refurb-traditional-cdc`, is
 the right one [K: knowledge/program/skeletons.yaml]. Stages and the activities that drive each:
 
 1. **Investigation.** Plant condition, capacity and refrigerant review; measure the plant rooms and
@@ -369,10 +369,11 @@ the right one [K: knowledge/program/skeletons.yaml]. Stages and the activities t
      [D].
    - Tenant notices and the shutdown schedule.
    - Council crane approval and traffic control plan.
-   - Lift plan and support frames, then a hold point: the structural engineer inspects the frames before
-     plant is set down.
-   - Then **Stage 1**: isolate and recover refrigerant → crane out and lift in → flushing hold point →
-     start-up and commissioning.
+   - Lift plan and support-frame fabrication.
+   - Then **Stage 1**: isolate and recover refrigerant → crane out → install frame → hold point (the
+     structural engineer inspects the frame) → lift in → flushing hold point → start-up and
+     commissioning. The old chiller sits on the plinths until it is lifted out, so the frame goes on
+     between the two lifts. The crane often stays for the weekend, so both lifts may be one booking.
    - Then **Stage 2**, the same again.
    - In parallel: AHUs floor by floor out of hours; submains and switchboards; BMS integration; fire-mode
      re-test; fire stopping.
@@ -386,7 +387,8 @@ the right one [K: knowledge/program/skeletons.yaml]. Stages and the activities t
 **Logic.**
 
 - The hazmat survey and the structural and electrical capacity checks come before the concept.
-- Plant delivery, the crane approval, the lift plan and the inspected frames all come before each lift.
+- The crane approval and the lift plan come before each lift out; plant delivery and the inspected
+  frame come before each lift in.
 - Switchboard delivery comes before the submains and switchboards are installed, and the new supply
   comes before chiller start-up and AHU commissioning.
 - Stage 1 is commissioned before Stage 2 starts: N-1 means the second chiller must not go out until the
@@ -514,7 +516,7 @@ show them:
 | `plant-deck-strengthening` | "slab cannot carry the new operating weight", "new steel platform", "carbon-fibre strengthening" | "existing plinths carry the new loads" | Strengthening design, a hold point, roof membrane renewal. |
 | `independent-commissioning` | "independent commissioning agent", "commissioning authority engaged by the Principal" | "commissioning witnessed by the mechanical engineer" | Commissioning agent, witness tests. |
 | `facade-opening-for-ahu-delivery` | "craned in through the plant room louvres", "glazing panels removed to deliver AHU sections" | "delivered in sections through the goods lift" | Facade removal and reinstatement, temporary weatherproofing, a water test. |
-| `capacity-increase` | "replacement chillers are 20 % larger", "an N+1 standby chiller is added" | "like-for-like capacity" | Action `upgrade`; maximum demand check, possible supply augmentation and P06; deck load check. |
+| `capacity-increase` | "replacement chillers are 20 % larger", "an N+1 standby chiller is added" | "like-for-like capacity" | Action `upgrade`; maximum demand check; deck load in the structural RFP. Supply augmentation and P06 only if the demand check says so (not expected). |
 | `crane-oversails-neighbour` | "the crane jib will oversail 14 Smith Street" | "the lift radius stays within the site and the road reserve" | Oversail licence with the adjoining owner (verified: false), dilapidation survey of the neighbour, an activity before the lift. |
 | `flammable-refrigerant` | "R1234ze, an A2L refrigerant", "mildly flammable" | "a non-flammable A1 refrigerant" | Safety-group and charge-limit checks and leak detection to AS/NZS 5149 (verified: false). Optional. |
 
@@ -667,7 +669,7 @@ The reviewed pilot maps T05 and T09 were used for form.
 - Sydney Water trade waste consent for bleed-off.
 - The Ozone Protection and Synthetic Greenhouse Gas Management Act 1989 (Cth) licensing and recovery
   duties.
-- WHS Regulation 2017: plant design registration, crane registration and operator licensing, the asbestos
+- WHS Regulation 2025 (NSW; it replaced the 2017 Regulation, CONVENTIONS C4) clause numbers: plant design registration, crane registration and operator licensing, the asbestos
   register for pre-2004 workplaces, the refurbishment survey, licensed removal, SafeWork notification and
   clearance.
 - Roads Act 1993 s 138 for the crane, and the Road Occupancy Licence from the Transport Management
@@ -676,7 +678,8 @@ The reviewed pilot maps T05 and T09 were used for form.
 - The EP&A (Development Certification and Fire Safety) Regulation 2021: essential fire safety measures,
   the AFSS, fire safety certificates and competent fire safety practitioners.
 - The NSW Certificate of Compliance for Electrical Work.
-- The NSW long service levy threshold, rate and application to plant replacement.
+- Whether like-for-like plant replacement is building work for the NSW long service levy (the rate and
+  threshold are checked: CONVENTIONS C4).
 - The NABERS rating basis (12 months of data) and the Commercial Building Disclosure scheme.
 - The DNSP connection process.
 - The contract's defects liability period.

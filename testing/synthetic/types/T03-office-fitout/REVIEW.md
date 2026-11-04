@@ -367,3 +367,161 @@ so it has no blocking difference; its `text.cdc_scope` row is about scope and st
 
 New counts: 33 work items, 13 packages, 38 cost lines, 71 activities, 11 RFPs, 14 triggers, 25 gaps,
 9 variants.
+
+## Round 2 review (4 November 2026)
+
+I re-read `shape.yaml`, `DOMAIN.md` and the Round 1 response. I checked them against `OWNER_RULINGS.md`
+(R1–R10) and `CONVENTIONS.md` (C1–C5; C4 and C5 are new since round 1). The validator, run from the repo
+root, gives `ok`, exit 0. A read-only script check over the YAML counts 33 work items, 13 packages,
+38 cost lines, 71 activities, 11 RFPs, 14 triggers, 25 gaps and 9 variants, as the response says. No
+`after` names a missing activity, and no activity label repeats.
+
+### Verdict: **FIX**
+
+Every round 1 finding is applied correctly, and none was disputed. The program order now reads right.
+Sprinkler pipework comes first, then the pressure test, then the ceilings, then fit-off. Rough-in and
+sealing come before the inspection and the ceilings. Three things are left, all small:
+
+- the base text still contains trigger evidence;
+- C4 has made the long service levy threshold a checked fact;
+- the exempt variant does not remove the rows the fixes added.
+
+### Fixes checked
+
+- **F1 ✔.** "Install ceilings" follows electrical and kitchenette rough-in. The `gaps` row and DOMAIN §7
+  and §11 item 6 match.
+- **F2 ✔.**
+  - "Alter sprinkler pipework above the ceiling" (`no`) comes before the pressure test.
+  - The test quotes the `link_skipped` note.
+  - "Alter and test sprinklers" follows the ceilings and feeds the integrated test.
+  - The `gaps` row says "run 30 Oct 2026; same root as T13".
+  - DOMAIN §7 and §11 item 8 say "confirmed by a run" and note the two-phase gap in detection.
+  - The hold row has no alias. The scorer's `interface` matcher pairs it through `source`
+    (`tools/score_shapes.py`), so it needs none.
+- **F3 ✔.** "Seal service penetrations" follows ductwork, kitchenette rough-in and sprinkler pipework. The
+  inspection `why` states the run result, the new `gaps` row is in, and the §12 bullet is gone. Its wording
+  is finding 5.
+- **F4 ✔.** The work item is gone. The hoardings `why`, "Tenancy signage" and the preliminaries `why` are
+  reworded. DOMAIN §2 and §7 are rewritten. Both gaps are kept. One gap phrase is out of date (finding 4).
+- **F5 ✔.** CDC lodgement follows "Landlord detailed design approval". Owner's consent (verified: false)
+  is in the `why`, in DOMAIN §5 step 2 and in DOMAIN §7 step 3.
+- **F6 ✔.** The commencement inspection is added, and "Establish the site" waits for it. DOMAIN §5 item 5
+  says "commencement and final". The certifier RFP wording is finding 7. The exempt variant is finding 3.
+- **F7 ✔.** The cabling `why` is reworded. The `slab-core-drilling` trigger is added as specified and is in
+  `variants`. The base still says "core drilling" elsewhere (finding 1).
+- **F8 ✔.** The certifier `why`, `sources` and DOMAIN §8 say "agent-draft key".
+- **F9 ✔ (accepted as applied).** The `sources` lines are in. The validator rejects a `scenario_inputs` row
+  with no key, so the row is keyed to `hdr.cond.procurement_route`, with a note. That is the right home;
+  T10 F11 did the same.
+- **F10 ✔.** All eight positions are expected `absent`, each with an `app_differs` row.
+- **F11 ✔.** There are four owner-supply lines with the parser's labels. The phrasing risk is finding 9.
+- **F12 ✔.** The contributions line is in the T12 form, with the LGA note. AS 1428.1 is marked verified:
+  false in both places. Finding 2 replaces the LSL wording.
+- **F13 ✔.** The date is out of the evidence, replaced by a survey finding. The separate 1979
+  `scenario_inputs` row is in, and DOMAIN §9 matches.
+- **F14 ✔.** `da-pathway` adds the BCA item on upgrading the existing building, and the authority line.
+- **F15 ✔.** DOMAIN §11 is re-ranked (items 6–8). The §12 unsure list keeps the two ruled items.
+- **Coordinator item ✔.** The BCA consultant's difference is `blocking.pathway_unsupported`: the app
+  blocks, and the key expects no block. The certifier expects the block, so it has no blocking difference.
+
+### Rulings and conventions
+
+- ✔ **R3:** declarations are absent for Class 5.
+- ✔ **R4, R5:** HBCF and BASIX are not applicable.
+- ✔ **R7:** not applied to Class 5. The Class 5–9 list stays verified: false.
+- ✔ **R8:** the defects liability period stays verified: false.
+- ✔ **C2:** the rating trigger uses `consultant.esd`.
+- ✔ **C3:** BCA and the certifier share one template.
+- ✔ **C4, fire control centre:** a base-building measure, already out of scope in DOMAIN §2.
+- **C5:** does not apply. A CDC has no CC, and the DA variant has one CC with no early works.
+- ✘ **C4, LSL:** not yet applied (finding 2).
+- ✘ **C1:** not addressed in the D&C variant (finding 8).
+
+### Findings
+
+1. **`shape.yaml scenario_inputs` (`hdr.cond.access_constraints` phrasing) and DOMAIN §1: the base still
+   says "core drilling".**
+   - **Problem.** "Noisy works, core drilling and deliveries are restricted to after hours" tells a reader
+     that cores are drilled. That is indirect evidence for `slab-core-drilling`, whose negation is "no new
+     slab penetrations". A base scenario written from this row would carry the trigger.
+   - **Change.** Use "Noisy works and deliveries are restricted to after hours and weekends under the
+     landlord's building rules". Make the same edit in DOMAIN §1.
+
+2. **`shape.yaml` "Long service levy" cost `why` and the "Pay long service levy" `why`, and DOMAIN §5
+   item 3, §6 and §12: C4 now gives the threshold.**
+   - **Change.**
+     - Replace "threshold verified: false" and "exceeds any plausible threshold" with: "0.25% of the cost
+       of building work of $250,000 or more including GST, paid before work starts (C4, checked against
+       nsw.gov.au); the type's $0.3M lower bound is above it, so the line is unconditional in the base".
+     - In DOMAIN §12, take the threshold off the unverified list, and change the bullet to "settled by C4".
+     - Keep the program row before "Certifier determination". The levy must be paid before the
+       certificate issues (clause verified: false).
+
+3. **`triggers[exempt-minor-refresh]` `removes`: the certification rows added in round 1 survive the exempt
+   path.**
+   - **Problem.** Exempt development has no principal certifier and no inspections. Its own negation says
+     it alters no fire safety measure. Contributions attach to a CDC or a DA, not to exempt work.
+   - **Change.**
+     - Add to `removes.program`: "Appoint principal certifier and give notice of commencement",
+       "Commencement inspection by the principal certifier" and "Final fire safety certificate".
+     - Add to `removes.cost_plan`: "Development contributions payable on the CDC (s7.11 or s7.12,
+       verified: false)".
+     - Add to the `why`: "LSL still applies at $250,000 or more (C4); a carpet-and-paint refresh may fall
+       below it".
+   - **The same double count in `triggers[heritage-item]`.** It adds "DA fees and contributions" but keeps
+     the CDC contributions line. Add that line to its `removes.cost_plan`, as `da-pathway` does.
+   - Update DOMAIN §9 to match.
+
+4. **`shape.yaml gaps`, the cost_plan row "P06 service authority fees…": out of date after F4 and F12.**
+   - **Problem.** It says "protection and signage land in 01 Site works", but protection is no longer a
+     work item. It also says "no s7.12 contributions", where the line now names s7.11 or s7.12.
+   - **Change.** Use "signage lands in 01 Site works and external works" and "no s7.11 or s7.12
+     contributions for a CDC". DOMAIN §11 item 11 is already right.
+
+5. **The `why` of "Fire-stopping inspection before concealment", and DOMAIN §7 step 6: "holds only the
+   linings and ceilings".**
+   - **Problem.** In the key, "Frame and line partitions" comes before sealing. That is right: a
+     penetration in a rated lined wall is sealed after lining. So the inspection does not hold linings.
+   - **Change.** Use "holds only the ceilings and bulkheads that conceal the penetrations" in both places.
+
+6. **`shape.yaml program`: two construction rows have no successor, and one is not before the ceilings.**
+   - **Problem.**
+     - "Alter exhaust ventilation" follows only the hoardings. The kitchenette and print-room exhaust runs
+       above the ceiling into the base-building riser, through a rated wall. It must come before the
+       ceilings and before sealing.
+     - Nothing follows "Install glazed partitions and manifestation" or "Install access control and
+       integrate with base-building security", so practical completion does not wait for them.
+   - **Change.**
+     - Add "Alter exhaust ventilation" to the `after` of "Install ceilings" and of "Seal service
+       penetrations".
+     - Add both of the other rows to the `after` of "Practical completion inspection".
+   - The defect predates round 1. This round's script check found it.
+
+7. **`shape.yaml rfps` consultant.certifier `must_include`: the inspections line predates F6.**
+   - **Change.** Replace "Mandatory inspections, incl. the final inspection (Class 5 list verified:
+     false)" with "Mandatory commencement and final inspections (Class 5 list verified: false)".
+
+8. **`triggers[design-and-construct]` `why`: C1 is not addressed.**
+   - **Problem.** The variant removes all four services engineers, but C1 makes them `option` on a D&C job
+     with novation. Here nothing is novated: the interior designer gives the tenant's design intent, and
+     the contractor's engineers design.
+   - **Change.** Keep the `removes`. Add to the `why`: "C1 does not apply: no tenant engineer is appointed
+     to be novated; whether a tenant keeps a services reviewer on a D&C fit-out is an owner question".
+
+9. **`shape.yaml scenario_inputs` (`proj.owner_supply_stated`): the four expected labels assume the read
+   value is the list alone.**
+   - **Problem.** `splitOutsideBrackets` splits at the first comma (`internal/costs/budget.go`). If the
+     stored value keeps the lead-in "Tenant supply, outside the fit-out contract: …", the app writes
+     "Owner supply: Tenant supply" and "Owner supply: outside the fit-out contract: loose furniture".
+   - **Change.** Add to the note: "the expected labels assume the read value is the list after the colon;
+     state the list in its own sentence, e.g. 'Tenant-supplied items: loose furniture, workstations, AV
+     equipment, IT active equipment'". The other option is to accept the lead-in as a scored extra.
+
+### Built-in claims re-checked this round
+
+- ✔ The scorer's `interface` matcher pairs the hold-point rows through `source`.
+- ✔ `ParseOwnerSupply` writes one "Owner supply: <item>" line per item, provided the value has no lead-in
+  (finding 9).
+- ✔ `slab-core-drilling` is `no` for program and procurement. No fragment or package rule names a slab
+  scan, or a structural engineer on refurb. Its cost and RFP claims are `partial`, on the same pattern as
+  `heavy-floor-loads`.

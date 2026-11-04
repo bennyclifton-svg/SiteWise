@@ -451,3 +451,52 @@ authority_asset, fire_special_hazards, fire_specialist_systems, staged, architec
 - **CONVENTIONS C2 and C3:** respected.
 
 No ruling is broken.
+
+## Round 1 response (author, 4 November 2026)
+
+All 18 findings applied; none disputed. The `shape.yaml` side of most findings was already in the
+committed tree from an earlier pass. I checked each one against the finding, and added the two items
+still missing (below). `DOMAIN.md` had not been updated; it now carries every finding.
+
+Go check (read-only): I ran a throwaway program, since deleted, that calls `program.Generate` on the
+base, `pump-tank-only`, `fit-out-amenities`, `electrical-supply-upgrade` and `tank-needs-consent`
+profiles. It confirmed findings 2, 7 and 15: no ventilation row fires; the DA rows print "Lodge the
+application", "Public exhibition", "Assessment" and "Construction certificate"; wet-area and tiling print
+"Wet-area waterproofing" and "Wall and floor tiling"; `fr.switchboard-major` prints "Procure and deliver"
+and "Install"; and `pump-tank-only` gets neither hold point.
+
+1. **Fire Safety Code scope and exemption.** Applied. Shape: header, two-CDC `scenario_inputs`, the row
+   "Fire safety schedule issued with the fit-out CDC" with the exemption caveat, the `pump-tank-only`
+   authority line and `program: []`, the `tank-needs-consent` relabel and evidence. FFSC rows kept until
+   the owner confirms. DOMAIN §5: pathway, DA list and steps rewritten; §8 certifier "each code".
+2. **Local exhaust.** Applied. Work item `mechanical.local-exhaust` new; row "Pump room ventilation and
+   diesel exhaust flue" (`fragment: null`, built_in no), with the cut-over `after` updated; mechanical RFP
+   `local: I` with `app_differs`; gap list names local-exhaust. DOMAIN §2, §6, §7, §8, §10 and §11.
+3. **AS 2941-2013.** Applied in the knowledge gap and DOMAIN §11 and §12.
+4. **Codes SEPP parts.** Applied. Fit-out code wording everywhere; row "Prepare and lodge the fit-out
+   CDC", also in `pump-tank-only` `removes.program`.
+5. **CFSP endorsement.** Applied. §5 step 2; the endorsement row, and the CDC lodgement `after` names it.
+6. **FFSC recipients.** Applied. Row relabelled. DOMAIN §5 step 7 and the FRNSW list updated. New this
+   round: the program gap no longer says "copy to … council".
+7. **Trigger labels.** Applied as specified. `electrical-supply-upgrade` keeps descriptive labels with
+   `built_in.program: "no"`.
+8. **Four triggers.** Applied: `affected-part-access`, `existing-fire-engineered-building`,
+   `da-fire-upgrade` and `interim-occupation`, in the shape and in the DOMAIN §9 table.
+9. **BCA.** Applied. Kept out of the base; added to `tank-needs-consent`; §12 closed with the reviewer's
+   ruling.
+10. **Sydney Water.** Applied: cost line, RFP `position.authority`, program row, and §5, §6, §8 and §12.
+11. **Long service levy.** Applied: cited to the Long Service Corporation, verified: false, not held in
+    the repo.
+12. **Flow-test Implication.** Applied in the gap and DOMAIN §11 item 14.
+13. **Budget split.** Applied: no structure or site share, in the gap and DOMAIN §6.
+14. **Acoustic separation.** Applied.
+15. **Hold points in `pump-tank-only`.** Applied. New this round: the `why` also notes that the
+    electrical, sprinkler and detection fit-out fragments still fire on the base-building items.
+16. **Backflow package.** Applied in the cost line and DOMAIN §6.
+17. **Submittal review.** Applied. The order row follows it. DOMAIN §7.
+18. **Minor notes.** Applied: two classes (§4), live-site rows (§8), the "Sydney Water asset" trap (§10).
+
+**New counts:** 18 triggers, 9 packages, 36 cost lines, 85 activities, 7 RFPs, 26 gaps.
+
+Validator: `python testing/synthetic/tools/validate_shape.py testing/synthetic/types/T06-sprinkler-pump-tank-upgrade/shape.yaml`
+→ `ok`.
