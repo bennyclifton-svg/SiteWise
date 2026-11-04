@@ -212,7 +212,11 @@ func scaleCandidates(f knowledge.ScaleField, text string) []Candidate {
 			return m[1]
 		})
 	case f.Unit == "m2":
-		return unitCandidates(areaRe, text, "m2", basisOf(text))
+		cands := unitCandidates(areaRe, text, "m2", basisOf(text))
+		if role, ok := floorAreaRole[f.Key]; ok {
+			return areasOfRole(text, cands, role)
+		}
+		return cands
 	case f.Unit == "m":
 		return unitCandidates(metreRe, text, "m", "")
 	case f.Type == "integer":
@@ -320,4 +324,66 @@ func atoi(s string) int {
 		n = n*10 + int(r-'0')
 	}
 	return n
+}
+
+// Floor areas are existing, added by the works, or the building after the
+// works. floorAreaRole names which a scale key holds.
+const sentenceBreaks = ".;\n"
+
+var floorAreaRole = map[string]string{"existing_gfa_sqm": "existing", "added_gfa_sqm": "added", "gfa_sqm": "proposed", "total_gfa_sqm": "proposed"}
+
+var (
+	areaExistingCue = regexp.MustCompile(`(?i)\bexisting\b`)
+	areaAddedCue    = regexp.MustCompile(`(?i)\b(?:addition(?:al)?|extension|added|extra)\b`)
+)
+
+// areasOfRole keeps the area candidates whose nearest cue word, within the
+// same sentence and 40 characters, is the role's: "existing" for existing,
+// "addition" or "extension" for added, neither for proposed. "Over existing
+// footprint (~95 m² addition GFA)" is an addition: its nearest cue is
+// "addition". Sorting is code; Jev still picks one or none.
+func areasOfRole(text string, cands []Candidate, role string) []Candidate {
+	var out []Candidate
+	for _, c := range cands {
+		if areaRole(text, c) == role {
+			out = append(out, c)
+		}
+	}
+	for i := range out {
+		out[i].ID = fmt.Sprintf("c%d", i+1)
+	}
+	return out
+}
+
+func areaRole(text string, c Candidate) string {
+	at := strings.Index(text, c.Value)
+	if at < 0 {
+		return "proposed"
+	}
+	end := at + len(c.Value)
+	lo := max(0, at-40)
+	if i := strings.LastIndexAny(text[lo:at], sentenceBreaks); i >= 0 {
+		lo += i + 1
+	}
+	hi := min(len(text), end+40)
+	if i := strings.IndexAny(text[end:hi], sentenceBreaks); i >= 0 {
+		hi = end + i
+	}
+	role, best := "proposed", 1<<30
+	for _, cue := range []struct {
+		re   *regexp.Regexp
+		role string
+	}{{areaExistingCue, "existing"}, {areaAddedCue, "added"}} {
+		for _, m := range cue.re.FindAllStringIndex(text[lo:hi], -1) {
+			start, stop := lo+m[0], lo+m[1]
+			d := start - end
+			if stop <= at {
+				d = at - stop
+			}
+			if d >= 0 && d < best || d == best && cue.role == "added" {
+				role, best = cue.role, d
+			}
+		}
+	}
+	return role
 }

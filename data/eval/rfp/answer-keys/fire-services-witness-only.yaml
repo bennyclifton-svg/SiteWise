@@ -62,15 +62,12 @@ description: Witness-only appointment cannot promote full wet/dry design and doe
 snapshot: false
 expect:
   fire-services:
-    stages_include:
-    - handover
-    stages_absent:
-    - concept
-    - design
-    - tender
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [handover]
+    stages_absent: [concept, design, tender]
     positions:
       wet: absent
       supply: absent
       dry: absent
       witness: I
-      execution: O
+      execution: I

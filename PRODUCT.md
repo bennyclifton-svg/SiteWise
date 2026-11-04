@@ -148,9 +148,12 @@ spreadsheets. Scanned PDFs without a text layer are stored but not filed.
 
 ## Brand Commitments
 
-- Keep the Sitewise mark and wordmark and the owner-approved Clerk cockpit
-  adaptation: Instrument Sans, shared semantic surfaces and compact working
-  controls. `web/DESIGN.md` is the shared visual authority; current shell tokens
+- The mark is the datum lockup (owner-approved 3 November 2026): the
+  surveyor's level datum with "sitewise" standing on its datum line, drawn as
+  one graphite pencil stroke. It replaced the blue S mark. The workbench wears
+  Trace (owner-approved the same day): a drawing sheet on a drafting table,
+  white butter paper over the header, and three hand marks used sparingly.
+  Instrument Sans, shared semantic surfaces and compact working controls stay. `web/DESIGN.md` is the shared visual authority; current shell tokens
   govern light and dark appearance. The earlier warm-paper/IBM Plex register
   in `../clerk/DESIGN.md` records the product's origin, not a separate identity
   for new workbench surfaces.

@@ -35,9 +35,10 @@ settings:
     "allowance:ca_inspections": "6"
 expect:
   architecture:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     stages_include: [interiors]
     stages_absent: [regulated_design, brief_masterplan]
-    positions: {live_staging: I, tenant_fitout: O, existing_interfaces: I}
+    positions: {live_staging: I, tenant_fitout: I, existing_interfaces: I}
     blocking: ["fact:budget"]
     blocking_only: true
 sources:

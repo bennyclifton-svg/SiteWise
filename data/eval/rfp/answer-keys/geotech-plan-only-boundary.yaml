@@ -54,30 +54,22 @@ description: Plan-only start/end leaves later fieldwork/report as options; clear
   a project decision before disturbance.
 expect:
   geotechnical:
-    stages_include:
-    - g1_plan
-    stages_option:
-    - g2_field
-    - g3_report
-    - g5_design
-    - g6_construction
-    - g7_transfer
-    stages_absent:
-    - g4_planning
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [g1_plan]
+    stages_absent: [g4_planning, g2_field, g3_report, g5_design, g6_construction, g7_transfer]
     positions:
       plan: I
       foundation: I
       civil_parameters: I
-      monitoring: O
+      monitoring: X
       asset_exposure: I
-      clearance: ask
+      clearance: X
       access: X
-      defects: O
+      defects: X
       environment: X
       ass: I
       handback: I
-      construction: O
-      transfer: O
-    blocking:
-    - fact:flag.geotech_intrusive
+      construction: X
+      transfer: X
+    blocking: ['fact:flag.geotech_intrusive']
     blocking_only: true

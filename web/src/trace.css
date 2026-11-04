@@ -1,0 +1,302 @@
+/* Trace: the workbench as a drawing sheet on a drafting table.
+   A white butter-paper band holds the title and blurs whatever scrolls under
+   it; pencil lines, a squared highlighter and a paint stroke are the only
+   hand marks. Marks are static files in assets/marks (scripts/make-marks.mjs).
+   Loaded after the surface stylesheets so it can quiet their chrome. */
+
+:root[data-theme="light"] {
+  --sw-canvas: #E9E8E4;
+  --sw-surface: #FBFAF8;
+  --sw-surface-elevated: #FFFFFF;
+  --sw-surface-inset: #F3F1EC;
+  --sw-border-subtle: #EEEBE6;
+  --sw-border-default: #E3DFD8;
+  --sw-border-strong: #C9C3BA;
+  --sw-text-primary: #1F1B17;
+  --sw-text-secondary: #4A433C;
+  --sw-text-tertiary: #6B625A;
+  --sw-hover-bg: #F3F1EC;
+  --sw-pressed-bg: #ECE9E3;
+  --sw-input-bg: #FFFFFF;
+  --sw-selection-bg: #EFEDE8;
+  --trace-table: #E9E8E4;
+  --trace-sheet: #FBFAF8;
+  --trace-paper: rgba(255, 255, 255, .74);
+  --trace-fringe: #FFFFFF;
+  --trace-rule: #E6E2DC;
+  --trace-rule-strong: #2A241F;
+  --trace-ink-4: #9A9188;
+  --trace-ember: #A85E2C;
+  --trace-azure: #2D5E9E;
+  --trace-brush-check: rgba(226, 170, 72, .5);
+  --trace-brush-nav: #FFFFFF;
+  --trace-brush-hover: rgba(255, 255, 255, .4);
+  --trace-in-scope: #35302A;
+  --trace-check: #B07A2A;
+}
+
+:root[data-theme="dark"] {
+  --trace-table: var(--sw-canvas);
+  --trace-sheet: var(--sw-surface);
+  --trace-paper: rgba(23, 23, 23, .72);
+  --trace-fringe: #2a2a2a;
+  --trace-rule: var(--sw-border-default);
+  --trace-rule-strong: var(--sw-text-secondary);
+  --trace-ink-4: var(--sw-text-tertiary);
+  --trace-ember: #D9935E;
+  --trace-azure: #93CEDD;
+  --trace-brush-check: rgba(235, 181, 83, .32);
+  --trace-brush-nav: rgba(255, 255, 255, .12);
+  --trace-brush-hover: rgba(255, 255, 255, .07);
+  --trace-in-scope: #D9D2C6;
+  --trace-check: #EBB553;
+}
+
+/* ---------- Table and sheet ---------- */
+
+.cockpit-page {
+  background-color: var(--trace-table);
+}
+
+:root[data-theme="light"] .cockpit-page {
+  background-image: url("./assets/marks/stone.svg");
+  background-size: 360px 360px;
+}
+
+.wordmark { display: inline-flex; align-items: center; color: var(--sw-text-primary); }
+.wordmark svg { display: block; overflow: visible; }
+
+@media (min-width: 1101px) {
+  .cockpit-page { padding: 14px 14px 14px 10px; }
+
+  .cockpit-shell { column-gap: 0; }
+
+  /* The shell is its own stacking context: the sheet sits under everything,
+     the paper over the working view, and fixed drawers inside the view
+     (z-index 20 and up) still rise above both. */
+  .cockpit-shell { z-index: 0; }
+
+  .trace-sheet {
+    grid-column: 2 / -1;
+    grid-row: 1 / -1;
+    z-index: -1;
+    border-radius: 4px;
+    background: var(--trace-sheet);
+    box-shadow: 0 0 0 1px rgba(40, 32, 24, .05), 0 1px 1px rgba(40, 32, 24, .05), 0 14px 34px -16px rgba(40, 32, 24, .24);
+  }
+
+  :root[data-theme="dark"] .trace-sheet { box-shadow: 0 0 0 1px var(--sw-border-default); }
+
+  /* Butter paper over the header rows. Content scrolling up passes beneath it
+     and is blurred and faded, so it never competes with the title. */
+  .trace-paper {
+    position: relative;
+    grid-column: 2 / -1;
+    grid-row: 1 / 3;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .trace-paper-sheet,
+  .trace-paper-fringe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: -14px;
+  }
+
+  .trace-paper-sheet {
+    border-radius: 4px 4px 0 0;
+    background: var(--trace-paper) url("./assets/marks/paper-fibre.svg");
+    background-size: auto, 420px 420px;
+    -webkit-backdrop-filter: blur(16px) saturate(.8);
+    backdrop-filter: blur(16px) saturate(.8);
+    -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - 30px) no-repeat, url("./assets/marks/tear-sheet.svg") bottom left / 1600px 30px repeat-x;
+    mask: linear-gradient(#000 0 0) top / 100% calc(100% - 30px) no-repeat, url("./assets/marks/tear-sheet.svg") bottom left / 1600px 30px repeat-x;
+  }
+
+  .trace-paper-fringe { filter: drop-shadow(0 1.2px 1.4px rgba(45, 38, 28, .1)) drop-shadow(0 5px 9px rgba(45, 38, 28, .05)); }
+  .trace-paper-fringe i {
+    position: absolute;
+    inset: 0;
+    background: var(--trace-fringe);
+    opacity: .96;
+    -webkit-mask: url("./assets/marks/tear-fringe.svg") bottom left / 1600px 30px repeat-x;
+    mask: url("./assets/marks/tear-fringe.svg") bottom left / 1600px 30px repeat-x;
+  }
+
+  .cockpit-shell-header,
+  .workspace-controls,
+  .repository-controls {
+    position: relative;
+    z-index: 4;
+  }
+
+  .cockpit-shell-header { padding: 0 28px 0 36px; }
+  .workspace-controls { padding-left: 32px; }
+  .repository-controls { padding-right: 20px; }
+
+  .project-main-panel {
+    position: relative;
+    grid-row: 1 / -1;
+  }
+
+  .cockpit-scroll {
+    padding: calc(var(--trace-top, 160px) + 26px) 32px 48px 36px;
+    scroll-padding-top: calc(var(--trace-top, 160px) + 26px);
+  }
+
+  .project-side-panel {
+    position: relative;
+    padding-top: 26px;
+    padding-right: 20px;
+  }
+
+  /* Sticky bars inside the working view stop below the paper. */
+  .cockpit-scroll :is(.bar, .sw-rail),
+  .cockpit-scroll .inv-table thead th { top: calc(var(--trace-top, 160px) + 8px); }
+}
+
+@media (max-width: 1100px) {
+  .trace-sheet, .trace-paper { display: none; }
+}
+
+/* ---------- Header ---------- */
+
+.cockpit-title { font-size: clamp(1.9rem, 2.4vw, 3.1rem); letter-spacing: -.03em; }
+.cockpit-address { color: var(--sw-text-secondary); font-size: 1rem; }
+
+.theme-button {
+  width: 38px;
+  height: 38px;
+  box-shadow: none;
+  background: transparent;
+}
+.theme-button svg { width: 18px; height: 18px; }
+
+/* ---------- Left navigation on the stone band ---------- */
+
+@media (min-width: 1101px) {
+  .cockpit-shell > .leftnav {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.leftnav-logo { padding: 0 26px; }
+
+.cockpit-shell .switcher-button {
+  border: 1px solid var(--sw-border-strong);
+  background: color-mix(in oklab, var(--sw-surface-elevated) 45%, transparent);
+}
+
+.nav-item {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  font-size: 15px;
+}
+
+/* A paint stroke sits behind the label: faint on hover, full when selected. */
+.nav-item::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 2px;
+  right: 6px;
+  top: 3px;
+  bottom: 3px;
+  background: var(--trace-brush-hover);
+  -webkit-mask: url("./assets/marks/brush-nav.svg") center / 100% 100% no-repeat;
+  mask: url("./assets/marks/brush-nav.svg") center / 100% 100% no-repeat;
+  opacity: 0;
+  transform: scaleX(.94);
+  transform-origin: left center;
+  transition: opacity .18s ease-out, transform .28s cubic-bezier(.2, .8, .2, 1);
+}
+
+.nav-item:hover:not(:disabled),
+.nav-item[aria-current="page"] {
+  background: transparent;
+}
+
+.nav-item:hover:not(:disabled)::before { opacity: 1; transform: none; }
+
+.nav-item[aria-current="page"]::before {
+  opacity: 1;
+  transform: none;
+  background: var(--trace-brush-nav);
+  filter: drop-shadow(0 1px 1px rgba(40, 32, 24, .06));
+}
+
+.nav-item[aria-current="page"] { color: var(--sw-text-primary); font-weight: 600; }
+.nav-item[aria-current="page"] .nav-icon { color: var(--sw-text-primary); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item::before { transition: none; }
+}
+
+/* ---------- Shared hand marks ---------- */
+
+/* Pencil underlines: ember for values read from documents, dotted blue for Jev. */
+.pencil-doc,
+.pencil-jev {
+  padding-bottom: 3px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 480px 6px;
+}
+.pencil-doc { background-image: url("./assets/marks/pencil-ember.svg"); }
+.pencil-jev { background-image: url("./assets/marks/pencil-azure.svg"); }
+
+/* A graphite rule drawn by hand, overshooting both ends like a drafter's line. */
+.pencil-rule {
+  position: relative;
+}
+.pencil-rule::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  right: -14px;
+  top: -3px;
+  height: 6px;
+  background: url("./assets/marks/pencil-graphite.svg") left center / 480px 6px repeat-x;
+  pointer-events: none;
+}
+
+/* Squared highlighter over a value that needs a decision. */
+.mark-check {
+  position: relative;
+  isolation: isolate;
+}
+.mark-check::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -5px;
+  right: -5px;
+  top: 12%;
+  bottom: 2%;
+  background: var(--trace-brush-check);
+  -webkit-mask: url("./assets/marks/brush-1.svg") center / 100% 100% no-repeat;
+  mask: url("./assets/marks/brush-1.svg") center / 100% 100% no-repeat;
+  transform: rotate(-.5deg);
+}
+.mark-check[data-stroke="2"]::before { -webkit-mask-image: url("./assets/marks/brush-2.svg"); mask-image: url("./assets/marks/brush-2.svg"); transform: rotate(.4deg); }
+.mark-check[data-stroke="3"]::before { -webkit-mask-image: url("./assets/marks/brush-3.svg"); mask-image: url("./assets/marks/brush-3.svg"); transform: rotate(-.2deg); }
+
+@media (prefers-contrast: more), print {
+  .mark-check::before { display: none; }
+  .mark-check { text-decoration: underline 2px; }
+  .pencil-doc, .pencil-jev { background: none; text-decoration: underline; }
+  .pencil-rule::before { background: currentColor; height: 1.5px; top: 0; }
+  .trace-paper-sheet { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet); }
+}
+
+/* Dark paper keeps its blur but not the fibre, which reads as noise on black. */
+:root[data-theme="dark"] .trace-paper-sheet { background-image: none; }

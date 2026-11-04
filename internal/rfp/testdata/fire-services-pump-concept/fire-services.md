@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to extend Warehouse (Class 7b) at 1 Example Street, Example NSW.
@@ -11,63 +9,52 @@ Example Client intends to extend Warehouse (Class 7b) at 1 Example Street, Examp
 
 Conditions that apply: Work to an existing building.
 
-Information provided: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified R1-R9 schedules.
-
 ### 2. Scope of services
 
 Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic design or proof of existing adequacy.
 Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing neither executes tests nor certifies unseen work. Name network design/application owners.
 Design basis: R7: parts/use/hazards, strategy/approvals, insurer/operator criteria, records/revisions, supply dates/conditions, plant/pipework and access gaps.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+R2 sets each output purpose/maturity, native formats, recipient/reliance, revision, rounds and date. R1 Fee by stage: Quantity/basis/ceiling, ex GST/GST/total by stage/system; base/options/dependencies/milestones, validity/addenda; price once. Acknowledge numbered addenda; confirm authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Evidence |  | Included |  |
+|  | Basis/system register | Included |  |
+|  | Accessible survey, observed/tested/assumed gaps | Included |  |
+|  | Supply/capacity investigation brief and inputs/owners | Included |  |
+| S2 Investigation |  | Included |  |
+|  | Defined surveys/tests/operator/reinstatement | Included |  |
+|  | Retained supply/plant/network suitability, uncertainty/options | Included |  |
+|  | Upgrade design separate | Included |  |
+|  | Defined investigation; records are not condition proof; upgrade separate | Included |  |
+| S3 Concept |  | Included |  |
+|  | Demand/options/indicative duties | Included |  |
+|  | Plant/booster/valve space, routes/access/power/drainage/brigade | Included |  |
+|  | Listed planning notes/responses | Included |  |
+|  | Unresolved pipework | Included |  |
+|  | Fire strategy and performance solutions | Excluded |  |
+| S4 Developed design | Not part of this appointment | Excluded | — |
+| S5 Documentation | Not part of this appointment | Excluded | — |
+| S6 Post-contract | Not part of this appointment | Excluded | — |
+| S7 Construction | Not part of this appointment | Excluded | — |
+| S8 Commissioning | Not part of this appointment | Excluded | — |
+| S9 Advisory | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent | Included |  |
+|  | Listed enquiry/test/meter/backflow/connection/augmentation duties; operator/payer named | Included |  |
+|  | Allocated detection/alarms/smoke alarms/monitoring/warning; one designer each | Included |  |
+|  | Matrix coordination; name author/programmer/point-checker/test leader/witness. R4 names designer/coordinator/installer/tester/witness/certifier/maintainer for each; unresolved allocation stays open. Systems: Sprinklers; hydrants/hose reels; pumps/tanks/supply; extinguishers; detection/smoke alarms; panel/transmission/monitoring; warning; emergency lighting/signage; smoke control; emergency power; cause-and-effect. | Included |  |
+|  | Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations | Included |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified R1-R9 schedules.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Water supply and wet fire — Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent | X |  |  |  |
-| Demand/storage calculations; pressure statement is not installed performance |  | X |  |  |
-| Listed enquiry/test/meter/backflow/connection/augmentation duties; operator/payer named | X |  |  |  |
-| Detection and systems coordination — Allocated detection/alarms/smoke alarms/monitoring/warning; one designer each | X |  |  |  |
-| Matrix coordination; name author/programmer/point-checker/test leader/witness. R4 names designer/coordinator/installer/tester/witness/certifier/maintainer for each; unresolved allocation stays open. Systems: Sprinklers; hydrants/hose reels; pumps/tanks/supply; extinguishers; detection/smoke alarms; panel/transmission/monitoring; warning; emergency lighting/signage; smoke control; emergency power; cause-and-effect. | X |  |  |  |
-| Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations | X |  |  |  |
-| Fire strategy and performance solutions. By fire engineer, not yet engaged |  |  | X |  |
-| Existing systems and special hazards — Defined investigation; records are not condition proof; upgrade separate | X |  |  |  |
-| Existing upgrade design subject to investigation/accepted strategy |  | X |  |  |
-| Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy |  | X |  |  |
-| Orders/defects: evidence, diagnosis, separate remedy/verification; no whole-building conclusion |  | X |  |  |
-| Special hazards/high storage/process/batteries/special suppression. By hazard / suppression specialist |  |  | X |  |
-| Declarations and later services — Scoped declarations/lodgement/certification; verify jurisdiction/competence; no approval guarantee |  | X |  |  |
-| Express continued design/novation |  | X |  |  |
-| Quantified construction support |  | X |  |  |
-| Selected test witnessing/handover evidence |  | X |  |  |
-| Test execution separately priced to named trades |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-R2 sets each output purpose/maturity, native formats, recipient/reliance, revision, rounds and date.  R1 Fee by stage: Quantity/basis/ceiling, ex GST/GST/total by stage/system; base/options/dependencies/milestones, validity/addenda; price once. Acknowledge numbered addenda; confirm authorised signatory. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Evidence — Included | Basis/system register; accessible survey, observed/tested/assumed gaps; supply/capacity investigation brief and inputs/owners |  |  |  |
-| S2 Investigation — Included | Defined surveys/tests/operator/reinstatement; retained supply/plant/network suitability, uncertainty/options; upgrade design separate |  |  |  |
-| S3 Concept — Included | Demand/options/indicative duties; plant/booster/valve space, routes/access/power/drainage/brigade; listed planning notes/responses; unresolved pipework |  |  |  |
-| S4 Developed design — Option | Demand/hydraulics/supply cases/storage/pumps/zones/equipment; existing/new, controls/power/loads/maintenance coordination; listed authority tasks |  |  |  |
-| S5 Documentation — Option | Traditional drawings/calculations/schedules/specification; D&C intent/performance/test criteria and contractor-design handover; RFIs/addenda/comparison |  |  |  |
-| S6 Post-contract — Option | Retained design/substitutions/updates; agree novation, client/liability, program/duties |  |  |  |
-| S7 Construction — Option | RFIs/submittals, hold-point inspection/findings, changes/test-plan records; inaccessible work/defect closure |  |  |  |
-| S8 Commissioning — Option | Scripts/results; water/integrated failure/recovery test witness, expected/actual results/defects/retests; scoped statements/as-builts/O&M/settings/training/residuals |  |  |  |
-| S9 Advisory — Option | Defined question/cutoff/reliance, method/confidence/actions; peer review retains design duty; remedy/annual services separate |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Demand/storage calculations |  |  |  |
-| Service option | Existing upgrade design subject to investigation/accepted strategy |  |  |  |
-| Service option | Live/staged/mixed-use isolation/protection/restoration |  |  |  |
-| Service option | Orders/defects: evidence, diagnosis, separate remedy/verification |  |  |  |
-| Service option | Scoped declarations/lodgement/certification |  |  |  |
-| Service option | Express continued design/novation |  |  |  |
-| Service option | Quantified construction support |  |  |  |
-| Service option | Selected test witnessing/handover evidence |  |  |  |
-| Service option | Test execution separately priced to named trades |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -111,6 +98,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Inputs/providers/revisions/dates (architecture, hazards, BCA/strategy/approvals, records/supply/MEP); methods/checks/gates, access/outages/operator permissions, hold-point/test plan, urgent findings and closure. |
 | R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/periods/certificates, activity/hazard exclusions; agreement/precedence, liability/reliance/novation departures. |
 | R9 Reimbursables | Enquiry/tests/authority/connection fees, surveys/openings/specialists/access/traffic/isolation/reinstatement/disposal/travel/printing: quantity/basis/payer/markup/GST/approval; no R1 or other-discipline duplication. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

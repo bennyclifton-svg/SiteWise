@@ -1,4 +1,5 @@
 import { RowHandle } from "../../table/RowHandle";
+import { IconBin } from "../../icons";
 // The Program grid (plan 9.1, 9.5): a treegrid of stages and activities.
 // Only the rows in the render window are in the DOM; the block is offset by
 // first × rowH so it lines up with the chart's rows. Names, durations and
@@ -60,6 +61,8 @@ export interface GridProps {
   onFocusCell?: (id: string, col: string) => void;
   onHandleDown?: (e: ReactPointerEvent<HTMLElement>, id: string) => void;
   onCatalogue?: (id: string, stage: string) => void;
+  /** Deletes one row from its bin; no bin is drawn without it (print). */
+  onDelete?: (id: string) => void;
   /** Row id → markers shown beside its name (plan 10.2, 10.4). */
   notes?: ReadonlyMap<string, readonly RowNote[]>;
 }
@@ -236,6 +239,22 @@ export const Grid = memo(function Grid(p: GridProps) {
               {editor("predecessors") ?? preds?.get(r.id) ?? ""}
             </span>
           </>
+        )}
+        {p.onDelete && !ed && (
+          // Out of the tab order: the Delete key does the same from the keyboard.
+          <button
+            type="button"
+            className="pg-row-del"
+            tabIndex={-1}
+            aria-label={`Delete ${r.act.label}`}
+            title="Delete"
+            onClick={(e) => {
+              e.stopPropagation();
+              p.onDelete?.(r.id);
+            }}
+          >
+            <IconBin />
+          </button>
         )}
         {ed?.error && (
           <span className="pg-cell-error" role="alert">

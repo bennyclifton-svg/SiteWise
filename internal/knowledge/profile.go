@@ -205,7 +205,24 @@ type scopeDefaults struct {
 		Category string   `yaml:"category"`
 		Systems  []string `yaml:"systems"`
 	} `yaml:"categories"`
+	ImpliedBy []ScopeTerm `yaml:"implied_by"`
 }
+
+// ScopeTerm is a word a document uses for the works that implies systems,
+// as a suggestion only (scope_defaults.yaml implied_by).
+type ScopeTerm struct {
+	ID      string   `yaml:"id"`
+	Label   string   `yaml:"label"`
+	Pattern string   `yaml:"pattern"`
+	Systems []string `yaml:"systems"`
+	re      *regexp.Regexp
+}
+
+// Find returns the first match of the term in text, or nil.
+func (t ScopeTerm) Find(text string) []int { return t.re.FindStringIndex(text) }
+
+// ScopeTerms are the words that imply systems as scope suggestions.
+func (c *Catalog) ScopeTerms() []ScopeTerm { return c.profile.scope.ImpliedBy }
 
 func (c *Catalog) loadDeterminants(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -294,6 +311,17 @@ func (c *Catalog) loadProfile(dir string) error {
 	}
 	for _, e := range scope.Categories {
 		if err := check(e.Category, e.Systems); err != nil {
+			return err
+		}
+	}
+	for i := range scope.ImpliedBy {
+		t := &scope.ImpliedBy[i]
+		re, err := regexp.Compile("(?i)" + t.Pattern)
+		if err != nil || t.ID == "" {
+			return fmt.Errorf("scope defaults implied_by %q: bad id or pattern: %v", t.ID, err)
+		}
+		t.re = re
+		if err := check("implied_by "+t.ID, t.Systems); err != nil {
 			return err
 		}
 	}

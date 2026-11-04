@@ -56,31 +56,22 @@ description: 'Occupied warehouse extension with OSD exposure: D&C and project no
   report appointment.'
 expect:
   geotechnical:
-    stages_include:
-    - g1_plan
-    - g2_field
-    - g3_report
-    stages_option:
-    - g4_planning
-    - g5_design
-    - g6_construction
-    - g7_transfer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [g1_plan, g2_field, g3_report]
     positions:
       plan: I
       foundation: I
       civil_parameters: I
-      monitoring: O
+      monitoring: I
       asset_exposure: I
       clearance: I
       access: X
-      defects: O
+      defects: I
       environment: X
       ass: I
       handback: I
-      construction: O
-      transfer: O
-    party:
-      environment: environmental consultant
-      access: client access lead
+      construction: X
+      transfer: X
     blocking_only: true
     blocking: []
+    stages_absent: [g4_planning, g5_design, g6_construction, g7_transfer]

@@ -1,0 +1,784 @@
+schema: sitewise-synthetic-shape/1
+type_id: T03
+slug: office-fitout
+name: Commercial office fit-out
+reviewed: false
+state: NSW
+# Every yes/no/partial value is quoted: bare yes/no are YAML 1.1 booleans.
+# Base scenario: a tenant fit-out of one whole floor (about 1,200 m2 NLA) of an occupied, landlord-controlled
+# A-grade Class 5 tower in Sydney. The floor is handed over in base-building condition (ceiling grid, base-building
+# lighting, VAV air-conditioning, sprinklers, detection and EWIS, amenities on the core). Interior designer leads a
+# traditional lump-sum tender to fit-out contractors. Complying development certificate (CDC).
+profile:
+  hdr.building_class: commercial
+  hdr.subclass: office
+  hdr.work_type: refurb
+  hdr.cond.planning: cdc
+  hdr.cond.procurement_route: traditional
+  hdr.cond.quality_level: high
+  hdr.cond.operational_constraints: partial_occupation
+  hdr.cond.access_constraints: restricted_hours
+  hdr.cond.environmental_sensitivity: standard
+  hdr.scale.nla_sqm: 1200
+  hdr.scale.floor_plate_sqm: 1200
+  hdr.scale.tenancies: 1
+  hdr.scale.grade: A
+  # The building's storeys, not the works: the fit-out is on one floor (keyword trap, DOMAIN.md section 10).
+  hdr.scale.storeys: 24
+  det.ncc_class: ["5"]
+  det.state: NSW
+  det.existing_building: true
+  det.existing_building_year: 2008
+  det.heritage_status: none
+  det.bushfire_prone_land: false
+  det.flood_hazard: false
+  det.potentially_contaminated_land: false
+  det.acid_sulfate_soils_mapped: false
+  det.sprinklered: true
+  det.type_of_construction: A
+  det.rise_in_storeys: 24
+  det.climate_zone: "5"
+  det.gas_supply: none
+  fact.contract_form: as4000
+  proj.regulated_design: "no"
+  # RFP flags set explicitly so unknowns do not turn excluded rows into priced options or asks.
+  flag.staged: "no"
+  flag.multi_building: "no"
+  flag.sustainability_target: "no"
+  flag.community: "no"
+  flag.country: "no"
+  flag.fire_vulnerable_occupants: "no"
+  flag.fire_special_hazards: "no"
+  flag.fire_specialist_systems: "no"
+  flag.basement: "no"
+  flag.excavation_adjoining: "no"
+  flag.transfer_structures: "no"
+  flag.authority_asset: "no"
+  flag.rail: "no"
+  flag.arborist_tree_impacts: "no"
+  flag.public_road: "no"
+  flag.osd_required: "no"
+  flag.osd_existing: "no"
+  flag.cl46: "no"
+  flag.panel: "no"
+
+expected_derived:
+  - {key: det.basix_required, value: false, source: "knowledge/clusters/envelope/rules.yaml rule.basix.certificate-required", note: "BASIX is a residential instrument; a Class 5 fit-out never needs one"}
+  - {key: det.energy_compliance_pathway, value: section_j_dts, note: "no profile_group, so not settable; NCC Section J applies to the new lighting, power and air-conditioning work (Part numbers verified: false)"}
+  - {key: det.existing_building, value: true, note: "the RFP drivers also derive flag.existing_building from work type refurb (internal/rfp/drivers.go deriveFlags)"}
+
+scenario_inputs:
+  - {key: proj.budget_stated, note: "stated in the tenant's brief; amount chosen by the scenario author", phrasing: "Fit-out construction budget: $<amount> excluding GST"}
+  - {key: hdr.scale.nla_sqm, note: "stated in the brief or agreement for lease", phrasing: "Tenancy: whole of Level <n>, <area> m2 NLA"}
+  - {key: proj.owner_supply_stated, note: "tenant-direct supply outside the fit-out contract", phrasing: "Tenant supply, outside the fit-out contract: loose furniture and workstations, AV equipment, IT active equipment"}
+  - {key: det.existing_building_year, note: "decides whether an asbestos register applies", phrasing: "The building was completed in <year>"}
+  - {key: det.existing_building_year, note: "a 1979 date alone gives the register check and the hazardous-materials survey only; it is not evidence of asbestos in the tenancy, removal or clearance", phrasing: "The building was completed in 1979"}
+  - {key: hdr.cond.procurement_route, note: "no profile key records consultant stage scope; the traditional route is the fact it rests on, and the consultant brief must state the scope so a reader can see it", phrasing: "The services engineers' scope runs through construction-phase inspections, witness testing and completion certification"}
+  - {key: hdr.cond.operational_constraints, note: "the building stays occupied by other tenants", phrasing: "All other floors of the building remain occupied by tenants throughout the works"}
+  - {key: hdr.cond.access_constraints, note: "the landlord's building rules", phrasing: "Noisy works, core drilling and deliveries are restricted to after hours and weekends under the landlord's building rules"}
+
+work_items:
+  - {system: interiors.walls-linings, action: new, why: "Plasterboard partitions to offices, meeting rooms, comms room and storage; acoustic partitions to the boardroom"}
+  - {system: interiors.internal-glazing, action: new, why: "Glazed meeting-room fronts and office suites with manifestation; long lead"}
+  - {system: interiors.ceilings, action: alter, why: "Base-building suspended grid altered: tiles and lights removed and stored for the landlord at new rooms, plasterboard ceilings and bulkheads in feature areas"}
+  - {system: interiors.internal-doors, action: new, why: "Solid-core and glazed doors with hardware"}
+  - {system: interiors.joinery, action: new, why: "Reception desk, kitchenette and breakout joinery, storage walls, lockers; long lead"}
+  - {system: interiors.floor-finishes, action: new, why: "Carpet tiles over the base-building slab or raised floor, vinyl to kitchenette and comms room"}
+  - {system: interiors.painting, action: new, why: "Painting to new partitions and the core walls inside the tenancy"}
+  - {system: interiors.room-acoustics, action: new, why: "Acoustic ceiling and wall treatment to meeting rooms and the boardroom (speech privacy)"}
+  - {system: interiors.ffe, action: new, why: "Loose furniture and workstations are tenant supply outside the fit-out contract; the builder powers and coordinates them"}
+  - {system: site.signage, action: new, why: "Tenancy entry signage and internal wayfinding, to the landlord's signage rules"}
+  - {system: fire-passive.penetrations, action: new, why: "Fire stopping where new cabling and pipework pass through the rated riser and comms-room walls"}
+  - {system: fire-active.sprinklers, action: alter, why: "Relocate and add heads to suit the new rooms (AS 2118.1, verified: false); base-building system, often by the landlord's nominated contractor"}
+  - {system: fire-active.detection, action: alter, why: "Relocate and add detectors for the enclosed rooms (AS 1670.1, verified: false)"}
+  - {system: fire-active.occupant-warning, action: alter, why: "EWIS speakers and strobes added to enclosed rooms and re-tested with the base-building panel (AS 1670.4, verified: false)"}
+  - {system: fire-active.emergency-lighting, action: alter, why: "Emergency lights and exit signs relocated and added for the new layout (AS 2293.1, verified: false)"}
+  - {system: mechanical.air-conditioning, action: alter, why: "Re-zone the base-building VAV system: added terminals and thermostats for meeting rooms and offices"}
+  - {system: mechanical.air-distribution, action: alter, why: "Flexible duct, diffusers and return air paths for the new partitions"}
+  - {system: mechanical.ventilation, action: alter, why: "Outside air to high-occupancy meeting rooms and the boardroom, within the base-building allowance"}
+  - {system: mechanical.local-exhaust, action: new, why: "Kitchenette and print-room exhaust into the base-building toilet or general exhaust riser"}
+  - {system: mechanical.controls-bms, action: alter, why: "BMS points and after-hours AC controls for the new zones, by the landlord's BMS contractor"}
+  - {system: hydraulic.cold-water, action: alter, why: "Kitchenette sink, dishwasher, boiling and chilled water unit off the tenant water point"}
+  - {system: hydraulic.hot-water, action: new, why: "Local instantaneous hot-water unit at the kitchenette"}
+  - {system: hydraulic.sanitary, action: alter, why: "Kitchenette waste to the base-building tenant waste point"}
+  - {system: electrical.switchboards, action: alter, why: "New circuits and a tenant sub-board fed from the base-building tenant distribution board"}
+  - {system: electrical.cabling-wiring, action: alter, why: "Power to workstations through power poles or the existing floor boxes, and to joinery and appliances"}
+  - {system: electrical.lighting, action: alter, why: "Base-building luminaires re-arranged, feature and pendant lighting, DALI or sensor controls (Section J lighting, verified: false)"}
+  - {system: comms-security.structured-cabling, action: new, why: "Category 6A data cabling to workstations, Wi-Fi points and AV"}
+  - {system: comms-security.ict-rooms-pathways, action: new, why: "Comms room, racks, cable tray and riser pathway to the building carrier room"}
+  - {system: comms-security.access-control, action: new, why: "Card readers at the tenancy entry and secure rooms, integrated with the base-building security system"}
+  - {system: comms-security.audiovisual, action: new, why: "Meeting room and boardroom AV, often tenant-direct; the builder provides power, data and in-wall conduits"}
+  - {system: access-egress.exits, action: alter, why: "New rooms change travel distances and paths to the base-building fire stairs; a design outcome checked by the BCA consultant"}
+  - {system: access-egress.egress-doors, action: new, why: "Tenancy entry doors on the path of travel with egress hardware and access control"}
+  - {system: access-egress.accessible-access, action: alter, why: "Accessible path of travel inside the tenancy, door circulation spaces, hearing augmentation in the boardroom"}
+
+procurement:
+  - {discipline: consultant.project_manager, kind: services, need: usually, built_in: "no", why: "Tenant's project manager: brief, budget, program, landlord liaison under the agreement for lease, consultant and contractor procurement, superintendent; no package rule names it"}
+  - {discipline: consultant.interior_design, kind: services, need: always, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[4]", why: "Design lead: workplace brief, test fit, design, documentation, CDC drawings, tender"}
+  - {discipline: consultant.mechanical, kind: services, need: usually, aliases: [consultant.services], built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Re-zoning the base-building AC, outside air, exhaust, BMS points; one multi-services firm often does mechanical, electrical, hydraulic and fire"}
+  - {discipline: consultant.electrical, kind: services, need: usually, aliases: [consultant.services], built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Power, lighting and controls, emergency lighting, Section J lighting, ICT pathways"}
+  - {discipline: consultant.fire_services, kind: services, need: usually, aliases: [consultant.services], built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Sprinkler, detection and EWIS alteration design against the base-building systems and fire engineering report"}
+  - {discipline: consultant.hydraulic, kind: services, need: optional, aliases: [consultant.services], built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Kitchenette water and waste only; often by the services firm or design-and-install plumber"}
+  - {discipline: consultant.bca, kind: services, need: always, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "BCA compliance report for the CDC: egress, travel distances, doors, fire safety schedule, access"}
+  - {discipline: consultant.certifier, kind: services, need: always, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "CDC, principal certifier, final inspection, occupation certificate"}
+  - {discipline: consultant.access, kind: services, need: usually, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Access report against AS 1428.1 (verified: false) for the CDC; hearing augmentation and door circulation"}
+  - {discipline: consultant.quantity_surveyor, kind: services, need: usually, built_in: "no", why: "Cost plan, pre-tender estimate, tender evaluation, total project budget; no package rule names it"}
+  - {discipline: consultant.acoustic, kind: services, need: optional, built_in: "no", why: "Meeting-room and boardroom speech privacy, partition and ceiling ratings, services noise"}
+  - {discipline: consultant.ict, kind: services, need: optional, aliases: [consultant.av, consultant.security], built_in: "no", why: "Tenant's ICT, AV and security design, often by the tenant's IT team or vendors"}
+  - {discipline: trade.main_works, kind: works, need: always, built_in: "partial", source: "internal/procurement/proposed.go ProposeHeadContract", why: "Lump-sum fit-out contract (AS 4000 with fit-out amendments); proposed only from gaps on accepted work items"}
+
+not_expected_procurement:
+  - {discipline: consultant.architect, app_suggests: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "The interior designer is the design lead. A second design-lead appointment duplicates the scope; where the design firm is an architectural practice it is still one appointment"}
+
+cost_plan:
+  - {line: "CDC and occupation certificate lodgement fees", section: fees_and_charges, aliases: ["Construction certificate and certifier fees"], built_in: "partial", source: "knowledge/costs/starter_lines.yaml cc-fees", why: "The app's line is labelled for a construction certificate, which a CDC job does not have; it stands in for the Planning Portal and council registration fees"}
+  - {line: "Development contributions payable on the CDC (s7.11 or s7.12, verified: false)", section: fees_and_charges, built_in: "no", why: "The certifier imposes the contributions the council plan levies on a CDC (verified: false); decided by the LGA's contributions plan, so the scenario must name the LGA. da-fees is dropped for cdc and nothing replaces it"}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "Paid before the CDC is issued when the works exceed the threshold (threshold verified: false); the type's $0.3M lower bound (PROJECT_TYPES.md) exceeds any plausible threshold, so the line is unconditional in the base"}
+  - {line: "Landlord's design review and approval fees", section: fees_and_charges, built_in: "no", why: "The landlord recovers its base-building engineers' review of the tenant's design under the agreement for lease"}
+  - {line: "Landlord's building charges during the works", section: fees_and_charges, built_in: "no", why: "After-hours lift and loading dock use, security, base-building services shutdowns and fire-system isolation charges"}
+  - {line: "Project manager", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Interior designer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[4]", why: "Fee line from the adopted package"}
+  - {line: "Mechanical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line from the adopted package"}
+  - {line: "Electrical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Fee line from the adopted package"}
+  - {line: "Fire services engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line from the adopted package"}
+  - {line: "Hydraulic engineer (optional)", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Fee line from the adopted package"}
+  - {line: "BCA consultant", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line from the adopted package"}
+  - {line: "Certifier", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Professional fee for the CDC, inspections and OC; the app also adds P05, a double-count risk"}
+  - {line: "Access consultant", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[3]", why: "Fee line from the adopted package"}
+  - {line: "Quantity surveyor", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Acoustic consultant (optional)", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "ICT, AV and security consultant (optional)", section: consultants, built_in: "no", why: "No package rule"}
+  - {line: "Preliminaries, supervision and after-hours premiums", section: construction, built_in: "no", why: "No line; a stated budget spreads preliminaries pro rata (commercial_fitout split). After-hours noisy works and deliveries, and temporary protection of the goods lift, lobbies, corridors and loading dock, are real costs on an occupied tower"}
+  - {line: "Tenancy signage", section: construction, aliases: ["Site works and external works"], built_in: "partial", source: "knowledge/costs/elements.yaml code 01", why: "site.signage lands in the 01 Site works and external works line, a misleading label inside a tower"}
+  - {line: "Interiors and finishes", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 05", why: "Partitions, glazing, ceilings, doors, joinery, floors, painting, acoustics; refurb has no default scope, so the line appears only once interiors work items are read or added"}
+  - {line: "Passive fire protection", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 06", why: "Fire stopping; once the penetrations item is in scope"}
+  - {line: "Active fire protection", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 07", why: "Sprinkler, detection, EWIS and emergency lighting alterations; once those items are in scope"}
+  - {line: "Mechanical services", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 08", why: "Re-zoning, ductwork, exhaust, BMS; once those items are in scope"}
+  - {line: "Hydraulic services", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 09", why: "Kitchenette services; once those items are in scope"}
+  - {line: "Electrical services", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 10", why: "Power, lighting, sub-board; once those items are in scope"}
+  - {line: "Communications and security", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 11", why: "Data cabling, comms room, access control, AV infrastructure; once those items are in scope"}
+  - {line: "Accessible paths, TGSIs and braille/tactile signage", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 13", why: "Child of the itemised access-egress group, once access-egress.accessible-access is in scope"}
+  - {line: "Egress doors and hardware", section: construction, built_in: "partial", source: "knowledge/costs/elements.yaml code 13", why: "Child of the itemised access-egress group, once access-egress.egress-doors is in scope"}
+  - {line: "Landlord's nominated contractor works (base-building fire services and BMS)", section: construction, built_in: "no", why: "Most A-grade landlords require their own contractors for work on the base-building fire and BMS systems; priced by quote, often outside the head contract"}
+  - {line: "Provisional sums for above-ceiling conditions and base-building interfaces", section: construction, built_in: "no", why: "Unknown services above the ceiling, base-building defects found on opening up"}
+  - {line: "Design contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml design-contingency", why: "Always"}
+  - {line: "Construction contingency", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml construction-contingency", why: "Always"}
+  - {line: "Escalation", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml escalation", why: "Always"}
+  - {line: "Exclusions", section: contingency, built_in: "yes", source: "knowledge/costs/starter_lines.yaml exclusions", why: "Always"}
+  - {line: "Owner supply: loose furniture", section: contingency, built_in: "partial", source: "internal/store/cost_budget.go applyBriefFigures", why: "Only when proj.owner_supply_stated is read; ParseOwnerSupply splits the phrasing on commas and 'and' into one line per item"}
+  - {line: "Owner supply: workstations", section: contingency, built_in: "partial", source: "internal/store/cost_budget.go applyBriefFigures", why: "As above"}
+  - {line: "Owner supply: AV equipment", section: contingency, built_in: "partial", source: "internal/store/cost_budget.go applyBriefFigures", why: "As above"}
+  - {line: "Owner supply: IT active equipment", section: contingency, built_in: "partial", source: "internal/store/cost_budget.go applyBriefFigures", why: "As above"}
+
+not_expected_cost_plan:
+  - {line: "Architect (consultant fee)", app_label: "F02 Architect", section: consultants, source: "knowledge/works/package_defaults.yaml baselines[2]", why: "Adopted suggestion on cost-plan prepare; the interior designer is the design lead"}
+  - {line: "Service authority connection fees", app_label: "P06 Service authority connection fees", section: fees_and_charges, source: "knowledge/costs/starter_lines.yaml service-authority", why: "A fit-out takes its supply from the base building; there is no new water, sewer, power or carrier connection"}
+
+program:
+  skeleton: sk.refurb-traditional-cdc
+  activities:
+    - {label: "Review the agreement for lease and the landlord's fit-out guide", stage: investigation, fragment: null, after: [], built_in: "no", why: "Access date, rent-free fit-out period, landlord approvals, nominated contractors, building rules, make-good obligations"}
+    - {label: "Obtain base-building information", stage: investigation, fragment: null, after: [], built_in: "no", why: "As-built drawings, services capacities, fire engineering report, fire safety schedule, asbestos register"}
+    - {label: "Measure the existing building", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "Measure the tenancy and check the base-building drawings"}
+    - {label: "Check the landlord's hazardous materials register", stage: investigation, fragment: fr.existing-conditions, aliases: ["Hazardous-materials survey"], after: ["Obtain base-building information"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "The app adds a hazardous-materials survey on every refurb; a 2008 building needs only a register check (asbestos-in-tenancy adds the survey)"}
+    - {label: "Trace existing services", stage: investigation, fragment: fr.existing-conditions, after: [], built_in: "yes", source: "knowledge/program/fragments.yaml fr.existing-conditions", why: "Above-ceiling services, risers, tenant points"}
+    - {label: "Confirm base-building services capacity with the landlord's engineers", stage: investigation, fragment: null, after: ["Obtain base-building information", "Trace existing services"], built_in: "no", why: "AC capacity and hours, outside air, tenant power allocation, hydraulic points; knowledge has it only as an Implication (if.tenant-fitout-base-building-hvac)"}
+    - {label: "Confirm the brief", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Review the agreement for lease and the landlord's fit-out guide"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Workplace brief: headcount, work points, meeting rooms, support spaces"}
+    - {label: "Prepare the concept design", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Confirm the brief", "Measure the existing building"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Test fit and concept"}
+    - {label: "Client review of the concept", stage: concept_design, fragment: fr.concept-design-fitout, after: ["Prepare the concept design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.concept-design-fitout", why: "Tenant approval"}
+    - {label: "Landlord approval of the concept design", stage: concept_design, fragment: null, after: ["Client review of the concept"], built_in: "no", why: "Required under most agreements for lease before design development"}
+    - {label: "Develop the design", stage: concept_design, fragment: fr.design-development-fitout, after: ["Landlord approval of the concept design", "Confirm base-building services capacity with the landlord's engineers"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.design-development-fitout", why: "Design development with services"}
+    - {label: "Cost plan at design development", stage: concept_design, fragment: null, after: ["Develop the design"], built_in: "no", why: "QS estimate against the budget before documentation"}
+    - {label: "Prepare fit-out documentation", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["Develop the design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Drawings, finishes schedules, specification"}
+    - {label: "Coordinate consultant documentation", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["Develop the design"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Mechanical, electrical, hydraulic and fire services design"}
+    - {label: "BCA and access compliance reports", stage: construction_documentation, fragment: null, after: ["Prepare fit-out documentation", "Coordinate consultant documentation"], built_in: "no", why: "Support the CDC application"}
+    - {label: "Landlord detailed design approval", stage: construction_documentation, fragment: null, after: ["Prepare fit-out documentation", "Coordinate consultant documentation"], built_in: "no", why: "Base-building engineers review services, loads, penetrations and fire alterations"}
+    - {label: "Client sign-off for tender", stage: construction_documentation, fragment: fr.fitout-documentation, after: ["BCA and access compliance reports", "Landlord detailed design approval", "Cost plan at design development"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.fitout-documentation", why: "Sign-off"}
+    - {label: "Prepare and lodge the complying development certificate", stage: approvals, fragment: fr.cdc-application, after: ["BCA and access compliance reports", "Landlord detailed design approval"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cdc-application", why: "CDC under the Codes SEPP commercial alterations code (part verified: false); the landlord signs owner's consent only after its detailed design approval (verified: false)"}
+    - {label: "Pay long service levy", stage: approvals, fragment: null, after: ["Client sign-off for tender"], built_in: "no", why: "Before the CDC is issued (threshold verified: false)"}
+    - {label: "Certifier determination", stage: approvals, fragment: fr.cdc-application, after: ["Prepare and lodge the complying development certificate", "Pay long service levy"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cdc-application", why: "CDC issued with the fire safety schedule"}
+    - {label: "Assemble the tender package", stage: procurement, fragment: fr.tender-docs-fitout, after: ["Client sign-off for tender"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-docs-fitout", why: "Select tender to fit-out contractors on the landlord's approved list"}
+    - {label: "Tender period", stage: procurement, fragment: fr.tender-period-fitout, after: ["Assemble the tender package"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-period-fitout", why: "Includes a site inspection of the floor"}
+    - {label: "Evaluate tenders", stage: procurement, fragment: fr.tender-evaluation-fitout, after: ["Tender period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.tender-evaluation-fitout", why: "Price, program, after-hours allowances, nominated-contractor quotes"}
+    - {label: "Award the contract", stage: procurement, fragment: fr.contract-award, after: ["Evaluate tenders"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.contract-award", why: "Lump-sum fit-out contract"}
+    - {label: "Landlord approval of the contractor", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Insurances, safe work method statements, inductions, building rules"}
+    - {label: "Appoint principal certifier and give notice of commencement", stage: procurement, fragment: null, after: ["Certifier determination", "Award the contract"], built_in: "no", why: "Before any work (notice period verified: false)"}
+    - {label: "Landlord grants access to the floor", stage: procurement, fragment: null, after: ["Landlord approval of the contractor"], built_in: "no", why: "Access date under the agreement for lease; starts the fit-out period"}
+    - {label: "Commencement inspection by the principal certifier", stage: construction, fragment: null, after: ["Appoint principal certifier and give notice of commencement"], built_in: "no", why: "Class 5-9 list: commencement and final (verified: false; owner to confirm, as R7 did for Class 1 and 10)"}
+    - {label: "Condition survey of the tenancy and access route", stage: construction, fragment: null, after: ["Landlord grants access to the floor"], built_in: "no", why: "Tenancy, lift lobby, goods lift and loading dock recorded before work so damage claims can be settled"}
+    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-fitout, after: ["Appoint principal certifier and give notice of commencement", "Commencement inspection by the principal certifier", "Condition survey of the tenancy and access route"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-fitout", why: "Site start"}
+    - {label: "Install hoardings and protection to occupied areas", stage: construction, fragment: fr.occupied-protection, after: ["Establish the site"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.occupied-protection", why: "The fragment exists but needs a site.impact-protection item (vehicle and forklift impact protection), which a correct fit-out scope does not have"}
+    - {label: "Book services shutdowns, fire-system isolations and hot-works permits", stage: construction, fragment: null, after: ["Establish the site"], built_in: "no", why: "Through the landlord's facilities manager; isolations notified to the fire alarm monitoring provider"}
+    - {label: "Alter ductwork and pipework", stage: construction, fragment: fr.mechanical-fitout, after: ["Install hoardings and protection to occupied areas", "Book services shutdowns, fire-system isolations and hot-works permits"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "Fires once mechanical.air-conditioning is in scope (refurb has no default scope)"}
+    - {label: "Alter exhaust ventilation", stage: construction, fragment: fr.ventilation-fitout, after: ["Install hoardings and protection to occupied areas"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.ventilation-fitout", why: "Fires once mechanical.ventilation is in scope"}
+    - {label: "Alter sprinkler pipework above the ceiling", stage: construction, fragment: null, after: ["Book services shutdowns, fire-system isolations and hot-works permits"], built_in: "no", why: "The library has no concealed-pipework row; fr.sprinklers-fitout is one row after the ceilings"}
+    - {label: "Sprinkler pressure test before ceilings close", stage: construction, fragment: null, after: ["Alter sprinkler pipework above the ceiling"], built_in: "partial", source: "knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings", why: "The hold point row is made but its link to the ceilings is dropped. Run 30 Oct 2026, note link_skipped: 'Link from Hold point: a recorded pressure test of the sprinkler pipework to interiors.ceilings left out: it would make a loop'"}
+    - {label: "Electrical rough-in", stage: construction, fragment: fr.electrical-fitout, aliases: ["Rough-in"], after: ["Install hoardings and protection to occupied areas"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.electrical-fitout", why: "Fires once electrical.cabling-wiring is in scope"}
+    - {label: "Kitchenette sanitary and water rough-in", stage: construction, fragment: fr.hydraulic-sanitary-fitout, aliases: ["Rough-in"], after: ["Install hoardings and protection to occupied areas"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-fitout", why: "Also fr.hydraulic-cold-fitout and fr.hydraulic-hot-fitout; once those items are in scope"}
+    - {label: "Frame and line partitions", stage: construction, fragment: fr.partitions-fitout, after: ["Install hoardings and protection to occupied areas"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.partitions-fitout", why: "One-activity fragment, so the app labels it with the work item's title"}
+    - {label: "Install structured cabling", stage: construction, fragment: fr.comms-fitout, after: ["Frame and line partitions"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.comms-fitout", why: "Once comms-security.structured-cabling is in scope"}
+    - {label: "Seal service penetrations", stage: construction, fragment: fr.fire-stopping, after: ["Electrical rough-in", "Install structured cabling", "Alter ductwork and pipework", "Kitchenette sanitary and water rough-in", "Alter sprinkler pipework above the ceiling"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.fire-stopping", why: "Once fire-passive.penetrations is in scope"}
+    - {label: "Fire-stopping inspection before concealment", stage: construction, fragment: null, after: ["Seal service penetrations"], built_in: "partial", source: "knowledge/clusters/fire/interfaces.yaml if.fire-stopping-before-concealment", why: "Run 30 Oct 2026. The app seals at construction start and holds every interiors row behind the inspection, including partitions and off-site joinery. Correct: the inspection holds only the linings and ceilings that conceal the penetrations"}
+    - {label: "Install ceilings", stage: construction, fragment: fr.ceilings-fitout, after: ["Sprinkler pressure test before ceilings close", "Fire-stopping inspection before concealment", "Alter ductwork and pipework", "Frame and line partitions", "Electrical rough-in", "Kitchenette sanitary and water rough-in"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.ceilings-fitout", why: "Re-lay the base-building grid and new ceilings"}
+    - {label: "Alter and test sprinklers", stage: construction, fragment: fr.sprinklers-fitout, after: ["Install ceilings"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.sprinklers-fitout", why: "Fit off heads in the new ceiling and restore the system; the app's single row is in the right place for fit-off"}
+    - {label: "Alter detection and warning", stage: construction, fragment: fr.detection-fitout, after: ["Install ceilings"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.detection-fitout", why: "Detectors and EWIS speakers in the new rooms; fire-active.occupant-warning itself has no fragment"}
+    - {label: "Install emergency lighting and exit signs", stage: construction, fragment: null, after: ["Install ceilings"], built_in: "no", why: "fire-active.emergency-lighting has no fragment"}
+    - {label: "Install luminaires", stage: construction, fragment: fr.lighting-fitout, after: ["Install ceilings"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.lighting-fitout", why: "Once electrical.lighting is in scope"}
+    - {label: "Hang doors", stage: construction, fragment: fr.internal-doors-fitout, after: ["Frame and line partitions"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.internal-doors-fitout", why: "Once interiors.internal-doors is in scope"}
+    - {label: "Install glazed partitions and manifestation", stage: construction, fragment: null, after: ["Install ceilings"], built_in: "no", why: "interiors.internal-glazing has no fragment; long lead"}
+    - {label: "Procure and deliver joinery", stage: construction, fragment: fr.joinery-fitout, aliases: ["Procure and deliver"], after: ["Award the contract"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.joinery-fitout", why: "Long lead; shop drawings after award"}
+    - {label: "Install joinery", stage: construction, fragment: fr.joinery-fitout, aliases: ["Install"], after: ["Procure and deliver joinery", "Frame and line partitions"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.joinery-fitout", why: "Reception, kitchenette, storage"}
+    - {label: "Paint the fit-out", stage: construction, fragment: fr.painting-fitout, after: ["Install joinery", "Install ceilings"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.painting-fitout", why: "Once interiors.painting is in scope"}
+    - {label: "Lay floor finishes", stage: construction, fragment: fr.floors-fitout, after: ["Paint the fit-out"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.floors-fitout", why: "Carpet tiles and vinyl"}
+    - {label: "Fit off electrical and hydraulic services", stage: construction, fragment: fr.electrical-fitout, aliases: ["Fit off"], after: ["Install joinery", "Install luminaires"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.electrical-fitout", why: "Also the fit-off rows of fr.hydraulic-sanitary-fitout"}
+    - {label: "BMS works by the landlord's nominated contractor", stage: construction, fragment: null, after: ["Alter ductwork and pipework"], built_in: "no", why: "mechanical.controls-bms has no fragment"}
+    - {label: "Install access control and integrate with base-building security", stage: construction, fragment: null, after: ["Hang doors"], built_in: "no", why: "comms-security.access-control has no fragment"}
+    - {label: "Commission the altered system", stage: construction, fragment: fr.mechanical-fitout, after: ["BMS works by the landlord's nominated contractor", "Install ceilings"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.mechanical-fitout", why: "Air balancing and BMS checks"}
+    - {label: "Fire services commissioning and integrated test with the base-building panel and EWIS", stage: construction, fragment: null, after: ["Alter detection and warning", "Install emergency lighting and exit signs", "Commission the altered system", "Alter and test sprinklers"], built_in: "no", why: "Witnessed by the fire services engineer; needed for the final fire safety certificate"}
+    - {label: "Install signage", stage: construction, fragment: null, after: ["Paint the fit-out"], built_in: "no", why: "site.signage has no fragment"}
+    - {label: "Install furniture, workstations and AV (tenant suppliers)", stage: construction, fragment: null, after: ["Lay floor finishes"], built_in: "no", why: "Tenant-direct packages coordinated into the builder's program; long lead"}
+    - {label: "Install IT active equipment and cut over", stage: construction, fragment: null, after: ["Install structured cabling", "Install furniture, workstations and AV (tenant suppliers)"], built_in: "no", why: "Tenant's IT; carrier service to the comms room"}
+    - {label: "Practical completion inspection", stage: completion, fragment: fr.practical-completion, after: ["Lay floor finishes", "Fit off electrical and hydraulic services", "Fire services commissioning and integrated test with the base-building panel and EWIS", "Install signage"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.practical-completion", why: "PC"}
+    - {label: "Final fire safety certificate", stage: completion, fragment: null, after: ["Fire services commissioning and integrated test with the base-building panel and EWIS"], built_in: "no", why: "For the fire safety measures the fit-out altered, before the OC (Regulation clause verified: false)"}
+    - {label: "Final inspection by the principal certifier", stage: completion, fragment: null, after: ["Practical completion inspection", "Final fire safety certificate"], built_in: "no", why: "Mandatory final inspection before the OC (clause verified: false)"}
+    - {label: "Occupation certificate", stage: completion, fragment: fr.occupation-certificate, after: ["Final inspection by the principal certifier"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.occupation-certificate", why: "Needed before the tenant occupies the altered floor"}
+    - {label: "Landlord's completion inspection and handover of as-builts and manuals", stage: completion, fragment: null, after: ["Practical completion inspection"], built_in: "no", why: "Base-building as-builts, O&M manuals, certificates and BMS records go to the landlord"}
+    - {label: "Handover", stage: completion, fragment: fr.handover, after: ["Occupation certificate", "Landlord's completion inspection and handover of as-builts and manuals"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.handover", why: "Keys, warranties, manuals"}
+    - {label: "Tenant move-in", stage: completion, fragment: null, after: ["Handover", "Install IT active equipment and cut over"], built_in: "no", why: "Relocation, often over a weekend; lease rent start follows"}
+    - {label: "Defects inspection", stage: defects, fragment: fr.defects-inspection, after: ["Handover"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-inspection", why: "Defects"}
+    - {label: "Defects liability period", stage: defects, fragment: fr.defects-liability-end, after: ["Defects inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "Contract defects liability period (length verified: false)"}
+    - {label: "Final defects inspection", stage: defects, fragment: fr.defects-liability-end, after: ["Defects liability period"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.defects-liability-end", why: "End of defects liability"}
+
+# RFP expectations use the data/eval/rfp/answer-keys keys exactly. They state the CORRECT answer for this fit-out.
+# app_differs is structured: {key: stage.<k> | position.<k> | element.<k> | text.<k>, app, expect, why}.
+rfps:
+  - discipline: consultant.interior_design
+    template: null
+    built_in: "no"
+    why: "No interior-design template; the app drafts the generic tpl.rfp-capex report"
+    must_include: ["Workplace brief and test fit", "Concept design and client review", "Landlord concept and detailed design approval submissions", "Design development with finishes and FF&E selections", "Fit-out documentation and specification for tender", "CDC drawings coordinated with the BCA consultant and certifier", "Tender documentation and tender evaluation input", "Construction-phase design support, shop drawing review and defects inspection"]
+    must_not_include: ["Base-building design", "Facade or external works", "Services engineering design", "DA and statement of environmental effects", "Structural design"]
+  - discipline: consultant.project_manager
+    template: null
+    built_in: "no"
+    must_include: ["Project brief, budget and program", "Consultant procurement and appointments", "Landlord liaison and approvals under the agreement for lease", "Contractor tender and contract administration as superintendent", "Cost reporting with the QS", "Coordination of tenant-direct suppliers: furniture, IT, AV, security, relocation", "Completion, OC and handover to the landlord"]
+    must_not_include: ["Design", "Statutory certification"]
+  - discipline: consultant.mechanical
+    template: mechanical-services
+    built_in: "partial"
+    source: "knowledge/rfp/mechanical-services.yaml"
+    aliases: [consultant.services]
+    must_include:
+      - {text: "Investigation of base-building AC capacity, zoning, outside air and operating hours", key: position.existing}
+      - {text: "Detailed HVAC design for the new layout: zones, terminals, diffusers", key: position.hvac}
+      - {text: "BMS points and sequences for new zones with the landlord's BMS contractor", key: position.controls}
+      - {text: "Kitchenette and print-room exhaust", key: position.local}
+      - {text: "Tender documentation", key: stage.tender}
+      - {text: "Construction-phase inspections", key: stage.construction}
+      - {text: "Witness commissioning and air balancing", key: stage.handover}
+      - "Landlord's base-building engineer review"
+    must_not_include:
+      - {text: "Commercial kitchen exhaust", key: position.kitchen}
+      - {text: "Smoke control design", key: position.smoke}
+      - {text: "Planning stage", key: stage.planning}
+      - {text: "Seasonal commissioning", key: stage.seasonal}
+      - "Central plant replacement"
+    expect:
+      stages_include: [inception, investigation, concept, design, tender, construction, handover]
+      stages_option: []
+      stages_absent: [planning, continuation, seasonal, advisory]
+      positions: {hvac: I, local: I, kitchen: absent, smoke: absent, controls: I, energy: X, acoustic: X, interfaces: I, existing: I, staging: O, specialist: X, declarations: absent, construction: I, witness: I, execution: O, continuation: absent, seasonal: absent, remediation: absent}
+      blocking: []
+      sources: ["Construction and witness included: the landlord and certifier need the tenant's engineer to inspect and certify the installation"]
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag mech_investigation cannot be keyed"}
+      - {key: stage.planning, app: ask, expect: absent, why: "client flag mech_planning cannot be keyed"}
+      - {key: stage.tender, app: option, expect: include, why: "default boundary ends at design, so resolveStages prices tender as an option"}
+      - {key: stage.construction, app: option, expect: include, why: "default option, after the boundary"}
+      - {key: stage.handover, app: option, expect: include, why: "default option, after the boundary"}
+      - {key: stage.continuation, app: option, expect: absent, why: "after the boundary"}
+      - {key: stage.seasonal, app: option, expect: absent, why: "after the boundary; seasonal commissioning belongs to the base-building plant"}
+      - {key: stage.advisory, app: option, expect: absent, why: "after the boundary"}
+      - {key: position.local, app: ask, expect: I, why: "client flag mech_local"}
+      - {key: position.kitchen, app: ask, expect: absent, why: "client flag mech_kitchen; a kitchenette is not a kitchen"}
+      - {key: position.smoke, app: ask, expect: absent, why: "client flag mech_smoke"}
+      - {key: position.controls, app: ask, expect: I, why: "client flag mech_controls"}
+      - {key: position.interfaces, app: ask, expect: I, why: "client flag mech_interfaces"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag mech_investigation), so the row is left out"}
+      - {key: position.declarations, app: ask, expect: absent, why: "client flag mech_declarations; no NSW design declarations for Class 5 (owner ruling R3)"}
+      - {key: position.construction, app: O, expect: I, why: "follows the construction stage"}
+      - {key: position.witness, app: O, expect: I, why: "follows the handover stage"}
+      - {key: position.continuation, app: O, expect: absent, why: "follows the continuation stage, an option after the boundary"}
+      - {key: position.seasonal, app: O, expect: absent, why: "follows the seasonal stage, an option after the boundary"}
+      - {key: position.remediation, app: O, expect: absent, why: "always O"}
+  - discipline: consultant.electrical
+    template: electrical-services
+    built_in: "partial"
+    source: "knowledge/rfp/electrical-services.yaml"
+    aliases: [consultant.services]
+    must_include:
+      - {text: "Investigation of the tenant distribution board capacity and existing circuits", key: position.existing}
+      - {text: "Power distribution to workstations and joinery", key: position.distribution}
+      - {text: "Lighting layout, controls, emergency and exit lighting", key: position.lighting}
+      - {text: "Passive ICT cabling and pathways", key: position.ict}
+      - {text: "Tender documentation", key: stage.tender}
+      - {text: "Construction-phase inspections", key: stage.construction}
+      - {text: "Witness testing and handover", key: stage.handover}
+      - "Section J lighting and power compliance (Part number verified: false)"
+    must_not_include:
+      - {text: "Utility demand application", key: position.utility}
+      - {text: "Standby generation, UPS, PV or EV", key: position.generation}
+      - {text: "Fire detection design (allocated to fire services)", key: position.dry_fire}
+      - {text: "Planning stage", key: stage.planning}
+    expect:
+      stages_include: [inception, investigation, concept, design, tender, construction, handover]
+      stages_option: [defects]
+      stages_absent: [planning, continuation, advisory]
+      positions: {distribution: I, utility: absent, asp3: X, lighting: I, feature: O, controls: I, generation: absent, ict: I, dry_fire: absent, plant: absent, existing: I, staging: I, specialist: X, construction: I, handover: I, declarations: absent, studies: absent, continuation: absent}
+      blocking: []
+      sources: ["Construction and witness included: the landlord and certifier need the tenant's engineer to inspect and certify the installation"]
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag elec_investigation"}
+      - {key: stage.planning, app: option, expect: absent, why: "client flag elec_planning, if_unknown option"}
+      - {key: stage.tender, app: option, expect: include, why: "default boundary ends at design"}
+      - {key: stage.construction, app: option, expect: include, why: "default option"}
+      - {key: stage.handover, app: option, expect: include, why: "default option"}
+      - {key: stage.continuation, app: option, expect: absent, why: "after the boundary"}
+      - {key: position.utility, app: I, expect: absent, why: "included whenever concept is; a tenancy has no new supply"}
+      - {key: position.controls, app: ask, expect: I, why: "client flag elec_controls"}
+      - {key: position.generation, app: O, expect: absent, why: "client flag elec_generation, if_unknown option"}
+      - {key: position.ict, app: O, expect: I, why: "client flag elec_ict, if_unknown option"}
+      - {key: position.dry_fire, app: ask, expect: absent, why: "client flag elec_dry_fire; allocated to the fire services engineer"}
+      - {key: position.plant, app: I, expect: absent, why: "included whenever design is; no new plant in the base fit-out"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag elec_investigation), so the row is left out"}
+      - {key: position.staging, app: ask, expect: I, why: "client flag elec_staging; tenancy metering and energisation"}
+      - {key: position.construction, app: O, expect: I, why: "follows the stage"}
+      - {key: position.handover, app: O, expect: I, why: "follows the stage"}
+      - {key: position.declarations, app: ask, expect: absent, why: "client flag elec_declarations"}
+      - {key: position.studies, app: O, expect: absent, why: "always O"}
+      - {key: position.continuation, app: O, expect: absent, why: "follows the continuation stage, an option after the boundary"}
+  - discipline: consultant.fire_services
+    template: fire-services
+    built_in: "partial"
+    source: "knowledge/rfp/fire-services.yaml"
+    aliases: [consultant.services]
+    must_include:
+      - {text: "Review of the existing sprinkler, detection and EWIS layout and the base-building fire engineering report", key: position.existing}
+      - {text: "Sprinkler head relocation and additions for the new rooms", key: position.wet}
+      - {text: "Detection and EWIS additions", key: position.dry}
+      - {text: "Cause-and-effect update with the base-building fire panel", key: position.controls}
+      - {text: "Isolation and restoration of base-building systems while other floors stay occupied", key: position.staging}
+      - {text: "Tender documentation", key: stage.tender}
+      - {text: "Construction-phase inspections", key: stage.construction}
+      - {text: "Witness commissioning and the integrated test", key: stage.handover}
+    must_not_include:
+      - {text: "Fire-water supply, pumps and tanks", key: position.supply}
+      - {text: "Authority enquiry and connection", key: position.authority}
+      - {text: "Fire strategy and performance solutions", key: position.strategy}
+      - {text: "Existing system upgrade", key: position.upgrade}
+    expect:
+      stages_include: [inception, investigation, concept, design, tender, construction, handover]
+      stages_option: []
+      stages_absent: [continuation, advisory]
+      positions: {wet: I, supply: absent, authority: absent, dry: I, controls: I, plant: absent, existing: I, upgrade: absent, staging: I, remediation: absent, hazards: X, strategy: X, declarations: absent, construction: I, witness: I, execution: O}
+      blocking: []
+      sources: ["Construction and witness included: the landlord and certifier need the tenant's engineer to inspect and certify the installation, including the integrated test"]
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag fs_investigation"}
+      - {key: stage.tender, app: option, expect: include, why: "default boundary ends at design"}
+      - {key: stage.construction, app: option, expect: include, why: "default option"}
+      - {key: stage.handover, app: option, expect: include, why: "default option"}
+      - {key: stage.continuation, app: option, expect: absent, why: "after the boundary"}
+      - {key: stage.advisory, app: option, expect: absent, why: "after the boundary"}
+      - {key: position.wet, app: ask, expect: I, why: "client flag fs_wet"}
+      - {key: position.supply, app: ask, expect: absent, why: "client flag fs_supply"}
+      - {key: position.authority, app: ask, expect: absent, why: "client flag fs_authority"}
+      - {key: position.dry, app: ask, expect: I, why: "client flag fs_dry"}
+      - {key: position.controls, app: ask, expect: I, why: "client flag fs_controls"}
+      - {key: position.plant, app: ask, expect: absent, why: "client flag fs_plant_interfaces"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag fs_investigation), so the row is left out"}
+      - {key: position.upgrade, app: ask, expect: absent, why: "client flag fs_upgrade"}
+      - {key: position.staging, app: O, expect: I, why: "always O; the building stays occupied"}
+      - {key: position.remediation, app: O, expect: absent, why: "always O"}
+      - {key: position.declarations, app: ask, expect: absent, why: "client flag fs_declarations"}
+      - {key: position.construction, app: O, expect: I, why: "follows the stage"}
+      - {key: position.witness, app: O, expect: I, why: "follows the stage"}
+  - discipline: consultant.hydraulic
+    template: hydraulic-services
+    built_in: "partial"
+    source: "knowledge/rfp/hydraulic-services.yaml"
+    aliases: [consultant.services]
+    must_include:
+      - {text: "Kitchenette cold, hot, boiling and chilled water", key: position.domestic}
+      - {text: "Sanitary connection to the base-building waste point", key: position.sanitary}
+      - {text: "Investigation of base-building hydraulic risers and tenant points", key: position.existing}
+    must_not_include:
+      - {text: "Roof drainage", key: position.roof}
+      - {text: "Rainwater reuse", key: position.rainwater}
+      - {text: "Trade waste", key: position.trade}
+      - {text: "Site stormwater and detention", key: position.civil}
+      - {text: "Domestic tanks and pumps", key: position.pumps}
+    expect:
+      stages_include: [inception, investigation, concept, design, tender]
+      stages_option: [construction, handover]
+      stages_absent: [planning, continuation, defects, advisory]
+      positions: {domestic: I, existing: I, sanitary: I, interfaces: I, pumps: absent, rainwater: absent, roof: absent, trade: absent, treatment: absent, gas: absent, civil: absent, declarations: absent, fixtures: X, fire: X, process: absent, utility: absent, alternative_sources: absent, staging: absent}
+      blocking: []
+      sources: ["data/eval/rfp/answer-keys/hydraulic-office-fitout.yaml: an office kitchenette buys no whole-site drainage, trade waste, treatment, roof or gas"]
+    app_differs:
+      - {key: stage.investigation, app: ask, expect: include, why: "client flag hyd_investigation"}
+      - {key: stage.planning, app: ask, expect: absent, why: "client flag hyd_planning"}
+      - {key: stage.tender, app: option, expect: include, why: "default boundary ends at design"}
+      - {key: stage.continuation, app: option, expect: absent, why: "after the boundary"}
+      - {key: stage.defects, app: option, expect: absent, why: "after the boundary"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag hyd_investigation), so the row is left out"}
+      - {key: position.pumps, app: I, expect: absent, why: "if_unknown include"}
+      - {key: position.rainwater, app: I, expect: absent, why: "if_unknown include"}
+      - {key: position.roof, app: I, expect: absent, why: "if_unknown include"}
+      - {key: position.trade, app: O, expect: absent, why: "if_unknown option"}
+      - {key: position.treatment, app: ask, expect: absent, why: "client flag hyd_treatment"}
+      - {key: position.gas, app: O, expect: absent, why: "if_unknown option"}
+      - {key: position.civil, app: ask, expect: absent, why: "client flag hyd_external"}
+      - {key: position.declarations, app: ask, expect: absent, why: "client flag hyd_declarations"}
+      - {key: position.process, app: ask, expect: absent, why: "client flag hyd_process"}
+      - {key: position.utility, app: O, expect: absent, why: "if_unknown option"}
+      - {key: position.alternative_sources, app: O, expect: absent, why: "if_unknown option"}
+      - {key: position.staging, app: O, expect: absent, why: "if_unknown option"}
+  - discipline: consultant.bca
+    template: bca-certification
+    built_in: "partial"
+    source: "knowledge/rfp/bca-certification.yaml unsupported_pathways"
+    why: "Advisory (Package A) scope fits, but the whole template blocks on cdc, so the BCA consultant's RFP cannot issue on a CDC fit-out"
+    must_include:
+      - "BCA assessment of the fit-out design at concept and detailed design"
+      - {text: "Fit-out assessment of the affected area against the existing building; no whole-building upgrade assumed", key: position.existing_assessment}
+      - "BCA compliance report supporting the CDC application"
+      - "Egress, travel distance and door hardware review"
+      - "Fire safety schedule input"
+    must_not_include:
+      - {text: "Principal certifier functions", key: position.statutory_functions}
+      - {text: "Detailed specialist design", key: position.specialist_design}
+      - {text: "Building supervision", key: position.supervision}
+    expect:
+      stages_include: [a1_inception, a3_tender]
+      stages_option: [a4_construction]
+      stages_absent: [a2_planning, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      positions: {evidence_registers: I, statutory_functions: absent, existing_assessment: I, classification_map: absent, staged_occupation: absent, performance_assessment: O, fire_referrals: absent, residential_evidence: absent, specialist_design: X, other_approvals: X, extra_visits: O, supervision: X}
+      blocking: []
+      sources: ["a3_tender stands for the detailed-design BCA report that supports the CDC; a2_planning needs a DA"]
+    app_differs:
+      - {key: blocking.pathway_unsupported, app: blocking, expect: not blocking, why: "bca-certification.yaml unsupported_pathways lists cdc for the whole template, advisory included"}
+      - {key: stage.a1_inception, app: ask, expect: include, why: "client flag bca_advisory cannot be keyed"}
+      - {key: stage.a3_tender, app: ask, expect: include, why: "client flag bca_advisory"}
+      - {key: position.statutory_functions, app: ask, expect: absent, why: "row needs client flag bca_certification"}
+      - {key: position.existing_assessment, app: ask, expect: I, why: "client flag bca_existing_assessment"}
+      - {key: position.classification_map, app: ask, expect: absent, why: "client flag bca_classification_map"}
+      - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag bca_staged_occupation"}
+      - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag bca_fire_referrals"}
+      - {key: position.residential_evidence, app: ask, expect: absent, why: "client flag bca_residential_evidence"}
+  - discipline: consultant.certifier
+    template: bca-certification
+    built_in: "no"
+    source: "knowledge/rfp/bca-certification.yaml unsupported_pathways"
+    why: "The certifier is the approval authority for this job, but the template blocks on cdc and its B stages need da or ssd. The agent-draft key bca-unsupported-cdc (a new Class 5 CDC, reviewed: false) treats the block as the safe answer until a CDC scope exists; for the owner to confirm"
+    must_include: ["CDC eligibility check against the Codes SEPP commercial alterations code and the planning certificate (verified: false)", "CDC assessment and determination with the fire safety schedule", "Principal certifier appointment", "Mandatory inspections, incl. the final inspection (Class 5 list verified: false)", "Final fire safety certificate check", "Occupation certificate for the fit-out"]
+    must_not_include: ["Package A BCA advisory", "Construction certificate (there is none under a CDC)", "Performance solution authorship", "Design", "Building supervision"]
+    expect:
+      stages_include: []
+      stages_option: []
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      blocking: ["pathway_unsupported"]
+      sources: ["data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml (agent draft, reviewed: false): CDC must receive its own scope; existing CC stages cannot be relabelled"]
+    app_differs:
+      - {key: stage.a1_inception, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
+      - {key: stage.a3_tender, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary end"}
+      - {key: text.cdc_scope, app: "no CDC stage exists", expect: "CDC eligibility, determination, principal certifier, inspections, fire safety certificate check and OC", why: "Gap: the template has no CDC scope, so the base job's approval authority cannot be sent an RFP"}
+  - discipline: consultant.access
+    template: access
+    built_in: "partial"
+    source: "knowledge/rfp/access.yaml"
+    must_include:
+      - {text: "Retained and new work on affected routes; no automatic whole-building upgrade", key: position.existing}
+      - {text: "Shared lift lobby, base-building lifts and accessible amenities the tenancy relies on", key: position.shared_routes}
+      - {text: "Hearing augmentation, signage and door circulation criteria", key: position.facilities}
+      - {text: "Construction approval report for the CDC", key: stage.s4_approval}
+      - {text: "Route continuity while other floors stay occupied", key: position.occupied}
+    must_not_include:
+      - {text: "Housing or SDA targets", key: position.housing}
+      - {text: "Planning report", key: stage.s3_planning}
+    expect:
+      stages_include: [s1_inception, s2_concept, s4_approval]
+      stages_option: [s5_tender, s6_postcontract, s7_completion]
+      stages_absent: [s3_planning, s8_advisory]
+      positions: {review: I, existing: I, shared_routes: I, housing: absent, facilities: I, solutions: O, testing: O, occupied: I, inclusive: O, remediation: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s3_planning, app: ask, expect: absent, why: "client flag access_planning"}
+      - {key: stage.s4_approval, app: ask, expect: include, why: "client flag access_approval"}
+      - {key: stage.s8_advisory, app: option, expect: absent, why: "after the boundary"}
+      - {key: position.shared_routes, app: ask, expect: I, why: "client flag access_shared_routes"}
+      - {key: position.housing, app: ask, expect: absent, why: "client flag access_housing"}
+      - {key: position.facilities, app: ask, expect: I, why: "client flag access_facilities"}
+      - {key: position.remediation, app: O, expect: absent, why: "always O"}
+  - discipline: consultant.quantity_surveyor
+    template: cost-planning
+    built_in: "partial"
+    source: "knowledge/rfp/cost-planning.yaml existing_costs"
+    must_include:
+      - {text: "Cost basis", key: stage.s1_basis}
+      - {text: "Concept estimate", key: stage.s2_concept}
+      - {text: "Design cost plan", key: stage.s4_design}
+      - {text: "Pre-tender estimate and tender evaluation", key: stage.s5_tender}
+      - {text: "Total project budget incl. FF&E, IT, AV, relocation and landlord charges", key: position.total_budget}
+      - {text: "Strip-out, make-good, after-hours and isolation costs", key: position.existing_costs}
+    must_not_include:
+      - {text: "Authority estimate", key: stage.s3_authority}
+      - {text: "Lender reports", key: position.lender}
+      - {text: "Remediation costing", key: position.remediation}
+    expect:
+      stages_include: [s1_basis, s2_concept, s4_design, s5_tender]
+      stages_option: [s6_construction, s7_completion]
+      stages_absent: [s3_authority, s8_advice]
+      positions: {construction_plan: I, total_budget: I, contract_allowances: I, existing_costs: I, operator: absent, allocation: absent, remediation: absent, risk: I, tender: I, claims: O, lender: absent, valuation: X, lifecycle: absent}
+      blocking: []
+    app_differs:
+      - {key: stage.s2_concept, app: ask, expect: include, why: "client flag cost_concept"}
+      - {key: stage.s3_authority, app: ask, expect: absent, why: "client flag cost_authority"}
+      - {key: stage.s4_design, app: ask, expect: include, why: "client flag cost_design"}
+      - {key: stage.s5_tender, app: option, expect: include, why: "default option, after the boundary"}
+      - {key: position.total_budget, app: ask, expect: I, why: "client flag cost_total_budget"}
+      - {key: position.contract_allowances, app: ask, expect: I, why: "client flag cost_contract_allowances"}
+      - {key: position.operator, app: ask, expect: absent, why: "client flag cost_operator"}
+      - {key: position.allocation, app: ask, expect: absent, why: "client flag cost_allocation"}
+      - {key: position.remediation, app: ask, expect: absent, why: "client flag cost_remediation"}
+      - {key: position.tender, app: O, expect: I, why: "follows s5_tender"}
+      - {key: position.lender, app: O, expect: absent, why: "always O"}
+      - {key: position.lifecycle, app: O, expect: absent, why: "always O"}
+  - discipline: consultant.acoustic
+    template: null
+    built_in: "no"
+    must_include: ["Acoustic criteria for meeting rooms, boardroom and open plan (speech privacy)", "Partition, ceiling and door acoustic ratings in the documentation", "Mechanical and services noise criteria", "Option: post-completion acoustic testing"]
+    must_not_include: ["Facade acoustics", "Environmental noise impact assessment for a DA"]
+
+triggers:
+  - id: da-pathway
+    label: Development application instead of a CDC
+    evidence: ["A development application will be lodged with council for the fit-out", "the proposal changes the use of part of the floor, so complying development is not available", "the works do not meet the complying development standards; a DA is required"]
+    negation: ["The fit-out is complying development; the certifier will issue a CDC", "No development consent is required beyond the CDC"]
+    profile: [hdr.cond.planning]
+    adds:
+      procurement: [consultant.town_planner]
+      cost_plan: ["DA fees and contributions", "Town planner"]
+      program: ["Lodge the application", "Public exhibition", "Assessment", "Construction certificate"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Statement of environmental effects", "Lodgement", "Responses to council requests"]}, {discipline: consultant.certifier, must_include: ["Package B: CC assessment", "Principal certifier services", "Occupation certificate"]}, {discipline: consultant.bca, must_include: ["Assessment of the existing building's fire safety against any upgrade the consent requires"]}]
+      authority: ["DA consent from council; construction certificate from the certifier", "Council may require a fire safety upgrade of the existing building (verified: false)"]
+    removes:
+      cost_plan: ["Development contributions payable on the CDC (s7.11 or s7.12, verified: false)"]
+      program: ["Prepare and lodge the complying development certificate", "Certifier determination"]
+    why: "Skeleton becomes sk.refurb-traditional-da. The certifier RFP stops blocking. Contributions move into the DA fees line"
+    built_in: {procurement: "yes", cost_plan: "yes", program: "yes", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.da-lodgement"
+  - id: heritage-item
+    label: Building is a heritage item
+    evidence: ["The building is listed as a local heritage item in the LEP", "heritage-listed sandstone office building; the original lift lobby and pressed-metal ceilings are significant fabric", "council's heritage officer must review the fit-out"]
+    negation: ["The building is not a heritage item and is not in a heritage conservation area", "the heritage item next door is not affected"]
+    profile: [det.heritage_status, hdr.cond.planning]
+    adds:
+      procurement: [consultant.heritage, consultant.town_planner]
+      cost_plan: ["Heritage consultant", "DA fees and contributions"]
+      program: ["Heritage impact statement", "Heritage referral", "Lodge the application"]
+      rfps: [{discipline: consultant.town_planner, must_include: ["Heritage controls and the heritage impact statement in the SEE"]}]
+      authority: ["DA with heritage referral; complying development is generally not available on a heritage item (verified: false)"]
+    removes:
+      program: ["Prepare and lodge the complying development certificate", "Certifier determination"]
+    built_in: {procurement: "yes", cost_plan: "yes", program: "partial", rfps: "partial"}
+    source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
+  - id: design-and-construct
+    label: Design and construct fit-out contractor
+    evidence: ["Design and construct fit-out contract on the interior designer's concept", "the fit-out contractor's engineers will design the mechanical, electrical, hydraulic and fire services", "D&C tender on a performance brief"]
+    negation: ["Traditional lump-sum tender on fully documented design", "the services engineers will document their design fully for tender"]
+    profile: [hdr.cond.procurement_route]
+    adds:
+      program: ["Prepare the design-intent documents and performance brief", "Contractor's design development and landlord approval", "Review the contractor's design"]
+      rfps: [{discipline: consultant.interior_design, must_include: ["Design-intent documents and performance brief for the D&C tender", "Review of the contractor's design"]}]
+    removes:
+      procurement: [consultant.mechanical, consultant.electrical, consultant.fire_services, consultant.hydraulic]
+      cost_plan: ["Mechanical engineer", "Electrical engineer", "Fire services engineer", "Hydraulic engineer (optional)"]
+      rfps: [consultant.mechanical, consultant.electrical, consultant.fire_services, consultant.hydraulic]
+    why: "The tenant keeps the interior designer as its design reviewer, not novated. The app keeps every consultant with novation option, adds fr.novation, and falls back to sk.generic (refurb plus D&C has no skeleton)"
+    built_in: {procurement: "no", program: "no", rfps: "no", cost_plan: "no"}
+  - id: staged-occupied-tenancy
+    label: Tenant stays in occupation and the works are staged
+    evidence: ["Staff remain in occupation of the floor; the works are staged in three zones", "decant into swing space on Level 11 for stage 2", "works inside occupied areas after hours only"]
+    negation: ["The floor is vacant for the whole fit-out period", "the tenant takes possession of the vacant floor"]
+    profile: [hdr.cond.operational_constraints, flag.staged]
+    adds:
+      cost_plan: ["Staging, decanting and temporary works", "After-hours works premium"]
+      program: ["Stage 1 works", "Decant staff for stage 2", "Stage 2 works", "Interim occupation certificate for each stage"]
+      rfps: [{discipline: consultant.access, must_include: ["Occupied and staged route continuity"]}, {discipline: consultant.bca, must_include: ["Staged occupation boundaries"]}, {discipline: consultant.quantity_surveyor, must_include: ["Decanting and staging costs"]}]
+      authority: ["Interim OC for each stage before staff reoccupy it"]
+    built_in: {rfps: "partial", program: "no", cost_plan: "no"}
+    source: "knowledge/rfp/access.yaml occupied"
+  - id: asbestos-in-tenancy
+    label: Asbestos in the tenancy of a pre-2004 building
+    evidence: ["The landlord's asbestos register records bonded vinyl floor tiles under the carpet", "asbestos-containing material in the ceiling space around the core", "the refurbishment survey found asbestos mastic under the floor tiles in the north-east corner"]
+    negation: ["The building was completed in 2008 and no asbestos register is required", "the asbestos register records no asbestos within the tenancy"]
+    profile: [det.existing_building_year]
+    adds:
+      procurement: [consultant.hazmat]
+      work_items: [{system: site.demolition, action: remove}]
+      cost_plan: ["Hazardous materials survey", "Licensed asbestos removal and clearance"]
+      program: ["Hazardous-materials survey", "Notify SafeWork NSW of licensed removal", "Licensed asbestos removal", "Asbestos clearance certificate"]
+      rfps: [{discipline: consultant.hazmat, must_include: ["Refurbishment survey of the affected areas with sampling", "Removal scope", "Clearance inspection and certificate"]}]
+      authority: ["SafeWork NSW notification of licensed asbestos removal (notice period verified: false)"]
+    built_in: {procurement: "no", work_items: "no", program: "partial", cost_plan: "no", rfps: "no"}
+    source: "knowledge/program/fragments.yaml fr.existing-conditions"
+  - id: existing-fitout-strip-out
+    label: Previous tenant's fit-out to strip out
+    evidence: ["The previous tenant's fit-out will be stripped out back to base building", "remove the existing partitions, ceilings, kitchen and carpet", "the landlord has agreed the incoming tenant demolishes the existing offices"]
+    negation: ["The floor is handed over in base-building condition", "the outgoing tenant has completed make-good"]
+    profile: []
+    adds:
+      work_items: [{system: site.demolition, action: remove}]
+      cost_plan: ["Strip-out of the existing fit-out and disposal"]
+      program: ["Isolate services and protect adjacent areas", "Soft-strip partitions, ceilings and services", "Make good retained structure and services"]
+      rfps: [{discipline: consultant.interior_design, must_include: ["Demolition plan"]}, {discipline: consultant.quantity_surveyor, must_include: ["Strip-out and make-good costs"]}]
+    why: "implied_by strip-out adds site.demolition with the refurb default action alter, so fr.strip-out-fitout (action remove) stays false unless a document gives the action"
+    built_in: {work_items: "partial", program: "partial", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.strip-out-fitout"
+  - id: internal-stair
+    label: New internal stair between tenancy floors
+    evidence: ["A new internal stair will connect Levels 11 and 12", "slab penetration for the communicating stair", "a void through the floor for the feature stair"]
+    negation: ["The tenancy is on one floor", "No inter-floor stair; staff use the base-building lifts and fire stairs"]
+    profile: []
+    adds:
+      procurement: [consultant.structural, consultant.fire_engineer]
+      work_items: [{system: structure.alterations, action: alter}, {system: access-egress.stairs-and-ramps, action: new}, {system: access-egress.barriers, action: new}, {system: fire-passive.compartments, action: alter}]
+      cost_plan: ["Structural engineer", "Fire engineer", "Slab penetration, trimming steel and propping", "Stairs, ramps, handrails and nosings", "Compliant balustrades and barriers"]
+      program: ["Structural assessment of the slab", "Fire engineering performance solution", "Alter and protect retained structure", "Install stair and balustrades"]
+      rfps: [{discipline: consultant.structural, must_include: ["Slab penetration and trimming design", "Temporary propping"]}, {discipline: consultant.fire_engineer, must_include: ["Performance solution for the stair connecting two storeys"]}]
+      authority: ["Landlord's structural approval; the CDC standards may not cover a new slab penetration, so check the pathway (verified: false)"]
+    built_in: {procurement: "no", work_items: "partial", program: "partial", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.structure-alterations"
+  - id: slab-core-drilling
+    label: New core holes through the post-tensioned slab
+    evidence: ["new floor boxes cored through the post-tensioned slab", "core holes for the kitchenette waste through the slab", "scan the slab before coring"]
+    negation: ["Power is from power poles; no new slab penetrations", "the existing floor boxes are reused"]
+    profile: []
+    adds:
+      procurement: [consultant.structural]
+      cost_plan: ["Structural engineer", "Slab scanning and core drilling"]
+      program: ["Scan the slab and obtain the landlord's structural approval for core holes"]
+      rfps: [{discipline: consultant.structural, must_include: ["Core-hole locations against post-tensioning tendons and the landlord's structural approval"]}]
+      authority: ["Landlord's structural approval for each slab penetration"]
+    why: "The scan and approval come before the services rough-in rows. No rule suggests a structural engineer on refurb"
+    built_in: {procurement: "no", program: "no", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/rfp/structural.yaml"
+  - id: heavy-floor-loads
+    label: Floor loads above the base-building allowance
+    evidence: ["mobile compactus units in the records room", "high-density storage loads of 5 kPa", "the server racks and UPS batteries exceed the floor design load"]
+    negation: ["No high-density storage; records are digital", "all loads are within the base-building office allowance"]
+    profile: []
+    adds:
+      procurement: [consultant.structural]
+      work_items: [{system: structure.design-basis, action: investigate}]
+      cost_plan: ["Structural engineer", "Floor strengthening or load spreading"]
+      program: ["Structural floor-load assessment and landlord approval"]
+      rfps: [{discipline: consultant.structural, must_include: ["Floor load assessment against the base-building design loads"]}]
+    built_in: {procurement: "no", work_items: "no", program: "partial", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/rfp/structural.yaml"
+  - id: fire-engineered-solution
+    label: Performance solution needed for the layout
+    evidence: ["Travel distance to the nearest exit exceeds the deemed-to-satisfy limit; a fire engineered performance solution is proposed", "the base-building fire engineering report must be updated for the new layout", "the BCA report identifies two performance solutions"]
+    negation: ["The layout complies with the deemed-to-satisfy provisions; no performance solutions", "the BCA report identifies no performance solutions"]
+    profile: []
+    adds:
+      procurement: [consultant.fire_engineer]
+      cost_plan: ["Fire engineer"]
+      program: ["Fire engineering brief", "Fire engineering report", "Fire and Rescue NSW consultation"]
+      rfps: [{discipline: consultant.fire_engineer, must_include: ["Brief for scheduled solutions", "FER for scheduled solutions", "Reconcile with the base-building fire engineering report"]}, {discipline: consultant.bca, must_include: ["Performance-solution assessment"]}]
+      authority: ["The certifier consults FRNSW where the Regulation requires it for a fire safety performance solution (verified: false)"]
+    built_in: {procurement: "no", cost_plan: "no", program: "no", rfps: "partial"}
+    source: "knowledge/rfp/fire-engineering.yaml"
+  - id: comms-room-cooling
+    label: Comms room with 24/7 supplementary cooling and UPS
+    evidence: ["A dedicated comms room with two racks and 24/7 split-system cooling", "connect the supplementary units to the base-building tenant condenser water loop", "UPS for the comms room"]
+    negation: ["IT is cloud-hosted; a small comms cupboard only", "no supplementary cooling is needed"]
+    profile: []
+    adds:
+      work_items: [{system: mechanical.refrigerant-condensate, action: new}, {system: electrical.standby-power, action: new}]
+      cost_plan: ["Supplementary cooling to the comms room", "UPS"]
+      program: ["Landlord approval of the condenser location or condenser-water connection", "Install supplementary cooling"]
+      rfps: [{discipline: consultant.mechanical, must_include: ["Supplementary cooling and the landlord's condenser-water connection"]}, {discipline: consultant.electrical, must_include: ["UPS"]}]
+    built_in: {work_items: "no", program: "no", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/rfp/electrical-services.yaml generation"
+  - id: tenant-amenities
+    label: New amenities inside the tenancy
+    evidence: ["A new unisex accessible toilet and shower within the tenancy", "end-of-trip showers and lockers in the tenancy", "a parents' room with a basin"]
+    negation: ["Amenities are base-building on the core; no new wet areas in the tenancy"]
+    profile: []
+    adds:
+      procurement: [consultant.hydraulic]
+      work_items: [{system: interiors.wet-area-waterproofing, action: new}, {system: interiors.tiling, action: new}, {system: hydraulic.sanitary, action: new}, {system: access-egress.accessible-facilities, action: new}]
+      cost_plan: ["Accessible sanitary facilities and hearing augmentation", "Wet-area waterproofing and tiling"]
+      program: ["Waterproof amenities", "Waterproofing inspection before tiling", "Tile amenities"]
+      rfps: [{discipline: consultant.hydraulic, must_include: ["Sanitary drainage to the base-building stack, with set-down or pump-out"]}, {discipline: consultant.access, must_include: ["Accessible sanitary compartment to AS 1428.1 (verified: false)"]}]
+    built_in: {procurement: "yes", work_items: "partial", program: "partial", cost_plan: "partial", rfps: "partial"}
+    source: "knowledge/program/fragments.yaml fr.wet-area-fitout"
+  - id: sustainability-rating
+    label: Green Star Interiors or NABERS tenancy target
+    evidence: ["The fit-out targets a 5 Star Green Star Interiors rating", "a NABERS Energy tenancy rating is committed under the green lease"]
+    negation: ["No sustainability rating is targeted for the fit-out", "the base building's NABERS rating is the landlord's (not a tenant target)"]
+    profile: [flag.sustainability_target]
+    adds:
+      procurement: [consultant.esd]
+      cost_plan: ["ESD consultant and rating fees"]
+      program: ["Register the project for the rating", "Rating submission"]
+      rfps: [{discipline: consultant.interior_design, must_include: ["Green Star or NABERS documentation"]}, {discipline: consultant.electrical, must_include: ["Tenancy sub-metering"]}]
+    built_in: {procurement: "no", cost_plan: "no", program: "no", rfps: "partial"}
+    source: "knowledge/rfp/architecture.yaml sustainability_docs"
+  - id: exempt-minor-refresh
+    label: Minor refresh as exempt development
+    evidence: ["The works are exempt development: new carpet, paint and loose furniture only", "no changes to partitions, services or fire safety measures; no CDC is required"]
+    negation: ["A CDC is required", "new partitions affect sprinkler and detection coverage"]
+    profile: [hdr.cond.planning]
+    adds:
+      program: ["Confirm the exempt path"]
+    removes:
+      procurement: [consultant.certifier]
+      cost_plan: ["CDC and occupation certificate lodgement fees"]
+      program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Occupation certificate", "Final inspection by the principal certifier"]
+      rfps: [consultant.certifier]
+    why: "Exempt development needs no certificate (Codes SEPP exempt standards verified: false). The app still suggests the certifier, keeps cc-fees and fr.occupation-certificate (gated only on work type)"
+    built_in: {program: "partial", procurement: "no", cost_plan: "no", rfps: "no"}
+    source: "knowledge/program/fragments.yaml fr.exempt-confirmation"
+
+gaps:
+  - {area: scope, what: "Refurb has no scope defaults, and the typical_fit_out preset is never applied automatically, so a fit-out has no work items, construction lines or construction activities until documents are read or the user picks scope", evidence: "knowledge/profile/scope_defaults.yaml empty_work_types, presets"}
+  - {area: procurement, what: "Project manager, quantity surveyor, acoustic and ICT/AV consultants are never suggested; Architect and Interior Design are both suggested as design leads", evidence: "knowledge/works/package_defaults.yaml baselines[2]-[4]"}
+  - {area: procurement, what: "No structural engineer for refurb even when structure.alterations or a stair is in scope; no scope addition names Structural", evidence: "knowledge/works/package_defaults.yaml scope_additions"}
+  - {area: procurement, what: "No landlord party and no nominated-subcontract concept; trade packages are never suggested, so landlord-nominated fire and BMS contractors cannot be proposed", evidence: "data/intake/disciplines.json; internal/procurement/discipline.go DisciplinePackage"}
+  - {area: profile, what: "No profile keys for the agreement for lease, access date, fit-out period, landlord approvals or make-good; stakeholder_complexity has no landlord-and-tenant value", evidence: "knowledge/profile/taxonomy.yaml conditions; knowledge/profile/project_details.yaml"}
+  - {area: profile, what: "Performance solutions cannot be keyed (fe_solutions is a client flag), so no fire engineer follows from a BCA report", evidence: "knowledge/rfp/fire-engineering.yaml s3_brief; testing/synthetic/reference/index/triggers.md"}
+  - {area: program, what: "No rows for landlord concept and detailed design approval, contractor approval, access date, commencement inspection, condition survey, shutdowns and isolations, BMS by nominated contractors, fire integrated test, final fire safety certificate, principal certifier appointment, final inspection, long service levy, landlord handover or move-in", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
+  - {area: program, what: "Occupied-building protection hangs off site.impact-protection (vehicle and forklift impact protection), which a correct fit-out scope does not have; temporary protection is the builder's preliminaries", evidence: "knowledge/program/fragments.yaml fr.occupied-protection; knowledge/clusters/structure/systems.yaml site.impact-protection"}
+  - {area: program, what: "Strip-out needs action remove, but implied_by strip-out gives the refurb default alter", evidence: "knowledge/program/fragments.yaml fr.strip-out-fitout; knowledge/works/actions.yaml work_type_defaults"}
+  - {area: program, what: "fr.sprinklers-fitout attaches after fr.ceilings-fitout, but the sprinkler pressure-test hold point needs it before ceilings, so the hold-to-ceilings link is dropped and the ceilings are not held (run 30 Oct 2026; same root as T13: the hold point keys on the whole system, and the library has no concealed-pipework row). Detection has the same two-phase gap without a hold point", evidence: "knowledge/program/fragments.yaml fr.sprinklers-fitout; knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings"}
+  - {area: program, what: "With no strip-out, every fit-out services fragment attached after fr.strip-out-fitout loses its anchor; the chain step puts sanitary rough-in after doors, electrical rough-in after the hot-water unit and ductwork after luminaires, so services rough-in follows the ceilings (run 30 Oct 2026)", evidence: "knowledge/program/fragments.yaml fr.electrical-fitout, fr.mechanical-fitout attach; internal/program/generate.go chainLinks"}
+  - {area: program, what: "if.fire-stopping-before-concealment holds the whole interiors tree (partitions, joinery procurement, doors, paint, floors), and fr.fire-stopping has no attach, so sealing starts at construction start before the services it seals (run 30 Oct 2026)", evidence: "knowledge/clusters/fire/interfaces.yaml if.fire-stopping-before-concealment; knowledge/program/fragments.yaml fr.fire-stopping"}
+  - {area: program, what: "No fragment for EWIS, emergency lighting, internal glazing, BMS, access control, AV, ICT rooms, signage, local exhaust or air distribution", evidence: "testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment"}
+  - {area: program, what: "Per-unit fit-out durations read gfa_sqm, but the office subclass records nla_sqm, so every fit-out is sized at the 250 m2 default", evidence: "internal/store/program_prepare.go profileFloorArea; knowledge/program/durations.yaml assumptions"}
+  - {area: program, what: "A tenant sub-board alteration (alter) gets no switchboard row; fr.switchboard-major needs new, replace or upgrade", evidence: "knowledge/program/fragments.yaml fr.switchboard-major"}
+  - {area: program, what: "fr.existing-conditions always adds a hazardous-materials survey on refurb, even for a post-2004 building", evidence: "knowledge/program/fragments.yaml fr.existing-conditions"}
+  - {area: program, what: "Refurb under D&C falls back to sk.generic and adds fr.novation; exempt still gets fr.occupation-certificate", evidence: "knowledge/program/skeletons.yaml; knowledge/program/fragments.yaml fr.novation, fr.occupation-certificate"}
+  - {area: cost_plan, what: "P06 service authority fees always appear; no s7.12 contributions for a CDC, long service levy, landlord fees and charges, preliminaries or nominated-contractor lines; protection and signage land in 01 Site works and external works", evidence: "knowledge/costs/starter_lines.yaml; knowledge/costs/elements.yaml code 01"}
+  - {area: cost_plan, what: "cc-fees is labelled for a construction certificate, which a CDC job does not have", evidence: "knowledge/costs/starter_lines.yaml cc-fees"}
+  - {area: rfp, what: "No interior-design or project-manager template; the design lead gets the generic capex report", evidence: "testing/synthetic/reference/index/rfp-templates.md disciplines with no RFP template"}
+  - {area: rfp, what: "bca-certification blocks on cdc for the BCA advisory role as well as the certifier, and has no CDC scope", evidence: "knowledge/rfp/bca-certification.yaml unsupported_pathways"}
+  - {area: rfp, what: "Services templates end their default boundary at design, so tender, construction and witness stages are priced as options; electrical utility and plant rows are included for a tenancy with no new supply or plant", evidence: "knowledge/rfp/mechanical-services.yaml boundary; knowledge/rfp/electrical-services.yaml utility, plant"}
+  - {area: rfp, what: "Client-decision flags (mech_*, elec_*, fs_*, hyd_*, cost_*, bca_*, access_*) cannot be keyed, so most rows ask", evidence: "testing/synthetic/reference/index/triggers.md"}
+  - {area: knowledge, what: "The tenant-fit-out base-building HVAC interface and landlord re-approval reach Implications only", evidence: "knowledge/clusters/services-wet-air/interfaces.yaml if.tenant-fitout-base-building-hvac"}
+  - {area: profile, what: "implied_by has no negation and over-reaches in a tower: 'fire stair' adds stairs-and-ramps, 'base-building bathrooms' adds wet-area systems, 'no strip-out' adds demolition; 'kitchenette' does not match the kitchen pattern", evidence: "knowledge/profile/scope_defaults.yaml implied_by; internal/profile/implied.go ImpliedReadings"}
+
+variants: [da-pathway, design-and-construct, staged-occupied-tenancy, asbestos-in-tenancy, existing-fitout-strip-out, internal-stair, fire-engineered-solution, exempt-minor-refresh, slab-core-drilling]

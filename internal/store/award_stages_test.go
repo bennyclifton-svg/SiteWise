@@ -131,4 +131,47 @@ func TestAwardByStageFromQuotedFees(t *testing.T) {
 	if award, _ := s.ReadAward(ctx, orgA, projectA, pkg.ID); award != nil {
 		t.Fatalf("undo left %+v", award)
 	}
+	// Adding an agreed fee must preserve the letter's stage breakdown.
+	if err := s.SetComparisonRow(ctx, orgA, projectA, pkg.ID, store.ComparisonRowInput{Label: "Test Sum", Section: "base"}); err != nil {
+		t.Fatal(err)
+	}
+	table, err := s.ReadPriceTable(ctx, orgA, projectA, pkg.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var extra string
+	for _, item := range table.Items {
+		if item.Label == "Test Sum" {
+			extra = item.Key
+		}
+	}
+	if err := s.SetSubmissionCell(ctx, orgA, projectA, id, extra, store.CellInput{State: "priced", Amount: "6666", Note: "Agreed addition"}); err != nil {
+		t.Fatal(err)
+	}
+	if got := stages(); len(got) != 2 {
+		t.Fatalf("added base fee removed source stages: %+v", got)
+	}
+	withExtra := append(append([]store.AwardLine{}, byStage...), store.AwardLine{Label: "Test Sum", Keys: []string{extra}})
+	for name, lines := range map[string][]store.AwardLine{
+		"breakdown":                   withExtra,
+		"one total":                   {{Label: "Professional fee", Keys: []string{"comparison:appointment", extra}}},
+		"combined stage and addition": {{Label: "Professional fee", QuoteIDs: []string{"a2", "a3"}, Keys: []string{extra}}},
+	} {
+		preview, err := s.PreviewAward(ctx, orgA, projectA, pkg.ID, store.AwardInput{SubmissionID: id, Lines: lines})
+		if err != nil || preview.Total != 766600 {
+			t.Fatalf("%s: %+v %v", name, preview, err)
+		}
+	}
+	duplicate := append(append([]store.AwardLine{}, withExtra...), store.AwardLine{Label: "Duplicate total", Keys: []string{"comparison:appointment"}})
+	if _, err := s.PreviewAward(ctx, orgA, projectA, pkg.ID, store.AwardInput{SubmissionID: id, Lines: duplicate}); !errors.Is(err, store.ErrInvalidInput) {
+		t.Fatalf("source stages plus total accepted: %v", err)
+	}
+	v, err = s.Award(ctx, orgA, projectA, pkg.ID, userA, store.AwardInput{SubmissionID: id, Lines: withExtra, Total: "7666.00"})
+	if err != nil || len(v.Lines) != 3 || v.Total != 766600 {
+		t.Fatalf("stage award with addition: %+v %v", v, err)
+	}
+	if err := s.UndoAward(ctx, orgA, projectA, pkg.ID, userA); err != nil {
+		t.Fatal(err)
+	}
+
 }

@@ -62,26 +62,18 @@ description: Late mixed-use remediation appointment includes explicit constructi
   repair design, field tests and solution authoring remain separately scoped.
 expect:
   access:
-    stages_include:
-    - s4_approval
-    - s6_postcontract
-    - s7_completion
-    stages_absent:
-    - s1_inception
-    - s2_concept
-    - s3_planning
-    stages_option:
-    - s5_tender
-    - s8_advisory
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s4_approval, s6_postcontract, s7_completion, s5_tender]
+    stages_absent: [s1_inception, s2_concept, s3_planning, s8_advisory]
     positions:
       existing: I
       shared_routes: I
       housing: I
       facilities: I
       occupied: I
-      remediation: O
-      solutions: O
-      testing: O
-      inclusive: O
+      remediation: X
+      solutions: I
+      testing: I
+      inclusive: X
     blocking_only: true
     blocking: []

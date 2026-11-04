@@ -54,9 +54,10 @@ type cell struct {
 }
 
 type row struct {
-	page  int
-	y     float64
-	cells []cell
+	page          int
+	y             float64
+	cells         []cell
+	selfContained bool
 }
 
 func (r row) text() string {
@@ -75,12 +76,17 @@ func rowsOf(text identity.Text) []row {
 	var pages []int
 	for _, r := range text.Runs {
 		t := strings.TrimSpace(strings.ReplaceAll(r.Text, "\n", " "))
+		markdown := text.Format == "md" || text.Format == "markdown"
+		if markdown {
+			// Formatting around a label is not part of its invoice number.
+			t = markdownStrong.ReplaceAllString(t, "$1")
+		}
 		if t == "" {
 			continue
 		}
 		r.Text = t
 		if r.Source.Width == 0 && r.Source.X == 0 && r.Source.Y == 0 {
-			out = append(out, row{page: r.Source.Page, cells: []cell{{text: t}}})
+			out = append(out, row{page: r.Source.Page, cells: []cell{{text: t}}, selfContained: markdown})
 			continue
 		}
 		if _, ok := byPage[r.Source.Page]; !ok {
@@ -117,6 +123,7 @@ func rowsOf(text identity.Text) []row {
 }
 
 var (
+	markdownStrong = regexp.MustCompile(`\*\*([^*]+)\*\*`)
 	moneyToken     = regexp.MustCompile(`(?i)(\(\s*)?(\$\s?|AUD\s?)?(-\s?)?(\d{1,3}(?:,\d{3})+|\d+)(\.\d{2})?(\s*\))?(\s?CR\b)?`)
 	dateDMY        = regexp.MustCompile(`\b(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4}|\d{2})\b`)
 	dateISO        = regexp.MustCompile(`\b(20\d{2})-(\d{2})-(\d{2})\b`)
@@ -250,6 +257,11 @@ func mergeLabels(have, more []string) []string {
 func labelsFor(rows []row, i, j int) []string {
 	var out []string
 	r, c := rows[i], rows[i].cells[j]
+	// Markdown lines retain their labels and values together. The preceding
+	// line is not a column header (e.g. Invoice date above Due date).
+	if r.selfContained {
+		return nil
+	}
 	if j > 0 {
 		out = append(out, strings.ToLower(r.cells[j-1].text))
 	}

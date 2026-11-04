@@ -32,14 +32,13 @@ settings:
     "allowance:authority_meetings": "1"
 expect:
   architecture:
-    stages_ask: [planning_approval, tender_traditional, for_construction, dnc_tender]
-    stages_option: [interiors]
-    stages_include: [concept, schematic, design_development]
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [concept, schematic, design_development, interiors, planning_approval, tender_traditional, for_construction, dnc_tender]
     blocking: ["fact:pathway", "fact:procurement", "fact:gfa", "fact:class", "fact:regulated_design"]
     checks: [scale]
   town-planning:
-    stages_ask: [pre_lodgement, planning_report, lodgement, assessment, determination_review]
-    stages_include: [prelim_advice]
-    blocking: ["fact:pathway", "fact:gfa"]
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [prelim_advice, pre_lodgement, planning_report, lodgement, assessment, determination_review]
+    blocking: ['fact:pathway', 'fact:gfa']
 sources:
   - "Peer review: unknown pathway, missing information or contradictory facts become focused decisions or printed assumptions, never fabricated certainty."

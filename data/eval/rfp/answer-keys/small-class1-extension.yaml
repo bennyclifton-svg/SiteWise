@@ -41,18 +41,23 @@ settings:
     "allowance:ca_inspections": "3"
 expect:
   architecture:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     stages_include: [concept, schematic, planning_approval, design_development, house_documents, bidding]
-    stages_option: [construction_support]
-    stages_absent: [brief_masterplan, planning_response, interiors, regulated_design, dnc_tender, tender_traditional, for_construction]
+    stages_absent: [brief_masterplan, planning_response, interiors, regulated_design, dnc_tender, tender_traditional, for_construction, construction_support]
     positions: {bim_coordination: absent, marketing_renders: X, specification: I, typical_interiors: absent, house_interiors: I, lodgement: I, existing_interfaces: I, mixed_use_map: absent, apartment_design: absent}
     allowances_absent: [workshops, planning_cap, bim_lod, qs_reviews]
     scale: simple
     blocking_only: true
   structural:
-    stages_include: [concept_schematic, existing_assessment, planning_approval, design_development, tender_traditional, construction_documents]
-    stages_option: [construction_phase, authority_asset]
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [concept_schematic, existing_assessment, planning_approval, design_development, tender_traditional, construction_documents, construction_phase, authority_asset]
     stages_absent: [regulated_design, dnc_tender]
-    positions: {residential_framing: I, shared_model: O, retention_design: O, dilapidation: O, strengthening: O}
+    positions:
+      residential_framing: I
+      shared_model: I
+      retention_design: I
+      dilapidation: I
+      strengthening: I
     scale: simple
     checks: [scale]
     blocking_only: true

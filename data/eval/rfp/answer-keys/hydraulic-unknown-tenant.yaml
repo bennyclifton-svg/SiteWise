@@ -58,13 +58,14 @@ description: Unknown tenant and specialist systems use explicit pricing options;
 snapshot: false
 expect:
   hydraulic-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
       rainwater: I
-      alternative_sources: O
+      alternative_sources: I
       pumps: I
-      treatment: ask
+      treatment: I
       roof: I
-      civil: ask
-      trade: O
-      gas: O
-      utility: O
+      civil: I
+      trade: I
+      gas: I
+      utility: I

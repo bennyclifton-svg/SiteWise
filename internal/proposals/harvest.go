@@ -191,6 +191,18 @@ type Evidence struct {
 	// Dated is the proposal's own header date, YYYY-MM-DD, or "".
 	Dated    string
 	Contacts []string
+	// InvalidABNs are printed after "ABN" but fail the checksum; they are
+	// never decided, only reported (Walsh letter, 2026-10-27).
+	InvalidABNs []string
+	// SignatureFirm is the firm a sign-off names ("Director, Atelier North")
+	// under a person's name, for a letter with no letterhead.
+	SignatureFirm string
+	// HeaderFirm is the one registered company name in the header.
+	HeaderFirm string
+	// MonthlyFees are fee rows worded per month ("Monthly × est. 9 months").
+	MonthlyFees []string
+	// PI is the professional indemnity cover the document states, or nil.
+	PI       *Insurance
 	Sections []Section
 	// Form holds a SiteWise response form's cells by schedule key, read
 	// verbatim; FormFirm its labelled firm fields.
@@ -304,7 +316,28 @@ func Harvest(filename string, text identity.Text) Evidence {
 		for _, m := range abnRe.FindAllString(abnGlued.ReplaceAllString(t, "ABN $1"), -1) {
 			if d := invoices.NormalizeABN(m); d != "" && invoices.ValidABN(d) {
 				addUnique(&ev.ABNs, d)
+			} else if d != "" && abnLabel.MatchString(t) {
+				addUnique(&ev.InvalidABNs, d)
 			}
+		}
+		if m := signatureRole.FindStringIndex(stripEmphasis(t)); m != nil && i > 0 && personName(stripEmphasis(lines[i-1].Text)) {
+			// "Director, Registered Architect NSW #9104" is a title, not a firm.
+			if firm := cleanFirmCandidate(stripEmphasis(t)[m[1]:]); firm != "" && len(strings.Fields(firm)) <= 6 && !strings.ContainsAny(firm, "0123456789#@$") && !signatureTitle.MatchString(firm) {
+				if ev.SignatureFirm == "" {
+					ev.SignatureFirm = firm
+				}
+				person := stripEmphasis(lines[i-1].Text)
+				known := false
+				for _, c := range ev.Contacts {
+					known = known || strings.EqualFold(stripEmphasis(c), person)
+				}
+				if !known {
+					addUnique(&ev.Contacts, person)
+				}
+			}
+		}
+		if monthlyFee.MatchString(t) && moneyRe.MatchString(t) {
+			ev.MonthlyFees = append(ev.MonthlyFees, strings.TrimSpace(strings.Trim(stripEmphasis(t), "|")))
 		}
 		if companyRe.MatchString(t) && len(strings.Fields(t)) <= 8 && !moneyRe.MatchString(t) && !emailRe.MatchString(t) {
 			addUnique(&ev.Names, cleanFirmCandidate(strings.Trim(t, " ,.-|")))
@@ -388,6 +421,8 @@ func Harvest(filename string, text identity.Text) Evidence {
 	markUnitRates(ev.Amounts, lines)
 	ev.Letterhead = letterhead(lines, ev.ABNs)
 	ev.Dated = headerDate(lines)
+	ev.PI = readInsurance(lines)
+	ev.HeaderFirm = headerFirm(lines)
 	// Keep table structure with a subtotal: the headings above its component
 	// rows explain the scope a single bundled figure covers.
 	for i := range ev.Amounts {

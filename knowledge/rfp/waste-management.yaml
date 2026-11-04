@@ -139,12 +139,16 @@ boundary:
   end: s8_advisory
 - start: s1_inception
   end: s3_cd
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_inception
   name: S1 Inception / evidence
-  deliverable: 'Brief, local controls/consents, operator arrangements and agreed visits; input gaps, stream/stakeholder
-    schedule and responsibility map. Existing work: photos, retained/removed extent and safe access; remediation follows
-    specialist diagnosis'
+  lines:
+  - {key: brief_local_controls, text: "Brief, local controls/consents, operator arrangements and agreed visits"}
+  - {key: input_gaps_stream, text: "input gaps, stream/stakeholder schedule and responsibility map"}
+  - {key: existing_work_photos, text: "Existing work: photos, retained/removed extent and safe access"}
+  - {key: remediation_follows_specialist, text: "remediation follows specialist diagnosis"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -165,8 +169,9 @@ stages:
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
 - key: s2_concept
   name: S2 Operational concept
-  deliverable: 'Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste,
-    rooms/routes/chutes and collection points. Compare feasibility before space is fixed'
+  lines:
+  - {key: actual_use_stream, text: "Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste, rooms/routes/chutes and collection points"}
+  - {key: compare_feasibility_before, text: "Compare feasibility before space is fixed"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -187,8 +192,10 @@ stages:
   if_unknown: ask
 - key: s3_operational
   name: S3 Operational plan
-  deliverable: 'Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties;
-    scheduled drafts, council forms/consultation/responses to named milestone. Confirm operator acceptance owner/date'
+  lines:
+  - {key: separate_operational_wmp, text: "Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties"}
+  - {key: scheduled_drafts_council, text: "scheduled drafts, council forms/consultation/responses to named milestone"}
+  - {key: confirm_operator_acceptance, text: "Confirm operator acceptance owner/date"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -206,9 +213,10 @@ stages:
   if_unknown: ask
 - key: s3_cd
   name: S3 C&D plan
-  deliverable: 'Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage,
-    reuse/recycling/disposal pathways and tracking evidence. Confirm contractor processes/destinations later if unavailable;
-    no hazardous audit'
+  lines:
+  - {key: separate_demolition_construction, text: "Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage, reuse/recycling/disposal pathways and tracking evidence"}
+  - {key: confirm_contractor_processes, text: "Confirm contractor processes/destinations later if unavailable"}
+  - {key: no_hazardous_audit, text: "no hazardous audit"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -233,8 +241,11 @@ stages:
   if_unknown: ask
 - key: s4_review
   name: S4 Consent / design review
-  deliverable: Conditions and design changes checked against selected plans; space, routes, wash-down/drainage, ventilation/security
-    and fire/acoustic interfaces. Assign/close actions; equipment drawings separately commissioned
+  lines:
+  - {key: conditions_design_changes, text: "Conditions and design changes checked against selected plans"}
+  - {key: space_routes_wash, text: "space, routes, wash-down/drainage, ventilation/security and fire/acoustic interfaces"}
+  - {key: assign_close_actions, text: "Assign/close actions"}
+  - {key: equipment_drawings_separately, text: "equipment drawings separately commissioned"}
   fee_basis: fixed
   shown_when: Selected appointment
   provenance:
@@ -255,8 +266,10 @@ stages:
   if_unknown: ask
 - key: s5_tender
   name: S5 Tender support
-  deliverable: Functional criteria, selected plan updates, waste targets/tracking clauses and counted RFIs. D&C design
-    intent and contractor selections/detailed-design duties explicit; no daily waste management
+  lines:
+  - {key: functional_criteria_selected, text: "Functional criteria, selected plan updates, waste targets/tracking clauses and counted RFIs"}
+  - {key: d_c_design, text: "D&C design intent and contractor selections/detailed-design duties explicit"}
+  - {key: no_daily_waste, text: "no daily waste management"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -274,8 +287,10 @@ stages:
   default: option
 - key: s6_contractor
   name: S6 Contractor review
-  deliverable: Selected processes/equipment/design changes, plan updates and counted authority responses; retained versus
-    novated role and handover. No automatic novation or supplier design
+  lines:
+  - {key: selected_processes_equipment, text: "Selected processes/equipment/design changes, plan updates and counted authority responses"}
+  - {key: retained_versus_novated, text: "retained versus novated role and handover"}
+  - {key: no_automatic_novation, text: "No automatic novation or supplier design"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -293,8 +308,10 @@ stages:
   default: option
 - key: s7_completion
   name: S7 Construction / completion
-  deliverable: Sample tracking/destination evidence and counted room/route hold-point visits; deviations, outstanding
-    gaps and qualified completion report for inspected/evidenced scope. Authority/certifier retains approval
+  lines:
+  - {key: sample_tracking_destination, text: "Sample tracking/destination evidence and counted room/route hold-point visits"}
+  - {key: deviations_outstanding_gaps, text: "deviations, outstanding gaps and qualified completion report for inspected/evidenced scope"}
+  - {key: authority_certifier_retains, text: "Authority/certifier retains approval"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -315,8 +332,9 @@ stages:
   default: option
 - key: s8_advisory
   name: S8 Advisory review
-  deliverable: 'Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence,
-    reliance and prioritised actions; independent peer/expert evidence separately selected'
+  lines:
+  - {key: defined_advice_audit, text: "Defined advice/audit/options/cost decision: evidence cutoff, sampling/inspection limits, calculations/confidence, reliance and prioritised actions"}
+  - {key: independent_peer_expert, text: "independent peer/expert evidence separately selected"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -334,8 +352,10 @@ stages:
     - advisory
 - key: s8_operational
   name: S8 Post-occupation review
-  deliverable: Review actual collection records/costs over stated period against assumptions; prioritise actions and
-    operator ownership. No ongoing management or savings guarantee
+  lines:
+  - {key: review_actual_collection, text: "Review actual collection records/costs over stated period against assumptions"}
+  - {key: prioritise_actions_operator, text: "prioritise actions and operator ownership"}
+  - {key: no_ongoing_management, text: "No ongoing management or savings guarantee"}
   fee_basis: option
   shown_when: Selected appointment
   provenance:
@@ -434,6 +454,7 @@ allowances:
   owner: client
 positions:
 - key: operational
+  stage: [s3_operational]
   group: Waste planning and collection
   label: 'Operational WMP: actual streams, bins/storage and collection; dated rates/records only'
   kind: technical
@@ -460,6 +481,7 @@ positions:
   - flag:
     - waste_operational
 - key: cd
+  stage: [s3_cd]
   group: Waste planning and collection
   label: 'C&D plan: separate quantities, reuse/disposal pathways and tracking'
   kind: technical
@@ -490,6 +512,7 @@ positions:
   - flag:
     - waste_cd
 - key: hazardous
+  stage: [s3_cd, s1_inception]
   group: Waste planning and collection
   label: Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings
   kind: technical
@@ -508,6 +531,7 @@ positions:
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
   responsible: competent environmental/hazardous-waste specialist named in R4
 - key: collection
+  stage: [s3_operational]
   group: Waste planning and collection
   label: Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator
     engagement separate
@@ -533,6 +557,7 @@ positions:
   - flag:
     - waste_operational
 - key: swept_paths
+  stage: [s3_operational, s2_concept, s4_review]
   group: Facilities and design interfaces
   label: Vehicle swept paths/clearances; civil/structural confirm grades and loads
   kind: technical
@@ -548,6 +573,7 @@ positions:
       current requirements.
   responsible: traffic engineer named in R4
 - key: rooms
+  stage: [s2_concept, s3_operational]
   group: Facilities and design interfaces
   label: Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power
   kind: technical
@@ -572,6 +598,7 @@ positions:
   - flag:
     - waste_operational
 - key: equipment
+  stage: [s6_contractor, s4_review]
   group: Facilities and design interfaces
   label: Equipment design, supply and commissioning
   kind: technical
@@ -587,6 +614,7 @@ positions:
       current requirements.
   responsible: equipment supplier or engineer named in R4
 - key: shared
+  stage: [s2_concept, s3_operational]
   group: Facilities and design interfaces
   label: 'Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated
     assumptions'
@@ -622,6 +650,7 @@ positions:
     - mixed_use
     - waste_shared
 - key: interim
+  stage: [s3_cd, s6_contractor]
   group: Delivery and verification
   label: Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service
   kind: technical
@@ -646,6 +675,7 @@ positions:
     ref: waste-management#37
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
 - key: targets
+  stage: [s5_tender, s3_cd]
   group: Delivery and verification
   label: 'Recycling/circularity/rating/carbon support: agreed target and measurement, no credits/savings guarantee'
   kind: technical
@@ -660,6 +690,7 @@ positions:
     why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
       current requirements.
 - key: completion
+  stage: [s7_completion]
   group: Delivery and verification
   label: 'Construction records and completion checks: defined samples/frequency/end, contractor supplies evidence'
   kind: technical
@@ -682,6 +713,7 @@ positions:
     ref: waste-management#37
     why: Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination.
 - key: postoccupation
+  stage: [s8_operational]
   group: Delivery and verification
   label: 'Post-occupation records/cost review: separately selected period and operator actions'
   kind: technical
@@ -701,6 +733,7 @@ positions:
     why: Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or
       current requirements.
 - key: independent
+  stage: [s8_advisory]
   group: Delivery and verification
   label: 'Independent audit/peer review/expert evidence: independence/reliance, no design or operating duty transfer'
   kind: technical

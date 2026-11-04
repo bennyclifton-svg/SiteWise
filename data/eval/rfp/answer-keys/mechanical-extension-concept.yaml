@@ -60,16 +60,11 @@ description: D&C concept is not full HVAC/controls design or continuation.
 snapshot: false
 expect:
   mechanical-services:
-    stages_include:
-    - inception
-    - investigation
-    - concept
-    stages_option:
-    - design
-    - tender
-    - continuation
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [inception, investigation, concept]
     positions:
-      hvac: O
-      controls: O
+      hvac: X
+      controls: X
       existing: I
-      witness: O
+      witness: X
+    stages_absent: [design, tender, continuation]

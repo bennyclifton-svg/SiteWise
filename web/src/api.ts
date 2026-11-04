@@ -111,6 +111,7 @@ export interface VisualReview {
 export const api = {
   visualReview: (id: string) => request<VisualReview>("GET", `/documents/${id}/visual-review`),
   requestVisualReview: (id: string) => request<VisualReview>("POST", `/documents/${id}/visual-review`),
+  signOut: () => request<void>("DELETE", "/session"),
   checkSession: () => request<void>("GET", "/session"),
   signIn: (token: string) => request<void>("POST", "/session", { token }),
   projects: () => request<Project[]>("GET", "/projects"),

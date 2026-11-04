@@ -56,16 +56,8 @@ description: Residential label does not appoint housing/SDA, testing or performa
   and approval do apply.
 expect:
   access:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    - s3_planning
-    - s4_approval
-    stages_option:
-    - s5_tender
-    - s6_postcontract
-    - s7_completion
-    - s8_advisory
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept, s3_planning, s4_approval]
     positions:
       review: I
       existing: absent
@@ -73,10 +65,11 @@ expect:
       housing: absent
       facilities: absent
       occupied: absent
-      solutions: O
-      testing: O
-      inclusive: O
-      remediation: O
-      peer: O
+      solutions: I
+      testing: X
+      inclusive: X
+      remediation: I
+      peer: X
     blocking_only: true
     blocking: []
+    stages_absent: [s5_tender, s6_postcontract, s7_completion, s8_advisory]

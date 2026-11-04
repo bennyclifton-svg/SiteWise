@@ -10,10 +10,13 @@ import (
 const ReviewSectionID = "pre_issue_review"
 
 var briefKeyLabels = map[string]string{
-	"gfa sqm":       "Gross floor area (sq m)",
-	"total gfa sqm": "Total gross floor area (sq m)",
-	"site sqm":      "Site area (sq m)",
-	"car parks":     "Car parks",
+	"gfa sqm":          "Gross floor area (sq m)",
+	"proposed gfa sqm": "Gross floor area after the works (sq m)",
+	"existing gfa sqm": "Existing gross floor area (sq m)",
+	"added gfa sqm":    "Gross floor area added by the works (sq m)",
+	"total gfa sqm":    "Total gross floor area (sq m)",
+	"site sqm":         "Site area (sq m)",
+	"car parks":        "Car parks",
 }
 
 var briefValueLabels = map[string]string{

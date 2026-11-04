@@ -136,8 +136,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <button className="table-action" disabled={busy} onClick={() => setMoving(null)}>Cancel</button>
     </div>}
     {table?.award && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
-    {table && quoted && <ConsultantComparison onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onCoverage={(sub, key, state, note) => run(() => submissionApi.setCell(projectId, sub, key, state, "", note))} onConfirm={(sub, amount, note) => run(() => submissionApi.setCell(projectId, sub, "comparison:appointment", "priced", amount, note))} />}
-    <details open={!quoted}><summary>{quoted ? "Schedule details and scope corrections" : "Fee schedule"}</summary>
+    {table && quoted && <ConsultantComparison onAdd={() => setAdding(true)} onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onSelect={(col, row, included, keys) => run(() => submissionApi.appointmentRow(projectId, col.submission.id, col.submission.version, row.id, included, keys))} />}
+    {!quoted && <details open><summary>Fee schedule</summary>
     {!table ? !error && <p role="status"><Pending delayed>Loading prices…</Pending></p> : cols.length === 0 ? <div className="prices-empty">
       <p><strong>No proposals yet.</strong> Drop a fee proposal on this package's row in Procurement, or drop it anywhere in the document register: proposals are recognised when they are filed.</p>
       <p>The table will list the {base.length + options.length} fee rows of this package's schedule{rates.length ? ` and ${rates.length} hourly rates` : ""}.</p>
@@ -201,7 +201,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
         </tbody>
       </table>
     </div>}
-    </details>
+    </details>}
+    {quoted && rates.length > 0 && <section aria-label="Rates" className="appointment-rates"><h2>Rates</h2><div className="prices-scroll"><table className="prices-table"><thead><tr><th scope="col">Rate</th>{cols.map(c => <th scope="col" key={c.submission.id}>{c.firm?.name ?? c.submission.filename}</th>)}<th scope="col"><span className="prices-sr-only">Row actions</span></th></tr></thead><tbody>{rates.map(renderRow)}</tbody></table></div></section>}
     {cols.length > 0 && !quoted && <p className="prices-legend">{table?.builder ? "Review the quoted total, then use it or enter your confirmed comparison amount. Expand a work section to check the source wording. Allowances, options and components are not added to the quoted total. Your corrections are preserved." : "Figures are read from each proposal and are ex GST. The warning triangle means review needed. Click a fee for its source and notes. Use row arrows to change base/option placement, or the button beside a fee to move or combine it. Your corrections are final."}</p>}
     {table && table.earlier.length > 0 && <details className="prices-earlier"><summary>{table.earlier.length} earlier or set-aside proposal{table.earlier.length === 1 ? "" : "s"}</summary>
       <ul>{table.earlier.map(s => <li key={s.id}>{s.filename} · {day(s.received_on)} · {STATUS_WORDS[s.status]}

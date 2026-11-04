@@ -128,7 +128,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	fact("pathway", "Planning pathway", "choice", options(sk.Pathways), "")
 	fact("procurement", "Procurement route", "choice", options(sk.Procurement), "")
 	if used["regulated_design"] {
-		fact("regulated_design", "Regulated design applies", "choice", []Choice{{"yes", "Yes, the regime applies"}, {"no", "No, recorded advice says it does not"}}, "Record the professional advice or verified rule you relied on. The class alone does not decide it.")
+		fact("regulated_design", "Regulated design applies", "choice", []Choice{{"yes", "Yes, the regime applies"}, {"no", "No, recorded advice says it does not"}}, "The NSW regime covers Class 2, 3 and 9c work only, so a project without those classes reads No. Otherwise record the professional advice you relied on.")
 	}
 	parts := []Choice{}
 	selected := []string{}

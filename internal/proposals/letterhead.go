@@ -20,7 +20,33 @@ var (
 	addresseeRe = regexp.MustCompile(`(?i)^\s*(?:to|attn\.?|attention|client|principal|owner|project|site|prepared\s+for|re|subject)\s*[:–]`)
 	bareLabelRe = regexp.MustCompile(`(?i)^\s*(?:to|client|principal|owner|attention|prepared\s+for)\s*$`)
 	dateLabelRe = regexp.MustCompile(`(?i)^\s*(?:date|dated|proposal\s+date)\s*:\s*(.+)$`)
+	dayInLine   = regexp.MustCompile(`\b\d{1,2}\s+[A-Za-z]+\s+\d{4}\b|\b\d{1,2}/\d{1,2}/\d{4}\b`)
+	// legalName is a company's registered form, as a header prints it.
+	legalName = regexp.MustCompile(`(?i)\bpty\.?\s*(?:ltd|limited)\b|\blimited\b`)
 )
+
+// headerFirm is the one registered company name printed in a document's
+// header, before its first section and outside any addressee line, for a
+// letter or advice with no ABN (Walsh heritage advice, 2026-10-27:
+// "**Heritage Insight Pty Ltd**"). Two such names, or none, settle nothing.
+func headerFirm(lines []Line) string {
+	found := ""
+	for i, l := range lines {
+		if i >= 8 || i > 0 && (l.Heading || strings.HasPrefix(l.Text, "## ")) {
+			break
+		}
+		t := strings.Trim(stripEmphasis(l.Text), " ,.-|#")
+		if !legalName.MatchString(t) || addressee(l.Text) || len(strings.Fields(t)) > 8 || moneyRe.MatchString(t) || emailRe.MatchString(t) || addressRe.MatchString(t) {
+			continue
+		}
+		name := cleanFirmCandidate(t)
+		if found != "" && !strings.EqualFold(found, name) {
+			return ""
+		}
+		found = name
+	}
+	return found
+}
 
 // stripEmphasis removes Markdown bold markers so "**Quoin Pty Ltd**" reads
 // as the name it prints.
@@ -108,6 +134,22 @@ func headerDate(lines []Line) string {
 			continue
 		}
 		if d, ok := parseDay(strings.TrimSpace(m[1])); ok {
+			return d
+		}
+		// An email's "Date: 22 March 2026 11:34 AM" carries a time.
+		if day := dayInLine.FindString(m[1]); day != "" {
+			if d, ok := parseDay(day); ok {
+				return d
+			}
+		}
+	}
+	// A letter prints its date alone on a line above the addressee
+	// ("3 March 2026"; Walsh engagement letter, 2026-10-27).
+	for i, l := range lines {
+		if i >= 25 || strings.HasPrefix(l.Text, "## ") {
+			break
+		}
+		if d, ok := parseDay(strings.Trim(stripEmphasis(l.Text), " ,.")); ok {
 			return d
 		}
 	}

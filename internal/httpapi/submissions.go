@@ -280,7 +280,9 @@ type totalsJSON struct {
 }
 
 type columnJSON struct {
+	AppointmentRows  []store.AppointmentRow        `json:"appointment_rows,omitempty"`
 	AppointmentTotal *string                       `json:"appointment_total"`
+	AppointmentBasis string                        `json:"appointment_basis,omitempty"`
 	Quote            *proposals.QuoteReview        `json:"quote,omitempty"`
 	AwardStages      []proposals.QuotedFee         `json:"award_stages,omitempty"`
 	Builder          *proposals.BuilderReview      `json:"builder,omitempty"`
@@ -311,6 +313,8 @@ func tableBody(t store.PriceTable, award *store.AwardView) tableJSON {
 		col.Quote = c.Quote
 		col.AwardStages = c.AwardStages
 		col.AppointmentTotal = cents(c.AppointmentTotal)
+		col.AppointmentRows = c.AppointmentRows
+		col.AppointmentBasis = c.AppointmentBasis
 		for k, v := range c.Cells {
 			col.Cells[k] = cellOf(v)
 		}
@@ -601,6 +605,26 @@ func postSubmissionAlignment(w http.ResponseWriter, r *http.Request, deps Deps) 
 	submissionWritten(w, r, deps, session)
 }
 
+func putAppointmentRow(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !pathIDs(w, r, "sub") {
+		return
+	}
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var in store.AppointmentRowInput
+	if readProposalJSON(w, r, deps.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.SetAppointmentRow(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("sub"), in); err != nil {
+		procurementError(w, deps, err)
+		return
+	}
+	submissionWritten(w, r, deps, session)
+}
+
 func patchSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !pathIDs(w, r, "sub") {
 		return
@@ -795,7 +819,21 @@ func priceSheet(t store.PriceTable) xlsx.Sheet {
 			}
 			return xlsx.Cell{Text: strings.Join(lines, "\n")}
 		})
-		row("Confirmed comparison fee", true, func(c store.FirmColumn) xlsx.Cell { v, ok := c.Cells["comparison:appointment"]; return cell(v, ok) })
+		row("Selected appointment total", true, func(c store.FirmColumn) xlsx.Cell {
+			if c.AppointmentTotal != nil {
+				return xlsx.Cell{Cents: c.AppointmentTotal, Bold: true}
+			}
+			return xlsx.Cell{Text: "Not confirmed"}
+		})
+		row("Selected scope", false, func(c store.FirmColumn) xlsx.Cell {
+			var labels []string
+			for _, r := range c.AppointmentRows {
+				if r.Included {
+					labels = append(labels, r.Label)
+				}
+			}
+			return xlsx.Cell{Text: strings.Join(labels, "; ")}
+		})
 		row("Confirmed scope and source", false, func(c store.FirmColumn) xlsx.Cell { return xlsx.Cell{Text: c.Cells["comparison:appointment"].Basis} })
 		for _, it := range t.Items {
 			if !it.Price() || it.Key == "comparison:appointment" {

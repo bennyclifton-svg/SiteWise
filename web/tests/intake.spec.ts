@@ -27,7 +27,7 @@ function block(page: Page, filename: string): Locator {
 }
 
 async function open(b: Locator) {
-  if ((await b.getAttribute("data-open")) !== "true") await b.getByRole("button", { name: /^Open document:/ }).click();
+  if ((await b.getAttribute("data-open")) !== "true") await b.locator("td.reg-no").dblclick();
   await expect(b).toHaveAttribute("data-open", "true");
   await b.page().getByRole("button", { name: "Filing details", exact: true }).click();
 }
@@ -97,8 +97,8 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
 
   // Stored but not filed says so in words, not only colour.
   const scan = block(page, "scanned-empty.pdf");
-  await expect(scan.locator(".reg-title")).toContainText("Title not extracted");
-  await expect(scan.locator(".reg-title")).toContainText("File: scanned-empty.pdf");
+  await expect(scan.locator(".reg-title")).toContainText("Needs title review");
+  await expect(scan.locator(".reg-title")).toContainText("scanned-empty.pdf");
   await expect(scan.locator("tr.reg-line")).toContainText("Not filed · no readable text");
   await open(scan);
   await expect(page.locator(".document-workspace .tb-state")).toHaveText("Stored · not filed");
@@ -225,7 +225,7 @@ test("centre viewer opens full PDFs and Markdown, with separate filing details a
   const projectId = new URL(page.url()).pathname.split("/").pop();
   await dropFile(page, "identity-page.pdf", fixture("identity-page.pdf"), "application/pdf");
   const row = block(page, "identity-page.pdf");
-  await expect(row.locator(".reg-sel input")).toBeVisible();
+  await expect(row).toHaveAttribute("id", /^doc-/);
   const docId = (await row.getAttribute("id"))!.slice(4);
   const file = `/api/documents/${docId}/file`;
   const response = await page.request.get(`${file}?view=1`);
@@ -241,14 +241,14 @@ test("centre viewer opens full PDFs and Markdown, with separate filing details a
   await other.context().close();
 
   await row.locator(".reg-line").click({ modifiers: ["Control"] });
-  await expect(row.locator(".reg-sel input")).toBeChecked();
+  await expect(row).toHaveAttribute("data-selected", "true");
   await expect(page.getByRole("region", { name: "Document viewer" })).toHaveCount(0);
-  await row.getByRole("button", { name: /^Open document:/ }).click();
+  await row.locator("td.reg-no").dblclick();
   const viewer = page.getByRole("region", { name: "Document viewer" });
   await expect(viewer.locator("iframe")).toHaveAttribute("src", `${file}?view=1#view=FitH`);
   await expect(viewer.getByRole("region", { name: "Image-assisted filing review" })).toHaveCount(0);
   await expect(page.locator(".profile-col")).toBeHidden();
-  await expect(row.locator(".reg-sel input")).toBeChecked();
+  await expect(row).toHaveAttribute("data-selected", "true");
   await expect.poll(() => page.frames().some(frame => frame.url().startsWith("chrome-extension://"))).toBe(true);
   const pdfFrame = page.frames().find(frame => frame.url().startsWith("chrome-extension://"))!;
   await expect(pdfFrame.locator("viewer-toolbar")).toBeVisible();
@@ -265,14 +265,14 @@ test("centre viewer opens full PDFs and Markdown, with separate filing details a
 
   await dropFile(page, "notes.md", Buffer.from('# Site notes\n<script>alert("untrusted")</script>\n'), "text/markdown");
   const notes = block(page, "notes.md");
-  await expect(notes.locator(".reg-sel input")).toBeVisible();
-  await notes.getByRole("button", { name: /^Open document:/ }).click();
+  await expect(notes).toHaveAttribute("id", /^doc-/);
+  await notes.locator("td.reg-no").dblclick();
   await expect(viewer.locator(".document-text")).toContainText('<script>alert("untrusted")</script>');
   await expect(viewer.locator("script")).toHaveCount(0);
   await expect(viewer.locator("iframe")).toHaveCount(0);
   await viewer.getByRole("button", { name: "Close document" }).click();
   await page.route('**/api/documents/*/file', route => route.fulfill({ status: 404, body: 'File unavailable' }));
-  await notes.getByRole("button", { name: /^Open document:/ }).click();
+  await notes.locator("td.reg-no").dblclick();
   await expect(viewer.getByRole("alert")).toContainText("Could not load this document");
   await page.unroute('**/api/documents/*/file');
 

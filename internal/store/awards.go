@@ -13,6 +13,7 @@ import (
 	"sitewise/internal/costs"
 	"sitewise/internal/invoices"
 	"sitewise/internal/proposals"
+	"sitewise/internal/rfp"
 )
 
 // ErrAwardLocked refuses an undo once an invoice is allocated to one of the
@@ -23,15 +24,18 @@ var ErrAwardLocked = errors.New("an invoice is allocated to this award's lines")
 // offered extras, by price id, or the source's stages, by quoted fee id) it
 // holds and the name it carries.
 type AwardLine struct {
-	Label    string   `json:"label"`
-	Keys     []string `json:"item_keys"`
-	PriceIDs []string `json:"price_ids"`
-	QuoteIDs []string `json:"quote_ids"`
+	AppointmentIDs []string `json:"appointment_ids,omitempty"`
+	Label          string   `json:"label"`
+	Keys           []string `json:"item_keys"`
+	PriceIDs       []string `json:"price_ids"`
+	QuoteIDs       []string `json:"quote_ids"`
 }
 
 // AwardInput is the award as confirmed. Total is the running total the PM
 // saw; the award is refused unless code computes the same to the cent.
 type AwardInput struct {
+	Appointment  bool        `json:"appointment,omitempty"`
+	Version      int64       `json:"version,omitempty"`
 	SubmissionID string      `json:"submission_id"`
 	Lines        []AwardLine `json:"lines"`
 	Total        string      `json:"total"`
@@ -129,8 +133,88 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	if err != nil {
 		return v, sub, nil, "", err
 	}
-	// Award by stage: every line holds only source stages, and together
-	// they are exactly the stages that add to the confirmed fee.
+	if in.Appointment {
+		if isBuilder || quote == nil || in.Version != sub.Version {
+			return v, sub, nil, "", ErrConflict
+		}
+		items, err := readSchedule(ctx, tx, org, pkg)
+		if err != nil {
+			return v, sub, nil, "", err
+		}
+		live := []rfp.ScheduleItem{}
+		for _, it := range items {
+			if !it.Retired {
+				live = append(live, it.ScheduleItem)
+			}
+		}
+		decisions, err := submissionDecisions(ctx, tx, org, sub.ID)
+		if err != nil {
+			return v, sub, nil, "", err
+		}
+		cells := map[string]proposals.Cell{}
+		for key, p := range byKey {
+			cells[key] = proposals.Cell{Label: p.label, Cents: p.cents, State: p.state, DecidedBy: p.by}
+		}
+		selected, total, _ := appointmentRows(live, FirmColumn{Submission: sub, Quote: quote, Cells: cells, Decisions: decisions})
+		if total == nil {
+			return v, sub, nil, "", ErrInvalidInput
+		}
+		available := map[string]AppointmentRow{}
+		for _, row := range selected {
+			if row.Included && row.Amount != nil && row.State == proposals.StatePriced {
+				available[row.ID] = row
+			}
+		}
+		used := map[string]bool{}
+		for _, input := range in.Lines {
+			if strings.TrimSpace(input.Label) == "" || len(input.Label) > 200 || len(input.AppointmentIDs) == 0 || len(input.Keys)+len(input.QuoteIDs)+len(input.PriceIDs) != 0 {
+				return v, sub, nil, "", ErrInvalidInput
+			}
+			line := AwardLineView{Label: strings.TrimSpace(input.Label), Keys: []string{}, QuoteIDs: []string{}, PriceIDs: []string{}}
+			for _, id := range input.AppointmentIDs {
+				row, ok := available[id]
+				if !ok || used[id] {
+					return v, sub, nil, "", ErrInvalidInput
+				}
+				used[id] = true
+				c, ok, err := invoices.ParseCents(*row.Amount)
+				if err != nil || !ok {
+					return v, sub, nil, "", ErrInvalidInput
+				}
+				line.Cents += c
+				line.Keys = append(line.Keys, row.Keys...)
+				if row.QuoteID != "" {
+					line.QuoteIDs = append(line.QuoteIDs, row.QuoteID)
+				} else if row.ItemKey != "" && len(row.Keys) == 0 {
+					line.Keys = append(line.Keys, row.ItemKey)
+				}
+			}
+			v.Lines = append(v.Lines, line)
+			v.Total += line.Cents
+		}
+		if len(used) != len(available) || len(used) == 0 || v.Total != *total {
+			return v, sub, nil, "", ErrInvalidInput
+		}
+		if in.Total != "" {
+			c, ok, err := invoices.ParseCents(in.Total)
+			if err != nil || !ok || c != v.Total {
+				return v, sub, nil, "", ErrInvalidInput
+			}
+		}
+		v.SubmissionID, v.FirmName, v.ParentLabel = sub.ID, firm.Name, title+": "+firm.Name
+		return v, sub, firm, title, nil
+	}
+	// Once scope was explicitly selected, an old client cannot bypass it by
+	// awarding the original package total or a stale source breakdown.
+	var selected bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM submission_decisions WHERE org_id=$1::uuid AND submission_id=$2::uuid AND field LIKE 'appointment-row:%')`, org, sub.ID).Scan(&selected); err != nil {
+		return v, sub, nil, "", err
+	}
+	if selected {
+		return v, sub, nil, "", ErrConflict
+	}
+	// Award by stage: source stages cover the confirmed fee exactly.
+	// User-added fees may accompany them, but the parent total may not.
 	stages := map[string]proposals.QuotedFee{}
 	byStage := false
 	for _, line := range in.Lines {
@@ -145,14 +229,24 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 			stages[f.ID] = f
 		}
 		for _, line := range in.Lines {
-			if len(stages) == 0 || len(line.QuoteIDs) == 0 || len(line.Keys)+len(line.PriceIDs) != 0 {
+			if len(stages) == 0 || len(line.PriceIDs) != 0 {
 				return v, sub, nil, "", ErrInvalidInput
+			}
+			for _, key := range line.Keys {
+				if key == "comparison:appointment" || !strings.HasPrefix(key, "comparison:") || byKey[key].by != proposals.ByUser {
+					return v, sub, nil, "", ErrInvalidInput
+				}
 			}
 		}
 	} else if _, confirmed := byKey["comparison:appointment"]; !isBuilder && (quote != nil || confirmed) {
 		for _, line := range in.Lines {
-			if len(line.PriceIDs) != 0 || len(line.Keys) != 1 || !strings.HasPrefix(line.Keys[0], "comparison:") || byKey[line.Keys[0]].by != proposals.ByUser {
+			if len(line.PriceIDs) != 0 || len(line.Keys) == 0 {
 				return v, sub, nil, "", ErrInvalidInput
+			}
+			for _, key := range line.Keys {
+				if !strings.HasPrefix(key, "comparison:") || byKey[key].by != proposals.ByUser {
+					return v, sub, nil, "", ErrInvalidInput
+				}
 			}
 		}
 	}

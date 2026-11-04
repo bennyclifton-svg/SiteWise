@@ -49,6 +49,7 @@ type Deps struct {
 	ProgramImporter ProgramImporter
 	// Closing ends event streams when the server shuts down.
 	Closing <-chan struct{}
+	streams *sessionStreams
 	// Health and Speed serve the owner-only status views. Budgets are what
 	// the speed view judges against.
 	Health  *healthChecker
@@ -76,6 +77,7 @@ type Filer interface {
 
 // Handler serves session consumption and project routes.
 func Handler(deps Deps) http.Handler {
+	deps.streams = newSessionStreams()
 	if deps.ReportBuild == "" {
 		deps.ReportBuild = reportBuildVersion()
 	}
@@ -124,6 +126,7 @@ func Handler(deps Deps) http.Handler {
 		"PUT /projects/{id}/submissions/{sub}/cells/{key}":                 putSubmissionCell,
 		"PUT /projects/{id}/procurement/packages/{pkg}/comparison-row":     putComparisonRow,
 		"POST /projects/{id}/submissions/{sub}/alignment":                  postSubmissionAlignment,
+		"PUT /projects/{id}/submissions/{sub}/appointment-row":             putAppointmentRow,
 		"PATCH /projects/{id}/submissions/{sub}":                           patchSubmission,
 		"GET /projects/{id}/submissions/{sub}/file":                        downloadSubmission,
 		"GET /firms": getFirms,
@@ -165,7 +168,9 @@ func Handler(deps Deps) http.Handler {
 		"POST /projects":                                     createProject,
 		"DELETE /projects/{id}":                              deleteProject,
 		"GET /projects/{id}":                                 getProject,
+		"PATCH /projects/{id}":                               renameProject,
 		"GET /session":                                       checkSession,
+		"DELETE /session":                                    endSession,
 		"GET /projects":                                      listProjects,
 		"GET /projects/{id}/documents":                       listDocuments,
 		"POST /projects/{id}/files":                          uploadFile,
@@ -266,6 +271,7 @@ func Handler(deps Deps) http.Handler {
 // view. Failed requests are timed too. Uploads are not: their duration is
 // the client's network.
 var routePaths = map[string]string{
+	"DELETE /session":                                                  "project_invite_auth",
 	"POST /projects/{id}/specifications/cells":                         "specification_write",
 	"POST /projects/{id}/specifications/types/{type}/link":             "specification_write",
 	"POST /projects/{id}/specifications/update":                        "specification_write",
@@ -291,6 +297,7 @@ var routePaths = map[string]string{
 	"PUT /projects/{id}/submissions/{sub}/cells/{key}":                 pathSubmissionWrite,
 	"PUT /projects/{id}/procurement/packages/{pkg}/comparison-row":     pathSubmissionWrite,
 	"POST /projects/{id}/submissions/{sub}/alignment":                  pathSubmissionWrite,
+	"PUT /projects/{id}/submissions/{sub}/appointment-row":             pathSubmissionWrite,
 	"PATCH /projects/{id}/submissions/{sub}":                           pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/documents":         pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/firms":             pathSubmissionWrite,
@@ -354,6 +361,7 @@ var routePaths = map[string]string{
 	"PATCH /projects/{id}/delivery/{item}":                             pathDeliveryWrite,
 	"POST /projects/{id}/works":                                        pathWorksWrite,
 	"PATCH /projects/{id}/works/{wi}":                                  pathWorksWrite,
+	"PATCH /projects/{id}":                                             pathProfileEdit,
 	"POST /session":                                                    pathInviteAuth,
 	"POST /projects":                                                   pathInviteAuth,
 	"GET /projects":                                                    pathDocumentList,

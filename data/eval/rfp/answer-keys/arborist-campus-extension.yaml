@@ -55,29 +55,20 @@ description: Occupied school extension appoints inventory/impact/protection; off
   later construction and investigations remain options.
 expect:
   arborist:
-    stages_include:
-    - s1_inventory
-    - s2_impact
-    - s3_protection
-    stages_option:
-    - s4_tender
-    - s5_construction
-    - s6_investigation
-    - s6_risk
-    - s7_advisory
-    - s7_monitoring
-    - s7_peer
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inventory, s2_impact, s3_protection]
     positions:
       inventory: I
       offsite: I
       impacts: I
       pruning: I
       existing: I
-      supervision: O
-      investigation: O
-      risk: O
-      monitoring: O
+      supervision: X
+      investigation: X
+      risk: X
+      monitoring: X
       landscape: X
     blocking_only: true
     blocking: []
+    stages_absent: [s4_tender, s5_construction, s6_investigation, s6_risk, s7_advisory, s7_monitoring, s7_peer]
 snapshot: true

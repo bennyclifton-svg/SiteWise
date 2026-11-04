@@ -61,24 +61,21 @@ description: Occupied mixed residential refurbishment buys strategy only; later 
   optional despite required solutions.
 expect:
   fire-engineering:
-    stages_include:
-    - s1_strategy
-    stages_option:
-    - s3_brief
-    - s4_report
-    - s7_verification
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_strategy]
     positions:
       wet_design: X
       dry_design: X
       matrix_design: X
-      peer: O
-      remediation: O
-      interim: O
-      brief: O
-      fer: O
-      strategy_review: O
-      witnessing: O
+      peer: X
+      remediation: X
+      interim: X
+      brief: X
+      fer: X
+      strategy_review: X
+      witnessing: X
       existing: I
       occupants: I
     blocking_only: true
     blocking: []
+    stages_absent: [s3_brief, s4_report, s7_verification]

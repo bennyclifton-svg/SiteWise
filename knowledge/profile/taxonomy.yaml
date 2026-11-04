@@ -42,7 +42,7 @@ building_classes:
       - \blot size\b
       typical: 200-2000 sqm
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -50,6 +50,18 @@ building_classes:
       - \bgfa\b
       - gross floor area
       typical: 50-800 sqm
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: storeys
       label: Storeys
       type: integer
@@ -93,7 +105,19 @@ building_classes:
       triggers: *id002
       typical: Low-rise 1-3, mid-rise 4-12, high-rise 13-40, super-tall 40+
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -126,7 +150,19 @@ building_classes:
       - \b\d+\s+(dwellings|lots|homes)\b
       typical: 3-50
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -185,7 +221,19 @@ building_classes:
       type: integer
       typical: 4-8 beds per cluster
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -209,7 +257,19 @@ building_classes:
       type: integer
       typical: 20-300+
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -246,7 +306,19 @@ building_classes:
       label: Dementia beds
       type: integer
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -278,7 +350,19 @@ building_classes:
       type: integer
       triggers: *id006
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -443,7 +527,19 @@ building_classes:
       type: integer
       typical: 20-400
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -511,12 +607,24 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 2,000-75,000+ sqm
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: clear_height_m
       label: Clear height m
       type: number
@@ -551,12 +659,24 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 10,000-100,000+ sqm
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: clear_height_m
       label: Clear height m
       type: number
@@ -584,12 +704,24 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 1,000-50,000 sqm
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: process_area_sqm
       label: Process area sqm
       type: number
@@ -613,12 +745,24 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 2,000-30,000 sqm
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: frozen_sqm
       label: Frozen sqm (<-18C)
       type: number
@@ -703,7 +847,19 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -729,7 +885,19 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -792,6 +960,18 @@ building_classes:
       unit: m2
       basis_required: true
       triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: change_rooms
       label: Gowning/Change Rooms
       type: integer
@@ -806,7 +986,19 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -878,7 +1070,19 @@ building_classes:
       type: integer
       typical: 30-120
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
       type: number
       unit: m2
       basis_required: true
@@ -906,12 +1110,24 @@ building_classes:
       type: integer
       typical: 300-2,000
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 10-15 sqm/student
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: classrooms
       label: Classrooms
       type: integer
@@ -939,12 +1155,24 @@ building_classes:
       type: integer
       typical: 1,000-50,000 FTE
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 15-25 sqm/student
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: lecture_theatres
       label: Lecture theatres
       type: integer
@@ -971,12 +1199,24 @@ building_classes:
       triggers: *id005
       typical: 50-800+
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 100-150 sqm/bed
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: ed_bays
       label: ED bays
       type: integer
@@ -1006,12 +1246,24 @@ building_classes:
       type: integer
       typical: 5-50
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 25-40 sqm/room
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: procedure_rooms
       label: Procedure rooms
       type: integer
@@ -1033,12 +1285,24 @@ building_classes:
       type: integer
       typical: 2-20
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 60-100 sqm/practitioner
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: treatment_rooms
       label: Treatment rooms
       type: integer
@@ -1053,12 +1317,24 @@ building_classes:
       basis_required: true
       triggers: *id001
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 1,000-50,000 sqm
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: public_areas_sqm
       label: Public areas sqm
       type: number
@@ -1085,12 +1361,24 @@ building_classes:
       type: integer
       typical: 100-2,000+
     - key: gfa_sqm
-      label: GFA sqm
+      label: Proposed GFA sqm
       type: number
       unit: m2
       basis_required: true
       triggers: *id003
       typical: 0.8-1.2 sqm/seat
+    - key: existing_gfa_sqm
+      label: Existing GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id003
     - key: ancillary_halls_sqm
       label: Ancillary halls sqm
       type: number

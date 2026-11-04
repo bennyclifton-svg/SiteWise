@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to build Housing (Class 1a) at 1 Example St, Example NSW.
@@ -9,51 +7,58 @@ Example Client intends to build Housing (Class 1a) at 1 Example St, Example NSW.
 | Work type: New build | Site address: 1 Example St, Example NSW | Client: Example Client |
 | Building: Housing: Class 1a | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; no automatic later appointment or novation. |
 
-Information provided: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory suite, owners and reliance recipients); quantities are client test-fixture choices.
-
 ### 2. Scope of services
 
 Investigate and interpret ground for the stated decision; identify preliminary/final reports and monitoring endpoint. Civil/structural designers own design; contractor owns methods, temporary works and supervision. Environmental assessment is a separate appointment.
 Ground brief: Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance recipients; reconcile conflicting plans.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Base stages only, from written instruction/input-access milestone to the selected deliverable. Later options require written instruction; agree interim reports and monitoring endpoint. R1 Fee by stage: Price stages/options separately: fixed, time-ceiling or unit basis; quantities, rates, GST, dependencies and markups. Cored alternatives include auger: total and increment, no double count. Acknowledge addenda. Confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| G1 Brief / plan |  | Included |  |
+|  | Review design and prior tests for relevance | Included |  |
+|  | Agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe fieldwork, access and handback | Included |  |
+|  | Reconcile counts/levels | Included |  |
+|  | Deliver plan, inputs and issues register. | Included |  |
+|  | Investigation plan and issues register reconciled to allowances | Included |  |
+| G2 Field / laboratory |  | Included |  |
+|  | Scheduled locating/clearance, drilling/coring/pits, sampling and tests | Included |  |
+|  | Competent supervision | Included |  |
+|  | Record locations/datum/precision, logs/photos, groundwater and incomplete/refusal points | Included |  |
+|  | Traceable lab records and scheduled site handback. | Included |  |
+|  | Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist | Included |  |
+|  | Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy | Included |  |
+|  | Locating/clearance before intrusive work; name isolation/potholing party | Included |  |
+|  | Occupied access, tenant liaison and permits | Excluded |  |
+|  | Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners | Included |  |
+| G3 Interpretation / report |  | Included |  |
+|  | Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater, aggressivity, pavement and classification parameters | Included |  |
+|  | Location plan and designer parameter schedule | Included |  |
+|  | Identify pending tests and further evidence. | Included |  |
+|  | Foundation/bearing/settlement advice; structural engineer designs | Included |  |
+|  | Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance | Included |  |
+|  | Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy | Included |  |
+|  | Contamination, waste classification, remediation/validation and independent audit | Excluded |  |
+|  | Acid sulfate soil assessment; define desktop/intrusive/management package from evidence | Included |  |
+| G4 Concept / planning |  | Included |  |
+|  | Compare selected ground/foundation options and risk | Included |  |
+|  | Nominated planning report and responses | Included |  |
+|  | Interim report has stated limits | Included |  |
+|  | Approval not guaranteed. | Included |  |
+| G5 Design / tender support | Not part of this appointment | Excluded | — |
+| G6 Construction / completion | Not part of this appointment | Excluded | — |
+| G7 Contractor advice / transfer | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory suite, owners and reliance recipients); quantities are client test-fixture choices.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Investigation and access — Investigation plan and issues register reconciled to allowances | X |  |  |  |
-| Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy | X |  |  |  |
-| Locating/clearance before intrusive work; name isolation/potholing party | X |  |  |  |
-| Occupied access, tenant liaison and permits. By client access lead (name in R4) |  |  | X |  |
-| Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners | X |  |  |  |
-| Ground design parameters — Foundation/bearing/settlement advice; structural engineer designs | X |  |  |  |
-| Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance | X |  |  |  |
-| Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist |  | X |  |  |
-| Specialist assessment — Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy |  | X |  |  |
-| Contamination, waste classification, remediation/validation and independent audit. By separately appointed environmental consultant (name in R4), not yet engaged |  |  | X |  |
-| Acid sulfate soil assessment; define desktop/intrusive/management package from evidence | X |  |  |  |
-| Construction and transfer — G6 inspections/tests/scoped completion; contractor books, named others supervise/design temporary works |  | X |  |  |
-| G7 novation/transfer; separate appointment and fee, never inferred from route |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Base stages only, from written instruction/input-access milestone to the selected deliverable. Later options require written instruction; agree interim reports and monitoring endpoint.  R1 Fee by stage: Price stages/options separately: fixed, time-ceiling or unit basis; quantities, rates, GST, dependencies and markups. Cored alternatives include auger: total and increment, no double count. Acknowledge addenda. Confirm the signatory can bind your firm. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| G1 Brief / plan — Included | Review design and prior tests for relevance; agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe fieldwork, access and handback; reconcile counts/levels. Deliver plan, inputs and issues register. |  |  |  |
-| G2 Field / laboratory — Included | Scheduled locating/clearance, drilling/coring/pits, sampling and tests; competent supervision. Record locations/datum/precision, logs/photos, groundwater and incomplete/refusal points; traceable lab records and scheduled site handback. |  |  |  |
-| G3 Interpretation / report — Included | Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater, aggressivity, pavement and classification parameters; location plan and designer parameter schedule. Identify pending tests and further evidence. |  |  |  |
-| G4 Concept / planning — Included | Compare selected ground/foundation options and risk; nominated planning report and responses. Interim report has stated limits; approval not guaranteed. |  |  |  |
-| G5 Design / tender support — Option | Review conditions and changed footprint/loads against coverage; supplementary work separately priced. Review parameter use; tender inputs, hold points and scheduled queries. Review is not design authorship |  |  |  |
-| G6 Construction / completion — Option | Scheduled founding/pile/excavation inspections, earthworks tests and monitoring reviews; changed-condition advice, test/issues register and scoped completion statement. Record missed/inaccessible work; agree instruments handover/decommissioning |  |  |  |
-| G7 Contractor advice / transfer — Option | Define contractor design review, further investigation, client, reliance and endpoint. Separate appointment and fee for novation/transfer |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Beyond-spot groundwater monitoring / hydrogeology / dewatering |  |  |  |
-| Service option | Defect/distress diagnosis |  |  |  |
-| Service option | G6 inspections/tests/scoped completion |  |  |  |
-| Service option | G7 novation/transfer |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -97,6 +102,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Input/plan approval, mobilisation, field/lab, preliminary/final report and monitoring endpoint dates; optional construction coverage, booking notice, dependencies/start/pause and interim report limits. |
 | R8 Insurance and compliance | Client-selected PI $5 million (client selected) and PL $20 million (client selected). Current PI/PL/workers compensation as applicable, claim/aggregate limits, exclusions, continuity and competence/registration. Agree client-selected insurance limits before issue. |
 | R9 Reimbursables | Labs/plant/locator, permits, water/skips/disposal/restoration, travel, instruments/storage: included/allowance/rate, payer, quantity, markup/GST and approval. No R1 duplication; identify client-direct work. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

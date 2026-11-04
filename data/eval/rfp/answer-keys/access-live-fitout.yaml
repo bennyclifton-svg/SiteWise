@@ -56,24 +56,17 @@ description: Occupied retail fit-out requires retained/shared routes and sensory
   novation or later base services.
 expect:
   access:
-    stages_include:
-    - s1_inception
-    - s2_concept
-    - s4_approval
-    stages_absent:
-    - s3_planning
-    stages_option:
-    - s5_tender
-    - s6_postcontract
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s2_concept, s4_approval]
+    stages_absent: [s3_planning, s5_tender, s6_postcontract, s7_completion]
     positions:
       existing: I
       shared_routes: I
       facilities: I
       occupied: I
       housing: absent
-      inclusive: O
-      testing: O
+      inclusive: X
+      testing: X
     blocking_only: true
     blocking: []
 snapshot: true

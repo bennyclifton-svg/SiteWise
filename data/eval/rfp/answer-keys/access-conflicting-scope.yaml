@@ -63,10 +63,8 @@ scenario: access-conflicting-scope
 description: Conflicting housing and approval scope stay unresolved even on a known residential building.
 expect:
   access:
-    stages_ask:
-    - s4_approval
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      housing: ask
-    blocking:
-    - fact:flag.access_housing
-    - fact:flag.access_approval
+      housing: I
+    blocking: ['fact:flag.access_housing', 'fact:flag.access_approval']
+    stages_include: [s4_approval]

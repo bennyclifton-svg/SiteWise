@@ -3,6 +3,7 @@ package invoices
 import (
 	"encoding/csv"
 	"io"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -65,6 +66,7 @@ func roundDiv(a, b int64) int64 {
 // Filter is what the Invoices tab is showing. Empty fields match everything;
 // Line "unallocated" matches rows with no line.
 type Filter struct {
+	LineIDs  []string // Display group descendants, resolved from this project's plan.
 	Supplier string
 	Month    string // YYYY-MM
 	Line     string
@@ -102,7 +104,7 @@ func (f Filter) Match(inv Invoice, row Row, status string) bool {
 	if f.Month != "" && !strings.HasPrefix(inv.Period, f.Month) {
 		return false
 	}
-	if f.Line == "unallocated" && row.LineID != "" || f.Line != "" && f.Line != "unallocated" && row.LineID != f.Line {
+	if f.Line == "unallocated" && row.LineID != "" || f.Line != "" && f.Line != "unallocated" && row.LineID != f.Line && !slices.Contains(f.LineIDs, row.LineID) {
 		return false
 	}
 	return f.Status == "" || f.Status == status

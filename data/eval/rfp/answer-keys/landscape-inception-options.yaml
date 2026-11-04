@@ -53,23 +53,16 @@ description: Inception boundary prices selected future podium/irrigation/public 
   extent asks, never I or X.
 expect:
   landscape-architecture:
-    stages_include:
-    - s1_inception
-    stages_option:
-    - s2_concept
-    - s3_approval
-    - s4_developed
-    - s5_tender
-    - s7_construction
-    - s8_establishment
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception]
     positions:
-      design: O
-      podium: O
-      irrigation_brief: O
-      irrigation_detail: O
-      public: O
-      special: ask
-      construction: O
-      establishment: O
-    blocking:
-    - fact:flag.landscape_special
+      design: X
+      podium: X
+      irrigation_brief: X
+      irrigation_detail: X
+      public: X
+      special: X
+      construction: X
+      establishment: X
+    blocking: ['fact:flag.landscape_special']
+    stages_absent: [s2_concept, s3_approval, s4_developed, s5_tender, s7_construction, s8_establishment]

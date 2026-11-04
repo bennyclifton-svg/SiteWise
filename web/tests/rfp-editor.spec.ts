@@ -19,7 +19,7 @@ async function refreshDraft(page: Page) {
   await toolbar.getByRole("button", { name: "Refresh draft", exact: true }).click();
   // Existing controls can still show the previous value while the new draft
   // loads. Wait for its version before testing persistence or another edit.
-  await expect(toolbar).toContainText(`Version ${Number(version![1]) + 1} ·`);
+  await expect(toolbar).toContainText(`Version ${Number(version![1]) + 1}`);
 }
 
 test("one RFP report: page one edited where it prints, checks beside their values, issue at the end", async ({ page }) => {
@@ -42,7 +42,9 @@ test("one RFP report: page one edited where it prints, checks beside their value
   // One report: page one is the project, always open in the Profile card's
   // columns; no decisions banner, no stale block.
   await expect(page.getByRole("complementary", { name: "Finish this RFP" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "3. Scope by stage and fee proposal", exact: true })).toBeVisible();
+  // Scope by stage: the stage table sits under 2. Scope of services.
+  await expect(page.locator(".rfp-stage-scope")).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: /Scope by stage/ })).toHaveCount(0);
   await expect(page.getByRole("region", { name: "Decide before issue" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Edit 1. Project", exact: true })).toHaveCount(0);
   const pageOne = page.locator(".rfp-page-one");
@@ -66,12 +68,12 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await pageOne.getByRole("button", { name: /^Client: .*Change$/ }).click();
   await pageOne.getByLabel("Client", { exact: true }).fill("Inner West Council");
   await pageOne.getByLabel("Client", { exact: true }).press("Enter");
-  await expect(pageOne.locator('[data-control="fact:client"] .rfp-source')).toHaveText("Profile");
+  await expect(pageOne.locator(".rfp-source")).toHaveCount(0);
   await expect(pageOne.locator('[data-control="fact:client"]')).toContainText("Inner West Council");
   await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toHaveCount(0);
   // An unset row waits behind "more", as on the Profile card.
   const site = pageOne.getByRole("group", { name: "Site and planning", exact: true });
-  await site.getByRole("button", { name: /^\+ \d+ more$/ }).click();
+  await expect(site.getByRole("button", { name: /^\+ \d+ more$/ })).toHaveCount(0);
   await site.getByRole("button", { name: "Zone: —. Change", exact: true }).click();
   await site.getByLabel("Zone", { exact: true }).fill("R2");
   await site.getByLabel("Zone", { exact: true }).press("Enter");
@@ -79,7 +81,8 @@ test("one RFP report: page one edited where it prints, checks beside their value
   // A condition answers in place.
   const country = pageOne.locator('[data-control="fact:flag.country"]');
   await country.getByRole("radio", { name: "Yes", exact: true }).check();
-  await expect(country.locator(".rfp-source")).toHaveText("Profile");
+  await expect(country.locator(".rfp-source")).toHaveCount(0);
+  await expect(country.getByRole("radio", { name: "Yes", exact: true })).toBeChecked();
   await page.screenshot({ path: "../.tools/rfp-report-editing.png", fullPage: true });
   const saved = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   expect(saved.details.find((d: { key: string }) => d.key === "proj.zone").value).toBe("R2");
@@ -87,14 +90,17 @@ test("one RFP report: page one edited where it prints, checks beside their value
   expect(saved.details.find((d: { key: string }) => d.key === "proj.flag.country").value).toBe("yes");
 
   const scope = page.locator('.report-section').filter({ has: page.getByRole('heading', { name: '2. Scope of services', exact: true }) });
-  const positions = scope.locator('.hydraulic-service-table');
-  await positions.getByRole('radio', { name: 'Help selecting other consultants: Excluded', exact: true }).check();
-  const selection = positions.locator('tr[data-control="position:consultant_selection"]');
-  await expect(selection).toContainText('party not named');
+  // Scope by stage: a service is included or excluded in its stage.
+  const positions = scope.locator('.rfp-stage-scope');
+  for (let i = 0; i < await positions.locator('.rfp-stage-toggle').count(); i++) { const t = positions.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }
+  const out = positions.getByRole('checkbox', { name: 'Help selecting other consultants: excluded', exact: true });
+  await out.check();
+  await expect(out).toBeChecked();
   await refreshDraft(page);
-  await expect(selection.getByRole('radio', { name: 'Help selecting other consultants: Excluded', exact: true })).toBeChecked();
-  await selection.getByRole('button', { name: 'Reset selection', exact: true }).click();
-  await expect(selection.getByRole('radio', { name: 'Help selecting other consultants: Optional price', exact: true })).toBeChecked();
+  for (let i = 0; i < await positions.locator('.rfp-stage-toggle').count(); i++) { const t = positions.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }
+  await expect(out).toBeChecked();
+  await positions.getByRole('checkbox', { name: 'Help selecting other consultants: included', exact: true }).check();
+  await expect(out).not.toBeChecked();
 
   await page.setViewportSize({ width: 1280, height: 2600 });
   await scope.screenshot({ path: '../.tools/rfp-scope-desktop.png' });
@@ -154,13 +160,108 @@ test("electrical keeps its allocation schedule beside grouped positions, with se
   await expect(allowances.getByLabel("Design review rounds", { exact: true })).toHaveValue("1");
   await page.screenshot({ path: "../.tools/electrical-simplified-desktop.png", fullPage: true });
   const scope = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "2. Scope of services", exact: true }) });
-  const allocation = scope.locator('.hydraulic-service-table');
+  // Allocation notes sit with their service inside the opened stage.
+  const allocation = scope.locator('.rfp-stage-scope');
+  for (let i = 0; i < await allocation.locator('.rfp-stage-toggle').count(); i++) { const t = allocation.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }
   await expect(allocation).toContainText(/smoke alarms/i);
   await expect(allocation).toContainText(/power.*recovery/i);
   await expect(allocation).toHaveCount(1);
   await refreshDraft(page);
+  for (let i = 0; i < await allocation.locator('.rfp-stage-toggle').count(); i++) { const t = allocation.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }
   await expect(allocation).toContainText(/smoke alarms/i);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   await scope.screenshot({ path: "../.tools/rfp-electrical-allocation-mobile.png" });
+});
+
+
+test("transmittal follows repository selection, saves snapshots and stays inside report budgets", async ({ page }) => {
+  const project = await signIn(page, "Compact RFP transmittal");
+  await page.setViewportSize({ width: 1900, height: 1000 });
+  await page.getByTestId('file-input').setInputFiles([0,1,2].map(i => ({name: `transmittal-${i}.md`, mimeType: 'text/markdown', buffer: Buffer.from(`# Survey ${i}\nDocument number: T-10${i}\nRevision: A\n`)})));
+  const repoRows = page.locator('tbody.reg-doc');
+  await expect(repoRows).toHaveCount(3);
+  await expect.poll(async () => (await (await page.request.get(`/api/projects/${project}/documents`)).json()).documents.every((d: {status: string}) => d.status === 'filed')).toBe(true);
+  const docs = (await (await page.request.get(`/api/projects/${project}/documents`)).json()).documents;
+  for (let i = 0; i < docs.length; i++) {
+    for (const [field, value] of Object.entries({number:`T-10${i}`, title:`Survey ${i}`, revision:'B', date:'2026-10-28'})) {
+      const r = await page.request.put(`/api/documents/${docs[i].id}/fields/${field}`, {headers:origin, data:{value}});
+      expect(r.ok(), await r.text()).toBeTruthy();
+    }
+  }
+  const pkg = await (await page.request.post(`/api/projects/${project}/packages`, { headers: origin, data: {kind:'services', title:'Architect', discipline_id:'consultant.architect'} })).json();
+  await page.getByRole('button', {name:'Procurement', exact:true}).click();
+  await page.getByRole('button', {name:'Create RFP for Architect', exact:true}).click();
+  const transmittal = page.getByRole('region', {name:'Transmittal', exact:true});
+  await expect(transmittal.locator('tbody tr')).toHaveCount(3);
+  await expect(transmittal).toContainText('2026-10-28');
+  await expect(transmittal.locator('tbody tr td:nth-child(3)')).toHaveText(['B','B','B']);
+  await expect(page.locator('.rfp-release-dates + .rfp-markers')).toHaveCount(0);
+  await expect(page.locator('.report-toolbar')).not.toContainText('Draft — not for issue');
+  await expect(page.locator('.rfp-grid .pf-col h4')).toHaveText(['Site and planning', 'The building', 'Delivery']);
+  await expect(page.locator('.rfp-page-one .rfp-source')).toHaveCount(0);
+  await transmittal.getByRole('button', {name:'Select all documents', exact:true}).click();
+  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
+  await repoRows.nth(1).locator('.reg-title').click({modifiers:['Control']});
+  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(2);
+  const selected = await repoRows.evaluateAll(els => els.filter(el => el.hasAttribute('data-selected')).map(el => el.id.slice(4)));
+  await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
+  await expect(transmittal.locator('tbody tr')).toHaveCount(2);
+  const reports = await (await page.request.get(`/api/projects/${project}/reports`)).json();
+  const report = reports.find((r: {package_id:string}) => r.package_id === pkg.id);
+  const base = `/api/reports/${report.id}`;
+  const block = (view: any) => view.draft.sections.flatMap((s: any) => s.blocks).find((b: any) => b.id === 'rfp:project:information');
+  let view = await (await page.request.get(base)).json();
+  expect(block(view).basis.document_ids.sort()).toEqual(selected.sort());
+  const frozenRows = block(view).table.rows;
+  await refreshDraft(page);
+  view = await (await page.request.get(base)).json();
+  expect(block(view).table.rows).toEqual(frozenRows);
+  await page.screenshot({path:'../.tools/rfp-transmittal-desktop.png'});
+  await page.setViewportSize({width:390,height:844});
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  expect((await transmittal.boundingBox())!.width).toBeLessThanOrEqual(390);
+  await transmittal.screenshot({path:'../.tools/rfp-transmittal-mobile.png'});
+  await page.setViewportSize({width:1900,height:1000});
+
+  // A failed write leaves both the previous saved schedule and the selection intact.
+  await transmittal.getByRole('button', {name:'Select all documents', exact:true}).click();
+  await page.route('**/settings/transmittal', route => route.fulfill({status:503,body:'Unavailable'}));
+  await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
+  await expect(page.getByRole('alert')).toContainText('Could not load or save');
+  await expect(transmittal.locator('tbody tr')).toHaveCount(2);
+  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
+  await page.unroute('**/settings/transmittal');
+  await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
+  await expect(transmittal.locator('tbody tr')).toHaveCount(3);
+  view = await (await page.request.get(base)).json();
+  for (const value of [[docs[0].id,docs[0].id], ['00000000-0000-0000-0000-000000000000'], {}, null]) {
+    const bad = await page.request.put(`${base}/settings/transmittal`, {headers:origin,data:{value,version:view.draft.version}});
+    expect(bad.status()).toBe(400);
+  }
+  const stale = await page.request.put(`${base}/settings/transmittal`, {headers:origin,data:{value:[],version:1}});
+  expect(stale.status()).toBe(409);
+  const timings: number[] = [], reads: number[] = [];
+  for (let i = 0; i < 25; i++) {
+    const started = performance.now();
+    const saved = await page.request.put(`${base}/settings/transmittal`, {headers:origin,data:{value:i % 2 ? docs.map((d:any) => d.id) : [],version:view.draft.version}});
+    expect(saved.ok(), await saved.text()).toBeTruthy();
+    timings.push(performance.now() - started);
+    view = await saved.json();
+    const readStarted = performance.now();
+    const read = await page.request.get(base);
+    expect(read.ok()).toBeTruthy();
+    reads.push(performance.now() - readStarted);
+  }
+  for (const [path, values] of [['report_setting', timings], ['report_read', reads]] as const) {
+    values.sort((a,b) => a-b);
+    console.log(`${path} p50=${values[12].toFixed(1)}ms p90=${values[22].toFixed(1)}ms; budget 100/250ms`);
+    expect(values[12]).toBeLessThanOrEqual(100); expect(values[22]).toBeLessThanOrEqual(250);
+  }
+  expect(block(view).table.rows).toEqual([]);
+  await page.reload();
+  await page.getByRole('button', {name:'Procurement', exact:true}).click();
+  const open = page.getByRole('button', {name:'View RFP for Architect', exact:true});
+  if (await open.count()) await open.click();
+  await expect(page.getByRole('region', {name:'Transmittal',exact:true})).toContainText('No documents in this transmittal.');
 });

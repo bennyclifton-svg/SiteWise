@@ -51,7 +51,7 @@ body {
   background: var(--canvas);
   color: var(--ink-body);
   font-family: var(--sans);
-  font-size: 13.5px;
+  font-size: var(--fs-md);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -88,15 +88,15 @@ select {
 }
 
 /* ---------- shell ---------- */
-.ocr-summary { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--ink-muted); font-size: 12px; font-weight: 500; }
+.ocr-summary { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--ink-muted); font-size: var(--fs-sm); font-weight: 500; }
 .ocr-summary[data-complete] { color: var(--warn); }
 .ocr-summary svg { width: 14px; height: 14px; }
 .ocr-status { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px 18px; background: var(--ground); border-bottom: 1px solid var(--line); }
 .ocr-status-copy { min-width: 0; max-width: 62ch; }
-.ocr-status-copy strong { color: var(--ink); font-size: 14px; font-weight: 600; }
-.ocr-status-copy p { margin-top: 4px; color: var(--ink-muted); font-size: 13px; line-height: 1.5; }
+.ocr-status-copy strong { color: var(--ink); font-size: var(--fs-lg); font-weight: 600; }
+.ocr-status-copy p { margin-top: 4px; color: var(--ink-muted); font-size: var(--fs-md); line-height: 1.5; }
 .ocr-steps { display: flex; flex-shrink: 0; gap: 18px; margin: 0; padding: 0; list-style: none; }
-.ocr-steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-muted); font-size: 12px; white-space: nowrap; }
+.ocr-steps li { display: flex; align-items: center; gap: 6px; color: var(--ink-muted); font-size: var(--fs-sm); white-space: nowrap; }
 .ocr-steps li[data-state="active"] { color: var(--ink); font-weight: 600; }
 .ocr-step-mark { display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--line-strong); border-radius: 50%; }
 .ocr-step-mark > span { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-muted); }
@@ -196,7 +196,7 @@ select {
 .btn-small {
   height: 28px;
   padding: 0 10px;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
 }
 
 .input,
@@ -320,7 +320,7 @@ select {
   min-width: 0;
   padding: 14px 12px 14px 16px;
   color: var(--ink);
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 500;
   text-decoration: none;
 }
@@ -339,7 +339,7 @@ select {
 .project-open {
   flex: none;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 400;
   color: var(--ink-muted);
 }
@@ -381,7 +381,7 @@ select {
   display: flex;
   gap: 18px;
   flex-wrap: wrap;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -395,7 +395,7 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--ink-muted);
 }
 
@@ -457,7 +457,7 @@ select {
 }
 
 .drop-title {
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--ink);
 }
@@ -473,7 +473,7 @@ select {
   margin: 12px 0 28px;
   padding: 0;
   list-style: none;
-  font-size: 12px;
+  font-size: var(--fs-sm);
   color: var(--ink-muted);
 }
 
@@ -517,7 +517,7 @@ select {
   flex: 1;
   min-width: 0;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--ink-body);
   overflow: hidden;
@@ -529,7 +529,7 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--ink-muted);
   white-space: nowrap;
@@ -607,7 +607,7 @@ button.cell:focus-visible {
 
 .cell-label {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-xs);
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -616,7 +616,7 @@ button.cell:focus-visible {
 
 .cell-value {
   flex: 1;
-  font-size: 15px;
+  font-size: var(--fs-lg);
   font-weight: 500;
   line-height: 1.3;
   color: var(--ink);
@@ -632,7 +632,7 @@ button.cell:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   white-space: nowrap;
   color: var(--ink-muted);
 }
@@ -715,11 +715,11 @@ button.cell[data-state="check"]:hover {
 .cell-edit .select {
   width: 100%;
   height: 32px;
-  font-size: 14px;
+  font-size: var(--fs-lg);
 }
 
 .cell-hint {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   color: var(--ink-muted);
 }
 
@@ -782,7 +782,7 @@ button.cell[data-state="check"]:hover {
 .empty strong {
   display: block;
   color: var(--ink);
-  font-size: 15px;
+  font-size: var(--fs-lg);
   margin-bottom: 4px;
 }
 
@@ -887,7 +887,7 @@ button.cell[data-state="check"]:hover {
 }
 
 .switcher-label {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-muted);
@@ -1016,7 +1016,7 @@ button.cell[data-state="check"]:hover {
 /* register */
 
 .register {
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .reg-head {
@@ -1035,13 +1035,13 @@ button.cell[data-state="check"]:hover {
 .reg-head h2 {
   margin: 0;
   flex: 1;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 
 .reg-live[data-state="reconnecting"],
 .reg-live[data-state="offline"] {
   color: var(--warn);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .reg-empty {
@@ -1158,7 +1158,7 @@ button.cell[data-state="check"]:hover {
   padding: 6px 12px;
   border-bottom: 1px solid var(--line);
   background: var(--warn-soft);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .reg-table thead th {
@@ -1221,7 +1221,7 @@ button.cell[data-state="check"]:hover {
 .reg-line td.reg-rev,
 .reg-line td.reg-date {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .reg-line td[data-user] {
@@ -1246,7 +1246,7 @@ button.cell[data-state="check"]:hover {
   display: block;
   overflow: hidden;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 400;
   text-overflow: ellipsis;
 }
@@ -1254,7 +1254,7 @@ button.cell[data-state="check"]:hover {
 .reg-text-status {
   display: block;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 400;
 }
 .reg-text-status[data-state="failed"] {
@@ -1312,7 +1312,7 @@ button.cell[data-state="check"]:hover {
 .profile-status {
   margin: 0 0 12px;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .pf-section {
@@ -1321,14 +1321,14 @@ button.cell[data-state="check"]:hover {
 
 .pf-section h2 {
   margin: 0 0 8px;
-  font-size: 14px;
+  font-size: var(--fs-lg);
   letter-spacing: 0.02em;
 }
 
 .pf-section h3 {
   margin: 14px 0 6px;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1340,9 +1340,16 @@ button.cell[data-state="check"]:hover {
   justify-content: space-between;
 }
 
+/* Firms appointed in Procurement, under the Project card. */
+.pf-appointed { display: grid; gap: 4px; margin: 10px 0 0; font-size: var(--fs-md); }
+.pf-appointed > div { display: flex; gap: 8px; flex-wrap: wrap; }
+.pf-appointed dt { color: var(--ink-muted); min-width: 9em; }
+.pf-appointed dd { margin: 0; }
+.pf-appointed-contact { color: var(--ink-muted); }
+
 .pf-toggle {
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .pf-grid {
@@ -1385,14 +1392,14 @@ button.cell[data-state="check"]:hover {
 
 .pf-derived {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .pf-assert {
   padding: 1px 6px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .pf-assert[data-assertion="allowance"],
@@ -1403,14 +1410,14 @@ button.cell[data-state="check"]:hover {
 
 .pf-hint {
   color: var(--ink-muted);
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
 }
 
 .pf-mark {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 .pf-mark svg {
   width: 13px;
@@ -1450,7 +1457,7 @@ button.cell[data-state="check"]:hover {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   list-style: none;
   cursor: pointer;
 }
@@ -1475,7 +1482,7 @@ button.cell[data-state="check"]:hover {
 .pf-provider,
 .pf-note {
   height: 28px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .pf-parts {
@@ -1490,7 +1497,7 @@ button.cell[data-state="check"]:hover {
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--paper);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .pf-more summary {
@@ -1554,7 +1561,7 @@ button.cell[data-state="check"]:hover {
   padding: 0 4px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
-  font-size: 9.5px;
+  font-size: var(--fs-xs);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -1571,7 +1578,7 @@ button.cell[data-state="check"]:hover {
 
 .profile-actions-note {
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 /* development server status, foot of the left nav */
@@ -1584,13 +1591,13 @@ button.cell[data-state="check"]:hover {
   padding-top: 12px;
   border-top: 1px solid var(--line);
   color: var(--ink-body);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .devstatus small {
   display: block;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .devstatus-dot {
@@ -1618,9 +1625,9 @@ button.cell[data-state="check"]:hover {
 .pf-source-list { list-style: none; margin: 0; padding: 0; }
 .pf-source-list > li { border-top: 1px solid var(--line); padding: 14px 0; }
 .pf-source-list blockquote { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
-.pf-source-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--ink-muted); overflow-wrap: anywhere; }
+.pf-source-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: var(--fs-sm); color: var(--ink-muted); overflow-wrap: anywhere; }
 .pf-source-context { margin: 6px 0; white-space: pre-wrap; }
-.pf-source-warning { color: var(--ember); font-size: 12px; }
+.pf-source-warning { color: var(--ember); font-size: var(--fs-sm); }
 .pf-source-pages { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; }
 .pf-coverage { padding-left: 20px; }
 .pf-coverage li { margin: 8px 0; overflow-wrap: anywhere; }
@@ -1628,7 +1635,7 @@ button.cell[data-state="check"]:hover {
 .profile-reading {
   margin: 4px 0 0;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 /* Deletion: a quiet bin per row and in the header; the dialog confirms. */
@@ -1664,6 +1671,17 @@ button.cell[data-state="check"]:hover {
   outline: 2px solid var(--azure);
   outline-offset: -2px;
 }
+/* The bins appear on demand: a row's on hover, focus or selection; the
+   header's once something is selected. Touch screens cannot hover, so they
+   keep them visible. Opacity, not display, so the column keeps its width and
+   a keyboard user still lands on the button. */
+@media (hover: hover) {
+  .reg-table .reg-line .reg-del { opacity: 0; transition: opacity 120ms ease-out; }
+  .reg-table .reg-doc:hover .reg-del,
+  .reg-table .reg-doc:focus-within .reg-del,
+  .reg-table .reg-doc[data-selected] .reg-del { opacity: 1; }
+  .reg-table th.reg-bin .reg-del:disabled { visibility: hidden; }
+}
 .btn-danger {
   border-color: var(--alert);
   background: var(--alert);
@@ -1689,7 +1707,7 @@ button.cell[data-state="check"]:hover {
 }
 .confirm h2 {
   margin: 0 0 8px;
-  font-size: 15px;
+  font-size: var(--fs-lg);
   color: var(--ink);
 }
 .confirm p {
@@ -1705,14 +1723,14 @@ button.cell[data-state="check"]:hover {
 .pf-scope-hint {
   margin: 0 0 8px;
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .pf-scope-origin {
   padding: 0 6px;
   border: 1px dashed var(--line-strong);
   border-radius: 999px;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 .pf-scope-origin[data-origin="default"] {
   border-color: var(--azure);
@@ -1726,16 +1744,16 @@ button.cell[data-state="check"]:hover {
 .pf-scope-note {
   flex-basis: 100%;
   color: var(--warn);
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
 }
 
 .pf-scope-check {
   color: var(--warn);
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
 }
 .pf-scope-out {
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .pf-ev {
@@ -1766,7 +1784,7 @@ button.cell[data-state="check"]:hover {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   color: var(--ink-muted);
-  font-size: 10.5px;
+  font-size: var(--fs-xs);
   text-align: center;
 }
 
@@ -1781,7 +1799,7 @@ button.cell[data-state="check"]:hover {
 .pf-identity {
   margin: 0;
   color: var(--ink-body);
-  font-size: 13px;
+  font-size: var(--fs-md);
   overflow-wrap: anywhere;
 }
 .pf-header .profile-reading {
@@ -1804,7 +1822,7 @@ button.cell[data-state="check"]:hover {
   background: var(--alert-soft);
   color: var(--alert);
   font: inherit;
-  font-size: 11.5px;
+  font-size: var(--fs-xs);
   cursor: pointer;
 }
 
@@ -1839,7 +1857,7 @@ button.cell[data-state="check"]:hover {
 }
 .pf-unit {
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .pf-reset {
   width: 22px;
@@ -1849,7 +1867,7 @@ button.cell[data-state="check"]:hover {
   border-radius: var(--radius-sm);
   background: none;
   color: var(--ember-hot);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   line-height: 1;
   cursor: pointer;
 }
@@ -1861,7 +1879,7 @@ button.cell[data-state="check"]:hover {
 /* Project card: the building, the site and planning, delivery. */
 .pf-head .pf-parts {
   justify-content: flex-end;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .pf-card {
   display: grid;
@@ -1887,7 +1905,7 @@ button.cell[data-state="check"]:hover {
 }
 .pf-col .pf-label {
   color: var(--ink-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   line-height: 1.25;
 }
 .pf-col .pf-main {
@@ -1897,7 +1915,7 @@ button.cell[data-state="check"]:hover {
 .pf-col-more {
   justify-self: start;
   margin: 4px 4px 0;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 /* Scope and works: a rail in build order, the chosen entry beside it. */
@@ -1935,7 +1953,7 @@ button.cell[data-state="check"]:hover {
   background: none;
   color: var(--ink-body);
   font: inherit;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   text-align: left;
   cursor: pointer;
 }
@@ -1952,12 +1970,12 @@ button.cell[data-state="check"]:hover {
 .sw-count {
   color: var(--ink-muted);
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-xs);
   font-weight: 400;
 }
 .sw-check {
   color: var(--warn);
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 400;
   white-space: nowrap;
 }
@@ -1975,7 +1993,7 @@ button.cell[data-state="check"]:hover {
 .pf-section .sw-pane-head h3 {
   margin: 0;
   color: var(--ink);
-  font-size: 14px;
+  font-size: var(--fs-lg);
   letter-spacing: 0;
   text-transform: none;
 }
@@ -1986,7 +2004,7 @@ button.cell[data-state="check"]:hover {
 }
 .sw-req {
   margin-left: auto;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .sw-row {
   display: grid;
@@ -2000,7 +2018,7 @@ button.cell[data-state="check"]:hover {
   min-height: 24px;
   border-bottom: 1px solid var(--line);
   color: var(--ink-muted);
-  font-size: 10.5px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2018,7 +2036,7 @@ button.cell[data-state="check"]:hover {
   align-items: center;
   gap: 2px 8px;
   min-width: 0;
-  font-size: 13px;
+  font-size: var(--fs-md);
 }
 .sw-name label {
   display: inline-flex;
@@ -2029,7 +2047,7 @@ button.cell[data-state="check"]:hover {
 .sw-select {
   width: 100%;
   height: 26px;
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 .sw-select[data-default] {
   color: var(--ink-muted);
@@ -2084,7 +2102,7 @@ button.cell[data-state="check"]:hover {
 }
 .sw-work .works-open {
   padding: 4px 6px;
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
 }
 .sw-inputs {
   margin-top: 16px;
@@ -2096,7 +2114,7 @@ button.cell[data-state="check"]:hover {
   margin: 0 0 4px;
   padding: 0 4px;
   color: var(--ink-body);
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   font-weight: 600;
 }
 .sw-grid {
@@ -2107,7 +2125,7 @@ button.cell[data-state="check"]:hover {
   grid-template-columns: minmax(0, 1fr) 6.5rem;
 }
 .sw-grid .pf-label {
-  font-size: 12.5px;
+  font-size: var(--fs-sm);
   line-height: 1.3;
 }
 
@@ -2143,7 +2161,7 @@ button.cell[data-state="check"]:hover {
 }
 
 .profile-progress { grid-column: 1 / -1; margin-top: 8px; }
-.profile-progress p { margin: 0 0 4px; font-size: 13px; color: var(--ink-body); }
+.profile-progress p { margin: 0 0 4px; font-size: var(--fs-md); color: var(--ink-body); }
 .profile-progress progress { display: block; width: 100%; height: 6px; accent-color: var(--azure); }
 .profile-progress progress::-webkit-progress-bar { background: var(--ground); }
 .profile-progress progress::-webkit-progress-value { background: var(--azure); }

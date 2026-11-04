@@ -70,6 +70,8 @@ const (
 	FlagNoText       = "no_text"
 	FlagNoSchedule   = "no_schedule"
 	FlagResponseForm = "response_form"
+	FlagABNInvalid   = "abn_invalid"
+	FlagMonthlyFee   = "monthly_fee"
 )
 
 const (
@@ -246,6 +248,15 @@ func (d *Draft) settlePackage() {
 	}
 }
 
+// ownFirm is the firm a document names as its author without an ABN: the
+// sign-off's firm, else the one registered name in its header.
+func (d *Draft) ownFirm() string {
+	if d.ev.SignatureFirm != "" {
+		return d.ev.SignatureFirm
+	}
+	return d.ev.HeaderFirm
+}
+
 // settleFirm matches the directory by ABN or name. A match fills every firm
 // field from the directory, so no firm question is asked.
 func (d *Draft) settleFirm() {
@@ -258,6 +269,12 @@ func (d *Draft) settleFirm() {
 		if k := NameKey(n); k != "" {
 			keys = append(keys, k)
 		}
+	}
+	// The firm that signs, or the one registered name in the header, is the
+	// author. A forwarded email also carries the forwarder's domain, which
+	// must not match the directory first (Walsh builder email, 2026-10-27).
+	if own := d.ownFirm(); own != "" {
+		keys = []string{NameKey(own)}
 	}
 	if u := d.by[FieldFirmName]; u.DecidedBy == ByUser && u.Value != "" {
 		keys = []string{NameKey(u.Value)}
@@ -282,6 +299,9 @@ func (d *Draft) settleFirm() {
 		}
 	}
 	d.rule(FieldFirmName, d.corroboratedName())
+	// A letter with no letterhead names its firm in the sign-off, or prints
+	// its one registered name in the header.
+	d.rule(FieldFirmName, d.ownFirm())
 	if f := d.ev.FormFirm; f != nil {
 		for field, label := range map[string]string{FieldFirmName: "Firm", FieldFirmContact: "Contact", FieldFirmEmail: "Email", FieldFirmPhone: "Phone", FieldFirmAddress: "Address"} {
 			d.rule(field, strings.TrimSpace(f[label]))
@@ -899,6 +919,8 @@ type Reading struct {
 	Decisions   []Decision
 	// Dated is the proposal's printed date (YYYY-MM-DD), or "".
 	Dated string
+	// PI is the professional indemnity cover the document states, or nil.
+	PI *Insurance
 }
 
 var departureHeading = regexp.MustCompile(`(?i)exclusion|assumption|departure|qualification|not included|limitation|clarification`)
@@ -906,7 +928,7 @@ var departureHeading = regexp.MustCompile(`(?i)exclusion|assumption|departure|qu
 // Finish computes every figure from the decisions: ex GST, percentage fees,
 // other items, the sum check and the flags.
 func (d *Draft) Finish() Reading {
-	r := Reading{Kind: d.by[FieldKind].Value, PackageID: d.by[FieldPackage].Value, Firm: d.firm, GSTBasis: d.by[FieldGSTBasis].Value, FirmFields: map[string]string{}, Dated: d.ev.Dated}
+	r := Reading{Kind: d.by[FieldKind].Value, PackageID: d.by[FieldPackage].Value, Firm: d.firm, GSTBasis: d.by[FieldGSTBasis].Value, FirmFields: map[string]string{}, Dated: d.ev.Dated, PI: d.ev.PI}
 	for _, f := range FirmFields {
 		if v := d.by[f].Value; v != "" {
 			r.FirmFields[f] = v
@@ -1017,6 +1039,12 @@ func (d *Draft) Finish() Reading {
 		if gap := total - base; gap > 100 || gap < -100 {
 			r.Flags = append(r.Flags, FlagTotalGap)
 		}
+	}
+	if len(d.ev.InvalidABNs) > 0 && d.by[FieldFirmABN].Value == "" {
+		d.flags[FlagABNInvalid] = true
+	}
+	if len(d.ev.MonthlyFees) > 0 {
+		d.flags[FlagMonthlyFee] = true
 	}
 	for f := range d.flags {
 		r.Flags = append(r.Flags, f)

@@ -9,15 +9,23 @@ import type { ProgramActivity, ProgramChange, ProgramHoldPoint, ProgramImport, P
 import { fmtDate } from "./layout";
 import { fileLinks, notReadWords, proposedText, type ReadingGroup } from "./readings";
 
-/** "Scope and procurement changed: 3 to add, 1 to remove, 2 renamed. Review." */
-export function ReviewBanner({ words, onReview }: { words: string; onReview: () => void }) {
+/**
+ * The page's primary action, like Update project profile on the Profile
+ * (owner, 2026-11-03). A change elsewhere never moves the program's dates:
+ * it only lights this button with a count. The user opens the list and
+ * chooses; nothing is applied until then.
+ */
+export function UpdateProgramButton({ pending, words, open, onToggle }: { pending: number; words: string; open: boolean; onToggle: () => void }) {
   return (
-    <div className="pg-note pg-banner" role="status">
-      <span>{words}</span>
-      <button type="button" className="pg-link-button" onClick={onReview}>
-        Review
-      </button>
-    </div>
+    <button
+      type="button"
+      className={pending > 0 ? "btn pg-update is-pending" : "btn pg-update"}
+      aria-expanded={open}
+      title={pending > 0 ? words : "The program is up to date with the Profile and Procurement."}
+      onClick={onToggle}
+    >
+      Update program{pending > 0 && <span className="pg-update-count">{pending}</span>}
+    </button>
   );
 }
 
@@ -28,12 +36,14 @@ export function ReviewBanner({ words, onReview }: { words: string; onReview: () 
  */
 export function ReviewPanel({
   changes,
+  words,
   busy,
   onApply,
   onAdoptAll,
   onClose,
 }: {
   changes: readonly ProgramChange[] | null;
+  words: string;
   busy: boolean;
   onApply: (decisions: { id: string; choice: string }[]) => void;
   onAdoptAll: () => void;
@@ -44,9 +54,9 @@ export function ReviewPanel({
   useEffect(() => setChoice({}), [changes]);
   const chosen = (c: ProgramChange) => choice[c.id] ?? c.default_choice;
   return (
-    <section className="pg-panel" aria-label="Review changes">
+    <section className="pg-panel" aria-label="Update program">
       <header className="pg-panel-head">
-        <h2>Review changes</h2>
+        <h2>Update program</h2>
         <button type="button" className="btn btn-small" onClick={onClose}>
           Close
         </button>
@@ -54,9 +64,10 @@ export function ReviewPanel({
       {!changes ? (
         <p className="pg-panel-empty">Loading the changes…</p>
       ) : changes.length === 0 ? (
-        <p className="pg-panel-empty">Nothing waits for review.</p>
+        <p className="pg-panel-empty">The program is up to date with the Profile and Procurement.</p>
       ) : (
         <>
+          <p className="pg-panel-intro">{words} Nothing changes until you choose. Rows you edited default to Keep.</p>
           <ul className="pg-review">
             {changes.map((c) => (
               <li key={c.id} className="pg-review-item" data-change={c.id}>
@@ -84,7 +95,7 @@ export function ReviewPanel({
               Adopt all
             </button>
             <button type="button" className="btn btn-small pg-build" disabled={busy} onClick={() => onApply(changes.map((c) => ({ id: c.id, choice: chosen(c) })))}>
-              Apply choices
+              Update program
             </button>
           </div>
         </>

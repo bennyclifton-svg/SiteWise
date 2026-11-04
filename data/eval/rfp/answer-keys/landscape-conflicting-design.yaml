@@ -57,8 +57,6 @@ scenario: landscape-conflicting-design
 description: Conflicting landscape extent never implies design or specialist exclusion.
 expect:
   landscape-architecture:
-    stages_ask:
-    - s2_concept
-    - s3_approval
-    blocking:
-    - fact:flag.landscape_design
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    blocking: ['fact:flag.landscape_design']
+    stages_include: [s2_concept, s3_approval]

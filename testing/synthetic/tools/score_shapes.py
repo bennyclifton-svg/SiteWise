@@ -582,7 +582,22 @@ def _same(key, got, want):
     return (got or "absent") == (want or "absent")
 
 
-def _compare_expect(r, values, checks):
+def _by_stage(view):
+    """An RFP laid out as one stage table (scope by stage, owner direction
+    3 November 2026) has only included or excluded rows."""
+    for sec in (view.get("draft") or {}).get("sections") or []:
+        for b in sec.get("blocks") or []:
+            if (b.get("basis") or {}).get("layout") == "stage_scope":
+                return True
+    return False
+
+
+# Scope by stage reads an option or an open question as included. The shapes
+# keep the answer the rules give, so translate it here rather than rewrite them.
+BY_STAGE = {"option": "include", "O": "I"}
+
+
+def _compare_expect(r, values, checks, by_stage=False):
     out = {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": [], "awaiting_user": []}
     expect = r.get("expect") or {}
     differs = {d["key"]: d for d in r.get("app_differs") or []}
@@ -602,6 +617,9 @@ def _compare_expect(r, values, checks):
             continue  # compared per check below
         elif key not in wanted:
             wanted[key] = d.get("expect")
+    if by_stage:
+        wanted = {k: ("I" if k.startswith("position.") and v == "ask" else "include" if v == "ask" else BY_STAGE.get(v, v))
+                  for k, v in wanted.items()}
     for key, want in wanted.items():
         present = key in values
         got = values.get(key)
@@ -753,7 +771,7 @@ def score_rfps(exp, reports, packages):
         values, labels = _controls(a["view"])
         checks = {c.get("id") for c in (a["view"].get("rfp") or {}).get("checks") or [] if c.get("blocking")}
         entry.update(status="found", found=True, report=a["id"], app_template=a["template"])
-        entry["expect"] = _compare_expect(r, values, checks) if r.get("expect") or r.get("app_differs") else \
+        entry["expect"] = _compare_expect(r, values, checks, _by_stage(a["view"])) if r.get("expect") or r.get("app_differs") else \
             {"ok": 0, "new_failure": [], "known_difference": [], "fixed": [], "not_checked": [], "awaiting_user": []}
         entry["must_include"], entry["must_not_include"] = _phrases(r, a["view"], values, labels)
         out.append(entry)

@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to build Office (Class 5) at 1 Example Street, Example NSW.
@@ -11,54 +9,50 @@ Example Client intends to build Office (Class 5) at 1 Example Street, Example NS
 
 Conditions that do not apply: Vulnerable or assisted occupants documented; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Parts with different NCC classes.
 
-Information provided: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage scheduled.
-
 ### 2. Scope of services
 
 Own strategy/analysis. BCA adviser coordinates departures; system/passive/structure/facade designers detail; contractors install/test; authorities decide. Scoped FEIR is not occupation approval.
 Report unsupported solutions/alternatives; no approval guarantee. Operator accepts staffing/maintenance/storage/use limits. Revision-controlled plans/registers trace solutions to designer/verification.
 Fire basis: Confirm parts/classes/compartments/height, occupants/hazards/systems, accepted solutions, current instruments/verification owner, authority route, insurer targets and revisions.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Start on instruction/agreed inputs; end at named output/response. Price once. R1 Fee by stage: Quantity/basis, ex GST/GST/total by stage/question; base/options/dependencies, milestones/validity; price once. Acknowledge numbered addenda; confirm authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Evidence / strategy |  | Included |  |
+|  | Records/inspection, gaps/departures and strategy/markups: active/passive measures, egress/brigade access, options/operating consequences | Included |  |
+|  | Existing extent | Included |  |
+| S2 Early approval support |  | Included |  |
+|  | Defined preliminary letter/report and bounded responses | Included |  |
+|  | Partial-upgrade needs | Included |  |
+|  | Not final brief/FER or construction authority | Included |  |
+| S3 Performance design brief |  | Included |  |
+|  | PBDB/FEB: IDs/departures, verified requirements, methods/scenarios/criteria, inputs/limits | Included |  |
+|  | Consultation and team/operator/certifier comment closure | Included |  |
+|  | Brief for scheduled solutions | Included |  |
+| S4 Analysis / FER |  | Included |  |
+|  | Analysis/calculations/models/sensitivity, draft/final FER/plans and limits | Included |  |
+|  | Owned construction/system/commissioning/management requirements, acceptance/open items | Included |  |
+|  | FER for scheduled solutions | Included |  |
+|  | Smoke-control/cause-and-effect and selected services strategy review | Included |  |
+| S5 Tender / integration | Not part of this appointment | Excluded | — |
+| S6 Construction support | Not part of this appointment | Excluded | — |
+| S7 Verification / occupation | Not part of this appointment | Excluded | — |
+| S8a Specialist investigation | Not part of this appointment | Excluded | — |
+| S8b Interim / staged strategy | Not part of this appointment | Excluded | — |
+| S9a Defined advisory | Not part of this appointment | Excluded | — |
+| S9b Independent peer review | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Bushfire, legal/expert-witness and statutory BCA certification | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage scheduled.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Fire strategy and evidence — Brief for scheduled solutions | X |  |  |  |
-| FER for scheduled solutions | X |  |  |  |
-| Interim strategies/shutdowns/staged occupation; each phase priced separately |  | X |  |  |
-| Design ownership and verification — Sprinklers, hydrants, pumps, tanks and pipework design. By fire-services designer, not yet engaged |  |  | X |  |
-| Detection, alarm and warning design. By fire-services or electrical designer, not yet engaged |  |  | X |  |
-| Selected script review/test witnessing; evidence/defects/retests, trades close defects |  | X |  |  |
-| Matrix design, controls programming and test execution. By matrix designer, controls programmer and test contractors |  |  | X |  |
-| Independent peer review; designer retains duty |  | X |  |  |
-| Bushfire, legal/expert-witness and statutory BCA certification. By bushfire adviser, legal/expert witness and statutory certifier |  |  | X |  |
-| Systems and specialist assessments — Smoke-control/cause-and-effect and selected services strategy review | X |  |  |  |
-| Orders/defects: preserve evidence, diagnose extent, temporary controls, insured rectification designer/verifier and closure evidence |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Start on instruction/agreed inputs; end at named output/response. Price once.  R1 Fee by stage: Quantity/basis, ex GST/GST/total by stage/question; base/options/dependencies, milestones/validity; price once. Acknowledge numbered addenda; confirm authorised signatory. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Evidence / strategy — Included | Records/inspection, gaps/departures and strategy/markups: active/passive measures, egress/brigade access, options/operating consequences; existing extent |  |  |  |
-| S2 Early approval support — Option | Defined preliminary letter/report and bounded responses; partial-upgrade needs. Not final brief/FER or construction authority |  |  |  |
-| S3 Performance design brief — Included | PBDB/FEB: IDs/departures, verified requirements, methods/scenarios/criteria, inputs/limits; consultation and team/operator/certifier comment closure |  |  |  |
-| S4 Analysis / FER — Included | Analysis/calculations/models/sensitivity, draft/final FER/plans and limits; owned construction/system/commissioning/management requirements, acceptance/open items |  |  |  |
-| S5 Tender / integration — Option | Design-package review/closure and tender queries; D&C intent, contractor duties/substitution evidence; services design separate |  |  |  |
-| S6 Construction support — Option | Bounded RFIs, changes/shop interfaces, concealed-work hold points and evidence/departures; accepted-solution impacts. New solutions/staging separately authorised |  |  |  |
-| S7 Verification / occupation — Option | Evidence/test plan, certificates/scripts, accessible inspections/witnessing, defects/retests and scoped FEIR; unseen work/occupation dependencies; strategy/operations handover |  |  |  |
-| S8a Specialist investigation — Option | Scheduled investigation/CFD/egress/heat-transfer questions: methods/scenarios/iterations, insured competence, access/evidence, acceptance/output; price individually |  |  |  |
-| S8b Interim / staged strategy — Option | Phase/building/shutdown/occupation strategies; temporary measures, operator/contractor duties, impairment/restoration and acceptance dependencies |  |  |  |
-| S9a Defined advisory — Option | Defined question/cutoff/reliance, evidence limits, confidence/findings/actions/response end; continued design/novation duration/handover; annual operation separate |  |  |  |
-| S9b Independent peer review — Option | Independent review: named solutions/report, evidence cutoff, method/rounds; designer retains duty; advisory does not buy peer review |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Interim strategies/shutdowns/staged occupation |  |  |  |
-| Service option | Selected script review/test witnessing |  |  |  |
-| Service option | Orders/defects: preserve evidence, diagnose extent, temporary controls, insured rectification designer/verifier and closure evidence |  |  |  |
-| Service option | Independent peer review |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -102,6 +96,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Methods/scenarios/criteria/checks, input owners/dates, resources, draft/final gates, authority rounds, hold-point/test/retest plan; urgent escalation/operator decisions. |
 | R8 Insurance and compliance | PI Project-selected $5m; PL Project-selected $20m; current workers cover/duration/certificates; facade/material/hazard/modelling exclusions match offered work. Agreement/precedence departures, reliance/liability/inspection terms/novation. |
 | R9 Reimbursables | Travel/out-of-hours, authority/reviewer, surveys/tests/lab/opening/access, models/specialists/printing/reinstatement: quantity/basis, payer/GST/markup/approval; no services/R1 duplication. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

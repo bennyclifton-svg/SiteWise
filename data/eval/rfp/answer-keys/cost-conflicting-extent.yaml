@@ -64,10 +64,8 @@ description: Conflicting authority scope and remediation extent stay unresolved;
   agreement.
 expect:
   cost-planning:
-    stages_ask:
-    - s3_authority
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      remediation: ask
-    blocking:
-    - fact:flag.cost_authority
-    - fact:flag.cost_remediation
+      remediation: I
+    blocking: ['fact:flag.cost_authority', 'fact:flag.cost_remediation']
+    stages_include: [s3_authority]

@@ -31,7 +31,8 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   const drawer=page.getByRole('complementary',{name:'Cost line'});
   await drawer.getByLabel('Allocation 1 label').fill('First allocation');await drawer.getByLabel('Allocation 1 amount').fill('300');await drawer.getByLabel('Allocation 2 label').fill('Second allocation');await drawer.getByLabel('Allocation 2 amount').fill('400');await drawer.getByRole('button',{name:'Save subdivision',exact:true}).click();
   await expect(grid.getByText('First allocation',{exact:true})).toBeVisible();await expect(grid.getByText('Unallocated — Unallocated allowance',{exact:true})).toBeVisible();
-  await expect(row).toContainText('Group · amounts are on the lines below');
+  await expect(row.getByRole('button', { name: 'Collapse Unallocated allowance', exact: true })).toHaveAttribute('aria-expanded', 'true');
+  await expect(row.getByRole('cell').nth(FORECAST)).toBeEmpty();
   const project=new URL(page.url()).pathname.split('/').pop();const totals=await(await page.request.get(`/api/projects/${project}/cost-plan/totals`)).json();expect(totals.overall.budget.known_subtotal).toBe('1000.00');expect(totals.overall.budget.amount).toBeNull();expect(totals.overall.estimate).toBeUndefined();
   await drawer.getByRole('button',{name:'Close',exact:true}).click();await expect(drawer).toBeHidden();
 
@@ -57,4 +58,46 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
 
   await page.getByRole('button',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await expect(page.getByText('Cost Plan r2 · draft',{exact:true})).toBeVisible();await page.getByRole('button',{name:'View frozen baseline',exact:true}).click();await expect(page.getByText('Cost Plan r1 · baseline',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(head.getByRole('button',{name:'Budget for Head contract'})).toBeDisabled();await expect(head.getByRole('button',{name:'Approved Contract for Head contract'})).toBeDisabled();
   await page.setViewportSize({width:1360,height:1000});await page.screenshot({path:testInfo.outputPath('next-wave-costs-desktop.png'),fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:testInfo.outputPath('next-wave-costs-mobile.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+});
+
+test("arrow keys move between cost cells like a spreadsheet, saving as they go", async ({ page }) => {
+  const {token}=await(await page.request.post('/__e2e/invite?org=a')).json(); await page.goto(`/#token=${token}`);
+  await page.getByLabel('New project').fill('Arrow keys');await page.getByRole('button',{name:'Create project',exact:true}).click();
+  await page.getByRole('button',{name:'Costs',exact:true}).click();
+  for (const name of ['Allowance A','Allowance B']) {
+    await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();
+    await page.getByLabel('New Contingency item',{exact:true}).fill(name);await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
+    await expect(page.getByRole('button',{name:`Budget for ${name}`,exact:true})).toBeVisible();
+  }
+  const a=page.getByRole('textbox',{name:'Budget for Allowance A',exact:true}), b=page.getByRole('textbox',{name:'Budget for Allowance B',exact:true});
+  await page.getByRole('button',{name:'Budget for Allowance A',exact:true}).click();
+  await a.fill('100');await a.press('ArrowDown');
+  // Down saves the cell and opens the same column on the next line.
+  await expect(b).toBeFocused();
+  await expect(page.getByRole('button',{name:'Budget for Allowance A',exact:true})).toHaveText('100.00');
+  await b.fill('200');await b.press('ArrowUp');
+  await expect(a).toBeFocused();await expect(a).toHaveValue('100.00');
+  await expect(page.getByRole('button',{name:'Budget for Allowance B',exact:true})).toHaveText('200.00');
+  // A value the cell refuses keeps the cell open instead of moving on.
+  await a.fill('ten');await a.press('ArrowDown');
+  await expect(a).toHaveAttribute('aria-invalid','true');await expect(a).toBeFocused();
+  await a.press('Escape');await expect(page.getByRole('button',{name:'Budget for Allowance A',exact:true})).toHaveText('100.00');
+
+  // Tab and Shift+Tab go along the row; the figure arrives selected, as in Excel.
+  const ac=page.getByRole('textbox',{name:'Approved Contract for Allowance A',exact:true});
+  await page.getByRole('button',{name:'Budget for Allowance A',exact:true}).click();
+  await a.press('Tab');await expect(ac).toBeFocused();
+  await ac.fill('90');await ac.press('Shift+Tab');
+  await expect(a).toBeFocused();
+  await expect(page.getByRole('button',{name:'Approved Contract for Allowance A',exact:true})).toHaveText('90.00');
+  expect(await a.evaluate((el: HTMLInputElement) => [el.selectionStart, el.selectionEnd, el.value.length])).toEqual([0, 6, 6]);
+  // Right moves on only from the end of the text; inside the figure it moves the caret.
+  await a.press('End');await a.press('ArrowLeft');await a.press('ArrowRight');
+  await expect(a).toBeFocused();
+  await a.press('ArrowRight');await expect(ac).toBeFocused();
+  // Left from the start of the text moves back.
+  await ac.press('Home');await ac.press('ArrowLeft');await expect(a).toBeFocused();
+  // Tab off the last editable cell of a line wraps to the next line.
+  await a.press('Tab');await expect(ac).toBeFocused();
+  await ac.press('Tab');await expect(page.getByRole('textbox',{name:'Budget for Allowance B',exact:true})).toBeFocused();
 });

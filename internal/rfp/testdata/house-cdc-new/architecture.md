@@ -1,5 +1,3 @@
-Release date: 2026-10-20 · Proposals close: 2026-11-07
-
 ### 1. Project
 
 Example Owner intends to build a residential building (Class 1a) at 357 Catherine Street Lilyfield NSW 2040 (Inner West).
@@ -22,51 +20,66 @@ Conditions that do not apply: Heritage item or conservation area; Connecting wit
 
 Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. The client engages the other consultants directly: Surveyor (to be appointed), Geotechnical (to be appointed). You engage these consultants as your subconsultants and include their fees in your price; name them in R4: Structural.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| Concept |  | Included |  |
+|  | Site inspection | Included |  |
+|  | Review of existing information and brief gaps | Included |  |
+|  | Up to 2 options | Included |  |
+|  | Preferred concept | Included |  |
+|  | Area schedule | Included |  |
+|  | Check against budget | Included |  |
+|  | Brief gaps, required-input schedule, responsibility matrix and decisions register | Included |  |
+|  | Help selecting other consultants | Included |  |
+| Schematic design |  | Included |  |
+|  | Preferred scheme resolved for planning and the cost plan | Included |  |
+|  | Outline materials and systems | Included |  |
+|  | Pre-application meeting where the pathway has one | Included |  |
+|  | Photoreal renders, marketing CGI, models | Excluded |  |
+| Planning approval |  | Included |  |
+|  | Architectural drawings and input to the complying development application: one preliminary and one final issue | Included |  |
+|  | Who lodges is set in section 2 | Included |  |
+|  | Modification applications after approval | Included |  |
+|  | Lodging the planning application: a DA with the consent authority, or a CDC with the certifier, who assesses it | Excluded |  |
+|  | Water authority approval to build over or next to its asset: drawings and submission | Included |  |
+|  | Court appeals | Excluded |  |
+| Design development |  | Included |  |
+|  | Coordinated design to the approval and consent conditions | Included |  |
+|  | Finishes and typical details | Included |  |
+|  | BCA strategy with the BCA consultant | Included |  |
+|  | Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | Included |  |
+|  | Loose furniture and FF&E selection | Included |  |
+|  | Value management redesign (at R3 rates) | Included |  |
+| Tender and construction documents | You hold the whole architectural design. | Included |  |
+|  | One documentation set for a lump-sum price and for construction: drawings, door and window schedules, joinery details, the finishes and fixtures schedule and the specification | Included |  |
+|  | One tender issue, then one construction issue with the agreed tender changes and any construction certificate set | Included |  |
+|  | Architectural specification | Included |  |
+|  | Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details | Included |  |
+|  | Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes | Included |  |
+|  | Door schedule; hardware schedule by the supplier | Included |  |
+| Bidding | Fee ceiling: hours × R3 rate. | Included |  |
+|  | Tenderer questions and addenda | Included |  |
+|  | Actual time at R3 rates up to 40 hours | Included |  |
+| Design support during construction |  | Included |  |
+|  | 6 site inspections | Included |  |
+|  | RFIs | Included |  |
+|  | Shop drawing review | Included |  |
+|  | Practical completion and defects inspections | Included |  |
+|  | As-built or record drawings | Excluded |  |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Coordinating and integrating consultants' work | Included |  |
+|  | Liaison with the certifier | Included |  |
+|  | Uploading to the client's document system | Included |  |
+|  | Authority and other consultants' fees | Excluded |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Brief and design coordination — Coordinating and integrating consultants' work | X |  |  |  |
-| Brief gaps, required-input schedule, responsibility matrix and decisions register | X |  |  |  |
-| Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | X |  |  |  |
-| Help selecting other consultants |  | X |  |  |
-| Design documentation and models — Architectural specification | X |  |  |  |
-| Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details | X |  |  |  |
-| Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes | X |  |  |  |
-| Door schedule; hardware schedule by the supplier | X |  |  |  |
-| Loose furniture and FF&E selection |  | X |  |  |
-| Photoreal renders, marketing CGI, models. By the client |  |  | X |  |
-| Procurement and approvals — Value management redesign (at R3 rates) |  | X |  |  |
-| Liaison with the certifier | X |  |  |  |
-| Uploading to the client's document system | X |  |  |  |
-| Modification applications after approval |  | X |  |  |
-| Lodging the planning application: a DA with the consent authority, or a CDC with the certifier, who assesses it. By the client |  |  | X |  |
-| Water authority approval to build over or next to its asset: drawings and submission |  | X |  |  |
-| Specialist and additional services — Court appeals. By client (separate engagement) |  |  | X |  |
-| As-built or record drawings. By the contractor |  |  | X |  |
-| Authority and other consultants' fees. By the client |  |  | X |  |
-
-### 3. Scope by stage and fee proposal
-
-Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5).  R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| Concept — Included | Site inspection; review of existing information and brief gaps; up to 2 options; preferred concept; area schedule; check against budget |  |  |  |
-| Schematic design — Included | Preferred scheme resolved for planning and the cost plan; outline materials and systems; pre-application meeting where the pathway has one |  |  |  |
-| Planning approval — Included | Architectural drawings and input to the complying development application: one preliminary and one final issue; who lodges is set in section 2 |  |  |  |
-| Design development — Included | Coordinated design to the approval and consent conditions; finishes and typical details; BCA strategy with the BCA consultant |  |  |  |
-| Tender and construction documents — Included | One documentation set for a lump-sum price and for construction: drawings, door and window schedules, joinery details, the finishes and fixtures schedule and the specification. One tender issue, then one construction issue with the agreed tender changes and any construction certificate set. You hold the whole architectural design. |  |  |  |
-| Bidding — Option | Tenderer questions and addenda; actual time at R3 rates up to 40 hours. Fee ceiling: hours × R3 rate |  |  |  |
-| Design support during construction — Option | 6 site inspections; RFIs; shop drawing review; practical completion and defects inspections |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Help selecting other consultants |  |  |  |
-| Service option | Loose furniture and FF&E selection |  |  |  |
-| Service option | Value management redesign (at R3 rates) |  |  |  |
-| Service option | Modification applications after approval |  |  |  |
-| Service option | Water authority approval to build over or next to its asset: drawings and submission |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -108,6 +121,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Weeks by stage, separating your time, authority time and the dates you need inputs. |
 | R8 Insurance and compliance | PI $10 million and PL $20 million with insurer and expiry; workers compensation; how you check your documents before issue (no certified system is needed); conflicts of interest. |
 | R9 Reimbursables | "Included in the fee" (preferred), or each item with its rate. |
+
+### Proposal dates
+
+Release date: 2026-10-20 · Proposals close: 2026-11-07
 
 ### Before issue — resolve or accept
 

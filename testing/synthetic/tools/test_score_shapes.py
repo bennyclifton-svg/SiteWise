@@ -474,6 +474,16 @@ class RFPTests(unittest.TestCase):
         self.assertFalse(basix["found"])
         self.assertEqual(basix["built_in"], "no")
 
+    def test_scope_by_stage_reads_options_as_included(self):
+        # Owner direction 3 November 2026: a by-stage RFP is only in or out.
+        r = {"expect": {"stages_option": ["bidding"], "stages_ask": ["tender"], "positions": {"ffe": "O", "court": "ask", "renders": "X"}}}
+        values = {"stage.bidding": "include", "stage.tender": "include", "position.ffe": "I", "position.court": "I", "position.renders": "X"}
+        self.assertEqual(s._compare_expect(r, values, set(), by_stage=True)["new_failure"], [])
+        self.assertTrue(s._compare_expect(r, values, set(), by_stage=False)["new_failure"])
+        view = {"draft": {"sections": [{"blocks": [{"basis": {"layout": "stage_scope"}}]}]}}
+        self.assertTrue(s._by_stage(view))
+        self.assertFalse(s._by_stage({"draft": {"sections": []}}))
+
 
 class TriggerTests(unittest.TestCase):
     def test_cdc_variant_adds_and_removes(self):

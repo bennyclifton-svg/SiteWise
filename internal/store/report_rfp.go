@@ -205,6 +205,24 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 		}
 		delete(settings, key)
 	} else {
+		if key == "transmittal" {
+			var ids []string
+			if len(value) > 200000 || json.Unmarshal(value, &ids) != nil || ids == nil || len(ids) > 5000 {
+				return d, ErrInvalidSetting
+			}
+			docs, readErr := reportDocumentScheduleSelection(ctx, tx, org, r.ProjectID, ids)
+			if readErr != nil {
+				return d, readErr
+			}
+			// Reject missing, foreign and duplicate ids without revealing their existence.
+			if len(docs) != len(ids) {
+				return d, ErrInvalidSetting
+			}
+			value, err = json.Marshal(docs)
+			if err != nil {
+				return d, err
+			}
+		}
 		if err := rfp.ValidateSetting(disc, sk, drivers, key, value); err != nil {
 			return d, err
 		}

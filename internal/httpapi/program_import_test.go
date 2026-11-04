@@ -68,7 +68,12 @@ func (m *member) importProgram(t *testing.T, project, name string, file []byte) 
 
 func TestProgramImportUploadReadAcceptUndo(t *testing.T) {
 	asker := &countingJev{}
-	a := newApp(t, withProfile(t), func(o *httpapi.Options) { o.ProgramJev = asker })
+	// Keep a leaf stage for the import target; production library fragments
+	// legitimately populate those stages and are tested separately.
+	a := newApp(t, withProfile(t), func(o *httpapi.Options) {
+		o.ProgramJev = asker
+		o.Knowledge = programQuestionCatalog(t)
+	})
 	m := a.member(t, newUUID(t))
 	project := m.createProject(t, "Program import")
 	base := "/api/projects/" + project + "/program"

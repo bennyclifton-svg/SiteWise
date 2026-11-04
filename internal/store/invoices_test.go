@@ -18,6 +18,34 @@ import (
 
 var invoiceNow = time.Date(2026, 10, 16, 1, 0, 0, 0, time.UTC)
 
+func TestInvoiceRedropPreviouslyUnsupportedMarkdown(t *testing.T) {
+	s, pkg, line, _ := ledgerFixture(t)
+	ctx := context.Background()
+	up := upload("quoin")
+	up.Filename, up.NotRead = "quoin.md", invoices.NotReadUnsupported
+	first, err := s.CreateInvoice(ctx, orgA, projectA, up, invoiceNow)
+	if err != nil {
+		t.Fatal(err)
+	}
+	up.NotRead = ""
+	again, err := s.CreateInvoice(ctx, orgA, projectA, up, invoiceNow)
+	if err != nil || again.ID != first.ID || again.Created || again.Status != invoices.StatusReading {
+		t.Fatalf("recovery %+v %v", again, err)
+	}
+	ok, err := s.CommitInvoiceRead(ctx, orgA, first.ID, reading(pkg, line, "QUA-2601", 2640000, 240000), false, invoiceNow)
+	if err != nil || !ok {
+		t.Fatalf("commit %v %v", ok, err)
+	}
+	v, err := s.InvoiceLedger(ctx, orgA, projectA, "2026-10-25")
+	if err != nil || len(v.Invoices) != 1 || v.Invoices[0].Ex == nil || *v.Invoices[0].Ex != 2400000 {
+		t.Fatalf("ledger %+v %v", v, err)
+	}
+	again, err = s.CreateInvoice(ctx, orgA, projectA, up, invoiceNow)
+	if err != nil || again.Status == invoices.StatusReading {
+		t.Fatalf("reread filed invoice %+v %v", again, err)
+	}
+}
+
 func upload(name string) store.InvoiceUpload {
 	sum := sha256.Sum256([]byte(name))
 	return store.InvoiceUpload{SHA256: sum[:], Size: int64(len(name)), MediaType: "application/pdf", Filename: name + ".pdf", UserID: userA}

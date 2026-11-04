@@ -1,13 +1,19 @@
+import { PageActionsContext } from "./PageActions";
 import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { ProjectName } from "./ProjectName";
+import { SignOutButton } from "./SignOutButton";
 import { ThemeButton } from "./ThemeButton";
 
 interface Props {
   nav: ReactNode;
+  actionSurface?: string;
   title: string;
+  onRename?: (name: string) => Promise<void>;
   subtitle: string;
   children: ReactNode;
   repository: ReactNode;
   wideWorkspace?: boolean;
+  repositoryOpenRequest?: number;
   profileFeedbackRef?: (element: HTMLDivElement | null) => void;
   showProfileFeedback?: boolean;
   onDragEnter?: (e: DragEvent) => void;
@@ -23,7 +29,8 @@ interface Props {
 // window resize can still pick a width that fits the screen.
 const REPO_WIDTH_KEY = "sitewise.cockpit.repoWidth.v1";
 const REPO_MIN = 280;
-const REPO_PREFERRED = 760;
+// Wide enough for every register column; the working view keeps the rest.
+const REPO_PREFERRED = 540;
 const REPO_ABS_MAX = 920;
 const MAIN_FLOOR = 200;
 const MAIN_DEFAULT = 420;
@@ -67,9 +74,10 @@ function storeRepoWidth(px: number) {
 // view, and the document repository. The repository stays up on every view.
 // Its width is dragged from the left edge; columns fold in cockpit.css when
 // the rail is too narrow to read them.
-export function CockpitFrame({ nav, title, subtitle, children, repository, wideWorkspace=false, profileFeedbackRef, showProfileFeedback=false, onDragEnter, onDragOver, onDragLeave, onDrop, onDragOverCapture, onDropCapture, onDragEndCapture }: Props) {
-  const [showDocuments,setShowDocuments]=useState(false);
-  const focusWorkspace=wideWorkspace&&!showDocuments;
+export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitle, children, repository, wideWorkspace=false, repositoryOpenRequest=0, profileFeedbackRef, showProfileFeedback=false, onDragEnter, onDragOver, onDragLeave, onDrop, onDragOverCapture, onDropCapture, onDragEndCapture }: Props) {
+  const [showDocuments,setShowDocuments]=useState(true);
+  useEffect(() => { if (repositoryOpenRequest) setShowDocuments(true); }, [repositoryOpenRequest]);
+  const focusWorkspace=!showDocuments;
   const [wide, setWide] = useState(() => window.matchMedia(WIDE_SHELL).matches);
   const [viewport, setViewport] = useState(() => window.innerWidth);
   const [chosen, setChosen] = useState<number | null>(readRepoWidth);
@@ -140,9 +148,27 @@ export function CockpitFrame({ nav, title, subtitle, children, repository, wideW
     }
   }
 
+  // The butter-paper band covers the header rows. Its height is the space the
+  // working view leaves at its top, so scrolled content passes under the paper.
+  const shell = useRef<HTMLDivElement>(null);
+  const paper = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = paper.current, host = shell.current;
+    if (!el || !host || typeof ResizeObserver === "undefined") return;
+    const sync = () => host.style.setProperty("--trace-top", `${Math.round(el.getBoundingClientRect().height)}px`);
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const [actionTarget, setActionTarget] = useState<HTMLDivElement | null>(null);
+  const [primaryTarget, setPrimaryTarget] = useState<HTMLDivElement | null>(null);
   return (
+    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget }}>
     <div className={`cockpit-page${wideWorkspace?" specification-page":""}`}>
       <div
+        ref={shell}
         className={dragging ? "cockpit-shell is-resizing" : "cockpit-shell"}
         style={wide ? { gridTemplateColumns: focusWorkspace?"minmax(200px, 236px) minmax(0, 1fr)":`minmax(200px, 236px) minmax(0, 1fr) ${width}px` } : undefined}
         onDragEnter={onDragEnter}
@@ -154,22 +180,35 @@ export function CockpitFrame({ nav, title, subtitle, children, repository, wideW
         onDrop={onDrop}
       >
         {nav}
+        <div className="trace-sheet" aria-hidden="true" />
+        <div className="trace-paper" ref={paper} aria-hidden="true">
+          <div className="trace-paper-fringe"><i /></div>
+          <div className="trace-paper-sheet" />
+        </div>
         <header className="cockpit-shell-header">
           <div className="cockpit-title-block">
-            <h1 className="cockpit-title">{title}</h1>
+            {onRename ? <ProjectName name={title} onSave={onRename} /> : <h1 className="cockpit-title">{title}</h1>}
             <p className="cockpit-address">{subtitle}</p>
           </div>
           <div className="cockpit-header-actions">
-            {wideWorkspace&&<button className="btn" aria-expanded={showDocuments} onClick={()=>setShowDocuments(v=>!v)}>{showDocuments?"Hide documents":"Show documents"}</button>}
             <ThemeButton />
+            <SignOutButton />
           </div>
         </header>
+        <div className="workspace-controls" aria-label="Workspace actions">
+          <div className="workspace-primary-actions" ref={setPrimaryTarget} />
+          <div className="page-action-rail" ref={setActionTarget} />
+          {/* Show sits at the far right, where Hide documents was. */}
+          {!showDocuments && <button type="button" className="btn" aria-expanded={false} aria-controls="project-documents" onClick={() => setShowDocuments(true)}>Show documents</button>}
+        </div>
+        {showDocuments && <div className="repository-controls">
+          <button type="button" className="btn" aria-expanded={true} aria-controls="project-documents" onClick={() => setShowDocuments(false)}>Hide documents</button>
+        </div>}
         <main className="project-main-panel" id="main">
           <div className="cockpit-scroll">{children}</div>
           <div ref={profileFeedbackRef} hidden={!showProfileFeedback} className="profile-feedback-slot" />
-          {!showProfileFeedback && <AskBar />}
         </main>
-        <aside className="project-side-panel" aria-label="Document register" style={focusWorkspace?{display:"none"}:undefined}>
+        <aside id="project-documents" className="project-side-panel" aria-label="Document register" style={focusWorkspace?{display:"none"}:undefined}>
           {wide && (
             <div
               className="repo-resize"
@@ -191,33 +230,6 @@ export function CockpitFrame({ nav, title, subtitle, children, repository, wideW
         </aside>
       </div>
     </div>
-  );
-}
-
-// Visual match for the Clerk composer. It does not send: SiteWise has no chat model.
-function AskBar() {
-  return (
-    <div className="ask-bar" role="group" aria-label="Ask about your project documents. Not connected.">
-      <input readOnly tabIndex={-1} placeholder="Ask about your project documents" aria-label="Ask about your project documents" />
-      <div className="ask-modes">
-        <button type="button" aria-pressed="true" disabled>
-          Fast
-        </button>
-        <button type="button" aria-pressed="false" disabled>
-          Thorough
-        </button>
-      </div>
-      <button type="button" className="ask-icon" disabled aria-label="Voice input">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" strokeWidth="1.7" />
-          <path d="M6 11a6 6 0 0 0 12 0M12 17v4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        </svg>
-      </button>
-      <button type="button" className="ask-icon ask-send" disabled aria-label="Send">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-    </div>
+    </PageActionsContext.Provider>
   );
 }

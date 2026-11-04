@@ -180,104 +180,121 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
         </div>
       )}
 
-      <div className="sw-body">
-        <nav className="sw-rail" aria-label="Scope entries">
-          {entries.map((e, i) => {
+      <div className="sw-body sw-matrix">
+        <div className="sw-key" aria-hidden="true">
+          <span><i className="sw-cell" data-on="true" />In scope</span>
+          <span><i className="sw-cell" />Not in scope</span>
+          <span><i className="sw-cell" data-check="true" />To check</span>
+          <span className="sw-key-note">One cell per system, in building order</span>
+        </div>
+        <div className="sw-rail" role="group" aria-label="Scope entries">
+          {entries.map((e) => {
             const on = e.rows.filter(isIn).length;
             const checks = checksIn(e.id, e.rows);
             const { flags } = entryInputs(data, e.id);
+            const cells = e.id === PLANNING
+              ? flags.map((f) => ({ key: f.key, on: f.value !== "", check: f.band === "red" }))
+              : e.id === OTHER
+                ? orphans.map((w) => ({ key: w.id, on: true, check: false }))
+                : e.rows.map((r) => ({ key: r.leaf, on: isIn(r), check: needsCheck(r) }));
+            const active = e.id === current.id;
             return (
-              <button
-                key={e.id}
-                type="button"
-                className="sw-entry"
-                aria-current={e.id === current.id ? "true" : undefined}
-                data-active={on > 0 ? "true" : undefined}
-                onClick={() => {
-                  onSelect(e.id);
-                  setOpen(null);
-                }}
-              >
-                <span className="sw-num" aria-hidden="true">{e.id === OTHER ? "·" : i}</span>
-                <span className="sw-entry-label">{e.label}</span>
-                {checks > 0 && <span className="sw-check" title={`${checks} to check`}>⚠ {checks}</span>}
-                <span className="sw-count">
-                  {e.id === PLANNING ? `${flags.filter((f) => f.value !== "").length}/${flags.length}` : e.id === OTHER ? orphans.length : `${on}/${e.rows.length}`}
-                </span>
-              </button>
+              <div key={e.id} className="sw-matrow" data-open={active || undefined}>
+                <button
+                  type="button"
+                  className="sw-entry"
+                  aria-current={active ? "true" : undefined}
+                  aria-expanded={active}
+                  data-active={on > 0 ? "true" : undefined}
+                  onClick={() => {
+                    onSelect(e.id);
+                    setOpen(null);
+                  }}
+                >
+                  <span className="sw-entry-label">{e.label}</span>
+                  <span className="sw-cells" aria-hidden="true">
+                    {cells.map((c) => <i key={c.key} className="sw-cell" data-on={c.on || undefined} data-check={c.check || undefined} />)}
+                  </span>
+                  {checks > 0 && <span className="sw-check" title={`${checks} to check`}>{checks} to check</span>}
+                  <span className="sw-count">
+                    {e.id === PLANNING ? `${flags.filter((f) => f.value !== "").length} / ${flags.length}` : e.id === OTHER ? orphans.length : `${on} / ${e.rows.length}`}
+                  </span>
+                </button>
+                {active && (
+            <div className="sw-pane" role="region" aria-label={current.label}>
+              <div className="sw-pane-head">
+                {current.rows.length > 0 && (() => {
+                  const on = current.rows.filter(isIn).length;
+                  return (
+                    <label className="sw-group-tick">
+                      <input
+                        type="checkbox"
+                        aria-label={`All of ${current.label}`}
+                        checked={on > 0 && on === current.rows.length}
+                        ref={(el) => {
+                          if (el) el.indeterminate = on > 0 && on < current.rows.length;
+                        }}
+                        disabled={busy}
+                        onChange={() => {
+                          const every = on === current.rows.length;
+                          run(Object.fromEntries(current.rows.filter((r) => isIn(r) === every).map((r) => [r.leaf, every ? "out" : "in"])));
+                        }}
+                      />
+                    </label>
+                  );
+                })()}
+                <h3>{current.label}</h3>
+                {current.rows.length > 0 && <span className="muted">{current.rows.filter(isIn).length} of {current.rows.length} in scope</span>}
+                {current.id !== PLANNING && current.id !== OTHER && (
+                  <button type="button" className="cell-link sw-req" onClick={() => onSources(current.id)} aria-label={`View requirements for ${current.label}`}>
+                    Requirements
+                  </button>
+                )}
+              </div>
+
+              {current.rows.length > 0 && (
+                <div className="sw-table" role="table" aria-label={`${current.label} systems`}>
+                  <div className="sw-row sw-th" role="row">
+                    <span role="columnheader">System</span>
+                    <span role="columnheader">Works</span>
+                    <span role="columnheader">By</span>
+                    <span role="columnheader">Evidence</span>
+                    <span role="columnheader"><span className="sr-only">Details</span></span>
+                  </div>
+                  {current.rows.map((r) => (
+                    <SystemLine
+                      key={r.leaf}
+                      projectId={projectId}
+                      row={r}
+                      items={byLeaf.get(r.leaf) ?? []}
+                      parts={data.parts}
+                      inScope={isIn(r)}
+                      open={open === r.leaf}
+                      busy={busy}
+                      setBusy={setBusy}
+                      onOpen={() => setOpen(open === r.leaf ? null : r.leaf)}
+                      onTick={(choice) => run({ [r.leaf]: choice })}
+                      onSet={onSet}
+                      onJump={onJump}
+                      onSources={() => onSources(r.leaf)}
+                      onWorkChanged={() => setReload((n) => n + 1)}
+                      onWorkError={failWork}
+                      onWorks={setWorks}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {current.id === OTHER && (
+                <WorkList projectId={projectId} items={orphans} parts={data.parts} label={(w) => labels.get(w.system_id) ?? w.system_id} busy={busy} setBusy={setBusy} onChanged={() => setReload((n) => n + 1)} onError={failWork} onWorks={setWorks} />
+              )}
+
+              <EntryInputs data={data} id={current.id} showAll={showAll} onSet={onSet} onJump={onJump} />
+            </div>
+                )}
+              </div>
             );
           })}
-        </nav>
-
-        <div className="sw-pane" role="region" aria-label={current.label}>
-          <div className="sw-pane-head">
-            {current.rows.length > 0 && (() => {
-              const on = current.rows.filter(isIn).length;
-              return (
-                <label className="sw-group-tick">
-                  <input
-                    type="checkbox"
-                    aria-label={`All of ${current.label}`}
-                    checked={on > 0 && on === current.rows.length}
-                    ref={(el) => {
-                      if (el) el.indeterminate = on > 0 && on < current.rows.length;
-                    }}
-                    disabled={busy}
-                    onChange={() => {
-                      const every = on === current.rows.length;
-                      run(Object.fromEntries(current.rows.filter((r) => isIn(r) === every).map((r) => [r.leaf, every ? "out" : "in"])));
-                    }}
-                  />
-                </label>
-              );
-            })()}
-            <h3>{current.label}</h3>
-            {current.rows.length > 0 && <span className="muted">{current.rows.filter(isIn).length} of {current.rows.length} in scope</span>}
-            {current.id !== PLANNING && current.id !== OTHER && (
-              <button type="button" className="cell-link sw-req" onClick={() => onSources(current.id)} aria-label={`View requirements for ${current.label}`}>
-                Requirements
-              </button>
-            )}
-          </div>
-
-          {current.rows.length > 0 && (
-            <div className="sw-table" role="table" aria-label={`${current.label} systems`}>
-              <div className="sw-row sw-th" role="row">
-                <span role="columnheader">System</span>
-                <span role="columnheader">Works</span>
-                <span role="columnheader">By</span>
-                <span role="columnheader">Evidence</span>
-                <span role="columnheader"><span className="sr-only">Details</span></span>
-              </div>
-              {current.rows.map((r) => (
-                <SystemLine
-                  key={r.leaf}
-                  projectId={projectId}
-                  row={r}
-                  items={byLeaf.get(r.leaf) ?? []}
-                  parts={data.parts}
-                  inScope={isIn(r)}
-                  open={open === r.leaf}
-                  busy={busy}
-                  setBusy={setBusy}
-                  onOpen={() => setOpen(open === r.leaf ? null : r.leaf)}
-                  onTick={(choice) => run({ [r.leaf]: choice })}
-                  onSet={onSet}
-                  onJump={onJump}
-                  onSources={() => onSources(r.leaf)}
-                  onWorkChanged={() => setReload((n) => n + 1)}
-                  onWorkError={failWork}
-                  onWorks={setWorks}
-                />
-              ))}
-            </div>
-          )}
-
-          {current.id === OTHER && (
-            <WorkList projectId={projectId} items={orphans} parts={data.parts} label={(w) => labels.get(w.system_id) ?? w.system_id} busy={busy} setBusy={setBusy} onChanged={() => setReload((n) => n + 1)} onError={failWork} onWorks={setWorks} />
-          )}
-
-          <EntryInputs data={data} id={current.id} showAll={showAll} onSet={onSet} onJump={onJump} />
         </div>
       </div>
     </section>

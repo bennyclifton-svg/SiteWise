@@ -133,11 +133,14 @@ boundary:
   end: s9_advisory
 - start: s1_inception
   end: s3_approval
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_inception
   name: S1 Inception / evidence
-  deliverable: Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register;
-    missing levels, services, soil, trees and access.
+  lines:
+  - {key: agreed_accessible_site, text: "Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register"}
+  - {key: missing_levels_services, text: "missing levels, services, soil, trees and access."}
   fee_basis: fixed
   shown_when: Selected extent and appointment
   provenance:
@@ -147,8 +150,9 @@ stages:
     ref: landscape-architecture#26,27,30-33
 - key: s2_concept
   name: S2 Concept
-  deliverable: Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis; soil volumes/depths,
-    loads, shade, water and maintenance assumptions.
+  lines:
+  - {key: counted_alternatives_tree, text: "Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis"}
+  - {key: soil_volumes_depths, text: "soil volumes/depths, loads, shade, water and maintenance assumptions."}
   fee_basis: fixed
   shown_when: Selected extent and appointment
   provenance:
@@ -171,8 +175,10 @@ stages:
   if_unknown: ask
 - key: s3_approval
   name: S3 Approval / responses
-  deliverable: Pathway-specific plans, planting schedule/details/calculations; draft/consolidated comment/final and counted
-    council responses to named milestone. Scales suit submission.
+  lines:
+  - {key: pathway_specific_plans, text: "Pathway-specific plans, planting schedule/details/calculations"}
+  - {key: draft_consolidated_comment, text: "draft/consolidated comment/final and counted council responses to named milestone"}
+  - {key: scales_suit_submission, text: "Scales suit submission."}
   fee_basis: fixed
   shown_when: Selected extent and appointment
   provenance:
@@ -195,8 +201,9 @@ stages:
   if_unknown: ask
 - key: s4_developed
   name: S4 Consent / developed design
-  deliverable: Conditions/register, hard/soft landscape, soils and planting; coordinate irrigation, public domain, civil,
-    structure/waterproofing, access and long-lead items.
+  lines:
+  - {key: conditions_register_hard, text: "Conditions/register, hard/soft landscape, soils and planting"}
+  - {key: coordinate_irrigation_public, text: "coordinate irrigation, public domain, civil, structure/waterproofing, access and long-lead items."}
   fee_basis: fixed
   shown_when: Selected extent and appointment
   provenance:
@@ -217,8 +224,9 @@ stages:
   if_unknown: ask
 - key: s5_tender
   name: S5 Traditional documentation
-  deliverable: Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment
-    requirements/hold points; counted queries/substitutions.
+  lines:
+  - {key: coordinated_tender_construction, text: "Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment requirements/hold points"}
+  - {key: counted_queries_substitutions, text: "counted queries/substitutions."}
   fee_basis: fixed
   shown_when: Selected extent and appointment
   provenance:
@@ -241,8 +249,11 @@ stages:
   if_unknown: ask
 - key: s6_dnc
   name: S6 D&C / post-contract
-  deliverable: Design intent/performance tender package; delegated detail, handover and remaining deliverables. Separately
-    price post-contract completion, novation and substitutions; name instructor.
+  lines:
+  - {key: design_intent_performance, text: "Design intent/performance tender package"}
+  - {key: delegated_detail_handover, text: "delegated detail, handover and remaining deliverables"}
+  - {key: separately_price_post, text: "Separately price post-contract completion, novation and substitutions"}
+  - {key: name_instructor, text: "name instructor."}
   fee_basis: fixed
   shown_when: Selected extent and appointment
   provenance:
@@ -267,8 +278,9 @@ stages:
   if_unknown: ask
 - key: s7_construction
   name: S7 Construction / completion
-  deliverable: Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits; departures/actions/evidence
-    and bounded completion statement, distinct from contract PC/authority acceptance.
+  lines:
+  - {key: counted_stock_submittal, text: "Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits"}
+  - {key: departures_actions_evidence, text: "departures/actions/evidence and bounded completion statement, distinct from contract PC/authority acceptance."}
   fee_basis: option
   shown_when: Selected extent and appointment
   provenance:
@@ -290,8 +302,10 @@ stages:
   default: option
 - key: s8_establishment
   name: S8 Establishment review
-  deliverable: 'Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation,
-    erosion/defects; end report to administrator/operator. Contractor maintains.'
+  lines:
+  - {key: period_start_event, text: "Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation, erosion/defects"}
+  - {key: end_report_administrator, text: "end report to administrator/operator"}
+  - {key: contractor_maintains, text: "Contractor maintains."}
   fee_basis: option
   shown_when: Selected extent and appointment
   provenance:
@@ -313,8 +327,10 @@ stages:
   default: option
 - key: s9_advisory
   name: S9 Advice / rectification
-  deliverable: Defined question/cutoff, observed/tested/inferred evidence, limits/confidence, options/actions/reliance.
-    Tests separate; rectification follows agreed cause/extent or express risk allocation.
+  lines:
+  - {key: defined_question_cutoff, text: "Defined question/cutoff, observed/tested/inferred evidence, limits/confidence, options/actions/reliance"}
+  - {key: tests_separate, text: "Tests separate"}
+  - {key: rectification_follows_agreed, text: "rectification follows agreed cause/extent or express risk allocation."}
   fee_basis: option
   shown_when: Selected extent and appointment
   provenance:
@@ -423,6 +439,7 @@ allowances:
   owner: client
 positions:
 - key: design
+  stage: [s4_developed, s2_concept, s3_approval, s5_tender, s6_dnc]
   group: Landscape and planting design
   label: Planting/hardscape/external design only in enabled stages
   kind: technical
@@ -452,6 +469,7 @@ positions:
     - s6_dnc
   if_unknown: ask
 - key: trees
+  stage: [s2_concept, s1_inception]
   group: Landscape and planting design
   label: 'Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority'
   kind: technical
@@ -467,6 +485,7 @@ positions:
       quantities or current terms.
   responsible: arborist
 - key: civil_structure
+  stage: [s4_developed, s1_inception]
   group: Irrigation and design interfaces
   label: Levels/runoff/WSUD by civil; retaining structure by structural; geotechnical soil advice
   kind: technical
@@ -480,6 +499,7 @@ positions:
       quantities or current terms.
   responsible: civil engineer and structural engineer
 - key: podium
+  stage: [s4_developed, s2_concept, s5_tender, s6_dnc]
   group: Landscape and planting design
   label: Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named
   kind: technical
@@ -511,6 +531,7 @@ positions:
     - landscape_podium
   if_unknown: ask
 - key: irrigation_brief
+  stage: [s4_developed, s5_tender, s6_dnc]
   group: Irrigation and design interfaces
   label: Irrigation notation/performance brief; hydraulic/electrical interfaces named
   kind: technical
@@ -544,6 +565,7 @@ positions:
     - landscape_irrigation_brief
   if_unknown: ask
 - key: irrigation_detail
+  stage: [s5_tender, s6_dnc, s4_developed]
   group: Irrigation and design interfaces
   label: Detailed irrigation design only by expressly selected competent designer
   kind: technical
@@ -573,6 +595,7 @@ positions:
     - landscape_irrigation_detail
   if_unknown: ask
 - key: public
+  stage: [s4_developed, s3_approval]
   group: Public realm and delivery
   label: Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed
   kind: technical
@@ -604,6 +627,7 @@ positions:
     - landscape_public
   if_unknown: ask
 - key: special
+  stage: [s2_concept, s4_developed]
   group: Irrigation and design interfaces
   label: 'Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists'
   kind: technical
@@ -673,6 +697,7 @@ positions:
     - landscape_staging
   if_unknown: ask
 - key: environment
+  stage: [s1_inception, s9_advisory]
   group: Irrigation and design interfaces
   label: 'Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose
     cause; assign opening-up/testing/reinstatement'
@@ -687,6 +712,7 @@ positions:
       quantities or current terms.
   responsible: environmental consultant and relevant cause specialist
 - key: establishment
+  stage: [s8_establishment]
   group: Public realm and delivery
   label: Plant establishment/maintenance inspections; contractor/operator maintains, quantified visits/end criteria
   kind: technical
@@ -708,6 +734,7 @@ positions:
     - s8_establishment
   if_unknown: ask
 - key: construction
+  stage: [s7_construction]
   group: Public realm and delivery
   label: Construction visits/completion report against selected evidenced scope; contract PC remains administrator
   kind: technical

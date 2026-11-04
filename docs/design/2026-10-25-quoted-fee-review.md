@@ -18,8 +18,9 @@ included does not add money. Each firm owns its own cell values.
 Add row uses the existing comparison-row and cell APIs. Added base-fee cells
 are editable in the main quoted view with an agreement note. Award confirms
 the stated base fee through the existing action and offers the additional
-priced rows as separate cost lines. The original source-stage award remains
-available when there are no extra base rows. No budgets or source prices are
+priced rows as separate cost lines. The source-stage award remains available with added base fees: stages cover
+the original confirmed fee, and added fees become separate lines. One total
+combines the confirmed fee and added base fees into one cost-plan line. No budgets or source prices are
 overwritten. Unknown base amounts can be confirmed through the Award entry.
 
 No new dependency, service, migration or Jev call. Existing read/write budgets

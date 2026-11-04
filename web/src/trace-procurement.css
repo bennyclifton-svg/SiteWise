@@ -1,0 +1,147 @@
+/* Trace: Procurement. One ruled table of packages on the sheet. A firm is a
+   name over its price, not a boxed card; the awarded firm is underlined in
+   graphite; a proposal waiting for a package is highlighted. */
+
+.cockpit-scroll .procurement { padding: 0 0 40px; }
+
+.procurement-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 18px; }
+.procurement-head h1,
+.cockpit-scroll .procurement-head h1 { margin: 0; color: var(--sw-text-primary); font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
+
+.procurement-unassigned { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 22px; font-size: 14px; }
+.procurement-unassigned p { margin: 0; }
+.procurement-unassigned strong {
+  padding: 2px 6px;
+  background: url("./assets/marks/brush-check.svg") center 60% / 100% 86% no-repeat;
+  font-weight: 600;
+}
+.procurement-unassigned label { color: var(--sw-text-secondary); }
+.procurement-unassigned select {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 30px;
+  padding: 2px 26px 2px 10px;
+  border: 1px solid var(--sw-border-strong);
+  border-radius: 999px;
+  background: var(--sw-surface-elevated) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none' stroke='%239A9188' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6l4 4 4-4'/></svg>") right 10px center no-repeat;
+  color: var(--sw-text-primary);
+  font-size: 13px;
+}
+
+/* ---------- The table ---------- */
+
+.cockpit-scroll .procurement-scroll { overflow-x: auto; }
+
+.procurement-table {
+  table-layout: fixed;
+  min-width: 760px;
+  font-size: 14px;
+}
+.procurement-table col,
+.procurement-table thead th:nth-child(1) { width: 15%; }
+.procurement-table thead th:nth-child(2),
+.procurement-table thead th:nth-child(3),
+.procurement-table thead th:nth-child(4) { width: 21%; }
+.procurement-table thead th:nth-child(5) { width: 9%; }
+.procurement-table thead th:nth-child(6) { width: 10%; }
+.procurement-table thead th:nth-child(7) { width: 3.5%; }
+
+.cockpit-scroll .procurement-table thead th {
+  height: 34px;
+  padding: 0 10px;
+  border-top: 1.5px solid var(--trace-rule-strong);
+  border-bottom: 1px solid var(--sw-border-strong);
+  background: transparent;
+  color: var(--sw-text-tertiary);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.cockpit-scroll .procurement-table thead th:first-child { padding-left: 0; }
+
+.cockpit-scroll .procurement-table .group-row th {
+  padding: 22px 0 8px;
+  border-bottom: 1px solid var(--trace-rule);
+  background: transparent;
+  color: var(--sw-text-primary);
+  font-size: 13px;
+  font-variant: normal;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.procurement-table th,
+.procurement-table td {
+  height: 52px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--trace-rule);
+  white-space: normal;
+}
+.procurement-table tbody th.discipline-cell { width: auto; padding-left: 0; color: var(--sw-text-primary); font-size: 14px; font-weight: 600; }
+.row-suggested .discipline-cell { background-image: none; }
+.row-suggested th.discipline-cell::after { content: "Suggested"; display: block; color: var(--sw-text-tertiary); font-size: 11.5px; font-weight: 400; }
+
+/* A firm: name over price, plain type. */
+.firm-card { position: relative; }
+.firm-slot .firm-chip,
+.firm-card .firm-chip {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  margin: 0 0 0 -8px;
+  padding: 5px 30px 5px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--sw-text-primary);
+  font-size: 13.5px;
+  text-align: left;
+}
+.firm-chip:hover { background: var(--sw-hover-bg); }
+.firm-chip-name { overflow: hidden; font-weight: 500; text-overflow: ellipsis; }
+.firm-chip-figure { color: var(--sw-text-secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
+.firm-chip-status { color: var(--sw-text-tertiary); font-size: 11.5px; }
+.firm-chip.lowest { border: 0; background: transparent; }
+.firm-chip.lowest .firm-chip-figure { color: var(--sw-text-primary); font-weight: 600; }
+.firm-chip[data-status="awarded"] { border: 0; }
+.firm-chip[data-status="awarded"] .firm-chip-name {
+  justify-self: start;
+  max-width: 100%;
+  padding-bottom: 3px;
+  background: url("./assets/marks/pencil-graphite.svg") left bottom / 480px 6px repeat-x;
+  font-weight: 600;
+}
+.firm-awarded { color: var(--sw-success-text); font-weight: 500; }
+.firm-chip[data-status="unsuccessful"] { opacity: .6; }
+.firm-detach { top: 6px; right: 2px; background: transparent; }
+
+.firms-none { color: var(--trace-ink-4); }
+.proposal-drop-icon { width: 28px; height: 28px; border-radius: 8px; color: var(--trace-ink-4); opacity: .7; }
+.proposal-drop-icon svg { width: 16px; height: 16px; }
+.procurement-table tr:hover .proposal-drop-icon { opacity: 1; }
+
+.cockpit-scroll .procurement-table .table-action,
+.cockpit-scroll .procurement-pmp .table-action {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 999px;
+  background: var(--sw-surface-elevated);
+  color: var(--sw-text-primary);
+  font-size: 12.5px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.cockpit-scroll .procurement-table .table-action:hover:not(:disabled) { border-color: var(--sw-border-strong); background: var(--sw-hover-bg); }
+
+.procurement-table tr.row-drop td,
+.procurement-table tr.row-drop th { background: color-mix(in oklab, var(--sw-selection-bg) 70%, transparent); box-shadow: none; }
+
+.procurement-pmp { display: flex; align-items: center; gap: 10px; margin: 22px 0 0; color: var(--sw-text-secondary); font-size: 13.5px; }
+
+.firm-chip-name { white-space: normal; text-overflow: clip; line-height: 1.3; }
+.procurement-table thead th:nth-child(5) { width: 8%; }
+.procurement-table thead th:nth-child(6) { width: 11%; }
+.cockpit-scroll .procurement-table .table-action { white-space: nowrap; }

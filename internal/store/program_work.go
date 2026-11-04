@@ -440,6 +440,9 @@ func (w *programWork) diff() programChanges {
 		}
 		c.inverse = append(c.inverse, programInverse{Op: "restore", Target: "day", ID: day, Before: beforeImg, After: afterImg})
 	}
+	if w.prog.WorkingWeek != w.progBefore.WorkingWeek {
+		c.inverse = append(c.inverse, programInverse{Op: "restore", Target: "working_week", ID: w.prog.ID, Before: img(w.progBefore.WorkingWeek), After: img(w.prog.WorkingWeek)})
+	}
 	if w.prog.StartDate != w.progBefore.StartDate || w.prog.StartOrigin != w.progBefore.StartOrigin {
 		c.inverse = append(c.inverse, programInverse{Op: "restore", Target: "program", ID: w.prog.ID, Before: img(programStart(w.progBefore)), After: img(programStart(w.prog))})
 	}

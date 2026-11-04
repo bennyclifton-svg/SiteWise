@@ -120,11 +120,16 @@ stage_intro: From written instruction/inputs/access to named final issue/handove
 boundary:
 - start: s1_plan
   end: s4_services
+# One table: each stage with its lines and services (owner direction, 3 November 2026).
+scope_by_stage: true
 stages:
 - key: s1_plan
   name: S1 Brief / survey plan
-  deliverable: Review records/currency/conflicts; agree extent/features, method/accuracy, datum/control, access
-    and hidden-feature treatment; boundary work separately selected. Deliver marked plan and input/decision schedule
+  lines:
+  - {key: review_records_currency, text: "Review records/currency/conflicts"}
+  - {key: agree_extent_features, text: "agree extent/features, method/accuracy, datum/control, access and hidden-feature treatment"}
+  - {key: boundary_work_separately, text: "boundary work separately selected"}
+  - {key: deliver_marked_plan, text: "Deliver marked plan and input/decision schedule"}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -137,9 +142,10 @@ stages:
   shown_when: Every appointment
 - key: s2_detail
   name: S2 Detail / topographic
-  deliverable: Measure selected terrain/levels, structures, retained tie-ins, trees and adjoining features; dated
-    coordinated PDF/CAD with control, method/accuracy, accessible extent and missing-feature register; selected
-    point cloud separately
+  lines:
+  - {key: measure_selected_terrain, text: "Measure selected terrain/levels, structures, retained tie-ins, trees and adjoining features"}
+  - {key: dated_coordinated_pdf, text: "dated coordinated PDF/CAD with control, method/accuracy, accessible extent and missing-feature register"}
+  - {key: selected_point_cloud, text: "selected point cloud separately"}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -156,8 +162,11 @@ stages:
   if_unknown: ask
 - key: s3_boundary
   name: S3 Boundary / title
-  deliverable: Selected searches and field boundary definition; identify discrepancies/encroachments and legal/authority
-    referrals. Signed plans/report for stated task; detail survey is not boundary proof
+  lines:
+  - {key: selected_searches_field, text: "Selected searches and field boundary definition"}
+  - {key: identify_discrepancies_encroachments, text: "identify discrepancies/encroachments and legal/authority referrals"}
+  - {key: signed_plans_report, text: "Signed plans/report for stated task"}
+  - {key: detail_survey_is, text: "detail survey is not boundary proof"}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -171,9 +180,11 @@ stages:
   if_unknown: ask
 - key: s4_services
   name: S4 Services / drainage / sewer
-  deliverable: Coordinate locator/surveyor attendance; distinguish records, detected markings and exposed measurements.
-    Selected pits/tanks/pipes and sewer peg-out/report by named provider/method; list authority deliverables, reconcile
-    detail/stormwater overlap
+  lines:
+  - {key: coordinate_locator_surveyor, text: "Coordinate locator/surveyor attendance"}
+  - {key: distinguish_records_detected, text: "distinguish records, detected markings and exposed measurements"}
+  - {key: selected_pits_tanks, text: "Selected pits/tanks/pipes and sewer peg-out/report by named provider/method"}
+  - {key: list_authority_deliverables, text: "list authority deliverables, reconcile detail/stormwater overlap"}
   fee_basis: fixed
   provenance:
   - kind: evidence
@@ -188,8 +199,10 @@ stages:
   if_unknown: ask
 - key: s5_support
   name: S5 Approval / tender support
-  deliverable: Scheduled supplementary/adjoining/roof/height inputs, approval plans and queries; tender datum/control/set-out
-    allocation. Draft subdivision/easement/strata plans only if selected, with solicitor/authority inputs
+  lines:
+  - {key: scheduled_supplementary_adjoining, text: "Scheduled supplementary/adjoining/roof/height inputs, approval plans and queries"}
+  - {key: tender_datum_control, text: "tender datum/control/set-out allocation"}
+  - {key: draft_subdivision_easement, text: "Draft subdivision/easement/strata plans only if selected, with solicitor/authority inputs"}
   fee_basis: option
   provenance:
   - kind: seed
@@ -198,9 +211,12 @@ stages:
   default: option
 - key: s6_construction
   name: S6 Set-out / checks / monitoring
-  deliverable: Selected elements from current approved revisions; control/set-out records and discrepancy notices.
-    Monitoring has separate baseline/locations/frequency/duration and engineer action plan. Builder protects marks/books
-    before concealment; name independent checker
+  lines:
+  - {key: selected_elements_from, text: "Selected elements from current approved revisions"}
+  - {key: control_set_out, text: "control/set-out records and discrepancy notices"}
+  - {key: monitoring_has_separate, text: "Monitoring has separate baseline/locations/frequency/duration and engineer action plan"}
+  - {key: builder_protects_marks, text: "Builder protects marks/books before concealment"}
+  - {key: name_independent_checker, text: "name independent checker"}
   fee_basis: option
   provenance:
   - kind: seed
@@ -212,9 +228,11 @@ stages:
   default: option
 - key: s7_completion
   name: S7 Completion / final plans
-  deliverable: Selected identification/work-as-executed, scoped certificates and final title plans; distinguish
-    measured/supplied data, dates, concealed/missed work and deviations. Name lodgement/registration payer; hand
-    over records and close-out queries
+  lines:
+  - {key: selected_identification_work, text: "Selected identification/work-as-executed, scoped certificates and final title plans"}
+  - {key: distinguish_measured_supplied, text: "distinguish measured/supplied data, dates, concealed/missed work and deviations"}
+  - {key: name_lodgement_registration, text: "Name lodgement/registration payer"}
+  - {key: hand_over_records, text: "hand over records and close-out queries"}
   fee_basis: option
   provenance:
   - kind: seed
@@ -329,6 +347,7 @@ allowances:
     - s7_completion
 positions:
 - key: boundary
+  stage: [s3_boundary]
   group: Survey control and boundaries
   label: Boundary identification for setback/easement design; surveyor reports geometry, solicitor advises rights
   kind: technical
@@ -348,6 +367,7 @@ positions:
   - flag:
     - survey_boundary
 - key: titling
+  stage: [s5_support, s7_completion]
   group: Survey control and boundaries
   label: Subdivision, strata and easement creation; separately selected/priced
   kind: technical
@@ -356,6 +376,7 @@ positions:
   - kind: seed
     ref: land-surveying#23,24,25
 - key: control
+  stage: [s2_detail, s1_plan]
   group: Survey control and boundaries
   label: Agreed horizontal/vertical control and threshold/slab/outlet/retained levels; record accuracy, resolve
     datum conflicts before merging
@@ -370,6 +391,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: adjoining
+  stage: [s2_detail, s5_support]
   group: Survey control and boundaries
   label: Neighbour heights/windows/trees/roof; permissions, inferred labels; arborist owns tree health, architect
     privacy/shadow
@@ -393,6 +415,7 @@ positions:
   - flag:
     - survey_adjoining
 - key: records
+  stage: [s4_services, s2_detail]
   group: Services and measured building evidence
   label: Underground services records and visible features; locator states methods/limits, surveyed paint is not
     proof
@@ -407,6 +430,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: exposure
+  stage: [s4_services]
   group: Services and measured building evidence
   label: Exposure, potholing, isolation and surface restoration
   kind: technical
@@ -421,6 +445,7 @@ positions:
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
   responsible: client-appointed exposure/isolation and reinstatement contractors (name each in R4)
 - key: buried
+  stage: [s4_services]
   group: Services and measured building evidence
   label: Buried tanks/drainage/sealed pits; measured/inferred separated, name opening party; civil owns capacity,
     structural adequacy
@@ -442,6 +467,7 @@ positions:
   - flag:
     - survey_buried
 - key: sewer
+  stage: [s4_services]
   group: Services and measured building evidence
   label: Sewer/main peg-out versus condition report; provider/method named, CCTV/cleaning/tracing/approvals separately
     selected
@@ -463,6 +489,7 @@ positions:
   - flag:
     - survey_sewer
 - key: interior
+  stage: [s2_detail, s5_support]
   group: Services and measured building evidence
   label: Interior measure-up/scan/point cloud; select rooms/levels, name scan-to-model party; boundaries only if
     needed
@@ -493,6 +520,7 @@ positions:
     ref: land-surveying#27
   if_unknown: ask
 - key: monitoring
+  stage: [s6_construction]
   group: Access and construction surveys
   label: Movement monitoring/repeat observations; structural/geotechnical lead supplies triggers and interpretation
   kind: technical
@@ -504,6 +532,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: setout
+  stage: [s6_construction]
   group: Access and construction surveys
   label: Construction set-out; builder provides approved revisions, protects control and books
   kind: technical
@@ -520,6 +549,7 @@ positions:
     ref: land-surveying#32
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
 - key: asbuilt
+  stage: [s7_completion]
   group: Access and construction surveys
   label: Work-as-executed checks; missed hold points not certified later
   kind: technical

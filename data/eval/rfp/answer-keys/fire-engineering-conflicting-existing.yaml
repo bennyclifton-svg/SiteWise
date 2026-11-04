@@ -64,11 +64,10 @@ scenario: fire-engineering-conflicting-existing
 description: Extension has conflicting reconciliation extent and hazard evidence; do not exclude or assume adequacy.
 expect:
   fire-engineering:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      existing: ask
-      hazards: ask
+      existing: I
+      hazards: X
       brief: I
       fer: I
-    blocking:
-    - fact:flag.fe_existing_reconciliation
-    - fact:flag.fire_special_hazards
+    blocking: ['fact:flag.fe_existing_reconciliation', 'fact:flag.fire_special_hazards']

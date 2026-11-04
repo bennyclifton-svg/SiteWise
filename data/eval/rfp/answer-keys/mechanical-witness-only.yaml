@@ -61,14 +61,12 @@ description: Witness-only does not promote design or execute contractor tests.
 snapshot: false
 expect:
   mechanical-services:
-    stages_include:
-    - handover
-    stages_absent:
-    - design
-    - tender
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [handover]
+    stages_absent: [design, tender]
     positions:
       hvac: absent
       smoke: absent
       controls: absent
       witness: I
-      execution: O
+      execution: I

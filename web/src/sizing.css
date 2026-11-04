@@ -1,0 +1,145 @@
+/*
+ * Sizing for reading and clicking with ease (owner direction, 3 November
+ * 2026): larger text, larger controls and plain entry fields, after Gmail's
+ * scale and Xero's fields. Loaded last so these sizes hold app-wide; colours,
+ * fonts and layout stay with clerk-colours.css, styles.css and cockpit.css.
+ */
+:root {
+  /* Text steps. Fixed sizes in surface CSS map onto these. */
+  --fs-xs: 13px; /* the smallest text anywhere */
+  --fs-sm: 14px;
+  --fs-md: 15px; /* body and table text */
+  --fs-lg: 16px; /* entry fields: also stops iOS zooming on focus */
+
+  /* Click targets. */
+  --control-h: 40px;
+  --control-h-sm: 36px;
+  --field-h: 44px;
+  --target: 44px;
+  --check: 20px;
+  --field-radius: 8px;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  height: var(--control-h);
+  padding: 0 16px;
+  font-size: var(--fs-md);
+}
+
+.btn-small {
+  height: var(--control-h-sm);
+  padding: 0 14px;
+  font-size: var(--fs-sm);
+}
+
+/* ---------- entry fields: one border, no outer ring ---------- */
+
+/* :where() keeps these at one class's weight, so a component that styles
+   its own field on purpose (the project title, say) still can; add
+   .field-plain to opt out. */
+.input,
+.select,
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]), select, textarea):not(.field-plain, .project-name-editor) {
+  min-height: var(--control-h);
+  padding: 8px 12px;
+  border: 1px solid var(--sw-border-strong, var(--line-strong));
+  border-radius: var(--field-radius);
+  background: var(--sw-surface, var(--paper));
+  color: var(--sw-text-primary, var(--ink));
+  font: inherit;
+  font-size: var(--fs-lg);
+  box-shadow: none;
+}
+
+.input,
+.select {
+  height: var(--field-h);
+}
+
+select {
+  padding-right: 32px;
+}
+
+textarea {
+  line-height: 1.5;
+}
+
+/* Focus thickens the field's own border in the focus colour; the inset
+   shadow adds the second pixel without moving the text. */
+.input:focus,
+.select:focus,
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]), select, textarea):not(.field-plain, .project-name-editor):focus {
+  outline: none;
+  border-color: var(--sw-action-focus, var(--ember));
+  box-shadow: inset 0 0 0 1px var(--sw-action-focus, var(--ember));
+}
+
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--sw-error-text, var(--alert));
+  box-shadow: inset 0 0 0 1px var(--sw-error-text, var(--alert));
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- tick boxes and radios ---------- */
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: var(--check);
+  height: var(--check);
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--sw-action-focus, var(--ember));
+  cursor: pointer;
+}
+
+/* A tick box and its words sit on one line, centred. */
+:where(label:has(> input[type="checkbox"], > input[type="radio"])) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The one-click position letters draw their own box over a hidden radio. */
+.rfp-position-choice input[type="radio"] {
+  width: auto;
+  height: auto;
+}
+
+.rfp-position-choice span {
+  min-width: 36px;
+  padding: 8px 0;
+  font-size: var(--fs-sm);
+}
+
+/* ---------- cost plan: a cell opens a full-size field ---------- */
+
+.cost-input {
+  width: 100%;
+  min-width: 96px;
+  height: var(--control-h);
+  text-align: right;
+}
+
+/* ---------- documents panel ---------- */
+
+/* Fixed columns widen with the larger text; the title column takes the rest. */
+.reg-table col.reg-sel,
+.project-side-panel .reg-table col.reg-sel { width: 32px; }
+.project-side-panel .reg-table col.reg-no { width: 5rem; }
+.project-side-panel .reg-table col.reg-rev { width: 2.25rem; }
+.project-side-panel .reg-table col.reg-date { width: 5.5rem; }
+.project-side-panel .reg-table col.reg-disc { width: 6.5rem; }
+.project-side-panel .reg-table col.reg-kind { width: 5.5rem; }
+.project-side-panel .reg-table col.reg-prof { width: 2.25rem; }
+.project-side-panel .reg-table col.reg-open { width: 3.75rem; }
+.project-side-panel .reg-table col.reg-bin { width: 2.5rem; }

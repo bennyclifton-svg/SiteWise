@@ -47,13 +47,11 @@ scenario: landscape-unknown-interfaces
 description: Unknown podium/irrigation/public/special/staging extent remains decision rather than exclusion.
 expect:
   landscape-architecture:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      podium: ask
-      irrigation_brief: ask
-      public: ask
-      special: ask
-      staging: ask
-    blocking:
-    - fact:flag.landscape_podium
-    - fact:flag.landscape_irrigation_brief
-    - fact:flag.landscape_public
+      podium: X
+      irrigation_brief: X
+      public: X
+      special: I
+      staging: I
+    blocking: ['fact:flag.landscape_podium', 'fact:flag.landscape_irrigation_brief', 'fact:flag.landscape_public']

@@ -56,22 +56,15 @@ description: Operational/user audit includes the selected broader sensory/cognit
   stage or implied physical testing.
 expect:
   access:
-    stages_include:
-    - s1_inception
-    - s8_advisory
-    stages_absent:
-    - s2_concept
-    - s3_planning
-    - s4_approval
-    - s5_tender
-    - s6_postcontract
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_inception, s8_advisory]
+    stages_absent: [s2_concept, s3_planning, s4_approval, s5_tender, s6_postcontract, s7_completion]
     positions:
       existing: I
       facilities: I
       inclusive: I
-      testing: O
-      solutions: O
-      peer: O
+      testing: I
+      solutions: I
+      peer: I
     blocking_only: true
     blocking: []

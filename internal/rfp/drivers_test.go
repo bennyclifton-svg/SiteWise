@@ -134,6 +134,38 @@ func TestWholePartStandsInWhenNoParts(t *testing.T) {
 	}
 }
 
+// The Design and Building Practitioners Act reaches only Class 2, 3 and 9c,
+// so a house is not regulated design. A saved answer and an unclassed part
+// are left alone.
+func TestRegulatedDesignFollowsClass(t *testing.T) {
+	cases := []struct {
+		name, classes, saved, want string
+	}{
+		{"house", "1a, 10a", "", "no"},
+		{"apartments", "2", "", ""},
+		{"aged care", "9c", "", ""},
+		{"mixed with class 3", "5, 3", "", ""},
+		{"class not known", "", "", ""},
+		{"saved answer wins", "1a", "yes", "yes"},
+	}
+	for _, c := range cases {
+		s := arthurSnapshot()
+		s.Parts = []reports.PartInfo{{ID: "w", Label: "Whole project", Kind: "whole", NCCClass: c.classes}}
+		s.Brief = nil
+		if c.saved != "" {
+			s.Brief = []reports.BriefValue{{ID: "w:proj.regulated_design", Text: c.saved}}
+		}
+		f := Drivers(s, skeleton(t)).Fact("regulated_design")
+		got := ""
+		if f.State == Known {
+			got = f.Values[0]
+		}
+		if got != c.want {
+			t.Errorf("%s: regulated design = %+v, want %q", c.name, f, c.want)
+		}
+	}
+}
+
 // Project details and flags with no determinant are read from Profile; the
 // user's word on a flag replaces a reading of it.
 func TestDriversReadProjectDetails(t *testing.T) {

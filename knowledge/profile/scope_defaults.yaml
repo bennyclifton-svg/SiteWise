@@ -403,3 +403,64 @@ categories:
   - substructure.footings
   - structure.concrete
   - electrical.utility-supply
+# Words a document uses for the works that imply systems, as suggestions
+# (Walsh review, 2026-10-27). A matched passage of a read document suggests
+# each system with the passage's words in the note; it is never evidence,
+# and the user's out is final. Draft; owner review pending.
+implied_by:
+- id: wet-room
+  label: bathroom, ensuite or laundry
+  pattern: \b(?:bath(?:room)?s?|ensuites?|laundr(?:y|ies)|powder rooms?)\b
+  systems:
+  - interiors.wet-area-waterproofing
+  - interiors.tiling
+  - hydraulic.sanitary
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  - mechanical.local-exhaust
+- id: kitchen
+  label: kitchen
+  pattern: \bkitchens?\b
+  systems:
+  - interiors.joinery
+  - hydraulic.sanitary
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  - mechanical.local-exhaust
+- id: robe
+  label: robe or wardrobe
+  pattern: \b(?:walk-in robes?|wardrobes?|built-in robes?)\b
+  systems:
+  - interiors.joinery
+- id: bedroom
+  label: new rooms
+  pattern: \b(?:bedrooms?|study|studies)\b
+  systems:
+  - interiors.internal-doors
+- id: stair
+  label: stair
+  pattern: \b(?:internal )?stair(?:s|case|cases)?\b
+  systems:
+  - access-egress.stairs-and-ramps
+- id: party-wall
+  label: party wall
+  pattern: \b(?:party|separating|common) walls?\b
+  systems:
+  - site.adjoining-structures
+  - fire-passive.compartments
+  - interiors.acoustic-separation
+- id: strip-out
+  label: strip-out or demolition
+  pattern: \bstrip[- ]?out\b|\bdemoli(?:tion|sh)\b
+  systems:
+  - site.demolition
+- id: masonry
+  label: masonry work
+  pattern: \bmasonry\b|\bre-?point(?:ing)?\b|\bbrickwork\b
+  systems:
+  - structure.masonry
+- id: energy-rating
+  label: BASIX or NatHERS
+  pattern: \bBASIX\b|\bNatHERS\b
+  systems:
+  - envelope.thermal-performance

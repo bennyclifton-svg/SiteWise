@@ -175,6 +175,39 @@ class ValidateShapeTests(unittest.TestCase):
         for word in ["procurement[0]: alias consultant.wizard", "rfps[0]: aliases", "not_expected_procurement[0]: alias consultant.dragon"]:
             self.assertIn(word, joined)
 
+    def test_removes_rfps_may_drop_named_phrases(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["rfps"][0]["must_include"] = ["footing design", {"text": "Retention design", "key": "stage.retention"}]
+        ok["rfps"][0]["must_not_include"] = ["Shared Revit model"]
+        ok["triggers"][0]["removes"] = {"rfps": [
+            "consultant.arborist",
+            {"discipline": "consultant.structural", "must_include": [{"text": "Retention design", "key": "stage.retention"}],
+             "must_not_include": ["Shared Revit model"]},
+        ]}
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+
+        bad = yaml.safe_load(yaml.safe_dump(ok))
+        bad["triggers"][0]["removes"]["rfps"] = [
+            {"discipline": "consultant.wizard"},
+            {"discipline": "consultant.structural", "must_include": ["moat design"]},
+            {"discipline": "consultant.civil", "must_include": ["footing design"]},
+        ]
+        errors, _ = check(bad)
+        joined = "\n".join(errors)
+        for word in ["consultant.wizard", "moat design", "consultant.civil has no base RFP"]:
+            self.assertIn(word, joined)
+
+    def test_app_differs_accepts_blocking_keys(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["rfps"][0]["expect"] = {"blocking": []}
+        ok["rfps"][0]["app_differs"] = [{"key": "blocking.fact:budget", "app": "blocking", "expect": "not blocking", "why": "x"}]
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+        ok["rfps"][0]["app_differs"][0]["app"] = "maybe"
+        errors, _ = check(ok)
+        self.assertTrue(any("blocking.fact:budget" in e and "app" in e for e in errors))
+
     def test_folder_must_match_type_id(self):
         bad = dict(GOOD, type_id="T02")
         errors, _ = check(bad)

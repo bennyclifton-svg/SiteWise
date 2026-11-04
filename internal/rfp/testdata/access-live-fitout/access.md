@@ -1,5 +1,3 @@
-Release date: 2026-10-12 · Proposals close: 2026-10-30
-
 ### 1. Project
 
 Example Client intends to refurbish and fit out Retail fit-out (Class 6) at 1 Example St, Example NSW.
@@ -12,50 +10,48 @@ Example Client intends to refurbish and fit out Retail fit-out (Class 6) at 1 Ex
 Conditions that apply: Work to an existing building; Site stays occupied or operating during the works; Delivered in stages.
 Conditions that do not apply: Several buildings or a campus; Parts with different NCC classes.
 
-Information provided: Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts are client choices.
-
 ### 2. Scope of services
 
 Access advice from written instruction/agreed inputs to named final output and response-round end. Architect/specialists retain design; BCA adviser coordinates code; independent statutory certifier decides approval. No approval or discrimination-immunity guarantee.
 Dated PDFs/mark-ups and editable issues, assumptions, solutions and evidence registers; locations, input revisions, owners/dates and closure proof. Coordinate architecture, landscape/civil, services/AV, lifts, fire, BCA and operator.
 Assessment basis: Confirm uses/classes by part, affected access chain and tenant/operator boundaries; current jurisdiction/editions, housing targets and mandatory versus voluntary objectives. Attach measured evidence, approvals, conditions and gaps.
 
-I = included; O = optional price; X = excluded; ? = scope unknown. Resolve unknown scope before issue; propose departures in R6.
+Select base, options and end boundary; advice-only ends at its report/response round. Later work needs written activation. R1 Fee by stage: Price each selected stage/service: basis, quantity, ex GST/GST/total; base/options/alternatives and standalone/package dependency separate. State milestones/validity; acknowledge addenda and authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
-| Scope of services | I | O | X | ? |
+| Stage | Scope | Position | Fee $ |
+|---|---|---|---|
+| S1 Inception / evidence |  | Included |  |
+|  | Agree brief/basis | Included |  |
+|  | Inspect agreed existing routes, separate observed/measured/reported facts | Included |  |
+|  | Route map/photos, inaccessible areas, upgrade questions and prioritised actions | Included |  |
+|  | Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade or exemption | Included |  |
+| S2 Concept advice |  | Included |  |
+|  | Mark access-chain barriers/options: arrival/parking, entries/levels, routes, lifts and facilities | Included |  |
+|  | Flag solution candidates and required versus voluntary improvements | Included |  |
+|  | Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy reliance | Included |  |
+|  | Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material design | Included |  |
+| S4 Construction approval |  | Included |  |
+|  | Review conditions and coordinated drawings/specs | Included |  |
+|  | Preliminary mark-ups/final access report, close earlier findings and schedule product/measurement evidence | Included |  |
+|  | Solution preparation separate | Included |  |
+|  | Hearing/signage/tactile/lift/facility criteria review; services/AV designs hearing, architect signs, lift specialist lifts | Included |  |
+|  | Performance departure: brief/method/report/revisions per departure; author/independent assessor, fire/egress interfaces and acceptance/completion conditions | Included |  |
+| S5 Tender support | Not part of this appointment | Excluded | — |
+| S6 Post-contract review | Not part of this appointment | Excluded | — |
+| S7 Construction / completion | Not part of this appointment | Excluded | — |
+| S8 Advisory / operational | Not part of this appointment | Excluded | — |
+| Across all stages | Services through the whole appointment |  | In stage fees |
+|  | Access review against confirmed basis at appointed stages only | Included |  |
+|  | Occupied/staged route-continuity review at appointed stages; repeat audits only within selected visit/stage allowances; contractor methods/safety, operator management | Included |  |
+| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
+| Total fee | Included stages and reimbursables |  |  |
+
+### 3. Transmittal
+
+Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts are client choices.
+
+| Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-| Access strategy and routes — Access review against confirmed basis at appointed stages only | X |  |  |  |
-| Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade or exemption | X |  |  |  |
-| Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy reliance | X |  |  |  |
-| Occupied/staged route-continuity review at appointed stages; repeat audits only within selected visit/stage allowances; contractor methods/safety, operator management | X |  |  |  |
-| Facilities and housing — Hearing/signage/tactile/lift/facility criteria review; services/AV designs hearing, architect signs, lift specialist lifts | X |  |  |  |
-| Beyond-minimum inclusive/user/operational brief, sensory/cognitive needs and action plan; owner training/ongoing management |  | X |  |  |
-| Specialist assessments — Performance departure: brief/method/report/revisions per departure; author/independent assessor, fire/egress interfaces and acceptance/completion conditions |  | X |  |  |
-| Luminance/slip tests: competent named provider, installed-product certificates and field-test extent separately priced |  | X |  |  |
-| Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material design |  | X |  |  |
-| Independent peer review/expert evidence: independence, reliance and legal instruction; no transfer of design duty |  | X |  |  |
-
-### 3. Scope by stage and fee proposal
-
-Select base, options and end boundary; advice-only ends at its report/response round. Later work needs written activation.  R1 Fee by stage: Price each selected stage/service: basis, quantity, ex GST/GST/total; base/options/alternatives and standalone/package dependency separate. State milestones/validity; acknowledge addenda and authorised signatory. Price included stages in the base fee and options separately, without duplication. Fees exclude GST; state GST and total in your proposal.
-
-| Stage / position | Deliverable at sign-off | Fee $ | Weeks | Hours |
-|---|---|---|---|---|
-| S1 Inception / evidence — Included | Agree brief/basis; inspect agreed existing routes, separate observed/measured/reported facts; route map/photos, inaccessible areas, upgrade questions and prioritised actions |  |  |  |
-| S2 Concept advice — Included | Mark access-chain barriers/options: arrival/parking, entries/levels, routes, lifts and facilities; flag solution candidates and required versus voluntary improvements |  |  |  |
-| S4 Construction approval — Included | Review conditions and coordinated drawings/specs; preliminary mark-ups/final access report, close earlier findings and schedule product/measurement evidence. Solution preparation separate |  |  |  |
-| S5 Tender support — Option | Review agreed tender access documents and counted queries; D&C design-intent/contractor duties explicit. Access review does not prepare architectural design |  |  |  |
-| S6 Post-contract review — Option | Separately appointed contractor details/substitutions: tactile indicators, doors, fixtures, signs/lifts; effects on earlier reports/solutions and reassessment. No automatic novation |  |  |  |
-| S7 Construction / completion — Option | Counted hold-point visits, pre-final/final audits and close-out; location/photos, test/product/as-built evidence and solution conditions. Qualified opinion only for inspected scope; outstanding gaps explicit; certifier decides occupation |  |  |  |
-| S8 Advisory / operational — Option | Defined audit/inclusive brief: sampling, evidence cutoff, user consultation, sensory/cognitive needs, priorities/actions and operator commitments. Operational plan cannot replace physical compliance or accepted solution |  |  |  |
-| Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |  |
-| Base fee total | Included stages and elements only |  |  |  |
-| Service option | Performance departure: brief/method/report/revisions per departure |  |  |  |
-| Service option | Luminance/slip tests: competent named provider, installed-product certificates and field-test extent separately priced |  |  |  |
-| Service option | Beyond-minimum inclusive/user/operational brief, sensory/cognitive needs and action plan |  |  |  |
-| Service option | Remediation/heritage access options from specialist diagnosis/advice |  |  |  |
-| Service option | Independent peer review/expert evidence: independence, reliance and legal instruction |  |  |  |
-| Options total | Separate from the base fee |  |  |  |
 
 ### 4. Allowances
 
@@ -97,6 +93,10 @@ Reply in this order. The response form (Excel, issued with this RFP) has a table
 | R7 Program | Input/access owners/dates, start, draft/final reviews, consultations, authority/tender responses, hold points before finishes, final response/end and later options; unavailable-evidence consequences. |
 | R8 Insurance and compliance | Current PI $5 million (client selected)/PL $20 million (client selected)/workers evidence and agreed duration; claim/aggregate, expiry/retroactivity/exclusions/renewal. Task competence/accreditation and required registration; historic certificates insufficient. |
 | R9 Reimbursables | Testing/survey/opening-up/reinstatement, specialist/authority/equipment/travel/platform costs: included/quantity/rate, payer, GST/markup/prior authority; client-direct evidence owners; no double counting. |
+
+### Proposal dates
+
+Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 ### Before issue — resolve or accept
 

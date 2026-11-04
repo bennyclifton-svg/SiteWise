@@ -214,6 +214,10 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		if Boilerplate(passage.Passage) {
 			return nil
 		}
+		// The words a passage uses for the works imply scope suggestions;
+		// code finds them, so they are stored even when Jev is not asked.
+		implied := impliedFacts(passage.ID, profile.ImpliedReadings(passage.Text, w.Catalog))
+		factSets[i] = implied
 		call, cands := labelCall(w.Catalog, passage.Passage)
 		if len(call.Questions) == 0 {
 			return nil
@@ -228,7 +232,7 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		}
 		readings := profile.Readings(result, call.Questions, cands, passage.Text)
 		_, partLabel := w.Profile.AppliedLocation(result.Answers["source.scope"], passage.Parts)
-		factSets[i] = storedFacts(passage.ID, readings, partLabel)
+		factSets[i] = append(storedFacts(passage.ID, readings, partLabel), implied...)
 		return w.Store.SetSourceReading(ctx, job.OrgID, passage.ID, sourceReading(result, labels, readings, passage.Parts, w.Profile))
 	})
 	if err != nil {
@@ -239,7 +243,7 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, set...)
 	}
 
-	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr.", knowledge.DetailPrefix, knowledge.SitePrefix}, profile.QuestionVersion, facts); err != nil {
+	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr.", knowledge.DetailPrefix, knowledge.SitePrefix, "implied."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
 	if err := w.Store.SetReadRevision(ctx, job.OrgID, job.DocumentID, profile.ReadRevision); err != nil {
@@ -389,6 +393,15 @@ func storedFacts(passageID string, readings []profile.Reading, partLabel string)
 	for _, r := range readings {
 		out = append(out, store.StoredFact{PassageID: passageID, QuestionID: r.QuestionID, Value: r.Value, Unit: r.Unit,
 			Basis: r.Basis, Excerpt: r.Excerpt, Confidence: r.Confidence, DecidedBy: "jev", PartLabel: partLabel})
+	}
+	return out
+}
+
+// impliedFacts stores implied-scope readings as code facts (decided by rule).
+func impliedFacts(passageID string, readings []profile.Reading) []store.StoredFact {
+	out := make([]store.StoredFact, 0, len(readings))
+	for _, r := range readings {
+		out = append(out, store.StoredFact{PassageID: passageID, QuestionID: r.QuestionID, Value: r.Value, Basis: r.Basis, Excerpt: r.Excerpt, DecidedBy: "rule"})
 	}
 	return out
 }
@@ -763,7 +776,25 @@ var explicitEvidenceRoutes = []struct {
 	{"mechanical", regexp.MustCompile(`(?i)\b(?:battery|MHE) charging\b`)},
 	// "Pool backwash interfaces" in a hydraulic scope (Kavanagh, 2026-10-24).
 	{"site", regexp.MustCompile(`(?i)\b(?:swimming )?pools?\b`)},
+	// Rooms a brief names involve finishes, joinery, plumbing and exhaust;
+	// the first-pass family label misses them (Walsh brief, 2026-10-27).
+	{"interiors", wetRoomRe},
+	{"hydraulic", wetRoomRe},
+	{"mechanical", wetRoomRe},
+	{"interiors", regexp.MustCompile(`(?i)\b(?:walk-in )?robes?\b|\bwardrobes?\b|\bbedrooms?\b|\bjoinery\b`)},
+	// A wall shared with a neighbour: adjoining structure, fire and sound.
+	{"site", partyWallRe},
+	{"fire-passive", partyWallRe},
+	{"interiors", partyWallRe},
+	{"site", regexp.MustCompile(`(?i)\bstrip[- ]?out\b|\bdemoli(?:tion|sh)\b`)},
+	{"structure", regexp.MustCompile(`(?i)\bmasonry\b|\bre-?point(?:ing)?\b|\bsandstone\b|\bbrickwork\b`)},
+	{"envelope", regexp.MustCompile(`\bBASIX\b|(?i)\bNatHERS\b`)},
 }
+
+var (
+	wetRoomRe   = regexp.MustCompile(`(?i)\bkitchens?\b|\bbath(?:room)?s?\b|\bensuites?\b|\blaundr(?:y|ies)\b|\bpowder room\b|\bWCs?\b|\btoilets?\b`)
+	partyWallRe = regexp.MustCompile(`(?i)\bparty[- ]walls?\b|\bseparating walls?\b|\bcommon walls?\b`)
+)
 
 const knowledgeNoul = "noul"
 

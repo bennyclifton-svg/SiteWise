@@ -17,11 +17,12 @@ export interface BuilderSection { key: string; label: string; summary?: string; 
 export interface BuilderReview { ex_gst: Money; inc_gst: Money; basis: string; sources: string[]; issues: string[]; sections: BuilderSection[] }
 export interface QuoteFee { id: string; label: string; printed: string; amount: Money; role: string; page: number; source: string; heading: string; suggestion?: string }
 export interface QuoteReview { fees: QuoteFee[]; coverage: Record<string, {fee_id: string; status: string}>; issues: string[]; terms?: {kind: string; heading: string; text: string; page: number}[] }
-export interface Column { appointment_total?: Money; quote?: QuoteReview; award_stages?: QuoteFee[]; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
+export interface AppointmentRow { id: string; label: string; amount: Money; state: CellState; included: boolean; quote_id?: string; item_key?: string; keys: string[]; source_label?: string; source?: string; page?: number; mapping_suggested?: boolean; alternative?: boolean; printed?: string }
+export interface Column { appointment_rows?: AppointmentRow[]; appointment_total?: Money; appointment_basis?: "reconciled" | "listed"; quote?: QuoteReview; award_stages?: QuoteFee[]; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
 export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[]; amount: Money; invoiced: boolean }
 export interface Award { id?: string; submission_id: string; firm_name: string; parent_label: string; parent_item_id?: string; budget: Money; total: Money; lines: AwardLine[]; created_at?: string; locked: boolean }
 export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null }
-export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[] }
+export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number }
 export interface Board { packages: Record<string, FirmCard[]>; unassigned: FirmCard[] }
 export interface FirmFields { name: string; abn: string; address: string; contact: string; email: string; phone: string }
 export interface ResponsePassage { ordinal: number; heading: string; page: number; excerpt: string }
@@ -30,11 +31,12 @@ export interface ReportData {
   table: PriceTable;
   report: { criteria: ScheduleItem[]; columns: { submission_id: string; responses: Record<string, CriterionResponse> }[]; recommendation: string; draft: string; edited_by: string; signed_off_by: string; signed_off_at: string | null; version: number };
 }
-export interface AwardRequest { submission_id: string; lines: { label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[] }[]; total: string }
+export interface AwardRequest { submission_id: string; appointment?: boolean; version?: number; lines: { label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[]; appointment_ids?: string[] }[]; total: string }
 
 const p = (project: string) => `/projects/${project}`;
 
 export const submissionApi = {
+  appointmentRow: (project: string, sub: string, version: number, id: string, included: boolean, keys?: string[]) => request<PriceTable>("PUT", `${p(project)}/submissions/${sub}/appointment-row`, { version, id, included, keys }),
   linkDocument: (project: string, pkg: string, document_id: string) => request<{ submission_id: string }>("POST", `${p(project)}/procurement/packages/${pkg}/documents`, { document_id }),
   row: (project: string, pkg: string, key: string, label: string, section: string, unit = "") => request<PriceTable>("PUT", `${p(project)}/procurement/packages/${pkg}/comparison-row`, { key, label, section, unit }),
   align: (project: string, sub: string, version: number, target: string, price_ids: string[], undo = false, exclude = false) => request<PriceTable>("POST", `${p(project)}/submissions/${sub}/alignment`, { version, target, price_ids, undo, exclude }),
@@ -89,4 +91,6 @@ export const FLAG_WORDS: Record<string, string> = {
   no_text: "No readable text: type the prices from the file.",
   no_schedule: "The package has no schedule yet.",
   response_form: "Returned on the response form: read row by row.",
+  abn_invalid: "The printed ABN fails the ABN checksum, so it was not recorded. Ask the firm for its ABN.",
+  monthly_fee: "A fee row is worded per month. Check whether its amount is per month or for the whole stage before awarding.",
 };

@@ -93,8 +93,45 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await expect(table.getByText("Reading invoice…")).toHaveCount(0, { timeout: 15_000 });
   testInfo.annotations.push({ type: "batch of 10, last row read", description: `${Date.now() - started} ms in the browser` });
   for (const n of [1, 5, 10]) await expect(table.getByRole("button", { name: `INV-${String(n).padStart(5, "0")}`, exact: true })).toBeVisible();
-  // Rules read the synthetic layout: amounts are from the document.
-  await expect(table.getByRole("row").nth(1).getByText("From document").first()).toBeVisible();
+  await expect(table.getByRole("columnheader")).toHaveText(["Invoice date", "Invoice no.", "Discipline", "Activity line", "Month", "Ex GST (AUD)", "Status"]);
+  await expect(table.locator(".inv-chip")).toHaveCount(0);
+  const discipline = table.getByLabel("Discipline for INV-00004", { exact: true });
+  const originalDiscipline = await discipline.inputValue();
+  await discipline.selectOption("");
+  await expect(discipline).toBeEnabled();
+  await expect(discipline).toHaveValue("");
+  await expect(page.locator(".inv-panel")).toHaveCount(0);
+  const editURL = `**/api/projects/${project}/invoices/*`;
+  await page.route(editURL, route => route.request().method() === "PATCH" ? route.fulfill({ status: 500, body: "Test save failure" }) : route.continue());
+  await discipline.selectOption({ label: "Architect" });
+  await expect(page.getByRole("alert")).toContainText("Could not save the discipline");
+  await expect(discipline).toHaveValue("");
+  await page.unroute(editURL);
+  await discipline.selectOption({ label: "Architect" });
+  await expect(discipline).toBeEnabled();
+  await expect(discipline.locator("option:checked")).toHaveText("Architect");
+  await discipline.selectOption(originalDiscipline);
+  await expect(discipline).toBeEnabled();
+  await expect(discipline).toHaveValue(originalDiscipline);
+  await expect(page.locator(".inv-panel")).toHaveCount(0);
+
+  // Exercise the same saved assignment path repeatedly; no model is involved.
+  const snapshot = await (await page.request.get(`/api/projects/${project}/invoices`)).json();
+  const edited = snapshot.invoices.find((inv: { number: string }) => inv.number === "INV-00004");
+  const timings: number[] = [];
+  for (let i = 0; i < 20; i++) {
+    const start = performance.now();
+    const response = await page.request.patch(`/api/projects/${project}/invoices/${edited.id}`, {
+      data: { fields: { supplier: i % 2 === 0 ? snapshot.packages[0].id : originalDiscipline } },
+      headers: { Origin: new URL(page.url()).origin },
+    });
+    expect(response.ok()).toBeTruthy();
+    timings.push(performance.now() - start);
+  }
+  timings.sort((a, b) => a - b);
+  console.log(`Invoice discipline write, 10-invoice fixture: p50 ${timings[9].toFixed(1)} ms / p90 ${timings[17].toFixed(1)} ms (budget 50 / 100 ms)`);
+  expect(timings[9]).toBeLessThanOrEqual(50);
+  expect(timings[17]).toBeLessThanOrEqual(100);
 
   // A re-drop of the same bytes makes no new row.
   await dropInvoices(page, [3]);

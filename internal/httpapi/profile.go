@@ -138,6 +138,8 @@ type profileJSON struct {
 	Systems     []systemGroupJSON     `json:"systems"`
 	Compliance  []complianceGroupJSON `json:"compliance"`
 	Presets     []presetJSON          `json:"presets"`
+	// Appointed are the packages awarded to a firm, with the firm's contact.
+	Appointed []store.AppointedFirm `json:"appointed"`
 }
 
 func getProfile(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -209,6 +211,10 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 	}
 	body := profileBody(projectID, view, deps)
 	body.Queued = queued
+	if body.Appointed, err = deps.Store.AppointedFirms(r.Context(), orgID, projectID); err != nil {
+		http.Error(w, "read failed", http.StatusInternalServerError)
+		return
+	}
 	writeJSON(w, http.StatusOK, body)
 }
 

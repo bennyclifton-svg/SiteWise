@@ -12,14 +12,14 @@ import (
 // RunBackground keeps upload preparation independent of Jev reading. Text
 // extraction always resumes after a restart, including in development.
 func RunBackground(ctx context.Context, w *Worker, poll time.Duration, logf func(string, ...any)) {
-	extraction, reading, ocr := *w, *w, *w
+	extraction, reading, ocr := w.forLane(), w.forLane(), w.forLane()
 	extraction.Kinds = []string{store.JobKindFullText}
 	extraction.Since = time.Time{}
 	reading.Kinds = []string{store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification}
 	ocr.Kinds = []string{store.JobKindOCR, store.JobKindVisualIdentity}
 	ocr.Since = time.Time{}
 	var done sync.WaitGroup
-	for _, worker := range []*Worker{&extraction, &reading, &ocr} {
+	for _, worker := range []*Worker{extraction, reading, ocr} {
 		done.Add(1)
 		go func(w *Worker) {
 			defer done.Done()
@@ -30,6 +30,18 @@ func RunBackground(ctx context.Context, w *Worker, poll time.Duration, logf func
 		}(worker)
 	}
 	done.Wait()
+}
+
+// Each lane gets fresh initialisation state. Copying Worker would copy its
+// sync.Once, which may already be in use when a worker is restarted.
+func (w *Worker) forLane() *Worker {
+	return &Worker{
+		Visual: w.Visual, OCR: w.OCR, Store: w.Store, Ask: w.Ask,
+		Text: w.Text, Source: w.Source, Catalog: w.Catalog,
+		Lease: w.Lease, Backoff: w.Backoff, MinNoul: w.MinNoul,
+		Since: w.Since, Profile: w.Profile, Reading: w.Reading,
+		ProgramThresholds: w.ProgramThresholds,
+	}
 }
 
 // Run works background jobs until ctx ends: for each org with queued work it

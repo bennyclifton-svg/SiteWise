@@ -82,6 +82,7 @@ func (o OptInt) MarshalJSON() ([]byte, error) {
 // ProgramOp is one edit of a batch (plan 8.1). Any id field may name the
 // temp_id of a row added earlier in the same batch.
 type ProgramOp struct {
+	WorkingWeek      *int     `json:"working_week,omitempty"`
 	Op               string   `json:"op"`
 	TempID           string   `json:"temp_id,omitempty"`
 	ID               string   `json:"id,omitempty"`
@@ -272,6 +273,11 @@ func (o ProgramOp) shape(i int, temps map[string]bool) *ProgramOpError {
 		return first(ref("id", o.ID, true), linkFields(i, o))
 	case "link_delete":
 		return refs("ids", o.IDs, 1)
+	case "set_working_week":
+		if o.WorkingWeek == nil || *o.WorkingWeek < 1 || *o.WorkingWeek > 127 {
+			return opErr(i, "working_week", "Choose at least one working day.")
+		}
+		return nil
 	case "set_start":
 		return date("start_date", o.StartDate)
 	case "calendar_day":
@@ -365,8 +371,8 @@ func (s *Store) programWrite(ctx context.Context, org, project, programID string
 	if w.stageChange {
 		bump = 1
 	}
-	if err := tx.QueryRow(ctx, `UPDATE programs SET version=version+1,stage_revision=stage_revision+$3,start_date=NULLIF($4,'')::date,start_origin=NULLIF($5,''),updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid RETURNING version,stage_revision`,
-		org, p.ID, bump, string(w.prog.StartDate), string(w.prog.StartOrigin)).Scan(&w.prog.Version, &w.prog.StageRevision); err != nil {
+	if err := tx.QueryRow(ctx, `UPDATE programs SET version=version+1,stage_revision=stage_revision+$3,start_date=NULLIF($4,'')::date,start_origin=NULLIF($5,''),working_week=$6,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid RETURNING version,stage_revision`,
+		org, p.ID, bump, string(w.prog.StartDate), string(w.prog.StartOrigin), w.prog.WorkingWeek).Scan(&w.prog.Version, &w.prog.StageRevision); err != nil {
 		return ProgramResult{}, err
 	}
 	if err := tx.Commit(ctx); err != nil {
@@ -479,6 +485,10 @@ func (w *programWork) apply(i int, o ProgramOp) error {
 		return w.opLinkUpdate(i, o)
 	case "link_delete":
 		return w.opLinkDelete(i, o)
+	case "set_working_week":
+		w.prog.WorkingWeek = *o.WorkingWeek
+		w.dirty = true
+		return nil
 	case "set_start":
 		return w.opSetStart(o)
 	case "calendar_day":

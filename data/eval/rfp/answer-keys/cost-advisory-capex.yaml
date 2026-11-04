@@ -55,20 +55,13 @@ scenario: cost-advisory-capex
 description: Standalone capex advice has no design/tender/claims retainer or valuation authority.
 expect:
   cost-planning:
-    stages_include:
-    - s1_basis
-    - s8_advice
-    stages_absent:
-    - s2_concept
-    - s3_authority
-    - s4_design
-    - s5_tender
-    - s6_construction
-    - s7_completion
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
+    stages_include: [s1_basis, s8_advice]
+    stages_absent: [s2_concept, s3_authority, s4_design, s5_tender, s6_construction, s7_completion]
     positions:
-      claims: O
-      lender: O
+      claims: I
+      lender: I
       valuation: X
-      lifecycle: O
+      lifecycle: I
     blocking_only: true
     blocking: []

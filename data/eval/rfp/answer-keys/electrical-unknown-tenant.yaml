@@ -47,10 +47,11 @@ description: Unsettled tenant systems remain decisions, never exclusions.
 snapshot: false
 expect:
   electrical-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      controls: ask
-      generation: O
-      ict: O
-      dry_fire: ask
-      staging: ask
+      controls: I
+      generation: I
+      ict: I
+      dry_fire: I
+      staging: I
       declarations: I

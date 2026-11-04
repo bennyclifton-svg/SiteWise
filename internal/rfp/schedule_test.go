@@ -65,6 +65,13 @@ func feeRowName(row []string) string {
 		return ""
 	case row[0] == "Service option":
 		return "option|" + row[1]
+	case len(row) == 4:
+		// Scope by stage: a line or service is in its stage's fee, and an
+		// excluded stage is not priced.
+		if row[0] == "" || row[0] == "Across all stages" || row[0] == "Total fee" || row[3] == "—" {
+			return ""
+		}
+		return row[0]
 	}
 	name, _, _ := strings.Cut(row[0], " — ")
 	return name
@@ -91,6 +98,9 @@ func TestScheduleFollowsTheSelectedStages(t *testing.T) {
 	if !ok {
 		t.Fatal("town planning RFP missing")
 	}
+	// The schedule mechanics for options, before scope by stage makes
+	// every stage only in or out.
+	d.ScopeByStage = false
 	var scenarioDrivers DriverSet
 	for _, s := range loadScenarios(t) {
 		if _, ok := s.Expect["town-planning"]; ok {

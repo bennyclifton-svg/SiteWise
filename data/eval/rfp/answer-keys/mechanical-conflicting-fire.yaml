@@ -68,6 +68,7 @@ description: Conflicting smoke/control appointment requires decision.
 snapshot: false
 expect:
   mechanical-services:
+    # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
-      smoke: ask
-      controls: ask
+      smoke: I
+      controls: I
