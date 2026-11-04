@@ -82,11 +82,13 @@ finished. Recommended.
 
 ## Recommended budget
 
-We recommend the owners corporation adopts a construction budget of $1,960,000 excluding GST for Option B, balconies and podium (construction cost of the works including preliminaries and provisional sums). This allows
-for the remedial works to all 42 balconies, about $280,000 for the courtyard podium, a provisional sum for concrete repairs found on opening
-up, and a 10% contingency. It excludes consultant fees.
+We recommend the owners corporation adopts a construction budget of $1,960,000 excluding GST for
+Option B. This allows for the remedial works to all 42 balconies, about $280,000 for the courtyard
+podium, preliminaries, a provisional sum for concrete repairs found on opening up, and a 10%
+contingency. It excludes consultant fees.
 
-The works include no excavation and no new basement; the existing basement car park below the podium is protected and stays in use. Bays below the courtyard are closed only while the podium membrane is open.
+The works include no excavation and no new basement; the existing basement car park below the podium is
+protected and stays in use. Bays below the courtyard are closed only while the podium membrane is open.
 
 ## Approvals
 
@@ -106,13 +108,14 @@ developer. The owners corporation funds the works through a special levy.
 ## Next steps
 
 1. Committee to accept this report and Option B, and to put the budget to a general meeting.
-2. Parapet to prepare the remedial specification and details, coordinated with Karrak's design and
-   with the landscape architect and hydraulic engineer for the podium.
+2. Parapet to prepare the remedial specification and details, coordinated with Karrak's design and with
+   the landscape architect and hydraulic engineer for the podium.
 3. Tender to remedial builders on a lump sum.
 
 Balcony work will be done from within the balconies, and podium work from the courtyard, with no
-external access equipment. All 42 balconies and the podium will be renewed in one continuous stage, working on a few balconies at a time so residents lose the
-use of their balcony for as short a time as practical.
+external access equipment. All 42 balconies and the podium will be renewed in one continuous stage,
+working on a few balconies at a time so residents lose the use of their balcony for as short a time
+as practical.
 
 Joel Marchetti
 Director, Parapet Building Consultants Pty Ltd

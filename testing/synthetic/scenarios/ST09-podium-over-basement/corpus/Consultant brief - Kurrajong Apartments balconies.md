@@ -14,10 +14,10 @@ Prepared by Rhiannon Teale, strata managing agent, for the strata committee.
 
 ## The building
 
-Kurrajong Apartments is a 6-storey residential flat building of 42 apartments over a single-level basement car park. The building was
-constructed in 2008. It has a reinforced concrete frame and floor slabs, and every apartment has a
-tiled balcony with an aluminium-framed glass balustrade. At ground floor, a communal courtyard with
-paving and planter boxes sits over part of the basement.
+Kurrajong Apartments is a 6-storey residential flat building of 42 apartments over a single-level
+basement car park. The building was constructed in 2008. It has a reinforced concrete frame and floor
+slabs, and every apartment has a tiled balcony with an aluminium-framed glass balustrade. At ground
+floor, a communal courtyard with paving and planter boxes sits over part of the basement.
 
 The building is a strata scheme of 42 lots; the owners corporation acts through its strata committee,
 with Northgate Strata Management as its strata managing agent. The committee meets monthly, and any
@@ -41,19 +41,21 @@ balcony waterproofing of the existing building.
 The consultant investigates and documents the works, which are then tendered to remedial builders for a
 lump sum contract that the consultant administers. We expect the services to include:
 
-1. Investigation: visual inspection of all balconies and the courtyard podium, leak mapping against our leak log, water testing
-   and opening-up at a small number of representative balconies, and a review of the records we hold.
+1. Investigation: visual inspection of all balconies and the courtyard podium, leak mapping against our
+   leak log, water testing and opening-up at a small number of representative balconies, and a review of
+   the records we hold.
 2. A defect report setting out the causes, the options for repair, a recommended option and an order of
    cost for each option, written so that the committee can put it to owners.
 3. A remedial specification and details suitable for tender, including any regulated design and
    declarations the work needs.
 4. Tender: preparing the tender documents, inviting remedial builders, answering queries, assessing the
    tenders and making a recommendation to the committee.
-5. Contract administration: acting as superintendent, inspecting the work at its hold points,
-   assessing progress claims and variations, and certifying completion.
+5. Contract administration: acting as superintendent, inspecting the work at its hold points, assessing
+   progress claims and variations, and certifying completion.
 
 Please name any other consultant you need, such as a structural engineer, and say whether you will
-engage them or the owners corporation should.
+engage them or the owners corporation should. For the courtyard podium, the owners corporation will
+engage a landscape architect and a hydraulic engineer directly; the consultant coordinates their input.
 
 ## Constraints
 

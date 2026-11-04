@@ -13,8 +13,9 @@ asbestos removalist to tenderer eligibility. Fee proposals and invoices are unch
 
 ## Traps
 
-- d18 `not-contaminated-land`: "not a contaminated land assessment" and "asbestos remediation" match the
-  contamination trigger; `det.potentially_contaminated_land` stays false (from d02).
+- d18 `not-contaminated-land`: "not a contaminated land assessment" matches the contamination trigger
+  `contaminat`. "Asbestos remediation" is the DOMAIN.md §10 'Remediation' word; it matches no trigger and
+  tests only the Jev reading of the passage. `det.potentially_contaminated_land` stays false (from d02).
 - Base traps carry over.
 
 ## Missed by design

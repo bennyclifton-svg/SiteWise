@@ -47,8 +47,8 @@ analysed by a NATA-accredited laboratory by polarised light microscopy with disp
 
 ## Recommendations
 
-1. We recommend asbestos remediation of the soffits: the bonded fibre cement soffit sheets of all 42 balconies are
-   removed by a licensed asbestos removalist before or with the strip-out of the balcony above.
+1. Asbestos remediation of the soffits: a licensed asbestos removalist removes the bonded fibre
+   cement soffit sheets of all 42 balconies before or with the strip-out of the balcony above.
 2. The removalist prepares an asbestos removal control plan, which we review before removal starts.
 3. The removalist gives SafeWork NSW the required notice before removal starts.
 4. Each work area is isolated from residents until it is cleared. A licensed assessor or competent

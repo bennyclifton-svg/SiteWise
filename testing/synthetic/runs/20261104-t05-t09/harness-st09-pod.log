@@ -1,0 +1,38 @@
+ST09-podium-over-basement: project 00d2d138-99f4-4887-83f4-29c9d89da72b
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued None, 14.7 s
+    created the consultant.building row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued None, 14.9 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued None, 16.9 s
+    waiting: 3 invoices reading
+    waiting: settling
+    APP FINDING: profile Update response cut off (ConnectionResetError); the read was queued, continuing
+    waiting: settling
+  wave 4: 3 dropped, profile queued None, 6.5 s
+    program prepare -> 200
+    RFP for Building Consultant -> 201
+    RFP for Hydraulic -> 201
+    RFP for Landscape -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+done: testing\synthetic\runs\20261104-t05-t09

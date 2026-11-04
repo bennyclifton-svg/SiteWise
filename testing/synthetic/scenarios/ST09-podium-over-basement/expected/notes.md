@@ -13,9 +13,11 @@ scope. Fees and invoices are unchanged in amount, to keep the comparison with th
 
 ## Traps
 
-- `podium-over-basement` on d01, d03, d07, d08 and `podium-over-basement-quote` on d18: the high-risk basement
-  trap (DOMAIN.md §10). `flag.basement` must stay no: the basement is existing and nothing is excavated. Its "no"
-  sources are d07, d08 and d10, which say the works include no new basement and no excavation.
+- `podium-over-basement` on d01, d03, d05, d06, d07, d08, d09, d10, d13 and d17, and `podium-over-basement-quote`
+  on d18: the high-risk basement trap (DOMAIN.md §10). Each of these names the existing basement car park.
+  `flag.basement` must stay no: the basement is existing and nothing is excavated. Its "no" sources are d07 and
+  d08, which say the works include no excavation and no new basement, and d10, which says the existing basement
+  car park structure is not altered.
 - Base traps carry over; the podium flood test in d08 and d09 adds to the flood-test trap.
 
 ## Missed by design
@@ -29,3 +31,6 @@ With the shape's podium trigger now listing them, d08 states "NCC building class
 basement car park" (`det.ncc_class` ["2", "7a"]) and recommends a construction budget of $1,960,000 ex GST
 (about $280,000 for the podium), keyed as `proj.budget_stated` and `rfps.json` `budget_stated_cents`. Fees are
 deliberately unchanged in amount.
+
+`det.ncc_class` is not in `derived` for this variant: the 7a part is read from d08 and cannot be derived from
+"apartments", so a derived ["2"] would contradict the keyed ["2", "7a"].

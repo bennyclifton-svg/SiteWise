@@ -418,7 +418,7 @@
           "expect": "det.flood_hazard is not true (d02 states it false)"
         }
       ],
-      "content": "The remedial building consultant's report after visual inspection, leak mapping, flood tests and opening-up at four representative balconies. Sections: ## Building description (existing building constructed in 1986, Class 2, rise in storeys 6, 42 apartments, no podium and no basement, pitched metal roof outside the scope), ## Findings (membrane stops short of the door sills though set-down is adequate at all thresholds and door frames are retained; reversed falls; outlets with no puddle flange and no overflow; balustrade posts core-drilled through the membrane; tiles bonded to the membrane; the common property asbestos register lists bonded fibre cement in the balcony soffits; the original bituminous membrane and mastic sealants are of unknown composition, so a hazardous materials survey of the build-ups is needed before strip-out; no spalling, cracking or exposed reinforcement on any balcony; no plant or services on the balconies), ## Options (A patch repair, B full renewal like for like, recommended), ## Recommended budget (a construction budget of $1,680,000 ex GST for Option B), ## Approvals (exempt; DBP Act applies; not a heritage item), ## Warranty (the building is out of warranty and no claim is being pursued), ## Next steps (all work from within the balconies, no external access equipment; one continuous stage)."
+      "content": "The remedial building consultant's report after visual inspection, leak mapping, flood tests and opening-up at four representative balconies. Sections: ## Building description (existing building constructed in 1986, Class 2, rise in storeys 6, 42 apartments, no podium and no basement, pitched metal roof outside the scope), ## Findings (membrane stops short of the door sills though set-down is adequate at all thresholds and door frames are retained; reversed falls; outlets with no puddle flange and no overflow; balustrade posts core-drilled through the membrane; tiles bonded to the membrane; the common property asbestos register lists bonded fibre cement in the balcony soffits; the original bituminous membrane and mastic sealants were of unknown composition; Fibrecheck's survey FHM-R-0309 (8 April 2026) confirms asbestos in the soffit sheets and none in the membrane or mastics, so the soffits of all 42 balconies are removed by a licensed asbestos removalist with clearance before membrane works; no spalling, cracking or exposed reinforcement on any balcony; no plant or services on the balconies), ## Options (A patch repair, B full renewal like for like including licensed removal and reinstatement of the asbestos soffits, recommended), ## Recommended budget (a construction budget of $1,680,000 ex GST for Option B, allowing for licensed asbestos removal and clearance), ## Approvals (exempt; DBP Act applies; not a heritage item), ## Warranty (the building is out of warranty and no claim is being pursued), ## Next steps (all work from within the balconies, no external access equipment; one continuous stage)."
     },
     {
       "id": "d09",
@@ -735,7 +735,7 @@
       "traps": [
         {
           "id": "not-contaminated-land",
-          "what": "States 'This survey covers building materials only; it is not a contaminated land assessment' and recommends 'asbestos remediation' of the soffits; matches the contamination trigger contaminat (DOMAIN.md §10 'Remediation').",
+          "what": "States 'This survey covers building materials only; it is not a contaminated land assessment'; matches the contamination trigger `contaminat`. 'Asbestos remediation' is the DOMAIN.md §10 'Remediation' word; it matches no trigger and tests only the Jev reading of the passage.",
           "expect": "det.potentially_contaminated_land stays false; no environmental consultant"
         }
       ],
@@ -756,7 +756,7 @@
     {
       "doc": "d08",
       "change": "changed",
-      "why": "Year 1986; the trigger's evidence (asbestos register, bituminous membrane and mastics of unknown composition) replaces 'the 2019 survey found no asbestos'"
+      "why": "Year 1986; the trigger's evidence (asbestos register, bituminous membrane and mastics of unknown composition, now resolved by the d18 survey) replaces 'the 2019 survey found no asbestos'; Option B and the budget allow for licensed asbestos removal and clearance"
     },
     {
       "doc": "d09",

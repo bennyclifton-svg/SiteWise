@@ -15,19 +15,19 @@ landscape architect's and hydraulic engineer's podium details.
 
 1. **Extent.** Renew the waterproofing of all 42 balconies, Levels 1 to 6, and of the ground-floor
    courtyard podium over the basement car park, like for like.
-2. **Approvals.** The works are exempt development: like-for-like repair with no change to the
-   external appearance; no development consent or construction certificate is required.
-3. **Occupation.** The building will remain fully occupied throughout the works. See Resident access
-   and protection.
-4. **Contract.** AS 4000-1997 General conditions of contract, with special conditions, as set out in
-   the conditions of tender PBC-T-26014.
+2. **Approvals.** The works are exempt development: like-for-like repair with no change to the external
+   appearance; no development consent or construction certificate is required.
+3. **Occupation.** The building will remain fully occupied throughout the works. See Resident access and
+   protection.
+4. **Contract.** AS 4000-1997 General conditions of contract, with special conditions, as set out in the
+   conditions of tender PBC-T-26014.
 5. **Regulated design.** This specification and drawing RW-101 are regulated designs under the Design
-   and Building Practitioners Act 2020; a design compliance declaration accompanies them. The
-   contractor must be a registered building practitioner and must lodge the building compliance
-   declaration.
+   and Building Practitioners Act 2020; a design compliance declaration accompanies them. The contractor
+   must be a registered building practitioner and must lodge the building compliance declaration.
 6. **Authority assets.** The works do not build over or next to any sewer main or water main.
-7. **Delivery.** There will be no staged delivery: all 42 balconies are renewed under one contract in
-   one continuous stage. The contractor may work on up to eight balconies at a time.
+7. **Delivery.** There will be no staged delivery: all 42 balconies and the courtyard podium are renewed
+   under one contract in one continuous stage. The contractor may work on up to eight balconies at a
+   time.
 
 ## Strip-out
 
@@ -51,7 +51,8 @@ landscape architect's and hydraulic engineer's podium details.
 1. Fit new outlets with puddle flanges and clamping rings, connected to the existing downpipes.
 2. Install one new overflow per balcony through the balustrade line, discharging clear of the slab
    edge, as shown on RW-101 Detail 6.
-3. The existing building stormwater system, which has no on-site detention, is not altered.
+3. Apart from the podium drainage below the courtyard, the existing building stormwater system, which
+   has no on-site detention, is not altered.
 
 ## Membrane system
 

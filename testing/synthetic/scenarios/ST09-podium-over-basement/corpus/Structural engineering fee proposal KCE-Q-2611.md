@@ -29,7 +29,8 @@ slabs and the balustrade fixings. Our services are:
    certificate on completion.
 
 Inspections will reach the balconies through the lift and the fire stairs, by arrangement with the
-building manager. No excavation and no new basement works are included; the existing basement car park structure is not altered, so no geotechnical input is required.
+building manager. No excavation and no new basement works are included; the existing basement car park
+structure is not altered, so no geotechnical input is required.
 
 ## Fees
 
@@ -46,7 +47,8 @@ excluding GST.
 
 ## Exclusions
 
-Concrete testing beyond visual inspection and cover measurement, and any work outside the balconies and the podium slab.
+Concrete testing beyond visual inspection and cover measurement, and any work outside the balconies and
+the podium slab.
 
 This quote is valid for 60 days.
 

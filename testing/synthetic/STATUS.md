@@ -13,10 +13,10 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 | 0 Scaffolding and shape validator | ok | `tools/validate_shape.py`, briefs, this file | 75 tests pass (validator + scorer) |
 | 1 Knowledge index | ok | `reference/KNOWLEDGE_INDEX.md` | brief `briefs/00-knowledge-index.md` |
 | 4 Shape scoring rules | ok | `SCORING.md`, `tools/score_shapes.py` | TDD from the T01 shape |
-| 5 Scenario brief and expected JSON schema | ok | `briefs/03-scenarios.md`, `03r`, `tools/validate_expected.py` | 23 tests; T01 done, T05 and T09 run |
+| 5 Scenario brief and expected JSON schema | ok | `briefs/03-scenarios.md`, `03r`, `tools/validate_expected.py` | 23 tests; T01, T05 and T09 done |
 | 6 Rendering brief and leak lint | ok | `briefs/04-render.md`, `04r`, `tools/lint_corpus.py` | 10 tests; T01 rendered |
 | 7 Harness | ok | `harness/` | serve.sh (own DB on :8091), run.py, score.py; 10 tests |
-| 8 Pilot run | run | `runs/20261031-pilot/REPORT.md`, `FINDINGS.md` | T01 run 31 Oct; T05, T09 not started; owner gate 3 pending |
+| 8 Pilot run | gate | `runs/20261031-pilot/REPORT.md`, `runs/20261104-t05-t09/REPORT.md`, `FINDINGS.md` | T01 run 31 Oct; T05 and T09 run 4 Nov; owner gate 3 pending |
 
 ## Project types
 
@@ -26,11 +26,11 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 | T02 | Apartments | ok | ok | ok | gate | — | — | — |
 | T03 | Office fit-out | ok | ok | fix | — | — | — | — |
 | T04 | Warehouse | ok | ok | fix | — | — | — | — |
-| T05 | House alterations and additions (pilot) | ok | ok | ok | ok | ok | run | run |
+| T05 | House alterations and additions (pilot) | ok | ok | ok | ok | ok | ok | ok |
 | T06 | Sprinkler pump and tank upgrade | ok | ok | fix | — | — | — | — |
 | T07 | Mechanical plant upgrade | ok | ok | fix | — | — | — | — |
 | T08 | Roof remediation | ok | ok | ok | gate | — | — | — |
-| T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | ok | run | run |
+| T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | ok | ok | ok |
 | T10 | Knock-down rebuild | ok | ok | ok | gate | — | — | — |
 | T11 | Dual occupancy or townhouses | ok | ok | ok | gate | — | — | — |
 | T12 | Granny flat | ok | ok | ok | gate | — | — | — |
@@ -365,3 +365,4 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 - 2026-11-04: ST05-base render fixes in: 7 applied, part of finding 4 disputed ("no other buildings on the lot" matches no multiple-buildings pattern; it now says "We are not planning multiple buildings: just the one house"). The matching manifest wording is updated in all three ST05 scenarios, and the T05 shape's move-out phrasing follows d01 ("for the whole of the works"). Lint and checker ok. The ST05-base corpus is final. Both T05 variant renders launched.
 - 2026-11-04: ST09-base render review: FIX, 7 findings. Every planned trap is placed and no unplanned trap word appears. The d13 tender conditions say "a rise of more than three storeys", a second storey number beside the keyed 6. fees.json leaves out Halyard's $220/h ex GST rate. Smaller: a duplicate balcony in the leak log, a brief deadline before the proposals, an overflow clause, the street name, and key-shaped wording. The writer is applying the fixes.
 - 2026-11-04: ST09-base render fixes in: 7 applied. d13 now says the rise is 6 storeys, and Halyard's $220/h ex GST rate and new address are in all three fees.json. Halyard moved to 7 Gray Street to avoid sharing a street with Northgate. Lint and checker ok. The ST09-base corpus is final. ST05-first-floor-addition rendered (19 documents, 10 changed, 140 + 55 = 195 m2 throughout) and ST05-heritage-conservation-area rendered (22; d20 to d22 added); both lint ok, both in render review. The ST09 variant renders are running. Live run of ST05-base and ST09-base started on :8091 into `runs/20261104-t05-t09/`.
+- 2026-11-04: All four variant corpora rendered, render-reviewed (FIX 3, 2, 5 and 6 findings) and fixed; lint and checker ok on all six. Live run of all six T05 and T09 scenarios: `runs/20261104-t05-t09/REPORT.md`. The changed key landed in three of the four variants; the heritage status was blank on 14 passages to 1 (F15). New app findings: F13 (an invalid invoice ABN can never be flagged: BadABNs is never read), F14 (stated fee total missed for a second-column total row and for inc-only totals; 0 of 12 T09 proposals), F15 (one dissenting passage blanks a choice, so with F4 every T05 program opens on sk.generic), F16 (rise in storeys read only from a BCA report). F1, F2 (now the site address too), F3, F4, F7 and F8 repeat. Next: owner gate 3 on all three pilots.

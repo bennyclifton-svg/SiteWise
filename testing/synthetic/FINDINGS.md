@@ -141,7 +141,10 @@ proposals; traced offline with `Harvest` and `NewDraft` on the corpus).
   so it is blank too. This is the other side of F3 (where an inc figure
   was kept as if ex).
 `internal/proposals/read.go` `settleTotal` and the stated-total question
-guard (`len(totals) > 0`).
+guard (`len(totals) > 0`). The T09 hazmat proposal (`| | Total $7,000
+excluding GST | $7,000 |`) is a fourth case; its firm was also left blank
+although the letterhead prints "Fibrecheck Hazardous Materials Pty Ltd"
+and a valid ABN (not traced).
 
 **F15. One dissenting passage blanks a value, however lopsided the
 evidence.** `hdr.work_type` had 42 passages for `extend` and 5 for `refurb`

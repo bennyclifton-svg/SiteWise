@@ -38,7 +38,8 @@ Read with drawing RW-101 Rev B and the Karrak Consulting Engineers balustrade fi
    area isolated from residents until it is cleared.
 4. No membrane works start on a balcony until the hazardous materials consultant has inspected it and
    issued a clearance certificate.
-5. Reinstate the soffits to match the existing once the balcony above is cleared.
+5. Once the balcony above is cleared, reinstate the soffits with new 6 mm fibre cement sheet
+   (asbestos-free), fixed and painted to match the existing.
 
 ## Strip-out
 

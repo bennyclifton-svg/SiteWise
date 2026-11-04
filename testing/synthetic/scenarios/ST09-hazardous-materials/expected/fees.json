@@ -204,6 +204,12 @@
           "kind": "stage",
           "state": "priced",
           "amount_cents": 140000
+        },
+        {
+          "label": "Further clearance visits, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 18000
         }
       ]
     }

@@ -52,9 +52,11 @@ pitched metal roof and is outside the scope of this report.
 6. **Concrete.** We found no spalling, cracking or exposed reinforcement on any balcony. Karrak
    Consulting Engineers is reporting separately on the slabs and post fixings.
 7. **Hazardous materials.** The common property asbestos register lists bonded fibre cement sheet
-   in the balcony soffits. The original bituminous membrane and the mastic sealants at the sills and
-   posts are of unknown composition. A hazardous materials survey of the build-ups and soffits is
-   needed before strip-out, and its findings govern how the strip-out is done.
+   in the balcony soffits, and the original bituminous membrane and the mastic sealants at the sills
+   and posts were of unknown composition. Fibrecheck Hazardous Materials sampled all three at the four
+   opened balconies. Their survey FHM-R-0309 (8 April 2026) confirms asbestos in the soffit sheets and
+   found none in the membrane or mastics. The soffits of all 42 balconies are to be removed by a
+   licensed asbestos removalist, with clearance before membrane works.
 8. **Services.** No plant or services are located on the balconies.
 
 The membrane cannot be repaired in place: it is cracked, wrongly terminated and penetrated at every
@@ -69,14 +71,15 @@ and falls as they are. We expect leaks to return within two to three years. Not 
 **Option B: full renewal like for like.** Remove the tiles, bedding and membrane; lay a new falls
 screed; fit new outlets with puddle flanges and add overflows; lay a new external membrane turned up
 behind the door sills; re-fix the balustrade posts to the slab edge outside the membrane; re-tile to
-match. The balconies look the same when finished. Recommended.
+match. Remove the asbestos soffit sheets under licence and reinstate the soffits. The balconies look
+the same when finished. Recommended.
 
 ## Recommended budget
 
 We recommend the owners corporation adopts a construction budget of $1,680,000 excluding GST for
 Option B (construction cost of the works including preliminaries and provisional sums). This allows
 for the remedial works to all 42 balconies, a provisional sum for concrete repairs found on opening
-up, and a 10% contingency. It excludes consultant fees.
+up, licensed asbestos removal and clearance, and a 10% contingency. It excludes consultant fees.
 
 ## Approvals
 

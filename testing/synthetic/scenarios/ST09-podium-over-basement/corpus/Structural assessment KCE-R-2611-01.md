@@ -61,8 +61,9 @@ polymer-modified repair mortar. Each repair is to be inspected by us before it i
 
 ## Other matters
 
-The works are confined to the balconies and the podium surface; no excavation, basement or ground works are involved, and
-nothing is done near the adjoining boundaries or neighbouring structures. The works include no excavation; the existing basement car park structure is not altered.
+The works are confined to the balconies and the podium surface, with no excavation or ground works and
+nothing done near the adjoining boundaries or neighbouring structures. The existing basement car park
+structure is not altered.
 
 Lachlan Pyne
 Principal Engineer, Karrak Consulting Engineers Pty Ltd

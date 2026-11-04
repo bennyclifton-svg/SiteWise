@@ -298,12 +298,6 @@
   "conflicts": [],
   "derived": [
     {
-      "key": "det.ncc_class",
-      "value": [
-        "2"
-      ]
-    },
-    {
       "key": "det.existing_building",
       "value": true
     }

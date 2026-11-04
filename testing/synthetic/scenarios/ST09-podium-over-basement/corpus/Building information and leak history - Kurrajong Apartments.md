@@ -15,8 +15,8 @@ For consultants invited to propose under brief NSM-912345-RFP1.
   through to Units 601 to 607). Every apartment has one tiled balcony.
 - The building was constructed in 2008 and the strata plan was registered the same year.
 - The building is out of statutory warranty. The owners corporation is not pursuing any claim.
-- 6 storeys, with a reinforced concrete frame, aluminium-framed glass balustrades, aluminium sliding doors to the
-  balconies.
+- 6 storeys, with a reinforced concrete frame, aluminium-framed glass balustrades, aluminium sliding
+  doors to the balconies.
 - A single-level basement car park (level B1) of 48 bays. Part of it sits below the ground-floor
   communal courtyard, which has paving and raised planter boxes.
 

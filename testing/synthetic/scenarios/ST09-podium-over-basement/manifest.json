@@ -122,7 +122,7 @@
           "expect": "flag.basement is not yes: the basement exists but the works include no basement and no excavation"
         }
       ],
-      "content": "The strata manager's brief, written for the strata committee, inviting remedial building consultants to propose. Sections: ## The building (6 storeys, 42 apartments over a single-level basement car park, constructed in 2008, reinforced concrete, tiled balconies with aluminium-framed glass balustrades, a ground-floor communal courtyard with planter boxes over the basement), ## The problem (all 42 balconies leak at door sills and slab edges; water is entering the basement car park beneath the ground-floor communal courtyard), ## Scope of services (investigation of the balconies and the courtyard podium, defect report with options and order of cost, specification, tender, contract administration; lump sum contract with a remedial builder), ## Constraints (fully occupied throughout, car park stays in use; committee approval gates), ## Submission (submit a fee proposal by 27 February 2026 to Rhiannon Teale). Plain prose."
+      "content": "The strata manager's brief, written for the strata committee, inviting remedial building consultants to propose. Sections: ## The building (6 storeys, 42 apartments over a single-level basement car park, constructed in 2008, reinforced concrete, tiled balconies with aluminium-framed glass balustrades, a ground-floor communal courtyard with planter boxes over the basement), ## The problem (all 42 balconies leak at door sills and slab edges; water is entering the basement car park beneath the ground-floor communal courtyard), ## Scope of services (investigation of the balconies and the courtyard podium, defect report with options and order of cost, specification, tender, contract administration; lump sum contract with a remedial builder; the owners corporation engages a landscape architect and a hydraulic engineer directly for the courtyard podium and the consultant coordinates them), ## Constraints (fully occupied throughout, car park stays in use; committee approval gates), ## Submission (submit a fee proposal by 27 February 2026 to Rhiannon Teale). Plain prose."
     },
     {
       "id": "d02",
@@ -284,6 +284,11 @@
           "id": "fee-stages-not-staged-works",
           "what": "The fee table is headed 'Stage 1' to 'Stage 4', which matches the staged trigger \\bstages? [1-9a-c]\\b.",
           "expect": "flag.staged stays no: these are fee stages, not construction stages"
+        },
+        {
+          "id": "podium-over-basement",
+          "what": "Names the existing basement car park under the ground-floor courtyard podium (Our understanding and Exclusions); matches the basement trigger \bbasement (DOMAIN.md §10, high risk).",
+          "expect": "flag.basement is not yes"
         }
       ],
       "content": "Remedial building consultant's proposal, signed by Joel Marchetti, registered design practitioner. Sections: understanding, methodology, fee table (Stage 1 Investigation and defect report $24,500; Stage 2 Remedial specification, details and regulated design $18,000; Stage 3 Tender and recommendation $6,500; Stage 4 Contract administration and hold-point inspections $32,000; total $81,000 ex GST), opening-up and make-good at four balconies as a disbursement at cost (estimated $6,800 ex GST), additional general meetings at $650 per meeting, hourly rate $210 ex GST, exclusions (structural engineer, builder's work). Scope covers the 42 balconies and the ground-floor communal courtyard podium over the basement car park; a landscape architect and a hydraulic engineer for the podium are engaged directly by the owners corporation and excluded. Amounts unchanged."
@@ -309,7 +314,13 @@
           "says": "All amounts include GST"
         }
       ],
-      "traps": [],
+      "traps": [
+        {
+          "id": "podium-over-basement",
+          "what": "Names the existing basement car park under the ground-floor courtyard podium (the opening paragraph); matches the basement trigger \bbasement (DOMAIN.md §10, high risk).",
+          "expect": "flag.basement is not yes"
+        }
+      ],
       "content": "A competing remedial building consultant's proposal, dropped on the remedial building consultant row. Same four stages priced GST-inclusive: investigation and defect report $29,700; specification and documentation $22,000; tender $8,800; contract administration $38,500; total $99,000 inc GST. Opening-up and make-good are included in the investigation stage. Every figure is GST-inclusive. Scope covers the 42 balconies and the ground-floor communal courtyard podium over the basement car park; a landscape architect and a hydraulic engineer for the podium are engaged directly by the owners corporation and excluded. Amounts unchanged."
     },
     {
@@ -413,7 +424,7 @@
         },
         {
           "key": "proj.budget_stated",
-          "says": "We recommend the owners corporation adopts a construction budget of $1,960,000 excluding GST for Option B, balconies and podium (construction cost of the works including preliminaries and provisional sums)"
+          "says": "We recommend the owners corporation adopts a construction budget of $1,960,000 excluding GST for Option B"
         },
         {
           "key": "flag.basement",
@@ -437,7 +448,7 @@
           "expect": "flag.basement is not yes: the basement exists but the works include no basement and no excavation"
         }
       ],
-      "content": "The remedial building consultant's report after visual inspection, leak mapping, flood tests and opening-up at four representative balconies. Sections: ## Building description (existing building constructed in 2008, Class 2 with a Class 7a basement car park, rise in storeys 6, 42 apartments, a single-level basement car park below a ground-floor communal courtyard podium with planter boxes, pitched metal roof outside the scope), ## Findings (water is entering the basement car park beneath the ground-floor communal courtyard; the podium pavers sit on pedestals over a membrane installed in 2008; podium flood test at the courtyard outlets; membrane stops short of the door sills though set-down is adequate at all thresholds and door frames are retained; reversed falls; outlets with no puddle flange and no overflow; balustrade posts core-drilled through the membrane; tiles bonded to the membrane; the 2019 hazardous materials survey found no asbestos in balcony build-ups; no spalling, cracking or exposed reinforcement on any balcony; no plant or services on the balconies), ## Options (A patch repair, B full renewal of the balconies and the courtyard podium like for like, recommended), ## Recommended budget (a construction budget of $1,960,000 ex GST for Option B, of which about $280,000 is the podium), ## Approvals (exempt; DBP Act applies; not a heritage item), ## Warranty (the building is out of warranty and no claim is being pursued), ## Next steps (all work from within the balconies, no external access equipment; one continuous stage)."
+      "content": "The remedial building consultant's report after visual inspection, leak mapping, flood tests and opening-up at four representative balconies. Sections: ## Building description (existing building constructed in 2008, Class 2 with a Class 7a basement car park, rise in storeys 6, 42 apartments, a single-level basement car park below a ground-floor communal courtyard podium with planter boxes, pitched metal roof outside the scope), ## Findings (water is entering the basement car park beneath the ground-floor communal courtyard; the podium pavers sit on pedestals over a membrane installed in 2008; podium flood test at the courtyard outlets; membrane stops short of the door sills though set-down is adequate at all thresholds and door frames are retained; reversed falls; outlets with no puddle flange and no overflow; balustrade posts core-drilled through the membrane; tiles bonded to the membrane; the 2019 hazardous materials survey found no asbestos in balcony build-ups; no spalling, cracking or exposed reinforcement on any balcony; no plant or services on the balconies), ## Options (A patch repair, B full renewal of the balconies and the courtyard podium like for like, recommended), ## Recommended budget (a construction budget of $1,960,000 ex GST for Option B, covering the balconies, about $280,000 for the podium, preliminaries, a provisional sum and contingency), ## Approvals (exempt; DBP Act applies; not a heritage item), ## Warranty (the building is out of warranty and no claim is being pursued), ## Next steps (all work from within the balconies, no external access equipment; one continuous stage)."
     },
     {
       "id": "d09",
@@ -473,11 +484,11 @@
         },
         {
           "key": "flag.osd_existing",
-          "says": "The existing building stormwater system, which has no on-site detention, is not altered"
+          "says": "the existing building stormwater system, which has no on-site detention, is not altered"
         },
         {
           "key": "flag.staged",
-          "says": "There will be no staged delivery: all 42 balconies are renewed under one contract in one continuous stage"
+          "says": "There will be no staged delivery"
         }
       ],
       "traps": [
@@ -490,9 +501,14 @@
           "id": "strip-out",
           "what": "Section 'Strip-out' says 'demolish the tiles, bedding and failed membrane'; matches the implied strip-out pattern.",
           "expect": "No site.demolition work item: this is membrane replacement"
+        },
+        {
+          "id": "podium-over-basement",
+          "what": "Names the existing basement car park under the ground-floor courtyard podium (General item 1 and Podium item 6); matches the basement trigger \bbasement (DOMAIN.md §10, high risk).",
+          "expect": "flag.basement is not yes"
         }
       ],
-      "content": "The tender specification. Sections: ## General (exempt, fully occupied, AS 4000 with special conditions, regulated design, no staged delivery), ## Strip-out, ## Substrate and falls screed, ## Outlets and overflows (puddle flanges, clamping rings, new overflows through the balustrade line discharging clear of the slab edge; the existing stormwater system, with no on-site detention, is not altered), ## Membrane system (external liquid membrane to AS 4654.2, upturns behind the door sills), ## Podium (lift and store pavers on pedestals, remove soil and planting, podium membrane with protection board and drainage cell, new podium outlets and overflows, car park protection and temporary drainage, podium flood test, reinstate landscape to the landscape architect's details), ## Balustrades (posts re-fixed to the slab edge outside the membrane, certified by the structural engineer), ## Tiling, ## Hold points (1 substrate, 2 outlets, 3 membrane flood test, 4 before cover), ## Provisional quantities and schedule of rates (concrete and substrate repairs found on opening up), ## Resident access and protection."
+      "content": "The tender specification. Sections: ## General (exempt, fully occupied, AS 4000 with special conditions, regulated design, no staged delivery: the balconies and the courtyard podium in one continuous stage), ## Strip-out, ## Substrate and falls screed, ## Outlets and overflows (puddle flanges, clamping rings, new overflows through the balustrade line discharging clear of the slab edge; apart from the podium drainage below the courtyard, the existing stormwater system, with no on-site detention, is not altered), ## Membrane system (external liquid membrane to AS 4654.2, upturns behind the door sills), ## Podium (lift and store pavers on pedestals, remove soil and planting, podium membrane with protection board and drainage cell, new podium outlets and overflows, car park protection and temporary drainage, podium flood test, reinstate landscape to the landscape architect's details), ## Balustrades (posts re-fixed to the slab edge outside the membrane, certified by the structural engineer), ## Tiling, ## Hold points (1 substrate, 2 outlets, 3 membrane flood test, 4 before cover), ## Provisional quantities and schedule of rates (concrete and substrate repairs found on opening up), ## Resident access and protection."
     },
     {
       "id": "d10",
@@ -520,15 +536,21 @@
         },
         {
           "key": "flag.excavation_adjoining",
-          "says": "no excavation, basement or ground works are involved, and nothing is done near the adjoining boundaries or neighbouring structures"
+          "says": "with no excavation or ground works and nothing done near the adjoining boundaries or neighbouring structures"
         },
         {
           "key": "flag.basement",
-          "says": "The works include no excavation; the existing basement car park structure is not altered"
+          "says": "The existing basement car park structure is not altered"
         }
       ],
-      "traps": [],
-      "content": "Remedial structural engineer's report from the four opened balconies: slab thickness and cover, no spalling, cracking or exposed reinforcement, balustrade post fixings core-drilled through the membrane, recommended side-fixed brackets outside the membrane, barrier height check against the raised finished level (still at least 1 m), screed load acceptable, provisional concrete repair method. Adds the podium slab over the basement car park: reinstated soil and planter load acceptable, no strengthening."
+      "traps": [
+        {
+          "id": "podium-over-basement",
+          "what": "Names the existing basement car park under the ground-floor courtyard podium (Scope, Podium slab and Other matters); matches the basement trigger \bbasement (DOMAIN.md §10, high risk).",
+          "expect": "flag.basement is not yes"
+        }
+      ],
+      "content": "Remedial structural engineer's report from the four opened balconies: slab thickness and cover, no spalling, cracking or exposed reinforcement, balustrade post fixings core-drilled through the membrane, recommended side-fixed brackets outside the membrane, barrier height check against the raised finished level (still at least 1 m), screed load acceptable, provisional concrete repair method. Adds the podium slab over the basement car park: reinstated soil and planter load acceptable, no strengthening. Other matters: the works are confined to the balconies and the podium surface, with no excavation or ground works and nothing near the adjoining boundaries; the existing basement car park structure is not altered."
     },
     {
       "id": "d11",
@@ -612,6 +634,11 @@
           "id": "schedule-of-rates",
           "what": "States 'A schedule of rates is tendered for the provisional quantities only' next to 'Lump sum contract'; matches the schedule_of_rates option trigger.",
           "expect": "fact.contract_basis is lump_sum"
+        },
+        {
+          "id": "podium-over-basement",
+          "what": "Names the existing basement car park under the ground-floor courtyard podium (Contract and procurement and Site inspection); matches the basement trigger \bbasement (DOMAIN.md §10, high risk).",
+          "expect": "flag.basement is not yes"
         }
       ],
       "content": "The conditions of tender and contract particulars. Sections: ## Contract and procurement (traditional, AS 4000 with special conditions, lump sum, schedule of rates for provisional quantities only), ## Tenderer eligibility (NSW contractor licence, DBP Act registered building practitioner, licensed waterproofer), ## Returnables, ## Insurance (HBCF cover is not required: the multi-storey building exemption applies (rise in storeys of 6)), ## Site inspection (balconies and the courtyard podium; the basement car park stays in use), ## Tender close 10 July 2026."
@@ -727,7 +754,13 @@
           "says": "Fees exclude GST"
         }
       ],
-      "traps": [],
+      "traps": [
+        {
+          "id": "podium-over-basement",
+          "what": "Names the existing basement car park under the ground-floor courtyard podium (Our understanding); matches the basement trigger \bbasement (DOMAIN.md §10, high risk).",
+          "expect": "flag.basement is not yes"
+        }
+      ],
       "content": "Landscape architect's proposal for the ground-floor courtyard over the basement car park: planter and soil build-up reinstatement over the new membrane $3,800; planting replacement schedule $2,200; root barrier and drainage layer coordination $1,600; construction-phase inspections $1,800; total $9,400 ex GST."
     },
     {
