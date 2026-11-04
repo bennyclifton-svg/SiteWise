@@ -21,7 +21,7 @@ building. The **base scenario** is the most common Sydney version [D]:
 - the tenant builds open-plan work points, offices and meeting rooms, a boardroom, reception, a kitchenette
   and breakout space, a comms room, and storage;
 - the other floors stay occupied by other tenants throughout (`hdr.cond.operational_constraints:
-  partial_occupation`); noisy work, core drilling and deliveries are after hours under the landlord's
+  partial_occupation`); noisy work and deliveries are after hours under the landlord's
   building rules (`hdr.cond.access_constraints: restricted_hours`);
 - building completed in 2008, so no asbestos register applies (the `asbestos-in-tenancy` trigger covers
   older buildings);
@@ -261,8 +261,10 @@ Sequence [D]:
    leased tower the owner is the landlord (Regulation clause verified: false). The certifier issues the CDC
    with the fire safety schedule listing the existing and altered measures. App: `fr.cdc-application`
    [K: knowledge/program/fragments.yaml fr.cdc-application].
-3. Long service levy paid before the CDC issues (threshold verified: false). The type's $0.3M lower bound
-   exceeds any plausible threshold, so it applies in the base.
+3. Long service levy: 0.25% of the cost of building work of $250,000 or more including GST, paid before
+   work starts (CONVENTIONS C4, checked against nsw.gov.au). The type's $0.3M lower bound is above it, so it
+   applies in the base. The program keeps it before the determination: the levy must be paid before the
+   certificate issues (clause verified: false).
 4. Principal certifier appointed and notice of commencement given (period verified: false).
 5. Mandatory inspections for a Class 5 building: **commencement and final** (the stormwater item does not
    apply inside a tower); the Class 1 and 10 list in owner ruling R7 does not apply. The Class 5–9 list is
@@ -300,7 +302,8 @@ Names lines only. The app writes no amounts; a stated budget is spread by the `c
 - Development contributions payable on the CDC (s7.11 or s7.12, verified: false): none. The `da-fees`
   starter is dropped for cdc [K: knowledge/costs/starter_lines.yaml da-fees] and nothing replaces it. The
   LGA's contributions plan decides it, so the scenario must name the LGA.
-- Long service levy: none. Unconditional in the base (above any plausible threshold).
+- Long service levy: none. 0.25% of building work of $250,000 or more incl. GST (C4); unconditional in the
+  base, whose $0.3M lower bound is above the threshold.
 - Landlord's design review and approval fees: none.
 - Landlord's building charges during the works (after-hours lifts and dock, security, shutdowns, isolations):
   none.
@@ -366,7 +369,7 @@ correct fit-out scope does not have.
 6. Commencement inspection and condition survey → establish → shutdowns and isolations booked → partitions
    framed; ductwork, electrical and kitchenette rough-in; **sprinkler pipework above the ceiling** →
    **sprinkler pressure test** → cabling → fire stopping after the services it seals → **fire-stopping
-   inspection** (holds only the linings and ceilings that conceal penetrations) → **ceilings** → sprinkler
+   inspection** (holds only the ceilings and bulkheads that conceal the penetrations) → **ceilings** → sprinkler
    head fit-off, detection and EWIS, lights, emergency lighting → doors, glazing, joinery → paint → floors →
    fit-off → BMS and mechanical commissioning → **fire integrated test** → signage → furniture, AV and IT by
    tenant suppliers.
@@ -463,8 +466,8 @@ Each is in `shape.yaml` with evidence, negation and what it adds or removes.
 | id | how it shows up | how a document denies it | adds |
 |---|---|---|---|
 | `da-pathway` | "a development application will be lodged with council for the fit-out"; "change of use, so complying development is not available" | "the certifier will issue a CDC" | Town planner, DA fees, DA lodgement, exhibition, assessment, CC; skeleton `sk.refurb-traditional-da`; certifier RFP stops blocking; the consent may require a fire safety upgrade of the existing building (verified: false), so the BCA consultant assesses it. Removes the CDC rows |
-| `heritage-item` | "listed as a local heritage item"; "the original lift lobby and pressed-metal ceilings are significant fabric" | "not a heritage item"; "the heritage item next door is not affected" | Heritage consultant (no template), heritage impact statement and referral, DA |
-| `design-and-construct` | "D&C fit-out contract on the interior designer's concept"; "the contractor's engineers will design the services" | "traditional lump-sum tender on fully documented design" | Performance brief, contractor's design and landlord approval, design review. Removes the four services consultants. App wrongly adds novation and falls back to `sk.generic` |
+| `heritage-item` | "listed as a local heritage item"; "the original lift lobby and pressed-metal ceilings are significant fabric" | "not a heritage item"; "the heritage item next door is not affected" | Heritage consultant (no template), heritage impact statement and referral, DA. Removes the CDC rows and the CDC contributions line (contributions move into the DA fees line) |
+| `design-and-construct` | "D&C fit-out contract on the interior designer's concept"; "the contractor's engineers will design the services" | "traditional lump-sum tender on fully documented design" | Performance brief, contractor's design and landlord approval, design review. Removes the four services consultants; C1 does not apply, as no tenant engineer is appointed to be novated (whether a tenant keeps a services reviewer on a D&C fit-out is an owner question). App wrongly adds novation and falls back to `sk.generic` |
 | `staged-occupied-tenancy` | "staff remain in occupation; the works are staged in three zones"; "decant into swing space on Level 11" | "the floor is vacant for the whole fit-out period" | Staging, decant, after-hours premium, interim OCs; `flag.staged` |
 | `asbestos-in-tenancy` | "the asbestos register records bonded vinyl floor tiles under the carpet"; "asbestos-containing material in the ceiling space around the core" (a 1979 completion date alone gives only the register check and survey) | "completed in 2008, no register required"; "no asbestos in the tenancy" | Hazmat consultant, survey, SafeWork NSW notice, licensed removal, clearance certificate |
 | `existing-fitout-strip-out` | "the previous tenant's fit-out will be stripped out"; "remove the existing partitions, ceilings, kitchen and carpet" | "handed over in base-building condition"; "make-good completed by the outgoing tenant" | `site.demolition` remove, strip-out rows, strip-out cost line |
@@ -475,7 +478,7 @@ Each is in `shape.yaml` with evidence, negation and what it adds or removes.
 | `comms-room-cooling` | "24/7 split-system cooling in the comms room"; "connect to the tenant condenser water loop"; "UPS" | "IT is cloud-hosted; a small comms cupboard only" | Refrigerant pipework, UPS, landlord approval of condensers |
 | `tenant-amenities` | "new unisex accessible toilet and shower within the tenancy"; "end-of-trip showers in the tenancy" | "amenities are base-building on the core" | Wet areas, accessible facilities, hydraulic design; note "shower" and "accessible toilet" do not match the wet-room implied pattern |
 | `sustainability-rating` | "targets a 5 Star Green Star Interiors rating"; "NABERS Energy tenancy rating under the green lease" | "no rating targeted"; "the base building's NABERS rating" (the landlord's, not the tenant's) | ESD consultant, rating registration and submission, sub-metering |
-| `exempt-minor-refresh` | "exempt development: new carpet, paint and loose furniture only" | "a CDC is required"; "new partitions affect sprinkler coverage" | Exempt confirmation. Removes the certifier, CDC rows and OC |
+| `exempt-minor-refresh` | "exempt development: new carpet, paint and loose furniture only" | "a CDC is required"; "new partitions affect sprinkler coverage" | Exempt confirmation. Removes the certifier, CDC rows, principal certifier appointment and notice, commencement and final inspections, final fire safety certificate, OC, and the CDC contributions line. LSL still applies at $250,000 or more (C4); a carpet-and-paint refresh may fall below it |
 
 Variants worth a one-change test: `da-pathway`, `design-and-construct`, `staged-occupied-tenancy`,
 `asbestos-in-tenancy`, `existing-fitout-strip-out`, `internal-stair`, `fire-engineered-solution`,
@@ -587,7 +590,7 @@ The `gaps` list in `shape.yaml` gives the evidence for each.
   and AS 1428.1 clause references.
 - The Class 5–9 mandatory inspection list and the final fire safety certificate clause in the EP&A
   (Development Certification and Fire Safety) Regulation 2021; FRNSW consultation on performance solutions.
-- The long service levy threshold; s7.11 or s7.12 contributions imposed on CDCs; the notice-of-commencement
+- s7.11 or s7.12 contributions imposed on CDCs; the LSL payment-before-certificate clause; the notice-of-commencement
   period; the owner's-consent requirement for a CDC application; a DA's power to require a fire safety
   upgrade of the existing building.
 - The WHS Regulation asbestos register date (31 December 2003) and the SafeWork NSW notice period.
@@ -598,7 +601,7 @@ The `gaps` list in `shape.yaml` gives the evidence for each.
 
 - Base services consultant stages (construction and witness included): ruled right by the review; some
   tenants still buy only design to tender.
-- The long service levy threshold: ruled unconditional for this type's value range by the review.
+- The long service levy threshold: settled by C4 (0.25% at $250,000 or more incl. GST).
 
 The program order defects (sprinkler hold point, services rough-in, fire stopping) were confirmed by the
 review's read-only Go run on 30 October 2026.

@@ -27,9 +27,9 @@ is `industrial / warehouse / new` with `det.ncc_class: [7b, 5]`
 | Building | About 7,500 m² of warehouse and 500 m² of single-storey office and amenities (office about 6% of GFA). Internal clear height about 12 m at the haunch. Single storey, so rise in storeys 1 and Type C construction [K: knowledge/tables/type_of_construction.yaml rows classes 5,6,7a,7b,8 rise 1 → C]. One fire compartment. |
 | Construction | Pad footings, a ground-bearing industrial slab (sawn or jointless, designed for racking leg and forklift loads, with a floor flatness specification), structural steel portal frame with purlins and girts, **off-site precast concrete panels** to the dock face, the front and the boundary walls (dado or full height) with metal cladding above, metal deck roof with insulation blanket and skylights, recessed loading docks with dock levellers and shelters, plus on-grade roller doors, awnings over the docks. |
 | External works | Bulk earthworks to the pad, heavy-duty concrete hardstand for 26 m B-doubles, a separate car park for about 40 cars, two heavy-duty vehicle crossings, on-site detention (OSD) with water-quality treatment (gross pollutant trap, bioretention or proprietary filters), landscape setback to the street, security fencing and gates. |
-| Fire | Sprinklered throughout with ceiling-level ESFR sprinklers (storage to about 11 m in selective racking), sprinkler and hydrant tanks with a pump room, hydrant booster at the street, hose reels, extinguishers, emergency lighting, building occupant warning. A large isolated building under NCC 2022 C3D4, because the compartment exceeds Table C3D3 [K: knowledge/tables/compartment_limits.yaml exclusions "C3D4 large isolated buildings"]. Performance solutions are usual (perimeter vehicular access, travel distances, smoke hazard management). |
+| Fire | Sprinklered throughout with ceiling-level ESFR sprinklers (storage to about 11 m in selective racking), sprinkler and hydrant tanks with a pump room, hydrant booster at the street, hose reels, extinguishers, emergency lighting, building occupant warning. Sprinklers are required by C3D4(1)(b) and by E1D13 (storage over 4 m). A large isolated building under NCC 2022 C3D4, because the compartment exceeds Table C3D3 [K: knowledge/tables/compartment_limits.yaml exclusions "C3D4 large isolated buildings"]: C3D4(1)(b) lets a Class 5–9 building of at most 18,000 m² and 108,000 m³ exceed Table C3D3 if it is sprinklered (Spec 17) and has perimeter vehicular access to C3D5(2) (at least 6 m wide, unobstructed, furthest boundary no more than 18 m from the building). The base, about 8,000 m² and about 100,000 m³, is inside both limits. NCC 2022 Vol One Parts C3 and E1 (ABCB, https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c3-compartmentation-and-separation; verified: true, T04 review). Performance solutions are usual (perimeter vehicular access, travel distances, smoke hazard management). |
 | Services | Kiosk substation and consumer mains from the DNSP (Endeavour Energy in most of Western Sydney), main switchboard, high-bay LED lighting with controls, power to docks, doors and chargers, office split or VRF air-conditioning, amenities exhaust, water, sewer, rainwater reuse for toilets and irrigation, NBN lead-in, CCTV and access control. |
-| Pathway | Local DA to council (Class 7b warehouse or distribution centre is permitted with consent in the industrial zone; verified: false), then a construction certificate, often staged (early works for bulk earthworks, then the building). |
+| Pathway | Local DA to council (Class 7b warehouse or distribution centre is permitted with consent in the industrial zone; verified: false), then construction certificates, usually staged (early works for bulk earthworks, then the building). On D&C both CCs follow award and the contractor's design. Where the developer lets bulk earthworks under a separate early-works contract before the D&C award, the early-works CC moves ahead of the award (a variant, not the base). |
 | Procurement | Owner or developer client. DA by the owner's design team, then a design and construct lump sum under AS 4902 [K: knowledge/profile/project_facts.yaml contract_form as4902]. Architect, structural and civil engineers and the landscape architect are novated; the fire, electrical and hydraulic consultants are novated or replaced by the builder's D&C subcontractors' designers (C1). |
 | Value | Inside the PROJECT_TYPES range of $5–30M; the shape names no amount. |
 
@@ -158,13 +158,13 @@ work in the base.
 
 | System | Action | Why |
 |---|---|---|
-| `fire-active.sprinklers` **+** | new | ESFR roof sprinklers to AS 2118.1 or FM Global data sheets [K: knowledge/clusters/fire/rules.yaml rule.as2118.sprinkler-design] |
+| `fire-active.sprinklers` **+** | new | ESFR roof sprinklers to AS 2118.1 or FM Global data sheets [K: knowledge/clusters/fire/rules.yaml rule.as2118.sprinkler-design]. Required by C3D4(1)(b) and E1D13 (combustible goods stored above 4 m, over 1,000 m³ in aggregate, in a compartment over 2,000 m² or 12,000 m³), NCC 2022 Vol One (verified: true) |
 | `fire-active.fire-water` | new | Sprinkler and hydrant tanks, diesel and electric pumps, booster [K: knowledge/clusters/fire/rules.yaml rule.as2941.fire-pumps] |
 | `fire-active.hydrants` | new | Ring main, external hydrants, hose reels [K: knowledge/clusters/fire/rules.yaml rule.as2419.hydrant-design, rule.ncc.hose-reel-provision] |
 | `fire-active.occupant-warning` **+** | new | Building occupant warning activated by the sprinkler system (verified: false) [D] |
 | `fire-active.emergency-lighting` | new | Emergency and exit lighting |
 | `fire-active.portable-extinguishers` | new | Extinguishers [K: knowledge/clusters/fire/rules.yaml rule.as2444.extinguishers] |
-| `fire-active.detection`, `.smoke-control`, `.fire-control`, `.special-suppression`, `.smoke-alarms` | — | Not in the base. Smoke control and a fire control room come with trigger `large-isolated-building-over-limit`; special suppression with `dangerous-goods-storage` |
+| `fire-active.detection`, `.smoke-control`, `.fire-control`, `.special-suppression`, `.smoke-alarms` | — | Not in the base. Smoke control and a fire control centre (E1D15(b), C4) come with trigger `large-isolated-building-over-limit`; special suppression with `dangerous-goods-storage` |
 
 ### `mechanical`
 
@@ -294,7 +294,11 @@ is not contaminated (SEPP (Resilience and Hazards) 2021 Chapter 4; verified: fal
 **Certificates.**
 
 1. Construction certificates, usually staged: early works (bulk earthworks, civil), then the building.
-   The fire safety schedule is attached [D].
+   The fire safety schedule is attached [D]. On D&C both CCs follow award and the contractor's design;
+   the PC is appointed and the notice of commencement given after the early-works CC, and the building
+   CC follows the principal's review and the FRNSW consultation. Where the developer lets bulk earthworks
+   under a separate early-works contract before the D&C award, the early-works CC moves ahead of the
+   award (a variant, not the base). Both CCs sit in construction documentation (C5).
 2. Fire safety performance solutions: the certifier consults FRNSW before issuing the CC (EP&A (Development
    Certification and Fire Safety) Regulation 2021; clause verified: false). Fire safety system designs are
    prepared or endorsed by a competent fire safety practitioner (verified: false). [D]
@@ -309,14 +313,19 @@ approval, the pressure and flow statement for fire water, backflow device regist
 application, kiosk substation design by an accredited service provider, easement, energisation. NBN.
 Council: s138 Roads Act consent for the crossings and footpath (verified: false), s68 Local Government Act
 approval for the stormwater connection where council requires it (verified: false), road occupancy for
-deliveries. Long service levy before the CC (verified: false). SafeWork NSW: precast and tilt-up erection
-and crane work are high-risk construction work needing a SWMS (WHS Regulation 2017; clause verified:
-false). [D]
+deliveries. Long service levy: 0.25% of the cost of building work of $250,000 or more, including GST,
+paid before work starts (C4, checked against nsw.gov.au). SafeWork NSW: precast and tilt-up erection
+and crane work are high-risk construction work needing a SWMS (NSW WHS Regulation 2025, which replaced
+the 2017 Regulation (C4); clause verified: false). [D]
 
 **Inspections and hold points.** Owner ruling R7 covers Class 1 and 10 only. For a Class 5 to 9 building
-the principal certifier's mandatory inspections are, as I recall them, at the commencement of building
-work, before covering stormwater drainage connections, and a final inspection before the OC (EP&A
-(Development Certification and Fire Safety) Regulation 2021; clause verified: false). The structural
+the principal certifier's mandatory inspections are after excavation and before the first footing,
+before covering stormwater drainage connections, and a final inspection before the OC (cl 61 EP&A
+(Development Certification and Fire Safety) Regulation 2021; clause verified: false). Source: Bega Valley
+Council, "About inspections", citing cl 61
+(https://www.begavalley.nsw.gov.au/Plan-and-build/Building-and-certification/About-inspections). "At the
+commencement of the building work" is the 2000 Regulation's wording (cl 162A(4)), now replaced. As R7
+says for Class 1, the CC lists the inspections that apply. The structural
 engineer inspects footings, slab reinforcement, panel connections and the steel frame and certifies them
 for the OC; the geotechnical testing authority certifies fill (Level 1, AS 3798)
 [K: knowledge/clusters/structure/rules.yaml rule.project.structural-inspections, rule.as3798.controlled-fill].
@@ -375,8 +384,9 @@ job [K: knowledge/program/fragments.yaml fr.*-7b].
    [K: fr.tender-docs-7b, fr.tender-period-7b, fr.tender-evaluation-7b, fr.contract-award, fr.novation].
 4. *Construction documentation (the builder):* design completion by the novated team and D&C
    subcontractors, the final fire engineering report and FRNSW consultation, Section 73 application,
-   long service levy, then the early works CC and the building CC [K: fr.construction-docs-7b,
-   fr.construction-certificate (stage approvals; see gaps)].
+   long service levy, then the early-works CC, the PC appointment and notice of commencement, and the
+   building CC [K: fr.construction-docs-7b, fr.construction-certificate (the app puts it in approvals;
+   it matches the early-works CC, C5; see gaps)].
 5. *Construction:* site establishment, erosion control, bulk earthworks and compaction testing,
    stormwater and OSD, footings, portal frame (fabrication lead), precast panels (manufacture lead), roof,
    cladding, slab under the roof, dock doors and levellers, fire pumps and tanks, sprinklers and hydrants,
@@ -418,7 +428,10 @@ at `design`, so their tender stage is priced as an option.
 The ancillary office makes the app derive `flag.mixed_use` = yes, because the profile has two classes
 [K: internal/rfp/drivers.go deriveFlags]. That switches on mixed-use rows (architecture class and use map,
 access shared routes, fire engineering occupant basis, waste shared facilities) that a warehouse with an
-ancillary office does not need.
+ancillary office does not need. `flag.mixed_use` is derived only (`FlagHome("mixed_use")` is
+`HomeDerived`, internal/rfp/homes.go), so a user cannot override it. Removing class 5 from
+`det.ncc_class` is the only cure, and it also excludes the architect's office interiors stage and drops
+`base_interiors` (Go run, 4 November 2026).
 
 | Consultant | Must carry | Must not carry |
 |---|---|---|
@@ -455,10 +468,14 @@ in `shape.yaml`.
 2. **`cdc-industrial-code`.** "Complying development under the Industrial and Business Buildings Code".
    Denied by "a DA will be lodged". Replaces the DA and CC with a CDC. D&C plus CDC gives `sk.generic`;
    the town-planning and certifier RFPs block on `cdc`.
-3. **`large-isolated-building-over-limit`.** "A single fire compartment of 24,000 m²", "volume over
-   108,000 m³", "fire control room". Denied by the stated area and volume within the limits. Adds smoke
-   hazard management, a fire control room and a fire engineer as always needed (thresholds verified:
-   false).
+3. **`large-isolated-building-over-limit`.** "A single fire compartment of 24,000 m²", "exceeds
+   18,000 m², so smoke exhaust and a fire control centre are required". Denied by "floor area 8,000 m²;
+   volume about 100,000 m³, below the C3D4(1) limits". Sprinklers and perimeter vehicular access are
+   required on both sides of the limit (C3D4(1)(b), C3D4(2)), so they cannot tell the variant from the
+   base. Adds a fire control centre only where the total floor area exceeds 18,000 m² (E1D15(b), C4);
+   smoke exhaust or smoke-and-heat vents where the area or volume exceeds the limits (E2D10(2)), smoke
+   exhaust only where the ceiling is over 12 m, so smoke exhaust at the 12 m haunch; and the fire
+   engineer as always needed. NCC 2022 Vol One Parts C3, E1, E2 (verified: true).
 4. **`tilt-up-on-site`.** "Tilt-up panels cast on the slab". Denied by "precast panels manufactured off
    site" or "metal-clad walls". Reverses the slab and wall sequence and adds casting and bracing.
 5. **`traffic-generating-development`.** "Traffic generating development under Schedule 3", "referred to
@@ -522,7 +539,9 @@ All regex triggers are case-insensitive [K: internal/knowledge/profile.go compil
 11. **"No demolition is required"** adds `site.demolition` through `implied_by strip-out`, with action
     `new` [K: knowledge/profile/scope_defaults.yaml implied_by strip-out].
 12. **Two classes make "mixed use".** Stating "Class 7b and Class 5" derives `flag.mixed_use` = yes
-    [K: internal/rfp/drivers.go deriveFlags]. The warehouse is not a mixed-use building.
+    [K: internal/rfp/drivers.go deriveFlags]. The warehouse is not a mixed-use building. The flag is
+    derived only (internal/rfp/homes.go FlagHome), so a user cannot override it; removing class 5 also
+    removes the office interiors stage.
 13. **"Kitchenette"** does not match the kitchen pattern (`\bkitchens?\b`); "staff kitchen" does.
 14. **"Fire wall"** in a warehouse is a compartment wall, not an external wall; "sprinkler" in the
     tenant's in-rack system is outside the base scope.
@@ -542,20 +561,24 @@ All regex triggers are case-insensitive [K: internal/knowledge/profile.go compil
    testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment].
 3. **Tilt-up sequence.** `fr.slab-7b` follows the roof; there is no tilt-up variant that pours the slab
    first and casts panels on it [K: knowledge/program/fragments.yaml fr.slab-7b attach].
-4. **D&C program order.** `fr.construction-certificate` sits in `approvals`, before D&C procurement and the
-   builder's documentation; there is no staged CC; `fr.construction-docs-7b` ends with "Client sign-off for
+4. **D&C program order.** One CC fragment, `fr.construction-certificate`, in `approvals` before D&C
+   procurement; no staged CCs. Expected: an early-works CC, then a building CC, both after award; `fr.construction-docs-7b` ends with "Client sign-off for
    tender", which follows award in D&C [K: knowledge/program/skeletons.yaml sk.new-dc-da; fragments.yaml
    fr.construction-certificate, fr.construction-docs-7b].
 5. **Authority applications start too late.** `fr.utility-major` and `fr.services-connections-major`
    attach to the construction stage start [K: fragments.yaml attach after stage_start].
-6. **No hold points fire.** The reinforcement interface needs a row tagged `structure.concrete`, which no 7b
-   fragment carries; the sprinkler-before-ceilings and services-before-paving interfaces need ceilings and
-   vehicle-access fragments that do not exist for 7b [K: knowledge/clusters/structure/interfaces.yaml
-   if.reinforcement-inspected-before-pour; clusters/fire/interfaces.yaml
-   if.sprinkler-pressure-test-before-ceilings]. Not confirmed by a Go run.
+6. **No hold points fire** (confirmed by a Go run, default and expected scope). The reinforcement
+   interface needs a row tagged `structure.concrete`, which no 7b fragment carries; the
+   sprinkler-before-ceilings interface needs an `interiors.ceilings` row, and the only ceilings fragment
+   (`fr.ceilings-fitout`) needs refurb; the frame interface needs `structure.timber`
+   [K: knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour;
+   clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings]. `fr.fire-stopping` applies
+   to class 5, so the fire-stopping hold point would fire (before `fr.painting-7b`) if
+   `fire-passive.penetrations` were added [K: knowledge/program/fragments.yaml fr.fire-stopping].
 7. **No process rows** for the fire strategy, FRNSW consultation, commissioning and integrated testing, the
    fire safety certificate, Section 73, WAE and OSD certification, the positive covenant, notice of
-   commencement, long service levy or the Class 5–9 mandatory inspections.
+   commencement, long service levy or the Class 5–9 critical-stage inspections (first footing,
+   stormwater, final).
 8. **Consultants never suggested:** fire engineer, landscape, acoustic, ESD, QS and waste. Contamination
    and flood rules are dead (`contamination_level`, `flood_exposure`) [K:
    knowledge/works/package_defaults.yaml complexity_additions[2], [6]].
@@ -590,23 +613,36 @@ in the shape (through `reference/index/rfp-templates.md`, and the raw files for 
 
 **Verified by the knowledge (instrument-checked rows):** NCC 2022 Table C2D2 (Class 7b, rise 1 → Type C)
 and Table C3D3 (Class 7b, Type C: 2,000 m² and 12,000 m³) [K: knowledge/tables/*.yaml, `verified: true`].
+The app returns unknown for type of construction and both compartment limits today, because the rules
+and tables are unreviewed (Go run, `profile.Build`).
+
+**Verified against the instrument by the T04 reviewer (`verified: true`):** NCC 2022 Vol One, ABCB site:
+C3D4(1)(b) and C3D4(2) (18,000 m², 108,000 m³; sprinklers and perimeter vehicular access), C3D5(2)
+(access at least 6 m wide, furthest boundary within 18 m), E1D13 (sprinklers for storage above 4 m),
+E1D15(b) (fire control centre for Class 6–9 over 18,000 m² total floor area; also above 25 m effective
+height, C4), E2D10(1) and (2) (smoke hazard management above the limits; smoke exhaust only above a 12 m
+ceiling). Sources: https://ncc.abcb.gov.au/editions/ncc-2022/adopted/volume-one/c-fire-resistance/part-c3-compartmentation-and-separation,
+…/e-services-and-equipment/part-e1-fire-fighting-equipment, …/e-services-and-equipment/part-e2-smoke-hazard-management.
+Long service levy rate, threshold and timing (C4).
 
 **Unverified (`verified: false`), for the owner:**
 
-- C3D4 large isolated building thresholds (18,000 m², 108,000 m³) and conditions (sprinklers, perimeter
-  vehicular access and its width).
-- Sprinkler, occupant warning, smoke hazard management and fire control room triggers for Class 7b.
+- Occupant warning triggers for Class 7b.
 - The NCC 10 per cent concession for an ancillary office; Section J applicability to an unconditioned 7b.
 - Zone names (IN1 or E4), permissibility, the $30M regional panel and $50M SSD thresholds.
 - SEPP (Transport and Infrastructure) 2021 Schedule 3 thresholds and the referral clause.
 - EP&A (Development Certification and Fire Safety) Regulation 2021: FRNSW consultation, competent fire
-  safety practitioners, Class 5–9 mandatory inspections.
+  safety practitioners, the Class 5–9 critical-stage inspections in cl 61 (first footing, stormwater,
+  final, from Bega Valley Council's page; the Regulation itself could not be opened).
 - Roads Act s138, Local Government Act s68, the positive covenant provisions, the Housing and
-  Productivity Contribution, the long service levy, the $3M cost estimate report.
-- WHS Regulation 2017 high-risk construction work for precast and tilt-up; AS 4084 for racking.
+  Productivity Contribution, the $3M cost estimate report.
+- NSW WHS Regulation 2025 clause numbers for high-risk construction work (precast and tilt-up); AS 4084
+  for racking.
 - NSW Noise Policy for Industry; SEPP (Resilience and Hazards) 2021 Chapters 3 and 4; Planning for Bush
   Fire Protection 2019 and s4.14; National Parks and Wildlife Act AHIP.
 
-**Claims I am least sure of:** that no Class 7b hold point fires (not checked with a Go run); that
-`flag.mixed_use` derives from a single part with two classes (read from the code, not run); the Class 5–9
-inspection list.
+**Claims checked by a Go run (round 1):** no Class 7b hold point fires (reviewer, both scopes);
+`flag.mixed_use` derives yes from one part with two classes (reviewer; author re-ran `rfp.Resolve`);
+the RFP `app_differs` for all 17 templated RFPs (author, `rfp.Resolve` with scope-by-stage off, so the
+rules' own answers are compared). **Least sure of:** the Class 5–9 inspection list, taken from a council
+page, not the Regulation.

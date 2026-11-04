@@ -358,3 +358,43 @@ Go = confirmed by the Go run; R = confirmed by reading the cited file and the se
   every RFP also blocks on `slot:project:intro`, `fields`, `terms`, `details`, allowance checks and each
   unanswered `fact:flag.*` client flag. Every shape that says `blocking: []` will then report these as
   new failures, unless the harness's saved view filters them. Worth one decision before the pilot run.
+
+## Round 1 response (author, 4 November 2026)
+
+Applied 13, disputed 1 in part (finding 1, fragment placement, under C5) and corrected 1 detail of
+finding 10 from my own Go run. I re-ran the Go read-only, with no database and no Jev:
+`go run -overlay` mapping a virtual `internal/zzt04author/main.go` to a scratch file. It ran
+`rfp.Drivers` and `rfp.Resolve` for all 17 templated RFPs on the shape's profile (budget stated, package
+novation `option`), and `profile.Build` for `expected_derived`. Since 3 November the app lays these
+templates out by stage, which turns every option and ask into include (`placeServices`). I set
+`ScopeByStage` off on the loaded discipline so the comparison sees the rules' own answers, which is what
+the shapes record and what `score_shapes.py` translates. After the edits, the predicted output
+(`expect` overridden by `app_differs`) matches the Go output on every stage, element and position of all
+17 RFPs.
+
+| # | Finding | Response |
+|---|---|---|
+| 1 | Staged CC rows | **Applied in part, disputed in part.** Both CCs are now `stage: construction_documentation`, after award and the contractor's documentation, and the gap row uses your wording. **Disputed:** I left the app's fragment and the alias "Construction certificate" on the **early-works** CC, and the building CC is `fragment: null`, `built_in: "no"`. CONVENTIONS C5, written after this review and citing it, says the app's CC fragment row corresponds to the early-works CC, and the building CC is recorded as built_in no. C5 binds the maps to one another, so I follow it. The order now follows your ruling: early-works CC (after documentation and the long service levy), then PC appointment, then notice of commencement. |
+| 2 | Building work not gated on the building CC | **Applied.** "Excavate and pour pad footings" follows "Construction certificate: building". Frame fabrication and precast manufacture stay off it. |
+| 3 | Class 5–9 inspection list | **Applied.** "Notice of commencement" and "Inspection after excavation, before the first footing" are separate rows, and the footings follow the inspection. The stormwater row cites cl 61 (verified: false). DOMAIN §5 now gives first footing, stormwater and final, cites Bega Valley, and says the CC lists the inspections. The certifier `must_include` names all three. §11 gap 7 and §12 are updated. |
+| 4 | C3D4 and the trigger conditions | **Applied.** C3D4, C3D5(2), E1D13, E1D15(b) and E2D10 are `verified: true` with the ABCB URLs (DOMAIN §1, §9, §12; trigger `why`). Evidence phrase 2 is your wording. I also changed "fire control room" to "fire control centre" in phrase 3 and the cost line, per C4 (S19C7's separate room applies above 50 m). The cost line is now "Smoke exhaust", because the base haunch is 12 m. The negation and a new `scenario_inputs` row for `det.floor_area` give about 100,000 m³. The base sprinkler `why` cites C3D4(1)(b) and E1D13. |
+| 5 | Missing `app_differs` | **Applied, confirmed by the Go run.** Every key you listed was added (41 entries across 11 RFPs). For landscape `position.establishment` and `position.construction` I took your suggestion: `expect` O, which matches the app. |
+| 6 | Two wrong `app_differs` | **Applied, confirmed.** Geotechnical `stage.g4_planning` app `option`; landscape `position.design` app `O`. |
+| 7 | Architect `blocking` | **Applied, confirmed** (no `fact:budget` with the budget stated). `blocking: []`, with the sources line and the RFP `why` reworded. |
+| 8 | `expected_derived` | **Applied, confirmed** (`profile.Build`: state unknown, reason unreviewed, for all three). The values stay. |
+| 9 | Hold-point wording | **Applied.** "Confirmed by a Go run, default and expected scope". "Services-before-paving" is dropped, and the fire-stopping note is added (DOMAIN §11 gap 6, the gap row, the reinforcement row). |
+| 10 | Mixed-use gap understated | **Applied, with one correction.** The FlagHome sentence is in DOMAIN §8, §10 trap 12 and the gap row. My Go run with `det.ncc_class: 7b` alone confirms that the interiors stage is excluded and `base_interiors` is absent. It does **not** confirm the rest: the architect scale stayed `complex`, and `specification` and `typical_interiors` stayed I. So the text says only what the run showed. |
+| 11 | `traditional-lump-sum` program | **Applied.** `"partial"`. |
+| 12 | `aboriginal-heritage` cost plan | **Applied.** `"partial"`. |
+| 13 | Program aliases | **Applied.** Earthworks takes "Earthworks, cut and fill", and the other 11 rows take the work-item titles you listed. I checked that each of these fragments has one activity, so `generate.go` uses the item title (line 648). |
+| 14 | Staged-CC sentence | **Applied** in DOMAIN §1 Pathway and §5. |
+
+Also applied from CONVENTIONS C4: the long service levy (0.25% of building work of $250,000 or more,
+including GST, paid before work starts) is in the cost line, the program row and DOMAIN §5 and §12. The
+WHS Regulation reference is now the NSW 2025 Regulation, with the clause still verified: false.
+
+**New counts:** 15 triggers, 20 packages, 49 cost lines, 95 activities (was 94: the notice of
+commencement and the first-footing inspection are now two rows), 19 RFPs, 26 gaps.
+
+**Validator:** `python testing/synthetic/tools/validate_shape.py testing/synthetic/types/T04-warehouse/shape.yaml`
+→ `ok`.

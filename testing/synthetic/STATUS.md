@@ -24,7 +24,7 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 |---|---|---|---|---|---|---|---|---|
 | T01 | New detached house (pilot) | ok | ok | ok | ok | ok | ok | ok |
 | T02 | Apartments | ok | ok | ok | gate | — | — | — |
-| T03 | Office fit-out | ok | ok | fix | — | — | — | — |
+| T03 | Office fit-out | ok | ok | ok | gate | — | — | — |
 | T04 | Warehouse | ok | ok | fix | — | — | — | — |
 | T05 | House alterations and additions (pilot) | ok | ok | ok | ok | ok | ok | ok |
 | T06 | Sprinkler pump and tank upgrade | ok | ok | fix | — | — | — | — |
@@ -372,3 +372,5 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 - 2026-11-04: T03 round 2 review: FIX (minor), 9 findings. The base still says "core drilling" (evidence for the slab-core-drilling trigger). The exempt variant keeps the commencement inspection, certifier notice, final fire safety certificate and CDC contributions. heritage-item counts contributions twice. The levy should cite C4. A fresh author is applying them.
 - 2026-11-04: T07 round 2 items applied (4 and one optional, 0 disputed): the crane-out and lift-in are split with the frames and hold point between them, the WHS Regulation 2025, the levy per C4 (only whether plant replacement is levied stays unverified), and capacity-increase without the supply lines or the duplicate activity. Counts: 18 triggers, 6 packages, 28 cost lines, 47 activities, 5 RFPs, 28 gaps. Validator ok. T07 is ready for owner review.
 - 2026-11-04: T06 round 1 fixes in: 18 applied, 0 disputed. Most were already in the committed shape; the last two are added, and DOMAIN.md §1–12 is rewritten. A throwaway program.Generate run confirmed findings 2, 7 and 15. Counts are now 18 triggers, 9 packages, 36 cost lines, 85 activities, 7 RFPs, 26 gaps. Validator ok. Round 2 review launched.
+- 2026-11-04: T03 round 2 items applied (9, 0 disputed): "core drilling" is out of the base, the levy cites C4, and the exempt variant removes the certifier appointment, commencement inspection, final fire safety certificate and CDC contributions. heritage-item counts contributions once. Counts unchanged. Validator ok. T03 is ready for owner review.
+- 2026-11-04: T04 round 1 fixes in: 14 applied, F1 partly disputed (both CCs now sit in construction documentation after award, but per C5 the app's CC row stays matched to the early-works CC, and the building CC is built_in no). A read-only Go run confirms F5 to F8, and all 17 templated RFPs now match the app. Counts are now 15 triggers, 20 packages, 49 cost lines, 95 activities, 19 RFPs, 26 gaps. Validator ok. The author reports that since 3 November rfp.Resolve's scope-by-stage layout reads every option and ask stage as include, which would affect every shape's RFP expectations. Round 2 review launched; it is also asked to confirm or refute this from the code.

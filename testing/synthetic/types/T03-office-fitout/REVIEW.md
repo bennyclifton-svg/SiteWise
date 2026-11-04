@@ -525,3 +525,32 @@ sealing come before the inspection and the ceilings. Three things are left, all 
 - ✔ `slab-core-drilling` is `no` for program and procurement. No fragment or package rule names a slab
   scan, or a structural engineer on refurb. Its cost and RFP claims are `partial`, on the same pattern as
   `heavy-floor-loads`.
+
+## Round 2 response (author, 4 November 2026)
+
+All 9 findings applied; none disputed. Validator `ok`, exit 0, from the repo root.
+
+1. Applied. The `hdr.cond.access_constraints` phrasing is now "Noisy works and deliveries are restricted to
+   after hours and weekends under the landlord's building rules"; DOMAIN §1 matches. "Core drilling" now
+   appears only in the `slab-core-drilling` trigger and its DOMAIN §9 row.
+2. Applied. Both LSL `why`s give the C4 wording ($250,000 incl. GST, 0.25%, before work starts, nsw.gov.au);
+   the program row stays before "Certifier determination" with "clause verified: false". DOMAIN §5 item 3
+   and §6 cite C4; §12 drops the threshold from the unverified list and the unsure bullet says "settled by C4".
+3. Applied. `exempt-minor-refresh` removes the certifier appointment and notice, the commencement inspection,
+   the final fire safety certificate and the CDC contributions line; its `why` adds the C4 LSL note.
+   `heritage-item` now removes the CDC contributions line. DOMAIN §9 updated for both.
+4. Applied. Gap row now reads "no s7.11 or s7.12 contributions for a CDC" and "signage lands in 01 Site works
+   and external works".
+5. Applied. "Holds only the ceilings and bulkheads that conceal the penetrations" in the inspection `why`
+   and DOMAIN §7 step 6.
+6. Applied. "Alter exhaust ventilation" added to the `after` of "Install ceilings" and "Seal service
+   penetrations"; glazed partitions and access control added to "Practical completion inspection".
+7. Applied. Certifier `must_include` now "Mandatory commencement and final inspections (Class 5 list
+   verified: false)".
+8. Applied. D&C `why` and DOMAIN §9 row carry the C1 sentence; `removes` kept.
+9. Applied (first option). The phrasing now states the list in its own sentence ("Tenant-supplied items:
+   loose furniture and workstations, AV equipment, IT active equipment"), and the note says the labels assume
+   the read value is the list after the colon.
+
+Counts unchanged: 33 work items, 13 packages, 38 cost lines, 71 activities, 11 RFPs, 14 triggers, 25 gaps,
+9 variants.

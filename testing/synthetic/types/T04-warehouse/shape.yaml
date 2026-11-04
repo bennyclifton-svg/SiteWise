@@ -78,9 +78,9 @@ profile:
 
 # Values the app derives or cannot set through PUT /profile; checked, never PUT.
 expected_derived:
-  - {key: det.type_of_construction, value: C, source: "knowledge/tables/type_of_construction.yaml", note: "Class 5 and 7b at rise 1 give Type C (Table C2D2, verified: true); the rule says mixed classifications need C2D4 assessment first"}
-  - {key: det.max_floor_area_m2, value: 2000, source: "knowledge/tables/compartment_limits.yaml", note: "Class 7b Type C limit from Table C3D3 (verified: true). The 8,000 m2 compartment exceeds it, so the C3D4 large isolated building route applies; the table's exclusions say C3D4 needs separate assessment"}
-  - {key: det.max_volume_m3, value: 12000, source: "knowledge/tables/compartment_limits.yaml", note: "Class 7b Type C volume limit (Table C3D3, verified: true)"}
+  - {key: det.type_of_construction, value: C, source: "knowledge/tables/type_of_construction.yaml", note: "Class 5 and 7b at rise 1 give Type C (Table C2D2, verified: true); the rule says mixed classifications need C2D4 assessment first. Returns unknown today: rule/table unreviewed (Go run, profile.Build, 4 November 2026)"}
+  - {key: det.max_floor_area_m2, value: 2000, source: "knowledge/tables/compartment_limits.yaml", note: "Class 7b Type C limit from Table C3D3 (verified: true). The 8,000 m2 compartment exceeds it, so the C3D4 large isolated building route applies; the table's exclusions say C3D4 needs separate assessment. Returns unknown today: rule/table unreviewed (Go run)"}
+  - {key: det.max_volume_m3, value: 12000, source: "knowledge/tables/compartment_limits.yaml", note: "Class 7b Type C volume limit (Table C3D3, verified: true). Returns unknown today: rule/table unreviewed (Go run)"}
   - {key: det.ev_readiness_required, value: true, source: "knowledge/clusters/electrical-comms/rules.yaml rule.ncc.ev-charging-readiness", note: "applies to 5 and 7b with car parking; derivation pending; the requirement itself is verified: false"}
   - {key: det.energy_compliance_pathway, value: section_j_dts, note: "Section J DTS for the office (JV3 is the alternative); no profile_group, so not settable"}
 
@@ -99,6 +99,7 @@ scenario_inputs:
   - {key: det.potentially_contaminated_land, note: "trigger 'contaminat'; the estate validation report is the evidence", phrasing: "The estate developer's validation report confirms the lot is suitable for industrial use and is not contaminated"}
   - {key: det.existing_building, note: "trigger is the singular 'existing building'", phrasing: "There is no existing building on the site"}
   - {key: hdr.scale.gfa_sqm, note: "GFA trigger phrasing", phrasing: "Gross floor area: 8,000 m2 (warehouse 7,500 m2, office 500 m2)"}
+  - {key: det.floor_area, note: "state the compartment volume too, so the base cannot read as over the C3D4 limits by accident (7,500 m2 at a 12 m haunch plus the roof rise is close to 100,000 m3)", phrasing: "Floor area 8,000 m2; volume of the single fire compartment about 100,000 m3 (below the C3D4(1) limits of 18,000 m2 and 108,000 m3)"}
 
 work_items:
   - {system: site.survey-boundaries, action: new, why: "Set-out, level control and as-built survey"}
@@ -134,7 +135,7 @@ work_items:
   - {system: interiors.internal-doors, action: new, why: "Office doors and hardware"}
   - {system: interiors.joinery, action: new, why: "Office kitchen and vanities; arrives via implied_by kitchen when a read document says kitchen"}
   - {system: interiors.painting, action: new, why: "Office painting and warehouse line marking"}
-  - {system: fire-active.sprinklers, action: new, why: "Ceiling-level ESFR sprinklers for storage to about 11 m; not in the default list"}
+  - {system: fire-active.sprinklers, action: new, why: "Ceiling-level ESFR sprinklers for storage to about 11 m; required by C3D4(1)(b) (large isolated building) and E1D13 (storage over 4 m), NCC 2022 Vol One (verified: true); not in the default list"}
   - {system: fire-active.fire-water, action: new, why: "Sprinkler and hydrant tanks, diesel and electric pumps, booster"}
   - {system: fire-active.hydrants, action: new, why: "Hydrant ring main, external hydrants, hose reels"}
   - {system: fire-active.occupant-warning, action: new, why: "Building occupant warning on sprinkler activation (verified: false); not in the default list"}
@@ -197,7 +198,7 @@ cost_plan:
   - {line: "Housing and Productivity Contribution", section: fees_and_charges, built_in: "no", why: "Applies to industrial development in Greater Sydney (verified: false); no starter line"}
   - {line: "Construction certificate and certifier fees", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml cc-fees", why: "Statutory CC and OC fees; the certifier's professional fee belongs on one line only"}
   - {line: "Service authority connection fees (Sydney Water, DNSP, NBN)", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", why: "One generic line; Section 73 developer charges, WSC fees and DNSP design and inspection fees are not split"}
-  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "Paid before the CC (verified: false)"}
+  - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "0.25% of the cost of building work of $250,000 or more including GST, paid before work starts (C4, checked against nsw.gov.au)"}
   - {line: "Council road-reserve fees and bonds (s138 crossings)", section: fees_and_charges, built_in: "no", why: "Standard DA conditions for the heavy-duty crossings (verified: false)"}
   - {line: "Architect", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package; pre-novation stages only"}
   - {line: "Town planner", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml complexity_additions[0]", why: "Fee line from the adopted package"}
@@ -283,58 +284,59 @@ program:
     - {label: "Award the contract", stage: procurement, fragment: fr.contract-award, after: ["Evaluate tenders"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.contract-award", why: "AS 4902 lump sum"}
     - {label: "Novate the design consultants", stage: procurement, fragment: fr.novation, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.novation", why: "Architect, structural, civil and landscape"}
     - {label: "Contractor provides security and insurances", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Bank guarantees, contract works and public liability before access to site"}
-    - {label: "Appoint the principal certifier", stage: procurement, fragment: null, after: ["Award the contract"], built_in: "no", why: "Owner appoints; before the CC"}
     - {label: "Prepare construction documentation", stage: construction_documentation, fragment: fr.construction-docs-7b, after: ["Novate the design consultants"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.construction-docs-7b", why: "The builder's novated team"}
     - {label: "Coordinate consultant documentation", stage: construction_documentation, fragment: fr.construction-docs-7b, after: ["Novate the design consultants"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.construction-docs-7b", why: "Structural, civil and services for the CC"}
     - {label: "D&C subcontractor design of fire, electrical, hydraulic and mechanical services", stage: construction_documentation, fragment: null, after: ["Award the contract"], built_in: "no", why: "Services design by the D&C subcontractors where not novated"}
     - {label: "Principal's review of the contractor's design", stage: construction_documentation, fragment: fr.construction-docs-7b, aliases: ["Client sign-off for tender"], after: ["Prepare construction documentation", "Coordinate consultant documentation", "D&C subcontractor design of fire, electrical, hydraulic and mechanical services"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.construction-docs-7b", why: "The fragment's step is labelled 'Client sign-off for tender', which follows award in D&C"}
     - {label: "Fire engineering report and FRNSW consultation", stage: construction_documentation, fragment: null, after: ["Prepare construction documentation"], built_in: "no", why: "Certifier consults FRNSW on the performance solutions before the CC (verified: false)"}
     - {label: "Section 73 application through a Water Servicing Coordinator", stage: construction_documentation, fragment: null, after: ["DA assessment and determination"], built_in: "no", why: "Starts after consent; long lead to the compliance certificate"}
-    - {label: "Pay long service levy", stage: construction_documentation, fragment: null, after: ["Award the contract"], built_in: "no", why: "Before the CC (verified: false)"}
-    - {label: "Construction certificate: early works", stage: approvals, fragment: fr.construction-certificate, aliases: ["Construction certificate"], after: ["Coordinate consultant documentation", "Pay long service levy", "Appoint the principal certifier"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.construction-certificate", why: "Bulk earthworks and civil. The fragment exists but sits in approvals, before D&C procurement, and is not staged"}
-    - {label: "Construction certificate: building", stage: approvals, fragment: null, after: ["Principal's review of the contractor's design", "Fire engineering report and FRNSW consultation"], built_in: "no", why: "Second staged CC with the fire safety schedule"}
-    - {label: "Notice of commencement and commencement inspection", stage: construction, fragment: null, after: ["Construction certificate: early works", "Contractor provides security and insurances"], built_in: "no", why: "Class 5-9 mandatory inspection at commencement (verified: false)"}
-    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-7b, after: ["Notice of commencement and commencement inspection"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-7b", why: "Site start"}
-    - {label: "Install erosion and sediment controls", stage: construction, fragment: fr.erosion-control, after: ["Establish the site"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.erosion-control", why: "Before disturbance"}
+    - {label: "Pay long service levy", stage: construction_documentation, fragment: null, after: ["Award the contract"], built_in: "no", why: "0.25% of building work of $250,000 or more, paid before work starts (C4); before the early-works CC"}
+    - {label: "Construction certificate: early works", stage: construction_documentation, fragment: fr.construction-certificate, aliases: ["Construction certificate"], after: ["Coordinate consultant documentation", "Pay long service levy"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.construction-certificate", why: "Bulk earthworks and civil, after award and the contractor's documentation. The app's single CC fragment matches here (C5), but the app puts it in approvals, before D&C procurement, and does not stage it"}
+    - {label: "Appoint the principal certifier", stage: construction_documentation, fragment: null, after: ["Construction certificate: early works"], built_in: "no", why: "Owner appoints the PC before any work starts; never novated"}
+    - {label: "Construction certificate: building", stage: construction_documentation, fragment: null, after: ["Principal's review of the contractor's design", "Fire engineering report and FRNSW consultation", "Construction certificate: early works"], built_in: "no", why: "Main CC with the fire safety schedule, after the contractor's design and the FRNSW consultation; the app has one CC row only (C5)"}
+    - {label: "Notice of commencement", stage: construction, fragment: null, after: ["Construction certificate: early works", "Appoint the principal certifier", "Contractor provides security and insurances"], built_in: "no", why: "Given before work starts under the early-works CC (period verified: false)"}
+    - {label: "Establish the site", stage: construction, fragment: fr.site-establishment-7b, after: ["Notice of commencement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.site-establishment-7b", why: "Site start"}
+    - {label: "Install erosion and sediment controls", stage: construction, aliases: ["Erosion, sediment and dust control"], fragment: fr.erosion-control, after: ["Establish the site"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.erosion-control", why: "Before disturbance"}
     - {label: "Connect temporary builders power", stage: construction, fragment: fr.temporary-power, after: ["Establish the site"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.temporary-power", why: "electrical.temporary-power is not in the default scope"}
     - {label: "Building set-out survey", stage: construction, fragment: null, after: ["Establish the site"], built_in: "no", why: "site.survey-boundaries with action new has no fragment"}
-    - {label: "Bulk earthworks to the warehouse pad", stage: construction, fragment: fr.earthworks-7b, aliases: ["Prepare the warehouse pad"], after: ["Install erosion and sediment controls"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.earthworks-7b", why: "Cut, fill and trim"}
+    - {label: "Bulk earthworks to the warehouse pad", stage: construction, fragment: fr.earthworks-7b, aliases: ["Earthworks, cut and fill"], after: ["Install erosion and sediment controls"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.earthworks-7b", why: "Cut, fill and trim"}
     - {label: "Level 1 compaction testing of fill", stage: construction, fragment: null, after: ["Bulk earthworks to the warehouse pad"], built_in: "no", why: "AS 3798 geotechnical testing authority"}
-    - {label: "Install stormwater detention", stage: construction, fragment: fr.stormwater-7b, after: ["Bulk earthworks to the warehouse pad"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.stormwater-7b", why: "OSD tank, pits and pipes, water-quality devices"}
-    - {label: "Inspection before covering stormwater drainage connections", stage: construction, fragment: null, after: ["Install stormwater detention"], built_in: "no", why: "Class 5-9 mandatory inspection (verified: false)"}
+    - {label: "Install stormwater detention", stage: construction, aliases: ["Site stormwater, detention and water quality"], fragment: fr.stormwater-7b, after: ["Bulk earthworks to the warehouse pad"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.stormwater-7b", why: "OSD tank, pits and pipes, water-quality devices"}
+    - {label: "Inspection before covering stormwater drainage connections", stage: construction, fragment: null, after: ["Install stormwater detention"], built_in: "no", why: "Class 5-9 critical stage, cl 61 EP&A (DC&FS) Reg 2021 (verified: false)"}
     - {label: "Lodge services applications", stage: construction, fragment: fr.services-connections-major, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.services-connections-major", why: "Water, sewer, NBN; the app attaches it to the construction stage start, which is late"}
     - {label: "Lead-in connections", stage: construction, fragment: fr.services-connections-major, after: ["Lodge services applications", "Bulk earthworks to the warehouse pad"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.services-connections-major", why: "Water, sewer, fire-water main"}
     - {label: "Lodge the supply application", stage: construction, fragment: fr.utility-major, after: ["DNSP connection enquiry and load estimate", "Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.utility-major", why: "Kiosk substation; long lead. Should start in design"}
     - {label: "Authority connection", stage: construction, fragment: fr.utility-major, after: ["Lodge the supply application"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.utility-major", why: "Substation energised; needed for commissioning"}
-    - {label: "Excavate and pour pad footings", stage: construction, fragment: fr.footings-7b, after: ["Level 1 compaction testing of fill", "Building set-out survey"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.footings-7b", why: "Column and panel footings"}
+    - {label: "Inspection after excavation, before the first footing", stage: construction, fragment: null, after: ["Building set-out survey", "Construction certificate: building"], built_in: "no", why: "Class 5-9 critical stage, cl 61 EP&A (DC&FS) Reg 2021 (verified: false); Bega Valley Council lists first footing, stormwater and final for Class 5-9"}
+    - {label: "Excavate and pour pad footings", stage: construction, fragment: fr.footings-7b, aliases: ["Pad and strip footings"], after: ["Level 1 compaction testing of fill", "Inspection after excavation, before the first footing", "Construction certificate: building"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.footings-7b", why: "Column and panel footings"}
     - {label: "Fabricate the portal frame", stage: construction, fragment: fr.steel-7b, after: ["Prepare construction documentation"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.steel-7b", why: "Long lead from shop drawings"}
     - {label: "Erect the portal frame", stage: construction, fragment: fr.steel-7b, after: ["Fabricate the portal frame", "Excavate and pour pad footings"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.steel-7b", why: "Steel erection"}
     - {label: "Manufacture precast wall panels", stage: construction, fragment: null, after: ["Prepare construction documentation"], built_in: "no", why: "structure.precast has no fragment; long lead"}
     - {label: "Erect and brace precast wall panels", stage: construction, fragment: null, after: ["Manufacture precast wall panels", "Excavate and pour pad footings"], built_in: "no", why: "Crane erection with temporary bracing; high-risk construction work"}
-    - {label: "Install the metal roof", stage: construction, fragment: fr.roof-7b, after: ["Erect the portal frame"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.roof-7b", why: "Safety mesh, insulation blanket, sheeting, skylights"}
+    - {label: "Install the metal roof", stage: construction, aliases: ["Pitched roof coverings"], fragment: fr.roof-7b, after: ["Erect the portal frame"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.roof-7b", why: "Safety mesh, insulation blanket, sheeting, skylights"}
     - {label: "Install roof drainage", stage: construction, fragment: null, after: ["Install the metal roof"], built_in: "no", why: "hydraulic.roof-drainage has no 7b fragment"}
-    - {label: "Install wall cladding", stage: construction, fragment: fr.cladding-7b, after: ["Erect the portal frame", "Erect and brace precast wall panels"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cladding-7b", why: "Metal cladding above the panels"}
+    - {label: "Install wall cladding", stage: construction, aliases: ["External walls and cladding"], fragment: fr.cladding-7b, after: ["Erect the portal frame", "Erect and brace precast wall panels"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cladding-7b", why: "Metal cladding above the panels"}
     - {label: "Prepare the subgrade and membrane", stage: construction, fragment: fr.slab-7b, after: ["Install the metal roof"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-7b", why: "Slab under the roof suits off-site precast"}
-    - {label: "Reinforcement inspection before the slab pour", stage: construction, fragment: null, after: ["Prepare the subgrade and membrane"], built_in: "no", why: "Engineer's hold point; the interface if.reinforcement-inspected-before-pour needs a structure.concrete tag that no 7b row carries (read, not run)"}
+    - {label: "Reinforcement inspection before the slab pour", stage: construction, fragment: null, after: ["Prepare the subgrade and membrane"], built_in: "no", why: "Engineer's hold point; the interface if.reinforcement-inspected-before-pour needs a structure.concrete tag that no 7b row carries (confirmed by a Go run, default and expected scope)"}
     - {label: "Pour and finish the slab", stage: construction, fragment: fr.slab-7b, after: ["Reinforcement inspection before the slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-7b", why: "Large pours; flatness survey after"}
     - {label: "Cure the slab", stage: construction, fragment: fr.slab-7b, after: ["Pour and finish the slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-7b", why: "Before racking loads and line marking"}
     - {label: "Procure and deliver vehicle doors", stage: construction, fragment: fr.vehicle-doors-7b, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.vehicle-doors-7b", why: "Long lead; the app labels it Procure and deliver"}
     - {label: "Install vehicle doors", stage: construction, fragment: fr.vehicle-doors-7b, after: ["Procure and deliver vehicle doors", "Install wall cladding"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.vehicle-doors-7b", why: "App labels it Install"}
     - {label: "Install dock levellers and shelters", stage: construction, fragment: null, after: ["Pour and finish the slab", "Install vehicle doors"], built_in: "no", why: "site.loading-docks has no fragment and is not in the default scope"}
     - {label: "Install fire pumps and tanks", stage: construction, fragment: null, after: ["Excavate and pour pad footings"], built_in: "no", why: "fire-active.fire-water has no fragment; long lead"}
-    - {label: "Install hydrants", stage: construction, fragment: fr.hydrants-7b, after: ["Pour and finish the slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydrants-7b", why: "Ring main and hydrants"}
+    - {label: "Install hydrants", stage: construction, aliases: ["Fire hydrants and hose reels"], fragment: fr.hydrants-7b, after: ["Pour and finish the slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydrants-7b", why: "Ring main and hydrants"}
     - {label: "Install and commission warehouse sprinklers", stage: construction, fragment: fr.sprinklers-7b, after: ["Install wall cladding", "Install fire pumps and tanks"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.sprinklers-7b", why: "Fragment exists but fire-active.sprinklers is not in the warehouse default scope"}
     - {label: "Procure and install the main switchboard", stage: construction, fragment: fr.switchboard-major, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.switchboard-major", why: "Long lead; app activities Procure and deliver, Install"}
-    - {label: "Install warehouse power cabling", stage: construction, fragment: fr.electrical-7b, after: ["Erect the portal frame"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-7b", why: "Submains and power"}
-    - {label: "Install high-bay lighting", stage: construction, fragment: fr.lighting-7b, after: ["Install wall cladding"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lighting-7b", why: "High-bay LED"}
+    - {label: "Install warehouse power cabling", stage: construction, aliases: ["Submains, final subcircuits and wiring"], fragment: fr.electrical-7b, after: ["Erect the portal frame"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.electrical-7b", why: "Submains and power"}
+    - {label: "Install high-bay lighting", stage: construction, aliases: ["General lighting and lighting controls"], fragment: fr.lighting-7b, after: ["Install wall cladding"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lighting-7b", why: "High-bay LED"}
     - {label: "Office and amenities fit-out", stage: construction, fragment: null, after: ["Pour and finish the slab"], built_in: "no", why: "No 7b fragment for partitions, ceilings, joinery, floor finishes or office mechanical"}
-    - {label: "Rough-in and fit off amenities", stage: construction, fragment: fr.hydraulic-sanitary-7b, after: ["Pour and finish the slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-7b", why: "Amenities plumbing"}
+    - {label: "Rough-in and fit off amenities", stage: construction, aliases: ["Sanitary plumbing and drainage"], fragment: fr.hydraulic-sanitary-7b, after: ["Pour and finish the slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.hydraulic-sanitary-7b", why: "Amenities plumbing"}
     - {label: "Install office air-conditioning and exhaust", stage: construction, fragment: null, after: ["Office and amenities fit-out"], built_in: "no", why: "No 7b mechanical fragment"}
     - {label: "Construct hardstand, car park and internal roads", stage: construction, fragment: null, after: ["Lead-in connections", "Install stormwater detention", "Inspection before covering stormwater drainage connections"], built_in: "no", why: "site.vehicle-access has no fragment; the largest external element"}
     - {label: "Construct heavy-duty crossings and footpath", stage: construction, fragment: null, after: ["Construct hardstand, car park and internal roads"], built_in: "no", why: "s138 consent works (verified: false)"}
     - {label: "Security fencing and gates", stage: construction, fragment: null, after: ["Construct hardstand, car park and internal roads"], built_in: "no", why: "No fragment"}
-    - {label: "Landscape the warehouse frontage", stage: construction, fragment: fr.landscape-7b, after: ["Construct hardstand, car park and internal roads"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.landscape-7b", why: "App attaches it after cladding"}
-    - {label: "Paint the office and mark the floor", stage: construction, fragment: fr.painting-7b, after: ["Cure the slab", "Office and amenities fit-out"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.painting-7b", why: "Line marking after curing"}
+    - {label: "Landscape the warehouse frontage", stage: construction, aliases: ["Landscape, planting and external grading"], fragment: fr.landscape-7b, after: ["Construct hardstand, car park and internal roads"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.landscape-7b", why: "App attaches it after cladding"}
+    - {label: "Paint the office and mark the floor", stage: construction, aliases: ["Internal painting and coatings"], fragment: fr.painting-7b, after: ["Cure the slab", "Office and amenities fit-out"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.painting-7b", why: "Line marking after curing"}
     - {label: "Commission fire systems and integrated testing", stage: completion, fragment: null, after: ["Install and commission warehouse sprinklers", "Install hydrants", "Authority connection"], built_in: "no", why: "Pump, sprinkler, hydrant and warning tests; FRNSW witnessing (verified: false)"}
     - {label: "Works-as-executed survey and OSD certification", stage: completion, fragment: null, after: ["Construct hardstand, car park and internal roads"], built_in: "no", why: "Civil certification and positive covenant for the OSD"}
     - {label: "Section 73 compliance certificate", stage: completion, fragment: null, after: ["Section 73 application through a Water Servicing Coordinator", "Lead-in connections"], built_in: "no", why: "Needed before the OC"}
@@ -353,7 +355,7 @@ rfps:
     template: architecture
     built_in: "partial"
     source: "knowledge/rfp/architecture.yaml dnc_tender"
-    why: "D&C boundary ends at dnc_tender; blocks on fact:budget until the budget is read; class 5 makes the scale complex"
+    why: "D&C boundary ends at dnc_tender; the stated budget clears fact:budget; class 5 makes the scale complex"
     must_include: ["Concept and schematic design", "DA planning approval documentation", "Planning response", "Design development", "Office interiors and finishes", {text: "D&C tender documents with performance brief and design responsibility matrix", key: position.dnc_performance_brief}, {text: "Post-novation documentation", key: stage.post_novation}, {text: "BIM model", key: position.bim_model}, "Certifier liaison"]
     must_not_include: ["House-module rows", {text: "Traditional tender documents", key: stage.tender_traditional}, {text: "Bidding", key: stage.bidding}, {text: "Regulated design", key: stage.regulated_design}, {text: "External hardstands (civil engineer's)", key: position.outside_boundary}, "Mixed-use class and use map", "Green Star or NABERS documentation"]
     expect:
@@ -361,8 +363,8 @@ rfps:
       stages_option: [contract_admin]
       stages_absent: [brief_masterplan, house_documents, tender_traditional, bidding, regulated_design, for_construction, construction_support]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, consultant_selection: O, bim_model: I, bim_coordination: O, specification: I, door_schedule: I, finishes_schedules: I, typical_interiors: I, base_interiors: I, tenant_fitout: O, ffe: O, marketing_renders: O, value_management: O, tender_evaluation: O, dnc_performance_brief: I, certifier_liaison: I, document_uploads: I, modifications: O, court: X, community: X, facade_certification: X, performance_solutions: X, signage: O, outside_boundary: X, as_built: O, others_fees: X, mixed_use_map: absent, house_interiors: absent, house_selections: absent, lodgement: absent, water_asset: absent, country: absent, extra_declarations: absent, apartment_design: absent, sustainability_docs: absent, existing_interfaces: absent, live_staging: absent}
-      blocking: ["fact:budget"]
-      sources: ["blocking clears once proj.budget_stated is read (scenario_inputs)", "interiors: class 5 office; base-building office finishes, not tenant fit-out"]
+      blocking: []
+      sources: ["blocking: none; the scenario states the budget, so the fact:budget block must clear", "interiors: class 5 office; base-building office finishes, not tenant fit-out"]
     app_differs:
       - {key: stage.post_novation, app: option, expect: include, why: "after the dnc_tender boundary end"}
       - {key: position.mixed_use_map, app: I, expect: absent, why: "flag.mixed_use is derived yes from det.ncc_class 7b,5; the office is ancillary"}
@@ -453,11 +455,18 @@ rfps:
       - {key: stage.b1_preliminary, app: option, expect: absent, why: "after the a1..a3 boundary"}
       - {key: position.statutory_functions, app: ask, expect: absent, why: "client flag bca_certification"}
       - {key: position.classification_map, app: ask, expect: absent, why: "client flag; a warehouse with an ancillary office needs no mixed-use map"}
+      - {key: position.existing_assessment, app: ask, expect: absent, why: "client flag (Go run); new building"}
+      - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag bca_fire_referrals (Go run); referrals are the certifier's"}
+      - {key: position.residential_evidence, app: ask, expect: absent, why: "client flag (Go run); no residential part"}
+      - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag (Go run); single occupation"}
+      - {key: stage.b2_construction_approval, app: option, expect: absent, why: "after the a1..a3 boundary (Go run)"}
+      - {key: stage.b3_construction, app: option, expect: absent, why: "after the a1..a3 boundary (Go run)"}
+      - {key: stage.b4_occupation, app: option, expect: absent, why: "after the a1..a3 boundary (Go run)"}
   - discipline: consultant.certifier
     template: bca-certification
     built_in: "partial"
     source: "knowledge/rfp/bca-certification.yaml boundary"
-    must_include: ["B2 construction certificate assessment (staged: early works, building)", "Principal certifier services and mandatory inspections for a Class 5-9 building (verified: false)", {text: "Fire referrals: FRNSW consultation on performance solutions", key: position.fire_referrals}, "Fire safety schedule and final fire safety certificate", "Occupation certificate"]
+    must_include: ["B2 construction certificate assessment (staged: early works, building)", "Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)", {text: "Fire referrals: FRNSW consultation on performance solutions", key: position.fire_referrals}, "Fire safety schedule and final fire safety certificate", "Occupation certificate"]
     must_not_include: ["Package A advisory", {text: "Design", key: position.specialist_design}, {text: "Building supervision", key: position.supervision}, {text: "Staged occupation", key: position.staged_occupation}, {text: "Residential BASIX evidence", key: position.residential_evidence}]
     expect:
       stages_include: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
@@ -475,6 +484,11 @@ rfps:
       - {key: stage.b4_occupation, app: option, expect: include, why: "after the boundary"}
       - {key: position.statutory_functions, app: ask, expect: I, why: "client flag bca_certification"}
       - {key: position.fire_referrals, app: ask, expect: I, why: "client flag bca_fire_referrals"}
+      - {key: position.classification_map, app: ask, expect: absent, why: "client flag (Go run); no mixed-use map for an ancillary office"}
+      - {key: position.existing_assessment, app: ask, expect: absent, why: "client flag (Go run); new building"}
+      - {key: position.residential_evidence, app: ask, expect: absent, why: "client flag (Go run); no residential part"}
+      - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag (Go run); single occupation"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary (Go run); construction-phase advice is the BCA consultant's"}
   - discipline: consultant.fire_services
     template: fire-services
     built_in: "partial"
@@ -499,6 +513,7 @@ rfps:
       - {key: position.plant, app: ask, expect: I, why: "client flag fs_plant_interfaces"}
       - {key: position.declarations, app: ask, expect: I, why: "client flag fs_declarations"}
       - {key: position.controls, app: ask, expect: absent, why: "client flag fs_controls"}
+      - {key: position.upgrade, app: ask, expect: absent, why: "client flag fs_upgrade (Go run); new building"}
       - {key: position.hazards, app: X, expect: I, why: "the template excludes high storage to a specialist; ESFR design for high-piled storage is the core fire services scope on a warehouse"}
   - discipline: consultant.fire_engineer
     template: fire-engineering
@@ -519,6 +534,14 @@ rfps:
       - {key: stage.s7_verification, app: option, expect: include, why: "default option"}
       - {key: position.witnessing, app: O, expect: I, why: "follows s7"}
       - {key: position.occupants, app: I, expect: absent, why: "row on through the derived mixed_use flag (7b and 5); no mixed or vulnerable occupants"}
+      - {key: position.brief, app: ask, expect: I, why: "client flag fe_solutions (Go run)"}
+      - {key: position.fer, app: ask, expect: I, why: "client flag fe_solutions (Go run)"}
+      - {key: position.strategy_review, app: O, expect: I, why: "Go run; the strategy review is core when the FER schedules the large isolated building solutions"}
+      - {key: position.existing, app: ask, expect: absent, why: "client flag (Go run); new building"}
+      - {key: stage.s8_specialist, app: option, expect: absent, why: "default option (Go run)"}
+      - {key: stage.s8_staging, app: option, expect: absent, why: "default option (Go run)"}
+      - {key: stage.s9_advisory, app: option, expect: absent, why: "default option (Go run)"}
+      - {key: stage.s9_peer, app: option, expect: absent, why: "default option (Go run)"}
   - discipline: consultant.electrical
     template: electrical-services
     built_in: "partial"
@@ -539,6 +562,7 @@ rfps:
       - {key: position.dry_fire, app: ask, expect: absent, why: "client flag elec_dry_fire"}
       - {key: position.staging, app: ask, expect: absent, why: "client flag elec_staging"}
       - {key: position.declarations, app: ask, expect: absent, why: "client flag elec_declarations; no regulated design for 7b"}
+      - {key: stage.investigation, app: ask, expect: absent, why: "client flag elec_investigation (Go run); no existing services"}
   - discipline: consultant.hydraulic
     template: hydraulic-services
     built_in: "partial"
@@ -563,6 +587,8 @@ rfps:
       - {key: position.utility, app: O, expect: I, why: "client flag hyd_utility, if_unknown option"}
       - {key: position.civil, app: ask, expect: X, why: "client flag hyd_external"}
       - {key: position.declarations, app: ask, expect: absent, why: "client flag hyd_declarations"}
+      - {key: position.process, app: ask, expect: absent, why: "client flag (Go run); no process water"}
+      - {key: position.treatment, app: ask, expect: absent, why: "client flag (Go run); reticulated sewer"}
   - discipline: consultant.access
     template: access
     built_in: "partial"
@@ -597,11 +623,14 @@ rfps:
       sources: ["g6 option: on D&C the builder engages the Level 1 testing authority"]
     app_differs:
       - {key: stage.g2_field, app: ask, expect: include, why: "client flag geotech_intrusive"}
-      - {key: stage.g4_planning, app: ask, expect: include, why: "client flag geotech_planning"}
+      - {key: stage.g4_planning, app: option, expect: include, why: "client flag geotech_planning, if_unknown option (Go run)"}
       - {key: position.foundation, app: ask, expect: I, why: "client flag geotech_foundation"}
       - {key: position.civil_parameters, app: ask, expect: I, why: "client flag geotech_civil_parameters"}
       - {key: position.clearance, app: ask, expect: I, why: "client flag geotech_intrusive"}
       - {key: position.defects, app: O, expect: absent, why: "always O"}
+      - {key: position.ass, app: ask, expect: absent, why: "client flag (Go run); acid sulfate soils not mapped"}
+      - {key: position.asset_exposure, app: ask, expect: absent, why: "client flag (Go run); no authority asset"}
+      - {key: position.handback, app: ask, expect: absent, why: "client flag (Go run)"}
   - discipline: consultant.surveyor
     template: land-surveying
     built_in: "partial"
@@ -624,6 +653,8 @@ rfps:
       - {key: position.titling, app: O, expect: absent, why: "always O"}
       - {key: position.interior, app: O, expect: absent, why: "always O"}
       - {key: position.monitoring, app: O, expect: absent, why: "always O"}
+      - {key: position.buried, app: ask, expect: absent, why: "client flag (Go run)"}
+      - {key: position.sewer, app: ask, expect: absent, why: "client flag (Go run); no sewer main through the lot"}
   - discipline: consultant.landscape
     template: landscape-architecture
     built_in: "partial"
@@ -634,7 +665,7 @@ rfps:
       stages_include: [s1_inception, s2_concept, s3_approval, s4_developed, s6_dnc]
       stages_option: [s7_construction, s8_establishment]
       stages_absent: [s5_tender, s9_advisory]
-      positions: {design: I, irrigation_brief: I, trees: X, civil_structure: X, environment: X, podium: absent, irrigation_detail: absent, public: absent, special: absent, staging: absent}
+      positions: {design: I, irrigation_brief: I, construction: O, establishment: O, trees: X, civil_structure: X, environment: X, podium: absent, irrigation_detail: absent, public: absent, special: absent, staging: absent}
       blocking: []
     app_differs:
       - {key: stage.s2_concept, app: ask, expect: include, why: "client flag landscape_design"}
@@ -642,8 +673,13 @@ rfps:
       - {key: stage.s4_developed, app: option, expect: include, why: "after the s3_approval boundary"}
       - {key: stage.s6_dnc, app: option, expect: include, why: "after the boundary"}
       - {key: stage.s9_advisory, app: option, expect: absent, why: "default option"}
-      - {key: position.design, app: ask, expect: I, why: "follows the design stages"}
+      - {key: position.design, app: O, expect: I, why: "follows the design stages (Go run)"}
       - {key: position.irrigation_brief, app: ask, expect: I, why: "client flag landscape_irrigation_brief"}
+      - {key: position.irrigation_detail, app: ask, expect: absent, why: "client flag (Go run); the irrigation brief is enough for D&C"}
+      - {key: position.podium, app: ask, expect: absent, why: "client flag (Go run); no podium"}
+      - {key: position.public, app: ask, expect: absent, why: "client flag (Go run); crossings and street trees only"}
+      - {key: position.special, app: ask, expect: absent, why: "client flag (Go run)"}
+      - {key: position.staging, app: ask, expect: absent, why: "client flag (Go run); one stage"}
   - discipline: consultant.quantity_surveyor
     template: cost-planning
     built_in: "partial"
@@ -664,6 +700,9 @@ rfps:
       - {key: position.tender, app: O, expect: I, why: "follows s5"}
       - {key: position.total_budget, app: ask, expect: I, why: "client flag cost_total_budget"}
       - {key: position.contract_allowances, app: ask, expect: I, why: "client flag cost_contract_allowances"}
+      - {key: position.allocation, app: ask, expect: absent, why: "client flag (Go run); no mixed-use allocation"}
+      - {key: position.operator, app: ask, expect: absent, why: "client flag (Go run)"}
+      - {key: position.remediation, app: ask, expect: absent, why: "client flag (Go run); no contamination"}
   - discipline: consultant.waste
     template: waste-management
     built_in: "partial"
@@ -683,6 +722,10 @@ rfps:
       - {key: stage.s4_review, app: option, expect: include, why: "after the s3_cd boundary"}
       - {key: stage.s8_advisory, app: option, expect: absent, why: "default option"}
       - {key: position.shared, app: O, expect: absent, why: "row on through the derived mixed_use flag"}
+      - {key: position.operational, app: ask, expect: I, why: "client flag waste_operational (Go run)"}
+      - {key: position.cd, app: ask, expect: I, why: "client flag waste_cd (Go run)"}
+      - {key: position.collection, app: ask, expect: I, why: "client flag waste_operational (Go run)"}
+      - {key: position.rooms, app: ask, expect: I, why: "client flag waste_operational (Go run)"}
   - discipline: consultant.acoustic
     template: null
     built_in: "no"
@@ -708,7 +751,7 @@ triggers:
     removes:
       program: ["Novate the design consultants", "D&C subcontractor design of fire, electrical, hydraulic and mechanical services", "Principal's review of the contractor's design"]
     why: "The skeleton moves to sk.new-traditional-da and fr.novation drops out; services consultants document fully, so a mechanical consultant is now needed for the office and roof ventilation"
-    built_in: {program: "yes", rfps: "yes", procurement: "yes", cost_plan: "no"}
+    built_in: {program: "partial", rfps: "yes", procurement: "yes", cost_plan: "no"}
     source: "knowledge/program/skeletons.yaml sk.new-traditional-da"
   - id: cdc-industrial-code
     label: Complying development under the Industrial and Business Buildings Code
@@ -730,17 +773,17 @@ triggers:
     source: "knowledge/program/fragments.yaml fr.cdc-application"
   - id: large-isolated-building-over-limit
     label: Fire compartment over the large isolated building area or volume limit
-    evidence: ["The warehouse is a single fire compartment of 24,000 m2", "the volume exceeds 108,000 m3, so the building must be sprinklered with perimeter vehicular access (verified: false)", "a fire control room is provided next to the main entry"]
-    negation: ["Floor area 8,000 m2 and volume about 97,000 m3, within the C3D4 limits"]
+    evidence: ["The warehouse is a single fire compartment of 24,000 m2", "the fire compartment exceeds 18,000 m2, so smoke exhaust and a fire control centre are required", "a fire control centre is provided next to the main entry"]
+    negation: ["Floor area 8,000 m2; volume of the single fire compartment about 100,000 m3 (below the C3D4(1) limits of 18,000 m2 and 108,000 m3)"]
     profile: [det.floor_area, det.sprinklered]
     adds:
       procurement: [consultant.fire_engineer]
       work_items: [{system: fire-active.fire-control, action: new}, {system: fire-active.smoke-control, action: new}]
-      cost_plan: ["Fire engineer", "Fire control room", "Smoke-and-heat vents or smoke exhaust"]
+      cost_plan: ["Fire engineer", "Fire control centre", "Smoke exhaust"]
       program: ["Fire engineering brief consultation with FRNSW", "Fire engineering report"]
       rfps: [{discipline: consultant.fire_engineer, must_include: [{text: "Performance design brief", key: stage.s3_brief}, {text: "FER", key: stage.s4_report}]}, {discipline: consultant.civil, must_include: ["Perimeter vehicular access road design"]}]
       authority: ["FRNSW consultation on the performance solutions (verified: false)"]
-    why: "Thresholds and the fire control room and smoke hazard management triggers are verified: false; the fire engineer moves from usually to always"
+    why: "NCC 2022 Vol One, Parts C3, E1 and E2 on the ABCB site (verified: true). Above 18,000 m2 or 108,000 m3 a Class 5-9 building stays sprinklered with perimeter vehicular access (C3D4(2); C3D5(2): at least 6 m wide, furthest boundary within 18 m), as the base already is under C3D4(1)(b). The variant adds: a fire control centre only where the total floor area exceeds 18,000 m2 (E1D15(b), C4); smoke exhaust or smoke-and-heat vents where the area or volume exceeds the limits (E2D10(2)); smoke exhaust only where the ceiling is over 12 m. The base clear height is 12 m at the haunch, so the variant expects smoke exhaust. The fire engineer moves from usually to always"
     built_in: {procurement: "no", work_items: "no", program: "no", rfps: "partial", cost_plan: "partial"}
     source: "knowledge/tables/compartment_limits.yaml exclusions"
   - id: tilt-up-on-site
@@ -753,7 +796,7 @@ triggers:
       cost_plan: ["Crane hire and panel bracing"]
       program: ["Pour the floor slab as the casting bed", "Cast tilt-up panels", "Lift and brace tilt-up panels", "Remove panel bracing after the roof diaphragm is complete"]
       rfps: [{discipline: consultant.structural, must_include: [{text: "Tilt-up panel design, lifting inserts and bracing, or a delegated design schedule", key: position.delegated_design}]}]
-      authority: ["SafeWork NSW: tilt-up erection is high-risk construction work needing a SWMS (WHS Regulation 2017; verified: false)"]
+      authority: ["SafeWork NSW: tilt-up erection is high-risk construction work needing a SWMS (NSW WHS Regulation 2025, which replaced the 2017 Regulation (C4); clause verified: false)"]
     removes:
       program: ["Manufacture precast wall panels"]
     why: "The slab precedes the walls, the reverse of fr.slab-7b's attach after the roof; no tilt-up fragment exists"
@@ -851,7 +894,7 @@ triggers:
       cost_plan: ["Archaeologist", "Test excavation and salvage"]
       program: ["Aboriginal heritage due diligence", "Aboriginal community consultation", "AHIP application", "Salvage before bulk earthworks"]
       authority: ["Heritage NSW AHIP under the National Parks and Wildlife Act 1974 (verified: false)"]
-    built_in: {procurement: "yes", program: "no", cost_plan: "yes"}
+    built_in: {procurement: "yes", program: "no", cost_plan: "partial"}
     source: "knowledge/works/package_defaults.yaml complexity_additions[4]"
   - id: brownfield-demolition
     label: Existing factory on the lot to be demolished
@@ -915,17 +958,17 @@ gaps:
   - {area: scope, what: "fire-passive.compartments is a default item, so a large isolated building gets an empty Passive fire protection cost line", evidence: "knowledge/profile/scope_defaults.yaml classes[3]; knowledge/costs/elements.yaml code 06"}
   - {area: program, what: "No fragment for precast panels, hardstand and pavements, fire pumps and tanks, loading docks, 7b roof drainage, office interiors and office mechanical", evidence: "testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment"}
   - {area: program, what: "fr.slab-7b follows the roof; no tilt-up variant pours the slab first and casts the panels on it", evidence: "knowledge/program/fragments.yaml fr.slab-7b attach after fr.roof-7b"}
-  - {area: program, what: "Under sk.new-dc-da the construction certificate sits in approvals, before D&C procurement and the builder's documentation; CCs are not staged", evidence: "knowledge/program/skeletons.yaml sk.new-dc-da; knowledge/program/fragments.yaml fr.construction-certificate"}
+  - {area: program, what: "One CC fragment, in approvals before D&C procurement; no staged CCs. Expected: an early-works CC, then a building CC, both after award", evidence: "knowledge/program/skeletons.yaml sk.new-dc-da; knowledge/program/fragments.yaml fr.construction-certificate"}
   - {area: program, what: "fr.construction-docs-7b ends with 'Client sign-off for tender', which in D&C comes after award", evidence: "knowledge/program/fragments.yaml fr.construction-docs-7b"}
   - {area: program, what: "DNSP and services applications attach to the construction stage start; a kiosk substation needs them in design", evidence: "knowledge/program/fragments.yaml fr.utility-major, fr.services-connections-major attach after stage_start"}
-  - {area: program, what: "No hold point fires for 7b: the reinforcement interface needs a structure.concrete-tagged row, and the sprinkler and paving interfaces need ceilings and vehicle-access fragments (read, not run)", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour; knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings"}
-  - {area: program, what: "No rows for the fire strategy, FRNSW consultation, fire commissioning, the fire safety certificate, Section 73, WAE and OSD certification, notice of commencement, long service levy or the Class 5-9 mandatory inspections", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
+  - {area: program, what: "No hold point fires for 7b (confirmed by a Go run, default and expected scope): the reinforcement interface needs a structure.concrete-tagged row, the sprinkler interface needs an interiors.ceilings row (fr.ceilings-fitout needs refurb), and the frame interface needs structure.timber. fr.fire-stopping applies to class 5, so the fire-stopping hold point would fire (before fr.painting-7b) if fire-passive.penetrations were added", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour; knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings"}
+  - {area: program, what: "No rows for the fire strategy, FRNSW consultation, fire commissioning, the fire safety certificate, Section 73, WAE and OSD certification, notice of commencement, long service levy or the Class 5-9 critical-stage inspections (first footing, stormwater, final)", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
   - {area: program, what: "Survey, geotechnical and services investigation rows need investigate actions the default scope never gives", evidence: "knowledge/program/fragments.yaml fr.investigate-survey, fr.investigate-geotech, fr.investigate-services"}
   - {area: procurement, what: "Fire engineer, landscape, acoustic, ESD, QS and waste are never suggested for a warehouse DA", evidence: "knowledge/works/package_defaults.yaml baselines, scope_additions, complexity_additions"}
   - {area: procurement, what: "Mechanical consultant over-suggested for a D&C warehouse office", evidence: "knowledge/works/package_defaults.yaml baselines[1], scope_additions[2]"}
   - {area: procurement, what: "Contamination and flood package rules can never fire", evidence: "knowledge/works/package_defaults.yaml complexity_additions[2], complexity_additions[6]"}
   - {area: procurement, what: "D&C sets every consultant to novation option, including the planner, BCA consultant and certifier", evidence: "internal/procurement/packages.go DefaultNovation"}
-  - {area: rfp, what: "Two classes on one part derive flag.mixed_use yes, switching on mixed-use rows in architecture, access, fire engineering and waste for an ancillary office", evidence: "internal/rfp/drivers.go deriveFlags"}
+  - {area: rfp, what: "Two classes on one part derive flag.mixed_use yes, switching on mixed-use rows in architecture, access, fire engineering and waste for an ancillary office. flag.mixed_use is derived only (internal/rfp/homes.go FlagHome); a user cannot override it, and removing class 5 from det.ncc_class also removes the office interiors stage (Go run)", evidence: "internal/rfp/drivers.go deriveFlags; internal/rfp/homes.go FlagHome"}
   - {area: rfp, what: "Fire-services hazards row excludes high storage to a specialist, though ESFR design for high-piled storage is the core warehouse scope", evidence: "knowledge/rfp/fire-services.yaml hazards"}
   - {area: rfp, what: "Civil pavement_design is always an option; heavy-duty hardstand design is core", evidence: "knowledge/rfp/civil.yaml pavement_design"}
   - {area: rfp, what: "D&C boundaries end at dnc_tender, so post-novation, construction-phase and as-built stages are priced as options", evidence: "knowledge/rfp/architecture.yaml, knowledge/rfp/structural.yaml, knowledge/rfp/civil.yaml boundary"}
