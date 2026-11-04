@@ -85,6 +85,15 @@ type Package struct {
 	Kind       string `json:"kind"`
 	Discipline string `json:"discipline"`
 	ABN        string `json:"abn"`
+	// Firms proposed for or were appointed to the package.
+	Firms []Firm `json:"firms,omitempty"`
+}
+
+// Firm is one firm on a package: its name key (letters and digits without
+// company suffixes, as proposals.NameKey makes it) and ABN; either may be "".
+type Firm struct {
+	NameKey string `json:"name_key"`
+	ABN     string `json:"abn"`
 }
 
 // Line is a live posting cost plan line an invoice may be charged to.
@@ -166,14 +175,19 @@ func NewDraft(ev Evidence, ctx Context, users map[string]Decision) *Draft {
 	set(FieldKind, kindRule(ev.KindWords))
 	set(FieldNumber, displayNumber(ev, uniqueLabeled(ev.Numbers)))
 	set(FieldDate, uniqueLabeled(ev.Dates))
-	// No ABN rule: the only ABN printed can be the customer's, so the
-	// issuer's ABN is always Jev's pick (same fan-out, no extra call).
+	// A valid ABN is always Jev's pick: the only one printed can be the
+	// customer's (same fan-out, no extra call). An ABN that fails the
+	// checksum is not a choice Jev is offered, so a rule keeps it.
+	d.settleBadABN()
 	if e, g, t, ok := amountRule(ev.Amounts); ok {
 		set(FieldTotal, strconv.FormatInt(t, 10))
 		set(FieldGST, strconv.FormatInt(g, 10))
 		_ = e
+	} else {
+		d.settlePrinted()
 	}
 	d.settleSupplier()
+	d.settleSupplierByFirm()
 	d.settleLine()
 	for _, f := range JevFields {
 		if _, done := d.by[f]; done {
@@ -203,6 +217,184 @@ func (d *Draft) settleSupplier() {
 	if len(match) == 1 {
 		d.by[FieldSupplier] = Decision{Field: FieldSupplier, Value: match[0], Band: BandGreen, DecidedBy: DecidedByRule}
 	}
+}
+
+// settleBadABN keeps the issuer's ABN as printed when the page prints no
+// valid ABN and one value beside "ABN" fails the checksum, so the ledger
+// flags it as invalid. A value printed for the customer is not the issuer's.
+func (d *Draft) settleBadABN() {
+	if _, done := d.by[FieldABN]; done || len(d.ev.ABNs) > 0 {
+		return
+	}
+	v := ""
+	for _, c := range d.ev.BadABNs {
+		if anyCustomer(c.Labels) {
+			continue
+		}
+		if v != "" {
+			return // two different values: not this rule's call
+		}
+		v = c.Value
+	}
+	if v != "" {
+		d.by[FieldABN] = Decision{Field: FieldABN, Value: v, Band: BandAmber, DecidedBy: DecidedByRule}
+	}
+}
+
+func anyCustomer(labels []string) bool {
+	for _, l := range labels {
+		if customerText(l) {
+			return true
+		}
+	}
+	return false
+}
+
+// PrintedExGST marks an ex GST decision read from the page rather than
+// computed as total less GST. It is kept in the decision's question version,
+// which a rule decision otherwise leaves empty, so a recompute keeps it.
+const PrintedExGST = "printed"
+
+// settlePrinted reads an invoice whose printed figures don't add up: one
+// ex-GST amount, one GST amount that is 10 % of it, and one total that is
+// not their sum. Each is kept as printed so the ledger says the totals don't
+// add up, rather than deriving ex GST from the total and blaming the GST.
+func (d *Draft) settlePrinted() {
+	e, g, t, ok := printedAmounts(d.ev.Amounts)
+	if !ok {
+		return
+	}
+	for _, f := range []string{FieldExGST, FieldGST, FieldTotal} {
+		if _, user := d.by[f]; user {
+			return
+		}
+	}
+	d.by[FieldExGST] = Decision{Field: FieldExGST, Value: strconv.FormatInt(e, 10), Band: BandGreen, DecidedBy: DecidedByRule, QuestionVersion: PrintedExGST}
+	d.by[FieldGST] = Decision{Field: FieldGST, Value: strconv.FormatInt(g, 10), Band: BandGreen, DecidedBy: DecidedByRule}
+	d.by[FieldTotal] = Decision{Field: FieldTotal, Value: strconv.FormatInt(t, 10), Band: BandAmber, DecidedBy: DecidedByRule}
+}
+
+// printedAmounts finds the one labelled ex-GST amount, the one GST amount at
+// 10 % of it and the one total, when the total is not their sum.
+func printedAmounts(amounts []Candidate) (ex, gst, total int64, ok bool) {
+	pick := func(keep func(v int64, c Candidate) bool) (int64, bool) {
+		var got []int64
+		for _, c := range amounts {
+			v, err := strconv.ParseInt(c.Value, 10, 64)
+			if err == nil && v > 0 && keep(v, c) {
+				got = append(got, v)
+			}
+		}
+		return got0(got)
+	}
+	ex, ok = pick(func(_ int64, c Candidate) bool { return exish(c.Labels) && !totalish(c.Labels) })
+	if !ok {
+		return 0, 0, 0, false
+	}
+	gst, ok = pick(func(v int64, c Candidate) bool { return gstish(c.Labels) && !exish(c.Labels) && abs(GSTOf(ex)-v) <= 1 })
+	if !ok {
+		return 0, 0, 0, false
+	}
+	total, ok = pick(func(v int64, c Candidate) bool { return totalish(c.Labels) && v > ex && v != gst })
+	if !ok || abs(ex+gst-total) <= 1 {
+		return 0, 0, 0, false
+	}
+	return ex, gst, total, true
+}
+
+// got0 is the only value in vs (candidates are distinct by value).
+func got0(vs []int64) (int64, bool) {
+	if len(vs) != 1 {
+		return 0, false
+	}
+	return vs[0], true
+}
+
+// exish is a label naming an amount before GST.
+func exish(labels []string) bool {
+	for _, l := range labels {
+		if strings.Contains(l, "inc") {
+			continue
+		}
+		for _, w := range []string{"subtotal", "sub-total", "sub total", "ex gst", "ex-gst", "ex. gst", "excl", "excluding gst", "before gst"} {
+			if strings.Contains(l, w) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// settleSupplierByFirm links the invoice to the one package a firm on the
+// invoice proposed for or was appointed to: by an ABN printed on the page,
+// else by the firm's name above the customer's details. No Jev call.
+func (d *Draft) settleSupplierByFirm() {
+	if _, done := d.by[FieldSupplier]; done {
+		return
+	}
+	var abns []string
+	for _, c := range d.ev.ABNs {
+		if !anyCustomer(c.Labels) {
+			abns = append(abns, c.Value)
+		}
+	}
+	byABN := packagesWhere(d.ctx.Packages, func(p Package) bool { return firmABNIn(p, abns) })
+	if len(byABN) > 0 {
+		if len(byABN) == 1 {
+			// Another ABN on the page may be a customer's printed unlabelled.
+			band := BandGreen
+			if len(abns) > 1 {
+				band = BandAmber
+			}
+			d.by[FieldSupplier] = Decision{Field: FieldSupplier, Value: byABN[0], Band: band, DecidedBy: DecidedByRule}
+		}
+		return
+	}
+	byName := packagesWhere(d.ctx.Packages, func(p Package) bool { return firmNamedIn(p, d.ev.Heading) })
+	if len(byName) == 1 {
+		d.by[FieldSupplier] = Decision{Field: FieldSupplier, Value: byName[0], Band: BandAmber, DecidedBy: DecidedByRule}
+	}
+}
+
+func packagesWhere(pkgs []Package, keep func(Package) bool) []string {
+	var out []string
+	for _, p := range pkgs {
+		if keep(p) {
+			out = append(out, p.ID)
+		}
+	}
+	return out
+}
+
+func firmABNIn(p Package, abns []string) bool {
+	for _, a := range abns {
+		if a == p.ABN {
+			return true
+		}
+		for _, f := range p.Firms {
+			if f.ABN != "" && f.ABN == a {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// minFirmKey keeps a short key ("abc") from matching inside other words.
+const minFirmKey = 5
+
+func firmNamedIn(p Package, heading []string) bool {
+	for _, f := range p.Firms {
+		if len(f.NameKey) < minFirmKey {
+			continue
+		}
+		for _, h := range heading {
+			if strings.Contains(h, f.NameKey) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // settleLine uses the supplier's history, then its only live line. A Jev
@@ -550,13 +742,13 @@ func (d *Draft) Finish(uploaded time.Time) Reading {
 }
 
 // Resolve turns decisions into ledger values. Ex GST is total − GST unless
-// the user typed it; a credit note's amounts are negative whatever sign was
+// the user typed it or it was read as printed (PrintedExGST); a credit note's amounts are negative whatever sign was
 // printed. It is the one place ledger columns are computed, after a read and
 // after a user edit alike. by gains the derived ex GST decision.
 func Resolve(by map[string]Decision) Reading {
 	var r Reading
 	total, gst := by[FieldTotal], by[FieldGST]
-	if ex, ok := by[FieldExGST]; !ok || ex.DecidedBy != DecidedByUser {
+	if ex, ok := by[FieldExGST]; !ok || !keptExGST(ex) {
 		dec := Decision{Field: FieldExGST, Band: BandBlank, DecidedBy: DecidedByRule}
 		if t, ok1 := cents(total.Value); ok1 {
 			if g, ok2 := cents(gst.Value); ok2 {
@@ -601,6 +793,12 @@ func Resolve(by map[string]Decision) Reading {
 		r.Decisions = append(r.Decisions, by[f])
 	}
 	return r
+}
+
+// keptExGST is an ex GST the user typed or a rule read as printed: a
+// recompute from total and GST does not replace it.
+func keptExGST(ex Decision) bool {
+	return ex.DecidedBy == DecidedByUser || ex.DecidedBy == DecidedByRule && ex.QuestionVersion == PrintedExGST && ex.Value != ""
 }
 
 // displayNumber returns the number as printed, from its normalized value.
