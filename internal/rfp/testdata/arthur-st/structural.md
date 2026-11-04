@@ -10,7 +10,7 @@ Hale Capital intends to extend Warehouse (Class 7b) and Mezzanine office (Class 
 |  | Planning pathway: Development application (DA) |  |
 
 Conditions that apply: Work to an existing building; Parts with different NCC classes; Building over or next to a water authority asset; Existing on-site detention to keep or modify; Use generates heavy vehicle movements.
-Conditions not yet known: Heritage item or conservation area; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Transfer structures; Next to a rail corridor; Super-flat floor needed for the use.
+Conditions not yet known: Neighbouring or street trees affected; Works affect trees roots or canopy; Heritage item or conservation area; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Transfer structures; Next to a rail corridor; Super-flat floor needed for the use.
 
 ### 2. Scope of services
 
@@ -67,6 +67,7 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Construction issue | Included |  |
 |  | Design certification for the construction certificate | Included |  |
 |  | 1 round(s) of peer review or certifier comments | Included |  |
+|  | Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging, piers or suspended slab where needed), coordinated with the arborist's tree protection zone | Included |  |
 |  | Detailed design of post-tensioned slabs and piles | Included |  |
 |  | Shoring and piled retention design | Included |  |
 |  | Inspection schedule by element and hold point, with notification lead time and the basis for reinspection | Included |  |
@@ -140,6 +141,10 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 **Blocks issue — Gross floor area: sources disagree (2135 vs 2895)**: Set the one figure every firm prices from.
 
 **Unallocated: Ground compaction inspections**: Excluded from this RFP, but the project has no geotechnical engineer package. Add one or name who does it.
+
+**Neighbouring or street trees affected: not established**: Priced on a printed assumption until confirmed: Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging, piers or suspended slab where needed), coordinated with the arborist's tree protection zone.
+
+**Works affect trees roots or canopy: not established**: Priced on a printed assumption until confirmed: Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging, piers or suspended slab where needed), coordinated with the arborist's tree protection zone.
 
 **Basement or deep excavation: not established**: Priced on a printed assumption until confirmed: Shoring and piled retention design; Retention, underpinning, temporary works and monitoring interfaces: designer and reviewer named, permanent and temporary loads stated; Dilapidation surveys of adjoining structures.
 

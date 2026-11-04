@@ -221,6 +221,19 @@ positions:
   - {group: "Design basis and coordination", key: shared_model, label: "Revit model shared with the design team", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "structural#39-40"}]}
   - {group: "Design basis and coordination", key: safety_in_design, stage: [tender_traditional, dnc_tender, construction_documents], label: "Safety in design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#34"}]}
   - {group: "Design basis and coordination", key: value_management, stage: [design_development, concept_schematic], label: "Value management participation", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "structural#36"}]}
+  # Owner ruling R9 (testing/synthetic/reference/OWNER_RULINGS.md): an
+  # important tree's structural root zone must be avoided, which can change
+  # the footing design and where footings go. Root cutting is a root-zone
+  # matter, not pruning, so the pruning flag does not drive this row.
+  - key: root_zone_footings
+    stage: [construction_documents, post_novation, design_development]
+    group: Permanent structural design
+    label: "Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging, piers or suspended slab where needed), coordinated with the arborist's tree protection zone"
+    kind: technical
+    value: {value: I, when: [{flag: [arborist_tree_impacts]}, {flag: [arborist_offsite_trees]}], else: "-"}
+    if_unknown: option
+    assumption: "Price as an option: needed only where footings sit near a tree's structural root zone."
+    provenance: [{kind: client_decision, ref: "testing/synthetic/reference/OWNER_RULINGS.md R9", why: "Owner ruling: footings avoid an important tree's structural root zone, so the structural engineer designs for it."}]
   - key: delegated_design
     stage: [tender_traditional, dnc_tender, construction_documents]
     group: Permanent structural design

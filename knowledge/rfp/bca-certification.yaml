@@ -19,11 +19,16 @@ evaluation_note: "First assess role eligibility, independence, scope completenes
 allowances_note: "Price these quantities; identify insufficiency before engagement. Allowances never permit omission of required statutory duties. R1/R6 must state authorised assumed counts, unit rates and fee effects."
 thresholds:
   - {key: bca_commercial, kind: client_default, text: "90-day validity; advisory monthly invoices payable within 30 days; certification payment separately agreed against current requirements", source: "bca-certification#35,38,54: proposed client procurement policy", verified: false}
+  # Owner ruling R7 (testing/synthetic/reference/OWNER_RULINGS.md) and
+  # direction F10: the house list and the BASIX check at the OC. The clause
+  # was not read from the instrument, so both stay unverified.
+  - {key: critical_stage_inspections, kind: statutory, text: "Class 1 and 10 building work has mandatory critical-stage inspections by the principal certifier", source: "Environmental Planning and Assessment (Development Certification and Fire Safety) Regulation 2021 (NSW), critical stage inspections (section 61 as owner ruling R7 names it; not read from the instrument); list from owner ruling R7 and council guidance citing the 2000 Regulation. Not verified against the instrument.", verified: false}
+  - {key: basix_occupation, kind: statutory, text: "Before an occupation certificate issues for BASIX development, the certifier checks the BASIX certificate's commitments are fulfilled", source: "Environmental Planning and Assessment (Development Certification and Fire Safety) Regulation 2021 (NSW), occupation certificate requirements for BASIX development; clause not read from the instrument. Not verified against the instrument.", verified: false}
   - {key: bca_evaluation, kind: client_default, text: "Technical coverage/method 35%, team/independence 25%, program 15%, evaluated fee 25%; project insurance limits to be agreed", source: "bca-certification#43-44,55: proposed client procurement policy", verified: false}
 scale:
   text: "Scope follows the appointed role and agreed assessment extent, never a building-label service default."
   complex: []
-unsupported_pathways: [cdc, planning_permit, ref, modification, planning_proposal]
+unsupported_pathways: [planning_permit, ref, modification, planning_proposal]
 project_rows:
   - key: procurement
     replace: true
@@ -46,7 +51,7 @@ role:
   - key: independence
     text: "Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work."
     provenance: [{kind: evidence, ref: "bca-certification#24,38"}, {kind: client_decision, ref: "bca-certification#53", why: "Independently priced and appointed packages; neither role implies the other."}]
-stage_intro: "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A; CDC/other routes need separately confirmed scope."
+stage_intro: "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A. Under a CDC, B2 is the CDC determination in place of the CC; other routes need separately confirmed scope."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 boundary:
@@ -107,7 +112,7 @@ stages:
       - {key: scheduled_visit, text: "scheduled visit"}
       - {key: identify_independence_limits, text: "Identify independence limits on design advice."}
     fee_basis: fixed
-    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    when: [{flag: [bca_certification], pathway: [da, ssd, cdc]}]
     if_unknown: ask
     shown_when: Certification package selected
     provenance: [{kind: evidence, ref: "bca-certification#5,24,38"}]
@@ -122,6 +127,20 @@ stages:
     if_unknown: ask
     shown_when: Certification following consent
     provenance: [{kind: evidence, ref: "bca-certification#6-13"}, {kind: client_decision, ref: "bca-certification#57", why: "Only consent-followed-by-CC supported; no mechanical substitution of CDC."}]
+  # A CDC needs a principal certifier: the certifier determines the CDC in
+  # place of the CC, then acts as PC (synthetic finding F9). This is a
+  # written stage of its own, not the CC stage relabelled (ledger #57).
+  - key: b2_cdc
+    name: B2 Complying development certificate assessment
+    lines:
+      - {key: cdc_code_check, text: "Assess the plans and specialist evidence against the applicable complying development code and its development standards; report any standard not met"}
+      - {key: cdc_prerequisites, text: "Confirm the certificates, authority advice and notices the code requires before determination"}
+      - {key: cdc_determine, text: "Determine the CDC with its conditions, or refuse it with reasons; the CDC takes the place of a CC"}
+    fee_basis: fixed
+    when: [{flag: [bca_certification], pathway: [cdc]}]
+    if_unknown: ask
+    shown_when: Certification under a complying development certificate
+    provenance: [{kind: client_decision, ref: "testing/synthetic/FINDINGS.md F9; docs/plans/2026-11-04-synthetic-findings-fixes.md", why: "A CDC house needs a principal certifier; the CDC determination replaces the CC stage, and PC services, inspections and the OC stay."}]
   - key: b3_construction
     name: B3 Principal-certifier construction services
     lines:
@@ -129,9 +148,9 @@ stages:
       - {key: scheduled_inspections_photo, text: "scheduled inspections/photo reports, close-out and missed-inspection records"}
       - {key: witness_referral_tasks, text: "witness/referral tasks, occupation checklist and required compliance/complaint duties."}
     fee_basis: fixed
-    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    when: [{flag: [bca_certification], pathway: [da, ssd, cdc]}]
     if_unknown: ask
-    shown_when: Principal-certifier appointment following consent
+    shown_when: Principal-certifier appointment following consent or a CDC
     provenance: [{kind: evidence, ref: "bca-certification#14-18,25"}]
   - key: b4_occupation
     name: B4 Occupation assessment / handover
@@ -142,9 +161,9 @@ stages:
       - {key: certificates_reasons_outstanding, text: "Certificates or reasons/outstanding items, approved-document index, inspection records and fire safety schedule"}
       - {key: separate_from_practical, text: "separate from practical completion."}
     fee_basis: fixed
-    when: [{flag: [bca_certification], pathway: [da, ssd]}]
+    when: [{flag: [bca_certification], pathway: [da, ssd, cdc]}]
     if_unknown: ask
-    shown_when: Occupation assessment following consent
+    shown_when: Occupation assessment following consent or a CDC
     provenance: [{kind: evidence, ref: "bca-certification#19-24"}, {kind: seed, ref: "bca-certification#50"}, {kind: client_decision, ref: "bca-certification#56", why: "Complete handover records support project use and evidence trust."}]
 allowances:
   - {key: plan_sets, label: Plan assessments, text: "{n} plan sets per stage; R1 states revision baseline and coordinated review rounds", owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
@@ -163,6 +182,8 @@ positions:
   - {group: "Compliance advice and evidence", key: existing_assessment, stage: [a1_inception, b1_preliminary, a3_tender, b2_construction_approval], label: "Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed", kind: technical, value: {value: I, when: [{flag: [bca_existing_assessment]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#2,4"}, {kind: seed, ref: "bca-certification#48"}]}
   - {group: "Compliance advice and evidence", key: classification_map, stage: [a1_inception, b1_preliminary, a2_planning, b2_construction_approval], label: "Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries", kind: technical, value: {value: I, when: [{flag: [bca_classification_map]}], else: "-"}, if_unknown: ask, provenance: [{kind: seed, ref: "bca-certification#47,49"}]}
   - {group: "Statutory assessment and occupation", key: staged_occupation, stage: [b4_occupation, a4_construction], label: "Occupied/staged occupation boundaries and certificate packages; designers design temporary measures, contractor sets methods", kind: technical, value: {value: I, when: [{flag: [bca_staged_occupation]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#16,21"}, {kind: seed, ref: "bca-certification#48-50"}]}
+  - {group: "Statutory assessment and occupation", key: critical_stage_inspections, stage: [b3_construction], module: house, label: "Critical-stage inspections for Class 1 and 10 work, as the CC or CDC lists them: pre-commencement site inspection; after excavation and before footings are placed; before pouring in-situ reinforced concrete; before covering the frame; before covering wet-area waterproofing; before covering stormwater drainage connections; for a pool, before pouring its concrete and once its barrier is erected; final inspection before the OC", kind: technical, when: [{flag: [bca_certification]}], value: {value: I, when: [{stage_included: [b3_construction]}], else: O}, if_unknown: ask, provenance: [{kind: client_decision, ref: "testing/synthetic/reference/OWNER_RULINGS.md R7", why: "Owner ruling R7 lists the house inspections, with a pre-commencement inspection added; direction F10 puts them in the certifier RFP."}]}
+  - {group: "Statutory assessment and occupation", key: basix_occupation, stage: [b4_occupation], module: house, label: "BASIX commitments checked as fulfilled before the occupation certificate issues", kind: technical, when: [{flag: [bca_certification]}], value: {value: I, when: [{stage_included: [b4_occupation]}], else: O}, if_unknown: ask, provenance: [{kind: client_decision, ref: "docs/plans/2026-11-04-synthetic-findings-fixes.md F10", why: "Owner direction: the certifier RFP checks BASIX at the occupation certificate."}]}
   - {group: "Statutory assessment and occupation", key: performance_assessment, stage: [b2_construction_approval, a3_tender, a2_planning], label: "Performance-solution assessment; specialist author and assessor are different parties", kind: technical, value: O, provenance: [{kind: evidence, ref: "bca-certification#8-10,20,22"}, {kind: seed, ref: "bca-certification#51"}]}
   - {group: "Statutory assessment and occupation", key: fire_referrals, stage: [b3_construction, b4_occupation, a4_construction], label: "Fire-system/authority referrals and witnessing; contractor/specialists test and certify", kind: technical, value: {value: I, when: [{flag: [bca_fire_referrals]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-20"}, {kind: seed, ref: "bca-certification#50"}]}
   - {group: "Compliance advice and evidence", key: residential_evidence, stage: [b2_construction_approval, a2_planning, a3_tender], label: "Residential energy/design-evidence review (e.g. BASIX), only if required", kind: technical, value: {value: I, when: [{flag: [bca_residential_evidence]}], else: "-"}, if_unknown: ask, provenance: [{kind: evidence, ref: "bca-certification#20"}, {kind: seed, ref: "bca-certification#47"}]}

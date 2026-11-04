@@ -4185,6 +4185,20 @@
         "verified": false
       },
       {
+        "key": "critical_stage_inspections",
+        "kind": "statutory",
+        "text": "Class 1 and 10 building work has mandatory critical-stage inspections by the principal certifier",
+        "source": "Environmental Planning and Assessment (Development Certification and Fire Safety) Regulation 2021 (NSW), critical stage inspections (section 61 as owner ruling R7 names it; not read from the instrument); list from owner ruling R7 and council guidance citing the 2000 Regulation. Not verified against the instrument.",
+        "verified": false
+      },
+      {
+        "key": "basix_occupation",
+        "kind": "statutory",
+        "text": "Before an occupation certificate issues for BASIX development, the certifier checks the BASIX certificate's commitments are fulfilled",
+        "source": "Environmental Planning and Assessment (Development Certification and Fire Safety) Regulation 2021 (NSW), occupation certificate requirements for BASIX development; clause not read from the instrument. Not verified against the instrument.",
+        "verified": false
+      },
+      {
         "key": "bca_evaluation",
         "kind": "client_default",
         "text": "Technical coverage/method 35%, team/independence 25%, program 15%, evaluated fee 25%; project insurance limits to be agreed",
@@ -4197,7 +4211,6 @@
       "complex": []
     },
     "unsupported_pathways": [
-      "cdc",
       "planning_permit",
       "ref",
       "modification",
@@ -4288,7 +4301,7 @@
         ]
       }
     ],
-    "stage_intro": "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A; CDC/other routes need separately confirmed scope.",
+    "stage_intro": "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A. Under a CDC, B2 is the CDC determination in place of the CC; other routes need separately confirmed scope.",
     "boundary": [
       {
         "when": [
@@ -4432,7 +4445,8 @@
             ],
             "pathway": [
               "da",
-              "ssd"
+              "ssd",
+              "cdc"
             ]
           }
         ],
@@ -4476,6 +4490,31 @@
         ]
       },
       {
+        "key": "b2_cdc",
+        "name": "B2 Complying development certificate assessment",
+        "deliverable": "Assess the plans and specialist evidence against the applicable complying development code and its development standards; report any standard not met; Confirm the certificates, authority advice and notices the code requires before determination; Determine the CDC with its conditions, or refuse it with reasons; the CDC takes the place of a CC",
+        "fee_basis": "fixed",
+        "when": [
+          {
+            "flag": [
+              "bca_certification"
+            ],
+            "pathway": [
+              "cdc"
+            ]
+          }
+        ],
+        "if_unknown": "ask",
+        "shown_when": "Certification under a complying development certificate",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "testing/synthetic/FINDINGS.md F9; docs/plans/2026-11-04-synthetic-findings-fixes.md",
+            "why": "A CDC house needs a principal certifier; the CDC determination replaces the CC stage, and PC services, inspections and the OC stay."
+          }
+        ]
+      },
+      {
         "key": "b3_construction",
         "name": "B3 Principal-certifier construction services",
         "deliverable": "Appointment notices/inspection schedule, booking responsibilities and notice; scheduled inspections/photo reports, close-out and missed-inspection records; witness/referral tasks, occupation checklist and required compliance/complaint duties.",
@@ -4487,12 +4526,13 @@
             ],
             "pathway": [
               "da",
-              "ssd"
+              "ssd",
+              "cdc"
             ]
           }
         ],
         "if_unknown": "ask",
-        "shown_when": "Principal-certifier appointment following consent",
+        "shown_when": "Principal-certifier appointment following consent or a CDC",
         "provenance": [
           {
             "kind": "evidence",
@@ -4512,12 +4552,13 @@
             ],
             "pathway": [
               "da",
-              "ssd"
+              "ssd",
+              "cdc"
             ]
           }
         ],
         "if_unknown": "ask",
-        "shown_when": "Occupation assessment following consent",
+        "shown_when": "Occupation assessment following consent or a CDC",
         "provenance": [
           {
             "kind": "evidence",
@@ -4800,6 +4841,70 @@
           {
             "kind": "seed",
             "ref": "bca-certification#48-50"
+          }
+        ]
+      },
+      {
+        "key": "critical_stage_inspections",
+        "module": "house",
+        "label": "Critical-stage inspections for Class 1 and 10 work, as the CC or CDC lists them: pre-commencement site inspection; after excavation and before footings are placed; before pouring in-situ reinforced concrete; before covering the frame; before covering wet-area waterproofing; before covering stormwater drainage connections; for a pool, before pouring its concrete and once its barrier is erected; final inspection before the OC",
+        "kind": "technical",
+        "when": [
+          {
+            "flag": [
+              "bca_certification"
+            ]
+          }
+        ],
+        "value": {
+          "value": "I",
+          "when": [
+            {
+              "stage_included": [
+                "b3_construction"
+              ]
+            }
+          ],
+          "else": "O"
+        },
+        "if_unknown": "ask",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "testing/synthetic/reference/OWNER_RULINGS.md R7",
+            "why": "Owner ruling R7 lists the house inspections, with a pre-commencement inspection added; direction F10 puts them in the certifier RFP."
+          }
+        ]
+      },
+      {
+        "key": "basix_occupation",
+        "module": "house",
+        "label": "BASIX commitments checked as fulfilled before the occupation certificate issues",
+        "kind": "technical",
+        "when": [
+          {
+            "flag": [
+              "bca_certification"
+            ]
+          }
+        ],
+        "value": {
+          "value": "I",
+          "when": [
+            {
+              "stage_included": [
+                "b4_occupation"
+              ]
+            }
+          ],
+          "else": "O"
+        },
+        "if_unknown": "ask",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-04-synthetic-findings-fixes.md F10",
+            "why": "Owner direction: the certifier RFP checks BASIX at the occupation certificate."
           }
         ]
       },
@@ -20333,6 +20438,36 @@
           {
             "kind": "evidence",
             "ref": "structural#36"
+          }
+        ]
+      },
+      {
+        "key": "root_zone_footings",
+        "label": "Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging, piers or suspended slab where needed), coordinated with the arborist's tree protection zone",
+        "kind": "technical",
+        "value": {
+          "value": "I",
+          "when": [
+            {
+              "flag": [
+                "arborist_tree_impacts"
+              ]
+            },
+            {
+              "flag": [
+                "arborist_offsite_trees"
+              ]
+            }
+          ],
+          "else": "-"
+        },
+        "if_unknown": "option",
+        "assumption": "Price as an option: needed only where footings sit near a tree's structural root zone.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "testing/synthetic/reference/OWNER_RULINGS.md R9",
+            "why": "Owner ruling: footings avoid an important tree's structural root zone, so the structural engineer designs for it."
           }
         ]
       },
