@@ -1,7 +1,10 @@
 package httpapi
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,6 +22,8 @@ import (
 const (
 	maxProfileText = 200
 	maxProfileNote = 120
+	// maxDiscardedBody bounds what the Update route reads of a body it ignores.
+	maxDiscardedBody = 64 << 10
 )
 
 type optionJSON struct {
@@ -158,6 +163,12 @@ func requestProfileRead(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "origin rejected", http.StatusForbidden)
 		return
 	}
+	// The button sends a small body this route does not use. Read it now: a
+	// socket closed with request bytes unread sends a TCP reset, and on
+	// Windows the reset discards the reply the client has not read yet, so
+	// the ~200 KB profile arrived cut off (F1). Bounded, so a large body
+	// cannot hold the handler.
+	_, _ = io.Copy(io.Discard, io.LimitReader(r.Body, maxDiscardedBody))
 	session, ok := memberSession(w, r, deps)
 	if !ok {
 		return
@@ -215,7 +226,22 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
-	writeJSON(w, http.StatusOK, body)
+	// Encode before the status line: a failure is then a 500 the client
+	// can see, not a 200 with a short body, and Content-Length lets the
+	// client tell a complete profile from a cut one.
+	raw, err := json.Marshal(body)
+	if err != nil {
+		log.Printf("profile response org=%s project=%s: encode: %v", orgID, projectID, err)
+		http.Error(w, "read failed", http.StatusInternalServerError)
+		return
+	}
+	raw = append(raw, '\n')
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Length", strconv.Itoa(len(raw)))
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(raw); err != nil {
+		log.Printf("profile response org=%s project=%s: write: %v", orgID, projectID, err)
+	}
 }
 
 func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSON {
