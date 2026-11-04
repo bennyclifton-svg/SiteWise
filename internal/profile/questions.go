@@ -35,7 +35,9 @@ const QuestionVersion = "profile-11"
 // read-12: final profile-9 questions and programme candidates.
 // read-13: implied scope from the documents' own words, owner targets and
 // the builder's estimate (2026-10-27).
-const ReadRevision = "read-13"
+// read-14: the procurement route is also asked of passages that state it in
+// words, wherever they sit (F4, 2026-11-04).
+const ReadRevision = "read-14"
 
 // PassageInfo is what header routing reads about a passage.
 type PassageInfo struct {
@@ -69,7 +71,25 @@ func HeaderRouted(p PassageInfo) bool {
 	return p.Ordinal <= headerOrdinals || headerSection.MatchString(p.Section) || projectDescription.MatchString(p.Text)
 }
 
-const notStatedCriterion = "The passage does not state it."
+const procurementRoute = "hdr.cond.procurement_route"
+
+// routeCue is wording that states how the works are procured. ECI and D&C
+// are matched in capitals only, so ordinary words are not mistaken for them.
+var routeCue = regexp.MustCompile(`(?i)\b(?:tender(?:s|ed|ing|er|ers|erer|erers)?|lump[\s-]*sum|design\s*(?:and|&)\s*construct|early\s+contractor\s+involvement|managing\s+contractor|construction\s+management|novat(?:e|ed|es|ing|ion)|head\s+contract)\b|\b(?-i:ECI|D\s?&\s?C)\b`)
+
+// RouteCued reports whether a passage of a kind the profile reads states
+// the procurement route in words, wherever it sits. A brief often states the
+// route late, under a heading such as "How we want to build", which position
+// routing misses (F4). Only the route question is cue-routed: code routes,
+// Jev answers (https://docs.typesafe.ai/patterns/intent-routing).
+func RouteCued(p PassageInfo) bool {
+	if !headerKinds[p.Kind] && p.Kind != "" && p.Read != ReadYes {
+		return false
+	}
+	return routeCue.MatchString(p.Text)
+}
+
+const notStatedCriterion ="The passage does not state it."
 
 // LabelQuestions are the profile questions asked in the label fan-out, which
 // reads the passage before labels exist. They join that one request
@@ -149,6 +169,10 @@ func LabelQuestions(p PassageInfo, h Harvested, cat *knowledge.Catalog) (map[str
 				Criteria: candidateCriteria(label, h.Candidates[key])}
 			state[key] = h.Candidates[key]
 		}
+	}
+	if !HeaderRouted(p) && RouteCued(p) {
+		// The route rides this passage's one label fan-out: no extra call.
+		qs[procurementRoute] = headerQuestions(cat.Taxonomy())[procurementRoute]
 	}
 	if HeaderRouted(p) {
 		for id, q := range headerQuestions(cat.Taxonomy()) {

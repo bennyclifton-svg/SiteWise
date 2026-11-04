@@ -412,6 +412,10 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 			allTenders = allTenders && f.DocumentKind == kindTender
 		}
 	}
+	lead := ""
+	if !multi {
+		lead = lopsidedChoice(key, shape, order, byValue, cat)
+	}
 	switch {
 	case len(order) == 1 || multi:
 		sort.Strings(order)
@@ -434,15 +438,28 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		if shape == "action" && r.Value == "several" {
 			r.Note = "Needs mapping — several actions; choose or split the work"
 		}
+	case lead != "":
+		// One dissenting passage does not blank a choice the documents
+		// overwhelmingly agree on (F15). Amber, never green, and the dissent
+		// stays listed so the user sees it and can pick it.
+		r.Value, r.Band = lead, bandAmber
+		r.Assertion = assertionOf(byValue[lead], assertions, key, th)
+		for _, v := range bySupport(order, byValue) {
+			if v == lead {
+				continue
+			}
+			alt := Alternative{Value: v}
+			for _, f := range byValue[v] {
+				alt.Sources = append(alt.Sources, source(f))
+			}
+			r.Alternatives = append(r.Alternatives, alt)
+		}
+		if allTenders {
+			r.Tenders = "differ"
+		}
 	default:
 		r.Band = bandRed
-		sort.SliceStable(order, func(i, j int) bool {
-			si, sj := support(byValue[order[i]]), support(byValue[order[j]])
-			if si != sj {
-				return si > sj
-			}
-			return order[i] < order[j]
-		})
+		order = bySupport(order, byValue)
 		for _, v := range order {
 			alt := Alternative{Value: v}
 			for _, f := range byValue[v] {
@@ -455,6 +472,66 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		}
 	}
 	return r
+}
+
+// bySupport orders values by independent documents, then by value.
+func bySupport(order []string, byValue map[string][]Fact) []string {
+	sort.SliceStable(order, func(i, j int) bool {
+		si, sj := support(byValue[order[i]]), support(byValue[order[j]])
+		if si != sj {
+			return si > sj
+		}
+		return order[i] < order[j]
+	})
+	return order
+}
+
+// Owner rule (F15, 2026-11-04): a choice settles on its leading value when
+// that value has at least lopsidedMin sources and at least lopsidedRatio
+// times the sources of all other values combined. A source is one reading
+// passage, as listed in the row's alternatives. Anything closer is a conflict.
+const (
+	lopsidedMin   = 3
+	lopsidedRatio = 3
+)
+
+// lopsidedChoice returns the value a lopsided choice settles on, or "".
+// Only choice fields take part: the project header and enumerated or
+// true/false determinants and facts. Flags, scope presence, providers,
+// actions, signals, free-text details and numbers keep their own rules.
+func lopsidedChoice(key, shape string, order []string, byValue map[string][]Fact, cat *knowledge.Catalog) string {
+	if len(order) < 2 || !choiceField(key, shape, cat) {
+		return ""
+	}
+	lead, total := "", 0
+	for _, v := range order {
+		n := len(byValue[v])
+		total += n
+		if lead == "" || n > len(byValue[lead]) {
+			lead = v
+		}
+	}
+	n := len(byValue[lead])
+	if n < lopsidedMin || n < lopsidedRatio*(total-n) {
+		return ""
+	}
+	return lead
+}
+
+func choiceField(key, shape string, cat *knowledge.Catalog) bool {
+	var d knowledge.Determinant
+	var ok bool
+	switch {
+	case shape == "header":
+		return true
+	case shape != "determinant":
+		return false
+	case strings.HasPrefix(key, "det."):
+		d, ok = cat.Determinant(strings.TrimPrefix(key, "det."))
+	case strings.HasPrefix(key, "fact."):
+		d, ok = cat.ProjectFact(strings.TrimPrefix(key, "fact."))
+	}
+	return ok && d.Extraction != "pre_parsed" && (d.Value == "choice" || d.Value == "boolean")
 }
 
 // mergeExtendedText treats free-text values as one answer when, ignoring case
