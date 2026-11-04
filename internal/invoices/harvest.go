@@ -34,8 +34,12 @@ type Evidence struct {
 	Dates     []Candidate
 	Numbers   []Candidate
 	ABNs      []Candidate
-	// BadABNs are eleven-digit values printed next to "ABN" that fail the checksum.
-	BadABNs []string
+	// BadABNs are eleven-digit values printed next to "ABN" that fail the
+	// checksum, with the words printed around them.
+	BadABNs []Candidate
+	// Heading is the firm key (FirmKey) of each row above the customer's
+	// details: where an invoice names the firm that issued it.
+	Heading []string
 	// Currency is a foreign currency code seen on the invoice, or "".
 	Currency string
 	// KindWords are kind phrases printed in a short heading row or the filename.
@@ -149,8 +153,8 @@ var kindPhrases = []string{"adjustment note", "credit note", "credit memo", "tax
 func Harvest(filename string, text identity.Text) Evidence {
 	ev := Evidence{Filename: filename, TextLayer: text.TextLayer}
 	rows := rowsOf(text)
-	amounts, dates, numbers, abns := map[string]*Candidate{}, map[string]*Candidate{}, map[string]*Candidate{}, map[string]*Candidate{}
-	var aOrder, dOrder, nOrder, bOrder []string
+	amounts, dates, numbers, abns, bad := map[string]*Candidate{}, map[string]*Candidate{}, map[string]*Candidate{}, map[string]*Candidate{}, map[string]*Candidate{}
+	var aOrder, dOrder, nOrder, bOrder, badOrder []string
 	add := func(set map[string]*Candidate, order *[]string, value, display string, labels []string, labeled bool, page int) {
 		if c, ok := set[value]; ok {
 			c.Count++
@@ -189,7 +193,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 				near := strings.ToLower(c.text + " " + strings.Join(labels, " "))
 				if !ValidABN(digits) {
 					if strings.Contains(near, "abn") {
-						ev.BadABNs = append(ev.BadABNs, digits)
+						add(bad, &badOrder, digits, DisplayABN(digits), append([]string{strings.ToLower(c.text)}, labels...), true, r.page)
 					}
 					continue
 				}
@@ -210,6 +214,8 @@ func Harvest(filename string, text identity.Text) Evidence {
 	ev.Dates = collect(dates, dOrder)
 	ev.Numbers = collect(numbers, nOrder)
 	ev.ABNs = collect(abns, bOrder)
+	ev.BadABNs = collect(bad, badOrder)
+	ev.Heading = heading(rows)
 	for k := range kinds {
 		ev.KindWords = append(ev.KindWords, k)
 	}
@@ -419,7 +425,65 @@ func isInvoiceDateLabel(l string) bool {
 		return false
 	}
 	return strings.Contains(l, "invoice date") || strings.Contains(l, "date of invoice") || strings.Contains(l, "tax date") ||
-		strings.Contains(l, "issue date") || strings.Contains(l, "date issued") || strings.TrimRight(strings.TrimSpace(l), ":") == "date"
+		strings.Contains(l, "issue date") || strings.Contains(l, "date issued") || tableCell(l) == "date"
+}
+
+// headingRows bounds the heading: an issuer's name is printed near the top.
+const headingRows = 12
+
+// heading is the firm key of each row above the first row of customer
+// details ("To:", "Bill to", "Client"). A firm named there issued the invoice.
+func heading(rows []row) []string {
+	var out []string
+	for i, r := range rows {
+		if i >= headingRows || r.page > 1 || customerText(r.text()) {
+			break
+		}
+		if k := FirmKey(r.text()); k != "" {
+			out = append(out, k)
+		}
+	}
+	return out
+}
+
+// customerWords name the customer's details on an invoice.
+var customerWords = []string{"bill to", "billed to", "invoice to", "sold to", "ship to", "deliver to", "client", "customer", "attention", "attn"}
+
+// customerText is a row or label that names the customer.
+func customerText(s string) bool {
+	l := tableCell(strings.ToLower(s))
+	if strings.HasPrefix(l, "to:") || strings.HasPrefix(l, "to ") {
+		return true
+	}
+	for _, w := range customerWords {
+		if strings.Contains(l, w) {
+			return true
+		}
+	}
+	return false
+}
+
+// firmNoise must stay the same as proposals.NameKey's, so a key made here
+// meets the firm directory's name_key.
+var firmNoise = regexp.MustCompile(`(?i)\b(pty|ltd|limited|proprietary|the|group|australia|aust|nsw|vic|qld|consulting|consultants|services|and|&)\b`)
+
+// FirmKey is a firm name reduced for matching, as proposals.NameKey reduces
+// it: lower-case letters and digits without company suffixes.
+func FirmKey(name string) string {
+	s := firmNoise.ReplaceAllString(strings.ToLower(name), " ")
+	var b strings.Builder
+	for _, r := range s {
+		if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
+			b.WriteRune(r)
+		}
+	}
+	return clip(b.String(), 200)
+}
+
+// tableCell is a label without the colon or the Markdown table bars and
+// emphasis around it: "| Date |" and "**Date:**" are both "date".
+func tableCell(l string) string {
+	return strings.Trim(l, " 	|:*#")
 }
 
 func anyInvoiceDateLabel(labels []string) bool {

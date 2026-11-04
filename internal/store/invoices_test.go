@@ -308,6 +308,45 @@ func TestConfirmedSupplierTeachesTheABNRule(t *testing.T) {
 	}
 }
 
+// A firm whose proposal is on a package comes with the package, so an
+// invoice from it can find the package by ABN or name (finding F8). An
+// unsuccessful firm does not.
+func TestInvoiceContextCarriesProposingFirms(t *testing.T) {
+	ctx := context.Background()
+	s, pkg, _, _ := ledgerFixture(t)
+	pool := rawPool(t)
+	for _, q := range []struct {
+		sql  string
+		args []any
+	}{
+		{`INSERT INTO firms(org_id,id,name,name_key,abn,status) VALUES($1,'77777777-7777-4777-8777-777777777771','Karrak Consulting Engineers Pty Ltd','karrakengineers','77650369205','draft')`, []any{orgA}},
+		{`INSERT INTO firms(org_id,id,name,name_key,status) VALUES($1,'77777777-7777-4777-8777-777777777772','Halyard Remedial','halyardremedial','draft')`, []any{orgA}},
+		{`INSERT INTO submissions(org_id,id,project_id,package_id,firm_id,filename,status,received_on) VALUES($1,'77777777-7777-4777-8777-777777777773',$2,$3,'77777777-7777-4777-8777-777777777771','fee.md','received','2026-10-10')`, []any{orgA, projectA, pkg}},
+		{`INSERT INTO submissions(org_id,id,project_id,package_id,firm_id,filename,status,received_on) VALUES($1,'77777777-7777-4777-8777-777777777774',$2,$3,'77777777-7777-4777-8777-777777777772','fee2.md','unsuccessful','2026-10-10')`, []any{orgA, projectA, pkg}},
+	} {
+		if _, err := pool.Exec(ctx, q.sql, q.args...); err != nil {
+			t.Fatal(q.sql, err)
+		}
+	}
+	inv, err := s.CreateInvoice(ctx, orgA, projectA, upload("firm"), invoiceNow)
+	if err != nil {
+		t.Fatal(err)
+	}
+	in, err := s.InvoiceForReading(ctx, orgA, inv.ID, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range in.Context.Packages {
+		want := 0
+		if p.ID == pkg {
+			want = 1
+		}
+		if len(p.Firms) != want || want == 1 && (p.Firms[0].NameKey != "karrakengineers" || p.Firms[0].ABN != "77650369205") {
+			t.Fatalf("package %s firms %+v", p.Title, p.Firms)
+		}
+	}
+}
+
 func TestInvoiceOrgIsolation(t *testing.T) {
 	ctx := context.Background()
 	s, pkg, line, _ := ledgerFixture(t)

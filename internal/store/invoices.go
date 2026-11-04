@@ -238,6 +238,36 @@ FROM invoice_decisions WHERE org_id=$1::uuid AND invoice_id = ANY($2::uuid[])`, 
 	return out, rows.Err()
 }
 
+// packageFirms adds to each package the firms whose proposal or tender is on
+// it and still in play, so an invoice from one of them finds its package by
+// ABN or by name without asking Jev.
+func packageFirms(ctx context.Context, q querier, orgID, projectID string, pkgs []invoices.Package) error {
+	at := map[string]int{}
+	for i, p := range pkgs {
+		at[p.ID] = i
+	}
+	rows, err := q.Query(ctx, `
+SELECT DISTINCT s.package_id::text, f.name_key, COALESCE(f.abn,'')
+FROM submissions s JOIN firms f ON f.org_id=s.org_id AND f.id=s.firm_id
+WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id IS NOT NULL
+  AND s.status NOT IN ('unsuccessful','withdrawn','not_proposal')`, orgID, projectID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var pkg string
+		var f invoices.Firm
+		if err := rows.Scan(&pkg, &f.NameKey, &f.ABN); err != nil {
+			return err
+		}
+		if i, ok := at[pkg]; ok {
+			pkgs[i].Firms = append(pkgs[i].Firms, f)
+		}
+	}
+	return rows.Err()
+}
+
 // invoiceContext is the project's live packages and posting cost lines, the
 // lines' budgets and the plan's tax basis, read from the current draft.
 func (s *Store) invoiceContext(ctx context.Context, orgID, projectID string) (invoices.Context, invoicePlan, error) {
@@ -275,6 +305,9 @@ ORDER BY title, id`, orgID, projectID)
 	}
 	rows.Close()
 	if err := rows.Err(); err != nil {
+		return pc, plan, err
+	}
+	if err := packageFirms(ctx, tx, orgID, projectID, pc.Packages); err != nil {
 		return pc, plan, err
 	}
 	cp, err := readCostPlan(ctx, tx, orgID, projectID, "")
