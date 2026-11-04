@@ -71,7 +71,7 @@
         "contact": "Sinead Okoro",
         "email": "sinead.halyard@example.com",
         "phone": "02 9587 6620",
-        "address": "Level 2, 7 Railway Parade, Kogarah NSW 2217"
+        "address": "Level 2, 7 Gray Street, Kogarah NSW 2217"
       },
       "stated_total_cents": 9000000,
       "gst_basis": "inc",
@@ -108,6 +108,12 @@
           "kind": "reimbursable",
           "state": "included",
           "amount_cents": null
+        },
+        {
+          "label": "Additional meetings and services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 22000
         }
       ]
     },

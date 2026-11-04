@@ -677,7 +677,7 @@
         }
       ],
       "traps": [],
-      "content": "Revision B of the ground floor plan: laundry moved and the terrace steps relocated; revision note says 'Amended for DA lodgement following council's pre-DA heritage advice'."
+      "content": "Revision B of the ground floor plan: laundry moved and the terrace steps relocated; revision note says 'Amended for DA lodgement following council's pre-DA advice (planning and heritage): laundry moved; terrace steps relocated'."
     },
     {
       "id": "d16",
@@ -855,7 +855,7 @@
         }
       ],
       "traps": [],
-      "content": "Heritage consultant's fee proposal: heritage impact statement for the DA, assessing the addition against the conservation area controls, $3,800; response to council's heritage referral during assessment $900; total $4,700 ex GST."
+      "content": "Heritage consultant's fee proposal: heritage impact statement for the DA, assessing the addition against the conservation area controls, $3,800; response to council's heritage referral during assessment $900; total $4,700 ex GST; further work at $185 per hour."
     },
     {
       "id": "d21",
@@ -875,7 +875,7 @@
         }
       ],
       "traps": [],
-      "content": "Town planner's fee proposal: pre-DA meeting and planning advice on the conservation area controls $1,800; statement of environmental effects $3,200; planning response during assessment $1,500; total $6,500 ex GST. Lodgement on the NSW Planning Portal stays with the architect."
+      "content": "Town planner's fee proposal: pre-DA meeting and planning advice on the conservation area controls $1,800; statement of environmental effects $3,200; planning response during assessment $1,500; total $6,500 ex GST; additional work at $195 per hour. Lodgement on the NSW Planning Portal stays with the architect."
     },
     {
       "id": "d22",
@@ -921,7 +921,7 @@
     {
       "doc": "d15",
       "change": "changed",
-      "why": "Rev B revision note cites council's pre-DA heritage advice"
+      "why": "Rev B revision note cites council's pre-DA advice (planning and heritage)"
     },
     {
       "doc": "d16",

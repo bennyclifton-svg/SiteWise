@@ -26,11 +26,11 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 | T02 | Apartments | ok | ok | ok | gate | — | — | — |
 | T03 | Office fit-out | ok | ok | fix | — | — | — | — |
 | T04 | Warehouse | ok | ok | fix | — | — | — | — |
-| T05 | House alterations and additions (pilot) | ok | ok | ok | ok | run | — | — |
+| T05 | House alterations and additions (pilot) | ok | ok | ok | ok | ok | run | run |
 | T06 | Sprinkler pump and tank upgrade | ok | ok | fix | — | — | — | — |
 | T07 | Mechanical plant upgrade | ok | ok | fix | — | — | — | — |
 | T08 | Roof remediation | ok | ok | ok | gate | — | — | — |
-| T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | run | — | — |
+| T09 | Waterproofing remediation (pilot) | ok | ok | ok | ok | ok | run | run |
 | T10 | Knock-down rebuild | ok | ok | ok | gate | — | — | — |
 | T11 | Dual occupancy or townhouses | ok | ok | ok | gate | — | — | — |
 | T12 | Granny flat | ok | ok | ok | gate | — | — | — |
@@ -363,3 +363,5 @@ rework (see that type's REVIEW.md), `gate` waiting for the owner.
 - 2026-11-04: ST09-base rendered: 16 documents. The lint failed twice because two procurement-route `says` began with a placement note ("Under '## …': ") that no document prints. The orchestrator removed the prefix in all three ST09 manifests; lint and checker ok. Render review launched.
 - 2026-11-04: ST05-base render review: FIX, 7 findings; every keyed value matches expected/. The d16 SEE's reason for a DA (a Housing Code rear-setback failure) is not credible on a 45.7 m lot, so it now says the owners chose a DA. The d01 vacant-during-works line is ambiguous. Departures 1 and 2 accepted. The writer is applying the fixes, keeping the three ST05 manifests consistent.
 - 2026-11-04: ST05-base render fixes in: 7 applied, part of finding 4 disputed ("no other buildings on the lot" matches no multiple-buildings pattern; it now says "We are not planning multiple buildings: just the one house"). The matching manifest wording is updated in all three ST05 scenarios, and the T05 shape's move-out phrasing follows d01 ("for the whole of the works"). Lint and checker ok. The ST05-base corpus is final. Both T05 variant renders launched.
+- 2026-11-04: ST09-base render review: FIX, 7 findings. Every planned trap is placed and no unplanned trap word appears. The d13 tender conditions say "a rise of more than three storeys", a second storey number beside the keyed 6. fees.json leaves out Halyard's $220/h ex GST rate. Smaller: a duplicate balcony in the leak log, a brief deadline before the proposals, an overflow clause, the street name, and key-shaped wording. The writer is applying the fixes.
+- 2026-11-04: ST09-base render fixes in: 7 applied. d13 now says the rise is 6 storeys, and Halyard's $220/h ex GST rate and new address are in all three fees.json. Halyard moved to 7 Gray Street to avoid sharing a street with Northgate. Lint and checker ok. The ST09-base corpus is final. ST05-first-floor-addition rendered (19 documents, 10 changed, 140 + 55 = 195 m2 throughout) and ST05-heritage-conservation-area rendered (22; d20 to d22 added); both lint ok, both in render review. The ST09 variant renders are running. Live run of ST05-base and ST09-base started on :8091 into `runs/20261104-t05-t09/`.

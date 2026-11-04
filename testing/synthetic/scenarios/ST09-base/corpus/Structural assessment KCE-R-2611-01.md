@@ -18,8 +18,8 @@ waterproofing is renewed. We reviewed the 2008 structural drawings held by the s
 
 ## The structure
 
-The building was constructed in 2008. The balconies are cantilevered reinforced concrete slabs of the
-existing building, cantilevering about 2.4 m from the edge of each floor plate. The building has no
+The building was constructed in 2008. The balconies are reinforced concrete slabs of the existing
+building, cantilevering about 2.4 m from the edge of each floor plate. The building has no
 transfer slabs or transfer beams; the balcony slabs cantilever from the floor plates.
 
 ## Observations
@@ -51,8 +51,8 @@ polymer-modified repair mortar. Each repair is to be inspected by us before it i
 
 ## Other matters
 
-No excavation is proposed next to adjoining boundaries or neighbouring structures. The works include
-no basement or excavation.
+The works are confined to the balconies; no excavation, basement or ground works are involved, and
+nothing is done near the adjoining boundaries or neighbouring structures.
 
 Lachlan Pyne
 Principal Engineer, Karrak Consulting Engineers Pty Ltd

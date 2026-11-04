@@ -1,5 +1,5 @@
 HALYARD REMEDIAL CONSULTANTS PTY LTD
-Level 2, 7 Railway Parade, Kogarah NSW 2217
+Level 2, 7 Gray Street, Kogarah NSW 2217
 ABN 41 434 467 555 | 02 9587 6620 | sinead.halyard@example.com
 
 # Fee proposal: remedial consultancy services

@@ -31,7 +31,7 @@ level and on all elevations, and short-term sealant repairs over the last three 
 it. The committee has resolved to fix the cause rather than keep patching.
 
 The owners corporation seeks a remedial building consultant to investigate and rectify the leaking
-balcony waterproofing of the existing building: remediation, not new work.
+balcony waterproofing of the existing building.
 
 ## Scope of services
 
@@ -63,7 +63,7 @@ approve the contract and the levy to fund it at a general meeting before any con
 
 ## Submission
 
-Please submit a fee proposal by 20 February 2026 to Rhiannon Teale at
+Please submit a fee proposal by 27 February 2026 to Rhiannon Teale at
 rhiannon.teale.northgate@example.com. Your proposal should:
 
 - price each part of the scope of services separately, and state whether fees include GST;

@@ -41,17 +41,17 @@ balcony was reported more than once, only the first report is listed.
 | 14/03/2023 | 502 | Water at the door sill after heavy rain |
 | 02/05/2023 | 403 | Drips from the soffit of balcony 503 onto the tiles of balcony 403 |
 | 19/06/2023 | 601 | Water at the door sill; sealant renewed 07/2023 |
-| 08/08/2023 | 206 | Water running down the slab edge onto balcony 106 |
+| 08/08/2023 | 106 | Water running down the slab edge from balcony 206 |
 | 27/09/2023 | 305 | Water at the door sill |
 | 11/11/2023 | 104 | Drips from the soffit of balcony 204 |
 | 30/01/2024 | 607 | Water at the door sill and lifting tiles near the outlet |
-| 21/02/2024 | 303 | Unit 203 reported water in the bathroom below balcony 303 in 2024; the plumber traced it to Unit 203's own shower, so it is not a balcony leak. |
+| 21/02/2024 | 303 | Unit 203 reported water in the bathroom below balcony 303; the plumber traced it to Unit 203's own shower, so it is not a balcony leak. |
 | 15/04/2024 | 402 | Drips from the soffit of balcony 502 |
 | 03/06/2024 | 507 | Water at the door sill |
 | 22/07/2024 | 101 | Efflorescence and drips at the slab edge from balcony 201 |
 | 09/09/2024 | 304 | Water at the door sill |
 | 28/10/2024 | 605 | Water standing near the outlet for days after rain |
-| 16/12/2024 | 206 | Further drips from the slab edge onto balcony 106 |
+| 16/12/2024 | 306 | Water at the door sill |
 | 05/02/2025 | 404 | Unit 404 reports water ponding against the bedroom sliding door sill on the balcony side |
 | 24/03/2025 | 302 | Drips from the soffit of balcony 402 |
 | 12/05/2025 | 506 | Water at the door sill |

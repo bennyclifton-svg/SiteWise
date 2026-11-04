@@ -23,11 +23,11 @@ and 605) and opened up the same four balconies on 24 and 25 March 2026.
 ## Building description
 
 Kurrajong Apartments is a 6-storey residential flat building of 42 apartments, with seven apartments
-on each level. The building is 6 storeys above ground.
+on each of its 6 storeys.
 
 - NCC building classification: Class 2
 - The building has a rise in storeys of 6
-- The works are to an existing building
+- Existing building; these are remedial works.
 - The building was constructed in 2008
 
 The frame and floors are reinforced concrete. Each balcony is a cantilevered slab finished with

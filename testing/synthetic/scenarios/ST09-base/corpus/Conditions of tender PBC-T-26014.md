@@ -49,8 +49,7 @@ Tenderers must hold:
 The contractor holds contract works insurance for the contract sum, public liability of at least
 $20 million and workers compensation.
 
-HBCF cover is not required because the building is a multi-storey building with a rise of more than
-three storeys.
+HBCF cover is not required: the multi-storey building exemption applies (rise in storeys of 6).
 
 ## Site inspection
 

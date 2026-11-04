@@ -104,6 +104,72 @@ not make a project mixed use. (RFP triage A3.)
 **F12. The structural RFP has no row for footings that avoid a tree's
 structural root zone** (trees variant, owner ruling R9). (RFP triage A4.)
 
+### From run `runs/20261104-t05-t09` (T05 and T09; app at `c56c9de`), 4 November 2026
+
+Repeats on the new types: F1 (Update cut off in the first wave), F2,
+F3, F4 (route blank in both T05 runs, so the program opens on
+`sk.generic`), F7 (the s10.7 certificate is filed as town planner in T05
+and T09) and F8 (no invoice supplier in all six invoices).
+
+F2 is wider than the council area. The site address has the same
+trailing-word problem: "41 Tallowwood Avenue Date", "41 Tallowwood Avenue.
+It" and "41 Tallowwood Avenue. We" sit beside the right address, so
+`site.address` becomes a conflict (T05 base and first floor).
+
+**F13. A wrong ABN on an invoice can never be flagged.** The T09 structural
+invoice prints `ABN | 77 650 369 250`, which fails the checksum. The app
+stored no ABN and raised no `abn_invalid`. Cause (traced):
+`internal/invoices/harvest.go` puts a checksum-failing ABN into
+`ev.BadABNs` and skips it as a candidate; nothing reads `BadABNs`. The
+issuer ABN is only ever Jev's pick among valid candidates, so the
+`abn_invalid` check in `ledger.go` (`inv.ABN != "" && !ValidABN`) cannot
+fire on a read invoice, only on a hand-typed one. Suggested fix (lane A):
+when the only ABN printed beside "ABN" fails the checksum, store it and
+let the ledger flag it. The same invoice's date ("| Date | 05/05/2026 |")
+was also left blank, Jev confidence 1.0.
+
+**F14. Stated fee total missed in two common layouts** (all three T09
+proposals; traced offline with `Harvest` and `NewDraft` on the corpus).
+- A total row whose words sit in the second column, with the first cell
+  empty (`| | Total $17,000 excluding GST | $17,000 |`, under a
+  Stage/Item column), is not marked `Total`. With no total candidate, the
+  stated-total question is never asked, so the field is blank, not
+  merely unconfirmed. T05's `| | **Total** | **$6,800** |` worked; the
+  difference is the amount inside the label cell.
+- A total stated only inc GST ("Total $99,000 including GST") is dropped
+  by `settleTotal` (`a.GST != "inc"`), and nothing converts it to ex GST,
+  so it is blank too. This is the other side of F3 (where an inc figure
+  was kept as if ex).
+`internal/proposals/read.go` `settleTotal` and the stated-total question
+guard (`len(totals) > 0`).
+
+**F15. One dissenting passage blanks a value, however lopsided the
+evidence.** `hdr.work_type` had 42 passages for `extend` and 5 for `refurb`
+(the internal alterations) and was left blank (red), in T05 base and first
+floor. Same pattern in T09: `fact.contract_basis` 13 `lump_sum` to 3
+`schedule_of_rates` (the planned "schedule of rates" trap), and
+`det.existing_building` 2 to 1 (the 1 is "The existing building stormwater
+system … is not altered", read as "not an existing building"). Worst case, on the very value a
+variant tests: in T05 heritage, `det.heritage_status` had 14 passages for
+`conservation_area` (the s10.7 certificate, SEE, HIS, design statement,
+three fee proposals) and 1 for `none` ("… 1958 house. None of it has
+heritage significance", about the rear lean-to), and was left blank.
+Knock-on in
+T05: with work type blank and the route blank (F4), the program opens on
+`sk.generic`, not `sk.extend-traditional`. Whether a strong majority
+should settle a choice, or alterations plus additions should count as
+`extend`, is an owner call (lane A: profile trust).
+
+**F16. Rise in storeys is read only from a BCA or NCC report.** The T09
+defect report says "The building has a rise in storeys of 6"; the field
+(`stated_in: BCA or NCC compliance report`) stayed blank with no
+sources. Remediation jobs rarely have a BCA report, so the class 2 DBP
+and HBCF rules that hang off storeys get nothing.
+
+Minor: `proj.client` read as "The Owners - Strata Plan No. 912345, c/-
+Rhiannon Teale, Northgate Strata Management" (the care-of party is kept).
+The predicted cut at " - " did not happen.
+
 ## Known gaps confirmed (already named in the shape)
 
 - Electrical, hydraulic and mechanical consultants are suggested for a

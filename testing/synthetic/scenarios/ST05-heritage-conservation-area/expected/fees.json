@@ -282,6 +282,12 @@
           "kind": "stage",
           "state": "priced",
           "amount_cents": 90000
+        },
+        {
+          "label": "Additional work: hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 18500
         }
       ]
     },
@@ -318,6 +324,12 @@
           "kind": "stage",
           "state": "priced",
           "amount_cents": 150000
+        },
+        {
+          "label": "Additional work: hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 19500
         }
       ]
     }

@@ -68,7 +68,7 @@
         },
         {
           "key": "hdr.work_type",
-          "says": "a smaller rear addition (new kitchen, living and dining) and a first-floor addition over the rear of the existing house, plus alterations to the existing house"
+          "says": "a modest rear addition (new kitchen, living and dining) and a first-floor addition over the rear of the existing house, plus alterations to the existing house"
         },
         {
           "key": "det.existing_building",
@@ -403,7 +403,7 @@
           "expect": "flag.osd_required and flag.osd_existing both stay no"
         }
       ],
-      "content": "Civil engineer's fee proposal for the changed catchment: 'The rear addition adds about 30 m² of new roof and the first floor replaces about 35 m² of the existing rear roof; all roof water is drained to the existing system', plus the new paved terrace. Stages: stormwater concept plan for the DA $2,420 inc GST; detailed stormwater design and erosion and sediment control plan for the CC $3,520 inc GST; works-as-executed review and stormwater certificate for the OC $1,320 inc GST. Every figure is GST-inclusive. Exclusions: CCTV of the retained drainage is at cost if needed."
+      "content": "Civil engineer's fee proposal for the changed catchment: 'The rear addition has a new low-pitched roof, and the first floor replaces part of the existing rear roof. Roof water from both, and from the new paved terrace at the back of the house, is drained to the existing system.' Stages: stormwater concept plan for the DA $2,420 inc GST; detailed stormwater design and erosion and sediment control plan for the CC $3,520 inc GST; works-as-executed review and stormwater certificate for the OC $1,320 inc GST. Every figure is GST-inclusive. Exclusions: CCTV of the retained drainage is at cost if needed."
     },
     {
       "id": "d08",
@@ -852,7 +852,7 @@
     {
       "doc": "d07",
       "change": "changed",
-      "why": "Civil proposal's roof-area sentence describes 30 m2 of new rear roof plus the first-floor roof in place of 55 m2 of new roof"
+      "why": "Civil proposal's roof-area sentence describes the new rear roof and the first-floor roof, without areas, in place of 55 m2 of new roof"
     },
     {
       "doc": "d08",

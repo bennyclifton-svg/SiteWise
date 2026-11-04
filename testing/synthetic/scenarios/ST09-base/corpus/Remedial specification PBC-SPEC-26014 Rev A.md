@@ -47,10 +47,9 @@ Read with drawing RW-101 Rev B and the Karrak Consulting Engineers balustrade fi
 ## Outlets and overflows
 
 1. Fit new outlets with puddle flanges and clamping rings, connected to the existing downpipes.
-2. Install one new overflow per balcony, discharging clear of the balcony edge and connected to the
-   existing downpipes as shown on RW-101.
-3. There is no existing on-site detention system; balcony outlets connect to the existing downpipes.
-   No sewer or water main is affected.
+2. Install one new overflow per balcony through the balustrade line, discharging clear of the slab
+   edge, as shown on RW-101 Detail 6.
+3. The existing building stormwater system, which has no on-site detention, is not altered.
 
 ## Membrane system
 

@@ -87,7 +87,7 @@
         },
         {
           "key": "hdr.work_type",
-          "says": "The owners corporation seeks a remedial building consultant to investigate and rectify the leaking balcony waterproofing of the existing building: remediation, not new work"
+          "says": "The owners corporation seeks a remedial building consultant to investigate and rectify the leaking balcony waterproofing of the existing building"
         },
         {
           "key": "det.existing_building_year",
@@ -113,7 +113,7 @@
       "traps": [
         {
           "id": "rfp-cued-as-proposal",
-          "what": "The brief asks consultants to 'submit a fee proposal by 20 February 2026'; proposals.Cue matches 'fee proposal' anywhere in the text.",
+          "what": "The brief asks consultants to 'submit a fee proposal by 27 February 2026'; proposals.Cue matches 'fee proposal' anywhere in the text.",
           "expect": "d01 files as design_brief and opens no submission and no procurement package"
         },
         {
@@ -122,7 +122,7 @@
           "expect": "flag.basement is not yes: the basement exists but the works include no basement and no excavation"
         }
       ],
-      "content": "The strata manager's brief, written for the strata committee, inviting remedial building consultants to propose. Sections: ## The building (6 storeys, 42 apartments over a single-level basement car park, constructed in 2008, reinforced concrete, tiled balconies with aluminium-framed glass balustrades, a ground-floor communal courtyard with planter boxes over the basement), ## The problem (all 42 balconies leak at door sills and slab edges; water is entering the basement car park beneath the ground-floor communal courtyard), ## Scope of services (investigation of the balconies and the courtyard podium, defect report with options and order of cost, specification, tender, contract administration; lump sum contract with a remedial builder), ## Constraints (fully occupied throughout, car park stays in use; committee approval gates), ## Submission (submit a fee proposal by 20 February 2026 to Rhiannon Teale). Plain prose."
+      "content": "The strata manager's brief, written for the strata committee, inviting remedial building consultants to propose. Sections: ## The building (6 storeys, 42 apartments over a single-level basement car park, constructed in 2008, reinforced concrete, tiled balconies with aluminium-framed glass balustrades, a ground-floor communal courtyard with planter boxes over the basement), ## The problem (all 42 balconies leak at door sills and slab edges; water is entering the basement car park beneath the ground-floor communal courtyard), ## Scope of services (investigation of the balconies and the courtyard podium, defect report with options and order of cost, specification, tender, contract administration; lump sum contract with a remedial builder), ## Constraints (fully occupied throughout, car park stays in use; committee approval gates), ## Submission (submit a fee proposal by 27 February 2026 to Rhiannon Teale). Plain prose."
     },
     {
       "id": "d02",
@@ -393,7 +393,7 @@
         },
         {
           "key": "det.existing_building",
-          "says": "The works are to an existing building"
+          "says": "Existing building; these are remedial works"
         },
         {
           "key": "det.existing_building_year",
@@ -473,7 +473,7 @@
         },
         {
           "key": "flag.osd_existing",
-          "says": "There is no existing on-site detention system; balcony outlets connect to the existing downpipes"
+          "says": "The existing building stormwater system, which has no on-site detention, is not altered"
         },
         {
           "key": "flag.staged",
@@ -492,7 +492,7 @@
           "expect": "No site.demolition work item: this is membrane replacement"
         }
       ],
-      "content": "The tender specification. Sections: ## General (exempt, fully occupied, AS 4000 with special conditions, regulated design, no staged delivery), ## Strip-out, ## Substrate and falls screed, ## Outlets and overflows (puddle flanges, clamping rings, new overflows to the existing downpipes; no sewer or water main affected), ## Membrane system (external liquid membrane to AS 4654.2, upturns behind the door sills), ## Podium (lift and store pavers on pedestals, remove soil and planting, podium membrane with protection board and drainage cell, new podium outlets and overflows, car park protection and temporary drainage, podium flood test, reinstate landscape to the landscape architect's details), ## Balustrades (posts re-fixed to the slab edge outside the membrane, certified by the structural engineer), ## Tiling, ## Hold points (1 substrate, 2 outlets, 3 membrane flood test, 4 before cover), ## Provisional quantities and schedule of rates (concrete and substrate repairs found on opening up), ## Resident access and protection."
+      "content": "The tender specification. Sections: ## General (exempt, fully occupied, AS 4000 with special conditions, regulated design, no staged delivery), ## Strip-out, ## Substrate and falls screed, ## Outlets and overflows (puddle flanges, clamping rings, new overflows through the balustrade line discharging clear of the slab edge; the existing stormwater system, with no on-site detention, is not altered), ## Membrane system (external liquid membrane to AS 4654.2, upturns behind the door sills), ## Podium (lift and store pavers on pedestals, remove soil and planting, podium membrane with protection board and drainage cell, new podium outlets and overflows, car park protection and temporary drainage, podium flood test, reinstate landscape to the landscape architect's details), ## Balustrades (posts re-fixed to the slab edge outside the membrane, certified by the structural engineer), ## Tiling, ## Hold points (1 substrate, 2 outlets, 3 membrane flood test, 4 before cover), ## Provisional quantities and schedule of rates (concrete and substrate repairs found on opening up), ## Resident access and protection."
     },
     {
       "id": "d10",
@@ -508,7 +508,7 @@
       "carries": [
         {
           "key": "det.existing_building",
-          "says": "The balconies are cantilevered reinforced concrete slabs of the existing building"
+          "says": "The balconies are reinforced concrete slabs of the existing building"
         },
         {
           "key": "det.existing_building_year",
@@ -520,7 +520,7 @@
         },
         {
           "key": "flag.excavation_adjoining",
-          "says": "No excavation is proposed next to adjoining boundaries or neighbouring structures"
+          "says": "no excavation, basement or ground works are involved, and nothing is done near the adjoining boundaries or neighbouring structures"
         },
         {
           "key": "flag.basement",
@@ -614,7 +614,7 @@
           "expect": "fact.contract_basis is lump_sum"
         }
       ],
-      "content": "The conditions of tender and contract particulars. Sections: ## Contract and procurement (traditional, AS 4000 with special conditions, lump sum, schedule of rates for provisional quantities only), ## Tenderer eligibility (NSW contractor licence, DBP Act registered building practitioner, licensed waterproofer), ## Returnables, ## Insurance (HBCF cover is not required because the building is a multi-storey building with a rise of more than three storeys), ## Site inspection (balconies and the courtyard podium; the basement car park stays in use), ## Tender close 10 July 2026."
+      "content": "The conditions of tender and contract particulars. Sections: ## Contract and procurement (traditional, AS 4000 with special conditions, lump sum, schedule of rates for provisional quantities only), ## Tenderer eligibility (NSW contractor licence, DBP Act registered building practitioner, licensed waterproofer), ## Returnables, ## Insurance (HBCF cover is not required: the multi-storey building exemption applies (rise in storeys of 6)), ## Site inspection (balconies and the courtyard podium; the basement car park stays in use), ## Tender close 10 July 2026."
     },
     {
       "id": "d14",
