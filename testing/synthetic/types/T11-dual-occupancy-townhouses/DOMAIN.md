@@ -19,8 +19,11 @@ roof form, divided by a fire-resisting and sound-insulating separating wall, eac
 Class 10a garage. It replaces an existing house on one suburban lot in Greater Sydney. The same DA approves
 demolition of that house and Torrens title subdivision into two lots. In NSW this is the commonest small multi-dwelling job. "Townhouses" (three or
 more attached Class 1a dwellings, multi dwelling housing) is the larger variant, trigger
-`three-plus-townhouses`. The app's subclass for both is `townhouses`, labelled "Townhouses (Class 1a)".
-[K: knowledge/profile/taxonomy.yaml townhouses]
+`three-plus-townhouses`. Owner ruling, 6 November 2026: the subclass follows the title, not the
+dwelling count. A dual occupancy has no strata scheme, so it is `house`, even attached and Torrens
+subdivided. `townhouses` is a registered strata or community scheme with shared common property, which
+the `three-plus-townhouses` variant has (community title, association property).
+[K: knowledge/profile/taxonomy.yaml house, townhouses]
 
 | Item | Base value |
 |---|---|
@@ -636,9 +639,11 @@ change nothing the app produces today.
    `site.adjoining-structures` with `fire-passive.compartments` and `interiors.acoustic-separation`. The
    last two are right here; the first is wrong. "Common wall" matches too. [K:
    knowledge/profile/scope_defaults.yaml implied_by party-wall]
-2. **"Dual occupancy" may be read as a house.** The subclass label is "Townhouses (Class 1a)". If a
-   reading picks `house`, scope loses the separating wall, acoustic separation, stairs and barriers. [K:
-   knowledge/profile/taxonomy.yaml townhouses]
+2. **"Dual occupancy" is a house.** Owner ruling, 6 November 2026: no strata scheme, so the subclass
+   is `house`; the word "townhouses" in the description does not change it. Known effect: the house
+   default list has no acoustic separation, rated elements, stairs or barriers, so the separating wall
+   rests on the party-wall signal and the rest on the user. [K: knowledge/profile/taxonomy.yaml house;
+   knowledge/profile/scope_defaults.yaml]
 3. **"Granny flat" is not a dual occupancy.** A secondary dwelling (T12) cannot be subdivided off. A
    land-use table listing "dual occupancy (detached)" says nothing about this project.
 4. **"Two dwellings" in words is not read.** The `dwellings` trigger needs a digit

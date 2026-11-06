@@ -34,9 +34,13 @@ reused the firm saved in the first run. F25 is an alias only and barely
 changes filing, because Jev sees only the label. Plan:
 `docs/plans/2026-11-06-knockdown-two-buildings.md`.
 
-Still open: the T11 subclass, which is now a real house-or-townhouses
-conflict about the new dwellings and needs an owner ruling or F27; F6;
-F24, F26, F27 and F29.
+Still open: F6; F24, F26, F27 and F29.
+
+Owner ruling on the T11 subclass (6 November 2026): a dual occupancy is a
+house, because there is no strata scheme. Townhouses are a registered
+strata or community scheme with shared common property. The T11 base and
+CDC keys now expect `house`; the four-townhouse variant keeps `townhouses`.
+The subclass criteria carry the rule (`profile-13`).
 
 ## App defects
 

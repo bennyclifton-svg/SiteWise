@@ -656,7 +656,7 @@
         {
           "id": "dual-occupancy-as-house",
           "what": "The words 'dual occupancy' and 'dwelling' may be read as a house (DOMAIN.md §10 trap 2).",
-          "expect": "hdr.subclass is townhouses"
+          "expect": "hdr.subclass is house: a dual occupancy has no strata scheme (owner ruling, 6 November 2026)"
         }
       ],
       "content": "Architect's design statement for the DA. Sections: '## Project description' (the development sentence and '2 dwellings on proposed Lots 1 and 2' in the same paragraph; demolition of the existing house; the building-a-dual-occupancy sentence; building classification; GFA 460 m2 in total with no per-dwelling area; two storeys each), '## Site description and context' (standard suburban lot sentence; 17 m frontage; each dwelling has its own driveway and vehicle crossing; side-by-side, both dwellings face the street), '## Design' (4 bedrooms each, living to rear courtyards, garages under a lower roof that ties into the main roof), '## Separating wall' (fire-rated separating wall on the proposed lot boundary from the slab to the underside of the metal roof, Rw + Ctr 50, discontinuous construction where a wet area adjoins a habitable room next door), '## Materials' (face brickwork ground floor, lightweight cladding above, metal roof), '## BASIX' (climate zone sentence, heat-pump hot water, rainwater tank sentence), '## Trees' (the two tree sentences), '## Planning' (the landscaped-area DA sentence, cl 4.6, delegation, notification)."

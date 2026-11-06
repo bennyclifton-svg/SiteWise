@@ -112,3 +112,11 @@ are Go in the profile build, which is precomputed.
   `det.existing_building` true on T10, footing, slab, frame and window
   actions `new`, the T11 subclass `townhouses` with no lift or hydrant
   consultants, and no "Dangerous goods" in any brief.
+
+## Owner ruling after the re-run (6 November 2026)
+
+A dual occupancy is a house, because there is no strata scheme. Townhouses
+are a registered strata or community scheme with shared common property.
+The T11 base and CDC keys now expect `house`; the four-townhouse variant
+(community title, association property) keeps `townhouses`. The subclass
+criteria carry the rule (`profile-13`).

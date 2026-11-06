@@ -25,7 +25,9 @@ import (
 // profile-12: demolishing an existing building is work to an existing
 // building, and the building type is the building delivered, not one the
 // works demolish or a survey describes (knock-down D1 and D3, 2026-11-06).
-const QuestionVersion = "profile-12"
+// profile-13: a dual occupancy is a house; townhouses are a strata or
+// community scheme with common property (owner ruling, 2026-11-06).
+const QuestionVersion = "profile-13"
 
 // ReadRevision says which families of profile questions a document's label
 // reading covered. Raise it when a new family of questions is added without
@@ -92,7 +94,7 @@ func RouteCued(p PassageInfo) bool {
 	return routeCue.MatchString(p.Text)
 }
 
-const notStatedCriterion ="The passage does not state it."
+const notStatedCriterion = "The passage does not state it."
 
 // LabelQuestions are the profile questions asked in the label fan-out, which
 // reads the passage before labels exist. They join that one request
@@ -340,6 +342,15 @@ func headerQuestions(t knowledge.Taxonomy) map[string]jev.Question {
 			}
 			subs[s.ID] = c.Label + ": " + label
 		}
+	}
+	// Owner ruling, 6 November 2026: title decides house against townhouses.
+	// A dual occupancy has no strata scheme, so it is a house even when it is
+	// attached and subdivided; townhouses share registered common property.
+	if l, ok := subs["house"]; ok {
+		subs["house"] = l + ". One or two dwellings with no strata or community scheme: a detached house, a dual occupancy (attached or detached, including one subdivided into Torrens title lots), or a house with a secondary dwelling."
+	}
+	if l, ok := subs["townhouses"]; ok {
+		subs["townhouses"] = l + ". Attached dwellings in a registered strata or community title scheme, with common property or association property shared by the owners."
 	}
 	ask := func(id, label string, crit map[string]string) {
 		qs[id] = jev.Question{Type: jev.TypeChoice,

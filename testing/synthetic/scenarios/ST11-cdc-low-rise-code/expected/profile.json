@@ -9,7 +9,7 @@
       "read_by_design": true
     },
     "hdr.subclass": {
-      "value": "townhouses",
+      "value": "house",
       "sources": [
         "d01",
         "d13"

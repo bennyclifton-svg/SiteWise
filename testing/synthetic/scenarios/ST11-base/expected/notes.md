@@ -23,7 +23,8 @@ budget $1,650,000 ex GST. 19 documents in 4 waves; every T11 trigger denied or a
 - d13 DA reason: the design misses the code's landscaped area standard (not an LEP standard, so no cl 4.6).
 - d13 `building-a-dual-occupancy` (multi_building stays no), `party-wall-not-neighbour` (no site.adjoining-structures),
   `fire-rated-wall` (no fire engineer or acoustic consultant), `rainwater-tank` (water supply stays reticulated),
-  `dual-occupancy-as-house` (subclass townhouses).
+  `dual-occupancy-as-house` (subclass house since the owner ruling of 6 November 2026: a dual occupancy has no
+  strata scheme; townhouses are a strata or community scheme with common property).
 - d18 invoice: total $4,610 against $4,100 + $410: `arithmetic`.
 - Incidental: "lodge" in d05, d10 and d16 fires architect_lodges, which is yes; d10 says the architect lodges.
 

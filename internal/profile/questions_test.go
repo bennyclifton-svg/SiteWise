@@ -163,3 +163,19 @@ func keys[V any](m map[string]V) []string {
 	}
 	return out
 }
+
+// Owner ruling, 6 November 2026: a dual occupancy is a house because it has
+// no strata scheme; townhouses are a registered strata or community scheme
+// with shared common property (synthetic T11).
+func TestSubclassCriteriaCarryTheStrataRule(t *testing.T) {
+	cat := repoCatalog(t)
+	h := profile.Harvest("Construction of an attached dual occupancy with Torrens title subdivision.", cat)
+	qs, _ := profile.LabelQuestions(profile.PassageInfo{Kind: "design_brief", Ordinal: 3}, h, cat)
+	crit := qs["hdr.subclass"].Criteria.(map[string]string)
+	if !strings.Contains(crit["house"], "dual occupancy") || !strings.Contains(crit["house"], "no strata") {
+		t.Fatalf("house criterion %q", crit["house"])
+	}
+	if !strings.Contains(crit["townhouses"], "strata or community") || !strings.Contains(crit["townhouses"], "common property") {
+		t.Fatalf("townhouses criterion %q", crit["townhouses"])
+	}
+}
