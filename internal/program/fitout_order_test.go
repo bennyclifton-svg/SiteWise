@@ -2,6 +2,7 @@ package program
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -210,4 +211,62 @@ func rowIndexOf(p Plan, key string) int {
 		}
 	}
 	return -1
+}
+
+// t06Fitout mirrors the T06 shape (testing/synthetic/types/T06-sprinkler-
+// pump-tank-upgrade/shape.yaml): a Class 5 office over a 7a car park, refurb,
+// CDC, traditional, with its 28 work items, including a strip-out.
+func t06Fitout() GenInput {
+	items := []struct{ system, action string }{
+		{"fire-active.fire-water", "upgrade"}, {"fire-active.sprinklers", "alter"}, {"fire-active.hydrants", "retain"},
+		{"hydraulic.backflow-prevention", "upgrade"}, {"structure.alterations", "alter"}, {"fire-passive.rated-elements", "alter"},
+		{"fire-passive.penetrations", "new"}, {"mechanical.local-exhaust", "new"}, {"electrical.switchboards", "alter"},
+		{"electrical.cabling-wiring", "alter"}, {"site.demolition", "remove"}, {"interiors.walls-linings", "new"},
+		{"interiors.ceilings", "alter"}, {"interiors.internal-doors", "new"}, {"interiors.internal-glazing", "new"},
+		{"interiors.joinery", "new"}, {"interiors.painting", "replace"}, {"interiors.floor-finishes", "replace"},
+		{"mechanical.air-distribution", "alter"}, {"mechanical.air-conditioning", "new"}, {"hydraulic.cold-water", "alter"},
+		{"hydraulic.hot-water", "new"}, {"hydraulic.sanitary", "alter"}, {"electrical.lighting", "replace"},
+		{"fire-active.detection", "alter"}, {"fire-active.occupant-warning", "alter"}, {"fire-active.emergency-lighting", "alter"},
+		{"comms-security.structured-cabling", "new"},
+	}
+	in := GenInput{
+		WorkTypes:  []string{"refurb"},
+		Conditions: map[string]string{"planning": "cdc", "procurement_route": "traditional"},
+		Values:     map[string]string{"ncc_class": "5,7a", "rise_in_storeys": "6", "state": "NSW"},
+	}
+	for i, it := range items {
+		in.WorkItems = append(in.WorkItems, WorkItem{ID: fmt.Sprintf("w%02d", i), System: it.system, Action: it.action})
+	}
+	return in
+}
+
+// The sprinkler pipework row has no library length. It must not leave the
+// rows after the ceilings undated (F47's failure): it takes the stated
+// default activity length, marked as assumed, so T03 and T06 are fully dated.
+func TestFitoutSprinklerPipeworkKeepsEveryRowDated(t *testing.T) {
+	cat := testCatalog(t, nil, "")
+	for name, in := range map[string]GenInput{"T03": t03Fitout(), "T06": t06Fitout()} {
+		p := mustGenerate(t, cat, in)
+		var pipework *Row
+		for i := range p.Rows {
+			if p.Rows[i].FragmentID == "fr.sprinklers-fitout" && strings.HasSuffix(p.Rows[i].SourceKey, ":pipework") {
+				pipework = &p.Rows[i]
+			}
+		}
+		if pipework == nil {
+			t.Fatalf("%s: no sprinkler pipework row", name)
+		}
+		if pipework.Duration == nil || assumed(*pipework) == "" {
+			t.Fatalf("%s: pipework duration %v source %v", name, pipework.Duration, pipework.DurationSource)
+		}
+		out := Compute(p.Input(Calendar{}))
+		if out.Cycle != nil || out.Status.Known != out.Status.Total || !out.Finish.Complete {
+			t.Fatalf("%s: cycle %v status %+v finish %+v", name, out.Cycle, out.Status, out.Finish)
+		}
+		for _, a := range out.Activities {
+			if a.Unknown {
+				t.Fatalf("%s: undated row %s", name, a.ID)
+			}
+		}
+	}
 }
