@@ -815,11 +815,18 @@ determinants:
     instructions: Using `text`, what does this passage explicitly state about whether Site affected by
       road, rail or other external noise? Use only the described building, part or site; select not_stated
       for silence, optional conditions or conflicting statements.
+    # Each option says what it covers and what belongs to another option, with
+    # an example (https://docs.typesafe.ai/concepts/how-to-build-with-system-one,
+    # https://docs.typesafe.ai/patterns). Naming a noise source is not being
+    # affected by it: an acoustic report that finds traffic noise low is a
+    # denial (synthetic finding F34).
     criteria:
       stated_true: The passage explicitly affirms this condition for the identified building, part or
-        site.
+        site, for example external noise above the criteria, or acoustic treatment needed against it.
+        A noise source that is named but found low or compliant is not this option.
       stated_false: The passage explicitly denies this condition for the identified building, part or
-        site.
+        site, including a statement that external noise is low, meets or complies with the criteria, or
+        needs no acoustic treatment, for example "road traffic noise from the local street is low".
       not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
         itself.
     runs_on:
