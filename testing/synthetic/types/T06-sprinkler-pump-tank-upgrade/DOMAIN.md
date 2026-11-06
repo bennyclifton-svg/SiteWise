@@ -799,3 +799,28 @@ Applied from `testing/synthetic/scenarios/ST06-base/REVIEW.md` (findings 4, 10 a
 - `pump-tank-only` profile: `[hdr.cond.operational_constraints, proj.budget_stated]`. With no fit-out every floor is
   tenanted (`live_environment`; keys accept `partial_occupation` too), and the stated budget loses the fit-out's share.
 - `tenant-procured-fitout` profile: `[proj.budget_stated]`, for the same budget reason.
+
+## Shape corrections after run `20261107-t03-t04-t06` (7 November 2026)
+
+From FINDINGS "Shape and key gaps" for that run, and owner ruling R19.
+
+- Certifier RFP re-keyed for F9, as the T12 certifier was on 6 November. It expects `b2_cdc`, `b3_construction`
+  and `b4_occupation` included, `b1_preliminary` option (as T11), `b2_construction_approval` absent and no
+  blocking check (was `pathway_unsupported`, every stage absent). The CDC, principal certifier and OC phrases are
+  keyed to those stages. The `text.cdc_scope` gap is removed.
+- Fire services, electrical and mechanical `position.existing`: `app_differs` now says `app: absent` (was `ask`),
+  as the T03 keys do from a Go run. The row is left out while the investigation stage is ask.
+- `tank-needs-consent`:
+  - sets `skeleton: sk.refurb-traditional-da`;
+  - adds "Town planner" to `adds.cost_plan`;
+  - restates the certifier `expect` (`a2_planning` and `b2_construction_approval` included, `b2_cdc` absent);
+  - adds a BCA RFP expectation with `a2_planning` included. A1 and A3 are included and A4 is option. The B stages
+    are absent with `app_differs` option, as the T03 BCA key has them: the CC is the certifier's.
+  The CDC phrases leave the certifier lists.
+- `pump-tank-only` keeps the generic design rows ("Confirm the brief", "Prepare the concept design", "Client review
+  of the concept", "Develop the design"): they are also the fire services design sequence. It removes only
+  "Prepare fit-out documentation".
+- `hdr.cond.quality_level` applies to residential only (`taxonomy.yaml` `applies_to`), so the ST06 keys mark it
+  `not_read`.
+- R19: the ST06 keys accept `urban_constrained` or `restricted_hours` for `hdr.cond.access_constraints`
+  (`operational_constraints` already accepted both occupation values).

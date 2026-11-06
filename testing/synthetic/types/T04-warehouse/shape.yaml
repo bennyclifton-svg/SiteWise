@@ -38,6 +38,8 @@ profile:
   det.flood_hazard: false
   det.potentially_contaminated_land: false
   det.acid_sulfate_soils_mapped: false
+  det.site_class: M          # keyed in the ST04 scenarios (geotechnical report)
+  det.saline_soil: true      # keyed in the ST04 scenarios (Western Sydney saline soils)
   det.facade_type: standard
   det.sewer_connection: reticulated
   det.water_supply_source: reticulated
@@ -196,7 +198,7 @@ not_expected_procurement:
 cost_plan:
   - {line: "DA fees and contributions", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml da-fees", why: "DA fee on the CIV and s7.11 or s7.12 contributions (verified: false)"}
   - {line: "Housing and Productivity Contribution", section: fees_and_charges, built_in: "no", why: "Applies to industrial development in Greater Sydney (verified: false); no starter line"}
-  - {line: "Construction certificate and certifier fees", section: fees_and_charges, built_in: "yes", source: "knowledge/costs/starter_lines.yaml cc-fees", why: "Statutory CC and OC fees; the certifier's professional fee belongs on one line only"}
+  - {line: "Construction certificate and certifier fees", section: fees_and_charges, aliases: ["CDC fee"], built_in: "yes", source: "knowledge/costs/starter_lines.yaml cc-fees", why: "Statutory CC and OC fees; the certifier's professional fee belongs on one line only"}
   - {line: "Service authority connection fees (Sydney Water, DNSP, NBN)", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", why: "One generic line; Section 73 developer charges, WSC fees and DNSP design and inspection fees are not split"}
   - {line: "Long service levy", section: fees_and_charges, built_in: "no", why: "0.25% of the cost of building work of $250,000 or more including GST, paid before work starts (C4, checked against nsw.gov.au)"}
   - {line: "Council road-reserve fees and bonds (s138 crossings)", section: fees_and_charges, built_in: "no", why: "Standard DA conditions for the heavy-duty crossings (verified: false)"}
@@ -758,17 +760,39 @@ triggers:
     evidence: ["Complying development certificate under Part 5A Industrial and Business Buildings Code of the Codes SEPP (verified: false)", "the warehouse meets the code's setbacks, height and landscaping standards, so the certifier can determine it"]
     negation: ["A development application will be lodged with council", "The building exceeds the code's height standard, so a DA is required"]
     profile: [hdr.cond.planning]
+    skeleton: sk.generic
     adds:
       program: ["Prepare and lodge the complying development certificate", "Certifier determination"]
-      cost_plan: ["CDC fee", "Contributions under the CDC"]
-      rfps: [{discipline: consultant.certifier, must_include: ["CDC assessment and determination"]}]
+      cost_plan: ["Contributions under the CDC"]
+      rfps:
+        - discipline: consultant.certifier
+          must_include: [{text: "CDC assessment and determination", key: stage.b2_cdc}]
+          expect:
+            stages_include: [b2_cdc]
+            stages_absent: [a2_planning, b2_construction_approval]
+        - discipline: consultant.architect
+          expect:
+            stages_absent: [planning_response]
+        - discipline: consultant.traffic
+          expect:
+            stages_absent: [assessment_response, conditions_review]
+        - discipline: consultant.bca
+          expect:
+            stages_absent: [a2_planning, b2_construction_approval, b2_cdc]
+          app_differs:
+            - {key: stage.b2_cdc, app: option, expect: absent, why: "after the a1..a3 boundary; the CDC determination is the certifier's"}
       authority: ["CDC by the registered certifier; neighbour notice before work; contributions still payable"]
     removes:
       procurement: [consultant.town_planner]
-      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees"]
+      cost_plan: ["DA fees and contributions"]
       program: ["Lodge the DA", "DA notification", "DA assessment and determination", "Construction certificate: early works", "Construction certificate: building", "Pre-DA meeting with council"]
-      rfps: [consultant.town_planner]
-    why: "D&C plus CDC falls back to sk.generic; the town-planning and bca-certification RFPs block on cdc; the app still suggests the town planner through baselines[0]"
+      rfps:
+        - consultant.town_planner
+        - {discipline: consultant.architect, must_include: ["Planning response"]}
+        - {discipline: consultant.traffic, must_include: ["Assessment response", "Conditions review"]}
+        - {discipline: consultant.bca, must_include: ["A2 DA BCA report"]}
+        - {discipline: consultant.certifier, must_include: ["B2 construction certificate assessment (staged: early works, building)"]}
+    why: "D&C plus CDC falls back to sk.generic. Since F9 the certifier's B2 is the CDC (b2_cdc) in place of the CC; no planning response, traffic assessment response or conditions review, and no A2 DA BCA report. The base line 'Construction certificate and certifier fees' stays and stands for the CDC fee, as T03 and T06 alias it (the app keeps the cc-fees label on a CDC). The app still suggests the town planner through baselines[0]"
     built_in: {program: "partial", cost_plan: "partial", procurement: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"
   - id: large-isolated-building-over-limit
@@ -837,9 +861,16 @@ triggers:
       work_items: [{system: site.flooding, action: investigate}]
       cost_plan: ["Flood impact assessment", "Raised pad and flood-compatible materials"]
       program: ["Council flood advice", "Flood impact assessment"]
-      rfps: [{discipline: consultant.civil, must_include: [{text: "Flood report and floor levels for the DA", key: position.flood_report}, {text: "Flood evacuation plan (option)", key: position.flood_evacuation}]}]
+      rfps:
+        - discipline: consultant.civil
+          must_include: [{text: "Flood report and floor levels for the DA", key: position.flood_report}, {text: "Flood evacuation plan (option)", key: position.flood_evacuation}, {text: "Trunk drainage for the overland flow path", key: position.trunk_drainage}]
+          expect:
+            positions: {flood_report: I, flood_evacuation: I, trunk_drainage: I}
       authority: ["Council flood advice letter"]
-    why: "fr.flood-1a and fr.flood-2 do not apply to 7b; the investigate item gets fr.investigate-flooding. Civil scale goes complex"
+    removes:
+      rfps:
+        - {discipline: consultant.civil, must_not_include: ["Flood report", "Trunk drainage"]}
+    why: "fr.flood-1a and fr.flood-2 do not apply to 7b; the investigate item gets fr.investigate-flooding. Civil scale goes complex (already complex in the base through the public road works, R15, so the complex service-level rows stay I); the flood report, evacuation plan and trunk drainage rows come in"
     built_in: {work_items: "no", rfps: "yes", program: "partial", cost_plan: "no"}
     source: "knowledge/rfp/civil.yaml flood_report"
   - id: contaminated-land

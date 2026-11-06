@@ -1546,12 +1546,17 @@
     },
     {
       "key": "hdr.cond.operational_constraints",
-      "expected": "partial_occupation",
+      "expected": {
+        "accept": [
+          "partial_occupation",
+          "live_environment"
+        ]
+      },
       "app": "live_environment",
       "band": "amber",
       "alternatives": null,
       "read_by_design": true,
-      "outcome": "wrong"
+      "outcome": "correct"
     },
     {
       "key": "hdr.cond.access_constraints",
@@ -2390,9 +2395,8 @@
       }
     },
     "profile": {
-      "correct": 44,
+      "correct": 45,
       "not_captured": 1,
-      "wrong": 1,
       "missed": 5,
       "missed_by_design": 6
     },

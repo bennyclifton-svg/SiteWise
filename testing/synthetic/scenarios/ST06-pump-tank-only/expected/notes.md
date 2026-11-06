@@ -29,3 +29,11 @@ the app's program; the shape lists them as removed, so they score as extras.
 
 Base traps carry over. The fit-out-amenities and affected-part negations (d10, d15) leave with those documents; both
 triggers need a fit-out, so nothing is lost.
+
+## Key changes after run `20261107-t03-t04-t06` (7 November 2026)
+
+- `hdr.cond.quality_level`: `read_by_design: false` with `not_read`. The field applies to residential only, so the
+  app never asks it on a commercial building.
+- `hdr.cond.access_constraints` accepts `urban_constrained` or `restricted_hours` (owner ruling R19).
+- The T06 shape's certifier RFP was re-keyed for F9, and `position.existing` now expects `app: absent` (see T06
+  `DOMAIN.md`).

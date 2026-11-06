@@ -223,6 +223,13 @@
         "code": "P05",
         "state": "item",
         "matched_by": "label"
+      },
+      {
+        "expected": "Town planner",
+        "app": "Town Planner",
+        "code": "F12",
+        "state": "item",
+        "matched_by": "label"
       }
     ],
     "missed": [
@@ -347,14 +354,7 @@
         "trigger": null
       }
     ],
-    "extra": [
-      {
-        "app": "Town Planner",
-        "code": "F12",
-        "section": "consultants",
-        "state": "item"
-      }
-    ],
+    "extra": [],
     "false_positive": [
       {
         "expected": "Architect (consultant fee)",
@@ -397,9 +397,9 @@
   "program": {
     "status": "scored",
     "skeleton": {
-      "expected": "sk.refurb-traditional-cdc",
+      "expected": "sk.refurb-traditional-da",
       "app": "sk.refurb-traditional-da",
-      "match": false
+      "match": true
     },
     "activities": {
       "matched": [
@@ -1439,12 +1439,6 @@
         "ok": 24,
         "new_failure": [
           {
-            "key": "position.existing",
-            "want": "I",
-            "app": "absent",
-            "app_differs_said": "ask"
-          },
-          {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
@@ -1457,6 +1451,12 @@
             "want": "exclude",
             "app": "include",
             "why": "always option"
+          },
+          {
+            "key": "position.existing",
+            "want": "I",
+            "app": "absent",
+            "why": "row needs the investigation stage included or optioned; it is ask (client flag fs_investigation), so the row is left out (as T03)"
           }
         ],
         "fixed": [],
@@ -1694,12 +1694,6 @@
         "ok": 26,
         "new_failure": [
           {
-            "key": "position.existing",
-            "want": "I",
-            "app": "absent",
-            "app_differs_said": "ask"
-          },
-          {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
@@ -1712,6 +1706,12 @@
             "want": "exclude",
             "app": "include",
             "why": "client flag elec_planning; if_unknown option; no DNSP application in the base"
+          },
+          {
+            "key": "position.existing",
+            "want": "I",
+            "app": "absent",
+            "why": "row needs the investigation stage included or optioned; it is ask (client flag elec_investigation), so the row is left out (as T03)"
           },
           {
             "key": "position.generation",
@@ -1808,12 +1808,6 @@
         "ok": 24,
         "new_failure": [
           {
-            "key": "position.existing",
-            "want": "I",
-            "app": "absent",
-            "app_differs_said": "ask"
-          },
-          {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
@@ -1832,6 +1826,12 @@
             "want": "exclude",
             "app": "include",
             "why": "always option"
+          },
+          {
+            "key": "position.existing",
+            "want": "I",
+            "app": "absent",
+            "why": "row needs the investigation stage included or optioned; it is ask (client flag mech_investigation), so the row is left out (as T03)"
           },
           {
             "key": "position.kitchen",
@@ -1973,55 +1973,19 @@
     {
       "discipline": "consultant.certifier",
       "template": "bca-certification",
-      "built_in": "no",
+      "built_in": "partial",
       "trigger": null,
       "status": "found",
       "found": true,
       "report": "bd3ea948-e965-4b2a-9ed6-51c1a4eaece7",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 0,
+        "ok": 6,
         "new_failure": [
-          {
-            "key": "stage.a2_planning",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b1_preliminary",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b2_construction_approval",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b3_construction",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b4_occupation",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
           {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.pathway_unsupported",
-            "want": "blocking",
-            "app": "not blocking",
             "app_differs_said": null
           }
         ],
@@ -2046,12 +2010,7 @@
           }
         ],
         "fixed": [],
-        "not_checked": [
-          {
-            "key": "text.cdc_scope",
-            "why": "Gap: the template has no CDC scope"
-          }
-        ],
+        "not_checked": [],
         "awaiting_user": [
           {
             "key": "blocking.allowance:duration_months",
@@ -2141,19 +2100,13 @@
         ]
       },
       "must_include": {
-        "present": 0,
-        "missing": [
-          "CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)",
-          "Fire safety schedule with the fit-out CDC, listing existing and new measures; confirm whether the Fire Safety Code CDC needs one (verified: false)",
-          "Principal certifier appointment and inspections",
-          "Review of the final fire safety certificate",
-          "Occupation certificate for level 3 and the pump room works"
-        ],
+        "present": 4,
+        "missing": [],
         "unknown": [],
         "known": []
       },
       "must_not_include": {
-        "absent": 4,
+        "absent": 2,
         "present": [],
         "unknown": [],
         "known": []
@@ -2280,6 +2233,73 @@
       }
     },
     {
+      "discipline": "consultant.bca",
+      "template": null,
+      "built_in": "yes",
+      "trigger": "tank-needs-consent",
+      "status": "found",
+      "found": true,
+      "report": "37982825-cf1f-42ef-9d11-dab07218df5c",
+      "app_template": "bca-certification",
+      "expect": {
+        "ok": 5,
+        "new_failure": [],
+        "known_difference": [
+          {
+            "key": "stage.b1_preliminary",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the a1..a3 boundary; Package B is the certifier's"
+          },
+          {
+            "key": "stage.b2_construction_approval",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the boundary; the CC is the certifier's"
+          },
+          {
+            "key": "stage.b3_construction",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the boundary"
+          },
+          {
+            "key": "stage.b4_occupation",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the boundary"
+          },
+          {
+            "key": "position.statutory_functions",
+            "want": "absent",
+            "app": "I",
+            "why": "row needs client flag bca_certification (as T03)"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [],
+        "awaiting_user": []
+      },
+      "must_include": {
+        "present": 2,
+        "missing": [],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 1,
+        "present": [
+          {
+            "phrase": "Principal certifier functions",
+            "where": "key:position.statutory_functions",
+            "coverage": 1.0
+          }
+        ],
+        "unknown": [],
+        "known": []
+      }
+    },
+    {
       "discipline": "consultant.architect",
       "template": "architecture",
       "status": "extra",
@@ -2292,13 +2312,6 @@
       "status": "extra",
       "found": true,
       "report": "2e9d0626-9576-4738-aba4-ee50eab4cb0a"
-    },
-    {
-      "discipline": "consultant.bca",
-      "template": "bca-certification",
-      "status": "extra",
-      "found": true,
-      "report": "37982825-cf1f-42ef-9d11-dab07218df5c"
     },
     {
       "discipline": "consultant.hydraulic",
@@ -2320,12 +2333,12 @@
       "kind_mismatch": 0
     },
     "cost_plan": {
-      "expected": 37,
-      "matched": 17,
+      "expected": 38,
+      "matched": 18,
       "missed": 20,
       "missed_built_in": 2,
       "missed_known_gap": 18,
-      "extra": 1,
+      "extra": 0,
       "false_positive": 4,
       "section_mismatch": 0,
       "fabricated": 0,
@@ -2341,7 +2354,7 @@
       "extra": 1,
       "false_positive": 0,
       "wrong_stage": 0,
-      "skeleton_match": false,
+      "skeleton_match": true,
       "links_holds": 3,
       "links_violated": 0,
       "links_unknown": 12,
@@ -2350,20 +2363,20 @@
       "cycles": 0
     },
     "rfps": {
-      "expected": 8,
-      "found": 8,
+      "expected": 9,
+      "found": 9,
       "missing": 0,
       "missing_built_in": 0,
       "not_expected_present": 0,
-      "extra": 4,
-      "expect_ok": 99,
-      "expect_new_failure": 14,
-      "expect_known_difference": 17,
+      "extra": 3,
+      "expect_ok": 110,
+      "expect_new_failure": 5,
+      "expect_known_difference": 25,
       "expect_fixed": 0,
       "expect_awaiting_user": 62,
-      "must_include_missing": 18,
+      "must_include_missing": 13,
       "must_include_unknown": 0,
-      "must_not_include_present": 9,
+      "must_not_include_present": 10,
       "must_not_include_known": 2
     }
   }

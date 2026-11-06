@@ -56,7 +56,12 @@
       "read_by_design": true
     },
     "hdr.cond.access_constraints": {
-      "value": "urban_constrained",
+      "value": {
+        "accept": [
+          "urban_constrained",
+          "restricted_hours"
+        ]
+      },
       "sources": [
         "d01"
       ],
@@ -74,7 +79,8 @@
       "sources": [
         "d01"
       ],
-      "read_by_design": true
+      "read_by_design": false,
+      "not_read": "Quality level applies to residential only (knowledge/profile/taxonomy.yaml quality_level applies_to: residential), so the app never asks it on a commercial job (run 20261107-t03-t04-t06: not captured)"
     },
     "hdr.cond.environmental_sensitivity": {
       "value": "standard",

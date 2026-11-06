@@ -74,3 +74,11 @@ All 11 findings applied, none disputed. d13 retitled "Structural assessment: spr
 slab" (manifest and document_register.json, also in ST06-pump-tank-only and ST06-tank-needs-consent); d13
 groundwater wording, d01/d03/d09/d12/d14 content and the two new traps carried into all three manifests. d09's unkeyed
 $450 inspection rate was deleted rather than keyed.
+
+## Key changes after run `20261107-t03-t04-t06` (7 November 2026)
+
+- `hdr.cond.quality_level`: `read_by_design: false` with `not_read`. The field applies to residential only, so the
+  app never asks it on a commercial building.
+- `hdr.cond.access_constraints` accepts `urban_constrained` or `restricted_hours` (owner ruling R19).
+- The T06 shape's certifier RFP was re-keyed for F9, and `position.existing` now expects `app: absent` (see T06
+  `DOMAIN.md`).

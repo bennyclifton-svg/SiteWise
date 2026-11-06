@@ -50,10 +50,16 @@
         "d01",
         "d13"
       ],
-      "read_by_design": true
+      "read_by_design": false,
+      "not_read": "Quality level applies to residential only (knowledge/profile/taxonomy.yaml quality_level applies_to: residential), so the app never asks it on a commercial job (run 20261107-t03-t04-t06: not captured)"
     },
     "hdr.cond.operational_constraints": {
-      "value": "partial_occupation",
+      "value": {
+        "accept": [
+          "partial_occupation",
+          "live_environment"
+        ]
+      },
       "sources": [
         "d01",
         "d03"

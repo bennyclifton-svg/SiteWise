@@ -148,6 +148,13 @@
     "status": "scored",
     "matched": [
       {
+        "expected": "Construction certificate and certifier fees",
+        "app": "Construction certificate and certifier fees",
+        "code": "P05",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
         "expected": "Service authority connection fees (Sydney Water, DNSP, NBN)",
         "app": "Service authority connection fees",
         "code": "P06",
@@ -463,12 +470,6 @@
         "trigger": null
       },
       {
-        "expected": "CDC fee",
-        "section": null,
-        "built_in": "partial",
-        "trigger": "cdc-industrial-code"
-      },
-      {
         "expected": "Contributions under the CDC",
         "section": null,
         "built_in": "partial",
@@ -490,13 +491,6 @@
         "code": "F10",
         "matched_by": "label",
         "why": "Adopted suggestion on cost-plan prepare; the base needs no mechanical consultant"
-      },
-      {
-        "expected": "Construction certificate and certifier fees",
-        "app": "Construction certificate and certifier fees",
-        "code": "P05",
-        "matched_by": "label",
-        "why": "removed by trigger cdc-industrial-code"
       }
     ],
     "section_mismatch": [],
@@ -511,9 +505,9 @@
   "program": {
     "status": "scored",
     "skeleton": {
-      "expected": "sk.new-dc-da",
+      "expected": "sk.generic",
       "app": "sk.generic",
-      "match": false
+      "match": true
     },
     "activities": {
       "matched": [
@@ -1589,15 +1583,8 @@
       "report": "da40e50a-9dcd-4221-8288-b8e3301f9a46",
       "app_template": "architecture",
       "expect": {
-        "ok": 53,
-        "new_failure": [
-          {
-            "key": "stage.planning_response",
-            "want": "include",
-            "app": "exclude",
-            "app_differs_said": null
-          }
-        ],
+        "ok": 54,
+        "new_failure": [],
         "known_difference": [
           {
             "key": "position.mixed_use_map",
@@ -1631,7 +1618,6 @@
         "missing": [
           "Concept and schematic design",
           "DA planning approval documentation",
-          "Planning response",
           "Office interiors and finishes"
         ],
         "unknown": [],
@@ -1756,21 +1742,8 @@
       "report": "df44f6f8-bce7-4339-a0fb-37bcdb2aacaf",
       "app_template": "traffic",
       "expect": {
-        "ok": 19,
-        "new_failure": [
-          {
-            "key": "stage.assessment_response",
-            "want": "include",
-            "app": "exclude",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.conditions_review",
-            "want": "include",
-            "app": "exclude",
-            "app_differs_said": null
-          }
-        ],
+        "ok": 21,
+        "new_failure": [],
         "known_difference": [],
         "fixed": [],
         "not_checked": [],
@@ -1794,10 +1767,7 @@
       },
       "must_include": {
         "present": 5,
-        "missing": [
-          "Assessment response",
-          "Conditions review"
-        ],
+        "missing": [],
         "unknown": [],
         "known": []
       },
@@ -1818,15 +1788,8 @@
       "report": "a6c4f2b0-6504-4244-a64c-832678e81e1e",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 9,
-        "new_failure": [
-          {
-            "key": "stage.a2_planning",
-            "want": "include",
-            "app": "exclude",
-            "app_differs_said": "ask"
-          }
-        ],
+        "ok": 11,
+        "new_failure": [],
         "known_difference": [
           {
             "key": "stage.b1_preliminary",
@@ -1845,6 +1808,12 @@
             "want": "exclude",
             "app": "include",
             "why": "after the a1..a3 boundary (Go run)"
+          },
+          {
+            "key": "stage.b2_cdc",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the a1..a3 boundary; the CDC determination is the certifier's"
           },
           {
             "key": "position.statutory_functions",
@@ -1883,14 +1852,7 @@
             "why": "client flag (Go run); no residential part"
           }
         ],
-        "fixed": [
-          {
-            "key": "stage.b2_construction_approval",
-            "want": "exclude",
-            "app": "exclude",
-            "was": "option"
-          }
-        ],
+        "fixed": [],
         "not_checked": [],
         "awaiting_user": [
           {
@@ -1983,7 +1945,6 @@
       "must_include": {
         "present": 3,
         "missing": [
-          "A2 DA BCA report",
           "Large isolated building strategy and performance solution schedule"
         ],
         "unknown": [],
@@ -2017,15 +1978,8 @@
       "report": "0facc9e7-54db-4df7-a6c8-eda927f1480c",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 11,
-        "new_failure": [
-          {
-            "key": "stage.b2_construction_approval",
-            "want": "include",
-            "app": "exclude",
-            "app_differs_said": "option"
-          }
-        ],
+        "ok": 14,
+        "new_failure": [],
         "known_difference": [
           {
             "key": "stage.a1_inception",
@@ -2070,14 +2024,7 @@
             "why": "client flag (Go run); no residential part"
           }
         ],
-        "fixed": [
-          {
-            "key": "stage.a2_planning",
-            "want": "exclude",
-            "app": "exclude",
-            "was": "ask"
-          }
-        ],
+        "fixed": [],
         "not_checked": [],
         "awaiting_user": [
           {
@@ -2168,12 +2115,10 @@
         ]
       },
       "must_include": {
-        "present": 2,
+        "present": 3,
         "missing": [
-          "B2 construction certificate assessment (staged: early works, building)",
           "Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)",
-          "Occupation certificate",
-          "CDC assessment and determination"
+          "Occupation certificate"
         ],
         "unknown": [],
         "known": []
@@ -3279,12 +3224,12 @@
     },
     "cost_plan": {
       "expected": 49,
-      "matched": 31,
-      "missed": 18,
+      "matched": 32,
+      "missed": 17,
       "missed_built_in": 0,
-      "missed_known_gap": 18,
+      "missed_known_gap": 17,
       "extra": 0,
-      "false_positive": 3,
+      "false_positive": 2,
       "section_mismatch": 0,
       "fabricated": 0,
       "amounts_document": 11,
@@ -3299,7 +3244,7 @@
       "extra": 1,
       "false_positive": 0,
       "wrong_stage": 0,
-      "skeleton_match": false,
+      "skeleton_match": true,
       "links_holds": 0,
       "links_violated": 0,
       "links_unknown": 47,
@@ -3314,12 +3259,12 @@
       "missing_built_in": 0,
       "not_expected_present": 1,
       "extra": 1,
-      "expect_ok": 282,
-      "expect_new_failure": 5,
-      "expect_known_difference": 50,
-      "expect_fixed": 2,
+      "expect_ok": 290,
+      "expect_new_failure": 0,
+      "expect_known_difference": 51,
+      "expect_fixed": 0,
       "expect_awaiting_user": 119,
-      "must_include_missing": 21,
+      "must_include_missing": 15,
       "must_include_unknown": 0,
       "must_not_include_present": 19,
       "must_not_include_known": 3

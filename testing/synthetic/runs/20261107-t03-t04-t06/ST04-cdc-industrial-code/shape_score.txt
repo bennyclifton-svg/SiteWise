@@ -1,16 +1,15 @@
 T04 Industrial warehouse (cdc-industrial-code)
   Procurement [scored]: matched 12/19, missed 7 (0 built in, 7 known gaps), extra 0, false positives 2
     false positives: consultant.mechanical; consultant.town_planner
-  Cost plan [scored]: matched 31/49, missed 18 (0 built in, 18 known gaps), extra 0, false positives 3, fabricated amounts 0 (from documents 11, typed 0)
-    false positives: Passive fire protection; Mechanical; Construction certificate and certifier fees
-  Program [scored]: skeleton sk.generic (expected sk.new-dc-da), matched 49/91, missed 42 (0 built in, 42 known gaps), extra 1, false positives 0, wrong stage 0; links holds 0, violated 0, unknown 47, unscored 69; orphans 1, cycles 0
-  RFPs: found 12/18 (0 built-in missing), not expected present 1, extra 1; expect ok 282, new failures 5, known differences 50, fixed 2, awaiting user input 119; must_include missing 21 (unknown 0); must_not_include present 19 (known 3)
-    consultant.architect: stage.planning_response; missing 'Concept and schematic design'; missing 'DA planning approval documentation'; missing 'Planning response'; missing 'Office interiors and finishes'
+  Cost plan [scored]: matched 32/49, missed 17 (0 built in, 17 known gaps), extra 0, false positives 2, fabricated amounts 0 (from documents 11, typed 0)
+    false positives: Passive fire protection; Mechanical
+  Program [scored]: skeleton sk.generic (match), matched 49/91, missed 42 (0 built in, 42 known gaps), extra 1, false positives 0, wrong stage 0; links holds 0, violated 0, unknown 47, unscored 69; orphans 1, cycles 0
+  RFPs: found 12/18 (0 built-in missing), not expected present 1, extra 1; expect ok 290, new failures 0, known differences 51, fixed 0, awaiting user input 119; must_include missing 15 (unknown 0); must_not_include present 19 (known 3)
+    consultant.architect: missing 'Concept and schematic design'; missing 'DA planning approval documentation'; missing 'Office interiors and finishes'
     consultant.structural: missing 'Portal frame and precast panel design with connections'; missing 'Pad and strip footings'; missing 'Industrial slab for racking and forklift loads with joint and flatness specification'
     consultant.civil: missing 'Earthworks and cut-fill design'; missing 'Crossings and boundary levels'; missing 'Erosion and sediment control plan'
-    consultant.traffic: stage.assessment_response; stage.conditions_review; missing 'Assessment response'; missing 'Conditions review'
-    consultant.bca: stage.a2_planning; missing 'A2 DA BCA report'; missing 'Large isolated building strategy and performance solution schedule'; has 'Package B statutory functions'; has 'Mixed-use classification map'
-    consultant.certifier: stage.b2_construction_approval; missing 'B2 construction certificate assessment (staged: early works, building)'; missing 'Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)'; missing 'Occupation certificate'; missing 'CDC assessment and determination'; has 'Staged occupation' (+1 more)
+    consultant.bca: missing 'Large isolated building strategy and performance solution schedule'; has 'Package B statutory functions'; has 'Mixed-use classification map'
+    consultant.certifier: missing 'Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)'; missing 'Occupation certificate'; has 'Staged occupation'; has 'Residential BASIX evidence'
     consultant.fire_services: missing 'Pressure and flow enquiry and fire-water strategy'; has 'Existing system investigation'; has 'Upgrade of existing systems'
     consultant.fire_engineer: missing
     consultant.electrical: has 'Fire detection design'; has 'Existing services investigation'

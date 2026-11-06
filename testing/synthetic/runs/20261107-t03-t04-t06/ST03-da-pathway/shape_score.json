@@ -426,9 +426,9 @@
   "program": {
     "status": "scored",
     "skeleton": {
-      "expected": "sk.refurb-traditional-cdc",
+      "expected": "sk.refurb-traditional-da",
       "app": "sk.refurb-traditional-da",
-      "match": false
+      "match": true
     },
     "activities": {
       "matched": [
@@ -2271,40 +2271,33 @@
       "report": "cc6f697d-d745-4b16-9121-816cb7c1b601",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 10,
-        "new_failure": [
-          {
-            "key": "stage.a2_planning",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
+        "ok": 12,
+        "new_failure": [],
+        "known_difference": [
           {
             "key": "stage.b1_preliminary",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b2_construction_approval",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
+            "why": "after the a1..a3 boundary without client flag bca_certification; Package B is the certifier's (run 20261107-t03-t04-t06)"
           },
           {
             "key": "stage.b3_construction",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
+            "why": "after the boundary; principal certifier services are the certifier's"
           },
           {
             "key": "stage.b4_occupation",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
-          }
-        ],
-        "known_difference": [
+            "why": "after the boundary; the OC is the certifier's"
+          },
+          {
+            "key": "stage.b2_construction_approval",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the boundary on a DA; the CC is the certifier's, as the base keys b1, b3 and b4"
+          },
           {
             "key": "position.statutory_functions",
             "want": "absent",
@@ -2336,14 +2329,7 @@
             "why": "client flag bca_residential_evidence"
           }
         ],
-        "fixed": [
-          {
-            "key": "blocking.pathway_unsupported",
-            "want": "not blocking",
-            "app": "not blocking",
-            "was": "blocking"
-          }
-        ],
+        "fixed": [],
         "not_checked": [],
         "awaiting_user": [
           {
@@ -2434,10 +2420,9 @@
         ]
       },
       "must_include": {
-        "present": 2,
+        "present": 3,
         "missing": [
           "BCA assessment of the fit-out design at concept and detailed design",
-          "BCA compliance report supporting the CDC application",
           "Egress, travel distance and door hardware review",
           "Assessment of the existing building's fire safety against any upgrade the consent requires"
         ],
@@ -2460,52 +2445,15 @@
     {
       "discipline": "consultant.certifier",
       "template": "bca-certification",
-      "built_in": "no",
+      "built_in": "partial",
       "trigger": null,
       "status": "found",
       "found": true,
       "report": "d00e8e1e-4bd2-4ab7-8a82-d5e9cadcbba5",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 0,
-        "new_failure": [
-          {
-            "key": "stage.a2_planning",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b1_preliminary",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b2_construction_approval",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b3_construction",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b4_occupation",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.pathway_unsupported",
-            "want": "blocking",
-            "app": "not blocking",
-            "app_differs_said": null
-          }
-        ],
+        "ok": 6,
+        "new_failure": [],
         "known_difference": [
           {
             "key": "stage.a1_inception",
@@ -2527,12 +2475,7 @@
           }
         ],
         "fixed": [],
-        "not_checked": [
-          {
-            "key": "text.cdc_scope",
-            "why": "Gap: the template has no CDC scope, so the base job's approval authority cannot be sent an RFP"
-          }
-        ],
+        "not_checked": [],
         "awaiting_user": [
           {
             "key": "blocking.allowance:duration_months",
@@ -2622,22 +2565,15 @@
         ]
       },
       "must_include": {
-        "present": 1,
+        "present": 6,
         "missing": [
-          "CDC eligibility check against the Codes SEPP commercial alterations code and the planning certificate (verified: false)",
-          "CDC assessment and determination with the fire safety schedule",
-          "Principal certifier appointment",
-          "Mandatory commencement and final inspections (Class 5 list verified: false)",
-          "Final fire safety certificate check",
-          "Occupation certificate for the fit-out",
-          "Package B: CC assessment",
           "Occupation certificate"
         ],
         "unknown": [],
         "known": []
       },
       "must_not_include": {
-        "absent": 4,
+        "absent": 3,
         "present": [
           {
             "phrase": "Design",
@@ -3048,7 +2984,7 @@
       "extra": 7,
       "false_positive": 0,
       "wrong_stage": 0,
-      "skeleton_match": false,
+      "skeleton_match": true,
       "links_holds": 3,
       "links_violated": 0,
       "links_unknown": 12,
@@ -3063,12 +2999,12 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 2,
-      "expect_ok": 105,
-      "expect_new_failure": 11,
-      "expect_known_difference": 64,
-      "expect_fixed": 1,
+      "expect_ok": 113,
+      "expect_new_failure": 0,
+      "expect_known_difference": 68,
+      "expect_fixed": 0,
       "expect_awaiting_user": 120,
-      "must_include_missing": 27,
+      "must_include_missing": 19,
       "must_include_unknown": 0,
       "must_not_include_present": 19,
       "must_not_include_known": 4

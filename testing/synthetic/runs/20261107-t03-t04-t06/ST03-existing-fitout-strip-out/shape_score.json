@@ -2314,27 +2314,32 @@
       "app_template": "bca-certification",
       "expect": {
         "ok": 12,
-        "new_failure": [
+        "new_failure": [],
+        "known_difference": [
           {
             "key": "stage.b1_preliminary",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
+            "why": "after the a1..a3 boundary without client flag bca_certification; Package B is the certifier's (run 20261107-t03-t04-t06)"
+          },
+          {
+            "key": "stage.b2_cdc",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the boundary; the CDC determination is the certifier's"
           },
           {
             "key": "stage.b3_construction",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
+            "why": "after the boundary; principal certifier services are the certifier's"
           },
           {
             "key": "stage.b4_occupation",
             "want": "exclude",
             "app": "include",
-            "app_differs_said": null
-          }
-        ],
-        "known_difference": [
+            "why": "after the boundary; the OC is the certifier's"
+          },
           {
             "key": "position.statutory_functions",
             "want": "absent",
@@ -2366,14 +2371,7 @@
             "why": "client flag bca_residential_evidence"
           }
         ],
-        "fixed": [
-          {
-            "key": "blocking.pathway_unsupported",
-            "want": "not blocking",
-            "app": "not blocking",
-            "was": "blocking"
-          }
-        ],
+        "fixed": [],
         "not_checked": [],
         "awaiting_user": [
           {
@@ -2489,40 +2487,15 @@
     {
       "discipline": "consultant.certifier",
       "template": "bca-certification",
-      "built_in": "no",
+      "built_in": "partial",
       "trigger": null,
       "status": "found",
       "found": true,
       "report": "b805a970-3f9b-4727-aaae-ee1804b0138c",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 2,
-        "new_failure": [
-          {
-            "key": "stage.b1_preliminary",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b3_construction",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b4_occupation",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.pathway_unsupported",
-            "want": "blocking",
-            "app": "not blocking",
-            "app_differs_said": null
-          }
-        ],
+        "ok": 6,
+        "new_failure": [],
         "known_difference": [
           {
             "key": "stage.a1_inception",
@@ -2544,12 +2517,7 @@
           }
         ],
         "fixed": [],
-        "not_checked": [
-          {
-            "key": "text.cdc_scope",
-            "why": "Gap: the template has no CDC scope, so the base job's approval authority cannot be sent an RFP"
-          }
-        ],
+        "not_checked": [],
         "awaiting_user": [
           {
             "key": "blocking.allowance:duration_months",
@@ -2639,15 +2607,8 @@
         ]
       },
       "must_include": {
-        "present": 0,
-        "missing": [
-          "CDC eligibility check against the Codes SEPP commercial alterations code and the planning certificate (verified: false)",
-          "CDC assessment and determination with the fire safety schedule",
-          "Principal certifier appointment",
-          "Mandatory commencement and final inspections (Class 5 list verified: false)",
-          "Final fire safety certificate check",
-          "Occupation certificate for the fit-out"
-        ],
+        "present": 6,
+        "missing": [],
         "unknown": [],
         "known": []
       },
@@ -3046,12 +3007,12 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 2,
-      "expect_ok": 109,
-      "expect_new_failure": 7,
-      "expect_known_difference": 64,
-      "expect_fixed": 1,
+      "expect_ok": 113,
+      "expect_new_failure": 0,
+      "expect_known_difference": 68,
+      "expect_fixed": 0,
       "expect_awaiting_user": 120,
-      "must_include_missing": 24,
+      "must_include_missing": 18,
       "must_include_unknown": 0,
       "must_not_include_present": 19,
       "must_not_include_known": 4

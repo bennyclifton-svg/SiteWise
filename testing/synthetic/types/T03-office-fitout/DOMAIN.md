@@ -605,3 +605,23 @@ The `gaps` list in `shape.yaml` gives the evidence for each.
 
 The program order defects (sprinkler hold point, services rough-in, fire stopping) were confirmed by the
 review's read-only Go run on 30 October 2026.
+
+## Shape corrections after run `20261107-t03-t04-t06` (7 November 2026)
+
+From FINDINGS "Shape and key gaps" for that run, and owner ruling R19.
+
+- Certifier RFP re-keyed for F9, as the T12 certifier was on 6 November. The old key expected
+  `blocking: [pathway_unsupported]` and every stage absent. The template now has `b2_cdc`, the CDC determination
+  in place of the CC. The key expects `b2_cdc`, `b3_construction` and `b4_occupation` included, `b1_preliminary`
+  option (as T11), `b2_construction_approval` absent and no blocking check. Its CDC, principal certifier,
+  inspection and OC phrases are keyed to those stages. The `text.cdc_scope` gap is removed.
+- BCA RFP: the `blocking.pathway_unsupported` difference is gone (cdc is no longer an unsupported pathway). The
+  Package B stages (`b1_preliminary`, `b2_cdc`, `b3_construction`, `b4_occupation`) stay absent, with `app_differs`
+  option: the app shows them after the boundary because the client flags cannot be set.
+- `da-pathway` sets `skeleton: sk.refurb-traditional-da`. It restates the certifier `expect` (`a2_planning` and
+  `b2_construction_approval` included, `b2_cdc` absent) and the BCA `expect` (`a2_planning` included). The BCA's
+  `b2_construction_approval` stays absent with `app_differs` option, as the base keys the other B stages: the CC
+  is the certifier's. The CDC phrases leave the certifier and BCA lists.
+- `hdr.cond.quality_level` applies to residential only (`taxonomy.yaml` `applies_to`), so the ST03 keys mark it
+  `not_read`. The shape keeps the value as a fact.
+- R19: the ST03 keys accept `partial_occupation` or `live_environment` for `hdr.cond.operational_constraints`.

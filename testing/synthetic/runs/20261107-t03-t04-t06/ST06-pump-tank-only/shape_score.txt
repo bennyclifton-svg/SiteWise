@@ -3,13 +3,13 @@ T06 Sprinkler pump and tank upgrade, with fit-out (pump-tank-only)
     false positives: consultant.architect; consultant.hydraulic; consultant.bca; consultant.access; consultant.interior_design
   Cost plan [scored]: matched 13/28, missed 15 (0 built in, 15 known gaps), extra 0, false positives 5, fabricated amounts 0 (from documents 1, typed 0)
     false positives: Architect; Hydraulic; BCA; Access; Interior Design
-  Program [scored]: skeleton sk.refurb-traditional-cdc (match), matched 18/57, missed 39 (6 built in, 33 known gaps), extra 0, false positives 5, wrong stage 0; links holds 13, violated 0, unknown 0, unscored 55; orphans 1, cycles 0
+  Program [scored]: skeleton sk.refurb-traditional-cdc (match), matched 22/61, missed 39 (6 built in, 33 known gaps), extra 0, false positives 1, wrong stage 0; links holds 16, violated 0, unknown 0, unscored 55; orphans 1, cycles 0
     missed built in: Alter and protect retained structure; Seal service penetrations; Electrical rough-in; Alter and test sprinklers; Alter detection and warning; Electrical fit-off
-  RFPs: found 6/6 (0 built-in missing), not expected present 1, extra 4; expect ok 101, new failures 12, known differences 17, fixed 0, awaiting user input 62; must_include missing 11 (unknown 0); must_not_include present 8 (known 2)
-    consultant.fire_services: position.existing; blocking.details; has 'Advisory-only report'
+  RFPs: found 6/6 (0 built-in missing), not expected present 1, extra 4; expect ok 105, new failures 5, known differences 20, fixed 0, awaiting user input 62; must_include missing 6 (unknown 0); must_not_include present 8 (known 2)
+    consultant.fire_services: blocking.details; has 'Advisory-only report'
     consultant.structural: blocking.details; missing 'Tank and pump plinth design; slab strengthening if the assessment needs it'; missing 'Core hole and penetration review, with scanning before coring'; has 'Construction certificate certification'
-    consultant.electrical: position.existing; blocking.details; has 'Utility (DNSP) application'; has 'Fire detection and EWIS design (fire services engineer)'; has 'Standby generation, PV or EV design'
-    consultant.mechanical: position.existing; blocking.details; has 'Smoke control design'; has 'Commercial kitchen exhaust'; has 'Planning submission'
-    consultant.certifier: stage.b1_preliminary; stage.b3_construction; stage.b4_occupation; blocking.details; blocking.pathway_unsupported; missing 'CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)' (+4 more)
+    consultant.electrical: blocking.details; has 'Utility (DNSP) application'; has 'Fire detection and EWIS design (fire services engineer)'; has 'Standby generation, PV or EV design'
+    consultant.mechanical: blocking.details; has 'Smoke control design'; has 'Commercial kitchen exhaust'; has 'Planning submission'
+    consultant.certifier: blocking.details
     consultant.hazmat: missing 'Pre-refurbishment hazardous materials survey: pump room, store, risers and level 3 ceiling and floor'; missing 'Sampling and NATA-accredited laboratory analysis'; missing 'Update of the asbestos register and management plan (WHS Regulation 2025 (NSW; clause numbers verified: false))'; missing 'Removal scope if asbestos is found, then air monitoring and clearance inspection'
     consultant.interior_design: not_expected

@@ -9,9 +9,8 @@ ST03-existing-fitout-strip-out
     title       correct 16
     date        correct 14, missed 2
     supersedes  missed 1
-  Profile: correct 43, missed 6, missed_by_design 6, not_captured 1, wrong 1
+  Profile: correct 44, missed 6, missed_by_design 6, not_captured 1
     not_captured     hdr.cond.quality_level: expected 'high', app None
-    wrong            hdr.cond.operational_constraints: expected 'partial_occupation', app 'live_environment'
     missed           hdr.cond.environmental_sensitivity: expected 'standard', app ''
     missed_by_design hdr.scale.floor_plate_sqm: expected 1200, app ''
     missed_by_design hdr.scale.tenancies: expected 1, app ''

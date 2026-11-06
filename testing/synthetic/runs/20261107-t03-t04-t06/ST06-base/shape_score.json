@@ -1467,12 +1467,6 @@
         "ok": 24,
         "new_failure": [
           {
-            "key": "position.existing",
-            "want": "I",
-            "app": "absent",
-            "app_differs_said": "ask"
-          },
-          {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
@@ -1485,6 +1479,12 @@
             "want": "exclude",
             "app": "include",
             "why": "always option"
+          },
+          {
+            "key": "position.existing",
+            "want": "I",
+            "app": "absent",
+            "why": "row needs the investigation stage included or optioned; it is ask (client flag fs_investigation), so the row is left out (as T03)"
           }
         ],
         "fixed": [],
@@ -1722,12 +1722,6 @@
         "ok": 26,
         "new_failure": [
           {
-            "key": "position.existing",
-            "want": "I",
-            "app": "absent",
-            "app_differs_said": "ask"
-          },
-          {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
@@ -1740,6 +1734,12 @@
             "want": "exclude",
             "app": "include",
             "why": "client flag elec_planning; if_unknown option; no DNSP application in the base"
+          },
+          {
+            "key": "position.existing",
+            "want": "I",
+            "app": "absent",
+            "why": "row needs the investigation stage included or optioned; it is ask (client flag elec_investigation), so the row is left out (as T03)"
           },
           {
             "key": "position.generation",
@@ -1836,12 +1836,6 @@
         "ok": 24,
         "new_failure": [
           {
-            "key": "position.existing",
-            "want": "I",
-            "app": "absent",
-            "app_differs_said": "ask"
-          },
-          {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
@@ -1860,6 +1854,12 @@
             "want": "exclude",
             "app": "include",
             "why": "always option"
+          },
+          {
+            "key": "position.existing",
+            "want": "I",
+            "app": "absent",
+            "why": "row needs the investigation stage included or optioned; it is ask (client flag mech_investigation), so the row is left out (as T03)"
           },
           {
             "key": "position.kitchen",
@@ -2001,43 +2001,19 @@
     {
       "discipline": "consultant.certifier",
       "template": "bca-certification",
-      "built_in": "no",
+      "built_in": "partial",
       "trigger": null,
       "status": "found",
       "found": true,
       "report": "5c11dd47-3fc9-4794-bd8f-e2e243110e34",
       "app_template": "bca-certification",
       "expect": {
-        "ok": 2,
+        "ok": 6,
         "new_failure": [
-          {
-            "key": "stage.b1_preliminary",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b3_construction",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "stage.b4_occupation",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
           {
             "key": "blocking.details",
             "want": "not blocking",
             "app": "blocking",
-            "app_differs_said": null
-          },
-          {
-            "key": "blocking.pathway_unsupported",
-            "want": "blocking",
-            "app": "not blocking",
             "app_differs_said": null
           }
         ],
@@ -2062,12 +2038,7 @@
           }
         ],
         "fixed": [],
-        "not_checked": [
-          {
-            "key": "text.cdc_scope",
-            "why": "Gap: the template has no CDC scope"
-          }
-        ],
+        "not_checked": [],
         "awaiting_user": [
           {
             "key": "blocking.allowance:duration_months",
@@ -2157,14 +2128,8 @@
         ]
       },
       "must_include": {
-        "present": 0,
-        "missing": [
-          "CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)",
-          "Fire safety schedule with the fit-out CDC, listing existing and new measures; confirm whether the Fire Safety Code CDC needs one (verified: false)",
-          "Principal certifier appointment and inspections",
-          "Review of the final fire safety certificate",
-          "Occupation certificate for level 3 and the pump room works"
-        ],
+        "present": 5,
+        "missing": [],
         "unknown": [],
         "known": []
       },
@@ -2334,12 +2299,12 @@
       "missing_built_in": 0,
       "not_expected_present": 0,
       "extra": 4,
-      "expect_ok": 101,
-      "expect_new_failure": 12,
-      "expect_known_difference": 17,
+      "expect_ok": 105,
+      "expect_new_failure": 5,
+      "expect_known_difference": 20,
       "expect_fixed": 0,
       "expect_awaiting_user": 62,
-      "must_include_missing": 17,
+      "must_include_missing": 12,
       "must_include_unknown": 0,
       "must_not_include_present": 8,
       "must_not_include_known": 2
