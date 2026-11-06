@@ -647,3 +647,23 @@ Long service levy rate, threshold and timing (C4).
 the RFP `app_differs` for all 17 templated RFPs (author, `rfp.Resolve` with scope-by-stage off, so the
 rules' own answers are compared). **Least sure of:** the Class 5–9 inspection list, taken from a council
 page, not the Regulation.
+
+## Shape corrections after run `20261107-t03-t04-t06` (7 November 2026)
+
+From FINDINGS "Shape and key gaps" for that run.
+
+- `cdc-industrial-code` sets `skeleton: sk.generic`, as its `why` already said. It restates `expect`:
+  - architect `planning_response` absent;
+  - traffic `assessment_response` and `conditions_review` absent;
+  - BCA `a2_planning` absent (`b2_construction_approval` absent; `b2_cdc` absent with `app_differs` option);
+  - certifier `b2_construction_approval` and `a2_planning` absent, `b2_cdc` included (F9).
+  The matching unkeyed phrases ("Planning response", "Assessment response", "Conditions review", "A2 DA BCA
+  report", "B2 construction certificate assessment ...") leave those RFPs for the variant. "CDC assessment and
+  determination" is keyed to `stage.b2_cdc`.
+- `cdc-industrial-code` cost plan: "Construction certificate and certifier fees" stays and stands for the CDC fee
+  (`aliases: ["CDC fee"]`), as T03 and T06 alias it. The variant no longer removes it or adds "CDC fee".
+- `flood-affected` restates the civil positions `flood_report`, `flood_evacuation` and `trunk_drainage` as I, and
+  adds "Trunk drainage" to `must_include`. The base `must_not_include` "Flood report" and "Trunk drainage" are
+  dropped for the variant. The complex service-level rows are already I in the base (public road works, R15).
+- The base profile gains `det.site_class: M` and `det.saline_soil: true`. The ST04 scenarios already key both
+  from the geotechnical report.

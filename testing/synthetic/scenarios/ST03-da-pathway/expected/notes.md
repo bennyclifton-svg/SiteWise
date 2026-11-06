@@ -30,3 +30,11 @@ should be read.
 d19 and d20, and d19 says plainly that the town planner lodges the application, so the right value is `no` (source
 d19). `validate_expected.py` rejects it here because the base does not key it and it is not one of the da-pathway
 trigger's profile keys. A reader that sets it to `yes` is wrong, but this scenario does not score it.
+
+## Key changes after run `20261107-t03-t04-t06` (7 November 2026)
+
+- `hdr.cond.quality_level`: `read_by_design: false` with `not_read`. The field applies to residential only, so the
+  app never asks it on an office fit-out.
+- `hdr.cond.operational_constraints` accepts `partial_occupation` or `live_environment` (owner ruling R19: an empty
+  floor in an occupied tower is both).
+- The certifier and BCA RFP keys in the T03 shape were re-keyed for F9 (see T03 `DOMAIN.md`).

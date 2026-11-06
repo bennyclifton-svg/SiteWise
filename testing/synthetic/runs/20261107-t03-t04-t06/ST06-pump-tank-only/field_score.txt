@@ -9,8 +9,7 @@ ST06-pump-tank-only
     title       correct 15
     date        correct 13, missed 2
     supersedes  missed 1
-  Profile: conflict_true 2, correct 44, missed 2, missed_by_design 2, not_captured 1, wrong 1
-    wrong            hdr.cond.access_constraints: expected 'urban_constrained', app 'restricted_hours'
+  Profile: conflict_true 2, correct 45, missed 2, missed_by_design 2, not_captured 1
     not_captured     hdr.cond.quality_level: expected 'mid', app None
     missed           hdr.cond.environmental_sensitivity: expected 'standard', app ''
     missed           det.rise_in_storeys: expected 6, app ''

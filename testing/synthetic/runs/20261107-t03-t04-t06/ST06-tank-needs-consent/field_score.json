@@ -1747,12 +1747,17 @@
     },
     {
       "key": "hdr.cond.access_constraints",
-      "expected": "urban_constrained",
+      "expected": {
+        "accept": [
+          "urban_constrained",
+          "restricted_hours"
+        ]
+      },
       "app": "restricted_hours",
       "band": "amber",
       "alternatives": null,
       "read_by_design": true,
-      "outcome": "wrong"
+      "outcome": "correct"
     },
     {
       "key": "hdr.cond.stakeholder_complexity",
@@ -2546,9 +2551,8 @@
       }
     },
     "profile": {
-      "correct": 43,
+      "correct": 44,
       "conflict_true": 3,
-      "wrong": 1,
       "not_captured": 1,
       "missed": 2,
       "missed_by_design": 2

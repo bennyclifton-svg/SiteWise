@@ -53,3 +53,11 @@ by a private certifier; interior designer leads; traditional lump-sum tender und
 - The app cannot read a count of one tenancy (`hdr.scale.tenancies`, `tenancyCountRe`).
 - Consider moving `det.type_of_construction: A` to `expected_derived`, as T02 does (left for the owner; no shape edit).
 - Brief 03's architect/structural/civil/geotechnical fee rule does not fit T03 (see above).
+
+## Key changes after run `20261107-t03-t04-t06` (7 November 2026)
+
+- `hdr.cond.quality_level`: `read_by_design: false` with `not_read`. The field applies to residential only, so the
+  app never asks it on an office fit-out.
+- `hdr.cond.operational_constraints` accepts `partial_occupation` or `live_environment` (owner ruling R19: an empty
+  floor in an occupied tower is both).
+- The certifier and BCA RFP keys in the T03 shape were re-keyed for F9 (see T03 `DOMAIN.md`).

@@ -15,8 +15,8 @@ profile:
   hdr.work_type: refurb
   hdr.cond.planning: cdc
   hdr.cond.procurement_route: traditional
-  hdr.cond.quality_level: high
-  hdr.cond.operational_constraints: partial_occupation
+  hdr.cond.quality_level: high       # residential-only field (taxonomy.yaml applies_to); the keys mark it not_read
+  hdr.cond.operational_constraints: partial_occupation   # R19: the keys accept partial_occupation or live_environment
   hdr.cond.access_constraints: restricted_hours
   hdr.cond.environmental_sensitivity: standard
   hdr.scale.nla_sqm: 1200
@@ -447,8 +447,8 @@ rfps:
   - discipline: consultant.bca
     template: bca-certification
     built_in: "partial"
-    source: "knowledge/rfp/bca-certification.yaml unsupported_pathways"
-    why: "Advisory (Package A) scope fits, but the whole template blocks on cdc, so the BCA consultant's RFP cannot issue on a CDC fit-out"
+    source: "knowledge/rfp/bca-certification.yaml a1_inception"
+    why: "Advisory (Package A) scope fits. Since F9 the template no longer blocks on cdc; the app shows the Package B stages after the boundary, which the BCA consultant (not the certifier) does not carry"
     must_include:
       - "BCA assessment of the fit-out design at concept and detailed design"
       - {text: "Fit-out assessment of the affected area against the existing building; no whole-building upgrade assumed", key: position.existing_assessment}
@@ -462,12 +462,11 @@ rfps:
     expect:
       stages_include: [a1_inception, a3_tender]
       stages_option: [a4_construction]
-      stages_absent: [a2_planning, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+      stages_absent: [a2_planning, b1_preliminary, b2_construction_approval, b2_cdc, b3_construction, b4_occupation]
       positions: {evidence_registers: I, statutory_functions: absent, existing_assessment: I, classification_map: absent, staged_occupation: absent, performance_assessment: O, fire_referrals: absent, residential_evidence: absent, specialist_design: X, other_approvals: X, extra_visits: O, supervision: X}
       blocking: []
       sources: ["a3_tender stands for the detailed-design BCA report that supports the CDC; a2_planning needs a DA"]
     app_differs:
-      - {key: blocking.pathway_unsupported, app: blocking, expect: not blocking, why: "bca-certification.yaml unsupported_pathways lists cdc for the whole template, advisory included"}
       - {key: stage.a1_inception, app: ask, expect: include, why: "client flag bca_advisory cannot be keyed"}
       - {key: stage.a3_tender, app: ask, expect: include, why: "client flag bca_advisory"}
       - {key: position.statutory_functions, app: ask, expect: absent, why: "row needs client flag bca_certification"}
@@ -476,24 +475,33 @@ rfps:
       - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag bca_staged_occupation"}
       - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag bca_fire_referrals"}
       - {key: position.residential_evidence, app: ask, expect: absent, why: "client flag bca_residential_evidence"}
+      - {key: stage.b1_preliminary, app: option, expect: absent, why: "after the a1..a3 boundary without client flag bca_certification; Package B is the certifier's (run 20261107-t03-t04-t06)"}
+      - {key: stage.b2_cdc, app: option, expect: absent, why: "after the boundary; the CDC determination is the certifier's"}
+      - {key: stage.b3_construction, app: option, expect: absent, why: "after the boundary; principal certifier services are the certifier's"}
+      - {key: stage.b4_occupation, app: option, expect: absent, why: "after the boundary; the OC is the certifier's"}
   - discipline: consultant.certifier
     template: bca-certification
-    built_in: "no"
-    source: "knowledge/rfp/bca-certification.yaml unsupported_pathways"
-    why: "The certifier is the approval authority for this job, but the template blocks on cdc and its B stages need da or ssd. The agent-draft key bca-unsupported-cdc (a new Class 5 CDC, reviewed: false) treats the block as the safe answer until a CDC scope exists; for the owner to confirm"
-    must_include: ["CDC eligibility check against the Codes SEPP commercial alterations code and the planning certificate (verified: false)", "CDC assessment and determination with the fire safety schedule", "Principal certifier appointment", "Mandatory commencement and final inspections (Class 5 list verified: false)", "Final fire safety certificate check", "Occupation certificate for the fit-out"]
+    built_in: "partial"
+    source: "knowledge/rfp/bca-certification.yaml b2_cdc"
+    why: "The certifier determines the CDC in place of a CC, then acts as principal certifier (F9 fixed: stage b2_cdc). Re-keyed after run 20261107-t03-t04-t06 as the T12 certifier was on 6 November. Partial: the A and B boundary turns on client flags the harness cannot set"
+    must_include:
+      - {text: "CDC eligibility check against the Codes SEPP commercial alterations code and the planning certificate (verified: false)", key: stage.b2_cdc}
+      - {text: "CDC assessment and determination with the fire safety schedule", key: stage.b2_cdc}
+      - {text: "Principal certifier appointment", key: stage.b3_construction}
+      - {text: "Mandatory commencement and final inspections (Class 5 list verified: false)", key: stage.b3_construction}
+      - {text: "Final fire safety certificate check", key: stage.b4_occupation}
+      - {text: "Occupation certificate for the fit-out", key: stage.b4_occupation}
     must_not_include: ["Package A BCA advisory", "Construction certificate (there is none under a CDC)", "Performance solution authorship", "Design", "Building supervision"]
     expect:
-      stages_include: []
-      stages_option: []
-      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
-      blocking: ["pathway_unsupported"]
-      sources: ["data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml (agent draft, reviewed: false): CDC must receive its own scope; existing CC stages cannot be relabelled"]
+      stages_include: [b2_cdc, b3_construction, b4_occupation]
+      stages_option: [b1_preliminary]
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b2_construction_approval]
+      blocking: []
+      sources: ["bca-certification.yaml b2_cdc: under a CDC, B2 is the CDC determination in place of the CC; B3 and B4 stay (F9). b1_preliminary option as T11 keys it; the app shows it included after the boundary, which a by-stage RFP reads the same"]
     app_differs:
       - {key: stage.a1_inception, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
       - {key: stage.a3_tender, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
       - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary end"}
-      - {key: text.cdc_scope, app: "no CDC stage exists", expect: "CDC eligibility, determination, principal certifier, inspections, fire safety certificate check and OC", why: "Gap: the template has no CDC scope, so the base job's approval authority cannot be sent an RFP"}
   - discipline: consultant.access
     template: access
     built_in: "partial"
@@ -567,16 +575,33 @@ triggers:
     evidence: ["A development application will be lodged with council for the fit-out", "the proposal changes the use of part of the floor, so complying development is not available", "the works do not meet the complying development standards; a DA is required"]
     negation: ["The fit-out is complying development; the certifier will issue a CDC", "No development consent is required beyond the CDC"]
     profile: [hdr.cond.planning]
+    skeleton: sk.refurb-traditional-da
     adds:
       procurement: [consultant.town_planner]
       cost_plan: ["DA fees and contributions", "Town planner"]
       program: ["Lodge the application", "Public exhibition", "Assessment", "Construction certificate"]
-      rfps: [{discipline: consultant.town_planner, must_include: ["Statement of environmental effects", "Lodgement", "Responses to council requests"]}, {discipline: consultant.certifier, must_include: ["Package B: CC assessment", "Principal certifier services", "Occupation certificate"]}, {discipline: consultant.bca, must_include: ["Assessment of the existing building's fire safety against any upgrade the consent requires"]}]
+      rfps:
+        - {discipline: consultant.town_planner, must_include: ["Statement of environmental effects", "Lodgement", "Responses to council requests"]}
+        - discipline: consultant.certifier
+          must_include: [{text: "Package B: CC assessment", key: stage.b2_construction_approval}, "Principal certifier services", "Occupation certificate"]
+          expect:
+            stages_include: [a2_planning, b2_construction_approval]
+            stages_absent: [b2_cdc]
+        - discipline: consultant.bca
+          must_include: ["Assessment of the existing building's fire safety against any upgrade the consent requires", {text: "BCA report supporting the DA", key: stage.a2_planning}]
+          expect:
+            stages_include: [a2_planning]
+            stages_absent: [b2_construction_approval, b2_cdc]
+          app_differs:
+            - {key: stage.b2_construction_approval, app: option, expect: absent, why: "after the boundary on a DA; the CC is the certifier's, as the base keys b1, b3 and b4"}
       authority: ["DA consent from council; construction certificate from the certifier", "Council may require a fire safety upgrade of the existing building (verified: false)"]
     removes:
       cost_plan: ["Development contributions payable on the CDC (s7.11 or s7.12, verified: false)"]
       program: ["Prepare and lodge the complying development certificate", "Certifier determination"]
-    why: "Skeleton becomes sk.refurb-traditional-da. The certifier RFP stops blocking. Contributions move into the DA fees line"
+      rfps:
+        - {discipline: consultant.certifier, must_include: ["CDC eligibility check against the Codes SEPP commercial alterations code and the planning certificate (verified: false)", "CDC assessment and determination with the fire safety schedule"], must_not_include: ["Construction certificate (there is none under a CDC)"]}
+        - {discipline: consultant.bca, must_include: ["BCA compliance report supporting the CDC application"]}
+    why: "Skeleton becomes sk.refurb-traditional-da. The certifier's B2 becomes the CC (b2_construction_approval) in place of the CDC (b2_cdc), and a2_planning comes in for the certifier and the BCA consultant. Contributions move into the DA fees line"
     built_in: {procurement: "yes", cost_plan: "yes", program: "yes", rfps: "partial"}
     source: "knowledge/program/fragments.yaml fr.da-lodgement"
   - id: heritage-item

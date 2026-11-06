@@ -29,10 +29,10 @@ profile:
   hdr.work_type: refurb
   hdr.cond.planning: cdc
   hdr.cond.procurement_route: traditional
-  hdr.cond.operational_constraints: partial_occupation   # levels 1-2 and 4-6 tenanted; level 3 vacant
-  hdr.cond.access_constraints: urban_constrained
+  hdr.cond.operational_constraints: partial_occupation   # levels 1-2 and 4-6 tenanted; level 3 vacant; the keys accept live_environment too (R19)
+  hdr.cond.access_constraints: urban_constrained   # R19: the keys accept urban_constrained or restricted_hours
   hdr.cond.stakeholder_complexity: single_owner
-  hdr.cond.quality_level: mid
+  hdr.cond.quality_level: mid        # residential-only field (taxonomy.yaml applies_to); the keys mark it not_read
   hdr.cond.environmental_sensitivity: standard
   hdr.scale.storeys: 6
   det.ncc_class: ["5", "7a"]        # office over a basement car park
@@ -332,7 +332,7 @@ rfps:
       - {key: position.dry, app: ask, expect: I, why: "client flag fs_dry"}
       - {key: position.controls, app: ask, expect: I, why: "client flag fs_controls"}
       - {key: position.plant, app: ask, expect: I, why: "client flag fs_plant_interfaces"}
-      - {key: position.existing, app: ask, expect: I, why: "client flag fs_investigation"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag fs_investigation), so the row is left out (as T03)"}
       - {key: position.upgrade, app: ask, expect: I, why: "client flag fs_upgrade"}
       - {key: position.declarations, app: ask, expect: I, why: "client flag fs_declarations"}
       - {key: position.staging, app: O, expect: I, why: "always O; impairment management is core in an occupied building"}
@@ -411,7 +411,7 @@ rfps:
       - {key: position.utility, app: I, expect: O, why: "follows the concept stage; no utility demand application in the base"}
       - {key: position.controls, app: ask, expect: I, why: "client flag elec_controls"}
       - {key: position.ict, app: O, expect: I, why: "client flag elec_ict; if_unknown option"}
-      - {key: position.existing, app: ask, expect: I, why: "client flag elec_investigation"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag elec_investigation), so the row is left out (as T03)"}
       - {key: position.staging, app: ask, expect: I, why: "client flag elec_staging; tenancy metering for level 3"}
       - {key: position.declarations, app: ask, expect: I, why: "client flag elec_declarations"}
       - {key: position.generation, app: O, expect: absent, why: "client flag elec_generation; if_unknown option"}
@@ -449,7 +449,7 @@ rfps:
       - {key: stage.advisory, app: option, expect: absent, why: "always option"}
       - {key: position.controls, app: ask, expect: I, why: "client flag mech_controls"}
       - {key: position.interfaces, app: ask, expect: I, why: "client flag mech_interfaces"}
-      - {key: position.existing, app: ask, expect: I, why: "client flag mech_investigation"}
+      - {key: position.existing, app: absent, expect: I, why: "row needs the investigation stage included or optioned; it is ask (client flag mech_investigation), so the row is left out (as T03)"}
       - {key: position.declarations, app: ask, expect: I, why: "client flag mech_declarations"}
       - {key: position.local, app: ask, expect: I, why: "client flag mech_local; plant room exhaust is local exhaust"}
       - {key: position.kitchen, app: ask, expect: absent, why: "client flag mech_kitchen; a tea point is not a kitchen"}
@@ -458,32 +458,31 @@ rfps:
       - {key: position.witness, app: O, expect: I, why: "follows the handover stage"}
   - discipline: consultant.certifier
     template: bca-certification
-    built_in: "no"
-    source: "knowledge/rfp/bca-certification.yaml unsupported_pathways"
-    why: "The certifier is the approval authority, but the template blocks on cdc and its B stages need da or ssd (owner key data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml, a Class 5 CDC)."
+    built_in: "partial"
+    source: "knowledge/rfp/bca-certification.yaml b2_cdc"
+    why: "The certifier determines both CDCs in place of a CC, then acts as principal certifier (F9 fixed: stage b2_cdc). Re-keyed after run 20261107-t03-t04-t06 as the T12 certifier was on 6 November. Partial: the A and B boundary turns on client flags the harness cannot set"
     must_include:
-      - "CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)"
-      - "Fire safety schedule with the fit-out CDC, listing existing and new measures; confirm whether the Fire Safety Code CDC needs one (verified: false)"
-      - "Principal certifier appointment and inspections"
-      - "Review of the final fire safety certificate"
-      - "Occupation certificate for level 3 and the pump room works"
+      - {text: "CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)", key: stage.b2_cdc}
+      - {text: "Fire safety schedule with the fit-out CDC, listing existing and new measures; confirm whether the Fire Safety Code CDC needs one (verified: false)", key: stage.b2_cdc}
+      - {text: "Principal certifier appointment and inspections", key: stage.b3_construction}
+      - {text: "Review of the final fire safety certificate", key: stage.b4_occupation}
+      - {text: "Occupation certificate for level 3 and the pump room works", key: stage.b4_occupation}
     must_not_include:
       - "Construction certificate (there is none under a CDC)"
       - "Development application advice"
       - "Fire safety design or performance solution authorship"
       - "Building supervision"
     expect:
-      stages_include: []
-      stages_option: []
-      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
-      blocking: ["pathway_unsupported"]
+      stages_include: [b2_cdc, b3_construction, b4_occupation]
+      stages_option: [b1_preliminary]
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b2_construction_approval]
+      blocking: []
       sources:
-        - "data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml: CDC must receive its own scope; existing CC stages cannot be relabelled"
+        - "bca-certification.yaml b2_cdc: under a CDC, B2 is the CDC determination in place of the CC; B3 and B4 stay (F9). b1_preliminary option as T11 keys it; the app shows it included after the boundary, which a by-stage RFP reads the same"
     app_differs:
       - {key: stage.a1_inception, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
       - {key: stage.a3_tender, app: ask, expect: absent, why: "client flag bca_advisory cannot be keyed"}
       - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary end"}
-      - {key: text.cdc_scope, app: "no CDC stage exists", expect: "CDC assessment, fire safety schedule, principal certifier, inspections and OC", why: "Gap: the template has no CDC scope"}
   - discipline: consultant.interior_design
     template: null
     built_in: "no"
@@ -527,17 +526,41 @@ triggers:
       - "The tank fits within the existing basement store; no car spaces or external areas are affected."
       - "The certifier confirmed the tank and pump house meet the Fire Safety Code development standards."
     profile: [hdr.cond.planning]
+    skeleton: sk.refurb-traditional-da
     adds:
       procurement: [consultant.town_planner, consultant.bca]
-      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees"]
+      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees", "Town planner"]
       program: ["Lodge the application", "Public exhibition", "Assessment", "Construction certificate", "Fire safety schedule issued with the construction certificate"]
       rfps:
         - {discipline: consultant.town_planner, must_include: ["Statement of environmental effects for the tank and screening", "Car parking assessment"]}
+        - discipline: consultant.certifier
+          must_include: [{text: "Construction certificate assessment with the fire safety schedule", key: stage.b2_construction_approval}]
+          expect:
+            stages_include: [a2_planning, b2_construction_approval]
+            stages_absent: [b2_cdc]
+        - discipline: consultant.bca
+          must_include: [{text: "BCA report supporting the DA", key: stage.a2_planning}, {text: "Detailed design BCA advice for the CC", key: stage.a3_tender}]
+          must_not_include: [{text: "Principal certifier functions", key: position.statutory_functions}, {text: "Building supervision", key: position.supervision}]
+          expect:
+            stages_include: [a1_inception, a2_planning, a3_tender]
+            stages_option: [a4_construction]
+            stages_absent: [b1_preliminary, b2_construction_approval, b2_cdc, b3_construction, b4_occupation]
+          app_differs:
+            - {key: stage.a1_inception, app: ask, expect: include, why: "client flag bca_advisory cannot be keyed"}
+            - {key: stage.a2_planning, app: ask, expect: include, why: "client flag bca_advisory"}
+            - {key: stage.a3_tender, app: ask, expect: include, why: "client flag bca_advisory"}
+            - {key: stage.b1_preliminary, app: option, expect: absent, why: "after the a1..a3 boundary; Package B is the certifier's"}
+            - {key: stage.b2_construction_approval, app: option, expect: absent, why: "after the boundary; the CC is the certifier's"}
+            - {key: stage.b3_construction, app: option, expect: absent, why: "after the boundary"}
+            - {key: stage.b4_occupation, app: option, expect: absent, why: "after the boundary"}
+            - {key: position.statutory_functions, app: ask, expect: absent, why: "row needs client flag bca_certification (as T03)"}
       authority: ["Development consent", "Construction certificate"]
     removes:
       cost_plan: ["Complying development certificate and certifier fees"]
       program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Prepare and lodge the fit-out CDC", "Fire safety schedule issued with the fit-out CDC"]
-    why: "An external tank alone is not a DA trigger: the Fire Safety Code has standards for water storage tanks and external pump houses (Info Sheet 8.1; verified: false). The DA and CC fragments fire on hdr.cond.planning alone and the skeleton becomes sk.refurb-traditional-da. The certifier RFP unblocks on da. BCA joins for the design-side compliance report; the app suggests it anyway. Assumes the fit-out is folded into the DA (a separate fit-out CDC is possible). The levy and the award re-link to 'Construction certificate'. The app has no fire safety schedule row, hence program partial."
+      rfps:
+        - {discipline: consultant.certifier, must_include: ["CDC assessment under each code: the Fire Safety Code (Part 8) for the pump works and the commercial internal alterations code for level 3 (verified: false)", "Fire safety schedule with the fit-out CDC, listing existing and new measures; confirm whether the Fire Safety Code CDC needs one (verified: false)"], must_not_include: ["Construction certificate (there is none under a CDC)", "Development application advice"]}
+    why: "An external tank alone is not a DA trigger: the Fire Safety Code has standards for water storage tanks and external pump houses (Info Sheet 8.1; verified: false). The DA and CC fragments fire on hdr.cond.planning alone and the skeleton becomes sk.refurb-traditional-da. The certifier's B2 becomes the CC (b2_construction_approval) in place of the CDC (b2_cdc), and a2_planning comes in for it; the BCA consultant's RFP carries A1 to A3. The town planner's fee line joins with its package. BCA joins for the design-side compliance report; the app suggests it anyway. Assumes the fit-out is folded into the DA (a separate fit-out CDC is possible). The levy and the award re-link to 'Construction certificate'. The app has no fire safety schedule row, hence program partial."
     built_in: {procurement: "yes", cost_plan: "yes", program: "partial", rfps: "yes"}
     source: "knowledge/works/package_defaults.yaml complexity_additions[0]"
   - id: performance-solution
@@ -689,8 +712,8 @@ triggers:
         - {system: fire-active.emergency-lighting, action: alter}
         - {system: comms-security.structured-cabling, action: new}
       cost_plan: ["Interior designer", "Level 3 soft strip", "Interiors and finishes", "Fit-out mechanical: air distribution and comms room cooling", "Tea point plumbing", "Fit-out lighting and power", "Communications and security", "Fit-out sprinkler, detection, EWIS and emergency lighting alterations"]
-      program: ["Confirm the brief", "Prepare the concept design", "Client review of the concept", "Develop the design", "Prepare fit-out documentation", "Frame and line partitions", "Install ceilings", "Install luminaires", "Lay floor finishes", "Paint the fit-out", "Install joinery", "Procure and deliver joinery", "Hang doors", "Install structured cabling", "Alter cold water", "Install or alter the local hot-water unit", "Sanitary rough-in", "Sanitary fit-off", "Relocate EWIS speakers, exit signs and emergency lighting", "Alter ductwork and pipework", "Commission the altered system", "Isolate services and protect adjacent areas", "Soft-strip partitions, ceilings and services", "Make good retained structure and services", "Hold point: a recorded pressure test of the sprinkler pipework", "Hold point: a location-based inspection record for concealed fire stopping", "Prepare and lodge the fit-out CDC", "Fire safety schedule issued with the fit-out CDC"]
-    why: "With no interiors items neither hold point has a before row, so holdPointRows adds neither; the PC link to floor finishes falls away. The electrical, sprinkler and detection fit-out fragments still fire on the base-building cabling, sprinkler and detection items (checked by running program.Generate), so their rows stay; links to the removed ceilings fall away. fr.strip-out-fitout still fires on the pump-removal demolition item, so the app prints the three strip-out rows; they are expected noise, like the fit-out concept rows. The FFSC rows stay until the owner confirms the exemption. Keyword trap: the fit-out project fragments (concept, design development, fit-out documentation, tender) still fire on class 5 refurb with no fit-out scope, so the app shows 'Prepare the concept design' for a pump job."
+      program: ["Prepare fit-out documentation", "Frame and line partitions", "Install ceilings", "Install luminaires", "Lay floor finishes", "Paint the fit-out", "Install joinery", "Procure and deliver joinery", "Hang doors", "Install structured cabling", "Alter cold water", "Install or alter the local hot-water unit", "Sanitary rough-in", "Sanitary fit-off", "Relocate EWIS speakers, exit signs and emergency lighting", "Alter ductwork and pipework", "Commission the altered system", "Isolate services and protect adjacent areas", "Soft-strip partitions, ceilings and services", "Make good retained structure and services", "Hold point: a recorded pressure test of the sprinkler pipework", "Hold point: a location-based inspection record for concealed fire stopping", "Prepare and lodge the fit-out CDC", "Fire safety schedule issued with the fit-out CDC"]
+    why: "With no interiors items neither hold point has a before row, so holdPointRows adds neither; the PC link to floor finishes falls away. The electrical, sprinkler and detection fit-out fragments still fire on the base-building cabling, sprinkler and detection items (checked by running program.Generate), so their rows stay; links to the removed ceilings fall away. fr.strip-out-fitout still fires on the pump-removal demolition item, so the app prints the three strip-out rows; they are expected noise, like the fit-out concept rows. The FFSC rows stay until the owner confirms the exemption. Keyword trap: the fit-out project fragments (concept, design development, fit-out documentation, tender) still fire on class 5 refurb with no fit-out scope, so the app shows 'Prepare the concept design' for a pump job. Those generic design rows (brief, concept, client review, develop the design) are also the fire services design sequence, so they stay expected; only 'Prepare fit-out documentation' is removed (run 20261107-t03-t04-t06)."
     built_in: {program: "no"}
   - id: tenant-procured-fitout
     label: The incoming tenant procures its own fit-out under the lease
