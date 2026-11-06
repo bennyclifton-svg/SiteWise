@@ -243,7 +243,10 @@ var (
 // project's own value, a turnover or a staff count.
 var excludedContext = regexp.MustCompile(`(?i)services concerned|failure to exercise reasonable care|policy value|imprisonment|if no invoice has been issued|insurance|insurer|indemnity|public liability|liability\b|\bworkers\b|any one (?:claim|occurrence)|aggregate|valued (?:at|over|up to)|projects? (?:valued|worth|value)|value of the (?:project|works)|estimated value|contract value|turnover|construction (?:cost|value|budget) of|capital (?:value|investment)|\$\s?\d+(?:\.\d+)?\s?(?:m|million|billion|bn)\b`)
 
-var totalWords = regexp.MustCompile(`(?i)\b(?:cost|fee) estimate\b|\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfixed\s+(?:professional\s+)?fee\b|\bfee\s+(?:total|summary)\b`)
+// "Cost estimate" is a total only when the words end at the figure or the
+// line ("Cost Estimate  $51,700.00"); a QS service named "DA cost estimate
+// report" is a fee row (F39).
+var totalWords = regexp.MustCompile(`(?i)\b(?:cost|fee) estimate(?:\s*[:*|]*\s*(?:\$|$))|\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfixed\s+(?:professional\s+)?fee\b|\bfee\s+(?:total|summary)\b`)
 
 // Harvest collects candidates from a proposal's text.
 func Harvest(filename string, text identity.Text) Evidence {

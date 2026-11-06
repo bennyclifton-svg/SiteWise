@@ -262,6 +262,22 @@ func (d *Draft) settlePackage() {
 	}
 }
 
+// abnConflict is true when the page prints valid ABNs and the directory
+// firm's ABN is none of them: a firm matched by name alone is then another
+// firm with the same name, or a stale one, and its fields must not overwrite
+// what the page prints (F37).
+func abnConflict(firmABN string, abns []string) bool {
+	if firmABN == "" || len(abns) == 0 {
+		return false
+	}
+	for _, a := range abns {
+		if a == firmABN {
+			return false
+		}
+	}
+	return true
+}
+
 // ownFirm is the firm a document names as its author without an ABN: the
 // sign-off's firm, else the one registered name in its header.
 func (d *Draft) ownFirm() string {
@@ -287,6 +303,11 @@ func (d *Draft) settleFirm() {
 	// The firm that signs, or the one registered name in the header, is the
 	// author. A forwarded email also carries the forwarder's domain, which
 	// must not match the directory first (Walsh builder email, 2026-10-27).
+	// A letterhead's legal name is the author too; the descriptor line under
+	// it ("Civil and stormwater engineers") must not match a firm (F37).
+	if l := d.ev.Letterhead; l != nil && d.ev.FormFirm == nil {
+		keys = []string{NameKey(l.Name)}
+	}
 	if own := d.ownFirm(); own != "" {
 		keys = []string{NameKey(own)}
 	}
@@ -294,7 +315,7 @@ func (d *Draft) settleFirm() {
 		keys = []string{NameKey(u.Value)}
 	}
 	if d.ctx.Lookup != nil {
-		if f := d.ctx.Lookup(abns, keys); f != nil && cleanFirmCandidate(f.Name) == f.Name {
+		if f := d.ctx.Lookup(abns, keys); f != nil && cleanFirmCandidate(f.Name) == f.Name && !abnConflict(f.ABN, abns) {
 			d.firm = f
 			for field, v := range map[string]string{FieldFirmName: f.Name, FieldFirmABN: f.ABN, FieldFirmAddress: f.Address, FieldFirmContact: f.Contact, FieldFirmEmail: f.Email, FieldFirmPhone: f.Phone} {
 				d.rule(field, v)
@@ -481,13 +502,28 @@ func (d *Draft) settleTotal() {
 		if a.Total && (a.GST != "inc" || incOK) {
 			totals = append(totals, a)
 		}
+		if !a.Total && optionalFee(a) {
+			continue
+		}
 		largest = max(largest, a.Cents)
 	}
 	// One total, and no fee on the page larger than it: a disbursements
-	// total beside a larger certification fee is not the stated total.
+	// total beside a larger certification fee is not the stated total. An
+	// optional fee sits outside the total, so it may be larger (F38).
 	if distinctCents(totals) == 1 && totals[0].Cents >= largest {
 		d.rule(FieldStatedTotal, strconv.FormatInt(totals[0].Cents, 10))
 	}
+}
+
+// optionalHeading opens an optional or conditional offer ("Option:
+// post-novation services", "Optional extras"). "Option A" and "Option 1"
+// are alternative prices, not extras, so they do not match.
+var optionalHeading = regexp.MustCompile(`(?i)^\s*(?:optional\b|conditional\b|option\s*[:\-–])`)
+
+// optionalFee is a fee printed under an optional or conditional heading or
+// row label: it is not part of the stated total.
+func optionalFee(a Amount) bool {
+	return optionalHeading.MatchString(stripEmphasis(a.Under)) || optionalHeading.MatchString(stripEmphasis(a.Label))
 }
 
 // settlePrices reads a returned response form by key, and marks every fee
