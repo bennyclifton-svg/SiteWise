@@ -21,6 +21,10 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
+| Brief |  | Included |  |
+|  | Confirmed, quantified brief (1 draft, 1 final) | Included |  |
+|  | Approval strategy workshop | Included |  |
+|  | Help selecting other consultants | Included |  |
 | Concept |  | Included |  |
 |  | Site inspection | Included |  |
 |  | Review of existing information and brief gaps | Included |  |
@@ -29,7 +33,6 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Area schedule | Included |  |
 |  | Check against budget | Included |  |
 |  | Brief gaps, required-input schedule, responsibility matrix and decisions register | Included |  |
-|  | Help selecting other consultants | Included |  |
 |  | Connecting with Country input | Included |  |
 |  | Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces | Included |  |
 | Schematic design |  | Included |  |

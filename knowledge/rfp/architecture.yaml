@@ -66,20 +66,22 @@ boundary:
   - {start: brief_masterplan, end: interiors}
 
 stages:
+  # Owner ruling R13 (7 November 2026): the brief is typical on every
+  # project, so it is always priced; a masterplan is only for a large project
+  # (more than one building, or staged). The key stays brief_masterplan so
+  # saved choices and answer keys keep their stage.
   - key: brief_masterplan
     name: Brief and masterplan
+    base_name: Brief
     lines:
       - {key: brief, text: "Confirmed, quantified brief (1 draft, 1 final)"}
-      - {key: masterplan_options, text: "up to {allowance:concept_options} masterplan options"}
-      - {key: masterplan_report, text: "preferred masterplan report"}
+      - {key: masterplan_options, text: "up to {allowance:concept_options} masterplan options", when: [{flag: [staged]}, {flag: [multi_building]}]}
+      - {key: masterplan_report, text: "preferred masterplan report", when: [{flag: [staged]}, {flag: [multi_building]}]}
       - {key: strategy_workshop, text: "approval strategy workshop"}
     fee_basis: fixed
     delivery_stage: concept_design
-    when: [{flag: [staged]}, {flag: [multi_building]}]
-    if_unknown: option
-    assumption: "Price as an option: needed only for a staged, multi-building or campus site."
-    shown_when: Multi-building, staged or campus site
-    provenance: [{kind: evidence, ref: "architecture#1-14"}]
+    shown_when: Always; the masterplan lines on a multi-building, staged or campus site
+    provenance: [{kind: evidence, ref: "architecture#1-14"}, {kind: client_decision, ref: "docs/plans/2026-11-07-synthetic-findings-f31-f42.md#r13", why: "Owner ruling R13: the brief is priced on every project; a masterplan only on a large one."}]
   - key: concept
     name: Concept
     items: [input_schedule]

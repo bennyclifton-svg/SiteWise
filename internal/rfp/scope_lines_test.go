@@ -111,3 +111,45 @@ func TestCustomLinesAreValidated(t *testing.T) {
 		t.Error("custom lines accepted for a discipline not by stage")
 	}
 }
+
+// R13 (owner ruling, 7 November 2026): the brief is typical on every
+// project, so the architect always prices it; a masterplan is only for a
+// large project (more than one building, or staged). The stage name follows
+// what is included.
+func TestArchitectBriefAlwaysMasterplanOnlyWhenLarge(t *testing.T) {
+	d, sk := discipline(t, "architecture"), skeleton(t)
+	lineKeys := func(s StageResult) string {
+		keys := []string{}
+		for _, l := range s.Lines {
+			keys = append(keys, l.Key)
+		}
+		return strings.Join(keys, ",")
+	}
+	for _, c := range []struct {
+		name  string
+		facts []string
+	}{
+		{"single house", []string{"class=1a", "work_type=new", "procurement=traditional", "pathway=cdc"}},
+		{"apartment building", []string{"class=2", "work_type=new", "procurement=traditional", "pathway=da", "flag.multi_building=no", "flag.staged=no"}},
+	} {
+		s := Resolve(d, sk, facts(t, c.facts...), Settings{}).Stage("brief_masterplan")
+		if s.State != Include || s.Name != "Brief" || lineKeys(s) != "brief,strategy_workshop" {
+			t.Errorf("%s: %s %q lines %s", c.name, s.State, s.Name, lineKeys(s))
+		}
+		if strings.Contains(s.Text, "masterplan") {
+			t.Errorf("%s prices a masterplan: %q", c.name, s.Text)
+		}
+	}
+	for _, flag := range []string{"flag.multi_building=yes", "flag.staged=yes"} {
+		r := Resolve(d, sk, facts(t, "class=9b", "work_type=new", "procurement=traditional", "pathway=da", flag), Settings{})
+		s := r.Stage("brief_masterplan")
+		if s.State != Include || s.Name != "Brief and masterplan" || lineKeys(s) != "brief,masterplan_options,masterplan_report,strategy_workshop" {
+			t.Errorf("%s: %s %q lines %s", flag, s.State, s.Name, lineKeys(s))
+		}
+	}
+	// Excluding both masterplan lines on a large project names the stage Brief.
+	r := Resolve(d, sk, facts(t, "class=9b", "work_type=new", "flag.staged=yes"), set("line:brief_masterplan.masterplan_options", `"X"`, "line:brief_masterplan.masterplan_report", `"X"`))
+	if s := r.Stage("brief_masterplan"); s.Name != "Brief" {
+		t.Errorf("masterplan excluded: %q", s.Name)
+	}
+}

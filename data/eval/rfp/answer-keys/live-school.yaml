@@ -36,8 +36,9 @@ settings:
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [interiors]
-    stages_absent: [regulated_design, brief_masterplan]
+    # The brief is priced on every project (owner ruling R13, 7 November 2026).
+    stages_include: [brief_masterplan, interiors]
+    stages_absent: [regulated_design]
     positions: {live_staging: I, tenant_fitout: I, existing_interfaces: I}
     blocking: ["fact:budget"]
     blocking_only: true

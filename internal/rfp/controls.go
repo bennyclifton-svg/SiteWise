@@ -75,7 +75,12 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	c.Scale = Scale{Value: r.Scale, Source: r.ScaleSource, Why: r.ScaleWhy, Set: isSet("scale")}
 	c.Boundary = BoundaryC{Boundary: r.Boundary, Set: isSet("boundary:range")}
 	for _, s := range d.Stages {
-		c.Boundary.Stages = append(c.Boundary.Stages, Choice{Value: s.Key, Label: s.Name})
+		// The resolved name follows the stage's included lines (R13).
+		label := r.Stage(s.Key).Name
+		if label == "" {
+			label = s.Name
+		}
+		c.Boundary.Stages = append(c.Boundary.Stages, Choice{Value: s.Key, Label: label})
 	}
 	used := usedDrivers(d, sk)
 	project := Group{ID: "project", Title: "Project", Section: "project"}

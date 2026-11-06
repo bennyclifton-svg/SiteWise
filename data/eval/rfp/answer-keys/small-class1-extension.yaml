@@ -42,8 +42,9 @@ settings:
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [concept, schematic, planning_approval, design_development, house_documents, bidding]
-    stages_absent: [brief_masterplan, planning_response, interiors, regulated_design, dnc_tender, tender_traditional, for_construction, construction_support]
+    # The brief is priced on every project (owner ruling R13, 7 November 2026).
+    stages_include: [brief_masterplan, concept, schematic, planning_approval, design_development, house_documents, bidding]
+    stages_absent: [planning_response, interiors, regulated_design, dnc_tender, tender_traditional, for_construction, construction_support]
     positions: {bim_coordination: absent, marketing_renders: X, specification: I, typical_interiors: absent, house_interiors: I, lodgement: I, existing_interfaces: I, mixed_use_map: absent, apartment_design: absent}
     allowances_absent: [workshops, planning_cap, bim_lod, qs_reviews]
     scale: simple

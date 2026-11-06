@@ -62,8 +62,9 @@ expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded,
     # and an excluded service names no party.
-    stages_include: [concept, schematic, planning_approval, planning_response, design_development, interiors, tender_traditional, bidding, for_construction]
-    stages_absent: [brief_masterplan, dnc_tender, post_novation, regulated_design, construction_support, contract_admin]
+    # The brief is priced on every project (owner ruling R13, 7 November 2026).
+    stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, interiors, tender_traditional, bidding, for_construction]
+    stages_absent: [dnc_tender, post_novation, regulated_design, construction_support, contract_admin]
     positions: {existing_interfaces: I, mixed_use_map: I, tenant_fitout: I, community: I, apartment_design: absent, live_staging: absent}
     scale: complex
     blocking: ["fact:budget", "fact:gfa"]
