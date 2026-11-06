@@ -133,3 +133,22 @@ func TestClientIsThePartyAnAgentActsFor(t *testing.T) {
 		}
 	}
 }
+
+// F48 (run 20261107-t03-t04-t06): a planning certificate states the area
+// after a label, under a council heading in capitals.
+func TestLGAFromLabelAndCapitalHeading(t *testing.T) {
+	for text, want := range map[string]string{
+		"| Legal description | Lot 12 DP 1184520 |\n\nLocal government area: North Sydney.\n": "North Sydney",
+		"LGA: Inner West Council\n":                                          "Inner West",
+		"NORTH SYDNEY COUNCIL\n\n# Planning Certificate\n":                   "North Sydney",
+		"# GEORGES RIVER COUNCIL\nPlanning certificate under section 10.7\n": "Georges River",
+	} {
+		if got := candidateNorms(t, text, "proj.lga"); !sameNorms(got, []string{want}) {
+			t.Errorf("%q: lga = %q, want %q", text, got, want)
+		}
+	}
+	// Capitals inside running text are not a heading.
+	if got := candidateNorms(t, "WORKS MUST BE APPROVED BY COUNCIL BEFORE START", "proj.lga"); len(got) != 0 {
+		t.Errorf("capital sentence offered as lga: %q", got)
+	}
+}
