@@ -1940,12 +1940,12 @@
     },
     {
       "key": "flag.public_road",
-      "expected": "no",
+      "expected": "yes",
       "app": "yes",
       "band": "amber",
       "alternatives": null,
       "read_by_design": true,
-      "outcome": "wrong"
+      "outcome": "correct"
     },
     {
       "key": "flag.state_road",
@@ -2451,11 +2451,10 @@
       }
     },
     "profile": {
-      "correct": 63,
+      "correct": 64,
       "conflict_true": 2,
       "missed": 5,
-      "missed_by_design": 6,
-      "wrong": 1
+      "missed_by_design": 6
     },
     "invoices_by_field": {
       "kind": {

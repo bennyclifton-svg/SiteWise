@@ -165,7 +165,7 @@
         },
         {
           "key": "hdr.cond.planning",
-          "says": "A development application will be lodged with council. The building exceeds the code's height standard, so a DA is required"
+          "says": "A development application will be lodged with council. The building does not meet the code's rear setback standard, so a DA is required"
         },
         {
           "key": "flag.panel",

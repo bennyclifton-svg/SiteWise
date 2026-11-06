@@ -4,12 +4,11 @@ T04 Industrial warehouse (base)
   Cost plan [scored]: matched 33/49, missed 16 (0 built in, 16 known gaps), extra 0, false positives 2, fabricated amounts 0 (from documents 11, typed 0)
     false positives: Passive fire protection; Mechanical
   Program [scored]: skeleton sk.new-dc-da (match), matched 51/95, missed 44 (0 built in, 44 known gaps), extra 1, false positives 0, wrong stage 1; links holds 0, violated 0, unknown 52, unscored 79; orphans 1, cycles 0
-  RFPs: found 13/19 (0 built-in missing), not expected present 0, extra 1; expect ok 297, new failures 9, known differences 53, fixed 0, awaiting user input 124; must_include missing 19 (unknown 0); must_not_include present 22 (known 3)
+  RFPs: found 13/19 (0 built-in missing), not expected present 0, extra 1; expect ok 306, new failures 0, known differences 53, fixed 0, awaiting user input 124; must_include missing 19 (unknown 0); must_not_include present 20 (known 3)
     consultant.architect: missing 'Concept and schematic design'; missing 'DA planning approval documentation'; missing 'Office interiors and finishes'
     consultant.structural: missing 'Portal frame and precast panel design with connections'; missing 'Pad and strip footings'; missing 'Industrial slab for racking and forklift loads with joint and flatness specification'
-    consultant.civil: element.public_road; position.clash_check; position.design_criteria; position.water_strategy; position.quality_audit; position.road_safety_audit (+6 more)
+    consultant.civil: missing 'Earthworks and cut-fill design'; missing 'Crossings and boundary levels'; missing 'Erosion and sediment control plan'
     consultant.town_planner: missing 'Preliminary advice on the LEP and DCP'; missing 'Assessment and responses to council requests'; has 'Panel attendance'
-    consultant.traffic: position.road_safety_audit; has 'Road safety audit'
     consultant.bca: missing 'A2 DA BCA report'; missing 'Large isolated building strategy and performance solution schedule'; has 'Package B statutory functions'; has 'Mixed-use classification map'
     consultant.certifier: missing 'B2 construction certificate assessment (staged: early works, building)'; missing 'Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)'; missing 'Occupation certificate'; has 'Staged occupation'; has 'Residential BASIX evidence'
     consultant.fire_services: missing 'Pressure and flow enquiry and fire-water strategy'; has 'Existing system investigation'; has 'Upgrade of existing systems'

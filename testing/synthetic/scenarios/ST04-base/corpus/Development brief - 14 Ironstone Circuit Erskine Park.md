@@ -82,7 +82,7 @@ only.
 
 ## Approvals and procurement
 
-A development application will be lodged with council. The building exceeds the code's height
+A development application will be lodged with council. The building does not meet the code's rear setback
 standard, so a DA is required.
 
 The DA will be determined by council staff under delegation; it will not go to the Sydney Western City

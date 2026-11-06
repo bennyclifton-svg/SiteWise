@@ -9,7 +9,7 @@ ST04-cdc-industrial-code
     title       correct 14
     date        correct 12, missed 2
     supersedes  missed 1
-  Profile: conflict_true 1, correct 64, missed 5, missed_by_design 5, wrong 1
+  Profile: conflict_true 1, correct 65, missed 5, missed_by_design 5
     missed           hdr.cond.power_source: expected 'grid', app ''
     missed           hdr.cond.hazardous_process: expected 'none', app ''
     conflict_true    hdr.scale.site_sqm: expected {'accept': [16000, 16012]}, app ''
@@ -19,7 +19,6 @@ ST04-cdc-industrial-code
     missed_by_design proj.target_da_lodgement: expected '2026-06-30', app ''
     missed_by_design proj.target_construction_start: expected '2027-02-01', app ''
     missed           flag.stormwater_quality: expected 'yes', app ''
-    wrong            flag.public_road: expected 'no', app 'yes'
     missed           flag.architect_lodges: expected 'no', app ''
     missed           flag.fire_specialist_systems: expected 'no', app ''
   Invoices (per field):

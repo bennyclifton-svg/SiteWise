@@ -456,7 +456,7 @@
       "read_by_design": true
     },
     "flag.public_road": {
-      "value": "no",
+      "value": "yes",
       "sources": [
         "d07",
         "d14"

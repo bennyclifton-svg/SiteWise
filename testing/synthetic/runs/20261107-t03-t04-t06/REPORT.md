@@ -119,6 +119,27 @@ that does not exist; no effect here), some missed "no" flags, and
 
 No key was changed after the run.
 
+## Owner answers (7 November 2026, later)
+
+Recorded as rulings R15 to R18 in `reference/OWNER_RULINGS.md`.
+
+- **R15** A vehicle crossing is public road work. The T04 shape and the
+  three ST04 keys now expect `flag.public_road` yes and the civil and
+  traffic public road positions. Re-scored from the same snapshots: T04
+  profile wrong 1 → 0 in every run; RFP new failures 9/14/12 → 0/5/3. What
+  is left is the cdc and flood variants' `expect` restatements listed
+  above.
+- **R16** On a refurbishment, an included system with an unsettled works
+  action stays in scope (the F43 fix direction).
+- **R17** The user should be able to choose one combined services package or
+  separate discipline packages per project. A product design, not yet
+  written.
+- **R18** Over height means a clause 4.6 variation and a DA. ST04-base and
+  ST04-flood-affected now give the code's rear setback standard as the
+  reason for a DA (d01 brief and the town planner's proposal). The run used
+  the old wording; no keyed value depends on it.
+- Question 3 (accepting both occupancy and access options) is still open.
+
 ## Owner questions
 
 1. Is a vehicle crossing "work in a public road"? (T04; 9 RFP failures per

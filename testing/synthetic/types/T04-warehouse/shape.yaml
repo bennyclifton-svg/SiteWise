@@ -57,7 +57,7 @@ profile:
   flag.rail: "no"
   flag.groundwater: "no"
   flag.norbe: "no"
-  flag.public_road: "no"
+  flag.public_road: "yes"  # R15: the heavy-duty vehicle crossings are work in the public road
   flag.state_road: "no"
   flag.tfnsw_referral: "no"
   flag.intersection_modelling: "no"
@@ -94,7 +94,7 @@ scenario_inputs:
   - {key: flag.heavy_vehicles, note: "regex 'b-double' or 'heavy vehicle'", phrasing: "The site is designed for 26 m B-double access to the hardstand and docks"}
   - {key: flag.osd_required, note: "civil or council statement", phrasing: "On-site detention is required under council's stormwater policy"}
   - {key: flag.stormwater_quality, note: "regex 'stormwater quality' or 'MUSIC model'", phrasing: "Stormwater quality targets are demonstrated with a MUSIC model"}
-  - {key: flag.public_road, note: "'road reserve' matches the flag; base documents must deny public road works plainly", phrasing: "No works in the public road other than the two heavy-duty vehicle crossings and making good the footpath"}
+  - {key: flag.public_road, note: "R15: vehicle crossings are public road works, so the base reads yes from the crossings sentence; 'road reserve' also matches the flag", phrasing: "No works in the public road other than the two heavy-duty vehicle crossings and making good the footpath"}
   - {key: flag.basement, note: "geotechnical pits 'excavated to a depth' match the basement pattern; state the denial", phrasing: "No basement is proposed; the building is slab on ground"}
   - {key: det.potentially_contaminated_land, note: "trigger 'contaminat'; the estate validation report is the evidence", phrasing: "The estate developer's validation report confirms the lot is suitable for industrial use and is not contaminated"}
   - {key: det.existing_building, note: "trigger is the singular 'existing building'", phrasing: "There is no existing building on the site"}
@@ -389,17 +389,17 @@ rfps:
     template: civil
     built_in: "partial"
     source: "knowledge/rfp/civil.yaml osd_new"
-    must_include: ["Earthworks and cut-fill design", {text: "Heavy-duty hardstand pavement design", key: position.pavement_design}, {text: "OSD design", key: position.osd_new}, {text: "MUSIC water quality modelling and treatment", key: position.water_quality}, "Crossings and boundary levels", "Erosion and sediment control plan", "D&C tender design", {text: "Post-novation design", key: stage.post_novation}, {text: "As-built and OSD certification", key: stage.as_built}]
-    must_not_include: [{text: "Public road works", key: element.public_road}, {text: "Flood report", key: position.flood_report}, {text: "NorBE assessment", key: position.norbe}, {text: "Trunk drainage", key: position.trunk_drainage}, {text: "Civil design declarations", key: position.civil_declarations}, {text: "Traditional detailed design for tender", key: stage.detailed_tender}]
+    must_include: ["Earthworks and cut-fill design", {text: "Heavy-duty hardstand pavement design", key: position.pavement_design}, {text: "OSD design", key: position.osd_new}, {text: "MUSIC water quality modelling and treatment", key: position.water_quality}, "Crossings and boundary levels", {text: "Public road works", key: element.public_road}, {text: "Authority submission schedule", key: position.public_road_approvals}, "Erosion and sediment control plan", "D&C tender design", {text: "Post-novation design", key: stage.post_novation}, {text: "As-built and OSD certification", key: stage.as_built}]
+    must_not_include: [{text: "Flood report", key: position.flood_report}, {text: "NorBE assessment", key: position.norbe}, {text: "Trunk drainage", key: position.trunk_drainage}, {text: "Civil design declarations", key: position.civil_declarations}, {text: "Traditional detailed design for tender", key: stage.detailed_tender}]
     expect:
       stages_include: [schematic, dnc_tender, post_novation, construction_phase, as_built]
       stages_option: []
       stages_absent: [detailed_tender, for_construction]
-      elements_include: [earthworks, roads, stormwater]
-      elements_absent: [public_road]
-      positions: {utility_plan: I, discharge: I, drainage_model: I, hydraulic_connection: I, water_quality: I, osd_new: I, safety_in_design: I, pavement_design: I, retaining_structural: X, clash_check: X, civil_model: O, design_criteria: X, water_strategy: X, quality_audit: X, services_location: X, shoring: X, trunk_drainage: X, sea: X, road_safety_audit: X, om_manual: X, quantities: X, modifications: X, norbe: absent, osd_existing: absent, osd_replacement: absent, retained_services: absent, earthworks_suitability: absent, flood_report: absent, flood_evacuation: absent, public_road_approvals: absent, civil_declarations: absent}
+      elements_include: [earthworks, roads, stormwater, public_road]
+      elements_absent: []
+      positions: {utility_plan: I, discharge: I, drainage_model: I, hydraulic_connection: I, water_quality: I, osd_new: I, safety_in_design: I, pavement_design: I, retaining_structural: X, clash_check: I, civil_model: O, design_criteria: I, water_strategy: I, quality_audit: I, services_location: X, shoring: X, trunk_drainage: X, sea: X, road_safety_audit: I, om_manual: I, quantities: X, modifications: X, norbe: absent, osd_existing: absent, osd_replacement: absent, retained_services: absent, earthworks_suitability: absent, flood_report: absent, flood_evacuation: absent, public_road_approvals: I, civil_declarations: absent}
       blocking: []
-      sources: ["scale simple: site 1.6 ha (under 2 ha), no public road, flood or NorBE", "roads element: hardstand, car park and internal roads"]
+      sources: ["scale complex: public road works (the vehicle crossings, R15); site 1.6 ha (under 2 ha), no flood or NorBE", "roads element: hardstand, car park and internal roads"]
     app_differs:
       - {key: stage.post_novation, app: option, expect: include, why: "after the dnc_tender boundary"}
       - {key: stage.construction_phase, app: option, expect: include, why: "default option; OSD and pavement certification needs inspections"}
@@ -423,15 +423,15 @@ rfps:
     template: traffic
     built_in: "partial"
     source: "knowledge/rfp/traffic.yaml swept_paths"
-    must_include: ["Parking and access advice", "Traffic and parking report", {text: "Swept paths for 26 m B-doubles at every dock and crossing", key: position.swept_paths}, "Assessment response", "Conditions review", {text: "Car park and hardstand certification", key: stage.car_park_certification}]
-    must_not_include: [{text: "Intersection modelling", key: stage.modelling}, {text: "Green travel plan", key: stage.travel_plan}, {text: "Public road design", key: position.public_road_design}, {text: "Road safety audit", key: position.road_safety_audit}]
+    must_include: ["Parking and access advice", "Traffic and parking report", {text: "Swept paths for 26 m B-doubles at every dock and crossing", key: position.swept_paths}, "Assessment response", "Conditions review", {text: "Car park and hardstand certification", key: stage.car_park_certification}, {text: "Road safety audit", key: position.road_safety_audit}]
+    must_not_include: [{text: "Intersection modelling", key: stage.modelling}, {text: "Green travel plan", key: stage.travel_plan}, {text: "Public road design", key: position.public_road_design}]
     expect:
       stages_include: [design_advice, report, assessment_response, conditions_review, car_park_certification]
       stages_option: [design_review, ctmp]
       stages_absent: [surveys, modelling, travel_plan]
-      positions: {vehicle_schedule: I, consultation: I, end_of_trip: I, demand_reduction: O, alternative_schemes: O, swept_paths: I, microsimulation: X, road_safety_audit: X, public_road_design: X, court: X, survey_costs: absent}
+      positions: {vehicle_schedule: I, consultation: I, end_of_trip: I, demand_reduction: O, alternative_schemes: O, swept_paths: I, microsimulation: X, road_safety_audit: I, public_road_design: X, court: X, survey_costs: absent}
       blocking: []
-      sources: ["scale complex: heavy_vehicles yes"]
+      sources: ["scale complex: heavy_vehicles yes; public road works (R15) bring the road safety audit in"]
     app_differs:
       - {key: stage.car_park_certification, app: option, expect: include, why: "default option; the certifier needs the AS 2890 compliance certificate (verified: false)"}
       - {key: stage.ctmp, app: include, expect: option, why: "include_when complex; on D&C the builder prepares the construction traffic management plan"}

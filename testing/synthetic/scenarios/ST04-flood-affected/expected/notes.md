@@ -57,3 +57,5 @@ As the base; d13 `floodlights` now expects true from the real flood sentences, n
 - Base corpus wording (no key effect): d10 exclusion "Parking demand surveys at comparable sites"; d13 heading
   "## Stormwater" and "reports submitted"; d12 perimeter access with the office-frontage performance solution; d15/d16
   "Two fire water tanks and pump room".
+
+- Owner ruling R15 (7 November 2026): the vehicle crossings are work in the public road, so `flag.public_road` is keyed yes (was no). Ruling R18: the DA reason is now the code's rear setback standard, since a height breach would also need a clause 4.6 variation, which the documents deny.

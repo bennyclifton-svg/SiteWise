@@ -20,7 +20,7 @@ We are pleased to offer our services to prepare and manage a development applica
 Council for the warehouse and office.
 
 The land is zoned E4 General Industrial, and a warehouse with an ancillary office is permitted with
-consent. The building exceeds the height standard of the Industrial and Business Buildings Code, so
+consent. The building does not meet the rear setback standard of the Industrial and Business Buildings Code, so
 complying development is not available and a DA is required. We have reviewed the architect's concept
 against Penrith Local Environmental Plan 2010 and the Penrith Development Control Plan and raise no
 planning concerns with it.

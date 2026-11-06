@@ -1769,12 +1769,12 @@
     },
     {
       "key": "flag.public_road",
-      "expected": "no",
+      "expected": "yes",
       "app": "yes",
       "band": "amber",
       "alternatives": null,
       "read_by_design": true,
-      "outcome": "wrong"
+      "outcome": "correct"
     },
     {
       "key": "flag.state_road",
@@ -2187,11 +2187,10 @@
       }
     },
     "profile": {
-      "correct": 64,
+      "correct": 65,
       "missed": 5,
       "conflict_true": 1,
-      "missed_by_design": 5,
-      "wrong": 1
+      "missed_by_design": 5
     },
     "invoices_by_field": {
       "kind": {

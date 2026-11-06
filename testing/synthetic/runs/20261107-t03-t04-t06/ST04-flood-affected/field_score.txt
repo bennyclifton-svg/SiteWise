@@ -9,7 +9,7 @@ ST04-flood-affected
     title       correct 16
     date        correct 14, missed 2
     supersedes  missed 1
-  Profile: conflict_true 2, correct 63, missed 5, missed_by_design 6, wrong 1
+  Profile: conflict_true 2, correct 64, missed 5, missed_by_design 6
     conflict_true    hdr.cond.environmental_sensitivity: expected 'standard', app ''
     missed           hdr.cond.power_source: expected 'grid', app ''
     missed           hdr.cond.hazardous_process: expected 'none', app ''
@@ -20,7 +20,6 @@ ST04-flood-affected
     missed_by_design proj.target_da_lodgement: expected '2026-06-30', app ''
     missed_by_design proj.target_construction_start: expected '2027-02-01', app ''
     missed           flag.stormwater_quality: expected 'yes', app ''
-    wrong            flag.public_road: expected 'no', app 'yes'
     missed           flag.architect_lodges: expected 'no', app ''
     missed           flag.fire_specialist_systems: expected 'no', app ''
     missed_by_design det.flood_planning_level: expected 31.2, app ''

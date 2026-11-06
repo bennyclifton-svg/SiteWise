@@ -1711,57 +1711,8 @@
       "report": "8c3438ac-bb42-4c12-a295-75f7c16d9855",
       "app_template": "civil",
       "expect": {
-        "ok": 34,
-        "new_failure": [
-          {
-            "key": "element.public_road",
-            "want": "exclude",
-            "app": "include",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.clash_check",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.design_criteria",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.water_strategy",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.quality_audit",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.road_safety_audit",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.om_manual",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.public_road_approvals",
-            "want": "absent",
-            "app": "I",
-            "app_differs_said": null
-          }
-        ],
+        "ok": 42,
+        "new_failure": [],
         "known_difference": [],
         "fixed": [],
         "not_checked": [],
@@ -1779,7 +1730,7 @@
         ]
       },
       "must_include": {
-        "present": 6,
+        "present": 8,
         "missing": [
           "Earthworks and cut-fill design",
           "Crossings and boundary levels",
@@ -1790,13 +1741,7 @@
       },
       "must_not_include": {
         "absent": 5,
-        "present": [
-          {
-            "phrase": "Public road works",
-            "where": "key:element.public_road",
-            "coverage": 1.0
-          }
-        ],
+        "present": [],
         "unknown": [],
         "known": []
       }
@@ -1811,7 +1756,7 @@
       "report": "df44f6f8-bce7-4339-a0fb-37bcdb2aacaf",
       "app_template": "traffic",
       "expect": {
-        "ok": 18,
+        "ok": 19,
         "new_failure": [
           {
             "key": "stage.assessment_response",
@@ -1823,12 +1768,6 @@
             "key": "stage.conditions_review",
             "want": "include",
             "app": "exclude",
-            "app_differs_said": null
-          },
-          {
-            "key": "position.road_safety_audit",
-            "want": "absent",
-            "app": "I",
             "app_differs_said": null
           }
         ],
@@ -1854,7 +1793,7 @@
         ]
       },
       "must_include": {
-        "present": 4,
+        "present": 5,
         "missing": [
           "Assessment response",
           "Conditions review"
@@ -1864,13 +1803,7 @@
       },
       "must_not_include": {
         "absent": 3,
-        "present": [
-          {
-            "phrase": "Road safety audit",
-            "where": "key:position.road_safety_audit",
-            "coverage": 1.0
-          }
-        ],
+        "present": [],
         "unknown": [],
         "known": []
       }
@@ -3381,14 +3314,14 @@
       "missing_built_in": 0,
       "not_expected_present": 1,
       "extra": 1,
-      "expect_ok": 273,
-      "expect_new_failure": 14,
+      "expect_ok": 282,
+      "expect_new_failure": 5,
       "expect_known_difference": 50,
       "expect_fixed": 2,
       "expect_awaiting_user": 119,
       "must_include_missing": 21,
       "must_include_unknown": 0,
-      "must_not_include_present": 21,
+      "must_not_include_present": 19,
       "must_not_include_known": 3
     }
   }

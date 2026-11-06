@@ -8,7 +8,7 @@ DA. Only `hdr.cond.planning` differs from the base (da -> cdc). 16 documents in 
 
 - d01 carries the trigger's evidence ("Complying development certificate under Part 5A Industrial and Business
   Buildings Code of the Codes SEPP"; "meets the code's setbacks, height and landscaping standards, so the certifier
-  can determine it") in place of the DA and code-height sentences. The panel, clause 4.6 and community denials are
+  can determine it") in place of the DA and code-setback sentences. The panel, clause 4.6 and community denials are
   reworded for complying development, so those flags keep a read source after d13 goes.
 - d05 architect: the DA documentation phase becomes CDC documentation; the development manager lodges the CDC
   (architect_lodges stays no); d05 is now a second source for planning. d06, d07, d10, d12, d14: "for the DA" becomes
@@ -56,3 +56,5 @@ As the base, less d09 `planner-lodges` and the d13 traps (removed). `det.flood_h
 - Base corpus wording (no key effect): d10 exclusion "Parking demand surveys at comparable sites"; d13 heading
   "## Stormwater" and "reports submitted"; d12 perimeter access with the office-frontage performance solution; d15/d16
   "Two fire water tanks and pump room".
+
+- Owner ruling R15 (7 November 2026): the vehicle crossings are work in the public road, so `flag.public_road` is keyed yes (was no). Ruling R18: the DA reason is now the code's rear setback standard, since a height breach would also need a clause 4.6 variation, which the documents deny.

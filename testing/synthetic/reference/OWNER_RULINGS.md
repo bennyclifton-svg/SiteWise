@@ -133,3 +133,32 @@ masterplan is only for large projects.
 
 Apartment count and shop area are key metrics for shop-top mixed use, so
 the app must read them.
+
+## After the T03, T04 and T06 run, 7 November 2026
+
+### R15. Vehicle crossings are public road works
+
+Yes. A vehicle crossing is work in the public road. The T04 base
+("No works in the public road other than the two heavy-duty vehicle
+crossings") now keys `flag.public_road` yes, and its civil and traffic RFPs
+expect the public road works the app adds.
+
+### R16. Refurbishment scope defaults to in
+
+On a refurbishment, a system the documents include stays in scope when its
+works action is unsettled (below the floor, or works actions in conflict).
+Default to in scope, not to existing (F43).
+
+### R17. Combined services engineer
+
+A combined services engineer is often engaged under one agreement with one
+invoice covering every services discipline. The user should be able to
+choose, per project, one multi-services package or separate discipline
+packages. (A product choice: to be designed in prose before any code.)
+
+### R18. Over height means a clause 4.6 variation and a DA
+
+A building over the height standard needs a clause 4.6 variation to the LEP,
+and that is one of many reasons for a DA. The ST04 base, which denies any
+clause 4.6 variation, now gives the code's rear setback standard as its
+reason for a DA.

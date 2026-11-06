@@ -10,7 +10,7 @@ architect, structural and civil engineers and landscape architect novated; budge
 ## Traps
 
 - d02 `cdc-available-on-land`: the certificate says the Industrial and Business Buildings Code may be carried out on
-  the land; the project is a DA because the building exceeds the code's height standard (d01, d09).
+  the land; the project is a DA because the building does not meet the code's rear setback standard (d01, d09).
   `potentially-contaminated-negated`: "no record that the land is contaminated" fires `contaminat`.
 - d09 `planner-lodges`: "We will lodge the development application" fires architect_lodges; value no. d05 also says
   the planner lodges; d01 "A development application will be lodged" fires it too (incidental, answer no).
@@ -70,3 +70,5 @@ architect, structural and civil engineers and landscape architect novated; budge
 - Base corpus wording (no key effect): d10 exclusion "Parking demand surveys at comparable sites"; d13 heading
   "## Stormwater" and "reports submitted"; d12 perimeter access with the office-frontage performance solution; d15/d16
   "Two fire water tanks and pump room".
+
+- Owner ruling R15 (7 November 2026): the vehicle crossings are work in the public road, so `flag.public_road` is keyed yes (was no). Ruling R18: the DA reason is now the code's rear setback standard, since a height breach would also need a clause 4.6 variation, which the documents deny.
