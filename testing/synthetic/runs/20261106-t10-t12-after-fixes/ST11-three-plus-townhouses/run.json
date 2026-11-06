@@ -1,0 +1,413 @@
+{
+  "scenario": "ST11-three-plus-townhouses",
+  "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "94dc593596f25ff01670e83550b73c5ae5d0236e",
+    "app_files_modified": 32
+  },
+  "started": "20261106-t10-t12-after-fixes",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.5
+    },
+    {
+      "wave": 2,
+      "documents": 8,
+      "idle": true,
+      "profile_queued": 8,
+      "seconds": 17.2
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 17.1
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 18 Wattlebird Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "52c00a5e-0cbb-4133-85f1-23058de67168",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Owner brief - 18 Wattlebird Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:10.974912+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 9 DP 236154.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5dea6dfa-696a-4fdf-ada7-9f15f38837ad",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Planning certificate s10.7 - Lot 9 DP 236154.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:10.98176+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 18 Wattlebird Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9752beac-7d12-4a3d-b8d9-fa40de0afc75",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Detail and boundary survey report - 18 Wattlebird Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:10.987797+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Timing for the build.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a2919e39-9134-4b7f-92f3-ff3d67ecdf69",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "RE Timing for the build.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:10.994529+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - 18 Wattlebird Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "8a0940bc-035d-4e31-bd10-a64df1d40c18",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Fee proposal - Architectural services - 18 Wattlebird Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.615656+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal CSE-2607.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "5c62133e-0f75-4309-8e45-90d96bab4c47",
+        "submission_id": "e5b108ca-5e35-47c5-97d8-40fd80790e42"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Merriden Civil - stormwater fee - Wattlebird St.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5c7f7299-f223-4e20-9a7d-c53559a13935",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Merriden Civil - stormwater fee - Wattlebird St.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.705218+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Basalt Ridge.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "241f90f6-a3b0-48d9-9ea3-37994be8285c",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Geotechnical investigation fee proposal - Basalt Ridge.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.735825+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Hazardous materials survey proposal - Greyfield.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2c0188e5-5362-4454-a304-7f697892a7c4",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Hazardous materials survey proposal - Greyfield.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.751451+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Town planning fee proposal - Halden Planning.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "27952cea-8fcb-49ff-b015-35df61e501bb",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Town planning fee proposal - Halden Planning.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.767615+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d20",
+      "filename": "Traffic and parking fee proposal - Wayfinder.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "80c3806d-e0d6-4202-a004-44be810990a1",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Traffic and parking fee proposal - Wayfinder.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.789769+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d21",
+      "filename": "Waste management plan fee proposal - Binley.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4a8ef30d-2076-4d09-9669-5e3ba4cbde48",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Waste management plan fee proposal - Binley.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:23.795008+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Hazardous materials survey report GE-26-0217.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "8bb7bd66-9b60-4014-9baf-ac4c92af0fde",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Hazardous materials survey report GE-26-0217.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:41.095426+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Geotechnical report BRG-26-0655 - 18 Wattlebird Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "11155790-74d1-4ba3-a30e-7fd3b35ca493",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Geotechnical report BRG-26-0655 - 18 Wattlebird Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:41.117084+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Architectural design statement - 18 Wattlebird Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "8a5a4fb3-6cf6-4571-9c57-f6c3e897641f",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Architectural design statement - 18 Wattlebird Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:41.128076+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Site and subdivision plan A-101 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c8be0408-bd02-4a12-acbf-70ef5e3f3736",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Site and subdivision plan A-101 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:41.154018+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Site and subdivision plan A-101 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f7e63aa1-48a6-46d0-b702-ed80a5e4cab0",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Site and subdivision plan A-101 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:41.179842+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Statement of environmental effects - 18 Wattlebird Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "644f6d3d-fcdf-444d-af51-4ed765114a66",
+        "project_id": "58c8fba8-f2bc-4988-a542-f8cf177ea299",
+        "filename": "Statement of environmental effects - 18 Wattlebird Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T17:30:41.195426+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d17",
+      "filename": "Tax invoice FLA-INV-1031.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "1d3ec41c-7eb2-4518-ae08-a7c92d654a23",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "Tax invoice BRG-0522.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "f13d418c-4252-491c-9795-c0a2d64f08f2",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d19",
+      "filename": "Greyfield invoice 2207.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "bb315cfe-b1d7-4cc3-a0d9-212c02ce1df0",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

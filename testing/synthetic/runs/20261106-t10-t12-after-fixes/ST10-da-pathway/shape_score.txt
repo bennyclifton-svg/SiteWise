@@ -1,0 +1,20 @@
+T10 Knock-down rebuild house (da-pathway)
+  Procurement [scored]: matched 9/13, missed 4 (0 built in, 4 known gaps), extra 0, false positives 3
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical
+  Cost plan [scored]: matched 26/40, missed 14 (0 built in, 14 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection
+  Program [scored]: skeleton sk.new-traditional-da (match), matched 63/104, missed 41 (4 built in, 37 known gaps), extra 12, false positives 0, wrong stage 3; links holds 0, violated 0, unknown 63, unscored 55; orphans 2, cycles 0
+    missed built in: Pave, turf and plant; Lodge the DA; Neighbour notification; DA assessment and determination
+  RFPs: found 9/12 (0 built-in missing), not expected present 0, extra 3; expect ok 134, new failures 13, known differences 21, fixed 7, awaiting user input 47; must_include missing 44 (unknown 0); must_not_include present 11 (known 0)
+    consultant.architect: stage.planning_response; position.existing_interfaces; position.water_asset; missing 'Concept and schematic design on the survey of the existing site'; missing 'Demolition plan of every structure to go; investigations needed; trees to keep (existing_interfaces)'; missing 'CDC documentation to the Housing Code with survey, hazmat, BASIX, stormwater and structural inputs' (+5 more)
+    consultant.structural: stage.authority_asset; position.dilapidation; position.retention_design; position.temporary_works_interfaces; missing 'Design basis with site class and AS 4055 wind class'; missing 'AS 2870 footing and slab design noting old footings and fill removed' (+8 more)
+    consultant.civil: position.retained_services; position.shoring; missing 'Investigation of the existing drainage and kerb outlet (CCTV or locating) and how findings change the design'; missing 'Stormwater design for the CDC with discharge point confirmed'; missing 'Detailed design incl. rainwater tank overflow'; missing 'Driveway long section and crossing levels' (+4 more)
+    consultant.geotechnical: stage.g4_planning; missing 'Investigation plan with boreholes or test pits clear of the existing house'; missing 'Field work and laboratory reactivity testing'; missing 'AS 2870 site classification and footing advice noting uncertainty under the house footprint'; missing 'Advice on removing old footings and fill'; missing 'Option: confirmation after demolition' (+4 more)
+    consultant.surveyor: position.access; blocking.fact:flag.live_operations; missing 'Detail and contour survey on AHD showing the existing house, garage and shed with floor and ridge levels, trees, pits, kerb outlet, sewer junction and crossing'; missing 'Boundary identification with easements and encroachments of old structures or fences'; missing 'Adjoining windows and ridge heights for the Housing Code'; missing 'Option: identification surveys' (+2 more)
+    consultant.certifier: stage.b1_preliminary; missing 'CDC assessment and determination for demolition and the new dwelling, with neighbour notification'; missing 'Pre-start site inspection before determining the CDC (R7 item 1)'; missing 'Every R7 critical-stage inspection'; missing 'Occupation certificate with BASIX completion check'; missing 'CC assessment (package B)' (+1 more)
+    consultant.hazmat: missing 'Demolition hazardous materials survey of every structure with destructive sampling'; missing 'Asbestos register and removal scope by material, location and friable or bonded state'; missing 'Lead paint, SMF and PCB identification'; missing 'LFAI register check'; missing 'Clearance inspection and certificate after removal'; missing 'Option: visual soil clearance after demolition'
+    consultant.basix: missing
+    consultant.building: missing
+    consultant.quantity_surveyor: missing
+    consultant.town_planner: missing 'SEE covering demolition and the new dwelling'
+    consultant.landscape: missing 'DA landscape plan to the DCP'

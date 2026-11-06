@@ -24,6 +24,20 @@ supply, contract form and existing building; `flag.authority_asset`,
 `flag.community` and access constraints as conflicts; `proj.regulated_design`
 (no reading exists); remediation has no skeleton.
 
+## Status after the fixes (6 November 2026)
+
+Fixed and confirmed by re-running all nine T10 to T12 scenarios
+(`runs/20261106-t10-t12-after-fixes/REPORT.md`): F17 (where the survey's
+reading clears the floor), F18, F19's old-house votes and apartment
+fallback, F20, F21, F22, F28 and F30. F23 is fixed in code; the re-run
+reused the firm saved in the first run. F25 is an alias only and barely
+changes filing, because Jev sees only the label. Plan:
+`docs/plans/2026-11-06-knockdown-two-buildings.md`.
+
+Still open: the T11 subclass, which is now a real house-or-townhouses
+conflict about the new dwellings and needs an owner ruling or F27; F6;
+F24, F26, F27 and F29.
+
 ## App defects
 
 **F1. Update profile response cut off while the app is busy.** *(2 Nov: improved by an owner fix, still 3 of 12 waves, only the first Update on a new project; see `runs/20261102-fixes-1-4-6`.)* In 8 of 12
@@ -503,8 +517,8 @@ ST12-sewer).
       T11.
   - **Key fix.** ST10 `proj.lga` also accepts "Sutherland", as ST12
     does for the same council. The app keeps the area name without
-    "Shire" or "City of" (`lgaTrailing`). Whether it should keep "Shire"
-    is an owner call.
+    "Shire" or "City of" (`lgaTrailing`). The owner confirmed this
+    convention on 6 November 2026.
   - **Still a scorer limitation.**
     - A trigger cannot change `rfps[].expect`. So in ST12-sewer, the
       architect `water_asset` and structural `authority_asset` rows the

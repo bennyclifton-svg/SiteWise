@@ -46,7 +46,7 @@ the new house; select tender, HIA lump-sum contract including demolition; budget
 
 - Ruling 1 applied: `det.site_class: M` (d12, "Site classification: Class M in accordance with AS 2870") and
   `flag.arborist_offsite_trees: "no"` (d13, "No neighbouring or street trees are affected by the works") are now
-  in the T10 shape's base profile, pending owner confirmation (R10 named T01 only).
+  in the T10 shape's base profile. The owner confirmed this on 6 November 2026 (R10 extended to T10 and T12).
 - `proj.regulated_design` is in the shape's base profile but has no reading in the app; suggest the shape note
   that it is never read.
 
@@ -55,4 +55,4 @@ the new house; select tender, HIA lump-sum contract including demolition; budget
 - `proj.lga` also accepts "Sutherland". The ST12 keys for the same council already accept it, as the ST11
   keys accept "Parramatta" for the City of Parramatta: the keys accept the area name without its "Shire" or
   "City of". The run read "Sutherland" from "Sutherland Shire Council". Whether the app should keep "Shire"
-  is noted in FINDINGS (F22).
+  is noted in FINDINGS (key fixes for this run). The owner confirmed this convention on 6 November 2026.

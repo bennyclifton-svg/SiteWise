@@ -1,0 +1,35 @@
+ST10-separate-demolition-contract
+  Register (per field):
+    status      correct 15
+    kind        correct 15
+    discipline  correct 14, missed 1
+    lifecycle   correct 6, missed 9
+    number      correct 11, correct_blank 2, missed 2
+    revision    correct 5, correct_blank 10
+    title       correct 15
+    date        correct 13, missed 2
+    supersedes  missed 1
+  Profile: conflict_true 5, correct 53, missed_by_design 2, wrong 1
+    conflict_true    hdr.cond.operational_constraints: expected 'vacant', app ''
+    wrong            hdr.cond.access_constraints: expected 'unrestricted', app 'urban_constrained'
+    conflict_true    hdr.scale.gfa_sqm: expected {'accept': [300, 302]}, app ''
+    missed_by_design proj.regulated_design: expected 'no', app ''
+    missed_by_design proj.target_construction_start: expected '2027-02-01', app ''
+    conflict_true    flag.excavation_adjoining: expected 'no', app ''
+    conflict_true    flag.authority_asset: expected 'no', app ''
+    conflict_true    flag.staged: expected 'no', app ''
+  Invoices (per field):
+    kind               correct 3
+    number             correct 3
+    invoice_date       correct 3
+    issuer_abn         correct 3
+    ex_gst_cents       correct 3
+    gst_cents          correct 3
+    total_cents        correct 3
+    supplier           correct 3
+    flag.period        correct 3
+    flag.unmapped      correct 3
+    flag.abn_invalid   correct 1
+  Fees (per field):
+    stated_total_cents correct 6
+    firm_name          correct 5, wrong 1

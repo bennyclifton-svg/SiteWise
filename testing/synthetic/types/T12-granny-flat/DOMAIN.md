@@ -762,7 +762,7 @@ None.
 ## Scenario review applied (6 November 2026)
 
 `det.site_class: M` added to the base profile in `shape.yaml`: owner ruling R10 (T01, site class M for a new
-house) applied by analogy. **Pending owner confirmation for T12.** No T12 trigger changes the site class; the
+house) applied by analogy. **Confirmed by the owner for T12 on 6 November 2026.** No T12 trigger changes the site class; the
 scenarios key it from the geotechnical report.
 
 ## Shape corrections after run `20261106-t10-t12` (6 November 2026)

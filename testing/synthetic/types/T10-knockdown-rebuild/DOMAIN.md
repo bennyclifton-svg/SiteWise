@@ -37,7 +37,7 @@ council assessment. [D] The base keeps T01's traditional, consultant-led procure
 differ only in the existing house and the pathway. The project-home "knock-down rebuild package", where
 the builder designs and demolishes, is very common by volume. It is the trigger `builder-designs`, as it
 is in T01, because the app models it badly (§11). Reviewer accepted this base (T10 REVIEW §2); the owner may override. After the ST10 scenario review, the base profile also carries site class M and no
-neighbouring or street trees affected (as R10 for T01); the owner should confirm.
+neighbouring or street trees affected (as R10 for T01); confirmed by the owner on 6 November 2026.
 
 **Who procures it and how.** The owner is usually a private individual or couple who has lived in the
 house. They engage the architect or designer first. The architect brings in:
