@@ -926,13 +926,14 @@ func (g *gen) stageLinks(sk knowledge.Skeleton) {
 	}
 }
 
-// Fragment internal links, then attach links. attach after/before
-// stage_start or stage_finish adds no link (containment already holds an
-// activity inside its stage, and a row cannot link to its own stage), but an
-// `after: stage_start` activity counts as placed, so step 7 does not chain
-// it behind the previous activity. attach to another fragment links every
-// sink of that fragment's instances to every source of this one (or the
-// reverse for before), FS with no lag.
+// Fragment internal links, then attach links, then activity links. attach
+// after/before stage_start or stage_finish adds no link (containment already
+// holds an activity inside its stage, and a row cannot link to its own
+// stage), but an `after: stage_start` activity counts as placed, so step 7
+// does not chain it behind the previous activity. attach to another fragment
+// links every sink of that fragment's instances to every source of this one
+// (or the reverse for before), FS with no lag. An attach.after fragment that
+// is not in the program is replaced by its own anchor (presentAnchor).
 func (g *gen) fragmentLinks() {
 	for _, inst := range g.fragInstances {
 		for _, l := range inst.frag.Links {
@@ -943,18 +944,23 @@ func (g *gen) fragmentLinks() {
 	for _, inst := range g.fragInstances {
 		byFrag[inst.frag.ID] = append(byFrag[inst.frag.ID], inst)
 	}
+	library := map[string]knowledge.Fragment{}
+	for _, f := range g.cat.Fragments() {
+		library[f.ID] = f
+	}
 	for _, inst := range g.fragInstances {
 		a := inst.frag.Attach
 		if a == nil {
 			continue
 		}
-		if a.After == "stage_start" || a.After == "stage_finish" {
+		after := presentAnchor(a.After, byFrag, library)
+		if after == "stage_start" || after == "stage_finish" {
 			for _, k := range inst.sources {
 				g.anchored[k] = true
 			}
 		}
-		if strings.HasPrefix(a.After, "fr.") {
-			for _, other := range byFrag[a.After] {
+		if strings.HasPrefix(after, "fr.") {
+			for _, other := range byFrag[after] {
 				for _, from := range other.sinks {
 					for _, to := range inst.sources {
 						g.addGuarded(PlanLink{PredKey: from, SuccKey: to, Type: LinkFS, Origin: LinkOriginLibrary})
@@ -972,12 +978,61 @@ func (g *gen) fragmentLinks() {
 			}
 		}
 	}
+	for _, inst := range g.fragInstances {
+		g.activityLinks(inst, byFrag)
+	}
+}
+
+// activityLinks places one fragment instance's activity-level after and
+// before links (FS, no lag): from every sink of each instance of an after
+// fragment, and to every source of each instance of a before fragment.
+func (g *gen) activityLinks(inst fragInstance, byFrag map[string][]fragInstance) {
+	for _, a := range inst.frag.Activities {
+		key := inst.keys[a.Key]
+		for _, id := range a.After {
+			for _, other := range byFrag[id] {
+				for _, from := range other.sinks {
+					g.addGuarded(PlanLink{PredKey: from, SuccKey: key, Type: LinkFS, Origin: LinkOriginLibrary})
+				}
+			}
+		}
+		for _, id := range a.Before {
+			for _, other := range byFrag[id] {
+				for _, to := range other.sources {
+					g.addGuarded(PlanLink{PredKey: key, SuccKey: to, Type: LinkFS, Origin: LinkOriginLibrary})
+				}
+			}
+		}
+	}
+}
+
+// presentAnchor resolves an attach.after end. A fragment end with no
+// instance in this program gives way to that fragment's own attach.after,
+// and so on: services that wait on a strip-out the project does not have
+// wait on what the strip-out would have waited on, ending at the stage
+// start. Chaining them behind the row before (step 7) would invent an order
+// from library position, such as sanitary rough-in after the doors (F44).
+func presentAnchor(after string, byFrag map[string][]fragInstance, library map[string]knowledge.Fragment) string {
+	seen := map[string]bool{} // the loader refuses attach cycles; this is a backstop
+	for strings.HasPrefix(after, "fr.") && len(byFrag[after]) == 0 {
+		f, ok := library[after]
+		if !ok || seen[after] || f.Attach == nil || f.Attach.After == "" {
+			return "stage_start"
+		}
+		seen[after] = true
+		after = f.Attach.After
+	}
+	return after
 }
 
 // Hold point links: every `after` activity → hold point → every `before`
-// activity, FS with no lag, origin interface.
+// activity, FS with no lag, origin interface. An `after` activity already
+// placed after a `before` activity is left out: it is fit-off work the hold
+// releases (sprinkler heads in the new ceiling), not work it waits on, and
+// waiting on it would drop the hold → concealment link as a loop (F44).
 func (g *gen) holdPointLinks() {
 	for _, h := range g.holds {
+		h.after = g.notAfterAny(h.after, h.before)
 		if h.conceals != "" {
 			for _, l := range slices.Clone(g.plan.Links) {
 				if l.SuccKey == h.conceals {
@@ -995,6 +1050,25 @@ func (g *gen) holdPointLinks() {
 			g.addGuarded(PlanLink{PredKey: h.key, SuccKey: b, Type: LinkFS, Origin: LinkOriginInterface, InterfaceID: h.iface})
 		}
 	}
+}
+
+// notAfterAny keeps the rows that no row in before already reaches.
+func (g *gen) notAfterAny(rows, before []string) []string {
+	var out []string
+	for _, a := range rows {
+		follows := false
+		for _, b := range before {
+			// A link a → b would close a loop exactly when b already reaches a.
+			if g.guard.closes(g.byKey[a], g.byKey[b], LinkFS) {
+				follows = true
+				break
+			}
+		}
+		if !follows {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 // Step 7: inside each stage, an activity with no predecessor from steps 3–6

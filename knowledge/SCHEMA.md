@@ -1001,7 +1001,18 @@ ids of the same row, and a row's links form no cycle.
 - `duration` is a `du.*` id or `null` (unknown).
 - `attach.after` and `attach.before` (either or both) are `stage_start`,
   `stage_finish` or another fragment id; each becomes an FS link with no lag.
-  Attach references between fragments form no cycle.
+  Attach references between fragments form no cycle. When the attach.after
+  fragment is not in the program, the fragment takes that fragment's own
+  attach.after instead, and so on, ending at the stage start; it is not
+  chained behind whatever row came before it.
+- An activity may carry its own `after` and `before`: lists of fragment ids.
+  `after` is FS from every sink of each instance of that fragment to the
+  activity; `before` is FS from the activity to every source of each
+  instance. Use them when one activity of a fragment goes before another
+  fragment and the rest after it (a services rough-in before the ceilings,
+  its fit-off after). A fragment not in the program adds nothing. They are
+  not part of the attach cycle check; a link that would close a loop is
+  left out and named in a check.
 - A fragment must not duplicate an activity a skeleton already provides.
 
 ### Durations (`program/durations.yaml`)

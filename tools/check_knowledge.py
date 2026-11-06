@@ -1765,7 +1765,7 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
             report.error(where, "fragment needs activities")
             activities = []
         for a in activities:
-            if not isinstance(a, dict) or set(a) - {"key", "label", "systems", "duration"} \
+            if not isinstance(a, dict) or set(a) - {"key", "label", "systems", "duration", "after", "before"} \
                     or not ACTIVITY_KEY.match(str(a.get("key", ""))) or not str(a.get("label") or "").strip():
                 report.error(where, f"activity needs key, label, systems and duration: {a}")
                 continue
@@ -1778,6 +1778,19 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
                 refs.extend(("system", where, s) for s in a["systems"])
             if a.get("duration") is not None and a["duration"] not in durations:
                 report.error(where, f"activity {a['key']} names unknown duration {a['duration']}")
+            # Activity-level order against other fragments (F44). Not added to
+            # attach_links: pipework before ceilings with heads after them is a
+            # fragment-level cycle but a valid activity order.
+            for side in ("after", "before"):
+                ends = a.get(side)
+                if ends is None:
+                    continue
+                if not isinstance(ends, list) or not ends:
+                    report.error(where, f"activity {a['key']} {side} must be a list of fragments")
+                    continue
+                for end in ends:
+                    if end not in fragments or end == f.get("id"):
+                        report.error(where, f"activity {a['key']} {side} names unknown fragment {end}")
         check_program_links(where, keys, f.get("links") or [], durations, report)
         attach = f.get("attach")
         if attach is not None:

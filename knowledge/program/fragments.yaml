@@ -1107,7 +1107,7 @@ fragments:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-2}
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-2, before: [fr.fire-stopping]}
     - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.sanitary-fit-2}
     - {key: commission, label: "Commission sanitary systems", systems: [hydraulic.sanitary], duration: du.sanitary-commission-2}
   links:
@@ -1127,7 +1127,7 @@ fragments:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [hydraulic.cold-water], duration: du.cold-rough-2}
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.cold-water], duration: du.cold-rough-2, before: [fr.fire-stopping]}
     - {key: fit-off, label: "Fit off", systems: [hydraulic.cold-water], duration: du.cold-fit-2}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
@@ -1163,7 +1163,7 @@ fragments:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-2}
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-2, before: [fr.fire-stopping]}
     - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-2}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
@@ -1196,7 +1196,7 @@ fragments:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [fire-active.sprinklers], duration: du.sprinklers-rough-2}
+    - {key: rough-in, label: "Rough-in", systems: [fire-active.sprinklers], duration: du.sprinklers-rough-2, before: [fr.fire-stopping]}
     - {key: fit-off, label: "Fit off and commission sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-fit-2}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-2}
@@ -1946,7 +1946,7 @@ fragments:
       - {det: ncc_class, any_of: ["9b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-9b}
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-9b, before: [fr.fire-stopping]}
     - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.sanitary-fit-9b}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-9b}
@@ -1964,7 +1964,7 @@ fragments:
       - {det: ncc_class, any_of: ["9b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-9b}
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-9b, before: [fr.fire-stopping]}
     - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-9b}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-9b}
@@ -2186,7 +2186,7 @@ fragments:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-fitout}
+    - {key: rough-in, label: "Rough-in", systems: [hydraulic.sanitary], duration: du.sanitary-rough-fitout, before: [fr.fire-stopping, fr.ceilings-fitout]}
     - {key: fit-off, label: "Fit off", systems: [hydraulic.sanitary], duration: du.sanitary-fit-fitout}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-fitout}
@@ -2204,7 +2204,7 @@ fragments:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
-    - {key: alter, label: "Alter cold water", systems: [hydraulic.cold-water], duration: du.cold-fitout}
+    - {key: alter, label: "Alter cold water", systems: [hydraulic.cold-water], duration: du.cold-fitout, before: [fr.fire-stopping, fr.ceilings-fitout]}
   attach: {after: fr.strip-out-fitout}
   status: draft
   sources:
@@ -2234,7 +2234,7 @@ fragments:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
-    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-fitout}
+    - {key: rough-in, label: "Rough-in", systems: [electrical.cabling-wiring], duration: du.electrical-rough-fitout, before: [fr.fire-stopping, fr.ceilings-fitout]}
     - {key: fit-off, label: "Fit off", systems: [electrical.cabling-wiring], duration: du.electrical-fit-fitout}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-fitout}
@@ -2267,7 +2267,7 @@ fragments:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
-    - {key: rough-in, label: "Alter ductwork and pipework", systems: [mechanical.air-conditioning], duration: du.mechanical-rough-fitout}
+    - {key: rough-in, label: "Alter ductwork and pipework", systems: [mechanical.air-conditioning], duration: du.mechanical-rough-fitout, before: [fr.fire-stopping, fr.ceilings-fitout]}
     - {key: fit-off, label: "Commission the altered system", systems: [mechanical.air-conditioning], duration: du.mechanical-commission-fitout}
   links:
     - {from: rough-in, to: fit-off, type: FS, lag: du.closein-fitout}
@@ -2285,7 +2285,7 @@ fragments:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
-    - {key: exhaust, label: "Alter exhaust ventilation", systems: [mechanical.ventilation], duration: du.ventilation-fitout}
+    - {key: exhaust, label: "Alter exhaust ventilation", systems: [mechanical.ventilation], duration: du.ventilation-fitout, before: [fr.fire-stopping, fr.ceilings-fitout]}
   attach: {after: fr.strip-out-fitout}
   status: draft
   sources:
@@ -2299,9 +2299,16 @@ fragments:
       - {work_action: {system: fire-active.sprinklers, any_of: [alter, upgrade, replace]}}
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
+  # Two phases (F44, T03 REVIEW finding 2): pipework above the ceiling goes
+  # before fire stopping and the ceilings, so its pressure-test hold point can
+  # sit before the ceilings close; the heads are fitted off in the new ceiling.
+  # The library has no reviewed length for the pipework row, so it is null.
   activities:
-    - {key: heads, label: "Alter and test sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-fitout}
-  attach: {after: fr.ceilings-fitout}
+    - {key: pipework, label: "Alter sprinkler pipework above the ceiling", systems: [fire-active.sprinklers], duration: null, before: [fr.fire-stopping, fr.ceilings-fitout]}
+    - {key: heads, label: "Alter and test sprinklers", systems: [fire-active.sprinklers], duration: du.sprinklers-fitout, after: [fr.ceilings-fitout]}
+  links:
+    - {from: pipework, to: heads, type: FS, lag: null}
+  attach: {after: fr.strip-out-fitout}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-fitout"}

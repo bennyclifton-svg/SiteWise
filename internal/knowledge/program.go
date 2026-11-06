@@ -88,6 +88,13 @@ type FragmentActivity struct {
 	Label    string   `yaml:"label" json:"label"`
 	Systems  []string `yaml:"systems" json:"systems"`
 	Duration *string  `yaml:"duration" json:"duration"`
+	// After and Before tie one activity, not the whole fragment, to other
+	// fragments: FS from every sink of each instance of an After fragment,
+	// and FS to every source of each instance of a Before fragment. A
+	// services rough-in goes before the ceilings while its fit-off follows
+	// them, which a fragment-level attach cannot say (F44).
+	After  []string `yaml:"after,omitempty" json:"after,omitempty"`
+	Before []string `yaml:"before,omitempty" json:"before,omitempty"`
 }
 
 // FragmentAttach places a fragment in its stage: after and before are
@@ -787,6 +794,11 @@ func (c *Catalog) validateFragment(f Fragment, fragments map[string]bool) error 
 				return err
 			}
 		}
+		for _, id := range append(append([]string(nil), a.After...), a.Before...) {
+			if !fragments[id] || id == f.ID {
+				return fmt.Errorf("activity %s names unknown fragment %s", a.Key, id)
+			}
+		}
 	}
 	if err := c.checkLinks(keys, f.Links); err != nil {
 		return err
@@ -896,6 +908,9 @@ func linkCycle(nodes []string, links []ProgramLink) bool {
 
 // fragmentAttachCycle: "fr.a after fr.b" and "fr.b after fr.a" could never
 // be placed, so attach references between fragments must be acyclic too.
+// Activity-level after/before are left out on purpose: sprinkler pipework
+// before the ceilings and heads after them is a fragment-level cycle but an
+// activity-level order; the generator's loop guard covers a real loop.
 func fragmentAttachCycle(fragments []Fragment) bool {
 	var nodes []string
 	var links []ProgramLink
