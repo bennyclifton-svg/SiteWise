@@ -358,8 +358,12 @@ interfaces:
   sources:
   - seed: fire-life-safety-guide.md
     anchor: '## Construction verification and integrated testing'
+  # Concealment is the ceilings (F44, T03 REVIEW finding 3). Holding every
+  # interiors row put partitions, doors, off-site joinery, paint and floors
+  # behind the inspection. The library's lining rows frame and line in one
+  # row, so they cannot wait on sealing without a loop.
   hold_point:
-    before: interiors
+    before: interiors.ceilings
     after: fire-passive.penetrations
     evidence: a location-based inspection record for concealed fire stopping
 - id: if.fire-facade-slab-edge

@@ -239,9 +239,10 @@ func (g *graph) topo() {
 func (g *graph) summary(i int) bool { return g.finish[i] >= 0 }
 
 // leafDuration is a schedulable row's duration in one run. Milestones are
-// always 0; every other kind is unknown until someone states a duration.
+// always 0, and so is an empty stage with no stated length (emptyStage);
+// every other kind is unknown until someone states a duration.
 func leafDuration(a Activity, run int) (int, bool) {
-	if a.Kind == KindMilestone {
+	if a.Kind == KindMilestone || emptyStage(a) {
 		return 0, true
 	}
 	if a.Duration == nil {
@@ -255,6 +256,13 @@ func leafDuration(a Activity, run int) (int, bool) {
 	}
 	return *a.Duration, true
 }
+
+// emptyStage is a stage row with no children and no stated length, called
+// only for rows that are not summaries. It is an empty summary: it takes no
+// time and dates from its predecessor, so it does not spread "unknown" to
+// every later row (F47: a new building's Investigation stage has no rows).
+// A childless stage with a stated length is a placeholder and keeps it.
+func emptyStage(a Activity) bool { return a.Kind == KindStage && a.Duration == nil }
 
 const (
 	runTypical = iota
@@ -577,11 +585,12 @@ func (g *graph) rowNumbers(i int, p *pass, free []int) (es, ef, ls, lf, tf, ff i
 }
 
 // status counts schedulable rows: every row except a stage with children,
-// whose span comes from them.
+// whose span comes from them, and an empty stage, which has nothing to
+// schedule.
 func status(g *graph) Status {
 	s := Status{}
 	for i, a := range g.in.Activities {
-		if g.summary(i) {
+		if g.summary(i) || emptyStage(a) {
 			continue
 		}
 		s.Total++

@@ -657,8 +657,9 @@ func TestEmptyLibrary(t *testing.T) {
 		t.Fatalf("%d activities, %d mappings", activities, len(p.StageMap))
 	}
 	out := Compute(p.Input(Calendar{}))
-	// 9 leaf stages and nothing else.
-	if out.Status.Known != 0 || out.Status.Total != 9 || out.Status.Words != "Indicative: 0 of 9 durations known" {
+	// 9 empty stages and nothing else: an empty stage has nothing to
+	// schedule (F47), so there is no activity to count.
+	if out.Status.Known != 0 || out.Status.Total != 0 || out.Status.Words != "No activities yet" {
 		t.Fatalf("status %+v", out.Status)
 	}
 	if out.Cycle != nil {
