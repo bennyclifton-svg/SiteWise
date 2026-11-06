@@ -11,7 +11,9 @@ state: NSW
 # detention; architect-led traditional tender; one HIA lump-sum contract. A vacant lot is the vacant-lot trigger.
 profile:
   hdr.building_class: residential
-  hdr.subclass: townhouses
+  # Owner ruling (6284fa1, 6 November 2026): title decides; a dual occupancy is a house, and three or more
+  # townhouses on a strata or community scheme are townhouses (the three-plus-townhouses trigger).
+  hdr.subclass: house
   hdr.work_type: new
   hdr.cond.planning: da
   hdr.cond.procurement_route: traditional
@@ -20,7 +22,8 @@ profile:
   hdr.cond.stakeholder_complexity: single_owner
   hdr.cond.access_constraints: unrestricted
   hdr.cond.environmental_sensitivity: standard
-  # The townhouses subclass has no storeys scale field (taxonomy.yaml townhouses scale_fields); two storeys is in prose.
+  # The dwellings and average-size keys are the townhouses subclass's scale fields (taxonomy.yaml townhouses); kept
+  # as stated facts. Two storeys is in prose.
   hdr.scale.site_sqm: 700
   hdr.scale.dwellings: 2
   hdr.scale.gfa_sqm: 460
@@ -326,15 +329,15 @@ rfps:
     must_include: ["Concept and schematic design for two dwellings and the lot split on the survey of the existing site", "Demolition plan of every structure to go; investigations needed (existing_interfaces)", "DA planning approval documentation for demolition, the dual occupancy and Torrens subdivision", "Planning response to council requests", "Design development", "House tender and construction documents (house_documents) for both dwellings", "Separating wall fire and acoustic details: FRL from the slab to the underside of the roof covering, only small battens and sarking crossing, shared eaves lined, discontinuous construction where required", "Kitchen, bathroom, laundry and joinery design", "Finishes, fixtures and appliances selections schedule", "Specification", "Tender (bidding) support", "Certifier liaison", "Lodging the DA through the NSW Planning Portal", "Option: construction-phase support", "Option: contract administration"]
     must_not_include: ["BIM coordination or clash detection", "Tenant fit-out", "Signage and wayfinding", "Facade certification", "Apartment design-quality submission", "Green Star or NABERS", "Regulated-design declarations", "D&C tender documents", "Post-novation stage", "Brief and masterplan stage", "Community consultation", "Connecting with Country input"]
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
       stages_option: [construction_support, contract_admin]
-      stages_absent: [brief_masterplan, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
+      stages_absent: [interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, existing_interfaces: I, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent, live_staging: absent}
       blocking: []   # the scenario states the budget (SCORING.md §7.5, as T01)
       sources:
         - "blocking: fact:budget holds while proj.budget_stated is unread (architecture.yaml required_facts); the scenario states the budget"
         - "existing_interfaces I because det.existing_building is true (module existing_building)"
-        - "brief_masterplan absent because flag.staged and flag.multi_building are no for one attached building"
+        - "brief_masterplan included as 'Brief' (owner ruling R13: the brief is priced on every project); its masterplan lines stay out because flag.staged and flag.multi_building are no for one attached building"
     app_differs:
       - {key: stage.bidding, app: option, expect: include, why: "bidding comes after the house boundary end (house_documents), so resolveStages prices it as an option"}
       - {key: text.separating_wall, app: "not named", expect: "separating wall FRL, acoustic rating and roof termination named", why: "the template has no attached-dwelling row"}
@@ -577,7 +580,7 @@ triggers:
     label: Three or more townhouses (multi dwelling housing)
     evidence: ["Multi dwelling housing comprising 4 two-storey townhouses", "community title subdivision into 4 lots with a common driveway"]
     negation: ["Attached dual occupancy (two dwellings only)", "No further dwellings are proposed"]
-    profile: [hdr.scale.dwellings, hdr.scale.avg_dwelling_size_sqm]
+    profile: [hdr.subclass, hdr.scale.dwellings, hdr.scale.avg_dwelling_size_sqm]
     adds:
       procurement: [consultant.traffic, consultant.waste]
       cost_plan: ["Traffic and parking consultant", "Waste management consultant", "Common driveway, bin store and mailboxes"]
@@ -597,7 +600,7 @@ triggers:
       rfps: [{discipline: consultant.architect, must_include: ["Separation between buildings checked against the 900 mm boundary rule (verified: false)"]}]
     removes:
       cost_plan: ["Passive fire protection"]
-    why: "No separating wall, so fire-passive and acoustic separation leave the scope; flag.multi_building turns on the architect's brief_masterplan stage and the staged RFP module, which a two-house job does not need"
+    why: "No separating wall, so fire-passive and acoustic separation leave the scope; flag.multi_building turns on the architect's masterplan lines (the stage becomes 'Brief and masterplan'; R13 prices the brief alone on every project) and the staged RFP module, which a two-house job does not need"
     built_in: {rfps: "partial", cost_plan: "no"}
     source: "knowledge/rfp/modules.yaml staged"
   - id: vacant-lot
@@ -762,7 +765,7 @@ gaps:
   - {area: rfp, what: "Surveyor RFP always prices titling (subdivision) as an option and the completion stage after the boundary, so the job's core survey scope is optional", evidence: "knowledge/rfp/land-surveying.yaml titling, s7_completion"}
   - {area: rfp, what: "No RFP row names the separating wall, subdivision, Section 73 or a subdivision certificate (architecture, structural, civil, town-planning, bca-certification)", evidence: "knowledge/rfp/architecture.yaml; knowledge/rfp/civil.yaml; knowledge/rfp/bca-certification.yaml"}
   - {area: rfp, what: "Architecture blocks on fact:budget until a budget is stated; certifier defaults to the BCA advisory package; town-planning and bca-certification block on cdc", evidence: "knowledge/rfp/architecture.yaml required_facts; knowledge/rfp/bca-certification.yaml boundary, unsupported_pathways; knowledge/rfp/town-planning.yaml unsupported_pathways"}
-  - {area: rfp, what: "flag.multi_building (detached dual occupancy) turns on the architect's brief_masterplan stage and the staged module meant for campuses", evidence: "knowledge/rfp/architecture.yaml brief_masterplan; knowledge/rfp/modules.yaml staged"}
+  - {area: rfp, what: "flag.multi_building (detached dual occupancy) turns on the architect's masterplan lines and the staged module meant for campuses; the brief itself is priced on every project (R13)", evidence: "knowledge/rfp/architecture.yaml brief_masterplan; knowledge/rfp/modules.yaml staged"}
   - {area: profile, what: "Subclass wording is 'Townhouses (Class 1a)' only; nothing names dual occupancy, duplex or semi-detached, so a reading may pick house and lose the separating wall, stairs and barriers from scope", evidence: "knowledge/profile/taxonomy.yaml townhouses"}
   - {area: profile, what: "Townhouses have no storeys scale field, and the dwellings trigger needs a digit ('two dwellings' is not read)", evidence: "knowledge/profile/taxonomy.yaml townhouses scale_fields"}
   - {area: profile, what: "implied_by party-wall adds site.adjoining-structures for a new party wall between new dwellings", evidence: "knowledge/profile/scope_defaults.yaml implied_by party-wall"}

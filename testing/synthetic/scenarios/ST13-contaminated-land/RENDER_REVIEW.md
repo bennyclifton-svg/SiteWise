@@ -34,7 +34,7 @@ d05, d13 and d19.
   appointment that is not yet priced.
 - Fees: the base six, plus Kestrel KE-FP-0611: DSI $38,500, RAP $14,000, validation $22,000, **total $74,500 ex GST**.
   Option: test pits, $6,800. Site auditor excluded. Invoices are unchanged from the base: Calder Rowe $74,800, Ashgrove
-  $25,850, Basalt Ridge $22,420 with the mistyped total.
+  $25,850, Bellbird Range $22,420 with the mistyped total.
 
 ## 3. Comparison with `expected/`
 

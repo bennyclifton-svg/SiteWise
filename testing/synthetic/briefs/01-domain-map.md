@@ -184,6 +184,28 @@ or `{discipline, must_include, must_not_include}`, which drops only those
 phrases for the variant. Each phrase (a string or `{text, key}`) must
 already be in that discipline's base RFP lists; the validator checks this.
 
+A trigger that changes the approval or procurement route may also set
+`skeleton:` (the skeleton the app should pick for the variant), and its
+`adds.rfps` items may restate the RFP's `expect` for the keys the variant
+moves (added 7 November 2026):
+
+```yaml
+triggers:
+  - id: traditional-procurement
+    skeleton: sk.new-traditional-da
+    adds:
+      rfps:
+        - discipline: consultant.architect
+          must_include: [...]
+          expect:            # only the keys that change; every other key keeps the base answer
+            stages_include: [tender_traditional, for_construction]
+            stages_absent: [dnc_tender, post_novation]   # a named stage leaves the base list it was in
+            positions: {dnc_performance_brief: absent}
+            # blocking: [...] replaces the base blocking list
+          app_differs:       # optional; the base app_differs on a restated key no longer applies
+            - {key: stage.for_construction, app: option, expect: include, why: "..."}
+```
+
 Two optional forms, adopted 30 October 2026 (provisional until the owner
 confirms). The validator checks both, and `tools/score_shapes.py` uses them
 (see `testing/synthetic/SCORING.md`):

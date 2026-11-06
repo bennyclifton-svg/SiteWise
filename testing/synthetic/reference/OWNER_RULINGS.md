@@ -110,3 +110,26 @@ T01 trees variant leaves `flag.arborist_pruning` unset.
 
 For a new house the normal base case is site class **M**, and **no
 neighbouring trees affected**. Both are in the T01 base profile.
+
+## After the T02, T13 and T17 scenarios, 7 November 2026
+
+### R11. CDC for a Class 2 recladding
+
+A complying development certificate for a Class 2 recladding is unlikely;
+it is more likely a DA. The ST17 `cdc-pathway` variant is retired: its
+folder and run stay as a record, it leaves the T17 `variants` list and is
+not re-run.
+
+### R12. Majority settling
+
+Yes. Free text and flags settle on a strong majority, like choices (F15).
+
+### R13. Architect brief and masterplan
+
+The brief is typical on every project, so it is always priced. A
+masterplan is only for large projects.
+
+### R14. Mixed-use scale
+
+Apartment count and shop area are key metrics for shop-top mixed use, so
+the app must read them.

@@ -191,6 +191,20 @@ class BaseScenario(Case):
         f["expected/document_register.json"]["documents"][0]["kind"] = "drawing"
         self.assertError(self.errors("ST01-base", f), "read_by_design")
 
+    def test_unasked_key_may_be_not_read_with_a_reason(self):
+        """A key the app never asks (podium levels, say) is read_by_design false
+        even from a read document, but only with a not_read reason."""
+        f = base_files()
+        entry = f["expected/profile.json"]["values"]["hdr.work_type"]
+        entry["read_by_design"] = False
+        self.assertError(self.errors("ST01-base", f), "read_by_design")
+        entry["not_read"] = "the app never asks this key (plan R14)"
+        self.assertEqual(self.errors("ST01-base", f), [])
+        entry["read_by_design"] = True
+        self.assertError(self.errors("ST01-base", f), "not_read")
+        entry["read_by_design"], entry["not_read"] = False, ""
+        self.assertError(self.errors("ST01-base", f), "not_read")
+
     def test_fee_stages_must_sum_to_total(self):
         f = base_files()
         f["expected/fees.json"]["submissions"][0]["stated_total_cents"] = 999

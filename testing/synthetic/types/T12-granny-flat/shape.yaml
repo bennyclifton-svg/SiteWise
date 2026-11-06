@@ -283,9 +283,9 @@ rfps:
     must_include: ["Concept and schematic design of a secondary dwelling within the floor-area limit", "CDC documentation: site plan with setbacks to boundaries and to the main house, private open space, services routes from the main house, BASIX commitments on the drawings", "Lodging the CDC with the certifier through the NSW Planning Portal", "Certifier liaison", "Design development", "Tender and construction documents for the quote package (house_documents)", "Kitchen, bathroom and laundry layouts", "Finishes, fixtures and appliances schedule", "Specification", "Site plan showing construction access and protection of the occupied house (live_staging)", "Option: quote (bidding) support", "Option: construction-phase support"]
     must_not_include: ["Planning response to council requests (no DA)", "Statement of environmental effects", "Measured drawings or alterations to the main house", "BIM coordination", "Tenant fit-out", "Signage", "Facade certification", "Apartment design-quality submission", "Green Star or NABERS", "Regulated-design declarations", "D&C tender documents", "Post-novation stage", "Community consultation"]
     expect:
-      stages_include: [concept, schematic, planning_approval, design_development, house_documents]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, design_development, house_documents]
       stages_option: [bidding, construction_support, contract_admin]
-      stages_absent: [brief_masterplan, planning_response, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
+      stages_absent: [planning_response, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, live_staging: I, consultant_selection: O, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, existing_interfaces: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent, apartment_design: absent}
       blocking: []   # the scenario states the budget (SCORING.md §7.5, as T01)
       sources:
@@ -459,7 +459,7 @@ triggers:
       procurement: [consultant.town_planner]
       cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees", "Town planner"]
       program: ["Statement of environmental effects", "Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
-      rfps: [{discipline: consultant.architect, must_include: ["Planning response to council requests"]}, {discipline: consultant.certifier, must_include: ["Package B: CC assessment, principal certifier, inspections, OC"]}]
+      rfps: [{discipline: consultant.architect, must_include: ["Planning response to council requests"], expect: {stages_include: [planning_response]}}, {discipline: consultant.certifier, must_include: ["Package B: CC assessment, principal certifier, inspections, OC"], expect: {stages_include: [b2_construction_approval]}}]
       authority: ["DA to council under SEPP (Housing) 2021 secondary dwelling provisions (verified: false); CC before work"]
     removes:
       program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Certifier notifies neighbours within 20 m (14 days before determination)", "Give neighbours notice of commencement (at least 7 days before work)"]
@@ -477,7 +477,7 @@ triggers:
       work_items: [{system: substructure.piles, action: new}]
       cost_plan: ["Piers below the zone of influence", "Sydney Water asset assessment and CCTV of the main"]
       program: ["Sydney Water building-over or adjacent-asset approval", "CCTV inspection of the main before and after"]
-      rfps: [{discipline: consultant.structural, must_include: ["Authority asset assessment and pier design to Sydney Water's guidelines"]}, {discipline: consultant.architect, must_include: ["Water authority asset submission"]}]
+      rfps: [{discipline: consultant.structural, must_include: ["Authority asset assessment and pier design to Sydney Water's guidelines"], expect: {stages_include: [authority_asset]}}, {discipline: consultant.architect, must_include: ["Water authority asset submission"], expect: {positions: {water_asset: I}}}]
       authority: ["Sydney Water Tap in asset assessment; a main that cannot be built over may need deviation (verified: false)"]
     why: "The authority-asset flag also makes the structural scale complex (Go run), the app over-scoping a granny-flat slab beside a main"
     built_in: {work_items: "no", rfps: "yes", program: "no", cost_plan: "partial"}

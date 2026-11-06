@@ -17,6 +17,16 @@ bash testing/synthetic/harness/serve.sh stop
 projects never mix with the owner's real projects in the `:8080` dev
 organisation. `run.py` refuses `:8080` and anything not on loopback.
 
+Start a run with an empty organisation:
+
+```
+bash testing/synthetic/harness/serve.sh fresh    # stop, drop and recreate sitewise_synth, then start as usual
+```
+
+The firm directory is organisation-wide, so without `fresh` firms read in
+earlier runs are matched again in later ones (FINDINGS F37). `fresh` drops
+only `sitewise_synth`; the file store is content addressed and kept.
+
 Each run writes `testing/synthetic/runs/<stamp>/<scenario>/`:
 
 | Path | What |

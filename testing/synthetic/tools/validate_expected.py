@@ -230,7 +230,13 @@ def _profile(s, ids, shape, docs, register, trigger_keys, base_profile):
             if i not in docs:
                 s.err(f"profile {key}: source {i} is not in the manifest")
         want = _read_by_design(entry.get("sources", []), register, ids)
-        if entry.get("read_by_design") is not want:
+        # A key the app never asks stays unread whatever its source; not_read says why.
+        if "not_read" in entry:
+            if not str(entry["not_read"] or "").strip():
+                s.err(f"profile {key}: not_read needs a reason")
+            elif entry.get("read_by_design") is not False:
+                s.err(f"profile {key}: not_read needs read_by_design false")
+        elif entry.get("read_by_design") is not want:
             s.err(f"profile {key}: read_by_design should be {str(want).lower()} from its sources' kinds")
     needed = list(shape.get("profile", {})) + [x["key"] for x in shape.get("scenario_inputs", [])]
     for key in needed:

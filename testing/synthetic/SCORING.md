@@ -126,6 +126,21 @@ is also accepted.
   before additions.
 - **RFP additions merge.** Added `must_include` phrases join the existing
   RFP for that discipline, or create one.
+- **A trigger may restate an RFP's `expect`.** An `adds.rfps` item may carry
+  `expect` (the same keys as the base: `stages_*`, `elements_*`,
+  `positions`, `blocking`) and `app_differs`. Only the keys it names change:
+  - a named stage or element leaves whichever base list it was in and joins
+    the trigger's list;
+  - a named position takes the trigger's value;
+  - a `blocking` list replaces the base list.
+
+  A base `app_differs` on a restated key no longer applies (the trigger has
+  given the variant's answer). The trigger's own `app_differs` are added,
+  replacing any base entry on the same key. This is how a route variant
+  moves stages (T02 `traditional-procurement`) and a site condition brings
+  a position in (T02 `groundwater-dewatering`: `earthworks_suitability`
+  I). `validate_shape.py` checks the keys, the position values and that a
+  stage sits in one list.
 
 The flag can be repeated for multi-trigger scenarios. An unknown trigger id
 is an error.
@@ -273,6 +288,12 @@ proposal (`proposed_works`). The shape's `need` is copied onto each miss.
   `app_differs` entry `{key: blocking.<id>, app: blocking | not blocking,
   expect: blocking | not blocking, why}` marks a check the app is known to
   raise or omit. Its difference is then known, not a new failure.
+
+  A block that clears only when the user types or chooses something is
+  reported under `awaiting_user`, not as a new failure: an `allowance:*`
+  check, `fields`, `terms`, a `fact:flag.*` the RFP skeleton marks
+  `scope_decision`, and the traffic RFP's design vehicle
+  (`slot:project:assessment_quantities`, typed on the RFP).
 
   `text.*` keys in `app_differs` cannot be checked mechanically, and are
   listed under `not_checked`.

@@ -595,7 +595,8 @@ triggers:
       authority: ["Development consent, or a heritage minor-works exemption from council under LEP cl 5.10(3) (verified: false)", "Construction certificate", "Occupation certificate"]
     removes:
       program: ["Confirm the exempt path"]
-    why: "Codes SEPP exempt development generally cannot be used on a heritage item (verified: false). The DA path moves the app to sk.refurb-traditional-da and fires fr.heritage-referral, fr.da-* and fr.construction-certificate. Heritage has no RFP template. The scorer takes the skeleton from the base program.skeleton only, so this variant will report a skeleton mismatch (sk.refurb-traditional-da is correct here) until a trigger can change the expected skeleton."
+    why: "Codes SEPP exempt development generally cannot be used on a heritage item (verified: false). The DA path moves the app to sk.refurb-traditional-da and fires fr.heritage-referral, fr.da-* and fr.construction-certificate. Heritage has no RFP template."
+    skeleton: sk.refurb-traditional-da   # refurb + traditional + da (knowledge/program/skeletons.yaml)
     built_in: {procurement: "yes", program: "yes", cost_plan: "yes", rfps: partial}
     source: "knowledge/works/package_defaults.yaml complexity_additions[1]"
   - id: fire-engineered-smoke-control

@@ -5,7 +5,7 @@ To: Halcyon Eastwood Pty Ltd
 
 # Fee proposal: geotechnical investigation
 
-Basalt Ridge Geotechnical Pty Ltd
+Bellbird Range Geotechnical Pty Ltd
 ABN 65 534 253 982
 Unit 8, 44 Carlingford Road, Epping NSW 2121
 Contact: Grant Ellery, Principal Geotechnical Engineer
@@ -53,4 +53,4 @@ are known. Reinstatement is limited to backfilling boreholes and patching asphal
 
 Grant Ellery
 Principal Geotechnical Engineer
-Basalt Ridge Geotechnical Pty Ltd
+Bellbird Range Geotechnical Pty Ltd

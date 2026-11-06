@@ -3,6 +3,7 @@
 #
 #   bash testing/synthetic/harness/serve.sh            # start (builds first)
 #   bash testing/synthetic/harness/serve.sh stop
+#   bash testing/synthetic/harness/serve.sh fresh      # stop, drop and recreate sitewise_synth, then start
 #
 # Why separate: /dev/login signs in to the one "Local dev" organisation,
 # which holds the owner's real projects. This instance uses its own
@@ -10,6 +11,11 @@
 # projects never mix with real ones. Postgres is the dev cluster on 5433
 # (started here if it is down). Live Jev: the key comes from .env, as in
 # tools/dev.ps1, and is never printed.
+#
+# Why fresh: the firm directory is organisation-wide, so firms read in
+# earlier runs are matched again in later ones (FINDINGS F37). A fresh
+# database gives a run an empty organisation. The file store is content
+# addressed and left as it is.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 TOOLS="$ROOT/.tools"
@@ -18,6 +24,12 @@ ADDR=127.0.0.1:8091
 EXE="$TOOLS/sitewise-synth.exe"
 PIDFILE="$TOOLS/synth-server.pid"
 LOG="$TOOLS/synth-server.log"
+DB=sitewise_synth  # only this harness database is ever dropped
+MODE="${1:-}"
+case "$MODE" in
+  ""|stop|fresh) ;;
+  *) echo "usage: serve.sh [stop|fresh]"; exit 2 ;;
+esac
 
 # The pid file holds the Windows pid: `$!` in Git Bash is an MSYS pid that
 # taskkill does not know, which once left an old build serving :8091.
@@ -30,7 +42,7 @@ stop_server() {
   taskkill //IM "$(basename "$EXE")" //F >/dev/null 2>&1 || true
 }
 
-if [[ "${1:-}" == stop ]]; then
+if [[ "$MODE" == stop ]]; then
   stop_server
   echo stopped
   exit 0
@@ -40,8 +52,13 @@ if ! "$PGBIN/pg_ctl.exe" -D "$TOOLS/pgdata" status >/dev/null 2>&1; then
   echo "starting PostgreSQL on 5433"
   "$PGBIN/pg_ctl.exe" -D "$TOOLS/pgdata" -l "$TOOLS/pg.log" -o "-p 5433" -w start >/dev/null
 fi
-if [[ "$("$PGBIN/psql.exe" -h 127.0.0.1 -p 5433 -U sitewise -d postgres -Atc "select 1 from pg_database where datname='sitewise_synth'")" != 1 ]]; then
-  "$PGBIN/createdb.exe" -h 127.0.0.1 -p 5433 -U sitewise sitewise_synth
+if [[ "$MODE" == fresh ]]; then
+  stop_server  # the server holds connections to the database
+  echo "dropping and recreating $DB"
+  "$PGBIN/dropdb.exe" -h 127.0.0.1 -p 5433 -U sitewise --if-exists --force "$DB"
+fi
+if [[ "$("$PGBIN/psql.exe" -h 127.0.0.1 -p 5433 -U sitewise -d postgres -Atc "select 1 from pg_database where datname='$DB'")" != 1 ]]; then
+  "$PGBIN/createdb.exe" -h 127.0.0.1 -p 5433 -U sitewise "$DB"
 fi
 
 # .env holds KEY=VALUE lines; a variable already set wins.
@@ -63,7 +80,7 @@ go build -o "$EXE" ./cmd/sitewise
 
 SECRET="$TOOLS/synth-session-secret"
 [[ -f "$SECRET" ]] || head -c 32 /dev/urandom | base64 > "$SECRET"
-export SITEWISE_DATABASE_URL="postgres://sitewise@127.0.0.1:5433/sitewise_synth?sslmode=disable"
+export SITEWISE_DATABASE_URL="postgres://sitewise@127.0.0.1:5433/$DB?sslmode=disable"
 export SITEWISE_FILE_DIR="$TOOLS/synth-files"
 export SITEWISE_SESSION_SECRET="$(cat "$SECRET")"
 export SITEWISE_JEV_MODEL=jev-1.13.0

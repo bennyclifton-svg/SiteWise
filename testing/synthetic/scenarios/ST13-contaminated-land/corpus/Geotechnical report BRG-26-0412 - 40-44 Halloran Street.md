@@ -5,7 +5,7 @@ Report date: 24 April 2026
 
 # Geotechnical investigation report
 
-Basalt Ridge Geotechnical Pty Ltd
+Bellbird Range Geotechnical Pty Ltd
 ABN 65 534 253 982
 Unit 8, 44 Carlingford Road, Epping NSW 2121
 Prepared by: Grant Ellery, Principal Geotechnical Engineer | grant.ellery@example.com | 02 9868 5512
@@ -74,4 +74,4 @@ monitoring on the adjoining properties during bulk excavation.
 
 Grant Ellery
 Principal Geotechnical Engineer
-Basalt Ridge Geotechnical Pty Ltd
+Bellbird Range Geotechnical Pty Ltd

@@ -179,18 +179,18 @@ Rules, as "when … then":
 | `scope_additions[5]` | `access-egress.accessible-access`, `.accessible-facilities` or `.livable-housing` | Access |
 | `complexity_additions[0]` | `hdr.cond.planning` da or ssd | Town Planner |
 | `complexity_additions[1]` | `det.heritage_status` conservation_area, local_item or state_register | Heritage |
-| `complexity_additions[2]` | field `contamination_level` | Environmental — **never fires**: no such determinant or condition |
+| `complexity_additions[2]` | `det.potentially_contaminated_land` true | Environmental (F41, 3adc511; was the dead field `contamination_level`) |
 | `complexity_additions[3]` | `hdr.cond.environmental_sensitivity` sensitive or protected_habitat | Ecology |
 | `complexity_additions[4]` | `hdr.cond.environmental_sensitivity` aboriginal_heritage | Archaeology |
 | `complexity_additions[5]` | `det.bal` any BAL value | Bushfire |
 | `complexity_additions[6]` | field `flood_exposure` | Civil — **never fires**: no such field |
 | `complexity_additions[7]` | `det.facade_type` complex | Facade |
 
-Why two never fire: `packageFieldValue` (`internal/procurement/defaults.go`) accepts a value only when the
-field is a live determinant or taxonomy condition and the value is one of its options. `contamination_level`
-and `flood_exposure` are neither (`knowledge/determinants.yaml` has `potentially_contaminated_land` and
-`flood_hazard`, both boolean). So **no site condition suggests an Environmental consultant or a flood
-engineer outside infrastructure.**
+Why one never fires (two until F41 rekeyed `[2]`): `packageFieldValue` (`internal/procurement/defaults.go`) accepts a value only when the
+field is a live determinant or taxonomy condition and the value is one of its options. `flood_exposure` is
+neither (`knowledge/determinants.yaml` has `flood_hazard`, boolean). So **no site condition suggests a flood
+engineer outside infrastructure.** Since F41 a stated `det.potentially_contaminated_land` suggests the
+Environmental consultant.
 
 Note also: there is **no baseline for `remediation` or `advisory`**, and their scope starts empty, so a
 remediation or advisory project gets **no consultant suggestions at all** unless DA or SSD planning
@@ -535,7 +535,7 @@ The direct site-condition → generator links that exist today:
 | Flood | `det.flood_hazard` true | `fr.flood-1a`, `fr.flood-2` (with a `site.flooding` item); civil flood report, evacuation, trunk drainage, complex civil scale. **No consultant** (`flood_exposure` rule is dead) | `fragments.yaml`; `rfp/civil.yaml` |
 | Complex facade | `det.facade_type` complex | Facade consultant (no template) | `complexity_additions[7]` |
 | Ecology or Aboriginal heritage | `hdr.cond.environmental_sensitivity` | Ecology or Archaeology (no templates) | `complexity_additions[3]`, `[4]` |
-| Contamination | `det.potentially_contaminated_land` | civil earthworks-suitability position only. **No Environmental consultant** (`contamination_level` rule is dead). A `site.contamination` investigate item gets `fr.investigate-contamination` | `rfp/civil.yaml`; `fr.investigate-contamination` |
+| Contamination | `det.potentially_contaminated_land` | civil earthworks-suitability position, and the Environmental consultant (`complexity_additions[2]`, F41). A `site.contamination` investigate item gets `fr.investigate-contamination` | `rfp/civil.yaml`; `fr.investigate-contamination` |
 | Acid sulfate soils | `det.acid_sulfate_soils_mapped` | civil earthworks-suitability position; `fr.investigate-acid-sulfate` for an investigate item | `rfp/civil.yaml`; `fragments.yaml` |
 | Groundwater | `proj.flag.groundwater` (also read from `det.groundwater_above_excavation`, which cannot be set) | civil earthworks position | `flag_readings.yaml`; `rfp/civil.yaml` |
 | Basement or deep excavation | `proj.flag.basement` | structural retention, temporary-works, dilapidation, complex scale; civil shoring; substructure budget share ×2 where the split has `basement` | `flag_readings.yaml`; `rfp/structural.yaml`, `rfp/civil.yaml`; `budget_splits.yaml` |
@@ -671,8 +671,9 @@ Ordered by how many of the 20 types they touch.
    Acoustic, ESD/BASIX, Hazmat, Waterproofing, Building Consultant, Demolition, Landscape, Waste, Fire
    Engineer, Quantity Surveyor (several of these have templates but no package rule). Hits T09, T17 (no
    building consultant or remedial engineer), T13, T15, T20.
-6. **Two dead package rules.** `complexity_additions[2]` (`contamination_level`) and `[6]`
-   (`flood_exposure`) name fields that do not exist, so contamination and flood never add a consultant.
+6. **One dead package rule.** `complexity_additions[6]` (`flood_exposure`) names a field that does not
+   exist, so flood never adds a consultant. (`[2]` keyed `contamination_level` until F41 rekeyed it on
+   `potentially_contaminated_land`.)
 7. **Pathways without content.** `ref` (T20), `modification`, `planning_proposal` and `advice_only` have no
    skeleton and no consent fragment; `town-planning` and `bca-certification` RFPs block on `cdc`.
 8. **No head contract until items are accepted**, and no trade package is ever suggested.

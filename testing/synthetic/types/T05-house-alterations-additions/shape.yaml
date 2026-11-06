@@ -282,9 +282,9 @@ rfps:
       - "Regulated design (the Design and Building Practitioners Act applies to Class 2 and 9c, not a Class 1 house: owner ruling R3)"
       - "Apartment design quality, facade certification, Green Star or NABERS"
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
       stages_option: [construction_support, contract_admin]
-      stages_absent: [brief_masterplan, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
+      stages_absent: [interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions:
         coordination: I
         input_schedule: I

@@ -324,7 +324,7 @@ program:
     - {label: "Under-slab drainage and basement waterproofing", stage: construction, fragment: null, after: ["Excavate and pour footings"], built_in: "no", why: "substructure.damp-waterproofing has no fragment"}
     - {label: "Pour the basement slab", stage: construction, fragment: fr.basement-2, after: ["Under-slab drainage and basement waterproofing"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "Then cure"}
     - {label: "Form lift pits", stage: construction, fragment: fr.lift-shafts-2, after: ["Pour the basement slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lift-shafts-2", why: "Pits"}
-    - {label: "Inspect reinforcement before each pour", stage: construction, fragment: null, after: ["Pour the basement slab"], built_in: "partial", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "Hold point exists but names substructure.slab-on-ground, which is not in apartment scope, so it never fires"}
+    - {label: "Inspect reinforcement before each pour", stage: construction, aliases: ["Hold point: Reinforcement inspection release identifying the pour."], fragment: null, after: ["Pour the basement slab"], built_in: "yes", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "F42 (local main 407695c): the hold point is structure.concrete before structure.concrete and the class 2 basement and ground slab pours are tagged structure.concrete, so the app makes the hold before the first reinforced pour (the basement slab) and the floor cycle and roof slab follow it (internal/program/generate.go holdPointRows). The app has one hold row, not one per pour"}
     - {label: "Floor cycle: columns, form, reinforce and pour", stage: construction, fragment: fr.structure-concrete-2, after: ["Pour the basement slab", "Inspect reinforcement before each pour", "Construction certificate: main works"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.structure-concrete-2", why: "Per-floor cycle from det.rise_in_storeys"}
     - {label: "Build lift shafts", stage: construction, fragment: fr.lift-shafts-2, after: ["Form lift pits"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lift-shafts-2", why: "Cores"}
     - {label: "Roof slab and plant plinths", stage: construction, fragment: fr.structure-concrete-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.structure-concrete-2", why: "Top out"}
@@ -384,8 +384,8 @@ rfps:
     must_include: ["Concept and schematic design to the ADG", "DA documentation, planning response", "Design verification statement and design review panel responses", "Design development", "D&C tender documents with performance brief and retained-versus-contractor design schedule", "Post-novation construction documentation", "Regulated designs and design compliance declarations (DBP Act)", "BIM model", "Typical apartment interior layouts", "Specification", "Certifier liaison"]
     must_not_include: ["House tender and construction documents", "Traditional bidding stage", "Contract administration (conflicts with novation)", "Tenant fit-out", "Facade certification", "Performance solutions", "Green Star or NABERS", "Court appeals"]
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, dnc_tender, regulated_design, post_novation]
-      stages_absent: [brief_masterplan, interiors, house_documents, tender_traditional, bidding, for_construction, construction_support, contract_admin]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, dnc_tender, regulated_design, post_novation]
+      stages_absent: [interiors, house_documents, tender_traditional, bidding, for_construction, construction_support, contract_admin]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, bim_model: I, bim_coordination: O, specification: I, door_schedule: I, finishes_schedules: I, typical_interiors: I, dnc_performance_brief: I, certifier_liaison: I, apartment_design: I, extra_declarations: O, tender_evaluation: O, ffe: O, marketing_renders: O, value_management: O, modifications: O, signage: O, as_built: O, court: X, community: X, facade_certification: X, performance_solutions: X, outside_boundary: X, others_fees: X, tenant_fitout: absent, mixed_use_map: absent, lodgement: absent, water_asset: absent, house_interiors: absent, country: absent, sustainability_docs: absent}
       blocking: []
       sources: ["scale complex: Class 2 part", "blocking fact:budget clears once proj.budget_stated is read"]
@@ -498,6 +498,7 @@ rfps:
       - {key: position.existing_assessment, app: ask, expect: absent, why: "client flag"}
       - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag"}
       - {key: position.classification_map, app: ask, expect: absent, why: "client flag; the BCA consultant maps classes"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "a4 BCA advice during construction is priced as an option after the boundary; the certifier's statutory role is Package B"}
   - discipline: consultant.bca
     template: bca-certification
     built_in: "partial"
@@ -781,20 +782,33 @@ triggers:
     negation: ["Design and construct with novation of the design team after DA"]
     profile: [hdr.cond.procurement_route, fact.contract_form]
     adds:
-      program: ["Prepare construction documentation before tender", "Construction certificate before award"]
       rfps:
         - discipline: consultant.architect
           must_include: [{text: "Tender documents", key: stage.tender_traditional}, {text: "For-construction documents", key: stage.for_construction}, "Option: design support during construction"]
           must_not_include: [{text: "D&C tender documents", key: stage.dnc_tender}, {text: "Post-novation", key: stage.post_novation}]
+          expect:
+            stages_include: [tender_traditional, bidding, for_construction]
+            stages_option: [construction_support]
+            stages_absent: [dnc_tender, post_novation]
+            positions: {dnc_performance_brief: absent}
         - discipline: consultant.structural
           must_include: [{text: "Tender documents", key: stage.tender_traditional}, {text: "Construction documents", key: stage.construction_documents}]
           must_not_include: [{text: "D&C tender documents", key: stage.dnc_tender}, {text: "Post-novation", key: stage.post_novation}]
+          expect:
+            stages_include: [tender_traditional, construction_documents]
+            stages_absent: [dnc_tender, post_novation]
+            positions: {specialist_element_design: O}
         - discipline: consultant.civil
           must_include: [{text: "Detailed design for tender", key: stage.detailed_tender}, {text: "Final design for construction", key: stage.for_construction}]
           must_not_include: [{text: "Design for the D&C tender", key: stage.dnc_tender}, {text: "Final design after novation", key: stage.post_novation}]
+          expect:
+            stages_include: [detailed_tender]
+            stages_option: [for_construction]
+            stages_absent: [dnc_tender, post_novation]
     removes:
       program: ["Novate the design consultants"]
-    why: "Every package's novation becomes no (internal/procurement/packages.go DefaultNovation), so the D&C and post-novation stages drop out of the architect, structural and civil RFPs (removes.rfps is not used because the RFPs themselves stay). App caveats (trigger RFP items carry no app_differs): for a non-house traditional job the architecture boundary is brief_masterplan → interiors (architecture.yaml boundary[3]), so tender_traditional, bidding and for_construction come after it and the app prices them as options. Civil's non-D&C boundary is schematic → detailed_tender (civil.yaml boundary[1]), so the app prices for_construction as an option. The structural boundary runs to construction_documents, so both structural stages are included. The services templates keep their fixed inception → design boundary, so their tender stage stays an option"
+    skeleton: sk.new-traditional-da   # new + traditional + da (knowledge/program/skeletons.yaml)
+    why: "Every package's novation becomes no (internal/procurement/packages.go DefaultNovation), so the D&C and post-novation stages drop out of the architect, structural and civil RFPs (removes.rfps is not used because the RFPs themselves stay). The trigger restates the stage and position keys that move (adds.rfps[].expect, SCORING.md §2): the D&C performance brief goes, and the structural specialist element design becomes an option once no contractor designs delegated elements. The construction-documentation and construction-certificate program rows are base rows the app already makes ('Prepare construction documentation', 'Construction certificate'), so the trigger no longer adds reworded copies. App caveats: for a non-house traditional job the architecture boundary is brief_masterplan → interiors (architecture.yaml boundary[3]), so tender_traditional, bidding and for_construction come after it and the app prices them as options. Civil's non-D&C boundary is schematic → detailed_tender (civil.yaml boundary[1]), so the app prices for_construction as an option. The structural boundary runs to construction_documents, so both structural stages are included. The services templates keep their fixed inception → design boundary, so their tender stage stays an option"
     built_in: {program: "yes", rfps: "partial", procurement: "yes"}
     source: "knowledge/program/skeletons.yaml sk.new-traditional-da"
   - id: groundwater-dewatering
@@ -805,7 +819,7 @@ triggers:
     adds:
       cost_plan: ["Dewatering, treatment and discharge", "Tanked basement"]
       program: ["Groundwater monitoring", "Dewatering approval", "Dewater during excavation"]
-      rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability coordinated with groundwater advice"]}, {discipline: consultant.geotechnical, must_include: ["Groundwater monitoring and hydrogeological assessment"]}]
+      rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability coordinated with groundwater advice"], expect: {positions: {earthworks_suitability: I}}}, {discipline: consultant.geotechnical, must_include: ["Groundwater monitoring and hydrogeological assessment"]}]
       authority: ["WaterNSW or NRAR dewatering approval; DA integrated development referral (verified: false)"]
     built_in: {rfps: "yes", cost_plan: "no", program: "no"}
     source: "knowledge/rfp/civil.yaml earthworks_suitability"
@@ -855,8 +869,8 @@ triggers:
       program: ["Preliminary and detailed site investigation", "Remedial action plan", "Remediation and validation"]
       rfps: [{discipline: consultant.civil, must_include: ["Earthworks reuse and disposal coordinated with environmental advice"]}]
       authority: ["SEPP (Resilience and Hazards) 2021 Chapter 4; site audit statement (verified: false)"]
-    built_in: {procurement: "no", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
-    source: "knowledge/rfp/civil.yaml earthworks_suitability"
+    built_in: {procurement: "yes", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
+    source: "knowledge/rfp/civil.yaml earthworks_suitability; knowledge/works/package_defaults.yaml complexity_additions[2] potentially_contaminated_land (F41)"
   - id: acid-sulfate-soils
     label: Acid sulfate soils mapped
     evidence: ["Class 2 on the Acid Sulfate Soils Map", "an acid sulfate soils management plan is required for the basement excavation"]
@@ -964,7 +978,7 @@ triggers:
       rfps: [{discipline: consultant.architect, must_include: ["Brief and masterplan"]}, {discipline: consultant.certifier, must_include: ["Staged occupation"]}]
       authority: ["Strata management statement or building management statement"]
     built_in: {rfps: "yes", program: "no", cost_plan: "no"}
-    source: "knowledge/rfp/architecture.yaml brief_masterplan"
+    source: "knowledge/rfp/architecture.yaml brief_masterplan (masterplan lines when flag.multi_building or flag.staged, R13)"
   - id: complex-facade
     label: Rainscreen or unitised facade designed by a facade engineer
     evidence: ["A ventilated rainscreen of terracotta baguettes on an aluminium subframe", "the facade will be designed by a specialist facade engineer"]
@@ -1004,7 +1018,7 @@ gaps:
   - {area: program, what: "D&C skeleton puts the construction certificate in approvals, before procurement and post-novation documentation", evidence: "knowledge/program/skeletons.yaml sk.new-dc-da; knowledge/program/fragments.yaml fr.construction-certificate"}
   - {area: program, what: "Tender fragments are traditional (no D&C performance brief); 'Client sign-off for tender' lands after award in construction documentation", evidence: "knowledge/program/fragments.yaml fr.tender-docs-2, fr.construction-docs-2"}
   - {area: program, what: "No rows for design review panel, panel determination, design verification statement, DBP regulated designs, Section 73, LSL and contributions, CTMP and work zone, dilapidation, hazmat removal, notice of commencement, RAB Act expected completion notice, fire safety certificate, strata bond and strata plan registration", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
-  - {area: program, what: "Reinforcement hold point names substructure.slab-on-ground and never fires for apartments; no wet-area, excavation or stormwater inspection rows for Class 2", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour"}
+  - {area: program, what: "No wet-area, excavation or stormwater inspection rows for Class 2 (the reinforcement hold point fires since F42)", evidence: "knowledge/clusters/structure/interfaces.yaml; knowledge/program/fragments.yaml"}
   - {area: program, what: "No fragments for fire-water (pump and tank), fire doors, external walls fire, basement waterproofing, public domain, vehicle access or waste storage", evidence: "testing/synthetic/reference/index/program-fragments.md leaf systems with no work-item fragment"}
   - {area: program, what: "Long-lead windows are linked after the roof slab, not from award", evidence: "knowledge/program/fragments.yaml fr.windows-2 attach after fr.structure-concrete-2"}
   - {area: cost_plan, what: "No lines for preliminaries, HPC, LSL, Sydney Water, DNSP, s138 bonds, strata bond, strata registration or DRP fees; no handling of post-novation fees inside the D&C sum", evidence: "knowledge/costs/starter_lines.yaml"}

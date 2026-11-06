@@ -317,7 +317,7 @@ program:
     - {label: "Install roof drainage", stage: construction, fragment: null, after: ["Install the metal roof"], built_in: "no", why: "hydraulic.roof-drainage has no 7b fragment"}
     - {label: "Install wall cladding", stage: construction, aliases: ["External walls and cladding"], fragment: fr.cladding-7b, after: ["Erect the portal frame", "Erect and brace precast wall panels"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.cladding-7b", why: "Metal cladding above the panels"}
     - {label: "Prepare the subgrade and membrane", stage: construction, fragment: fr.slab-7b, after: ["Install the metal roof"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-7b", why: "Slab under the roof suits off-site precast"}
-    - {label: "Reinforcement inspection before the slab pour", stage: construction, fragment: null, after: ["Prepare the subgrade and membrane"], built_in: "no", why: "Engineer's hold point; the interface if.reinforcement-inspected-before-pour needs a structure.concrete tag that no 7b row carries (confirmed by a Go run, default and expected scope)"}
+    - {label: "Reinforcement inspection before the slab pour", stage: construction, fragment: null, after: ["Prepare the subgrade and membrane"], built_in: "no", why: "Engineer's hold point; the interface if.reinforcement-inspected-before-pour needs a structure.concrete tag that no 7b row carries (confirmed by a Go run, default and expected scope; F42 tagged only the class 1a, 2 and 9b pours, fr.slab-7b is unchanged)"}
     - {label: "Pour and finish the slab", stage: construction, fragment: fr.slab-7b, after: ["Reinforcement inspection before the slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-7b", why: "Large pours; flatness survey after"}
     - {label: "Cure the slab", stage: construction, fragment: fr.slab-7b, after: ["Pour and finish the slab"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-7b", why: "Before racking loads and line marking"}
     - {label: "Procure and deliver vehicle doors", stage: construction, fragment: fr.vehicle-doors-7b, after: ["Award the contract"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.vehicle-doors-7b", why: "Long lead; the app labels it Procure and deliver"}
@@ -359,9 +359,9 @@ rfps:
     must_include: ["Concept and schematic design", "DA planning approval documentation", "Planning response", "Design development", "Office interiors and finishes", {text: "D&C tender documents with performance brief and design responsibility matrix", key: position.dnc_performance_brief}, {text: "Post-novation documentation", key: stage.post_novation}, {text: "BIM model", key: position.bim_model}, "Certifier liaison"]
     must_not_include: ["House-module rows", {text: "Traditional tender documents", key: stage.tender_traditional}, {text: "Bidding", key: stage.bidding}, {text: "Regulated design", key: stage.regulated_design}, {text: "External hardstands (civil engineer's)", key: position.outside_boundary}, "Mixed-use class and use map", "Green Star or NABERS documentation"]
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender, post_novation]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender, post_novation]
       stages_option: [contract_admin]
-      stages_absent: [brief_masterplan, house_documents, tender_traditional, bidding, regulated_design, for_construction, construction_support]
+      stages_absent: [house_documents, tender_traditional, bidding, regulated_design, for_construction, construction_support]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, consultant_selection: O, bim_model: I, bim_coordination: O, specification: I, door_schedule: I, finishes_schedules: I, typical_interiors: I, base_interiors: I, tenant_fitout: O, ffe: O, marketing_renders: O, value_management: O, tender_evaluation: O, dnc_performance_brief: I, certifier_liaison: I, document_uploads: I, modifications: O, court: X, community: X, facade_certification: X, performance_solutions: X, signage: O, outside_boundary: X, as_built: O, others_fees: X, mixed_use_map: absent, house_interiors: absent, house_selections: absent, lodgement: absent, water_asset: absent, country: absent, extra_declarations: absent, apartment_design: absent, sustainability_docs: absent, existing_interfaces: absent, live_staging: absent}
       blocking: []
       sources: ["blocking: none; the scenario states the budget, so the fact:budget block must clear", "interiors: class 5 office; base-building office finishes, not tenant fit-out"]
@@ -854,9 +854,9 @@ triggers:
       program: ["Preliminary site investigation", "Detailed site investigation", "Remedial action plan", "Remediation and validation"]
       rfps: [{discipline: consultant.civil, must_include: [{text: "Earthworks reuse and disposal coordinated with the environmental advice", key: position.earthworks_suitability}]}]
       authority: ["SEPP (Resilience and Hazards) 2021 Chapter 4 (verified: false); NSW EPA-accredited site auditor where required"]
-    why: "complexity_additions[2] can never fire, so no environmental consultant is suggested"
-    built_in: {procurement: "no", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
-    source: "knowledge/rfp/civil.yaml earthworks_suitability"
+    why: "complexity_additions[2] keys det.potentially_contaminated_land since F41 (local main 3adc511), so the environmental consultant is suggested, and its package gives the consultant cost line; remediation and fill disposal have no cost line"
+    built_in: {procurement: "yes", work_items: "no", program: "partial", rfps: "yes", cost_plan: "partial"}
+    source: "knowledge/rfp/civil.yaml earthworks_suitability; knowledge/works/package_defaults.yaml complexity_additions[2] potentially_contaminated_land"
   - id: bushfire-prone
     label: Bushfire-prone land at the estate edge
     evidence: ["The site is mapped as bush fire prone land (vegetation buffer)", "a bushfire assessment report to Planning for Bush Fire Protection 2019 is required (verified: false)", "asset protection zone along the riparian corridor"]
@@ -966,7 +966,7 @@ gaps:
   - {area: program, what: "Survey, geotechnical and services investigation rows need investigate actions the default scope never gives", evidence: "knowledge/program/fragments.yaml fr.investigate-survey, fr.investigate-geotech, fr.investigate-services"}
   - {area: procurement, what: "Fire engineer, landscape, acoustic, ESD, QS and waste are never suggested for a warehouse DA", evidence: "knowledge/works/package_defaults.yaml baselines, scope_additions, complexity_additions"}
   - {area: procurement, what: "Mechanical consultant over-suggested for a D&C warehouse office", evidence: "knowledge/works/package_defaults.yaml baselines[1], scope_additions[2]"}
-  - {area: procurement, what: "Contamination and flood package rules can never fire", evidence: "knowledge/works/package_defaults.yaml complexity_additions[2], complexity_additions[6]"}
+  - {area: procurement, what: "Flood package rule can never fire (the contamination rule fires since F41)", evidence: "knowledge/works/package_defaults.yaml complexity_additions[6]"}
   - {area: procurement, what: "D&C sets every consultant to novation option, including the planner, BCA consultant and certifier", evidence: "internal/procurement/packages.go DefaultNovation"}
   - {area: rfp, what: "Two classes on one part derive flag.mixed_use yes, switching on mixed-use rows in architecture, access, fire engineering and waste for an ancillary office. flag.mixed_use is derived only (internal/rfp/homes.go FlagHome); a user cannot override it, and removing class 5 from det.ncc_class also removes the office interiors stage (Go run)", evidence: "internal/rfp/drivers.go deriveFlags; internal/rfp/homes.go FlagHome"}
   - {area: rfp, what: "Fire-services hazards row excludes high storage to a specialist, though ESFR design for high-piled storage is the core warehouse scope", evidence: "knowledge/rfp/fire-services.yaml hazards"}

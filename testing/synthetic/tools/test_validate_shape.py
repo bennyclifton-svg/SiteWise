@@ -218,6 +218,32 @@ class ValidateShapeTests(unittest.TestCase):
         errors, _ = check(ok)
         self.assertTrue(any("blocking.fact:budget" in e and "app" in e for e in errors))
 
+    def test_trigger_rfps_may_restate_expect(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["triggers"][0]["adds"]["rfps"] = [{
+            "discipline": "consultant.structural",
+            "expect": {"stages_include": ["tender_traditional"], "stages_absent": ["dnc_tender"],
+                       "positions": {"retention_design": "I", "norbe": "absent"}, "blocking": []},
+            "app_differs": [{"key": "stage.tender_traditional", "app": "option", "expect": "include", "why": "x"}],
+        }]
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+
+        bad = yaml.safe_load(yaml.safe_dump(ok))
+        add = bad["triggers"][0]["adds"]["rfps"][0]
+        add["discipline"] = "consultant.wizard"
+        add["expect"]["stages_absent"] = ["tender_traditional"]
+        add["expect"]["positions"]["retention_design"] = "maybe"
+        add["expect"]["colours"] = ["blue"]
+        add["app_differs"][0]["key"] = "colour.blue"
+        errors, _ = check(bad)
+        joined = "\n".join(errors)
+        for word in ["consultant.wizard", "both include", "retention_design", "colours", "colour.blue"]:
+            self.assertIn(word, joined)
+        bad["triggers"][0]["adds"]["rfps"][0]["expect"] = ["not", "a", "mapping"]
+        errors, _ = check(bad)
+        self.assertTrue(any("expect must be a mapping" in e for e in errors))
+
     def test_folder_must_match_type_id(self):
         bad = dict(GOOD, type_id="T02")
         errors, _ = check(bad)

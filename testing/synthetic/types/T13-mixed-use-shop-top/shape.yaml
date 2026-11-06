@@ -207,7 +207,7 @@ procurement:
   - {discipline: consultant.landscape, kind: services, need: always, novation: "yes", built_in: "no", why: "ADG deep soil and communal open space, podium planters; no package rule"}
   - {discipline: consultant.waste, kind: services, need: usually, novation: "no", built_in: "no", why: "Operational and C&D waste management plans; no package rule"}
   - {discipline: consultant.quantity_surveyor, kind: services, need: always, novation: "no", built_in: "no", why: "Feasibility, CIV report for the DA, tender evaluation, financier reports; no package rule"}
-  - {discipline: consultant.environmental, kind: services, need: usually, novation: "no", built_in: "no", why: "PSI for the change to residential use; complexity_additions[2] can never fire"}
+  - {discipline: consultant.environmental, kind: services, need: usually, novation: "no", built_in: "partial", source: "knowledge/works/package_defaults.yaml complexity_additions[2]", why: "PSI for the change to residential use; complexity_additions[2] keys det.potentially_contaminated_land since F41 but the base states it false (no contaminating use known), so it fires only under contaminated-land"}
   - {discipline: consultant.hazmat, kind: services, need: always, novation: "no", built_in: "no", why: "Hazardous-materials survey of the buildings to be demolished; no package rule"}
   - {discipline: consultant.fire_engineer, kind: services, need: usually, novation: "no", built_in: "no", why: "Performance solutions are common at this scale; no package rule"}
   - {discipline: consultant.vertical_transport, kind: services, need: optional, novation: "no", built_in: "yes", source: "knowledge/works/package_defaults.yaml scope_additions[0]", why: "Often design-and-supply by the lift contractor at six storeys"}
@@ -245,7 +245,7 @@ cost_plan:
   - {line: "Landscape architect", section: consultants, built_in: "no", why: "No package rule"}
   - {line: "Waste consultant", section: consultants, built_in: "no", why: "No package rule"}
   - {line: "Quantity surveyor", section: consultants, built_in: "no", why: "No package rule"}
-  - {line: "Environmental consultant (PSI)", section: consultants, built_in: "no", why: "Dead rule complexity_additions[2]"}
+  - {line: "Environmental consultant (PSI)", section: consultants, built_in: "partial", source: "knowledge/works/package_defaults.yaml complexity_additions[2]", why: "complexity_additions[2] (F41) gives the package only when det.potentially_contaminated_land is true; the base states it false"}
   - {line: "Hazardous materials consultant", section: consultants, built_in: "no", why: "No package rule"}
   - {line: "Fire engineer", section: consultants, built_in: "no", why: "No package rule"}
   - {line: "Preliminaries, D&C design fee and builder's margin", section: construction, built_in: "no", why: "No line; a stated budget spreads preliminaries pro rata"}
@@ -324,9 +324,9 @@ program:
     - {label: "Install anchors or props", stage: construction, fragment: fr.basement-2, after: ["Excavate the basement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "Neighbours' or council consent for anchors (verified: false)"}
     - {label: "Excavate and pour footings", stage: construction, fragment: fr.footings-2, after: ["Excavate the basement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.footings-2", why: "Geotechnical sign-off of founding rock"}
     - {label: "Form lift pits", stage: construction, fragment: fr.lift-shafts-2, after: ["Excavate the basement"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lift-shafts-2", why: "Lift pits"}
-    - {label: "Reinforcement inspection before slab pour", stage: construction, fragment: null, after: ["Excavate and pour footings", "Form lift pits"], built_in: "yes", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "Fires once slab-on-ground is scoped, but the app links every structure.concrete row (floor cycle, roof slab) before it, so the ground slab lands after top-out; the key expects this correct order"}
+    - {label: "Reinforcement inspection before slab pour", stage: construction, aliases: ["Hold point: Reinforcement inspection release identifying the pour."], fragment: null, after: ["Excavate and pour footings", "Form lift pits"], built_in: "yes", source: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour", why: "F42 (local main 407695c): the hold point is structure.concrete before structure.concrete, and fr.basement-2's basement slab is tagged structure.concrete, so on a basement building the app puts the hold (labelled 'Hold point: Reinforcement inspection release identifying the pour.') after the anchors and before the basement slab; the floor cycle and roof slab follow it (internal/program/generate.go holdPointRows)"}
     - {label: "Pour the basement slab", stage: construction, fragment: fr.basement-2, after: ["Reinforcement inspection before slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.basement-2", why: "Slab with drainage and waterproofing"}
-    - {label: "Reinforce and pour the ground slab", stage: construction, fragment: fr.slab-2, after: ["Reinforcement inspection before slab pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.slab-2", why: "Duplicates 'Pour the basement slab' (fr.basement-2); the same slab, so the scorer may match either"}
+    - {label: "Reinforce and pour the ground slab", stage: construction, fragment: fr.slab-2, after: ["Reinforcement inspection before slab pour"], built_in: "partial", source: "knowledge/program/fragments.yaml fr.slab-2", why: "fr.slab-2 is now tagged structure.concrete (F42), so it follows the hold when it fires, but it needs substructure.slab-on-ground, which the class 2 basement default scope (knowledge/profile/scope_defaults.yaml) does not give; the hold releases 'Pour the basement slab' instead. Duplicates that row (fr.basement-2); the same slab, so the scorer may match either"}
     - {label: "Floor cycle: columns, form, reinforce and pour", stage: construction, fragment: fr.structure-concrete-2, after: ["Pour the basement slab", "Construction certificate"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.structure-concrete-2", why: "Basement, transfer and residential levels; durations read det.rise_in_storeys; each suspended pour has its own reinforcement inspection (domain)"}
     - {label: "Build lift shafts", stage: construction, fragment: fr.lift-shafts-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.lift-shafts-2", why: "Cores"}
     - {label: "Form stairs and ramps", stage: construction, fragment: fr.stairs-2, after: ["Floor cycle: columns, form, reinforce and pour"], built_in: "yes", source: "knowledge/program/fragments.yaml fr.stairs-2", why: "Fire-isolated stairs"}
@@ -404,12 +404,12 @@ rfps:
     must_include: ["Concept and schematic design", "DA planning approval documentation", "Planning response", "Design development", "Apartment and common-area interiors", "D&C tender documents with performance brief", "Regulated design and compliance declarations", "Post-novation documentation", "ADG design verification statement", "Class and use map by part; shell versus fit-out deliverables", "BIM model", "Demolition plans"]
     must_not_include: ["House-module rows", "Traditional tender documents or bidding", "Tenant fit-out design", "Green Star or NABERS", "Connecting with Country input", "Brief and masterplan"]
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender, regulated_design, post_novation]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender, regulated_design, post_novation]
       stages_option: [contract_admin]
-      stages_absent: [brief_masterplan, house_documents, tender_traditional, bidding, for_construction, construction_support]
+      stages_absent: [house_documents, tender_traditional, bidding, for_construction, construction_support]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, bim_model: I, bim_coordination: O, specification: I, door_schedule: I, finishes_schedules: I, typical_interiors: I, base_interiors: I, tenant_fitout: X, dnc_performance_brief: I, tender_evaluation: I, certifier_liaison: I, modifications: O, apartment_design: I, extra_declarations: O, mixed_use_map: I, existing_interfaces: I, facade_certification: X, performance_solutions: X, community: X, house_interiors: absent, house_selections: absent, lodgement: absent, water_asset: absent, country: absent, sustainability_docs: absent, live_staging: absent}
-      blocking: ["fact:budget"]
-      sources: ["blocking clears once proj.budget_stated is read", "existing_interfaces: demolition plans for the existing shops"]
+      blocking: []
+      sources: ["the budget is stated (SCORING.md §7.5, as T10 to T12), so fact:budget does not block", "existing_interfaces: demolition plans for the existing shops"]
     app_differs:
       - {key: stage.regulated_design, app: option, expect: include, why: "after the dnc_tender boundary end"}
       - {key: stage.post_novation, app: option, expect: include, why: "after the boundary end"}
@@ -487,6 +487,10 @@ rfps:
       - {key: stage.b1_preliminary, app: option, expect: absent, why: "after the a1..a3 boundary"}
       - {key: position.classification_map, app: ask, expect: I, why: "client flag bca_classification_map, not driven by the derived mixed_use flag"}
       - {key: position.statutory_functions, app: ask, expect: absent, why: "client flag bca_certification"}
+      - {key: stage.b2_construction_approval, app: option, expect: absent, why: "after the a1..a3 boundary; certification is a separate appointment"}
+      - {key: stage.b3_construction, app: option, expect: absent, why: "after the boundary; certification is a separate appointment"}
+      - {key: stage.b4_occupation, app: option, expect: absent, why: "after the boundary; certification is a separate appointment"}
+      - {key: position.existing_assessment, app: ask, expect: absent, why: "client flag; the existing shops are demolished"}
   - discipline: consultant.certifier
     template: bca-certification
     built_in: "partial"
@@ -507,6 +511,10 @@ rfps:
       - {key: position.statutory_functions, app: ask, expect: I, why: "client flag bca_certification"}
       - {key: position.staged_occupation, app: ask, expect: I, why: "client flag"}
       - {key: position.fire_referrals, app: ask, expect: I, why: "client flag"}
+      - {key: stage.a2_planning, app: ask, expect: absent, why: "boundary falls back to a1..a3 without client flag bca_certification"}
+      - {key: stage.a3_tender, app: ask, expect: absent, why: "as a2_planning"}
+      - {key: stage.a4_construction, app: option, expect: absent, why: "after the boundary; BCA advice in construction is the BCA consultant's option"}
+      - {key: position.existing_assessment, app: ask, expect: absent, why: "client flag; the existing shops are demolished"}
   - discipline: consultant.hydraulic
     template: hydraulic-services
     built_in: "partial"
@@ -529,6 +537,9 @@ rfps:
       - {key: position.declarations, app: ask, expect: I, why: "client flag hyd_declarations; not driven by regulated_design"}
       - {key: position.alternative_sources, app: O, expect: absent, why: "if_unknown option"}
       - {key: position.civil, app: ask, expect: X, why: "client flag hyd_external"}
+      - {key: position.treatment, app: ask, expect: absent, why: "client flag; sewer is connected, no onsite treatment"}
+      - {key: position.process, app: ask, expect: absent, why: "client flag; no process waste"}
+      - {key: position.staging, app: O, expect: absent, why: "if_unknown option; a new building is not staged around occupants"}
   - discipline: consultant.fire_services
     template: fire-services
     built_in: "partial"
@@ -547,6 +558,9 @@ rfps:
       - {key: stage.advisory, app: option, expect: absent, why: "default option"}
       - {key: position.wet, app: ask, expect: I, why: "client flag fs_wet"}
       - {key: position.declarations, app: ask, expect: I, why: "client flag fs_declarations"}
+      - {key: position.plant, app: ask, expect: absent, why: "client flag; no existing fire plant to replace"}
+      - {key: position.upgrade, app: ask, expect: absent, why: "client flag; a new building, not an upgrade"}
+      - {key: position.remediation, app: O, expect: absent, why: "default option; nothing to remediate in a new building"}
   - discipline: consultant.mechanical
     template: mechanical-services
     built_in: "partial"
@@ -566,6 +580,9 @@ rfps:
       - {key: position.kitchen, app: ask, expect: I, why: "client flag mech_kitchen"}
       - {key: position.local, app: ask, expect: I, why: "client flag mech_local"}
       - {key: position.smoke, app: ask, expect: absent, why: "client flag mech_smoke"}
+      - {key: stage.investigation, app: ask, expect: absent, why: "client flag; no existing mechanical services to investigate"}
+      - {key: position.staging, app: O, expect: absent, why: "default option; not staged around occupants"}
+      - {key: position.remediation, app: O, expect: absent, why: "default option; nothing to remediate in a new building"}
   - discipline: consultant.electrical
     template: electrical-services
     built_in: "partial"
@@ -585,6 +602,8 @@ rfps:
       - {key: position.ict, app: O, expect: I, why: "client flag elec_ict"}
       - {key: position.staging, app: ask, expect: I, why: "client flag elec_staging"}
       - {key: position.declarations, app: ask, expect: I, why: "client flag elec_declarations"}
+      - {key: stage.investigation, app: ask, expect: absent, why: "client flag; no existing electrical services to investigate"}
+      - {key: position.dry_fire, app: ask, expect: absent, why: "client flag; fire detection is the fire services engineer's"}
   - discipline: consultant.traffic
     template: traffic
     built_in: "partial"
@@ -655,6 +674,9 @@ rfps:
       - {key: stage.g6_construction, app: option, expect: include, why: "default option"}
       - {key: position.construction, app: O, expect: I, why: "follows g6"}
       - {key: position.defects, app: O, expect: absent, why: "always O"}
+      - {key: position.asset_exposure, app: ask, expect: absent, why: "client flag geotech_asset_exposure"}
+      - {key: position.ass, app: ask, expect: absent, why: "client flag geotech_ass"}
+      - {key: position.handback, app: ask, expect: absent, why: "client flag geotech_handback"}
   - discipline: consultant.surveyor
     template: land-surveying
     built_in: "partial"
@@ -673,6 +695,8 @@ rfps:
       - {key: position.titling, app: O, expect: I, why: "always O; strata subdivision is base"}
       - {key: position.asbuilt, app: O, expect: I, why: "follows s7"}
       - {key: position.interior, app: O, expect: absent, why: "always O"}
+      - {key: position.buried, app: ask, expect: absent, why: "client flag survey_buried"}
+      - {key: position.sewer, app: ask, expect: absent, why: "client flag survey_sewer"}
   - discipline: consultant.landscape
     template: landscape-architecture
     built_in: "partial"
@@ -824,10 +848,10 @@ triggers:
       work_items: [{system: site.contamination, action: repair}]
       cost_plan: ["Detailed site investigation, remediation action plan and site auditor", "Remediation and validation"]
       program: ["Detailed site investigation", "Remediation and validation", "Site audit statement"]
-      rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability advice"]}]
+      rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability advice"], expect: {positions: {earthworks_suitability: I}}}]
       authority: ["SEPP (Resilience and Hazards) 2021 Chapter 4 (verified: false)"]
-    built_in: {procurement: "no", cost_plan: "no", program: "partial", rfps: "yes"}
-    source: "knowledge/rfp/civil.yaml earthworks_suitability"
+    built_in: {procurement: "yes", cost_plan: "no", program: "partial", rfps: "yes"}
+    source: "knowledge/rfp/civil.yaml earthworks_suitability; knowledge/works/package_defaults.yaml complexity_additions[2] potentially_contaminated_land (F41)"
   - id: flood-affected
     label: Flood-affected site or overland flow along the lane
     evidence: ["The land is subject to flood related development controls", "overland flow along the rear lane", "basement entry crest above the PMF level"]
@@ -990,14 +1014,13 @@ gaps:
   - {area: profile, what: "quality_level applies to residential only, so it is not offered for mixed", evidence: "knowledge/profile/taxonomy.yaml conditions quality_level applies_to"}
   - {area: profile, what: "Parts exist but package suggestions read det.* and scope.* from the whole part only; no per-part class for scope, cost or program", evidence: "internal/store/packages.go packageOverview query"}
   - {area: scope, what: "Mixed default list is the apartments list: lacks sprinklers, trade waste, gas, loading dock, signage, accessible facilities, slab on ground, vehicle doors, occupant warning, openings, external wall fire", evidence: "knowledge/profile/scope_defaults.yaml categories[1]"}
-  - {area: procurement, what: "Acoustic, ESD/BASIX, landscape, waste, QS, hazmat and fire engineer are never suggested; environmental rule is dead", evidence: "knowledge/works/package_defaults.yaml baselines, scope_additions, complexity_additions[2]"}
+  - {area: procurement, what: "Acoustic, ESD/BASIX, landscape, waste, QS, hazmat and fire engineer are never suggested; the environmental rule fires only on det.potentially_contaminated_land (F41)", evidence: "knowledge/works/package_defaults.yaml baselines, scope_additions, complexity_additions[2]"}
   - {area: procurement, what: "D&C sets novation option on every consultant, including certifier, planner, BCA, QS and traffic", evidence: "internal/procurement/proposed.go BuilderDesigns; internal/procurement/packages.go DefaultNovation"}
   - {area: program, what: "No Class 6 or 7a new-build fragments: no retail shell, tenancy provisions, loading dock or car-park fit-out; Class 2 rows stand for the whole building", evidence: "testing/synthetic/reference/index/program-fragments.md Which NCC classes and work types any fragment names"}
   - {area: program, what: "fr.switchboard-2 and fr.switchboard-major both fire on the one switchboard item because 6 matches major", evidence: "knowledge/program/fragments.yaml fr.switchboard-major"}
   - {area: program, what: "Under D&C, construction docs carry 'Client sign-off for tender' after award and the CC sits in approvals before procurement; no staged CCs", evidence: "knowledge/program/fragments.yaml fr.construction-docs-2, fr.construction-certificate; knowledge/program/skeletons.yaml sk.new-dc-da"}
   - {area: program, what: "No rows for DBP declarations, RAB Act notice, strata bond, strata plan, s138, Section 73, long service levy, panel determination, hazmat clearance, fire safety certificate, tenancy handover", evidence: "knowledge/program/fragments.yaml has no fragment naming these"}
   - {area: program, what: "Demolition fragment needs action remove but site.demolition is not in default scope and implied_by gives new", evidence: "knowledge/program/fragments.yaml fr.demolition-2; knowledge/profile/scope_defaults.yaml implied_by strip-out"}
-  - {area: program, what: "Reinforcement hold point needs a slab-on-ground item, which the mixed list lacks", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour"}
   - {area: cost_plan, what: "Split commercial_hotel is hotel-centred, low confidence, no fire-passive share", evidence: "knowledge/costs/budget_splits.yaml commercial_hotel"}
   - {area: cost_plan, what: "No lines for HPC, long service levy, s138 fees, strata bond, strata registration, retail shell provisions, preliminaries; accessible facilities child missing", evidence: "knowledge/costs/starter_lines.yaml; knowledge/costs/elements.yaml code 13"}
   - {area: rfp, what: "Every template's default boundary ends before post-novation, regulated design and construction services, so they are priced options", evidence: "internal/rfp/resolve.go resolveStages; knowledge/rfp/architecture.yaml boundary"}
@@ -1007,7 +1030,6 @@ gaps:
   - {area: rfp, what: "No template for acoustic, ESD/BASIX, hazmat, environmental or vertical transport", evidence: "testing/synthetic/reference/index/rfp-templates.md Disciplines in data/intake/disciplines.json with no RFP template"}
   - {area: profile, what: "det.effective_height and det.commercial_kitchen feed no generator; no 25 m threshold rule produces smoke control or emergency lifts", evidence: "testing/synthetic/reference/index/triggers.md §1"}
   - {area: harness, what: "fire-pumps-tanks has no profile key, so a scenario can only express it through a scope row", evidence: "knowledge/determinants.yaml has no fire-water supply determinant"}
-  - {area: program, what: "Reinforcement hold point links every structure.concrete row before the ground slab, so a concrete-frame building pours its basement slab after the roof slab", evidence: "knowledge/clusters/structure/interfaces.yaml if.reinforcement-inspected-before-pour; internal/program/generate.go holdPointLinks"}
   - {area: program, what: "Sprinkler hold point takes in the fit-off row, so ceilings are forced after sprinkler fit-off; heads are fitted off after ceilings", evidence: "knowledge/clusters/fire/interfaces.yaml if.sprinkler-pressure-test-before-ceilings; knowledge/program/fragments.yaml fr.sprinklers-2"}
   - {area: program, what: "fr.slab-2 and fr.basement-2 both make a ground-slab pour for the one slab", evidence: "knowledge/program/fragments.yaml fr.slab-2, fr.basement-2"}
   - {area: program, what: "DNSP supply and Section 73 applications are anchored at construction stage start, after award; they are lodged after consent", evidence: "knowledge/program/fragments.yaml fr.utility-major, fr.services-connections-major attach stage_start"}

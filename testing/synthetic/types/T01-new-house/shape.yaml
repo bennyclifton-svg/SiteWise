@@ -286,9 +286,9 @@ rfps:
     must_include: [{"text": "Concept design", "key": "stage.concept"}, {"text": "Schematic design", "key": "stage.schematic"}, {"text": "DA planning approval documentation", "key": "stage.planning_approval"}, "Planning response to council requests", "Design development", "House tender and construction documents (house_documents)", "Kitchen, bathroom, laundry and joinery design", "Finishes, fixtures and appliances selections schedule", "Specification", {"text": "Tender (bidding) support", "key": "stage.bidding"}, "Certifier liaison", {"text": "Lodging the DA through the NSW Planning Portal", "key": "position.lodgement"}, {"text": "Option: construction-phase support", "key": "stage.construction_support"}, "Option: contract administration"]   # keys: RFP triage 2 Nov
     must_not_include: ["BIM coordination or clash detection", "Tenant fit-out", "Signage and wayfinding", "Facade certification", "Apartment design-quality submission", "Green Star or NABERS", "Regulated-design declarations", "D&C tender documents", "Post-novation stage", "Community consultation", "Connecting with Country input"]
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, house_documents, bidding]
       stages_option: [construction_support, contract_admin]
-      stages_absent: [brief_masterplan, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
+      stages_absent: [interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent}
       blocking: []
       sources:
@@ -489,6 +489,7 @@ triggers:
       cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees"]
       program: ["Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
       rfps: [consultant.town_planner, {discipline: consultant.architect, must_include: ["Planning response to council requests"]}]   # no council requests under a CDC
+    skeleton: sk.new-traditional-cdc   # new + traditional + cdc (knowledge/program/skeletons.yaml)
     why: "Town planner not needed; the app still suggests it through baselines[0] and its RFP then blocks on cdc. Contributions stay payable, so DA fees and contributions is replaced by the CDC fee and contributions lines"
     built_in: {program: "yes", cost_plan: "partial", procurement: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"

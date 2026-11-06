@@ -5,7 +5,7 @@ ABN: 65 534 253 982
 
 # Tax invoice
 
-Basalt Ridge Geotechnical Pty Ltd
+Bellbird Range Geotechnical Pty Ltd
 Unit 8, 44 Carlingford Road, Epping NSW 2121
 grant.ellery@example.com | 02 9868 5512
 
@@ -26,4 +26,4 @@ GST $2,020.00
 
 Total $22,420.00
 
-Payment due within 30 days. EFT to Basalt Ridge Geotechnical Pty Ltd, BSB 082-356, Account 6625 1904.
+Payment due within 30 days. EFT to Bellbird Range Geotechnical Pty Ltd, BSB 082-356, Account 6625 1904.

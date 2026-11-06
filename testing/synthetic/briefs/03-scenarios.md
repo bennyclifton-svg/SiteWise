@@ -199,7 +199,10 @@ disciplines of parties with no catalogue entry.
   other value your documents state.
 - `value` uses the shape's value form, or `{"accept": [..]}`.
 - `sources`: the doc ids that state it. `read_by_design` is true when at
-  least one source has a read kind.
+  least one source has a read kind. A key the app never asks (for example
+  the T13 podium and tower levels) is `read_by_design: false` whatever its
+  source, with `"not_read": "<why>"`; `validate_expected.py` requires the
+  reason.
 - `conflicts`: only where your documents genuinely disagree (Q4). The key
   holds the true value. Use at most one in the base.
 - `derived`: copy the shape's `expected_derived`.

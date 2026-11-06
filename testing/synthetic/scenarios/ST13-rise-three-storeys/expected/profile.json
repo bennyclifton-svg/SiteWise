@@ -99,14 +99,16 @@
       "sources": [
         "d01"
       ],
-      "read_by_design": true
+      "read_by_design": false,
+      "not_read": "The subclass scale field has no triggers, so the app never asks it; podium and tower levels stay unasked (plan 2026-11-07, R14)"
     },
     "hdr.scale.tower_levels": {
       "value": 2,
       "sources": [
         "d01"
       ],
-      "read_by_design": true
+      "read_by_design": false,
+      "not_read": "The subclass scale field has no triggers, so the app never asks it; podium and tower levels stay unasked (plan 2026-11-07, R14)"
     },
     "hdr.scale.residential_units": {
       "value": 18,

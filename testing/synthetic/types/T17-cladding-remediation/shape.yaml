@@ -229,9 +229,9 @@ rfps:
       - "FF&E and tenant fit-out"
       - "Fire engineering performance solutions (fire engineer)"
     expect:
-      stages_include: [concept, schematic, planning_approval, planning_response, design_development, tender_traditional, bidding, regulated_design, for_construction, construction_support]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, tender_traditional, bidding, regulated_design, for_construction, construction_support]
       stages_option: [contract_admin]
-      stages_absent: [brief_masterplan, interiors, house_documents, dnc_tender, post_novation]
+      stages_absent: [interiors, house_documents, dnc_tender, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, finishes_schedules: I, certifier_liaison: I, existing_interfaces: I, live_staging: I, facade_certification: X, performance_solutions: X, extra_declarations: O, apartment_design: O, marketing_renders: O, tender_evaluation: O, bim_model: absent, bim_coordination: absent, door_schedule: absent, typical_interiors: absent, tenant_fitout: absent, ffe: absent}
       blocking: []
       sources:
@@ -667,7 +667,7 @@ triggers:
       program:
         - "General meeting resolves option, design fees and first levy, and owners' consent to lodge the CDC (verified: false)"
         - "CDC documentation: drawings, BCA report, fire engineer's DTS confirmation, structural fixing details, QS cost report"
-        - "Prepare and lodge the CDC"
+        - "Prepare and lodge the complying development certificate"
         - "Certifier determination"
       rfps:
         - {discipline: consultant.certifier, must_include: ["CDC assessment and determination, including regulated designs lodged (DBP Act, owner ruling R3; lodgement timing verified: false)"]}
@@ -675,7 +675,7 @@ triggers:
         - {discipline: consultant.fire_engineer, must_include: ["Fire engineering support letter for the CDC"]}
     removes:
       procurement: [consultant.town_planner]
-      cost_plan: ["DA fees and contributions"]
+      cost_plan: ["DA fees and contributions", "Town planner"]
       program:
         - "Lodge DA"
         - "DA notification"
@@ -689,8 +689,8 @@ triggers:
         - {discipline: consultant.certifier, must_include: ["Construction certificate assessment, including regulated designs lodged (DBP Act, owner ruling R3; lodgement timing verified: false)"]}
         - {discipline: consultant.architect, must_include: ["DA drawings and photomontages for the change of appearance"]}
         - {discipline: consultant.fire_engineer, must_include: ["Early approval support letter for the DA"]}
-    why: "Whether cladding replacement on a Class 2 building can be complying development is verified: false, and the evidence points against it: NSW Planning's Codes SEPP Fire Safety Code page lists only three complying-development categories (fire sprinklers in residential aged care, alterations to hydraulic fire safety systems, fire alarm communication link works), and cladding is not one (verified: false). Kept as a test of a pathway the documents state, pending the owner. Both consultant.bca and consultant.certifier RFPs block (bca-certification unsupported_pathways cdc); the town-planning RFP is removed. A CDC is a combined planning and building approval, so no CC follows: the certifier's b2_construction_approval stage stands for the CDC, and the BCA consultant's a2_planning report is the one lodged with the CDC application, so the BCA consultant is appointed before the CDC drawings are lodged. The CDC documentation follows design development (a CDC must show NCC compliance when determined). The cost line 'Construction certificate and certifier fees' means CDC and principal certifier fees on this path. The scorer cannot re-point after links: 'Pay long service levy' (paid before the CDC issues), 'Report progress to council' (after the CDC is lodged), 'Contract award' (after the certifier's determination) and the colours hold point (the CDC colours condition) keep their other links and lose the removed DA and CC predecessors."
-    built_in: {program: "yes", rfps: "no"}
+    why: "Whether cladding replacement on a Class 2 building can be complying development is verified: false, and the evidence points against it: NSW Planning's Codes SEPP Fire Safety Code page lists only three complying-development categories (fire sprinklers in residential aged care, alterations to hydraulic fire safety systems, fire alarm communication link works), and cladding is not one (verified: false). Kept as a test of a pathway the documents state, pending the owner. Both consultant.bca and consultant.certifier RFPs block (bca-certification unsupported_pathways cdc); the town-planning RFP is removed. A CDC is a combined planning and building approval, so no CC follows: the certifier's b2_construction_approval stage stands for the CDC, and the BCA consultant's a2_planning report is the one lodged with the CDC application, so the BCA consultant is appointed before the CDC drawings are lodged. The CDC documentation follows design development (a CDC must show NCC compliance when determined). The cost line 'Construction certificate and certifier fees' means CDC and principal certifier fees on this path. The scorer cannot re-point after links: 'Pay long service levy' (paid before the CDC issues), 'Report progress to council' (after the CDC is lodged), 'Contract award' (after the certifier's determination) and the colours hold point (the CDC colours condition) keep their other links and lose the removed DA and CC predecessors. The app drops the town planner cost line with the package, so the trigger removes it too. RETIRED (owner ruling R11, 7 November 2026): a Class 2 recladding is more likely a DA, so this trigger is no longer a variant and is not re-run; the trigger and the ST17-cdc-pathway folder and run stay as a record."
+    built_in: {program: "partial", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"
   - id: design-and-construct
     label: Design and construct with novation of the design team
@@ -768,7 +768,7 @@ triggers:
       cost_plan: ["Escalation between stages", "Re-establishment preliminaries per stage"]
       program: ["General meeting and levy before each stage", "Separable portion completion per stage"]
       rfps: [{discipline: consultant.project_manager, must_include: ["Contract administration and reporting per stage", "Separable portions in the contract"]}]
-    why: "flag.staged yes also switches on architecture brief_masterplan and the staged module rows, which a funding stage does not need: a wrong addition, not a partial match. The must_include items are for consultant.project_manager, which has no template."
+    why: "flag.staged yes also switches on the architecture masterplan lines (the stage becomes 'Brief and masterplan'; the brief alone is priced on every project, R13) and the staged module rows, which a funding stage does not need: a wrong addition, not a partial match. The must_include items are for consultant.project_manager, which has no template."
     built_in: {rfps: "no", program: "no", cost_plan: "no"}
   - id: balcony-waterproofing-interface
     label: Failed balcony membrane upturns found behind the spandrel cladding
@@ -835,4 +835,4 @@ gaps:
   - {area: knowledge, what: "uc.asbestos-cladding-disturbed needs an alter, upgrade, repair or remove item on the external walls and a year before 2004; with the correct replace action it does not fire, so even an old building gets no hazmat prompt from the cladding item.", evidence: "knowledge/clusters/envelope/unforeseen.yaml uc.asbestos-cladding-disturbed"}
   - {area: knowledge, what: "rule.ncc.external-wall-fire cites NCC 2019 numbering (C1.9, C2.6, C2.7) with clause_verified false; no NCC 2022 C2D10 rule.", evidence: "knowledge/clusters/fire/rules.yaml rule.ncc.external-wall-fire"}
 
-variants: [project-remediate, performance-solution-retained-cladding, hazardous-materials, concealed-substrate-damage, balcony-balustrade-acp, facade-services-reinstatement, cdc-pathway, design-and-construct]
+variants: [project-remediate, performance-solution-retained-cladding, hazardous-materials, concealed-substrate-damage, balcony-balustrade-acp, facade-services-reinstatement, design-and-construct]

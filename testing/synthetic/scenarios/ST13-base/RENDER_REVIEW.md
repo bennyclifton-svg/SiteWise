@@ -96,7 +96,7 @@ carries its planned trap.
 1. **`expected/fees.json` (all five submissions): firm phone and address disagree with the documents.** Every fee
    proposal, and the invoices and reports from the same firm, use one consistent set of contact details. The key holds
    a different set: Calder Rowe "02 9874 3310, Level 2, 18 Rowe Street" against d06/d16 "02 9874 3360, Level 4, 120
-   Rowe Street", and likewise for Ironbark, Larkspur, Basalt Ridge and Ashgrove. The manifest invents neither. The
+   Rowe Street", and likewise for Ironbark, Larkspur, Bellbird Range and Ashgrove. The manifest invents neither. The
    harness scores only `stated_total_cents` and `firm_name` today, but the app stores phone and address (DISCOVERY.md
    §4), so the key is wrong for the day those fields are scored. The documents are consistent across ten files, so
    fix the key. In `expected/fees.json` set:

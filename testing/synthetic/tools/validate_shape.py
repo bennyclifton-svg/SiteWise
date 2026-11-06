@@ -26,6 +26,10 @@ REQUIRED = ["schema", "type_id", "slug", "name", "reviewed", "state", "profile",
 # Adopted after the T01 pilot reviews (29 October 2026). Optional, but checked when present.
 OPTIONAL = ["not_expected_procurement", "not_expected_cost_plan", "expected_derived", "scenario_inputs"]
 STAGE_LISTS = ["stages_include", "stages_option", "stages_absent"]
+# What a trigger's adds.rfps[].expect may restate (the base expect's own keys).
+EXPECT_KEYS = ["stages_include", "stages_option", "stages_absent", "stages_ask", "elements_include", "elements_option",
+               "elements_absent", "positions", "blocking", "sources"]
+POSITION_VALUES = {"I", "O", "X", "ask", "absent"}
 STATES = {"NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"}
 # Lower bounds that make a domain map worth reviewing. Thin maps are warned, not failed.
 MIN = {"triggers": 8, "procurement": 2, "cost_plan": 5, "activities": 8, "rfps": 1}
@@ -183,6 +187,47 @@ def _removes_rfp_errors(where, item, base_rfps, ids):
     return out
 
 
+def _expect_errors(where, expect, strict=False):
+    """An RFP expect mapping. A stage sits in one list only. strict (a trigger's
+    restatement) also checks the list names and the position values."""
+    if expect is None:
+        return []
+    if not isinstance(expect, dict):
+        return [f"{where}: expect must be a mapping"]
+    out, seen = [], {}
+    for lst in STAGE_LISTS:
+        for stage in expect.get(lst) or []:
+            if stage in seen:
+                out.append(f"{where}: expect stage {stage} is in both {seen[stage]} and {lst} (both include/option/absent)")
+            seen[stage] = lst
+    if strict:
+        for key in expect:
+            if key not in EXPECT_KEYS:
+                out.append(f"{where}: expect key {key} is not one of {', '.join(EXPECT_KEYS)}")
+        positions = expect.get("positions") or {}
+        if not isinstance(positions, dict):
+            out.append(f"{where}: expect positions must be a mapping")
+        else:
+            out += [f"{where}: expect position {k} value {val} must be one of {', '.join(sorted(POSITION_VALUES))}"
+                    for k, val in positions.items() if val not in POSITION_VALUES]
+    return out
+
+
+def _app_differs_errors(where, differs):
+    out = []
+    for j, d in enumerate(differs or []):
+        if not re.match(r"^(stage|position|element|text|blocking)\.", str(d.get("key", ""))):
+            out.append(f"{where} app_differs[{j}]: key {d.get('key')} must start with stage., position., element., text. or blocking.")
+        elif str(d["key"]).startswith("blocking."):
+            # blocking.<check id>: the app raises or omits that blocking check.
+            for side in ("app", "expect"):
+                if d.get(side) not in ("blocking", "not blocking"):
+                    out.append(f"{where} app_differs[{j}]: {d['key']} {side} must be 'blocking' or 'not blocking'")
+        if not d.get("why"):
+            out.append(f"{where} app_differs[{j}]: why is required")
+    return out
+
+
 def validate(path, ids):
     path = Path(path)
     errors, warnings = [], []
@@ -292,27 +337,8 @@ def validate(path, ids):
         errors.extend(_phrase_errors(f"{where} must_include", r.get("must_include")))
         errors.extend(_phrase_errors(f"{where} must_not_include", r.get("must_not_include")))
         built_in(where, r)
-        expect = r.get("expect")
-        if expect is not None:
-            if not isinstance(expect, dict):
-                err(f"{where}: expect must be a mapping")
-            else:
-                seen = {}
-                for lst in STAGE_LISTS:
-                    for stage in expect.get(lst) or []:
-                        if stage in seen:
-                            err(f"{where}: expect stage {stage} is in both {seen[stage]} and {lst} (both include/option/absent)")
-                        seen[stage] = lst
-        for j, d in enumerate(r.get("app_differs") or []):
-            if not re.match(r"^(stage|position|element|text|blocking)\.", str(d.get("key", ""))):
-                err(f"{where} app_differs[{j}]: key {d.get('key')} must start with stage., position., element., text. or blocking.")
-            elif str(d["key"]).startswith("blocking."):
-                # blocking.<check id>: the app raises or omits that blocking check.
-                for side in ("app", "expect"):
-                    if d.get(side) not in ("blocking", "not blocking"):
-                        err(f"{where} app_differs[{j}]: {d['key']} {side} must be 'blocking' or 'not blocking'")
-            if not d.get("why"):
-                err(f"{where} app_differs[{j}]: why is required")
+        errors.extend(_expect_errors(where, r.get("expect")))
+        errors.extend(_app_differs_errors(where, r.get("app_differs")))
 
     trigger_ids = set()
     for i, t in enumerate(shape["triggers"]):
@@ -336,8 +362,13 @@ def validate(path, ids):
             if d not in ids["disciplines"]:
                 err(f"{where}: adds discipline {d} is not in disciplines.json")
         for j, add in enumerate(adds.get("rfps") or []):
+            if add.get("discipline") not in ids["disciplines"]:
+                err(f"{where} adds.rfps[{j}]: discipline {add.get('discipline')} is not in disciplines.json")
             for name in ("must_include", "must_not_include"):
                 errors.extend(_phrase_errors(f"{where} adds.rfps[{j}] {name}", add.get(name)))
+            # expect and app_differs restate keys of that RFP for this variant (SCORING.md §2).
+            errors.extend(_expect_errors(f"{where} adds.rfps[{j}]", add.get("expect"), strict=True))
+            errors.extend(_app_differs_errors(f"{where} adds.rfps[{j}]", add.get("app_differs")))
         for j, w in enumerate(adds.get("work_items") or []):
             work_item(f"{where} adds.work_items[{j}]", w)
         removes = t.get("removes") or {}

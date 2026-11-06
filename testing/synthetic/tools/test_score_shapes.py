@@ -407,6 +407,17 @@ class RFPTests(unittest.TestCase):
                          ["blocking.allowance:visits", "blocking.fact:flag.geotech_intrusive", "blocking.terms"])
         self.assertEqual([f["key"] for f in ex["new_failure"]], ["blocking.fact:flag.staged"])
 
+    def test_design_vehicle_block_is_user_input(self):
+        """slot:project:assessment_quantities (the traffic design vehicle) is typed by the user."""
+        self.assertTrue(s.user_input_check("slot:project:assessment_quantities"))
+        self.assertFalse(s.user_input_check("slot:project:other"))
+        arch = next(r for r in self.sh["rfps"] if r["discipline"] == "consultant.architect")
+        arch["expect"]["blocking"] = []
+        self.report("architecture")["rfp"]["checks"] = [{"id": "slot:project:assessment_quantities", "blocking": True}]
+        ex = find(s.score(self.sh, self.app)["rfps"], discipline="consultant.architect")["expect"]
+        self.assertEqual([d["key"] for d in ex["awaiting_user"]], ["blocking.slot:project:assessment_quantities"])
+        self.assertEqual(ex["new_failure"], [])
+
     def test_inactive_position_counts_as_absent(self):
         view = {"rfp": {"groups": [{"id": "positions", "controls": [
             {"key": "position:norbe", "value": "X", "party": s.INACTIVE_PARTY},
@@ -566,6 +577,50 @@ class TriggerTests(unittest.TestCase):
         result = s.score(sh, app, triggers=[tid])
         self.assertTrue(result["program"]["skeleton"]["match"])
         self.assertFalse(s.score(sh, app)["program"]["skeleton"]["match"])  # the base still expects its own
+
+    def test_trigger_can_change_rfp_expect(self):
+        """adds.rfps[].expect restates named keys for the variant; the base answer
+        and any base app_differs for those keys give way (traditional procurement,
+        a groundwater position, say)."""
+        sh = shape()
+        app = app_from_shape(sh)  # the base app
+        sh["triggers"].append({"id": "route", "label": "x", "evidence": ["a", "b"], "negation": ["c"],
+                               "adds": {"rfps": [{"discipline": "consultant.structural",
+                                                  "expect": {"stages_absent": ["tender_traditional"],
+                                                             "stages_include": ["dnc_tender"],
+                                                             "positions": {"retention_design": "I", "specialist_element_design": "O"}},
+                                                  "app_differs": [{"key": "position.retention_design", "app": "absent", "expect": "I",
+                                                                   "why": "the app never prices retention on a house"}]}]}})
+        exp = next(r for r in s.expectations(sh, ["route"])["rfps"] if r["discipline"] == "consultant.structural")
+        self.assertIn("tender_traditional", exp["expect"]["stages_absent"])
+        self.assertNotIn("tender_traditional", exp["expect"]["stages_include"])
+        self.assertIn("dnc_tender", exp["expect"]["stages_include"])
+        self.assertNotIn("dnc_tender", exp["expect"]["stages_absent"])
+        self.assertEqual(exp["expect"]["positions"]["retention_design"], "I")
+        self.assertEqual(exp["expect"]["positions"]["design_basis"], "I")  # unnamed keys keep the base answer
+        keys = [d["key"] for d in exp["app_differs"]]
+        self.assertNotIn("position.specialist_element_design", keys)  # base difference dropped: the trigger restates the key
+        self.assertIn("position.shared_model", keys)  # other base differences stay
+        self.assertIn("position.retention_design", keys)  # the trigger's own difference is added
+        self.assertEqual(len(next(r for r in sh["rfps"] if r["discipline"] == "consultant.structural")["expect"]["stages_include"]), 4)  # the shape itself is not changed
+
+        st = find(s.score(sh, app, triggers=["route"])["rfps"], discipline="consultant.structural")["expect"]
+        self.assertEqual(sorted(f["key"] for f in st["new_failure"]), ["stage.dnc_tender", "stage.tender_traditional"])
+        self.assertIn("position.retention_design", [d["key"] for d in st["known_difference"]])
+        self.assertNotIn("position.specialist_element_design", [d["key"] for d in st["fixed"] + st["known_difference"]])
+        base = find(s.score(sh, app)["rfps"], discipline="consultant.structural")["expect"]
+        self.assertEqual(base["new_failure"], [])  # the base scenario is unchanged
+
+    def test_trigger_rfp_expect_can_replace_blocking(self):
+        sh = shape()
+        app = app_from_shape(sh)
+        next(r for r in app["reports"] if r["rfp"]["discipline"] == "structural")["rfp"]["checks"] = [{"id": "pathway_unsupported", "blocking": True}]
+        sh["triggers"].append({"id": "cdc", "label": "x", "evidence": ["a", "b"], "negation": ["c"],
+                               "adds": {"rfps": [{"discipline": "consultant.structural", "expect": {"blocking": ["pathway_unsupported"]}}]}})
+        self.assertEqual([f["key"] for f in find(s.score(sh, app)["rfps"], discipline="consultant.structural")["expect"]["new_failure"]],
+                         ["blocking.pathway_unsupported"])
+        st = find(s.score(sh, app, triggers=["cdc"])["rfps"], discipline="consultant.structural")["expect"]
+        self.assertEqual(st["new_failure"], [])
 
     def test_unknown_trigger_is_an_error(self):
         with self.assertRaises(ValueError):

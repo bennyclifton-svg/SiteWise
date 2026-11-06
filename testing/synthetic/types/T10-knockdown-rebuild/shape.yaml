@@ -317,9 +317,9 @@ rfps:
     must_include: ["Concept and schematic design on the survey of the existing site", "Demolition plan of every structure to go; investigations needed; trees to keep (existing_interfaces)", "CDC documentation to the Housing Code with survey, hazmat, BASIX, stormwater and structural inputs", "Lodging the CDC with the certifier on the NSW Planning Portal", "Design development", "House tender and construction documents (house_documents)", "Kitchen, bathroom, laundry and joinery design", "Selections schedule", "Specification", "Tender (bidding) support", "Certifier liaison", "Option: construction-phase support", "Option: contract administration"]
     must_not_include: ["DA planning response", "BIM coordination", "Tenant fit-out", "Signage", "Facade certification", "Regulated-design declarations", "D&C tender documents", "Post-novation stage", "Hazardous materials survey", "Demolition engineering"]
     expect:
-      stages_include: [concept, schematic, planning_approval, design_development, house_documents, bidding]
+      stages_include: [brief_masterplan, concept, schematic, planning_approval, design_development, house_documents, bidding]
       stages_option: [construction_support, contract_admin]
-      stages_absent: [brief_masterplan, planning_response, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
+      stages_absent: [planning_response, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, existing_interfaces: I, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent, live_staging: absent}
       blocking: []   # the scenario states the budget (SCORING.md §7.5, as T01)
       sources:
@@ -530,8 +530,8 @@ triggers:
       cost_plan: ["Class A friable asbestos removal with enclosure and air monitoring", "Soil assessment and remediation of the footprint"]
       program: ["Friable asbestos removal under enclosure", "Licensed asbestos assessor clearance", "Post-demolition soil assessment and remediation"]
       authority: ["SafeWork NSW Class A notification; NSW loose-fill program and council process (verified: false)"]
-    built_in: {procurement: "no", work_items: "no", program: "partial", cost_plan: "no"}
-    source: "knowledge/program/fragments.yaml fr.investigate-contamination"
+    built_in: {procurement: "yes", work_items: "no", program: "partial", cost_plan: "no"}
+    source: "knowledge/program/fragments.yaml fr.investigate-contamination; knowledge/works/package_defaults.yaml complexity_additions[2] potentially_contaminated_land (F41)"
   - id: friable-asbestos
     label: Friable asbestos found by the demolition survey
     evidence: ["Friable asbestos pipe lagging was identified in the subfloor", "the hazardous materials survey found friable asbestos in the old heater flue"]
@@ -565,8 +565,8 @@ triggers:
       cost_plan: ["Asbestos-in-soil assessment, removal and clearance"]
       program: ["Asbestos-in-soil assessment", "Remove impacted soil and clearance"]
       rfps: [{discipline: consultant.civil, must_include: ["Earthworks suitability coordinated with the environmental advice"]}]
-    built_in: {procurement: "no", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
-    source: "knowledge/rfp/civil.yaml earthworks_suitability"
+    built_in: {procurement: "yes", work_items: "no", program: "partial", rfps: "yes", cost_plan: "no"}
+    source: "knowledge/rfp/civil.yaml earthworks_suitability; knowledge/works/package_defaults.yaml complexity_additions[2] potentially_contaminated_land (F41)"
   - id: trees-affected
     label: Trees on or near the lot affected by demolition or the new house
     evidence: ["The new driveway is within the TPZ of the street tree", "remove the camphor laurel near the rear boundary", "demolition machinery must pass under the neighbour's fig"]

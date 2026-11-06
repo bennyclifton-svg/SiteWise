@@ -33,7 +33,7 @@ Consultant names are discipline **labels** in `data/intake/disciplines.json`; th
 |---|---|---|---|---|
 | `complexity_additions[0]` | planning | da, ssd | Town Planner (`consultant.town_planner`) | yes, `hdr.cond.planning` |
 | `complexity_additions[1]` | heritage_status | conservation_area, local_item, state_register | Heritage (`consultant.heritage`) | yes, `det.heritage_status` |
-| `complexity_additions[2]` | contamination_level | minor, significant, heavily_contaminated | Environmental (`consultant.environmental`) | **no**: no such determinant or condition; `packageFieldValue` rejects every value |
+| `complexity_additions[2]` | potentially_contaminated_land | true | Environmental (`consultant.environmental`) | yes, `det.potentially_contaminated_land` (F41, local main 3adc511: was the dead field `contamination_level`; the Profile's stated_true maps to true) |
 | `complexity_additions[3]` | environmental_sensitivity | sensitive, protected_habitat | Ecology (`consultant.ecology`) | yes, `hdr.cond.environmental_sensitivity` |
 | `complexity_additions[4]` | environmental_sensitivity | aboriginal_heritage | Archaeology (`consultant.archaeology`) | yes, `hdr.cond.environmental_sensitivity` |
 | `complexity_additions[5]` | bal | BAL-LOW, BAL-12.5, BAL-19, BAL-29, BAL-40, BAL-FZ | Bushfire (`consultant.bushfire`) | yes, `det.bal` |

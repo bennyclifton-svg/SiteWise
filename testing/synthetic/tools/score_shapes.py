@@ -42,6 +42,10 @@ def _scope_decisions(path=SKELETON):
 
 SCOPE_DECISIONS = _scope_decisions()
 
+# Blocking slots the user fills on the RFP itself: the traffic RFP's design
+# vehicle (assessment quantities) is typed, never read from a document.
+USER_SLOTS = {"slot:project:assessment_quantities"}
+
 
 def user_input_check(check_id):
     """A blocking check that clears only when the user types or chooses something:
@@ -49,8 +53,11 @@ def user_input_check(check_id):
     run never types, so these are reported apart from new failures."""
     if check_id.startswith("allowance:") or check_id in ("fields", "terms"):
         return True
+    if check_id in USER_SLOTS:
+        return True
     flag = check_id[len("fact:flag."):] if check_id.startswith("fact:flag.") else None
     return flag in SCOPE_DECISIONS
+
 
 # A phrase is found in a control label or a block of RFP text when this share
 # of its words is there. Prose phrasing in shapes is approximate; the score
@@ -222,8 +229,51 @@ def expectations(shape, triggers=()):
                 e["rfps"].append(target)
             target["must_include"] = list(target.get("must_include") or []) + list(add.get("must_include") or [])
             target["must_not_include"] = list(target.get("must_not_include") or []) + list(add.get("must_not_include") or [])
+            if add.get("expect") or add.get("app_differs"):
+                restate_expect(target, add.get("expect") or {}, add.get("app_differs") or [])
         e["not_rfps"] = [r for r in e["not_rfps"] if r["discipline"] not in {a["discipline"] for a in adds.get("rfps") or []}]
     return e
+
+
+EXPECT_LISTS = tuple(lst for lst, _ in STAGE_STATES + ELEMENT_STATES)
+
+
+def _expect_keys(expect):
+    """The control keys an expect mapping names: stage.k, element.k, position.k and blocking.<id>."""
+    keys = set()
+    for lst in EXPECT_LISTS:
+        prefix = "stage." if lst.startswith("stages_") else "element."
+        keys |= {prefix + k for k in expect.get(lst) or []}
+    keys |= {"position." + k for k in expect.get("positions") or {}}
+    keys |= {"blocking." + c for c in expect.get("blocking") or []}
+    return keys
+
+
+def restate_expect(rfp, expect, differs):
+    """A trigger's adds.rfps[].expect restates the keys it names for the variant
+    (a route change moves stages, a site condition brings a position in). Each named
+    stage or element leaves the base lists it was in, a named position takes the new
+    value, and a blocking list replaces the base one. A base app_differs on a named
+    key no longer applies; the trigger's own app_differs replace any on the same key."""
+    base = copy.deepcopy(rfp.get("expect") or {})
+    for lst in EXPECT_LISTS:
+        named = set(expect.get(lst) or [])
+        if not named:
+            continue
+        group = STAGE_STATES if lst.startswith("stages_") else ELEMENT_STATES
+        for other, _ in group:
+            if base.get(other):
+                base[other] = [k for k in base[other] if k not in named]
+        base[lst] = list(base.get(lst) or []) + [k for k in expect[lst] if k not in (base.get(lst) or [])]
+    if expect.get("positions"):
+        base["positions"] = dict(base.get("positions") or {}, **expect["positions"])
+    old_blocking = {"blocking." + c for c in base.get("blocking") or []}
+    if "blocking" in expect:
+        base["blocking"] = list(expect["blocking"] or [])
+    rfp["expect"] = base
+    restated = _expect_keys(expect) | (old_blocking if "blocking" in expect else set())
+    own = {d["key"] for d in differs}
+    rfp["app_differs"] = [d for d in rfp.get("app_differs") or [] if d["key"] not in restated and d["key"] not in own] +         copy.deepcopy(list(differs))
 
 
 # ---------------------------------------------------------------- matching
