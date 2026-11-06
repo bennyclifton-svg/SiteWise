@@ -40,8 +40,9 @@ settings:
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [concept, schematic, planning_approval, planning_response]
-    stages_absent: [dnc_tender, brief_masterplan, design_development, interiors, tender_traditional, bidding, for_construction, construction_support]
+    # The brief is priced on every project (owner ruling R13, 7 November 2026).
+    stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response]
+    stages_absent: [dnc_tender, design_development, interiors, tender_traditional, bidding, for_construction, construction_support]
     blocking: ["fact:budget"]
     blocking_only: true
   structural:

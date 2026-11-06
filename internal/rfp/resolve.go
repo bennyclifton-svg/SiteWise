@@ -768,14 +768,24 @@ func (r *resolver) resolveStages() {
 // the included lines, so an excluded line is priced by nobody.
 func (r *resolver) resolveLines(s *StageResult, st knowledge.RFPStage) {
 	s.Lines = []LineResult{}
+	conditional := false // a conditional line is included
 	for _, l := range st.Lines {
+		// A conditional line is left out unless its condition holds: a
+		// masterplan is not priced on a project not known to be large (R13).
+		if len(l.When) > 0 && r.eval(l.When).t != yes {
+			continue
+		}
 		line := LineResult{Key: l.Key, Text: l.Text, Value: "I", Source: "rule"}
 		if raw, ok := r.setting("line:" + st.Key + "." + l.Key); ok {
 			if v := settingString(raw); v == "I" || v == "X" {
 				line.Value, line.Source = v, "user"
 			}
 		}
+		conditional = conditional || (len(l.When) > 0 && line.Value == "I")
 		s.Lines = append(s.Lines, line)
+	}
+	if st.BaseName != "" && !conditional {
+		s.Name = st.BaseName
 	}
 	if raw, ok := r.setting("custom:" + st.Key); ok {
 		var own []CustomLine

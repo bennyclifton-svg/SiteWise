@@ -80,11 +80,19 @@ type RFPRow struct {
 type RFPLine struct {
 	Key  string `yaml:"key" json:"key"`
 	Text string `yaml:"text" json:"text"`
+	// When limits the line to projects where it holds; the line is left out
+	// unless the condition is true (owner ruling R13: a masterplan is only
+	// for a large project).
+	When RFPWhen `yaml:"when" json:"when,omitempty"`
 }
 
 type RFPStage struct {
 	Key  string `yaml:"key" json:"key"`
 	Name string `yaml:"name" json:"name"`
+	// BaseName is the stage's name when none of its conditional lines is
+	// included, so the name says only what is priced ("Brief" rather than
+	// "Brief and masterplan").
+	BaseName string `yaml:"base_name" json:"base_name,omitempty"`
 	// Lines are the deliverable as separate scope lines, each included or
 	// excluded on its own (owner direction, 3 November 2026). A stage with
 	// lines has its deliverable built from them.
@@ -699,10 +707,16 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 		if st.Deliverable != "" {
 			return d, fmt.Errorf("stage %s has lines and a deliverable; keep one", st.Key)
 		}
+		if st.BaseName != "" && !slices.ContainsFunc(st.Lines, func(l RFPLine) bool { return len(l.When) > 0 }) {
+			return d, fmt.Errorf("stage %s has a base_name but no conditional line", st.Key)
+		}
 		texts := []string{}
 		for _, l := range st.Lines {
 			if !lineKeyRE.MatchString(l.Key) || strings.TrimSpace(l.Text) == "" {
 				return d, fmt.Errorf("stage %s line %q needs a key and text", st.Key, l.Key)
+			}
+			if err := checkWhen("stage "+st.Key+" line "+l.Key, l.When, s); err != nil {
+				return d, err
 			}
 			texts = append(texts, l.Text)
 		}
