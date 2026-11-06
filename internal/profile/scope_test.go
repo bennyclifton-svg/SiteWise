@@ -197,3 +197,33 @@ func TestWalshUnknownsStayOutOfScope(t *testing.T) {
 		}
 	}
 }
+
+// F45: a sentence that denies the work implies nothing (T03 d13, T06). A
+// later sentence that affirms the same word still implies it.
+func TestImpliedScopeIgnoresDenials(t *testing.T) {
+	cat := repoCatalog(t)
+	for _, text := range []string{
+		"The base-building bathrooms on the core are not in scope.",
+		"No strip-out or demolition is required.",
+		"Kitchen joinery is excluded from the works.",
+		"Exclusions: bathrooms and laundry.",
+		"New stairs are not required.",
+		"There is no demolition proposed.",
+	} {
+		if got := profile.ImpliedReadings(text, cat); len(got) != 0 {
+			t.Errorf("%q implied %+v", text, got)
+		}
+	}
+	got := profile.ImpliedReadings("The core bathrooms are not in scope. A new ensuite to level 2.", cat)
+	if len(got) == 0 || got[0].Excerpt != "A new ensuite to level 2" {
+		t.Fatalf("an affirming sentence after a denial must still imply: %+v", got)
+	}
+	for _, text := range []string{
+		"Bathrooms including but not limited to tiling and waterproofing.",
+		"Party wall tie-in with No. 40 — acoustic and fire separation",
+	} {
+		if len(profile.ImpliedReadings(text, cat)) == 0 {
+			t.Errorf("%q is not a denial", text)
+		}
+	}
+}

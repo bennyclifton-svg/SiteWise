@@ -15,16 +15,22 @@ type workContext struct {
 	// contractor marks systems an applied provider reading says the
 	// contractor supplies "as part of their works or price".
 	contractor map[[2]string]bool
+	// unsettled marks systems whose works action was read but did not
+	// settle on a works value (R16, F43).
+	unsettled map[[2]string]bool
 }
 
 func workContextFor(rows []Row, whole string) workContext {
-	c := workContext{whole: whole, types: map[string]string{}, actions: map[[2]string]string{}, actionRows: map[[2]string]Row{}, contractor: map[[2]string]bool{}}
+	c := workContext{whole: whole, types: map[string]string{}, actions: map[[2]string]string{}, actionRows: map[[2]string]Row{}, contractor: map[[2]string]bool{}, unsettled: map[[2]string]bool{}}
 	for _, r := range rows {
 		if r.Key == "hdr.work_type" && appliedWorkRow(r) {
 			c.types[r.PartID] = r.Value
 		}
 	}
 	for _, r := range rows {
+		if unsettledWorksAction(r) {
+			c.unsettled[[2]string{r.PartID, strings.TrimSuffix(r.Key, ".action")}] = true
+		}
 		if !appliedWorkRow(r) {
 			continue
 		}
@@ -50,6 +56,28 @@ func workContextFor(rows []Row, whole string) workContext {
 // own action is final.
 func (c workContext) oldBuildingAction(r Row) bool {
 	return r.Band != bandUser && (r.Value == "investigate" || r.Value == "remove") && c.workType(r.PartID) == "new"
+}
+
+// unsettledWorksAction is a document action reading that may name works but
+// did not settle (owner ruling R16, F43): every candidate fell below the
+// action floor (blank, with sources), or the candidates conflict and one of
+// them does work on the system. A conflict of retain against investigate
+// names no works, so D-27 still files the system as existing.
+func unsettledWorksAction(r Row) bool {
+	if r.Band == bandUser || !strings.HasPrefix(r.Key, "sys.") || !strings.HasSuffix(r.Key, ".action") {
+		return false
+	}
+	switch r.Band {
+	case bandBlank:
+		return r.Value == "" && len(r.Sources) > 0
+	case bandRed:
+		for _, alt := range r.Alternatives {
+			if scopeAction[alt.Value] {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func appliedWorkRow(r Row) bool {
@@ -80,6 +108,9 @@ func (c workContext) severalActions(r Row) bool {
 // only its scope consequence changes, so factual answer keys stay intact.
 // A system the contractor provides is works, not existing building: the
 // provider question defines contractor as part of the works or price.
+// An unsettled works action is not "no action": on a refurb the documents may
+// be describing works the reader could not pin down, so the system stays in
+// scope with its action left for the user (R16).
 func (c workContext) existingPresence(r Row) bool {
 	if r.Band == bandUser || !appliedWorkRow(r) || r.Value != valIncluded ||
 		!strings.HasPrefix(r.Key, "sys.") || !strings.HasSuffix(r.Key, ".presence") {
@@ -88,7 +119,7 @@ func (c workContext) existingPresence(r Row) bool {
 	switch c.workType(r.PartID) {
 	case "refurb", "remediation", "advisory":
 		system := [2]string{r.PartID, strings.TrimSuffix(r.Key, ".presence")}
-		if c.contractor[system] {
+		if c.contractor[system] || c.unsettled[system] {
 			return false
 		}
 		action := c.actions[system]
