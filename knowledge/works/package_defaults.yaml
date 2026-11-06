@@ -2,7 +2,7 @@
 # v2 (2026-10-11, docs/plans/2026-10-11-procurement-default-disciplines.md)
 # splits Services Engineer into each service, lets work type alone suggest, and
 # adds scope additions. A baseline with no building_classes applies to any
-# class. Scope additions apply when a listed system (or one below it) is in
+# class; one with systems also needs a listed system in scope. Scope additions apply when a listed system (or one below it) is in
 # scope. Each consultant must be a discipline label in data/intake/disciplines.json.
 # Exact heritage/BAL identifiers are mapped to SiteWise's existing catalogue;
 # unresolved contamination/flood fields retain the source vocabulary for review.
@@ -62,12 +62,16 @@ baselines:
   - Access
   - Mechanical
   - Fire Services
+# Interior Design only when interiors work is in scope: a services-only
+# upgrade (a sprinkler pump and tank) has no fit-out to design (F50).
 - building_classes:
   - commercial
   - institution
   - mixed
   work_types:
   - refurb
+  systems:
+  - interiors
   consultants:
   - Interior Design
 - building_classes:

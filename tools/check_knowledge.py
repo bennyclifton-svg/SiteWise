@@ -1246,6 +1246,9 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             for w in b.get("work_types") or []:
                 if work_types and w not in work_types:
                     report.error(where, f"unknown work type {w}")
+            if "systems" in b and (not isinstance(b["systems"], list) or not b["systems"]
+                                   or any(not isinstance(v, str) or not v.strip() for v in b["systems"])):
+                report.error(where, "baseline systems must be a non-empty list of system ids")
         for i, a in enumerate(doc.get("scope_additions") or []):
             where = f"{rel} [scope_additions {i}]"
             if not isinstance(a, dict) or not isinstance(a.get("systems"), list) or not a["systems"]                     or any(not isinstance(v, str) or not v.strip() for v in a["systems"]) or not a.get("consultants"):
