@@ -1,7 +1,7 @@
 {
   "source": "clerk/data/taxonomy/disciplines.json",
   "source_sha256": "6e079e5e91ff479e147cf3244a7a80fd34d2011e9fe749d570201614120157fa",
-  "note": "Filing view derived from the reference taxonomy (source hash retained). Owner-requested 10 October 2026 correction separates fire services design from fire engineering; a 6 November 2026 correction adds Building designer as an Architect alias (synthetic finding F25); a 7 November 2026 correction describes Town Planner, BCA and Certifier for the markdown discipline question and adds a Building regulations consultant alias to BCA (synthetic finding F40); the frozen reference is unchanged. Consultant disciplines are not the building model. PM doctrine fields are omitted.",
+  "note": "Filing view derived from the reference taxonomy (source hash retained). Owner-requested 10 October 2026 correction separates fire services design from fire engineering; a 6 November 2026 correction adds Building designer as an Architect alias (synthetic finding F25); a 7 November 2026 correction describes Town Planner, BCA and Certifier for the markdown discipline question and adds a Building regulations consultant alias to BCA (synthetic finding F40); a 7 November 2026 correction describes Fire Services and Fire Engineer so hydrant, sprinkler and fire-water layouts file as Fire Services (synthetic finding F49); the frozen reference is unchanged. Consultant disciplines are not the building model. PM doctrine fields are omitted.",
   "disciplines": [
     {
       "id": "consultant.access",
@@ -185,7 +185,8 @@
         "Fire safety engineer",
         "Fire engineering",
         "Fire performance solutions"
-      ]
+      ],
+      "describe": "Fire Engineer: a fire safety engineer who writes fire engineering reports, fire engineering briefs and performance solutions against the NCC; fire services design drawings are Fire Services, not Fire Engineer."
     },
     {
       "id": "consultant.fire_services",
@@ -195,7 +196,8 @@
         "Sprinkler system designer",
         "Wet fire design",
         "Fire services engineer"
-      ]
+      ],
+      "describe": "Fire Services: a fire services designer or engineer who designs fire hydrant, sprinkler, fire pump and fire water supply systems and issues their layout drawings (FS- sheets), options reports and fee proposals."
     },
     {
       "id": "consultant.geotechnical",

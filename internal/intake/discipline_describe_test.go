@@ -31,7 +31,7 @@ func TestMarkdownDisciplineOptionsDescribePlannerBCAAndCertifier(t *testing.T) {
 	if !ok {
 		t.Fatal("no Jev call")
 	}
-	if !strings.HasSuffix(call.QuestionVersion, "+markdown-2") {
+	if !strings.HasSuffix(call.QuestionVersion, "+markdown-3") {
 		t.Fatalf("question version %q: criteria changed, version must change", call.QuestionVersion)
 	}
 	q, ok := call.Questions[intake.FieldDiscipline]
@@ -73,5 +73,52 @@ func TestPDFDisciplineOptionsStayLabels(t *testing.T) {
 	}
 	if got, _ := criteria["consultant.town_planner"].(string); got != "Town Planner" {
 		t.Fatalf("pdf criterion changed: %q", got)
+	}
+}
+
+// F49: FS-101 (a fire pump room layout by "Calder Fire and Hydraulic
+// Engineers") filed as Fire Engineer because both options were bare labels.
+// The markdown question now says fire services design drawings are Fire
+// Services and keeps Fire Engineer for fire engineering reports and
+// performance solutions.
+func TestMarkdownDisciplineOptionsTellFireServicesFromFireEngineer(t *testing.T) {
+	path := filepath.Join(repoRoot(t), "testing", "synthetic", "scenarios", "ST06-base", "corpus", "FS-101 Rev A - Basement fire pump room layout.md")
+	body, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var runs []identity.Run
+	for _, line := range strings.Split(string(body), "\n") {
+		runs = append(runs, identity.Run{Text: line})
+	}
+	d := intake.NewDraft(draftCatalog(t), filepath.Base(path), identity.Text{Format: "md", Runs: runs}, nil, nil)
+	d.Plan(nil, "self")
+	call, ok := d.Call()
+	if !ok {
+		t.Fatal("no Jev call")
+	}
+	if !strings.HasSuffix(call.QuestionVersion, "+markdown-3") {
+		t.Fatalf("question version %q: criteria changed, version must change", call.QuestionVersion)
+	}
+	q, ok := call.Questions[intake.FieldDiscipline]
+	if !ok {
+		t.Fatal("discipline settled without Jev")
+	}
+	raw, _ := json.Marshal(q.Criteria)
+	var criteria map[string]any
+	if err := json.Unmarshal(raw, &criteria); err != nil {
+		t.Fatal(err)
+	}
+	services, _ := criteria["consultant.fire_services"].(string)
+	for _, want := range []string{"hydrant", "sprinkler", "pump", "FS-"} {
+		if !strings.Contains(services, want) {
+			t.Errorf("fire services criterion %q lacks %q", services, want)
+		}
+	}
+	engineer, _ := criteria["consultant.fire_engineer"].(string)
+	for _, want := range []string{"fire engineering report", "performance solution"} {
+		if !strings.Contains(engineer, want) {
+			t.Errorf("fire engineer criterion %q lacks %q", engineer, want)
+		}
 	}
 }
