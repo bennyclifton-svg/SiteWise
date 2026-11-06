@@ -27,7 +27,11 @@ import (
 // works demolish or a survey describes (knock-down D1 and D3, 2026-11-06).
 // profile-13: a dual occupancy is a house; townhouses are a strata or
 // community scheme with common property (owner ruling, 2026-11-06).
-const QuestionVersion = "profile-13"
+// profile-14: mixed-use apartment count and retail GLA are asked, "site … m2"
+// triggers the site area, triggers match across line wraps, a low noise level
+// denies a noise-affected site, and the basement flag asks about the works
+// (synthetic findings F32-F34, F36; owner ruling R14, 2026-11-07).
+const QuestionVersion = "profile-14"
 
 // ReadRevision says which families of profile questions a document's label
 // reading covered. Raise it when a new family of questions is added without

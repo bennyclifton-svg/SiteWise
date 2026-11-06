@@ -40,6 +40,8 @@ building_classes:
       triggers: &id001
       - site area
       - \blot size\b
+      # "The consolidated site is about 1,800 m2" names no "site area" (F32).
+      - \bsite\b[^.;]{0,40}?\d[\d,]*(\.\d+)?\s*(m2\b|m²|sqm\b|sq\.?\s?m\b)
       typical: 200-2000 sqm
     - key: gfa_sqm
       label: Proposed GFA sqm
@@ -1432,12 +1434,22 @@ building_classes:
     - key: residential_units
       label: Residential units
       type: integer
+      # Apartment count is a key metric of shop-top mixed use (owner ruling R14).
+      triggers: &id014
+      - \b\d+\s+(sole\s+occupancy\s+)?(units|apartments|dwellings)\b
+      - apartment mix
       typical: 50-500
     - key: retail_gla_sqm
       label: Retail GLA sqm
       type: number
       unit: m2
       basis_required: true
+      # Shop area is a key metric of shop-top mixed use (owner ruling R14).
+      triggers: &id015
+      - \bgla\b
+      - gross lettable
+      - \b(retail|shop) (floor )?area\b
+      - \blettable area\b
       typical: 500-10,000 sqm
     - key: car_parks
       label: Car parks
@@ -1473,6 +1485,7 @@ building_classes:
     - key: residential_units
       label: Residential units
       type: integer
+      triggers: *id014
       typical: 50-500
     - key: commercial_nla_sqm
       label: Commercial NLA sqm
@@ -1514,6 +1527,7 @@ building_classes:
     - key: residential_units
       label: Residential units
       type: integer
+      triggers: *id014
     - key: hotel_rooms
       label: Hotel rooms
       type: integer
@@ -1561,6 +1575,7 @@ building_classes:
       type: number
       unit: m2
       basis_required: true
+      triggers: *id015
     - key: car_parks
       label: Car parks
       type: integer
@@ -1595,6 +1610,7 @@ building_classes:
     - key: residential_units
       label: Residential units
       type: integer
+      triggers: *id014
     - key: amenity_gfa_sqm
       label: Amenity GFA sqm
       type: number
@@ -1604,6 +1620,7 @@ building_classes:
       type: number
       unit: m2
       basis_required: true
+      triggers: *id015
   - id: vertical_village
     label: Vertical Village (ILU + Aged Care)
     ncc_class: 2/9c

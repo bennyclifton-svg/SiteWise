@@ -84,8 +84,13 @@ func (f ScaleField) TriggeredIn(t Text) bool { return anyMatch(f.triggers, t) }
 // Text is a passage with its lowercase form, computed once per passage.
 type Text struct{ Raw, Lower string }
 
-// NewText lowercases text for trigger prefiltering.
-func NewText(s string) Text { return Text{Raw: s, Lower: strings.ToLower(s)} }
+// NewText lowercases text for trigger prefiltering. Runs of whitespace become
+// one space first: PDF text wraps lines mid-phrase ("clause\n4.6"), and a
+// trigger's literal space must still match it (synthetic finding F33).
+func NewText(s string) Text {
+	s = strings.Join(strings.Fields(s), " ")
+	return Text{Raw: s, Lower: strings.ToLower(s)}
+}
 
 // trigger is a compiled pattern plus a literal every match must contain.
 // Case-insensitive patterns lose Go's literal prefix scan, so a substring

@@ -25,7 +25,9 @@ flags:
     asks: does the passage state that the project has several buildings, or is a campus?
   - key: basement
     triggers: ['\bbasement', 'deep excavation', 'excavat\w* to a depth']
-    asks: does the passage state that the project includes a basement or deep excavation?
+    # The works, not the building: an existing basement under a cladding job is
+    # not basement works (synthetic finding F36, T17 d04).
+    asks: does the passage state that the works include building a basement (a new one or an extension of an existing one) or deep excavation? An existing basement that the works do not build or extend does not count.
   - key: excavation_adjoining
     triggers: ['excavat\w*[^.]{0,120}(?:adjoin|neighbour|boundar)', '(?:adjoin|neighbour|boundar)\w*[^.]{0,120}excavat']
     asks: does the passage state that excavation is next to adjoining structures or boundaries?
