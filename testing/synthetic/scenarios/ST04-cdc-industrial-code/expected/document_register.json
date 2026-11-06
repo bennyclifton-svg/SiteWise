@@ -1,0 +1,259 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Development brief: warehouse and office at 14 Ironstone Circuit, Erskine Park",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-00418",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Penrith City Council"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "HRS-26-0114",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-02-27",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Hartigan Ross Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": {
+        "accept": [
+          "consultant.architect",
+          "none"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Program and CDC timing",
+      "date": "2026-03-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Marrick Hale Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "MHA-FP-2607",
+      "revision": null,
+      "title": "Fee proposal: architectural services",
+      "date": "2026-03-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Marrick Hale Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "RSE-2611",
+      "revision": null,
+      "title": "Fee proposal: structural engineering",
+      "date": "2026-03-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ridgeline Structural Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "CCE-P-0412",
+      "revision": null,
+      "title": "Fee proposal: civil and stormwater engineering",
+      "date": "2026-03-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Cardinal Civil Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "SHG-P-0219",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Shalehaven Geotechnics Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.traffic",
+      "lifecycle": "consultant",
+      "number": "LT-0326",
+      "revision": null,
+      "title": "Fee proposal: traffic and parking engineering",
+      "date": "2026-03-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Lanefield Traffic Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "SHG-26-0219",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-21",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Shalehaven Geotechnics Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.bca",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CBR-26-071",
+      "revision": "A",
+      "title": "BCA assessment report",
+      "date": "2026-05-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Clearpath Building Regulations Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.civil",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CCE-R-0412",
+      "revision": "1",
+      "title": "Civil engineering and stormwater management report",
+      "date": "2026-05-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Cardinal Civil Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-1100",
+      "revision": "A",
+      "title": "Site plan",
+      "date": "2026-04-28",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Marrick Hale Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d16",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-1100",
+      "revision": "B",
+      "title": "Site plan",
+      "date": "2026-05-22",
+      "supersedes": "d15",
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Marrick Hale Architects Pty Ltd"
+      }
+    }
+  ]
+}

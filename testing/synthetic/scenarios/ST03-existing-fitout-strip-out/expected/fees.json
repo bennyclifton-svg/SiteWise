@@ -1,0 +1,265 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.interior_design",
+      "firm": {
+        "name": "Corrigan Hale Interiors Pty Ltd",
+        "abn": "41 727 862 569",
+        "contact": "Harriet Corrigan",
+        "email": "harriet.corrigan@example.com",
+        "phone": "02 9955 4120",
+        "address": "Suite 6, 40 Berry Street, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 13000000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Brief and test fit",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "Concept design including landlord concept approval submission",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2200000
+        },
+        {
+          "label": "Design development including finishes and FF&E selection",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2800000
+        },
+        {
+          "label": "Documentation, specification, demolition plan and CDC drawings",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3800000
+        },
+        {
+          "label": "Tender documents and evaluation input",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Construction-phase services",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2000000
+        },
+        {
+          "label": "Option: FF&E procurement management",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 1200000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 21000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.services",
+      "firm": {
+        "name": "Meridale Building Services Engineers Pty Ltd",
+        "abn": "78 303 243 509",
+        "contact": "Marco Meridale",
+        "email": "marco.meridale@example.com",
+        "phone": "02 9922 7031",
+        "address": "Level 3, 9 Blue Street, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 6200000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Investigation of base-building services and capacity, and making safe the previous tenant's services before the strip-out",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 600000
+        },
+        {
+          "label": "Concept and design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Documentation for the CDC and tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2400000
+        },
+        {
+          "label": "Tender and tender review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        },
+        {
+          "label": "Construction-phase inspections, witness testing and completion certification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1100000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.bca",
+      "firm": {
+        "name": "Tallowood Building Regulations Pty Ltd",
+        "abn": "41 819 041 186",
+        "contact": "Lena Tallowood",
+        "email": "lena.tallowood@example.com",
+        "phone": "02 9411 2286",
+        "address": "Suite 2, 12 Help Street, Chatswood NSW 2067"
+      },
+      "stated_total_cents": 1000000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Inception and design advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 350000
+        },
+        {
+          "label": "BCA assessment report for the CDC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Option: construction-phase advice",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 240000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.access",
+      "firm": {
+        "name": "Clearpath Access Consultants Pty Ltd",
+        "abn": "11 834 477 902",
+        "contact": "Sunil Rao",
+        "email": "sunil.clearpath@example.com",
+        "phone": "02 9439 5512",
+        "address": "Level 1, 68 Alexander Street, Crows Nest NSW 2065"
+      },
+      "stated_total_cents": 550000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Design review and access report for the CDC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 420000
+        },
+        {
+          "label": "Final inspection and access statement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 130000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.certifier",
+      "firm": {
+        "name": "Harbourgate Certifiers Pty Ltd",
+        "abn": "44 112 068 819",
+        "contact": "Joanne Ashby",
+        "email": "joanne.harbourgate@example.com",
+        "phone": "02 9929 6604",
+        "address": "Suite 11, 77 Walker Street, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 1700000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "CDC assessment and determination with the fire safety schedule",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 980000
+        },
+        {
+          "label": "Principal certifier appointment and mandatory inspections",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 420000
+        },
+        {
+          "label": "Final fire safety certificate review and occupation certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.quantity_surveyor",
+      "firm": {
+        "name": "Baxter Lane Cost Consultants Pty Ltd",
+        "abn": "91 043 002 296",
+        "contact": "Ewan Baxter",
+        "email": "ewan.baxterlane@example.com",
+        "phone": "02 9906 3378",
+        "address": "Level 4, 15 Falcon Street, Crows Nest NSW 2065"
+      },
+      "stated_total_cents": 1650000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept cost plan including the total project budget",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 450000
+        },
+        {
+          "label": "Design development cost plan",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 500000
+        },
+        {
+          "label": "Pre-tender estimate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 400000
+        },
+        {
+          "label": "Tender evaluation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        }
+      ]
+    }
+  ]
+}

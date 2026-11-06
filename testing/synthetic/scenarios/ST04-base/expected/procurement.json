@@ -1,0 +1,59 @@
+{
+  "schema": "sitewise-synthetic-procurement/1",
+  "shape": "types/T04-warehouse/shape.yaml",
+  "triggers": [],
+  "from_proposals": [
+    {
+      "doc": "d05",
+      "discipline": "consultant.architect",
+      "kind": "services"
+    },
+    {
+      "doc": "d06",
+      "discipline": "consultant.structural",
+      "kind": "services"
+    },
+    {
+      "doc": "d07",
+      "discipline": "consultant.civil",
+      "kind": "services"
+    },
+    {
+      "doc": "d08",
+      "discipline": "consultant.geotechnical",
+      "kind": "services"
+    },
+    {
+      "doc": "d09",
+      "discipline": "consultant.town_planner",
+      "kind": "services"
+    },
+    {
+      "doc": "d10",
+      "discipline": "consultant.traffic",
+      "kind": "services"
+    }
+  ],
+  "route": "design_construct",
+  "novation": {
+    "consultant.architect": "yes",
+    "consultant.structural": "yes",
+    "consultant.civil": "yes",
+    "consultant.landscape": "yes",
+    "consultant.fire_services": "option",
+    "consultant.fire_engineer": "option",
+    "consultant.electrical": "option",
+    "consultant.hydraulic": "option",
+    "consultant.town_planner": "no",
+    "consultant.surveyor": "no",
+    "consultant.geotechnical": "no",
+    "consultant.traffic": "no",
+    "consultant.bca": "no",
+    "consultant.certifier": "no",
+    "consultant.access": "no",
+    "consultant.acoustic": "no",
+    "consultant.esd": "no",
+    "consultant.quantity_surveyor": "no",
+    "consultant.waste": "no"
+  }
+}

@@ -1,0 +1,375 @@
+{
+  "scenario": "ST04-flood-affected",
+  "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "0aee9a453a199171c69df220897388b3d0f2486d",
+    "app_files_modified": 16
+  },
+  "started": "20261107-t03-t04-t06",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.6
+    },
+    {
+      "wave": 2,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 6,
+      "seconds": 17.0
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 14.8
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Development brief - 14 Ironstone Circuit Erskine Park.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "507218f0-6f82-4454-9527-0b0e38558d67",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Development brief - 14 Ironstone Circuit Erskine Park.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:15.784205+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 21 DP 1289934.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ade53f8e-119e-4aed-a435-f8de310b254f",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Planning certificate s10.7 - Lot 21 DP 1289934.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:15.789303+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 14 Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "d6ac89a0-88a4-46e0-93aa-69051373574d",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Detail and boundary survey report - 14 Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:15.79403+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Program and DA timing - Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ba870a7c-b90c-4411-8f3d-b56a78fcae68",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "RE Program and DA timing - Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:15.798343+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - Ironstone Circuit warehouse.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ac67fc1f-a137-4afc-963f-43d63bb1ddb2",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Fee proposal - Architectural services - Ironstone Circuit warehouse.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:28.617136+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Ridgeline Structural fee proposal RSE-2611.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "9c0057cc-48d0-4322-b3c7-a64d263c0c40",
+        "submission_id": "58db2fcb-2f42-4e31-8f67-0a04a90b67a9"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Cardinal Civil - civil and stormwater fee - Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "01f4ac8b-279a-458c-9c84-e9a52c1a277a",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Cardinal Civil - civil and stormwater fee - Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:28.66317+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Fee proposal - Geotechnical investigation - Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "1cfba8f7-7093-473f-b65f-2973fec1a1b4",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Fee proposal - Geotechnical investigation - Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:28.689641+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Westbourne Planning fee proposal WP-26-014.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "86078399-5ac2-4cdc-bd1a-a441506e441f",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Westbourne Planning fee proposal WP-26-014.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:28.704912+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Lanefield Traffic fee proposal LT-0326.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "509469bd-9116-4331-bd24-e20805e1a7eb",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Lanefield Traffic fee proposal LT-0326.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:28.708945+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Geotechnical report SHG-26-0219 - 14 Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "392e9666-3155-482d-a62f-edfcf64a8c1d",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Geotechnical report SHG-26-0219 - 14 Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:45.817771+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "BCA report CBR-26-071 - 14 Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b02a6a1b-f328-4bcf-8db8-aad36cac4192",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "BCA report CBR-26-071 - 14 Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:45.836079+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Statement of environmental effects - 14 Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "714a572b-7f6c-4c45-8f7b-ed83af318696",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Statement of environmental effects - 14 Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:45.840118+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Civil and stormwater report CCE-R-0412 - 14 Ironstone Circuit.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4b954f79-9547-4dd4-8166-537467727541",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "Civil and stormwater report CCE-R-0412 - 14 Ironstone Circuit.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:45.844823+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "A-1100 Rev A - Site plan.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "aeb6f406-b0fb-419c-a300-37937a1c214f",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "A-1100 Rev A - Site plan.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:45.849179+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "A-1100 Rev B - Site plan.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "84b6e572-436a-4e00-844b-d30c54659394",
+        "project_id": "54b35063-b300-494f-962a-a7cf7c28f46e",
+        "filename": "A-1100 Rev B - Site plan.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:33:45.85403+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d17",
+      "filename": "Tax invoice MHA-INV-0311 Marrick Hale.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "baf19327-fbf0-4f99-b22f-0631bbecdd9e",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "Westbourne invoice 1187.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "1e623093-304c-4405-9404-6b016638c8b9",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d19",
+      "filename": "Tax invoice SHG-INV-0507 Shalehaven.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "d8aeb6d2-c5e0-4c43-9c76-265ca3b854ba",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

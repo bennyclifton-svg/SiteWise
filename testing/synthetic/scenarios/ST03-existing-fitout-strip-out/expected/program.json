@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T03-office-fitout/shape.yaml",
+  "triggers": [
+    "existing-fitout-strip-out"
+  ],
+  "scenario_facts": {
+    "program": {
+      "target_construction_start": "2026-09-07"
+    }
+  }
+}

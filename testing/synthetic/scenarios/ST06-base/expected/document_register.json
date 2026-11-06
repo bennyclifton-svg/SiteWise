@@ -1,0 +1,344 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": "CPH-CS41-B01",
+      "revision": null,
+      "title": "Owner's brief: sprinkler water supply upgrade and level 3 fit-out",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Corvina Property Holdings Pty Ltd"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-0815",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "North Sydney Council"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": {
+        "accept": [
+          "certificate",
+          "report"
+        ]
+      },
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "authorities",
+          "project"
+        ]
+      },
+      "number": "CS41-AFSS-2025",
+      "revision": null,
+      "title": "Annual fire safety statement and fire safety schedule",
+      "date": "2026-01-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Corvina Property Holdings Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": {
+        "accept": [
+          "certificate",
+          "correspondence",
+          "report"
+        ]
+      },
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "SW-SAPF-2026-118804",
+      "revision": null,
+      "title": "Statement of available pressure and flow",
+      "date": "2026-02-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sydney Water"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "lifecycle": "consultant",
+      "number": "CFH-FP-26-019",
+      "revision": null,
+      "title": "Fee proposal: hydraulic and fire services engineering",
+      "date": "2026-02-23",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Calder Fire and Hydraulic Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "FCE-Q-2207",
+      "revision": null,
+      "title": "Fee proposal: structural engineering for the fire water tank and pump room",
+      "date": "2026-02-25",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ferrule Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.electrical",
+      "lifecycle": "consultant",
+      "number": "KEE-P-0342",
+      "revision": null,
+      "title": "Fee proposal: electrical engineering services",
+      "date": "2026-02-26",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Kilnworth Electrical Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.mechanical",
+      "lifecycle": "consultant",
+      "number": "PME-26-031",
+      "revision": null,
+      "title": "Fee proposal: mechanical engineering services",
+      "date": "2026-02-27",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Plenum Mechanical Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.certifier",
+      "lifecycle": "consultant",
+      "number": "LBC-26-0144",
+      "revision": null,
+      "title": "Fee proposal: certification services",
+      "date": "2026-03-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Lintel Building Certifiers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": {
+        "accept": [
+          "consultant.interior_design",
+          "consultant.architect"
+        ]
+      },
+      "lifecycle": "consultant",
+      "number": "MI-FP-2603",
+      "revision": null,
+      "title": "Fee proposal: interior design for the level 3 fit-out",
+      "date": "2026-03-05",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Marlowe Interiors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.hazmat",
+      "lifecycle": "consultant",
+      "number": "SHS-Q-1187",
+      "revision": null,
+      "title": "Fee proposal: pre-refurbishment hazardous materials survey",
+      "date": "2026-03-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sentinel Hazmat Surveys Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CFH-R-26-019-01",
+      "revision": "0",
+      "title": "Fire services options report: sprinkler water supply upgrade",
+      "date": "2026-04-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Calder Fire and Hydraulic Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.structural",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "FCE-R-2207-01",
+      "revision": "0",
+      "title": "Structural assessment: sprinkler tank location and pump room slab",
+      "date": "2026-04-14",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ferrule Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.hazmat",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant",
+          "reporting"
+        ]
+      },
+      "number": "SHS-R-1187",
+      "revision": "0",
+      "title": "Pre-refurbishment hazardous materials survey",
+      "date": "2026-04-08",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sentinel Hazmat Surveys Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "report",
+      "discipline": {
+        "accept": [
+          "consultant.interior_design",
+          "consultant.architect"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "MI-R-2603-01",
+      "revision": "1",
+      "title": "Level 3 fit-out concept design report",
+      "date": "2026-05-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Marlowe Interiors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d16",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "lifecycle": "design",
+      "number": "FS-101",
+      "revision": "A",
+      "title": "Basement fire pump room: general arrangement",
+      "date": "2026-05-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Calder Fire and Hydraulic Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d17",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "lifecycle": "design",
+      "number": "FS-101",
+      "revision": "B",
+      "title": "Basement fire pump room: general arrangement",
+      "date": "2026-06-02",
+      "supersedes": "d16",
+      "unsupported": {
+        "issue_status": "for tender",
+        "originating_org": "Calder Fire and Hydraulic Engineers Pty Ltd"
+      }
+    }
+  ]
+}

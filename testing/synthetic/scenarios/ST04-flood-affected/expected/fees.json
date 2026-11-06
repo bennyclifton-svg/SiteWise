@@ -1,0 +1,295 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Marrick Hale Architects Pty Ltd",
+        "abn": "88 772 112 735",
+        "contact": "Joanna Hale",
+        "email": "joanna.hale@example.com",
+        "phone": "02 9687 3304",
+        "address": "Level 3, 41 Macquarie Street, Parramatta NSW 2150"
+      },
+      "stated_total_cents": 24000000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept design and brief",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3800000
+        },
+        {
+          "label": "DA documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 8600000
+        },
+        {
+          "label": "Design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 6200000
+        },
+        {
+          "label": "D&C tender documentation and performance brief",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 5400000
+        },
+        {
+          "label": "Option: post-novation construction documentation and services",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 16500000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 24000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Ridgeline Structural Engineers Pty Ltd",
+        "abn": "27 776 543 340",
+        "contact": "Daniel Moretti",
+        "email": "daniel.moretti@example.com",
+        "phone": "02 9893 4417",
+        "address": "Suite 7, 12 Argyle Street, Parramatta NSW 2150"
+      },
+      "stated_total_cents": 7600000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept and DA structural advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "Design development (portal frame, panels and industrial slab)",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3600000
+        },
+        {
+          "label": "D&C tender documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2600000
+        },
+        {
+          "label": "Option: post-novation construction documentation",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 5800000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 22000
+        },
+        {
+          "label": "Temporary works and panel bracing design",
+          "kind": "element",
+          "state": "excluded",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Cardinal Civil Engineering Pty Ltd",
+        "abn": "36 780 903 496",
+        "contact": "Aisha Karimi",
+        "email": "aisha.karimi@example.com",
+        "phone": "02 4721 5583",
+        "address": "Level 2, 9 Station Street, Penrith NSW 2750"
+      },
+      "stated_total_cents": 9400000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Concept civil, stormwater and OSD design with MUSIC model for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3200000
+        },
+        {
+          "label": "Flood impact assessment and floor levels for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "Design development and civil design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2800000
+        },
+        {
+          "label": "D&C tender documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2000000
+        },
+        {
+          "label": "Option: post-novation documentation and certification",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 4500000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Shalehaven Geotechnics Pty Ltd",
+        "abn": "78 393 410 749",
+        "contact": "Peter Vasquez",
+        "email": "peter.vasquez@example.com",
+        "phone": "02 4731 8862",
+        "address": "Unit 3, 25 Coombes Drive, Penrith NSW 2750"
+      },
+      "stated_total_cents": 2400000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Field investigation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1460000
+        },
+        {
+          "label": "Laboratory testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 420000
+        },
+        {
+          "label": "Geotechnical report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 520000
+        },
+        {
+          "label": "Option: four additional test pits",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 280000
+        },
+        {
+          "label": "Level 1 earthworks supervision",
+          "kind": "element",
+          "state": "excluded",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.town_planner",
+      "firm": {
+        "name": "Westbourne Planning Pty Ltd",
+        "abn": "92 136 641 903",
+        "contact": "Megan Doyle",
+        "email": "megan.doyle@example.com",
+        "phone": "02 9623 1478",
+        "address": "Suite 2, 70 Queen Street, St Marys NSW 2760"
+      },
+      "stated_total_cents": 3800000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Pre-lodgement meeting and planning advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Statement of environmental effects",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2200000
+        },
+        {
+          "label": "DA lodgement and assessment liaison",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 950000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 23000
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.traffic",
+      "firm": {
+        "name": "Lanefield Traffic Pty Ltd",
+        "abn": "17 566 987 104",
+        "contact": "Raj Patel",
+        "email": "raj.patel@example.com",
+        "phone": "02 4722 9035",
+        "address": "Level 1, 5 Lawson Street, Penrith NSW 2750"
+      },
+      "stated_total_cents": 1900000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Traffic and parking impact assessment for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1250000
+        },
+        {
+          "label": "Swept path and hardstand review in design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 450000
+        },
+        {
+          "label": "Response to council requests for information",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 200000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 21000
+        }
+      ]
+    }
+  ]
+}

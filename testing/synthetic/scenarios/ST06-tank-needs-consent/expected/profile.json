@@ -1,0 +1,435 @@
+{
+  "schema": "sitewise-synthetic-profile/1",
+  "values": {
+    "hdr.building_class": {
+      "value": "commercial",
+      "sources": [
+        "d01",
+        "d03",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "hdr.subclass": {
+      "value": "office",
+      "sources": [
+        "d01",
+        "d03",
+        "d12",
+        "d15"
+      ],
+      "read_by_design": true
+    },
+    "hdr.work_type": {
+      "value": "refurb",
+      "sources": [
+        "d01",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.planning": {
+      "value": "da",
+      "sources": [
+        "d09",
+        "d12",
+        "d21",
+        "d22"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.procurement_route": {
+      "value": "traditional",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.operational_constraints": {
+      "value": {
+        "accept": [
+          "partial_occupation",
+          "live_environment"
+        ]
+      },
+      "sources": [
+        "d01",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.access_constraints": {
+      "value": "urban_constrained",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.stakeholder_complexity": {
+      "value": "single_owner",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.quality_level": {
+      "value": "mid",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.environmental_sensitivity": {
+      "value": "standard",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.storeys": {
+      "value": 6,
+      "sources": [
+        "d01",
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.ncc_class": {
+      "value": [
+        "5",
+        "7a"
+      ],
+      "sources": [
+        "d03",
+        "d09"
+      ],
+      "read_by_design": true
+    },
+    "det.state": {
+      "value": "NSW",
+      "sources": [
+        "d01",
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building": {
+      "value": true,
+      "sources": [
+        "d03",
+        "d12",
+        "d13",
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building_year": {
+      "value": 1988,
+      "sources": [
+        "d01",
+        "d13",
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "det.rise_in_storeys": {
+      "value": 6,
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.type_of_construction": {
+      "value": "A",
+      "sources": [],
+      "read_by_design": false,
+      "not_read": "Derived only, never read; blank while rule.ncc.type-of-construction and its table are draft (reason unreviewed). Table C2D2 gives A for Class 5 and 7a at rise 6. The key keeps the true value."
+    },
+    "det.sprinklered": {
+      "value": true,
+      "sources": [
+        "d03",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "det.heritage_status": {
+      "value": "none",
+      "sources": [
+        "d02",
+        "d22"
+      ],
+      "read_by_design": true
+    },
+    "det.flood_hazard": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.potentially_contaminated_land": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.bushfire_prone_land": {
+      "value": false,
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "det.water_supply_source": {
+      "value": "reticulated",
+      "sources": [
+        "d04",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_form": {
+      "value": "as4000",
+      "sources": [
+        "d01",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_basis": {
+      "value": "lump_sum",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "proj.regulated_design": {
+      "value": "no",
+      "sources": [],
+      "read_by_design": false,
+      "stated_in": [
+        "d09"
+      ],
+      "not_read": "No profile extraction; the RFP derives no because no part is Class 2, 3 or 9c (internal/rfp/drivers.go deriveRegulatedDesign)"
+    },
+    "proj.client": {
+      "value": "Corvina Property Holdings Pty Ltd",
+      "sources": [
+        "d01",
+        "d05",
+        "d12",
+        "d22"
+      ],
+      "read_by_design": true
+    },
+    "proj.budget_stated": {
+      "value": 270000000,
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "proj.address": {
+      "value": "41 Callowhill Street, North Sydney NSW 2060",
+      "sources": [
+        "d01",
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.lga": {
+      "value": {
+        "accept": [
+          "North Sydney Council",
+          "North Sydney"
+        ]
+      },
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "proj.zone": {
+      "value": {
+        "accept": [
+          "E2 Commercial Centre",
+          "E2"
+        ]
+      },
+      "sources": [
+        "d02",
+        "d22"
+      ],
+      "read_by_design": true
+    },
+    "proj.lot": {
+      "value": "Lot 12 DP 1093476",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.basement": {
+      "value": "no",
+      "sources": [
+        "d06",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.excavation_adjoining": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.authority_asset": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.rail": {
+      "value": "no",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.transfer_structures": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.osd_existing": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.osd_required": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.staged": {
+      "value": "no",
+      "sources": [
+        "d01",
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.multi_building": {
+      "value": "no",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "flag.public_road": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.state_road": {
+      "value": "no",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.heavy_vehicles": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.sustainability_target": {
+      "value": "no",
+      "sources": [
+        "d01"
+      ],
+      "read_by_design": true
+    },
+    "flag.fire_special_hazards": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.fire_specialist_systems": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.fire_vulnerable_occupants": {
+      "value": "no",
+      "sources": [
+        "d12"
+      ],
+      "read_by_design": true
+    },
+    "flag.groundwater": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.coastal": {
+      "value": "no",
+      "sources": [
+        "d02"
+      ],
+      "read_by_design": true
+    },
+    "flag.panel": {
+      "value": "no",
+      "sources": [
+        "d09"
+      ],
+      "read_by_design": true
+    },
+    "flag.cl46": {
+      "value": "no",
+      "sources": [
+        "d09"
+      ],
+      "read_by_design": true
+    }
+  },
+  "conflicts": [],
+  "derived": [
+    {
+      "key": "det.ncc_class",
+      "value": [
+        "5",
+        "7a"
+      ]
+    },
+    {
+      "key": "det.existing_building",
+      "value": true
+    },
+    {
+      "key": "det.type_of_construction",
+      "value": "A"
+    }
+  ]
+}

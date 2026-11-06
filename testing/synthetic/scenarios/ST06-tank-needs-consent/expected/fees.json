@@ -1,0 +1,415 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.fire_services",
+      "firm": {
+        "name": "Calder Fire and Hydraulic Engineers Pty Ltd",
+        "abn": "25 166 774 158",
+        "contact": "Owen Calder",
+        "email": "owen.calder@example.com",
+        "phone": "02 9955 3140",
+        "address": "Level 2, 18 Berry Lane, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 10100000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Inception and records review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Stage 2 Investigation, flow and pressure test and Sydney Water statement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1200000
+        },
+        {
+          "label": "Stage 3 Options report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 950000
+        },
+        {
+          "label": "Stage 4 Design, hydraulic calculations and documentation, including level 3 sprinkler, detection and EWIS alterations",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3800000
+        },
+        {
+          "label": "Stage 5 Design certification and competent fire safety practitioner endorsement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 600000
+        },
+        {
+          "label": "Stage 6 Tender documentation and tender assessment",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 500000
+        },
+        {
+          "label": "Stage 7 Construction-phase reviews and hold-point inspections",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1600000
+        },
+        {
+          "label": "Stage 8 Commissioning witness and handover",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 24000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Ferrule Consulting Engineers Pty Ltd",
+        "abn": "14 278 143 045",
+        "contact": "Priya Raman",
+        "email": "priya.raman@example.com",
+        "phone": "02 9922 6071",
+        "address": "Suite 5, 77 Mount Street, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 2400000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Existing slab assessment, record drawing review and slab scanning",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 750000
+        },
+        {
+          "label": "Tank plinth and slab strengthening design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 900000
+        },
+        {
+          "label": "Core hole and penetration review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 250000
+        },
+        {
+          "label": "Structural design certification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        },
+        {
+          "label": "Construction inspections of plinths and strengthening before concrete",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 350000
+        },
+        {
+          "label": "Additional inspection, each",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 48000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.electrical",
+      "firm": {
+        "name": "Kilnworth Electrical Engineers Pty Ltd",
+        "abn": "57 072 996 136",
+        "contact": "Daniel Kwon",
+        "email": "daniel.kwon@example.com",
+        "phone": "02 9460 2285",
+        "address": "Level 7, 1 Chandos Street, St Leonards NSW 2065"
+      },
+      "stated_total_cents": 3000000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Maximum demand and main switchboard capacity check for the fire pump",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 400000
+        },
+        {
+          "label": "Design and documentation of the fire pump supply and fire-rated submain, and level 3 lighting, power and data",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Tender documentation and assessment",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 200000
+        },
+        {
+          "label": "Construction-phase inspections and certification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 600000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 19000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.mechanical",
+      "firm": {
+        "name": "Plenum Mechanical Engineers Pty Ltd",
+        "abn": "44 756 990 491",
+        "contact": "Hamish Doyle",
+        "email": "hamish.doyle@example.com",
+        "phone": "02 9437 8812",
+        "address": "Level 3, 40 Herbert Street, Artarmon NSW 2064"
+      },
+      "stated_total_cents": 2400000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Pump room ventilation and diesel engine exhaust design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 850000
+        },
+        {
+          "label": "Level 3 air distribution and comms room cooling design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 950000
+        },
+        {
+          "label": "Tender documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        },
+        {
+          "label": "Construction-phase reviews and commissioning witness",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 450000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 21000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.certifier",
+      "firm": {
+        "name": "Lintel Building Certifiers Pty Ltd",
+        "abn": "78 801 661 959",
+        "contact": "Grace Ellison",
+        "email": "grace.ellison@example.com",
+        "phone": "02 9929 0457",
+        "address": "Suite 12, 3 Little Walker Lane, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 1850000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Construction certificate assessment and determination, including the level 3 fit-out and the fire safety schedule",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1050000
+        },
+        {
+          "label": "Principal certifier: notice of commencement and inspections",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 500000
+        },
+        {
+          "label": "Final inspection and occupation certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        },
+        {
+          "label": "Planning Portal and long service levy charges",
+          "kind": "reimbursable",
+          "state": "excluded",
+          "amount_cents": null
+        },
+        {
+          "label": "DA fees",
+          "kind": "reimbursable",
+          "state": "excluded",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.interior_design",
+      "firm": {
+        "name": "Marlowe Interiors Pty Ltd",
+        "abn": "51 851 452 328",
+        "contact": "Isla Marlowe",
+        "email": "isla.marlowe@example.com",
+        "phone": "02 9954 1360",
+        "address": "Level 1, 9 Ridge Lane, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 6800000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Brief and test fit",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 900000
+        },
+        {
+          "label": "Concept design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1200000
+        },
+        {
+          "label": "Design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "Documentation for certification and tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 400000
+        },
+        {
+          "label": "Contract administration and site queries",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1100000
+        }
+      ]
+    },
+    {
+      "doc": "d11",
+      "kind": "fee_proposal",
+      "discipline": "consultant.hazmat",
+      "firm": {
+        "name": "Sentinel Hazmat Surveys Pty Ltd",
+        "abn": "30 200 480 273",
+        "contact": "Tom Reyes",
+        "email": "tom.reyes@example.com",
+        "phone": "02 8814 2270",
+        "address": "Unit 4, 22 Frederick Street, Artarmon NSW 2064"
+      },
+      "stated_total_cents": 450000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Pre-refurbishment hazardous materials survey of the pump room, the adjoining store, the risers and level 3",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 380000
+        },
+        {
+          "label": "Laboratory analysis of samples",
+          "kind": "reimbursable",
+          "state": "included",
+          "amount_cents": null
+        },
+        {
+          "label": "Asbestos register update and report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 70000
+        }
+      ]
+    },
+    {
+      "doc": "d21",
+      "kind": "fee_proposal",
+      "discipline": "consultant.town_planner",
+      "firm": {
+        "name": "Quillon Planning Pty Ltd",
+        "abn": "99 858 710 722",
+        "contact": "Leah Moretti",
+        "email": "leah.moretti@example.com",
+        "phone": "02 9957 4402",
+        "address": "Level 4, 100 Walker Street, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 1550000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Preliminary advice and pre-lodgement meeting notes",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 250000
+        },
+        {
+          "label": "Statement of environmental effects for the tank and screening, with a car parking assessment",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 750000
+        },
+        {
+          "label": "Lodgement on the Planning Portal",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 100000
+        },
+        {
+          "label": "Assessment and responses to council requests",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 350000
+        },
+        {
+          "label": "Review of the determination and conditions",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 100000
+        }
+      ]
+    }
+  ]
+}

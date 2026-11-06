@@ -1,0 +1,294 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": {
+        "accept": [
+          "consultant.project_manager",
+          "none"
+        ]
+      },
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Project brief: Avenor head office fit-out, Level 14 Wenlock Place",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Larchmont Project Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-01147",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "North Sydney Council"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": {
+        "accept": [
+          "report",
+          "specification",
+          "design_brief"
+        ]
+      },
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "brief",
+          "design",
+          "project"
+        ]
+      },
+      "number": "WP-FOG-2026",
+      "revision": null,
+      "title": "Base building information and tenant fit-out guide",
+      "date": "2026-02-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Copeland Asset Management Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": {
+        "accept": [
+          "consultant.project_manager",
+          "none"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Access date and program",
+      "date": "2026-02-24",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Larchmont Project Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.interior_design",
+      "lifecycle": "consultant",
+      "number": "CHI-FP-2603",
+      "revision": null,
+      "title": "Fee proposal: interior design services",
+      "date": "2026-03-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Corrigan Hale Interiors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": {
+        "accept": [
+          "consultant.services",
+          "consultant.mechanical"
+        ]
+      },
+      "lifecycle": "consultant",
+      "number": "MBS-P-2611",
+      "revision": null,
+      "title": "Fee proposal: building services engineering",
+      "date": "2026-03-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Meridale Building Services Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.bca",
+      "lifecycle": "consultant",
+      "number": "TBR-26-044",
+      "revision": null,
+      "title": "Fee proposal: BCA consultancy",
+      "date": "2026-03-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tallowood Building Regulations Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.access",
+      "lifecycle": "consultant",
+      "number": "CAC-0318",
+      "revision": null,
+      "title": "Fee proposal: access consultancy",
+      "date": "2026-03-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Clearpath Access Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.certifier",
+      "lifecycle": "consultant",
+      "number": "HGC-26-0219",
+      "revision": null,
+      "title": "Fee proposal: certification services",
+      "date": "2026-03-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Harbourgate Certifiers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.quantity_surveyor",
+      "lifecycle": "consultant",
+      "number": "BLC-2612",
+      "revision": null,
+      "title": "Fee proposal: quantity surveying",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Baxter Lane Cost Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.bca",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "authorities",
+          "consultant"
+        ]
+      },
+      "number": "TBR-R-26044-01",
+      "revision": null,
+      "title": "BCA assessment report",
+      "date": "2026-04-22",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Tallowood Building Regulations Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.access",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "authorities",
+          "consultant"
+        ]
+      },
+      "number": "CAC-R-0318",
+      "revision": null,
+      "title": "Access report",
+      "date": "2026-04-24",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Clearpath Access Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.interior_design",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CHI-R-2603-01",
+      "revision": null,
+      "title": "Concept design report",
+      "date": "2026-04-15",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Corrigan Hale Interiors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.interior_design",
+      "lifecycle": "design",
+      "number": "ID-101",
+      "revision": "A",
+      "title": "General arrangement plan - Level 14",
+      "date": "2026-04-29",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for landlord approval",
+        "originating_org": "Corrigan Hale Interiors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.interior_design",
+      "lifecycle": "design",
+      "number": "ID-101",
+      "revision": "B",
+      "title": "General arrangement plan - Level 14",
+      "date": "2026-05-13",
+      "supersedes": "d14",
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Corrigan Hale Interiors Pty Ltd"
+      }
+    }
+  ]
+}

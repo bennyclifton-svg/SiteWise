@@ -805,7 +805,7 @@ triggers:
   - id: traffic-generating-development
     label: Traffic-generating development referred to TfNSW
     evidence: ["The development is traffic generating development under Schedule 3 of the Transport and Infrastructure SEPP and is referred to TfNSW (verified: false)", "SIDRA modelling of the Mamre Road intersection", "intersection counts at the estate entry"]
-    negation: ["The development is below the Schedule 3 thresholds, so referral to TfNSW is not required"]
+    negation: ["The development is below the Schedule 3 thresholds, so it will not be referred to TfNSW"]
     profile: [flag.tfnsw_referral, flag.intersection_modelling]
     adds:
       cost_plan: ["Traffic surveys and intersection modelling"]
@@ -977,7 +977,7 @@ gaps:
   - {area: cost_plan, what: "No HPC, long service levy, road-reserve fees, preliminaries, D&C design or provisional sum lines; hardstand, docks and the substation roll into generic elements", evidence: "knowledge/costs/starter_lines.yaml; knowledge/costs/elements.yaml"}
   - {area: cost_plan, what: "industrial_warehouse budget split is low confidence and unverified", evidence: "knowledge/costs/budget_splits.yaml industrial_warehouse"}
   - {area: profile, what: "No key for perimeter vehicular access, compartment volume or design vehicle; storage height and the warehouse scale fields feed no generator", evidence: "knowledge/determinants.yaml storage_height; knowledge/profile/taxonomy.yaml warehouse scale_fields"}
-  - {area: profile, what: "Keyword traps: 'floodlights' (flood_hazard), 'bore logs' (water_supply_source), 'excavated to a depth' (basement), 'building a' (multi_building), 'storage ... fire' (fire_special_hazards), 'road reserve' (public_road), 'contaminants' (contamination)", evidence: "knowledge/determinants.yaml triggers; knowledge/profile/flag_readings.yaml"}
+  - {area: profile, what: "Keyword traps: 'floodlights' (flood_hazard), 'bore logs' (water_supply_source), 'excavated to a depth' (basement), 'building a' (multi_building), 'storage ... fire' (fire_special_hazards), 'road reserve' (public_road), 'contamination' or 'contaminated' in a stormwater sentence (contamination; 'contaminants' does not match contaminat)", evidence: "knowledge/determinants.yaml triggers; knowledge/profile/flag_readings.yaml"}
   - {area: harness, what: "Zero-delta triggers: tilt-up-on-site and sloping-site-retaining change nothing the app produces today (no settable key; structure.precast is already in scope with no fragment; retaining walls roll into Site works with no fragment); the harness expects no change", evidence: "knowledge/program/fragments.yaml; knowledge/costs/elements.yaml code 01"}
   - {area: program, what: "No public holidays or industry Christmas shutdown", evidence: "knowledge/program/calendars.yaml calendars: []"}
 

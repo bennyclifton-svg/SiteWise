@@ -1,0 +1,17 @@
+T06 Sprinkler pump and tank upgrade, with fit-out (tank-needs-consent)
+  Procurement [scored]: matched 9/11, missed 2 (0 built in, 2 known gaps), extra 0, false positives 3
+    false positives: consultant.architect; consultant.hydraulic; consultant.access
+  Cost plan [scored]: matched 17/37, missed 20 (2 built in, 18 known gaps), extra 1, false positives 4, fabricated amounts 0 (from documents 3, typed 0)
+    missed built in: Interiors and finishes; Communications and security
+    false positives: Architect; Hydraulic; BCA; Access
+  Program [scored]: skeleton sk.refurb-traditional-da (expected sk.refurb-traditional-cdc), matched 26/86, missed 60 (25 built in, 35 known gaps), extra 1, false positives 0, wrong stage 0; links holds 3, violated 0, unknown 12, unscored 88; orphans 1, cycles 0
+    missed built in: Isolate services and protect adjacent areas; Soft-strip partitions, ceilings and services; Make good retained structure and services; Alter and protect retained structure; Seal service penetrations; Hold point: a location-based inspection record for concealed fire stopping (+19 more)
+  RFPs: found 8/8 (0 built-in missing), not expected present 0, extra 4; expect ok 99, new failures 14, known differences 17, fixed 0, awaiting user input 62; must_include missing 18 (unknown 0); must_not_include present 9 (known 2)
+    consultant.fire_services: position.existing; blocking.details; has 'Advisory-only report'
+    consultant.structural: blocking.details; missing 'Tank and pump plinth design; slab strengthening if the assessment needs it'; missing 'Core hole and penetration review, with scanning before coring'; has 'Construction certificate certification'
+    consultant.electrical: position.existing; blocking.details; has 'Utility (DNSP) application'; has 'Fire detection and EWIS design (fire services engineer)'; has 'Standby generation, PV or EV design'
+    consultant.mechanical: position.existing; blocking.details; has 'Smoke control design'; has 'Commercial kitchen exhaust'; has 'Planning submission'
+    consultant.certifier: stage.a2_planning; stage.b1_preliminary; stage.b2_construction_approval; stage.b3_construction; stage.b4_occupation; blocking.details (+6 more)
+    consultant.interior_design: missing 'Tenant brief and test fit for level 3'; missing 'Concept and design development to the landlord's fit-out guide'; missing 'CDC drawings and specification under the Codes SEPP code for internal alterations to commercial buildings (historically Part 5 Commercial and Industrial Alterations Code; now possibly Part 5A Industrial and Business Buildings Code; verified: false)'; missing 'Coordination with the fire services engineer on head layout, ceilings and the new supply'; missing 'Tender documentation and tender assessment for the fit-out builder'; missing 'Construction-phase site visits, RFIs and shop drawing review' (+1 more)
+    consultant.hazmat: missing 'Pre-refurbishment hazardous materials survey: pump room, store, risers and level 3 ceiling and floor'; missing 'Sampling and NATA-accredited laboratory analysis'; missing 'Update of the asbestos register and management plan (WHS Regulation 2025 (NSW; clause numbers verified: false))'; missing 'Removal scope if asbestos is found, then air monitoring and clearance inspection'
+    consultant.town_planner: missing 'Car parking assessment'

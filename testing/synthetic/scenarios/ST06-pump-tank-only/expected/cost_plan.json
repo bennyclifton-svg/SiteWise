@@ -1,0 +1,7 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T06-sprinkler-pump-tank-upgrade/shape.yaml",
+  "triggers": [
+    "pump-tank-only"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "CHI-INV-0418",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "41 727 862 569",
+      "supplier_discipline": "consultant.interior_design",
+      "ex_gst_cents": 1400000,
+      "gst_cents": 140000,
+      "total_cents": 1540000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Brief and test fit (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "2291",
+      "invoice_date": "2026-05-29",
+      "issuer_abn": "78 303 243 509",
+      "supplier_discipline": "consultant.services",
+      "ex_gst_cents": 600000,
+      "gst_cents": 60000,
+      "total_cents": 690000,
+      "flags": [
+        "arithmetic"
+      ],
+      "unsupported": {
+        "claim_stage": "Investigation of base-building services and capacity (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "TBR-INV-1187",
+      "invoice_date": "2026-05-15",
+      "issuer_abn": "41 819 041 186",
+      "supplier_discipline": "consultant.bca",
+      "ex_gst_cents": 350000,
+      "gst_cents": 35000,
+      "total_cents": 385000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Inception and design advice (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

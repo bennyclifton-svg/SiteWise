@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "MHA-INV-0311",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "88 772 112 735",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 3800000,
+      "gst_cents": 380000,
+      "total_cents": 4180000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Concept design and brief (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "1187",
+      "invoice_date": "2026-05-29",
+      "issuer_abn": "92 136 641 903",
+      "supplier_discipline": "consultant.town_planner",
+      "ex_gst_cents": 1750000,
+      "gst_cents": 175000,
+      "total_cents": 1925000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Pre-lodgement advice (100%) and SEE (50%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d19",
+      "kind": "invoice",
+      "number": "SHG-INV-0507",
+      "invoice_date": "2026-05-15",
+      "issuer_abn": "78 393 410 749",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 1880000,
+      "gst_cents": 282000,
+      "total_cents": 2162000,
+      "flags": [
+        "gst_rate"
+      ],
+      "unsupported": {
+        "claim_stage": "Field investigation and laboratory testing (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

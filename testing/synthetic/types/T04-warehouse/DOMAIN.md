@@ -479,7 +479,7 @@ in `shape.yaml`.
 4. **`tilt-up-on-site`.** "Tilt-up panels cast on the slab". Denied by "precast panels manufactured off
    site" or "metal-clad walls". Reverses the slab and wall sequence and adds casting and bracing.
 5. **`traffic-generating-development`.** "Traffic generating development under Schedule 3", "referred to
-   TfNSW", "SIDRA". Denied by "below the Schedule 3 thresholds". Adds surveys and intersection modelling
+   TfNSW", "SIDRA". Denied by "below the Schedule 3 thresholds, so it will not be referred to TfNSW" (the shape negation was reworded on 7 November 2026 so the tfnsw_referral trigger `referred to tfnsw` fires; ST04 review). Adds surveys and intersection modelling
    and the TfNSW referral.
 6. **`classified-road-frontage`.** "Fronts the Great Western Highway, a classified road", "left-in
    left-out". Denied by "access from a local industrial road". Adds public road works, a road safety audit
@@ -530,8 +530,9 @@ All regex triggers are case-insensitive [K: internal/knowledge/profile.go compil
    vehicle crossings".
 7. **"TfNSW" and "traffic generating development"** raise `state_road` and `tfnsw_referral` even in a
    denial ("referral to TfNSW is not required").
-8. **"Contaminants".** `potentially_contaminated_land` fires on `contaminat`, which every stormwater
-   quality report uses for "hydrocarbon contaminants" [K: determinants.yaml potentially_contaminated_land].
+8. **"Contamination" in a stormwater sentence.** `potentially_contaminated_land` fires on the literal `contaminat`, so
+   "hydrocarbon contamination" or "contaminated runoff" in a stormwater quality report raises it; "contaminants" does not
+   match (contamina-n-ts) [K: determinants.yaml potentially_contaminated_land]. Corrected 7 November 2026 (ST04 review).
 9. **"Aboriginal heritage"** raises the `heritage_status` question (`heritage`), whose options are
    built heritage only [K: determinants.yaml heritage_status].
 10. **"Public exhibition"** in a notification letter sets `community` [K: flag_readings.yaml community];

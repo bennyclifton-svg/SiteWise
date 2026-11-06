@@ -1,0 +1,26 @@
+T04 Industrial warehouse (flood-affected)
+  Procurement [scored]: matched 13/20, missed 7 (0 built in, 7 known gaps), extra 0, false positives 1
+    false positives: consultant.mechanical
+  Cost plan [scored]: matched 33/51, missed 18 (0 built in, 18 known gaps), extra 0, false positives 2, fabricated amounts 0 (from documents 11, typed 0)
+    false positives: Passive fire protection; Mechanical
+  Program [scored]: skeleton sk.new-dc-da (match), matched 51/97, missed 46 (0 built in, 46 known gaps), extra 1, false positives 0, wrong stage 1; links holds 0, violated 0, unknown 52, unscored 79; orphans 1, cycles 0
+  RFPs: found 13/19 (0 built-in missing), not expected present 0, extra 1; expect ok 294, new failures 12, known differences 53, fixed 0, awaiting user input 124; must_include missing 19 (unknown 0); must_not_include present 24 (known 3)
+    consultant.architect: missing 'Concept and schematic design'; missing 'DA planning approval documentation'; missing 'Office interiors and finishes'
+    consultant.structural: missing 'Portal frame and precast panel design with connections'; missing 'Pad and strip footings'; missing 'Industrial slab for racking and forklift loads with joint and flatness specification'
+    consultant.civil: element.public_road; position.clash_check; position.design_criteria; position.water_strategy; position.quality_audit; position.trunk_drainage (+11 more)
+    consultant.town_planner: missing 'Preliminary advice on the LEP and DCP'; missing 'Assessment and responses to council requests'; has 'Panel attendance'
+    consultant.traffic: position.road_safety_audit; has 'Road safety audit'
+    consultant.bca: missing 'A2 DA BCA report'; missing 'Large isolated building strategy and performance solution schedule'; has 'Package B statutory functions'; has 'Mixed-use classification map'
+    consultant.certifier: missing 'B2 construction certificate assessment (staged: early works, building)'; missing 'Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)'; missing 'Occupation certificate'; has 'Staged occupation'; has 'Residential BASIX evidence'
+    consultant.fire_services: missing 'Pressure and flow enquiry and fire-water strategy'; has 'Existing system investigation'; has 'Upgrade of existing systems'
+    consultant.fire_engineer: missing
+    consultant.electrical: has 'Fire detection design'; has 'Existing services investigation'
+    consultant.hydraulic: has 'Trade waste'; has 'Gas'; has 'Onsite sewage treatment'; has 'Site stormwater and detention'
+    consultant.access: has 'Housing targets'
+    consultant.geotechnical: missing 'Boreholes and test pits with CBR, reactivity and salinity testing'; has 'Acid sulfate soils'; has 'Asset exposure'; has 'Groundwater monitoring wells'
+    consultant.surveyor: missing 'Detail and contour survey on AHD'; has 'Subdivision or strata titling'; has 'Interior scan'; has 'Movement monitoring'
+    consultant.landscape: missing
+    consultant.quantity_surveyor: missing
+    consultant.waste: missing
+    consultant.acoustic: missing
+    consultant.esd: missing

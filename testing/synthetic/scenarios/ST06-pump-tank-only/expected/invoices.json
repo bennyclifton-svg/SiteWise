@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "CFH-INV-0412",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "25 166 774 158",
+      "supplier_discipline": "consultant.fire_services",
+      "ex_gst_cents": 1850000,
+      "gst_cents": 185000,
+      "total_cents": 2035000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stages 1 and 2 (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d19",
+      "kind": "invoice",
+      "number": "FCE-2611",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "14 278 143 045",
+      "supplier_discipline": "consultant.structural",
+      "ex_gst_cents": 750000,
+      "gst_cents": 37500,
+      "total_cents": 787500,
+      "flags": [
+        "gst_rate"
+      ],
+      "unsupported": {
+        "claim_stage": "Existing slab assessment, record drawing review and slab scanning (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d20",
+      "kind": "invoice",
+      "number": "SHS-INV-5530",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "30 200 480 273",
+      "supplier_discipline": "consultant.hazmat",
+      "ex_gst_cents": 260000,
+      "gst_cents": 26000,
+      "total_cents": 286000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Pre-refurbishment hazardous materials survey (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,2211 @@
+{
+  "schema": "sitewise-synthetic-field-score/1",
+  "scenario": "ST06-pump-tank-only",
+  "register": [
+    {
+      "doc": "d01",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "design_brief",
+      "app": "design_brief",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.96,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "none",
+      "app": "none",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": "brief",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.91,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "CPH-CS41-B01",
+      "app": "CPH-CS41-B01",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Owner's brief: sprinkler water supply upgrade",
+      "app": "Owner's brief: sprinkler water supply upgrade",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-02-09",
+      "app": "9 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "kind",
+      "expected": "certificate",
+      "app": "certificate",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "discipline",
+      "expected": "none",
+      "app": "none",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "lifecycle",
+      "expected": "authorities",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.97,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "number",
+      "expected": "PC-2026-0815",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "title",
+      "expected": "Planning Certificate",
+      "app": "Planning Certificate",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "date",
+      "expected": "2026-02-12",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d03",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": {
+        "accept": [
+          "certificate",
+          "report"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.63,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "none",
+      "app": "none",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.98,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "authorities",
+          "project"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.87,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "CS41-AFSS-2025",
+      "app": "CS41-AFSS-2025",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Annual fire safety statement and fire safety schedule",
+      "app": "Annual fire safety statement and fire safety schedule",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-01-20",
+      "app": "20 January 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": {
+        "accept": [
+          "certificate",
+          "correspondence",
+          "report"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.51,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "none",
+      "app": "none",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.9,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": "authorities",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.85,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "SW-SAPF-2026-118804",
+      "app": "SW-SAPF-2026-118804",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Statement of available pressure and flow",
+      "app": "Statement of available pressure and flow",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-02-02",
+      "app": "2 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "app": "consultant.hydraulic",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.68,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "CFH-FP-26-019",
+      "app": "CFH-FP-26-019",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Fee proposal: hydraulic and fire services engineering",
+      "app": "Fee proposal: hydraulic and fire services engineering",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-02-23",
+      "app": "23 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "consultant.structural",
+      "app": "consultant.structural",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "FCE-Q-2207",
+      "app": "FCE-Q-2207",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Fee proposal: structural engineering for the fire water tank and pump room",
+      "app": "Fee proposal: structural engineering for the fire water tank and pump room",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-02-25",
+      "app": "25 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.electrical",
+      "app": "consultant.electrical",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.98,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "number",
+      "expected": "KEE-P-0342",
+      "app": "KEE-P-0342",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: electrical engineering services",
+      "app": "Fee proposal: electrical engineering services",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-02-26",
+      "app": "26 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "discipline",
+      "expected": "consultant.mechanical",
+      "app": "consultant.mechanical",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "number",
+      "expected": "PME-26-031",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "title",
+      "expected": "Fee proposal: mechanical engineering services",
+      "app": "Fee proposal: mechanical engineering services",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "messy",
+      "field": "date",
+      "expected": "2026-02-27",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d09",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.certifier",
+      "app": "consultant.certifier",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "number",
+      "expected": "LBC-26-0144",
+      "app": "LBC-26-0144",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: certification services",
+      "app": "Fee proposal: certification services",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-04",
+      "app": "4 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.hazmat",
+      "app": "consultant.hazmat",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.46,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "number",
+      "expected": "SHS-Q-1187",
+      "app": "SHS-Q-1187",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: pre-refurbishment hazardous materials survey",
+      "app": "Fee proposal: pre-refurbishment hazardous materials survey",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-06",
+      "app": "6 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "report",
+      "app": "report",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.42,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.38,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "CFH-R-26-019-01",
+      "app": "CFH-R-26-019-01",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": "0",
+      "app": "0",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Fire services options report: sprinkler water supply upgrade",
+      "app": "Fire services options report: sprinkler water supply upgrade",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-04-20",
+      "app": "20 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "report",
+      "app": "report",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.structural",
+      "app": "consultant.structural",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.54,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "number",
+      "expected": "FCE-R-2207-01",
+      "app": "FCE-R-2207-01",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "revision",
+      "expected": "0",
+      "app": "0",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Structural assessment: sprinkler tank location and pump room slab",
+      "app": "Structural assessment: sprinkler tank location and pump room slab",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-04-14",
+      "app": "14 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "report",
+      "app": "report",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.hazmat",
+      "app": "consultant.hazmat",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "design",
+          "consultant",
+          "reporting"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.44,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "number",
+      "expected": "SHS-R-1187",
+      "app": "SHS-R-1187",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "revision",
+      "expected": "0",
+      "app": "0",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Pre-refurbishment hazardous materials survey",
+      "app": "Pre-refurbishment hazardous materials survey",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-04-08",
+      "app": "8 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "drawing",
+      "app": "drawing",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "app": "consultant.fire_engineer",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.81,
+      "outcome": "wrong"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "design",
+      "app": "design",
+      "band": "amber",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "number",
+      "expected": "FS-101",
+      "app": "FS-101",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "revision",
+      "expected": "A",
+      "app": "A",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Basement fire pump room: general arrangement",
+      "app": "Basement fire pump room: general arrangement",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-05-11",
+      "app": "11 May 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "drawing",
+      "app": "drawing",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.fire_services",
+          "consultant.hydraulic"
+        ]
+      },
+      "app": "consultant.fire_engineer",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.81,
+      "outcome": "wrong"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "design",
+      "app": "design",
+      "band": "amber",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "number",
+      "expected": "FS-101",
+      "app": "FS-101",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "revision",
+      "expected": "B",
+      "app": "B",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Basement fire pump room: general arrangement",
+      "app": "Basement fire pump room: general arrangement",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-06-02",
+      "app": "2 June 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "supersedes",
+      "expected": "d16",
+      "app": null,
+      "outcome": "missed"
+    }
+  ],
+  "profile": [
+    {
+      "key": "hdr.building_class",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.subclass",
+      "expected": "office",
+      "app": "office",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.work_type",
+      "expected": "refurb",
+      "app": "refurb",
+      "band": "amber",
+      "alternatives": [
+        "extend"
+      ],
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.planning",
+      "expected": "cdc",
+      "app": "cdc",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.procurement_route",
+      "expected": "traditional",
+      "app": "traditional",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.operational_constraints",
+      "expected": {
+        "accept": [
+          "partial_occupation",
+          "live_environment"
+        ]
+      },
+      "app": "live_environment",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.access_constraints",
+      "expected": "urban_constrained",
+      "app": "restricted_hours",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "wrong"
+    },
+    {
+      "key": "hdr.cond.stakeholder_complexity",
+      "expected": "single_owner",
+      "app": "single_owner",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.quality_level",
+      "expected": "mid",
+      "outcome": "not_captured"
+    },
+    {
+      "key": "hdr.cond.environmental_sensitivity",
+      "expected": "standard",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "hdr.scale.storeys",
+      "expected": 6,
+      "app": "6",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.ncc_class",
+      "expected": [
+        "5",
+        "7a"
+      ],
+      "app": "5,7a",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.state",
+      "expected": "NSW",
+      "app": "NSW",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.existing_building",
+      "expected": true,
+      "app": "stated_true",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.existing_building_year",
+      "expected": 1988,
+      "app": "1988",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.rise_in_storeys",
+      "expected": 6,
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "det.type_of_construction",
+      "expected": "A",
+      "app": "",
+      "band": "blank",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "det.sprinklered",
+      "expected": true,
+      "app": "stated_true",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.heritage_status",
+      "expected": "none",
+      "app": "none",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.flood_hazard",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.potentially_contaminated_land",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.bushfire_prone_land",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.water_supply_source",
+      "expected": "reticulated",
+      "app": "reticulated",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "fact.contract_form",
+      "expected": "as4000",
+      "app": "as4000",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "fact.contract_basis",
+      "expected": "lump_sum",
+      "app": "lump_sum",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.regulated_design",
+      "expected": "no",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "proj.client",
+      "expected": "Corvina Property Holdings Pty Ltd",
+      "app": "",
+      "band": "red",
+      "alternatives": [
+        "Corvina Property Holdings Pty Ltd",
+        "Megan Holt, Asset Manager, Corvina Property Holdings Pty Ltd"
+      ],
+      "read_by_design": true,
+      "outcome": "conflict_true"
+    },
+    {
+      "key": "proj.budget_stated",
+      "expected": 120000000,
+      "app": "$1,200,000 excluding GST",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.address",
+      "expected": "41 Callowhill Street, North Sydney NSW 2060",
+      "app": "41 Callowhill Street, North Sydney NSW 2060",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.lga",
+      "expected": {
+        "accept": [
+          "North Sydney Council",
+          "North Sydney"
+        ]
+      },
+      "app": "North Sydney",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.zone",
+      "expected": {
+        "accept": [
+          "E2 Commercial Centre",
+          "E2"
+        ]
+      },
+      "app": "E2 Commercial Centre",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.lot",
+      "expected": "Lot 12 DP 1093476",
+      "app": "Lot 12 DP 1093476",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.basement",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.excavation_adjoining",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.authority_asset",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.rail",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.transfer_structures",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.osd_existing",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.osd_required",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.staged",
+      "expected": "no",
+      "app": "",
+      "band": "red",
+      "alternatives": [
+        "no",
+        "yes"
+      ],
+      "read_by_design": true,
+      "outcome": "conflict_true"
+    },
+    {
+      "key": "flag.multi_building",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.public_road",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.state_road",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.heavy_vehicles",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.sustainability_target",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.fire_special_hazards",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.fire_specialist_systems",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.fire_vulnerable_occupants",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.groundwater",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.coastal",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.panel",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.cl46",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    }
+  ],
+  "invoices": [
+    {
+      "doc": "d18",
+      "field": "kind",
+      "expected": "invoice",
+      "app": "invoice",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "number",
+      "expected": "CFH-INV-0412",
+      "app": "CFH-INV-0412",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "invoice_date",
+      "expected": "2026-04-30",
+      "app": "2026-04-30",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "issuer_abn",
+      "expected": "25 166 774 158",
+      "app": "25166774158",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "ex_gst_cents",
+      "expected": 1850000,
+      "app": "1850000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "gst_cents",
+      "expected": 185000,
+      "app": "185000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "total_cents",
+      "expected": 2035000,
+      "app": "2035000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "supplier",
+      "expected": "consultant.fire_services",
+      "app": "Fire Services",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "flag.period",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "kind",
+      "expected": "invoice",
+      "app": "invoice",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "number",
+      "expected": "FCE-2611",
+      "app": "FCE-2611",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "invoice_date",
+      "expected": "2026-04-30",
+      "app": "2026-04-30",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "issuer_abn",
+      "expected": "14 278 143 045",
+      "app": "14278143045",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "ex_gst_cents",
+      "expected": 750000,
+      "app": "750000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "gst_cents",
+      "expected": 37500,
+      "app": "37500",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "total_cents",
+      "expected": 787500,
+      "app": "787500",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "supplier",
+      "expected": "consultant.structural",
+      "app": "Structural",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "flag.gst_rate",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "flag.period",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d19",
+      "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "kind",
+      "expected": "invoice",
+      "app": "invoice",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "number",
+      "expected": "SHS-INV-5530",
+      "app": "SHS-INV-5530",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "invoice_date",
+      "expected": "2026-04-30",
+      "app": "2026-04-30",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "issuer_abn",
+      "expected": "30 200 480 273",
+      "app": "30200480273",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "ex_gst_cents",
+      "expected": 260000,
+      "app": "260000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "gst_cents",
+      "expected": 26000,
+      "app": "26000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "total_cents",
+      "expected": 286000,
+      "app": "286000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "supplier",
+      "expected": "consultant.hazmat",
+      "app": "Hazmat",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "flag.period",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d20",
+      "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    }
+  ],
+  "fees": [
+    {
+      "doc": "d05",
+      "field": "stated_total_cents",
+      "expected": 9000000,
+      "app": "90000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "field": "firm_name",
+      "expected": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "app": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "field": "stated_total_cents",
+      "expected": 2400000,
+      "app": "24000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "field": "firm_name",
+      "expected": "Ferrule Consulting Engineers Pty Ltd",
+      "app": "Ferrule Consulting Engineers Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "field": "stated_total_cents",
+      "expected": 1700000,
+      "app": "17000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "field": "firm_name",
+      "expected": "Kilnworth Electrical Engineers Pty Ltd",
+      "app": "Kilnworth Electrical Engineers Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "field": "stated_total_cents",
+      "expected": 1200000,
+      "app": "12000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "field": "firm_name",
+      "expected": "Plenum Mechanical Engineers Pty Ltd",
+      "app": "PLENUM MECHANICAL ENGINEERS PTY LTD",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "field": "stated_total_cents",
+      "expected": 1300000,
+      "app": "13000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "field": "firm_name",
+      "expected": "Lintel Building Certifiers Pty Ltd",
+      "app": "Lintel Building Certifiers Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "field": "stated_total_cents",
+      "expected": 330000,
+      "app": "3300.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "field": "firm_name",
+      "expected": "Sentinel Hazmat Surveys Pty Ltd",
+      "app": "Sentinel Hazmat Surveys Pty Ltd",
+      "outcome": "correct"
+    }
+  ],
+  "summary": {
+    "register_by_field": {
+      "status": {
+        "correct": 15
+      },
+      "kind": {
+        "correct": 13,
+        "missed": 2
+      },
+      "discipline": {
+        "correct": 12,
+        "missed": 1,
+        "wrong": 2
+      },
+      "lifecycle": {
+        "missed": 8,
+        "correct": 7
+      },
+      "number": {
+        "correct": 13,
+        "missed": 2
+      },
+      "revision": {
+        "correct_blank": 10,
+        "correct": 5
+      },
+      "title": {
+        "correct": 15
+      },
+      "date": {
+        "correct": 13,
+        "missed": 2
+      },
+      "supersedes": {
+        "missed": 1
+      }
+    },
+    "profile": {
+      "correct": 44,
+      "wrong": 1,
+      "not_captured": 1,
+      "missed": 2,
+      "missed_by_design": 2,
+      "conflict_true": 2
+    },
+    "invoices_by_field": {
+      "kind": {
+        "correct": 3
+      },
+      "number": {
+        "correct": 3
+      },
+      "invoice_date": {
+        "correct": 3
+      },
+      "issuer_abn": {
+        "correct": 3
+      },
+      "ex_gst_cents": {
+        "correct": 3
+      },
+      "gst_cents": {
+        "correct": 3
+      },
+      "total_cents": {
+        "correct": 3
+      },
+      "supplier": {
+        "correct": 3
+      },
+      "flag.period": {
+        "correct": 3
+      },
+      "flag.unmapped": {
+        "correct": 3
+      },
+      "flag.gst_rate": {
+        "correct": 1
+      }
+    },
+    "fees_by_field": {
+      "stated_total_cents": {
+        "correct": 6
+      },
+      "firm_name": {
+        "correct": 6
+      }
+    }
+  }
+}

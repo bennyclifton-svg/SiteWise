@@ -694,6 +694,274 @@ data).**
 - Should a single-building architect RFP always price "Brief and
   masterplan" (`architecture.yaml:62-66`)?
 
+### From run `runs/20261107-t03-t04-t06` (T03, T04, T06; app at `0aee9a4` plus uncommitted edits), 7 November 2026
+
+The run report is `runs/20261107-t03-t04-t06/REPORT.md`.
+
+The uncommitted edits were in `internal/httpapi/profile.go` (the
+`scope_decision` display field), `knowledge/profile/layout.yaml`,
+`internal/knowledge/layout_test.go` and web display files. None of them
+changes a reading, a scope row, a package, a cost line, a program row or an
+RFP position. The run used a fresh database.
+
+**Repeats.**
+- F16: T06 `det.rise_in_storeys` is blank. "The building has a rise in
+  storeys of 6" is printed only in the annual fire safety statement, which
+  is not a `stated_in` source.
+- F18 on a refurb: the access consultant's review passages set accessible
+  access, egress doors and internal doors to `investigate`
+  (0.94 on internal doors). The program then shows them as Investigation
+  rows, and no door-hanging row is made. The knock-down fix
+  (`oldBuildingAction`) applies only to new work.
+- F29: "Establish the site" has no predecessor in all nine runs (fit-out
+  and 7b fragments too).
+- F41 family: `complexity_additions` `flood_exposure`
+  (`knowledge/works/package_defaults.yaml:164-170`) keys a field the
+  profile does not have, so it can never fire. Here this has no effect:
+  civil is a baseline consultant, and the flood reaches the civil RFP
+  through `det.flood_hazard`.
+- Missed flags are fewer, but some remain:
+  - T04 now reads `cl46`, `community`, `staged`, `multi_building`, `panel`,
+    `basement` and `osd_existing` as no;
+  - still missed: T04 `architect_lodges`, T03 `authority_asset`, and T04
+    `fire_specialist_systems` (no at 0.42, under the floor);
+  - T04 `stormwater_quality` (yes) was never stored. Its triggers match the
+    MUSIC sentences. Suspected: the question asks whether *council
+    requires* modelling, and the documents say only that targets are
+    demonstrated with MUSIC.
+- `proj.regulated_design` is still unread. The keys now score it by design.
+
+**F43. On a refurb, a system with no settled works action is filed as
+existing and leaves scope (traced).**
+- *Expected:* the works the documents describe are in scope:
+  - T03: partitions, ceilings, glazing, joinery, paint, floors, lighting and
+    cabling;
+  - T06: the fire water and sprinklers (pumps and tank).
+- *Actual:* each has `sys.<leaf>.presence` included (amber), a blank or red
+  `.action`, and `sys.<leaf>.existing` present, so `scope.<leaf>` is never
+  written. Systems filed as existing:
+  - T03 base: 18;
+  - T03 strip-out: 17, including sprinklers, detection, air conditioning
+    and demolition;
+  - T06 base: 7, including `fire-active.fire-water` and
+    `fire-active.sprinklers`;
+  - ST06-pump-tank-only: 2, which leaves one system in scope
+    (`hydraulic.backflow-prevention`).
+- *Cause:* D-27, `existingPresence` (`internal/profile/existing.go:83-98`),
+  treats an included system with no applied action on a refurb as existing.
+  `withScope` then skips it (`internal/profile/build.go:190-211`). The
+  action is blank in two ways:
+  - *Below the floor.* The action floor is 0.85
+    (`data/profile/thresholds.json` `shapes.action`). T03's "## Interiors"
+    list got `new` 0.59 (walls), 0.73 (joinery), 0.52 (glazing) and 0.43
+    (floors), and `alter` 0.74 (ceilings). All were dropped.
+  - *Conflict.* T06 fire water got upgrade (0.99, 0.98, 0.92, 0.87), alter
+    0.91, retain 0.97 (from "The hydrant system is unaffected") and
+    investigate 0.91. Sprinklers got upgrade 0.99 against alter 1.00. Both
+    reconcile red with value "". `appliedWorkRow` rejects a red row, so the
+    action counts as unstated.
+- *Knock-on:*
+  - T03 program: the construction stage has no partitions, ceilings, doors,
+    joinery, paint, floors, luminaires, cabling or fire stopping. The
+    strip-out variant has 7 construction rows and no strip-out.
+  - T03 cost plan: no Electrical or Communications lines.
+  - T06 program: 3 construction rows and 25 built-in misses per run.
+  - T06 cost plan: Mechanical gets $1.8M of the $2.7M.
+  - ST06-pump-tank-only: the whole $1.2M goes to "Hydraulic services", and
+    there is no "Active fire protection" line.
+- *Location:* `existingPresence`, with the action floor and red-action
+  handling. Two possible fixes (owner's call, lane A):
+  - treat a conflict among works actions (new, alter, upgrade, replace) as
+    `several`, which `withScope` already handles;
+  - do not apply D-27 to a presence read from a passage that lists the
+    works.
+
+**F44. The three T03 REVIEW program-order defects are still in the code
+(confirmed offline at `0aee9a4`; masked live by F43).**
+- *Method:* `Generate` was run over the real catalogue with the T03 shape's
+  33 work items, refurb, cdc and traditional (throwaway `go test -overlay`;
+  nothing was written in the repo).
+- *Results:*
+  - "Seal service penetrations" has no predecessor and starts on
+    construction day 0. Its hold point precedes partitions, ceilings, doors,
+    joinery "Procure and deliver" and "Install", painting and floors.
+  - Ceilings start on day 8. Lighting (day 11) and ductwork (day 14) follow
+    the ceilings. Sanitary rough-in follows the doors, and electrical
+    rough-in (day 25) follows the hot-water unit.
+  - Note `link_skipped` appears: "Link from Hold point: a recorded pressure
+    test of the sprinkler pipework to interiors.ceilings left out: it would
+    make a loop".
+- *Locations:* as in `types/T03-office-fitout/REVIEW.md` findings 1 to 3
+  and the T03 shape gaps (lines 768-770):
+  - `internal/program/generate.go` `chainLinks`;
+  - `knowledge/clusters/fire/interfaces.yaml`
+    `if.fire-stopping-before-concealment`;
+  - `knowledge/program/fragments.yaml` `fr.fire-stopping`,
+    `fr.sprinklers-fitout`, and the services fragments that attach after
+    `fr.strip-out-fitout`.
+- *Also seen live:* with no anchor, the services chain in library order.
+  Sanitary is followed by cold water, hot water, ductwork, commissioning,
+  then sprinklers and detection, so the sprinklers start after mechanical
+  commissioning.
+
+**F45. `implied_by` scope suggestions fire on denials (traced).**
+- *Expected:* nothing suggested from a sentence that excludes the work.
+- *Actual:*
+  - "The base-building bathrooms on the core are not in scope" (T03 d13)
+    suggests wet-area waterproofing, tiling, sanitary, cold and hot water
+    and local exhaust. The program gains "Wet-area waterproofing" and "Wall
+    and floor tiling".
+  - "No strip-out or demolition is required" suggests `site.demolition`.
+  - "fire stairs" suggests stairs and ramps. This trap is already named in
+    the T06 shape.
+- *Cause:* `implied_by` patterns (`knowledge/profile/scope_defaults.yaml`
+  `wet-room`, `strip-out`, `stair`) match words with no negation check
+  (`withImpliedScope`, `internal/profile/build.go:246-269`).
+- *Note:* "kitchenette" does not match `\bkitchens?\b`, so the fit-out's
+  real kitchenette implies nothing.
+
+**F46. A "To:" line of the form "Name, Role, Company" is offered whole as
+the client (traced; F22 family).**
+- *Expected:* "Corvina Property Holdings Pty Ltd".
+- *Actual:* a red conflict in all three T06 runs.
+  - "Corvina Property Holdings Pty Ltd" has 3 sources ("Client:" lines).
+  - "Megan Holt, Asset Manager, Corvina Property Holdings Pty Ltd" has 5
+    sources (certifier, interior designer and hazmat "To:" lines).
+- *Cause:* `addresseeCandidates` (`internal/profile/addressee.go:30-53`)
+  offers the whole line. It cuts only at c/-, "for" or "on behalf of", and
+  "as trustee for". It does not cut a leading person and role.
+- *Knock-on:* the fire services, structural, electrical, mechanical and
+  certifier RFPs block on `details`. That is 5 RFP new failures per run.
+
+**F47. New-build programs have no dates (traced).**
+- *Expected:* computed start and finish for every row (owner direction,
+  25 October: every activity dated).
+- *Actual:* in all three T04 runs every activity's `es` and `ef` is null,
+  `finish.typical` is null, and the toolbar reads "Indicative: 52 of 53
+  durations known". The same holds in ST02-base ("90 of 91"), ST13-base
+  ("94 of 95") and ST10-base ("73 of 74"): zero dated activities in each.
+- *Cause:*
+  - On a new building the skeleton's Investigation stage gets no rows
+    (`stageRows` keeps every skeleton stage, `internal/program/generate.go:475-483`;
+    `investigationRows` adds none).
+  - A stage with no children is not a summary row, so `status` and
+    `leafDuration` treat it as a leaf with no duration
+    (`internal/program/engine.go:243-249`, `:581-589`).
+  - Unknown then spreads to every successor (`engine.go:288-303`).
+  - Refurb programs (T03, T06) have Investigation rows, and are dated.
+- *Knock-on:* the scorer reports program links as "unknown" (T04: 52). The
+  earlier "no program link violated" for T02 and T13 was not scorable.
+- *Location:* drop empty stages or give them zero duration (lane A).
+
+**F48. "Local government area: North Sydney." is not an LGA candidate
+(traced).**
+- *Expected:* `proj.lga` North Sydney in ST03-base and strip-out.
+- *Actual:* blank. The only candidate was "For the General Manager, North
+  Sydney Council" in the signature (0.26 to 0.28).
+- *Cause:*
+  - `lgaAreaRe` takes the name *before* "local government area"
+    (`internal/profile/details.go:44`). The planning certificate's label
+    form puts the name after the colon.
+  - The heading "NORTH SYDNEY COUNCIL" is upper case, and `lgaCouncil`
+    matches only "Council".
+- *Contrast:* ST03-da-pathway and T06 read it from "lodged with North
+  Sydney Council" and "Issued by North Sydney Council" (1.0).
+
+**F49. Fire services drawings file as fire engineer.**
+- *Expected:* `consultant.fire_services` (the key also accepts hydraulic).
+- *Actual:* FS-101 Rev A and Rev B file as `consultant.fire_engineer` at
+  0.79 to 0.85, in all three T06 runs. The fire services options report
+  (d12) is blank (0.38 to 0.42).
+- *Location:* `data/intake/disciplines.json`, same family as F6, F25 and
+  F40. Not traced further.
+
+**F50. The refurb baseline suggests Interior Design on a services-only
+upgrade.**
+- *Expected:* no interior designer in ST06-pump-tank-only, which has no
+  fit-out.
+- *Actual:* an Interior Design package (origin calculation), its fee line
+  and an RFP.
+- *Cause:* `knowledge/works/package_defaults.yaml` baselines[4] adds
+  Interior Design to every commercial, institution or mixed refurb.
+  baselines[2] adds Architect the same way; the T06 shape already names
+  that one.
+
+**Shape and key gaps (recommended, not applied).**
+- *T03 and T06 certifier and BCA:* the keys predate F9. They expect
+  `blocking: [pathway_unsupported]` and every B stage absent. The app now
+  prices `b2_cdc`, `b3` and `b4`, and `b1` as a boundary option (shown
+  included).
+  - Re-key them, as was done for the T12 certifier on 6 November.
+  - For the BCA consultant, add the B stages as `app_differs` (option).
+  - That is 7 RFP new failures per T03 run and 4 per T06 run.
+- *Skeletons:*
+  - T03 `da-pathway`: `skeleton: sk.refurb-traditional-da`;
+  - T06 `tank-needs-consent`: `skeleton: sk.refurb-traditional-da`;
+  - T04 `cdc-industrial-code`: `skeleton: sk.generic` (its `why` already
+    says so).
+- *Triggers that should restate `expect`:*
+  - T03 `da-pathway` and T06 `tank-needs-consent`: certifier and BCA
+    `a2_planning` and `b2_construction_approval` are in;
+  - T04 `cdc-industrial-code`: architect `planning_response`, traffic
+    `assessment_response` and `conditions_review`, BCA `a2_planning` and
+    certifier `b2_construction_approval` are excluded, and `b2_cdc` is
+    included;
+  - T04 `flood-affected`: civil `flood_report`, `flood_evacuation` and
+    `trunk_drainage` are I, and the complex service-level rows are I.
+- *T06 `position.existing`* (fire services, electrical, mechanical): the key
+  has `app: ask`. The T03 keys, checked by a Go run, have `app: absent`.
+  Use absent.
+- *T04 `cdc-industrial-code` cost plan:* alias "CDC fee" to "Construction
+  certificate and certifier fees", as T03 and T06 do, instead of removing
+  that line.
+- *T06 `tank-needs-consent`:* add "Town planner" to `adds.cost_plan`.
+- *T06 `pump-tank-only`:* keep the generic design rows ("Confirm the
+  brief", "Prepare the concept design", "Client review of the concept",
+  "Develop the design"). Remove only "Prepare fit-out documentation".
+- *T03 and T06 `hdr.cond.quality_level`:* the field applies to residential
+  only, so it is never captured on these types. Mark the keys
+  `read_by_design: false`.
+- *No key was changed.* The disputes below are owner questions, not clear
+  key errors.
+
+**Scorer limits.**
+- `after` is read as finish-to-start. The app's SS link "Prepare fit-out
+  documentation" → "Coordinate consultant documentation" scores as violated
+  (T06 base).
+- Program links are unscorable while F47 leaves every date unknown.
+
+**What worked.**
+- Every fee total, firm name and invoice amount is right in all nine runs.
+- The planted invoice flags are all raised, with no false flags:
+  - T03 `arithmetic`;
+  - T04 `gst_rate` at 15 %;
+  - T06 `gst_rate` at half rate.
+- Every variant's trigger value is read: planning `da` and `cdc`, and
+  `det.flood_hazard` true.
+- The flood reaches the civil RFP (flood report, evacuation plan, trunk
+  drainage).
+- F9 is confirmed: the certifier prices `b2_cdc` on a CDC.
+- F20 holds: no CDC job has a DA fees line.
+- F37 holds on a fresh database.
+- On the fit-outs, the tenant is the client, and the landlord's NABERS
+  rating does not set a sustainability target.
+- The survey's site area (16,012 m²) is now read (T04).
+
+**Owner questions.**
+- Is a vehicle crossing "work in a public road"? T04 says "No works in the
+  public road other than the two heavy-duty vehicle crossings".
+  - The app reads `flag.public_road` yes (0.68), and the civil RFP goes
+    complex with public road works: 9 RFP failures per T04 run.
+  - The key says no.
+- F43: on a refurb, should an included system with an unsettled action stay
+  in scope?
+- Should a vacant floor in an occupied tower accept both
+  `partial_occupation` and `live_environment` (T03; T06 accepts both)?
+  Should T06 access accept both `restricted_hours` and `urban_constrained`?
+- Should a combined services proposal fold into the four discipline
+  packages, rather than add a "Services Engineer" package beside them?
+  T03's cost plan carries five services fee lines.
+
 ## Known gaps confirmed (already named in the shape)
 
 - Electrical, hydraulic and mechanical consultants are suggested for a

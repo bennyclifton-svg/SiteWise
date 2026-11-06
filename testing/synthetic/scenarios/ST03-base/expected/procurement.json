@@ -1,0 +1,39 @@
+{
+  "schema": "sitewise-synthetic-procurement/1",
+  "shape": "types/T03-office-fitout/shape.yaml",
+  "triggers": [],
+  "from_proposals": [
+    {
+      "doc": "d05",
+      "discipline": "consultant.interior_design",
+      "kind": "services"
+    },
+    {
+      "doc": "d06",
+      "discipline": "consultant.services",
+      "kind": "services"
+    },
+    {
+      "doc": "d07",
+      "discipline": "consultant.bca",
+      "kind": "services"
+    },
+    {
+      "doc": "d08",
+      "discipline": "consultant.access",
+      "kind": "services"
+    },
+    {
+      "doc": "d09",
+      "discipline": "consultant.certifier",
+      "kind": "services"
+    },
+    {
+      "doc": "d10",
+      "discipline": "consultant.quantity_surveyor",
+      "kind": "services"
+    }
+  ],
+  "route": "traditional",
+  "novation": {}
+}

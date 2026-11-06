@@ -1,0 +1,1017 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST04-flood-affected",
+  "type_id": "T04",
+  "base": "ST04-base",
+  "triggers": [
+    "flood-affected"
+  ],
+  "project": {
+    "name": "Ironstone Circuit warehouse, 14 Ironstone Circuit",
+    "address": "14 Ironstone Circuit, Erskine Park NSW 2759",
+    "lga": "Penrith City Council",
+    "summary": "A developer's new single-storey, single-tenant warehouse of 7,500 m2 with a 500 m2 single-storey office on a vacant, benched 1.6 ha estate lot in Erskine Park (Penrith, E4 General Industrial): 12 m clear height, 12 recessed docks, ESFR sprinklers, off-site precast panels and a steel portal frame, about 6,000 m2 of B-double hardstand. Local DA determined by council staff, then an AS 4902 design and construct lump sum with the architect, structural and civil engineers and landscape architect novated; construction budget $14,800,000 ex GST."
+  },
+  "invented": {
+    "lots": [
+      "Lot 21 in DP 1289934"
+    ],
+    "abns": [
+      "88 772 112 735",
+      "27 776 543 340",
+      "36 780 903 496",
+      "78 393 410 749",
+      "92 136 641 903",
+      "17 566 987 104",
+      "66 729 851 081",
+      "45 465 566 157",
+      "93 670 964 024"
+    ],
+    "firms": [
+      "Marrick Hale Architects Pty Ltd",
+      "Ridgeline Structural Engineers Pty Ltd",
+      "Cardinal Civil Engineering Pty Ltd",
+      "Shalehaven Geotechnics Pty Ltd",
+      "Westbourne Planning Pty Ltd",
+      "Lanefield Traffic Pty Ltd",
+      "Hartigan Ross Surveyors Pty Ltd",
+      "Clearpath Building Regulations Pty Ltd",
+      "Redgum Logistics Estates Pty Ltd"
+    ],
+    "emails": [
+      "joanna.hale@example.com",
+      "daniel.moretti@example.com",
+      "aisha.karimi@example.com",
+      "peter.vasquez@example.com",
+      "megan.doyle@example.com",
+      "raj.patel@example.com",
+      "liam.hartigan@example.com",
+      "sophie.tran@example.com",
+      "owen.fitzgerald@example.com"
+    ],
+    "streets": [
+      "Ironstone Circuit, Erskine Park"
+    ],
+    "abn_holders": {
+      "66 729 851 081": "Hartigan Ross Surveyors Pty Ltd",
+      "45 465 566 157": "Clearpath Building Regulations Pty Ltd",
+      "93 670 964 024": "Redgum Logistics Estates Pty Ltd"
+    }
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Development brief - 14 Ironstone Circuit Erskine Park.md",
+      "title": "Development brief: warehouse and office at 14 Ironstone Circuit, Erskine Park",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date: 9 February 2026, Client: Redgum Logistics Estates Pty Ltd, Site: 14 Ironstone Circuit, Erskine Park NSW 2759; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "Redgum Logistics Estates Pty Ltd will develop a new industrial warehouse with an ancillary office for a single logistics tenant"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "a new single-storey warehouse (Class 7b use) with a single-storey office"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This is a new building on a vacant estate lot"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "There is no existing building on the site"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The lot is vacant and benched by the estate developer, so the site is unoccupied for the whole of the works"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "Redgum Logistics Estates Pty Ltd is the sole owner of the lot and the only decision maker"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Construction access is unrestricted: a 96 m frontage to a local industrial road, no neighbour built to a common boundary and no restriction on working hours beyond council's standard hours"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "There are no ecological or habitat constraints on the lot, and the AHIMS search found no Aboriginal sites recorded on it"
+        },
+        {
+          "key": "hdr.cond.power_source",
+          "says": "Power will come from the Endeavour Energy grid through a new kiosk substation; no on-site generation is planned"
+        },
+        {
+          "key": "hdr.cond.hazardous_process",
+          "says": "No dangerous goods will be stored above minor quantities; the tenant stores general palletised goods only"
+        },
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area: 16,000 m2 (1.6 ha)"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Gross floor area: 8,000 m2 (warehouse 7,500 m2, office 500 m2)"
+        },
+        {
+          "key": "hdr.scale.clear_height_m",
+          "says": "Clear height: 12 m to the underside of the haunch"
+        },
+        {
+          "key": "hdr.scale.dock_doors",
+          "says": "Dock doors: 12 dock doors, recessed, with levellers and shelters"
+        },
+        {
+          "key": "hdr.scale.hardstand_sqm",
+          "says": "Heavy-duty concrete hardstand: about 6,000 m2"
+        },
+        {
+          "key": "hdr.scale.office_percent",
+          "says": "Office share: about 6% of the gross floor area"
+        },
+        {
+          "key": "det.storage_height",
+          "says": "Maximum top of storage: 11 m in selective pallet racking"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building will be sprinkler protected throughout with ceiling-level ESFR heads."
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 14 Ironstone Circuit, Erskine Park NSW 2759"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "The estate developer's validation report confirms the lot is suitable for industrial use and is not contaminated"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "No natural gas supply is needed; the building is all-electric"
+        },
+        {
+          "key": "flag.heavy_vehicles",
+          "says": "The site is designed for 26 m B-double access to the hardstand and docks"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed; the building is slab on ground"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "A development application will be lodged with council. The building exceeds the code's height standard, so a DA is required"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The DA will be determined by council staff under delegation; it will not go to the Sydney Western City Planning Panel"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The design complies with the LEP height and floor space ratio standards; no clause 4.6 variation request is required"
+        },
+        {
+          "key": "flag.community",
+          "says": "We are not running any community consultation of our own; council notifies the neighbours"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "The works will be procured as a design and construct lump sum under AS 4902; the architect, structural and civil engineers and landscape architect will be novated to the contractor"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "a design and construct lump sum under AS 4902"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "a design and construct lump sum under AS 4902"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $14,800,000 excluding GST"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The building has no Class 2, 3 or 9c part, so the Design and Building Practitioners Act 2020 does not apply"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Redgum Logistics Estates Pty Ltd"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 14 Ironstone Circuit, Erskine Park NSW 2759"
+        },
+        {
+          "key": "flag.staged",
+          "says": "The warehouse will be built in one continuous stage under one contract; there is no staged construction or staged handover"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "This is one building; we are not planning multiple buildings on the lot"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star or NABERS rating is targeted; NCC Section J compliance only"
+        },
+        {
+          "key": "flag.country",
+          "says": "No Connecting with Country input is required for this lot"
+        }
+      ],
+      "traps": [],
+      "content": "The developer's brief to the design team, written by its development manager Owen Fitzgerald. Sections: '## The project' (the new warehouse sentence; the new building sentence; the no existing building sentence; vacant and benched lot; sole owner), '## Accommodation' (site area, gross floor area, clear height, dock doors, hardstand, office share and top of storage lines as label lines; car park for 40 cars; office amenities with a staff kitchen; single-storey office at ground level), '## Site' (access, ecology and AHIMS, contamination validation sentence, no basement, B-double sentence, no Connecting with Country input), '## Fire and services' (sprinkler sentence alone in its paragraph; kiosk substation and grid sentence; all-electric; dangerous goods sentence), '## Approvals and procurement' (the DA sentence and the code's height standard sentence; council staff determination; clause 4.6 sentence; community consultation sentence; D&C and novation sentence; DBP Act sentence; one continuous stage; one building; no rating targeted), '## Budget' (the budget line). Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence. The panel sentence is the only place 'planning panel' may appear."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 21 DP 1289934.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-16",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-00418 | | Issue date | 16/02/2026 | | Applicant | Redgum Logistics Estates Pty Ltd |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: Penrith City Council."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 21 in DP 1289934"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone E4 General Industrial under Penrith Local Environmental Plan 2010"
+        },
+        {
+          "key": "proj.address",
+          "says": "14 Ironstone Circuit, Erskine Park NSW 2759"
+        },
+        {
+          "key": "det.state",
+          "says": "Erskine Park NSW 2759"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not in a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is within the flood planning area and flood related development controls apply"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        },
+        {
+          "key": "det.flood_planning_level",
+          "says": "Flood planning level: 31.2 m AHD (1% AEP flood level 30.7 m AHD plus 0.5 m freeboard)"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-available-on-land",
+          "what": "Item 4 says complying development under the Industrial and Business Buildings Code may be carried out on the land; that is land eligibility, not this project's pathway.",
+          "expect": "hdr.cond.planning is not set from this certificate; the project documents decide it"
+        },
+        {
+          "id": "potentially-contaminated-negated",
+          "what": "'no record that the land is contaminated or potentially contaminated' contains the phrase it denies.",
+          "expect": "det.potentially_contaminated_land stays false"
+        }
+      ],
+      "content": "A Penrith City Council s10.7(2) and (5) planning certificate with numbered items in the usual order: zoning and LEP/DCP (E4 General Industrial; warehouse or distribution centres permitted with consent), complying development (item 4: the Industrial and Business Buildings Code may be carried out on the land), heritage, bush fire, flood (the flood planning area sentence and the flood planning level line; no m2 figure in that item), acid sulfate soils, contamination, loose-fill asbestos (not on the register), coastal, rail corridor, road widening (none). Fixed council wording; identity in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 14 Ironstone Circuit.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Hartigan Ross Surveyors Pty Ltd",
+      "date": "2026-02-27",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Ref: HRS-26-0114, Date: 27 February 2026, Prepared for: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 16,012 m2"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "There is no existing building or structure on the lot; the pad is bare benched earth"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "No Sydney Water assets are within the lot"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "A sewer junction from the estate's reticulated sewer is provided at the north-eastern corner of the lot"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "A mains water connection point is provided in the Ironstone Circuit frontage"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "There are no trees on the lot, so no tree is affected by the works"
+        }
+      ],
+      "traps": [],
+      "content": "Surveyor's report on the detail, level and boundary survey (AHD, MGA). Sections: '## Site description' (one lot, 16,012 m2, 96 m frontage to Ironstone Circuit, benched pad with a gentle fall of about 1.4 m to the east), '## Structures' (the no existing building sentence), '## Boundaries and easements' (a 3 m drainage easement along the eastern boundary in favour of the estate; no encroachments), '## Vegetation' (the no trees sentence), '## Services' (sewer junction, mains water connection point, Endeavour Energy pillar, NBN pit, no gas, the OSD sentence and the no Sydney Water assets sentence). Do not use the words 'flood' or 'overland'. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Program and DA timing - Ironstone Circuit.md",
+      "title": "RE: Program and DA timing",
+      "author_role": "consultant.architect",
+      "firm": "Marrick Hale Architects Pty Ltd",
+      "date": "2026-03-04",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread, the architect's reply on top)",
+      "carries": [
+        {
+          "key": "proj.target_da_lodgement",
+          "says": "Our target is to have the DA in with council by 30 June 2026"
+        },
+        {
+          "key": "proj.target_construction_start",
+          "says": "and the D&C contractor on site by 1 February 2027"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Owen Fitzgerald of Redgum Logistics Estates writes on 3 March 2026 (Subject: Program and DA timing) giving the two targets and asking whether they are realistic. Joanna Hale of Marrick Hale Architects replies on 4 March 2026 (Subject: RE: Program and DA timing): the DA date is achievable if the geotechnical investigation and traffic counts start this month; the construction start depends on council's assessment time and a ten-week D&C tender. No floor areas, dock counts or contamination wording. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural services - Ironstone Circuit warehouse.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Marrick Hale Architects Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: MHA-FP-2607, Date: 9 March 2026, To: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "After the D&C tender our appointment will be novated to the successful design and construct contractor"
+        },
+        {
+          "key": "det.facade_type",
+          "says": "The facade is precast concrete panels with metal cladding above and an aluminium-framed office frontage; there is no curtain wall or unitised facade system"
+        },
+        {
+          "key": "flag.architect_lodges",
+          "says": "Our DA documentation is issued to the town planner, who will lodge the development application"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee to the D&C tender: $240,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's fee proposal for the 8,000 m2 warehouse and office. Scope by phase, then a fee table: concept design and brief $38,000; DA documentation $86,000; design development $62,000; D&C tender documentation and performance brief $54,000; total to the D&C tender $240,000 ex GST. Then an optional post-novation construction documentation and services fee of $165,000 ex GST, payable by the contractor after novation; additional services at $240 per hour; exclusions (other consultants, authority fees, renders). The facade sentence and the lodgement sentence. Fee phases are named, never numbered. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d06",
+      "filename": "Ridgeline Structural fee proposal RSE-2611.md",
+      "title": "Fee proposal: structural engineering",
+      "author_role": "consultant.structural",
+      "firm": "Ridgeline Structural Engineers Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: RSE-2611, Date: 11 March 2026, To: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "There are no transfer slabs or transfer beams; the portal frame bears directly on pad footings"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "There is no excavation next to any boundary or neighbouring structure beyond footing pads and service trenches"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $76,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's fee proposal. Background: steel portal frame, off-site precast panels to the dock face, the front and the boundaries, pad footings and an industrial slab on ground for racking leg and forklift loads; the transfer sentence and the excavation sentence. Fee table: concept and DA structural advice $14,000; design development (portal frame, panels and industrial slab) $36,000; D&C tender documentation $26,000; total $76,000 ex GST. Optional post-novation construction documentation $58,000 ex GST; hourly rate $220. Exclusions: temporary works and panel bracing design by the contractor, in-rack structures. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d07",
+      "filename": "Cardinal Civil - civil and stormwater fee - Ironstone Circuit.md",
+      "title": "Fee proposal: civil and stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Cardinal Civil Engineering Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | CCE-P-0412 | | Date | 13/03/2026 | | Attention | Owen Fitzgerald |; # heading 'Fee proposal: civil and stormwater engineering'",
+      "carries": [
+        {
+          "key": "det.flood_hazard",
+          "says": "The lot is within the flood planning area, so a flood impact assessment with floor levels is needed for the DA"
+        },
+        {
+          "key": "flag.osd_required",
+          "says": "On-site detention is required under council's stormwater policy"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "Stormwater quality targets are demonstrated with a MUSIC model"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention to retain or modify"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "The lot is not in a drinking water catchment, so no neutral or beneficial effect assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No works in the public road other than the two heavy-duty vehicle crossings and making good the footpath"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $103,400 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "Civil engineer's fee proposal. Background: bulk earthworks to the pad, heavy-duty hardstand and car park pavements, OSD tank under the car park, water-quality treatment (gross pollutant trap and proprietary filters), two heavy-duty crossings. Phases, every figure GST-inclusive: concept civil, stormwater and OSD design with the MUSIC model for the DA $35,200; flood impact assessment and floor levels for the DA (the lot is within the flood planning area) $15,400; design development and civil design $30,800; D&C tender documentation $22,000; total $103,400 inc GST. Optional post-novation documentation and certification $49,500 inc GST. The public road sentence verbatim. No floor areas or dock counts. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d08",
+      "filename": "Fee proposal - Geotechnical investigation - Ironstone Circuit.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Shalehaven Geotechnics Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: SHG-P-0219, Date: 12 March 2026, To: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed, so the investigation targets footing, slab and pavement design only"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $24,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Prices exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical engineer's fee proposal for a slab-on-ground warehouse: eight boreholes to 6 m, twelve test pits across the hardstand and car park, CBR, reactivity and salinity testing. Fee table: field investigation $14,600; laboratory testing $4,200; geotechnical report $5,200; total $24,000 ex GST. Optional four additional test pits $2,800 ex GST. Level 1 earthworks supervision is excluded (priced separately at construction). Do not use the words 'groundwater', 'dewater' or 'water table'. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d09",
+      "filename": "Westbourne Planning fee proposal WP-26-014.md",
+      "title": "Fee proposal: town planning services",
+      "author_role": "consultant.town_planner",
+      "firm": "Westbourne Planning Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: WP-26-014, Date: 16 March 2026, To: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "a development application to Penrith City Council for the warehouse and office"
+        },
+        {
+          "key": "flag.architect_lodges",
+          "says": "We will lodge the development application on the NSW Planning Portal for Redgum Logistics Estates"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $38,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "planner-lodges",
+          "what": "'We will lodge the development application' matches the architect_lodges trigger \\blodge\\b, but the town planner lodges, not the architect.",
+          "expect": "flag.architect_lodges stays no"
+        }
+      ],
+      "content": "Town planner's fee proposal for a development application to Penrith City Council for the warehouse and office. It notes the building exceeds the Industrial and Business Buildings Code's height standard, so complying development is not available and a DA is required. Fee table: pre-lodgement meeting and planning advice $6,500; statement of environmental effects $22,000; DA lodgement and assessment liaison $9,500; total $38,000 ex GST. Hourly rate $230. The lodgement sentence. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d10",
+      "filename": "Lanefield Traffic fee proposal LT-0326.md",
+      "title": "Fee proposal: traffic and parking engineering",
+      "author_role": "consultant.traffic",
+      "firm": "Lanefield Traffic Pty Ltd",
+      "date": "2026-03-18",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Proposal no: LT-0326, Date: 18 March 2026, To: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.heavy_vehicles",
+          "says": "The site is designed for 26 m B-double access to the hardstand and docks; we will check B-double swept paths at both crossings"
+        },
+        {
+          "key": "flag.tfnsw_referral",
+          "says": "The development is below the Schedule 3 thresholds, so it will not be referred to TfNSW"
+        },
+        {
+          "key": "flag.state_road",
+          "says": "Access is from a local industrial road; the site has no classified road frontage"
+        },
+        {
+          "key": "flag.intersection_modelling",
+          "says": "No SIDRA intersection modelling is required; the estate road network was assessed at subdivision"
+        },
+        {
+          "key": "flag.gtp_required",
+          "says": "A green travel plan is not required for this development"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $19,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "tfnsw-denied",
+          "what": "'so it will not be referred to TfNSW' fires both the state_road (\btfnsw\b) and tfnsw_referral (referred to tfnsw) questions in a denial (DOMAIN.md §10 item 7).",
+          "expect": "flag.tfnsw_referral and flag.state_road stay no"
+        },
+        {
+          "id": "sidra-denied",
+          "what": "'No SIDRA intersection modelling' fires the intersection_modelling trigger \\bsidra\\b.",
+          "expect": "flag.intersection_modelling stays no"
+        }
+      ],
+      "content": "Traffic engineer's fee proposal. Scope: traffic and parking impact assessment for the DA (car parking to the DCP, peak-hour truck and car generation, sight distance at the two crossings), the B-double sentence, the Schedule 3 sentence, the classified road sentence, the SIDRA sentence and the green travel plan sentence. Fee table: traffic and parking impact assessment for the DA $12,500; swept path and hardstand review in design development $4,500; response to council requests for information $2,000; total $19,000 ex GST. Hourly rate $210. Never write 'building a' or 'buildings a', 'stage' followed by a digit or single letter, 'staged', 'road reserve', 'works in the road', 'intersection upgrade' or 'traffic generating development'."
+    },
+    {
+      "id": "d11",
+      "filename": "Geotechnical report SHG-26-0219 - 14 Ironstone Circuit.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Shalehaven Geotechnics Pty Ltd",
+      "date": "2026-04-21",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: SHG-26-0219, Revision: 0, Report date: 21 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.groundwater",
+          "says": "No groundwater was encountered in any borehole or test pit during drilling"
+        },
+        {
+          "key": "flag.basement",
+          "says": "Test pits were excavated to a depth of 3.0 m; no basement is proposed and the building is slab on ground"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Bore logs for BH1 to BH8 are in Appendix A"
+        },
+        {
+          "key": "det.site_class",
+          "says": "classified as site class M (moderately reactive) under AS 2870"
+        },
+        {
+          "key": "det.saline_soil",
+          "says": "The soils are moderately saline"
+        }
+      ],
+      "traps": [
+        {
+          "id": "excavated-to-a-depth",
+          "what": "'Test pits were excavated to a depth of 3.0 m' matches the basement pattern excavat\\w* to a depth (DOMAIN.md §10 item 3).",
+          "expect": "flag.basement stays no"
+        },
+        {
+          "id": "bore-logs",
+          "what": "'Bore logs' matches the water_supply_source trigger \\bbore\\b (DOMAIN.md §10 item 2).",
+          "expect": "det.water_supply_source stays reticulated (from d03); the logs are borehole records, not a water bore"
+        },
+        {
+          "id": "groundwater-negated",
+          "what": "'No groundwater was encountered' matches the groundwater trigger.",
+          "expect": "flag.groundwater stays no"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (eight boreholes to 6 m, twelve test pits), subsurface profile (controlled estate fill 0.5 to 1.5 m placed under Level 1 supervision, then stiff residual clay over Bringelly Shale from about 3 m), the groundwater sentence, the test pit sentence, the bore logs sentence, site classification for the office slab, CBR values for the hardstand pavement, moderately saline soils (exposure classification for concrete), pad footings on shale or stiff clay, industrial slab subgrade preparation. Do not use the word 'dewatering'. Never write 'building a' or 'buildings a', 'staged', 'contaminants', 'floodlight', 'demolition' or 'existing building'."
+    },
+    {
+      "id": "d12",
+      "filename": "BCA report CBR-26-071 - 14 Ironstone Circuit.md",
+      "title": "BCA assessment report",
+      "author_role": "consultant.bca",
+      "firm": "Clearpath Building Regulations Pty Ltd",
+      "date": "2026-05-06",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: CBR-26-071, Revision: A, Report date: 6 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: Class 7b (warehouse) and Class 5 (office)"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "Rise in storeys: 1"
+        },
+        {
+          "key": "det.floor_area",
+          "says": "Floor area 8,000 m2; volume of the single fire compartment about 100,000 m3 (below the C3D4(1) limits of 18,000 m2 and 108,000 m3)"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building will be sprinkler protected throughout with ceiling-level ESFR heads."
+        },
+        {
+          "key": "det.storage_height",
+          "says": "Maximum top of storage: 11 m in selective pallet racking"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "NCC climate zone 6"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The building has no Class 2, 3 or 9c part, so the Design and Building Practitioners Act 2020 does not apply"
+        },
+        {
+          "key": "flag.fire_vulnerable_occupants",
+          "says": "No vulnerable occupants requiring assisted evacuation are expected in any part of the building"
+        },
+        {
+          "key": "flag.fire_special_hazards",
+          "says": "No special fire hazards are proposed and no dangerous goods are kept above minor quantities"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "No fire performance solution is proposed for the facade, cladding or structure; performance solutions cover only warehouse travel distances and the perimeter vehicular access"
+        }
+      ],
+      "traps": [],
+      "content": "BCA assessment against NCC 2022 for the DA. Sections: '## Building description' (classification sentence; rise in storeys line; Type C construction; climate zone 6), '## Large isolated building' (the floor area and volume sentence; perimeter vehicular access at least 6 m wide around the building), '## Fire services' (the sprinkler sentence alone in its paragraph; hydrants, booster, tanks and pump room; hose reels; occupant warning), '## Racking' (the top of storage line alone in its section, with no fire words), '## Access and egress' (travel distances; exits from the warehouse), '## Energy' (Section J for the office and warehouse lighting), '## Fire engineering' (the three fire-flag sentences), '## Regulatory' (the DBP Act sentence). Do not put 'electric vehicle', 'EV', 'battery' or 'storage' in a sentence with 'fire'. Do not write 'structural steel' in a sentence with 'fire'. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d13",
+      "filename": "Statement of environmental effects - 14 Ironstone Circuit.md",
+      "title": "Statement of environmental effects",
+      "author_role": "consultant.town_planner",
+      "firm": "Westbourne Planning Pty Ltd",
+      "date": "2026-05-27",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: WP-26-014-SEE, Date: 27 May 2026, Prepared for: Redgum Logistics Estates Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "This statement accompanies a development application to Penrith City Council"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Gross floor area: 8,000 m2 (warehouse 7,500 m2, office 500 m2)"
+        },
+        {
+          "key": "hdr.scale.dock_doors",
+          "says": "12 dock doors"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application will be determined by council staff under delegation and is not referred to the Sydney Western City Planning Panel"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The proposal complies with the height and floor space ratio standards; no clause 4.6 variation request is required"
+        },
+        {
+          "key": "flag.community",
+          "says": "Council will notify neighbours and place the DA on public exhibition under its community participation plan; the developer is not running any separate community consultation"
+        },
+        {
+          "key": "flag.heavy_vehicles",
+          "says": "The site is designed for 26 m B-double access to the hardstand and docks"
+        },
+        {
+          "key": "flag.state_road",
+          "says": "Access is from a local industrial road; the site has no classified road frontage"
+        },
+        {
+          "key": "flag.tfnsw_referral",
+          "says": "The development is below the Schedule 3 thresholds, so it will not be referred to TfNSW"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "There are no trees on the lot and no tree is affected by the works"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "The estate developer's validation report confirms the lot is suitable for industrial use and is not contaminated"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is within the flood planning area; the warehouse floor level is set 500 mm above the 1% AEP flood level"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone E4 General Industrial under Penrith Local Environmental Plan 2010"
+        },
+        {
+          "key": "proj.lga",
+          "says": "Penrith City Council"
+        }
+      ],
+      "traps": [
+        {
+          "id": "floodlights",
+          "what": "'LED floodlights on the building and light poles light the hardstand' matches the flood_hazard trigger \\bflood (DOMAIN.md §10 item 1).",
+          "expect": "The lighting sentence is not flood evidence; det.flood_hazard is true here from the flood planning area sentences in d02, d07, d13 and d14"
+        },
+        {
+          "id": "public-exhibition",
+          "what": "'public exhibition' matches the community trigger.",
+          "expect": "flag.community stays no: council's notification is not community consultation by the developer"
+        },
+        {
+          "id": "planning-panel-denied",
+          "what": "'not referred to the Sydney Western City Planning Panel' matches the panel trigger 'planning panel'.",
+          "expect": "flag.panel stays no"
+        }
+      ],
+      "content": "SEE for the DA. Sections: '## Site and context' (E4 zone, Erskine Park estate, vacant benched lot, the validation sentence), '## The proposal' (the gross floor area line, 12 m clear height, '12 dock doors' with levellers, about 6,000 m2 hardstand, 40 car spaces, office), '## Planning controls' (Penrith LEP 2010 and DCP; the clause 4.6 sentence; SEPP (Resilience and Hazards) 2021), '## Traffic and parking' (the B-double, classified road and Schedule 3 sentences), '## Flooding and stormwater' (the flood planning area sentence; an overland flow path runs along the eastern boundary and is kept clear of buildings and the hardstand; the civil engineer's flood impact assessment; OSD and water quality by the civil engineer), '## Lighting' ('LED floodlights on the building and light poles light the hardstand, aimed away from the street'), '## Trees and landscape' (the trees sentence; a landscaped setback to Ironstone Circuit), '## Notification' (the public exhibition sentence), '## Determination' (the planning panel sentence). Never write 'building a' or 'buildings a', 'stage' followed by a digit or single letter, 'staged', 'water main', 'road reserve', 'contaminants', 'demolition', 'existing building', 'heritage', 'basement', 'SIDRA' or 'traffic generating development'; and never put 'storage' within 90 characters of 'fire'."
+    },
+    {
+      "id": "d14",
+      "filename": "Civil and stormwater report CCE-R-0412 - 14 Ironstone Circuit.md",
+      "title": "Civil engineering and stormwater management report",
+      "author_role": "consultant.civil",
+      "firm": "Cardinal Civil Engineering Pty Ltd",
+      "date": "2026-05-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: CCE-R-0412, Revision: 1, Report date: 20 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is within the flood planning area; an overland flow path runs along the eastern boundary"
+        },
+        {
+          "key": "det.flood_planning_level",
+          "says": "The warehouse floor level is set 500 mm above the 1% AEP flood level, at RL 31.20 m AHD, the flood planning level"
+        },
+        {
+          "key": "flag.osd_required",
+          "says": "On-site detention is required under council's stormwater policy; a 540 m3 OSD tank is provided under the car park"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "Stormwater quality targets are demonstrated with a MUSIC model"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No works in the public road other than the two heavy-duty vehicle crossings and making good the footpath"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "The gross pollutant trap and filters treat hydrocarbon contamination washed from the hardstand"
+        }
+      ],
+      "traps": [
+        {
+          "id": "hydrocarbon-contaminants",
+          "what": "'treat hydrocarbon contamination washed from the hardstand' fires the potentially_contaminated_land trigger 'contaminat' (\"contaminants\" would not).",
+          "expect": "det.potentially_contaminated_land stays false: stormwater pollutants are not land contamination"
+        }
+      ],
+      "content": "Civil report for the DA: bulk earthworks (cut and fill on the benched pad, close to balanced, the pad raised with cut from the OSD tank and car park), heavy-duty hardstand and car park pavements, stormwater drainage to the estate system in the eastern drainage easement, the OSD sentence, water quality (the MUSIC sentence; the hydrocarbon contamination sentence verbatim), the public road sentence, erosion and sediment control with a temporary sediment basin. A '## Flooding' section carries the flood planning area and overland flow sentences, the floor level sentence and flood-compatible materials below RL 31.20 m AHD; the pad is raised about 0.4 m, and the OSD outlet is designed for a tailwater level at the 1% AEP flood level. No m2 figure anywhere in the Flooding section. Never write 'floodlight'. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d15",
+      "filename": "A-1100 Rev A - Site plan.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Marrick Hale Architects Pty Ltd",
+      "date": "2026-04-28",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-1100, Revision: A, Title: Site plan, Date: 28 April 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.dock_doors",
+          "says": "12 recessed dock doors along the southern dock face"
+        },
+        {
+          "key": "hdr.scale.hardstand_sqm",
+          "says": "Heavy-duty hardstand 6,000 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the warehouse footprint and the office, 12 recessed dock doors and two on-grade roller doors, the hardstand area, the two heavy-duty crossings, the 40-space car park, the OSD tank, the sprinkler tank and pump room, the kiosk substation and the landscaped setback. Issue: preliminary. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d16",
+      "filename": "A-1100 Rev B - Site plan.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Marrick Hale Architects Pty Ltd",
+      "date": "2026-05-22",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-1100, Revision: B, Title: Site plan, Date: 22 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.dock_doors",
+          "says": "12 recessed dock doors along the southern dock face"
+        },
+        {
+          "key": "hdr.scale.hardstand_sqm",
+          "says": "Heavy-duty hardstand 6,000 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the warehouse footprint and the office, 12 recessed dock doors and two on-grade roller doors, the hardstand area, the two heavy-duty crossings, the 40-space car park, the OSD tank, the sprinkler tank and pump room, the kiosk substation and the landscaped setback. Revision B: dock count unchanged, car park moved 4 m west to clear the OSD tank and the bin enclosure added; revision note 'Amended for DA'. Apart from the sentences quoted in carries, never write 'building a' or 'buildings a' (or 'building' followed by a single letter), a number followed by 'buildings', 'stage' followed by a digit or a single letter, 'staged', 'water main', 'sewer main', 'road reserve', 'floodlight', 'contaminants', 'bore', 'excavated to a depth', 'rainwater tank', 'demolition', 'existing building', 'TfNSW', 'planning panel', 'public exhibition', 'heritage' or 'basement'; and never put 'storage' or 'racking' within 90 characters of 'fire' in one sentence."
+    },
+    {
+      "id": "d17",
+      "filename": "Tax invoice MHA-INV-0311 Marrick Hale.md",
+      "title": "Tax invoice MHA-INV-0311",
+      "author_role": "consultant.architect",
+      "firm": "Marrick Hale Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: MHA-INV-0311, Date: 30 April 2026, ABN: 88 772 112 735",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $41,800.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $38,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $3,800.00"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's invoice for concept design and brief, 100% of that phase."
+    },
+    {
+      "id": "d18",
+      "filename": "Westbourne invoice 1187.md",
+      "title": "Tax invoice 1187",
+      "author_role": "consultant.town_planner",
+      "firm": "Westbourne Planning Pty Ltd",
+      "date": "2026-05-29",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 1187 | | Date | 29/05/2026 | | ABN | 92 136 641 903 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $19,250.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$17,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$1,750.00"
+        }
+      ],
+      "traps": [],
+      "content": "Town planner's invoice: pre-lodgement meeting and planning advice $6,500 (100%) and statement of environmental effects $11,000 (50%)."
+    },
+    {
+      "id": "d19",
+      "filename": "Tax invoice SHG-INV-0507 Shalehaven.md",
+      "title": "Tax invoice SHG-INV-0507",
+      "author_role": "consultant.geotechnical",
+      "firm": "Shalehaven Geotechnics Pty Ltd",
+      "date": "2026-05-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "adversarial",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: SHG-INV-0507, Date: 15 May 2026, ABN: 78 393 410 749",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $18,800.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST (15%) $2,820.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $21,620.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "gst-15-percent",
+          "what": "GST is charged at 15% ($2,820.00 on $18,800.00); the total adds up.",
+          "expect": "The ledger flags gst_rate, not arithmetic"
+        }
+      ],
+      "content": "Geotechnical engineer's invoice for the field investigation ($14,600) and laboratory testing ($4,200), 100% of both. The GST line is at the wrong rate."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d02",
+      "change": "changed",
+      "why": "The trigger's evidence: the land is within the flood planning area, with a flood planning level of 31.2 m AHD, replacing 'not subject to flood related development controls'"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "Civil fee adds a flood impact assessment and floor levels phase ($15,400 inc GST); total $103,400 inc GST"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "SEE flooding section states the flood planning area, the overland flow path and the floor level 500 mm above the 1% AEP flood level instead of 'no flood related development controls'; the floodlights trap stays"
+    },
+    {
+      "doc": "d14",
+      "change": "changed",
+      "why": "Civil report adds a flooding section: flood planning area, overland flow path along the eastern boundary, floor level at the flood planning level"
+    }
+  ]
+}

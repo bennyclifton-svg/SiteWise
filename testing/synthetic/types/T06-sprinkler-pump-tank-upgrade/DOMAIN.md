@@ -786,3 +786,16 @@ What is missing, and what the app will probably produce wrongly as a result:
   `diesel-noise-exhaust` covers its effects.
 - **Fire services engineer designs the level 3 dry fire.** Some projects give detection and EWIS to the
   electrical engineer.
+
+---
+
+## Shape edits after the ST06 scenario review (7 November 2026)
+
+Applied from `testing/synthetic/scenarios/ST06-base/REVIEW.md` (findings 4, 10 and 11), with the reviewer's agreement:
+
+- `diesel-noise-exhaust` negation: the old wording ("two electric pumpsets ... no diesel engine") contradicted the
+  base's diesel standby pump. It now reads "The diesel exhaust discharges through the existing basement plant exhaust
+  shaft, clear of tenancies, air intakes and neighbours; the weekly test run is not audible in the tenancies."
+- `pump-tank-only` profile: `[hdr.cond.operational_constraints, proj.budget_stated]`. With no fit-out every floor is
+  tenanted (`live_environment`; keys accept `partial_occupation` too), and the stated budget loses the fit-out's share.
+- `tenant-procured-fitout` profile: `[proj.budget_stated]`, for the same budget reason.

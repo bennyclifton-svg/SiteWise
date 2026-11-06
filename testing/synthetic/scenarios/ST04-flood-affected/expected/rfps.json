@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T04-warehouse/shape.yaml",
+  "triggers": [
+    "flood-affected"
+  ],
+  "scenario_facts": {
+    "rfps": {
+      "budget_stated_cents": 1480000000
+    }
+  }
+}

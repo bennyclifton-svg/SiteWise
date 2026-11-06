@@ -1,0 +1,36 @@
+ST06-tank-needs-consent
+  Register (per field):
+    status      correct 19
+    kind        correct 17, missed 2
+    discipline  correct 16, missed 1, wrong 2
+    lifecycle   correct 9, missed 10
+    number      correct 17, missed 2
+    revision    correct 6, correct_blank 13
+    title       correct 19
+    date        correct 17, missed 2
+    supersedes  missed 1
+  Profile: conflict_true 3, correct 43, missed 2, missed_by_design 2, not_captured 1, wrong 1
+    conflict_true    hdr.cond.operational_constraints: expected {'accept': ['partial_occupation', 'live_environment']}, app ''
+    wrong            hdr.cond.access_constraints: expected 'urban_constrained', app 'restricted_hours'
+    not_captured     hdr.cond.quality_level: expected 'mid', app None
+    missed           hdr.cond.environmental_sensitivity: expected 'standard', app ''
+    missed           det.rise_in_storeys: expected 6, app ''
+    missed_by_design det.type_of_construction: expected 'A', app ''
+    missed_by_design proj.regulated_design: expected 'no', app ''
+    conflict_true    proj.client: expected 'Corvina Property Holdings Pty Ltd', app ''
+    conflict_true    flag.staged: expected 'no', app ''
+  Invoices (per field):
+    kind               correct 3
+    number             correct 3
+    invoice_date       correct 3
+    issuer_abn         correct 3
+    ex_gst_cents       correct 3
+    gst_cents          correct 3
+    total_cents        correct 3
+    supplier           correct 3
+    flag.period        correct 3
+    flag.unmapped      correct 3
+    flag.gst_rate      correct 1
+  Fees (per field):
+    stated_total_cents correct 8
+    firm_name          correct 8

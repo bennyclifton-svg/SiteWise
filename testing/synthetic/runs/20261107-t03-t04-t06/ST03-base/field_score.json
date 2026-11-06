@@ -1,0 +1,2255 @@
+{
+  "schema": "sitewise-synthetic-field-score/1",
+  "scenario": "ST03-base",
+  "register": [
+    {
+      "doc": "d01",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "design_brief",
+      "app": "design_brief",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.project_manager",
+          "none"
+        ]
+      },
+      "app": "consultant.project_manager",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.94,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": "brief",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.98,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Project brief: Avenor head office fit-out, Level 14 Wenlock Place",
+      "app": "Project brief: Avenor head office fit-out, Level 14 Wenlock Place",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d01",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-02-09",
+      "app": "9 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "kind",
+      "expected": "certificate",
+      "app": "certificate",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "discipline",
+      "expected": "none",
+      "app": "none",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "lifecycle",
+      "expected": "authorities",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.93,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "number",
+      "expected": "PC-2026-01147",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "title",
+      "expected": "Planning Certificate",
+      "app": "Planning Certificate",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d02",
+      "tier": "messy",
+      "field": "date",
+      "expected": "2026-02-16",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d03",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": {
+        "accept": [
+          "report",
+          "specification",
+          "design_brief"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.52,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "none",
+      "app": "none",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "brief",
+          "design",
+          "project"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.31,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "WP-FOG-2026",
+      "app": "WP-FOG-2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Base building information and tenant fit-out guide",
+      "app": "Base building information and tenant fit-out guide",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d03",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-02-12",
+      "app": "12 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "correspondence",
+      "app": "correspondence",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.project_manager",
+          "none"
+        ]
+      },
+      "app": "consultant.project_manager",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.88,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.84,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "number",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "title",
+      "expected": "RE: Access date and program",
+      "app": "RE: Access date and program",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d04",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-02-24",
+      "app": "24 February 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.interior_design",
+      "app": "consultant.interior_design",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "number",
+      "expected": "CHI-FP-2603",
+      "app": "CHI-FP-2603",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: interior design services",
+      "app": "Fee proposal: interior design services",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-04",
+      "app": "4 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "discipline",
+      "expected": {
+        "accept": [
+          "consultant.services",
+          "consultant.mechanical"
+        ]
+      },
+      "app": "consultant.services",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.94,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.67,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "number",
+      "expected": "MBS-P-2611",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "title",
+      "expected": "Fee proposal: building services engineering",
+      "app": "Fee proposal: building services engineering",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "tier": "messy",
+      "field": "date",
+      "expected": "2026-03-06",
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d07",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.bca",
+      "app": "consultant.bca",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "number",
+      "expected": "TBR-26-044",
+      "app": "TBR-26-044",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: BCA consultancy",
+      "app": "Fee proposal: BCA consultancy",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-09",
+      "app": "9 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.access",
+      "app": "consultant.access",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "number",
+      "expected": "CAC-0318",
+      "app": "CAC-0318",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: access consultancy",
+      "app": "Fee proposal: access consultancy",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-10",
+      "app": "10 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.certifier",
+      "app": "consultant.certifier",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "number",
+      "expected": "HGC-26-0219",
+      "app": "HGC-26-0219",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: certification services",
+      "app": "Fee proposal: certification services",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-11",
+      "app": "11 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.quantity_surveyor",
+      "app": "consultant.quantity_surveyor",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "consultant",
+      "app": "consultant",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "number",
+      "expected": "BLC-2612",
+      "app": "BLC-2612",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Fee proposal: quantity surveying",
+      "app": "Fee proposal: quantity surveying",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-03-12",
+      "app": "12 March 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "report",
+      "app": "report",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "consultant.bca",
+      "app": "consultant.bca",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "design",
+          "authorities",
+          "consultant"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.34,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "TBR-R-26044-01",
+      "app": "TBR-R-26044-01",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "BCA assessment report",
+      "app": "BCA assessment report",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d11",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-04-22",
+      "app": "22 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "report",
+      "app": "report",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.access",
+      "app": "consultant.access",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "design",
+          "authorities",
+          "consultant"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 0.28,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "number",
+      "expected": "CAC-R-0318",
+      "app": "CAC-R-0318",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "title",
+      "expected": "Access report",
+      "app": "Access report",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d12",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-04-24",
+      "app": "24 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "kind",
+      "expected": "report",
+      "app": "report",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "discipline",
+      "expected": "consultant.interior_design",
+      "app": "consultant.interior_design",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.99,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "lifecycle",
+      "expected": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "missed"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "number",
+      "expected": "CHI-R-2603-01",
+      "app": "CHI-R-2603-01",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "revision",
+      "expected": null,
+      "app": "",
+      "band": "blank",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct_blank"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "title",
+      "expected": "Concept design report",
+      "app": "Concept design report",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d13",
+      "tier": "adversarial",
+      "field": "date",
+      "expected": "2026-04-15",
+      "app": "15 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "drawing",
+      "app": "drawing",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.interior_design",
+      "app": "consultant.interior_design",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.63,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "design",
+      "app": "design",
+      "band": "amber",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "number",
+      "expected": "ID-101",
+      "app": "ID-101",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "revision",
+      "expected": "A",
+      "app": "A",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "title",
+      "expected": "General arrangement plan - Level 14",
+      "app": "General arrangement plan - Level 14",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d14",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-04-29",
+      "app": "29 April 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "field": "status",
+      "expected": "filed",
+      "app": "filed",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "kind",
+      "expected": "drawing",
+      "app": "drawing",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 1,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "discipline",
+      "expected": "consultant.interior_design",
+      "app": "consultant.interior_design",
+      "band": "amber",
+      "by": "jev",
+      "confidence": 0.75,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "lifecycle",
+      "expected": "design",
+      "app": "design",
+      "band": "amber",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "number",
+      "expected": "ID-101",
+      "app": "ID-101",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "revision",
+      "expected": "B",
+      "app": "B",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "title",
+      "expected": "General arrangement plan - Level 14",
+      "app": "General arrangement plan - Level 14",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "tier": "clean",
+      "field": "date",
+      "expected": "2026-05-13",
+      "app": "13 May 2026",
+      "band": "green",
+      "by": "rule",
+      "confidence": null,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d15",
+      "field": "supersedes",
+      "expected": "d14",
+      "app": null,
+      "outcome": "missed"
+    }
+  ],
+  "profile": [
+    {
+      "key": "hdr.building_class",
+      "expected": "commercial",
+      "app": "commercial",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.subclass",
+      "expected": "office",
+      "app": "office",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.work_type",
+      "expected": "refurb",
+      "app": "refurb",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.planning",
+      "expected": "cdc",
+      "app": "cdc",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.procurement_route",
+      "expected": "traditional",
+      "app": "traditional",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.quality_level",
+      "expected": "high",
+      "outcome": "not_captured"
+    },
+    {
+      "key": "hdr.cond.operational_constraints",
+      "expected": "partial_occupation",
+      "app": "live_environment",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "wrong"
+    },
+    {
+      "key": "hdr.cond.access_constraints",
+      "expected": "restricted_hours",
+      "app": "restricted_hours",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.cond.environmental_sensitivity",
+      "expected": "standard",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "hdr.scale.nla_sqm",
+      "expected": 1200,
+      "app": "1200",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "hdr.scale.floor_plate_sqm",
+      "expected": 1200,
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "hdr.scale.tenancies",
+      "expected": 1,
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "hdr.scale.grade",
+      "expected": "A",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "hdr.scale.storeys",
+      "expected": 24,
+      "app": "24",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.ncc_class",
+      "expected": [
+        "5"
+      ],
+      "app": "5",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.state",
+      "expected": "NSW",
+      "app": "NSW",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.existing_building",
+      "expected": true,
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "det.existing_building_year",
+      "expected": 2008,
+      "app": "2008",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.heritage_status",
+      "expected": "none",
+      "app": "none",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.bushfire_prone_land",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.flood_hazard",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.potentially_contaminated_land",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.acid_sulfate_soils_mapped",
+      "expected": false,
+      "app": "stated_false",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.sprinklered",
+      "expected": true,
+      "app": "stated_true",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.type_of_construction",
+      "expected": "A",
+      "app": "",
+      "band": "blank",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "det.rise_in_storeys",
+      "expected": 24,
+      "app": "24",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.climate_zone",
+      "expected": "5",
+      "app": "5",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "det.gas_supply",
+      "expected": "none",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "fact.contract_form",
+      "expected": "as4000",
+      "app": "as4000",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.regulated_design",
+      "expected": "no",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "proj.budget_stated",
+      "expected": 240000000,
+      "app": "$2,400,000 excluding GST",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.owner_supply_stated",
+      "expected": {
+        "accept": [
+          "loose furniture and workstations, AV equipment, IT active equipment",
+          "Loose furniture and workstations, AV equipment, IT active equipment"
+        ]
+      },
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "proj.client",
+      "expected": "Avenor Capital Partners Pty Ltd",
+      "app": "Avenor Capital Partners Pty Ltd",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.address",
+      "expected": {
+        "accept": [
+          "Level 14, 211 Wenlock Terrace, North Sydney NSW 2060",
+          "211 Wenlock Terrace, North Sydney NSW 2060",
+          "Level 14, 211 Wenlock Terrace, North Sydney NSW 2060"
+        ]
+      },
+      "app": "211 Wenlock Terrace, North Sydney NSW 2060",
+      "band": "amber",
+      "alternatives": [
+        "14 Wenlock Place, North Sydney"
+      ],
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.lga",
+      "expected": {
+        "accept": [
+          "North Sydney",
+          "North Sydney Council"
+        ]
+      },
+      "app": "",
+      "band": "blank",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "proj.lot",
+      "expected": {
+        "accept": [
+          "Lot 12 DP 1184520",
+          "Lot 12 in DP 1184520"
+        ]
+      },
+      "app": "Lot 12 DP 1184520",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.zone",
+      "expected": {
+        "accept": [
+          "E2 Commercial Centre",
+          "E2"
+        ]
+      },
+      "app": "E2 Commercial Centre",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "proj.target_construction_start",
+      "expected": "2026-09-07",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": false,
+      "outcome": "missed_by_design"
+    },
+    {
+      "key": "flag.staged",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.multi_building",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.sustainability_target",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.community",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.country",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.fire_vulnerable_occupants",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.fire_special_hazards",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.fire_specialist_systems",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.basement",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.excavation_adjoining",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.transfer_structures",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.authority_asset",
+      "expected": "no",
+      "app": "",
+      "band": "",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "missed"
+    },
+    {
+      "key": "flag.rail",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.arborist_tree_impacts",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.public_road",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.osd_required",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.osd_existing",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.cl46",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    },
+    {
+      "key": "flag.panel",
+      "expected": "no",
+      "app": "no",
+      "band": "amber",
+      "alternatives": null,
+      "read_by_design": true,
+      "outcome": "correct"
+    }
+  ],
+  "invoices": [
+    {
+      "doc": "d16",
+      "field": "kind",
+      "expected": "invoice",
+      "app": "invoice",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "number",
+      "expected": "CHI-INV-0418",
+      "app": "CHI-INV-0418",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "invoice_date",
+      "expected": "2026-04-30",
+      "app": "2026-04-30",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "issuer_abn",
+      "expected": "41 727 862 569",
+      "app": "41727862569",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "ex_gst_cents",
+      "expected": 1400000,
+      "app": "1400000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "gst_cents",
+      "expected": 140000,
+      "app": "140000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "total_cents",
+      "expected": 1540000,
+      "app": "1540000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "supplier",
+      "expected": "consultant.interior_design",
+      "app": "Interior Design",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "flag.period",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d16",
+      "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "kind",
+      "expected": "invoice",
+      "app": "invoice",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "number",
+      "expected": "2291",
+      "app": "2291",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "invoice_date",
+      "expected": "2026-05-29",
+      "app": "2026-05-29",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "issuer_abn",
+      "expected": "78 303 243 509",
+      "app": "78303243509",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "ex_gst_cents",
+      "expected": 600000,
+      "app": "600000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "gst_cents",
+      "expected": 60000,
+      "app": "60000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "total_cents",
+      "expected": 690000,
+      "app": "690000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "supplier",
+      "expected": "consultant.services",
+      "app": "Services Engineer",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "flag.arithmetic",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "flag.period",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d17",
+      "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "kind",
+      "expected": "invoice",
+      "app": "invoice",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "number",
+      "expected": "TBR-INV-1187",
+      "app": "TBR-INV-1187",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "invoice_date",
+      "expected": "2026-05-15",
+      "app": "2026-05-15",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "issuer_abn",
+      "expected": "41 819 041 186",
+      "app": "41819041186",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "ex_gst_cents",
+      "expected": 350000,
+      "app": "350000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "gst_cents",
+      "expected": 35000,
+      "app": "35000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "total_cents",
+      "expected": 385000,
+      "app": "385000",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "supplier",
+      "expected": "consultant.bca",
+      "app": "BCA",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "flag.period",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    },
+    {
+      "doc": "d18",
+      "field": "flag.unmapped",
+      "expected": true,
+      "app": true,
+      "outcome": "correct"
+    }
+  ],
+  "fees": [
+    {
+      "doc": "d05",
+      "field": "stated_total_cents",
+      "expected": 13000000,
+      "app": "130000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d05",
+      "field": "firm_name",
+      "expected": "Corrigan Hale Interiors Pty Ltd",
+      "app": "Corrigan Hale Interiors Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "field": "stated_total_cents",
+      "expected": 6200000,
+      "app": "62000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d06",
+      "field": "firm_name",
+      "expected": "Meridale Building Services Engineers Pty Ltd",
+      "app": "MERIDALE BUILDING SERVICES ENGINEERS PTY LTD",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "field": "stated_total_cents",
+      "expected": 1000000,
+      "app": "10000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d07",
+      "field": "firm_name",
+      "expected": "Tallowood Building Regulations Pty Ltd",
+      "app": "Tallowood Building Regulations Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "field": "stated_total_cents",
+      "expected": 550000,
+      "app": "5500.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d08",
+      "field": "firm_name",
+      "expected": "Clearpath Access Consultants Pty Ltd",
+      "app": "Clearpath Access Consultants Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "field": "stated_total_cents",
+      "expected": 1700000,
+      "app": "17000.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d09",
+      "field": "firm_name",
+      "expected": "Harbourgate Certifiers Pty Ltd",
+      "app": "Harbourgate Certifiers Pty Ltd",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "field": "stated_total_cents",
+      "expected": 1650000,
+      "app": "16500.00",
+      "outcome": "correct"
+    },
+    {
+      "doc": "d10",
+      "field": "firm_name",
+      "expected": "Baxter Lane Cost Consultants Pty Ltd",
+      "app": "Baxter Lane Cost Consultants Pty Ltd",
+      "outcome": "correct"
+    }
+  ],
+  "summary": {
+    "register_by_field": {
+      "status": {
+        "correct": 15
+      },
+      "kind": {
+        "correct": 14,
+        "missed": 1
+      },
+      "discipline": {
+        "correct": 15
+      },
+      "lifecycle": {
+        "missed": 8,
+        "correct": 7
+      },
+      "number": {
+        "correct_blank": 2,
+        "missed": 2,
+        "correct": 11
+      },
+      "revision": {
+        "correct_blank": 13,
+        "correct": 2
+      },
+      "title": {
+        "correct": 15
+      },
+      "date": {
+        "correct": 13,
+        "missed": 2
+      },
+      "supersedes": {
+        "missed": 1
+      }
+    },
+    "profile": {
+      "correct": 43,
+      "not_captured": 1,
+      "wrong": 1,
+      "missed": 6,
+      "missed_by_design": 6
+    },
+    "invoices_by_field": {
+      "kind": {
+        "correct": 3
+      },
+      "number": {
+        "correct": 3
+      },
+      "invoice_date": {
+        "correct": 3
+      },
+      "issuer_abn": {
+        "correct": 3
+      },
+      "ex_gst_cents": {
+        "correct": 3
+      },
+      "gst_cents": {
+        "correct": 3
+      },
+      "total_cents": {
+        "correct": 3
+      },
+      "supplier": {
+        "correct": 3
+      },
+      "flag.period": {
+        "correct": 3
+      },
+      "flag.unmapped": {
+        "correct": 3
+      },
+      "flag.arithmetic": {
+        "correct": 1
+      }
+    },
+    "fees_by_field": {
+      "stated_total_cents": {
+        "correct": 6
+      },
+      "firm_name": {
+        "correct": 6
+      }
+    }
+  }
+}

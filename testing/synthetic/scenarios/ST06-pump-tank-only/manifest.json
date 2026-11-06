@@ -1,0 +1,894 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST06-pump-tank-only",
+  "type_id": "T06",
+  "base": "ST06-base",
+  "triggers": [
+    "pump-tank-only"
+  ],
+  "project": {
+    "name": "41 Callowhill Street sprinkler pump and tank upgrade",
+    "address": "41 Callowhill Street, North Sydney NSW 2060",
+    "lga": "North Sydney Council",
+    "summary": "Corvina Property Holdings, sole owner of a 1988 6-storey Class 5 office building over a Class 7a basement car park in North Sydney, replaces its single electric sprinkler pump with electric duty, diesel standby and jockey pumps and a 150 kL fire water storage tank in an enlarged basement pump room, while every floor stays tenanted. There is no fit-out: one complying development certificate under the Fire Safety Code and one AS 4000 lump sum contract."
+  },
+  "invented": {
+    "lots": [
+      "Lot 12 DP 1093476"
+    ],
+    "abns": [
+      "72 535 457 468",
+      "25 166 774 158",
+      "14 278 143 045",
+      "57 072 996 136",
+      "44 756 990 491",
+      "78 801 661 959",
+      "51 851 452 328",
+      "30 200 480 273"
+    ],
+    "firms": [
+      "Corvina Property Holdings Pty Ltd",
+      "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "Ferrule Consulting Engineers Pty Ltd",
+      "Kilnworth Electrical Engineers Pty Ltd",
+      "Plenum Mechanical Engineers Pty Ltd",
+      "Lintel Building Certifiers Pty Ltd",
+      "Marlowe Interiors Pty Ltd",
+      "Sentinel Hazmat Surveys Pty Ltd"
+    ],
+    "emails": [
+      "megan.holt@example.com",
+      "owen.calder@example.com",
+      "priya.raman@example.com",
+      "daniel.kwon@example.com",
+      "hamish.doyle@example.com",
+      "grace.ellison@example.com",
+      "isla.marlowe@example.com",
+      "tom.reyes@example.com"
+    ],
+    "streets": [
+      "41 Callowhill Street, North Sydney NSW 2060 (invented street in a real suburb)"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Owner brief - 41 Callowhill Street fire services upgrade.md",
+      "title": "Owner's brief: sprinkler water supply upgrade",
+      "author_role": "owner",
+      "firm": "Corvina Property Holdings Pty Ltd",
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Ref: CPH-CS41-B01, Date: 9 February 2026, Client: Corvina Property Holdings Pty Ltd, Site: 41 Callowhill Street, North Sydney NSW 2060; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: Corvina Property Holdings Pty Ltd"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 41 Callowhill Street, North Sydney NSW 2060"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 41 Callowhill Street, North Sydney NSW 2060"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "41 Callowhill Street is a 6-storey office building over a single basement car park level, constructed in 1988"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "a 6-storey office building"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "a 6-storey office building over a single basement car park level"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "constructed in 1988"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "We are refurbishing the base-building fire services by upgrading the sprinkler water supply of the existing building. The scope is limited to the fire pump and tank upgrade; no tenancy works are included"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "All floors remain tenanted and in use throughout the works"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "The building is in single ownership. Corvina Property Holdings is the sole owner and the only decision maker"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "The building stands on the street boundary in the North Sydney CBD; every delivery comes through the basement car park entry or the loading dock, booked around the tenants, and there is no on-street loading"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "Mid-range quality: good, durable plant and finishes in the pump room, nothing high end"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "A standard CBD site with no ecological, habitat or Aboriginal heritage constraints"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "The consultants will fully document the upgrade for a traditional lump sum tender to fire protection contractors"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "a traditional lump sum tender"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The works contract will be AS 4000-1997 General conditions of contract, with special conditions"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Approved budget: $1,200,000 excluding GST (fire services upgrade)"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "This is one building; we are not planning multiple buildings"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or similar rating target is set for these works"
+        },
+        {
+          "key": "flag.staged",
+          "says": "The contract is delivered as one construction stage; there is no staged construction or staged occupation"
+        }
+      ],
+      "traps": [
+        {
+          "id": "rfp-cued-as-proposal",
+          "what": "The brief asks each consultant to 'submit a fee proposal by 6 March 2026'; proposals.Cue matches 'fee proposal' anywhere in the text.",
+          "expect": "d01 files as design_brief and opens no submission and no procurement package"
+        },
+        {
+          "id": "pump-room-in-basement",
+          "what": "'the fire pump room in the basement' matches the basement trigger \\bbasement.",
+          "expect": "flag.basement stays no (d06, d13): the basement exists and nothing is excavated"
+        },
+        {
+          "id": "building-over-basement",
+          "what": "'a 6-storey office building over a single basement car park level' matches the authority_asset trigger build(?:ing)? over.",
+          "expect": "flag.authority_asset stays no (d12)"
+        }
+      ],
+      "content": "The asset manager's brief (Megan Holt, Corvina Property Holdings) inviting the consultant team to propose. Sections: ## The building (6-storey office building over a single basement car park level, constructed in 1988, in single ownership; every floor is tenanted; level 3 remains leased to the existing tenant and is not affected), ## Why we are acting (the 2025 annual sprinkler flow test showed a thin margin at the duty point and Sydney Water's statement shows lower main pressure; the fire pump room in the basement holds one old electric pump; the upgrade is a voluntary capital works item; no order or notice has been issued), ## Scope (we are refurbishing the base-building fire services by upgrading the sprinkler water supply of the existing building with a new pumpset arrangement and fire water tank sized by the engineer; the scope is limited to the fire pump and tank upgrade; no tenancy works are included), ## Budget (Approved budget: $1,200,000 excluding GST (fire services upgrade)), ## Delivery (a traditional lump sum tender, AS 4000-1997 General conditions of contract, with special conditions; one construction stage; all floors remain tenanted and in use throughout the works; deliveries only through the car park entry or the loading dock), ## Expectations (mid-range quality; no rating target; one building; standard CBD site with no environmental constraints), ## Team sought (hydraulic and fire services engineer, structural, electrical and mechanical engineers, hazardous materials consultant, registered certifier), ## Submission (submit a fee proposal by 6 March 2026 to megan.holt@example.com). Plain prose."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 12 DP 1093476.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-12",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-0815 | | Issue date | 12/02/2026 | | Applicant | Corvina Property Holdings Pty Ltd |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "North Sydney Council"
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 12 DP 1093476"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone E2 Commercial Centre under North Sydney Local Environmental Plan 2013"
+        },
+        {
+          "key": "proj.address",
+          "says": "41 Callowhill Street, North Sydney NSW 2060"
+        },
+        {
+          "key": "det.state",
+          "says": "North Sydney NSW 2060"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.state_road",
+          "says": "The land does not front a classified road"
+        }
+      ],
+      "traps": [
+        {
+          "id": "acid-sulfate-class-not-ncc",
+          "what": "'Acid sulfate soils: class 5' names a class that is not an NCC building class.",
+          "expect": "det.ncc_class stays [\"5\", \"7a\"] from d03 and d09; no class is added or replaced"
+        }
+      ],
+      "content": "A council s10.7(2) planning certificate for Lot 12 DP 1093476, numbered items in the usual order: zoning and LEP (E2 Commercial Centre, North Sydney LEP 2013), DCP, complying development ('Complying development may be carried out on the land under the Codes SEPP'), heritage (not an item, not in a conservation area), coastal (not within a coastal management area), bush fire (not bush fire prone), flood (not subject to flood related development controls), acid sulfate soils (class 5), contamination (no record), rail corridor (not within or next to one), classified road (does not front one), road widening (none). Fixed council wording; identity sits in a table, not label lines."
+    },
+    {
+      "id": "d03",
+      "filename": "Annual fire safety statement 2025 and fire safety schedule - 41 Callowhill Street.md",
+      "title": "Annual fire safety statement and fire safety schedule",
+      "author_role": "owner",
+      "firm": "Corvina Property Holdings Pty Ltd",
+      "date": "2026-01-20",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Ref: CS41-AFSS-2025, Date: 20 January 2026, Building: 41 Callowhill Street, North Sydney NSW 2060; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "The building is Class 5 (office) with a Class 7a basement car park"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is sprinkler protected throughout to AS 2118.1"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "The building has a rise in storeys of 6"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "This statement covers the existing building"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "office building"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "office building"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "a rise in storeys of 6"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fire-stairs-implied-stair",
+          "what": "The schedule lists 'Fire doors to the fire stairs' and 'egress via the fire stairs'; 'stair' implies access-egress.stairs-and-ramps (DOMAIN.md §10).",
+          "expect": "No stairs-and-ramps work item and no 'Stairs, ramps, handrails and nosings' cost line"
+        },
+        {
+          "id": "afss-kind",
+          "what": "An annual fire safety statement has no obvious kind; filed as correspondence it would never be read (DOMAIN.md §10).",
+          "expect": "Filed as certificate or report, so det.ncc_class, det.sprinklered and det.rise_in_storeys are read from it"
+        }
+      ],
+      "content": "The owner's 2025 annual fire safety statement with the current fire safety schedule attached. Sections: ## Building (existing building; Class 5 (office) with a Class 7a basement car park; rise in storeys of 6; sprinkler protected throughout to AS 2118.1; the building has no performance solutions; it was approved to the deemed-to-satisfy provisions), ## Statement (each essential fire safety measure was assessed by a competent fire safety practitioner and performs to its standard of performance; note on the automatic fire sprinkler system: the 2025 annual flow test passed with a thin margin at the duty point and the owner is planning an upgrade of the water supply), ## Fire safety schedule (table of measures and standards: automatic fire sprinkler system AS 2118.1, fire hydrants and booster, fire detection and alarm, EWIS, emergency lighting and exit signs, fire doors to the fire stairs, portable extinguishers), ## Evacuation (egress via the fire stairs). Formal statutory wording."
+    },
+    {
+      "id": "d04",
+      "filename": "Sydney Water statement of available pressure and flow - 41 Callowhill Street.md",
+      "title": "Statement of available pressure and flow",
+      "author_role": "authority",
+      "firm": null,
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Ref: SW-SAPF-2026-118804, Date: 2 February 2026, Property: 41 Callowhill Street, North Sydney NSW 2060; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.water_supply_source",
+          "says": "The property is served by the 200 mm water main in Callowhill Street"
+        }
+      ],
+      "traps": [
+        {
+          "id": "sydney-water-asset",
+          "what": "Standard wording 'Do not build over or next to a Sydney Water asset without approval' matches the authority_asset trigger 'sydney water asset'.",
+          "expect": "flag.authority_asset stays no (d12)"
+        },
+        {
+          "id": "backflow-contamination",
+          "what": "'a testable backflow prevention device ... to protect the drinking water supply from contamination' matches the contamination trigger.",
+          "expect": "det.potentially_contaminated_land stays false (d02)"
+        }
+      ],
+      "content": "Sydney Water's statement issued through Tap in for the fire service at the property. Sections: ## Property and main (the property is served by the 200 mm water main in Callowhill Street; existing 150 mm fire service connection), ## Pressure and flow (a table of available pressure at flows from 5 to 40 L/s for peak-hour and maximum-day conditions; pressures are lower than the 2009 statement the original design used), ## Conditions (the statement is valid for 12 months; a containment backflow prevention device must be installed, tested and registered to protect the drinking water supply from contamination; do not build over or next to a Sydney Water asset without approval). Standard authority wording; no design advice."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Calder Fire and Hydraulic Engineers - 41 Callowhill Street.md",
+      "title": "Fee proposal: hydraulic and fire services engineering",
+      "author_role": "consultant.fire_services",
+      "firm": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "date": "2026-02-23",
+      "wave": 2,
+      "drop": "row:consultant.fire_services",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Proposal no: CFH-FP-26-019, Date: 23 February 2026, Client: Corvina Property Holdings Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: Corvina Property Holdings Pty Ltd"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee, Stages 1 to 8: $90,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "hydraulic-and-fire-name",
+          "what": "The firm and the signatory's title are 'Hydraulic and Fire Services Engineer'; Jev may file it as Hydraulic (DOMAIN.md §10).",
+          "expect": "Dropped on the Fire Services row, so the submission sits on consultant.fire_services; the register accepts fire_services or hydraulic"
+        },
+        {
+          "id": "fee-stages-not-staged-works",
+          "what": "The fee table is headed 'Stage 1' to 'Stage 8', which matches the staged trigger \\bstages? [1-9a-c]\\b.",
+          "expect": "flag.staged stays no (d01, d12)"
+        }
+      ],
+      "content": "Proposal signed by Owen Calder, Hydraulic and Fire Services Engineer, dropped on the Fire Services procurement row. Sections: understanding (old single electric pump, thin flow-test margin, lower Sydney Water pressure, fully occupied building; the scope is limited to the fire pump and tank upgrade), scope, fee table (Stage 1 Inception and records review $6,500; Stage 2 Investigation, flow and pressure test and Sydney Water statement $12,000; Stage 3 Options report $9,500; Stage 4 Design, hydraulic calculations and documentation $30,000; Stage 5 Design certification and competent fire safety practitioner endorsement $6,000; Stage 6 Tender documentation and tender assessment $5,000; Stage 7 Construction-phase reviews and hold-point inspections $14,000; Stage 8 Commissioning witness and handover $7,000; total $90,000 ex GST), additional services at $240 per hour ex GST, exclusions (structural, electrical and mechanical design; authority fees)."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal FCE-Q-2207.md",
+      "title": "Fee proposal: structural engineering for the fire water tank and pump room",
+      "author_role": "consultant.structural",
+      "firm": "Ferrule Consulting Engineers Pty Ltd",
+      "date": "2026-02-25",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Quote no: FCE-Q-2207, Date: 25 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.basement",
+          "says": "The pump room is in the existing basement; no basement is built or excavated"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $24,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "structural-fire-tank",
+          "what": "'The structural engineer will confirm the slab for the fire water storage tank' matches the fire_specialist_systems trigger structural[^.]{0,100}fire.",
+          "expect": "flag.fire_specialist_systems stays no (d12)"
+        }
+      ],
+      "content": "Structural engineer's quote signed by Priya Raman. Fee table: existing slab assessment, record drawing review and slab scanning $7,500; tank plinth and slab strengthening design $9,000; core hole and penetration review $2,500; structural design certification $1,500; construction inspections of plinths and strengthening before concrete $3,500; total $24,000 ex GST. Additional inspections $480 each. Notes: the structural engineer will confirm the slab for the fire water storage tank once the tank operating load is known; the pump room is in the existing basement; no basement is built or excavated."
+    },
+    {
+      "id": "d07",
+      "filename": "Kilnworth fee proposal KEE-P-0342 - Callowhill Street.md",
+      "title": "Fee proposal: electrical engineering services",
+      "author_role": "consultant.electrical",
+      "firm": "Kilnworth Electrical Engineers Pty Ltd",
+      "date": "2026-02-26",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Proposal ref: KEE-P-0342, Date: 26 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total fee $18,700 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "Electrical engineer's proposal from Daniel Kwon. Every figure GST-inclusive: maximum demand and main switchboard capacity check for the fire pump $4,400; design and documentation of the fire pump supply and fire-rated submain $9,900; tender documentation and assessment $1,100; construction-phase inspections and certification $3,300; total $18,700 inc GST. Hourly rate $209 inc GST."
+    },
+    {
+      "id": "d08",
+      "filename": "Plenum fee submission - Callowhill Street.md",
+      "title": "Fee proposal: mechanical engineering services",
+      "author_role": "consultant.mechanical",
+      "firm": "Plenum Mechanical Engineers Pty Ltd",
+      "date": "2026-02-27",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | PME-26-031 | | Date | 27/02/2026 | | Attention | Megan Holt, Corvina Property Holdings |; one # heading 'Fee proposal: mechanical engineering services'",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $12,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Mechanical engineer's submission from Hamish Doyle. Fee table: pump room ventilation and diesel engine exhaust design $8,500; tender documentation $1,000; construction-phase reviews and commissioning witness $2,500; total $12,000 ex GST. Hourly rate $210 ex GST."
+    },
+    {
+      "id": "d09",
+      "filename": "Fee proposal - Lintel Building Certifiers - 41 Callowhill Street.md",
+      "title": "Fee proposal: certification services",
+      "author_role": "consultant.certifier",
+      "firm": "Lintel Building Certifiers Pty Ltd",
+      "date": "2026-03-04",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Proposal no: LBC-26-0144, Date: 4 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "The works will be approved by one complying development certificate under the Fire Safety Code of the Codes SEPP"
+        },
+        {
+          "key": "det.ncc_class",
+          "says": "The building is Class 5 (office) with a Class 7a basement car park"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "This is a Class 5 office building, so the Design and Building Practitioners Act regulated-design obligations do not apply"
+        },
+        {
+          "key": "flag.panel",
+          "says": "As complying development, no planning panel is involved"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "No clause 4.6 variation is involved"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee: $13,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Registered certifier's proposal signed by Grace Ellison. Sections: approval pathway (one complying development certificate under the Fire Safety Code of the Codes SEPP for the pump, tank, pump room and fire service works; we have discussed the proposed arrangement with the fire services engineer, and on that arrangement the certifier confirmed the tank and pump house meet the Fire Safety Code development standards; the works proceed as complying development; no consent-authority upgrade applies; no planning panel and no clause 4.6 variation are involved; whether a fire safety schedule and final fire safety certificate are needed for this alteration will be confirmed at assessment), building (Class 5 (office) with a Class 7a basement car park; a Class 5 office building, so the Design and Building Practitioners Act regulated-design obligations do not apply), fee table (CDC: Fire Safety Code assessment and determination $6,500; principal certifier: notice of commencement and inspections $4,000; final inspection and occupation certificate $2,500; total $13,000 ex GST), exclusions (Planning Portal and long service levy charges)."
+    },
+    {
+      "id": "d11",
+      "filename": "Hazardous materials survey quote SHS-Q-1187.md",
+      "title": "Fee proposal: pre-refurbishment hazardous materials survey",
+      "author_role": "consultant.hazmat",
+      "firm": "Sentinel Hazmat Surveys Pty Ltd",
+      "date": "2026-03-06",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Quote no: SHS-Q-1187, Date: 6 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $3,300 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Prices exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Hazmat consultant's quote signed by Tom Reyes. Fee table: pre-refurbishment hazardous materials survey of the pump room, the adjoining store and the risers $2,600; laboratory analysis of samples included; asbestos register update and report $700; total $3,300 ex GST."
+    },
+    {
+      "id": "d12",
+      "filename": "Fire services options report CFH-R-26-019-01.md",
+      "title": "Fire services options report: sprinkler water supply upgrade",
+      "author_role": "consultant.fire_services",
+      "firm": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "date": "2026-04-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Report no: CFH-R-26-019-01, Revision: 0, Report date: 20 April 2026, Client: Corvina Property Holdings Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: Corvina Property Holdings Pty Ltd"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This report sets out the options for upgrading the sprinkler water supply of the existing building"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "the 6-storey office building"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "the 6-storey office building"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "the existing building"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is sprinkler protected throughout to AS 2118.1"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The works will be approved by one complying development certificate under the Fire Safety Code of the Codes SEPP"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "All floors remain tenanted and in use throughout the works"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "The sprinkler system is supplied from Sydney Water's reticulated town water main through the existing fire service connection"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "AS 4000-1997 General conditions of contract, with special conditions"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "The works do not build over or next to any sewer main or water main"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No public road works or road opening are required"
+        },
+        {
+          "key": "flag.heavy_vehicles",
+          "says": "No heavy vehicle access is needed: the tank panels arrive by light truck"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention"
+        },
+        {
+          "key": "flag.osd_required",
+          "says": "The works do not change the roof or any hard surface, so on-site detention is not required"
+        },
+        {
+          "key": "flag.fire_special_hazards",
+          "says": "There are no special fire hazards or dangerous goods in the building; the fire water storage tank and the diesel fuel for the standby pump are part of the sprinkler water supply, not a special hazard"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "No structural fire assessment and no facade, cladding or tested-system fire departure is required; no specialist fire systems are needed"
+        },
+        {
+          "key": "flag.fire_vulnerable_occupants",
+          "says": "There are no vulnerable occupants needing assisted evacuation"
+        },
+        {
+          "key": "flag.staged",
+          "says": "The contract is one construction stage; there is no staged construction"
+        }
+      ],
+      "traps": [
+        {
+          "id": "pump-room-flooding",
+          "what": "'The pump room floor drains to the car park sump to protect the pump room from flooding' and 'flood the tank for its hydrostatic test' match the flood trigger \\bflood.",
+          "expect": "det.flood_hazard stays false (d02)"
+        },
+        {
+          "id": "stage-1-cut-over",
+          "what": "The impairment plan says 'Stage 1 cut-over' and 'Stage 2 commissioning'; matches the staged trigger.",
+          "expect": "flag.staged stays no: these are impairment steps, not staged construction"
+        },
+        {
+          "id": "fire-storage-not-special-hazard",
+          "what": "'fire water storage tank' and 'diesel fuel storage' match the fire_special_hazards storage pattern.",
+          "expect": "flag.fire_special_hazards stays no"
+        },
+        {
+          "id": "sprinkler-alias-trade",
+          "what": "The title says 'sprinkler water supply upgrade'; trade.fire_services carries the aliases 'Sprinkler' and 'Sprinklers' (DOMAIN.md §10).",
+          "expect": "Files as consultant.fire_services (or its alias hydraulic), never trade.fire_services"
+        },
+        {
+          "id": "modular-fire-tank",
+          "what": "'a 150 kL modular fire water tank' matches the fire_specialist_systems trigger modular[^.]{0,100}fire.",
+          "expect": "flag.fire_specialist_systems stays no"
+        }
+      ],
+      "content": "The fire services engineer's options report after the investigation. Sections: ## Existing system (existing building; sprinkler protected throughout to AS 2118.1; one electric pump boosting the town main; the sprinkler system is supplied from Sydney Water's reticulated town water main through the existing fire service connection; the hydrant system is unaffected and remains town-main fed through the existing booster; the building has no performance solutions), ## Test results (flow and pressure test at the test line; the Sydney Water statement; the main alone cannot meet the sprinkler demand), ## Options (A: larger single pump, rejected; B: electric duty pumpset, diesel standby pumpset, jockey pump and a 150 kL modular fire water tank, recommended), ## Recommended option (the tank fits within the existing basement store; no car spaces or external areas are affected; tank panels are carried in through the basement car park entry; no crane is needed; no heavy vehicle access is needed; the existing fire service connection is retained; Sydney Water confirmed the main is adequate to refill the tank; the backflow device is upgraded; the electrical engineer confirmed the MSB has capacity and a spare supply-side connection; diesel fuel storage within a bunded day tank; pump room floor drains to the car park sump to protect the pump room from flooding; the diesel exhaust discharges through the existing basement plant exhaust shaft, clear of tenancies, air intakes and neighbours; the weekly test run is not audible in the tenancies), ## Compliance (the design complies with the deemed-to-satisfy provisions; no performance solution is proposed; no special fire hazards; no structural fire assessment and no facade, cladding or tested-system fire departure is required; no specialist fire systems are needed; no vulnerable occupants; the works do not build over or next to any sewer main or water main; no public road works; no roof or hard-surface change and no on-site detention), ## Approvals and delivery (one complying development certificate under the Fire Safety Code of the Codes SEPP; AS 4000-1997 General conditions of contract, with special conditions; the contract is one construction stage; there is no staged construction), ## Impairment plan (all floors remain tenanted and in use throughout the works; Stage 1 cut-over out of hours with a hire pump and fire watch; Stage 2 commissioning; flood the tank for its hydrostatic test), ## Scope (the scope is limited to the fire pump and tank upgrade; no tenancy works are included; level 3 remains leased to the existing tenant and is not affected; existing sprinkler heads on every floor are unchanged)."
+    },
+    {
+      "id": "d13",
+      "filename": "Structural assessment of tank location FCE-R-2207-01.md",
+      "title": "Structural assessment: sprinkler tank location and pump room slab",
+      "author_role": "consultant.structural",
+      "firm": "Ferrule Consulting Engineers Pty Ltd",
+      "date": "2026-04-14",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Report no: FCE-R-2207-01, Revision: 0, Report date: 14 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 1988"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "the existing building's basement slab"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is built or excavated: the pump room is in the existing basement car park level"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "No excavation is involved, and nothing is done near the adjoining boundaries or neighbouring structures"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "Groundwater is therefore not encountered and no dewatering is needed"
+        },
+        {
+          "key": "flag.transfer_structures",
+          "says": "The tank does not sit on or near any transfer slab or transfer beam"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's assessment of the tank location in the existing basement store. Sections: ## Existing structure (constructed in 1988; 200 mm conventionally reinforced slab on ground in the basement, record drawings confirmed by scanning; no transfer slab or transfer beam near the tank), ## Tank load (the 150 kL tank's operating load on a new reinforced plinth spreads within the slab's capacity; no strengthening needed beneath the store; local thickening under the pumpset skids), ## Core holes (scan before coring; core positions clear of reinforcement in the store wall), ## Scope limits (no basement is built or excavated; no excavation near the adjoining boundaries or neighbouring structures; groundwater is not encountered and no dewatering is needed)."
+    },
+    {
+      "id": "d14",
+      "filename": "Hazardous materials survey report SHS-R-1187.md",
+      "title": "Pre-refurbishment hazardous materials survey",
+      "author_role": "consultant.hazmat",
+      "firm": "Sentinel Hazmat Surveys Pty Ltd",
+      "date": "2026-04-08",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Report no: SHS-R-1187, Revision: 0, Report date: 8 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 1988"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "existing building"
+        }
+      ],
+      "traps": [],
+      "content": "Hazmat consultant's survey of the works areas. Sections: ## Scope (the pump room, the adjoining store and the risers; the building was constructed in 1988), ## Method (visual inspection, 14 samples, laboratory analysis), ## Findings (the 2024 hazardous materials survey found no asbestos in the areas affected by the works; this re-inspection confirms it; no lead paint in the pump room; man-made mineral fibre lagging on the old pump discharge pipe, to be removed with standard controls), ## Register (asbestos register updated for the works areas)."
+    },
+    {
+      "id": "d16",
+      "filename": "FS-101 Rev A - Basement fire pump room layout.md",
+      "title": "Basement fire pump room: general arrangement",
+      "author_role": "consultant.fire_services",
+      "firm": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "date": "2026-05-11",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: FS-101, Revision: A, Title: Basement fire pump room: general arrangement, Date: 11 May 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: FS-101"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: A"
+        }
+      ],
+      "traps": [],
+      "content": "Plan sheet as Markdown: title block, then notes on the pumpset skids, jockey pump, controllers, the 150 kL modular tank in the former store, test line and suction pipework, and the rated enclosure. Revision note 'Preliminary, for consultant coordination'."
+    },
+    {
+      "id": "d17",
+      "filename": "FS-101 Rev B - Basement fire pump room layout.md",
+      "title": "Basement fire pump room: general arrangement",
+      "author_role": "consultant.fire_services",
+      "firm": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "date": "2026-06-02",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: FS-101, Revision: B, Title: Basement fire pump room: general arrangement, Date: 2 June 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: FS-101"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: B"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of FS-101: tank plinth set out to the structural engineer's design, diesel exhaust route and fuel day tank bund added; revision note 'Issued for tender'."
+    },
+    {
+      "id": "d18",
+      "filename": "Tax invoice CFH-INV-0412.md",
+      "title": "Tax invoice CFH-INV-0412",
+      "author_role": "consultant.fire_services",
+      "firm": "Calder Fire and Hydraulic Engineers Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: CFH-INV-0412, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $18,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $1,850.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $20,350.00"
+        }
+      ],
+      "traps": [],
+      "content": "Calder's invoice for fee stages 1 (inception and records review, $6,500) and 2 (investigation, $12,000), both 100% complete."
+    },
+    {
+      "id": "d19",
+      "filename": "Ferrule invoice FCE-2611.md",
+      "title": "Tax invoice FCE-2611",
+      "author_role": "consultant.structural",
+      "firm": "Ferrule Consulting Engineers Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | FCE-2611 | | Date | 30/04/2026 | | ABN | 14 278 143 045 |",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Fee $7,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $375.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total due $7,875.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "gst-half-rate",
+          "what": "GST is printed $375.00 on a $7,500.00 fee (5%, not 10%); the total adds up.",
+          "expect": "The ledger flags gst_rate"
+        }
+      ],
+      "content": "Structural engineer's invoice for the existing slab assessment, record drawing review and slab scanning, 100% complete. The GST line is calculated at half the rate."
+    },
+    {
+      "id": "d20",
+      "filename": "Sentinel tax invoice SHS-INV-5530.md",
+      "title": "Tax invoice SHS-INV-5530",
+      "author_role": "consultant.hazmat",
+      "firm": "Sentinel Hazmat Surveys Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: SHS-INV-5530, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $2,600.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $260.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $2,860.00"
+        }
+      ],
+      "traps": [],
+      "content": "Hazmat consultant's invoice for the pre-refurbishment survey, 100% complete."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief: the trigger's evidence (scope limited to the pump and tank; level 3 remains leased and is not affected) replaces 'the level 3 fit-out is delivered with the fire services upgrade'; the fit-out funding, landlord's-works and interim-occupation sentences, the second contract and the interior designer are dropped; all floors stay tenanted; budget restated as the fire services figure only ($1,200,000)"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Fire services fee: level 3 sprinkler, detection and EWIS alterations removed; stages 4, 7 and 8 reduced (stages 1 and 2 unchanged, so invoice d18 stands)"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "Electrical fee: level 3 lighting, power and data removed"
+    },
+    {
+      "doc": "d08",
+      "change": "changed",
+      "why": "Mechanical fee: level 3 air distribution and comms room cooling removed"
+    },
+    {
+      "doc": "d09",
+      "change": "changed",
+      "why": "Certifier: one CDC under the Fire Safety Code; the level 3 fit-out CDC is removed"
+    },
+    {
+      "doc": "d10",
+      "change": "removed",
+      "why": "The trigger removes the interior designer: no fit-out"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "Hazmat survey no longer covers level 3"
+    },
+    {
+      "doc": "d12",
+      "change": "changed",
+      "why": "Options report: one CDC; all floors tenanted; the level 3 link becomes the trigger's evidence"
+    },
+    {
+      "doc": "d14",
+      "change": "changed",
+      "why": "Hazmat survey report no longer covers level 3"
+    },
+    {
+      "doc": "d15",
+      "change": "removed",
+      "why": "No fit-out, so no level 3 concept design report"
+    },
+    {
+      "doc": "d20",
+      "change": "changed",
+      "why": "Hazmat invoice follows the reduced survey fee"
+    },
+    {
+      "doc": "d18",
+      "change": "changed",
+      "why": "Project line drops the level 3 fit-out; every amount and keyed field is unchanged"
+    }
+  ]
+}

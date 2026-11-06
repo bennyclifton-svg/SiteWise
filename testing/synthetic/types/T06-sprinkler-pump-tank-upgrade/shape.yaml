@@ -622,7 +622,7 @@ triggers:
       - "The diesel exhaust must discharge above the roof, through the existing riser."
       - "A residential building adjoins the rear lane where the exhaust would discharge."
     negation:
-      - "Two electric pumpsets on separate supplies are proposed; there is no diesel engine."
+      - "The diesel exhaust discharges through the existing basement plant exhaust shaft, clear of tenancies, air intakes and neighbours; the weekly test run is not audible in the tenancies."
     profile: []
     adds:
       procurement: [consultant.acoustic]
@@ -664,7 +664,7 @@ triggers:
       - "Level 3 remains leased to the existing tenant and is not affected."
     negation:
       - "The level 3 fit-out is delivered with the fire services upgrade."
-    profile: []
+    profile: [hdr.cond.operational_constraints, proj.budget_stated]   # live_environment once every floor is tenanted (keys accept partial_occupation too); removing the fit-out removes its budget, so the stated budget becomes the fire services figure
     adds:
       program: []
       authority: ["One CDC under the Fire Safety Code (verified: false)", "Fire safety schedule and final fire safety certificate may not be required for a Fire Safety Code alteration to a hydraulic fire safety system (verified: false)"]
@@ -699,7 +699,7 @@ triggers:
       - "Landlord's works are limited to the base-building fire services upgrade; tenant works must comply with the fit-out guide."
     negation:
       - "The landlord delivers the level 3 fit-out as landlord's works."
-    profile: []
+    profile: [proj.budget_stated]   # removing the fit-out removes its budget; the stated budget becomes the fire services figure
     adds:
       cost_plan: ["Landlord's review of tenant fit-out design (fire services, mechanical, structural)", "Tenant fit-out incentive or contribution"]
       program: ["Landlord review and approval of the tenant's design", "Tenant's fire services alterations tested against the new supply"]

@@ -1,0 +1,11 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T03-office-fitout/shape.yaml",
+  "triggers": [],
+  "scenario_facts": {
+    "cost_plan": {
+      "lga": "North Sydney",
+      "budget_stated_cents": 240000000
+    }
+  }
+}

@@ -1,0 +1,394 @@
+{
+  "scenario": "ST03-da-pathway",
+  "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "0aee9a453a199171c69df220897388b3d0f2486d",
+    "app_files_modified": 16
+  },
+  "started": "20261107-t03-t04-t06",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 2,
+      "seconds": 10.5
+    },
+    {
+      "wave": 2,
+      "documents": 7,
+      "idle": true,
+      "profile_queued": 7,
+      "seconds": 14.8
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 12.7
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Tenant project brief - Level 14 Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "e1ba1379-c3d2-4c8e-a839-d45f6a94af18",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Tenant project brief - Level 14 Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:27.337371+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 12 DP 1184520.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "7f2f9a6f-b62e-4c31-84c8-55566e11fc78",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Planning certificate s10.7 - Lot 12 DP 1184520.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:27.38508+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Base building information and fit-out guide - Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ab5384e4-f782-4023-a40b-d23721c9915c",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Base building information and fit-out guide - Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:27.39199+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Access date and program.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "6b310c0b-3106-4948-b619-d55921146dcb",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "RE Access date and program.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:27.397741+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Interior design services - Level 14 Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a2e31800-2267-44a1-b67e-877124545e2c",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Fee proposal - Interior design services - Level 14 Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:37.976233+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Meridale - building services fee - Wenlock Place L14.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "502a0324-e9ca-48dd-b546-c55beabd2f83",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Meridale - building services fee - Wenlock Place L14.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:37.985983+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "BCA consultancy fee proposal TBR-26-044.md",
+      "drop": "row:consultant.bca",
+      "http": 201,
+      "response": {
+        "document_id": "612bb72e-8c48-48bc-ab3e-78f0196e0874",
+        "submission_id": "2859011b-9ca0-4ab0-9ccd-26b37a5058e7"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Access consultancy fee proposal - Clearpath - Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "73af4351-d47b-44b6-b4e0-d244f43fbde9",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Access consultancy fee proposal - Clearpath - Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:38.026845+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Certifier fee proposal HGC-26-0219.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "89c629db-98a0-4b35-b76b-64d49f148f16",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Certifier fee proposal HGC-26-0219.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:38.032088+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Quantity surveying fee proposal - Baxter Lane.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "6db296ea-87ef-4478-80cd-53b0a033b5e4",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Quantity surveying fee proposal - Baxter Lane.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:38.059532+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d19",
+      "filename": "Fee proposal - Town planning - Level 14 Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "1d812b5d-2cbb-4bc4-bf51-f6b394018122",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Fee proposal - Town planning - Level 14 Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:38.067645+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "BCA assessment report TBR-R-26044-01 - Level 14 Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "553c4778-78df-4e11-8a59-6c4880d3887c",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "BCA assessment report TBR-R-26044-01 - Level 14 Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:52.980083+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Access report CAC-R-0318 - Level 14 Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a4bf04cb-bc07-4e49-b745-01cafb2e1d22",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Access report CAC-R-0318 - Level 14 Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:53.007085+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Concept design report - Avenor Level 14 fit-out.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "3505477c-7127-4b64-a28c-ef71d6d6d23a",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Concept design report - Avenor Level 14 fit-out.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:53.011713+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "ID-101 Rev A - General arrangement plan.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c8f6869a-d287-46cd-9589-e630df674181",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "ID-101 Rev A - General arrangement plan.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:53.037818+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "ID-101 Rev B - General arrangement plan.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5a265cd3-3683-43e6-bfd8-61d990a08478",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "ID-101 Rev B - General arrangement plan.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:53.053694+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d20",
+      "filename": "Statement of environmental effects ETP-26-031 - Level 14 Wenlock Place.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ea05a695-60e1-4586-91f1-562163c2543b",
+        "project_id": "aa2c299c-ed61-4e3e-9983-1a00a7a8ee67",
+        "filename": "Statement of environmental effects ETP-26-031 - Level 14 Wenlock Place.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T08:32:53.071232+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice CHI-INV-0418 Corrigan Hale.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "3448feff-e5b4-4ea1-b09d-42e578eae63e",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "Meridale invoice 2291.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "6bbdf228-0808-4155-a39b-9a4a684948f8",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "Tax invoice TBR-INV-1187 Tallowood.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "92b4eeff-68d6-4d04-a819-ecd7ce18bd9e",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

@@ -1,0 +1,968 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST03-da-pathway",
+  "type_id": "T03",
+  "base": "ST03-base",
+  "triggers": [
+    "da-pathway"
+  ],
+  "project": {
+    "name": "Avenor head office fit-out, Level 14 Wenlock Place",
+    "address": "Level 14, 211 Wenlock Terrace, North Sydney NSW 2060",
+    "lga": "North Sydney",
+    "summary": "Tenant fit-out of the whole of Level 14 (1,200 m2 NLA) of Wenlock Place, an occupied 24-storey A-grade Class 5 office tower in North Sydney completed in 2008, handed over in base-building condition. The interior designer leads a traditional lump-sum tender under AS 4000; North Sydney Council determines a development application and a private certifier issues the construction certificate; fit-out budget $2,400,000 ex GST."
+  },
+  "invented": {
+    "lots": [
+      "Lot 12 DP 1184520"
+    ],
+    "abns": [
+      "68 214 563 584",
+      "41 727 862 569",
+      "78 303 243 509",
+      "41 819 041 186",
+      "11 834 477 902",
+      "44 112 068 819",
+      "91 043 002 296",
+      "16 402 488 475"
+    ],
+    "firms": [
+      "Larchmont Project Services Pty Ltd",
+      "Corrigan Hale Interiors Pty Ltd",
+      "Meridale Building Services Engineers Pty Ltd",
+      "Tallowood Building Regulations Pty Ltd",
+      "Clearpath Access Consultants Pty Ltd",
+      "Harbourgate Certifiers Pty Ltd",
+      "Baxter Lane Cost Consultants Pty Ltd",
+      "Copeland Asset Management Pty Ltd",
+      "Avenor Capital Partners Pty Ltd",
+      "Wenlock Place Property Trust",
+      "Ellery Town Planning Pty Ltd"
+    ],
+    "emails": [
+      "priya.nandakumar@example.com",
+      "daniel.okafor.lps@example.com",
+      "fitouts.wenlockplace@example.com",
+      "harriet.corrigan@example.com",
+      "marco.meridale@example.com",
+      "lena.tallowood@example.com",
+      "sunil.clearpath@example.com",
+      "joanne.harbourgate@example.com",
+      "ewan.baxterlane@example.com",
+      "clara.ellery@example.com"
+    ],
+    "places": [
+      "Wenlock Place, 211 Wenlock Terrace, North Sydney (invented street)",
+      "205 Wenlock Terrace (invented heritage item next door)"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Tenant project brief - Level 14 Wenlock Place.md",
+      "title": "Project brief: Avenor head office fit-out, Level 14 Wenlock Place",
+      "author_role": "consultant.project_manager",
+      "firm": "Larchmont Project Services Pty Ltd",
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Date: 9 February 2026, Client: Avenor Capital Partners Pty Ltd, Prepared by: Larchmont Project Services Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "The project is the fit-out of an existing commercial office floor for the tenant's head office"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "The project is the fit-out of an existing commercial office floor for the tenant's head office"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This is a tenant fit-out of an existing office floor; there is no building work outside the tenancy"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "A development application will be lodged with council for the fit-out: the works do not meet the complying development standards, so a DA is required"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Traditional lump-sum tender on fully documented design: the interior designer and the services engineers document the works, and three to five fit-out contractors from the landlord's approved list tender a lump sum"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "The services engineers' scope runs through construction-phase inspections, witness testing and completion certification"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "A high-quality A-grade head-office fit-out with premium finishes and custom joinery"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "All other floors of the building remain occupied by tenants throughout the works"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Noisy works and deliveries are restricted to after hours and weekends under the landlord's building rules"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "Environmental sensitivity is standard: an internal fit-out in a North Sydney office tower with no ecological or waterway constraints"
+        },
+        {
+          "key": "hdr.scale.nla_sqm",
+          "says": "Tenancy: whole of Level 14, 1,200 m2 NLA"
+        },
+        {
+          "key": "hdr.scale.tenancies",
+          "says": "Avenor will be the single tenancy on the floor"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Fit-out construction budget: $2,400,000 excluding GST"
+        },
+        {
+          "key": "proj.owner_supply_stated",
+          "says": "The fit-out contract excludes tenant-supplied items. Tenant-supplied items: loose furniture and workstations, AV equipment, IT active equipment"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The fit-out contractor will be engaged under AS 4000-1997 with the tenant's fit-out amendments"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Avenor Capital Partners Pty Ltd"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: Level 14, 211 Wenlock Terrace, North Sydney NSW 2060"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: Level 14, 211 Wenlock Terrace, North Sydney NSW 2060"
+        },
+        {
+          "key": "flag.staged",
+          "says": "There will be no staged construction: the whole floor is handed to the contractor at once"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "The works are in one building; there are not multiple buildings"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "The tenant is not targeting a Green Star Interiors or NABERS tenancy rating"
+        },
+        {
+          "key": "flag.community",
+          "says": "No community consultation is required for an internal fit-out"
+        },
+        {
+          "key": "flag.country",
+          "says": "No Connecting with Country input is required for an internal fit-out"
+        },
+        {
+          "key": "flag.basement",
+          "says": "The works involve no basement work of any kind"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "There is no excavation, so no adjoining or neighbouring property is affected"
+        },
+        {
+          "key": "flag.transfer_structures",
+          "says": "No transfer structures and no structural alterations are involved"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "The works are inside the building; no trees are affected"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "There are no works within the public road reserve; deliveries use the building's loading dock"
+        },
+        {
+          "key": "flag.osd_required",
+          "says": "No on-site detention is required and no existing OSD is modified"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "No on-site detention is required and no existing OSD is modified"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The DA needs no clause 4.6 variation and will not go to a planning panel"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The DA needs no clause 4.6 variation and will not go to a planning panel"
+        }
+      ],
+      "traps": [
+        {
+          "id": "make-good-at-expiry",
+          "what": "'At lease expiry the tenant must make good the premises to base-building condition' is a future lease obligation (DOMAIN.md section 10).",
+          "expect": "No site.demolition work item and no strip-out cost line or program rows for this job"
+        },
+        {
+          "id": "kitchenette-not-kitchen",
+          "what": "'A kitchenette and breakout space with a sink, dishwasher and boiling water unit' (DOMAIN.md section 10).",
+          "expect": "det.commercial_kitchen is not set and no commercial kitchen exhaust enters the mechanical scope; local exhaust only"
+        }
+      ],
+      "content": "The tenant's project brief written by its project manager. Sections: '## Project' (the fit-out sentence, the Tenancy line, single tenancy, Site and Client lines; the floor is handed over in base-building condition: ceiling grid and base-building lighting, VAV air-conditioning, sprinklers, detection and EWIS, tenant distribution board, amenities on the core), '## Accommodation' (open-plan work points for about 140 staff, offices, meeting rooms, boardroom, reception, the kitchenette and breakout sentence, comms room, storage), '## Budget and quality' (the budget line; the tenant-supplied items, stated as two sentences exactly as carried; quality sentence), '## Approvals and procurement' (the DA sentence; the certifier then issues a construction certificate; clause 4.6 and panel sentence; the traditional route sentence; the services engineers' scope sentence; AS 4000 sentence; no staged construction), '## Building and site' (other floors occupied; after-hours rule; environmental sensitivity; no community consultation, no Connecting with Country, one building, no basement work, no excavation, no structural alterations, no trees, no road works, no OSD), '## Lease' (the make-good-at-expiry sentence; no Green Star or NABERS tenancy target). Do not state the access date here. Do not write 'kitchen' alone, 'bathroom', 'stair', 'strip-out' or 'demolition'."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 12 DP 1184520.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-16",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-01147 | | Issue date | 16/02/2026 | | Applicant | Larchmont Project Services |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: North Sydney."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 12 DP 1184520"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone E2 Commercial Centre under North Sydney Local Environmental Plan 2013"
+        },
+        {
+          "key": "proj.address",
+          "says": "211 Wenlock Terrace, North Sydney NSW 2060"
+        },
+        {
+          "key": "det.state",
+          "says": "North Sydney NSW 2060"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-land-eligible",
+          "what": "Item 4 says complying development under the Commercial and Industrial Alterations Code may be carried out on the land.",
+          "expect": "hdr.cond.planning comes from the documents that state the chosen pathway (d01, d07, d09, d11, d20), not from land eligibility"
+        },
+        {
+          "id": "heritage-next-door",
+          "what": "Item 5 adds that the adjoining land at 205 Wenlock Terrace contains a local heritage item (DOMAIN.md section 10).",
+          "expect": "det.heritage_status stays none: the subject land is not a heritage item"
+        }
+      ],
+      "content": "A North Sydney Council s10.7(2) and (5) planning certificate for the whole tower lot, numbered items in the usual order: zoning and LEP/DCP, complying development (may be carried out), heritage (the not-a-heritage-item sentence, then the adjoining heritage item note), bush fire, flood, acid sulfate soils, contamination, loose-fill asbestos insulation (not listed), rail corridor, road widening (none). Fixed council wording; identity sits in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Base building information and fit-out guide - Wenlock Place.md",
+      "title": "Base building information and tenant fit-out guide",
+      "author_role": "owner",
+      "firm": "Copeland Asset Management Pty Ltd",
+      "date": "2026-02-12",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: WP-FOG-2026, Date: 12 February 2026, Issued by: Copeland Asset Management Pty Ltd for the Wenlock Place Property Trust; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.storeys",
+          "says": "Wenlock Place is a 24-storey A-grade office tower"
+        },
+        {
+          "key": "hdr.scale.grade",
+          "says": "Wenlock Place is a 24-storey A-grade office tower"
+        },
+        {
+          "key": "hdr.scale.floor_plate_sqm",
+          "says": "Typical office floor plate: 1,200 m2"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The existing building was constructed in 2008"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The existing building was constructed in 2008"
+        },
+        {
+          "key": "det.ncc_class",
+          "says": "The office levels are a Class 5 building"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is sprinklered throughout"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "There is no gas supply to the office floors"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "Levels 2 to 13 and 15 to 24 are occupied by other tenants and stay open throughout the fit-out"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Noisy works, hot works and deliveries are permitted only after hours (6 pm to 7 am) and on weekends; the goods lift and loading dock must be booked"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "No Sydney Water assets are within the tenancy"
+        }
+      ],
+      "traps": [
+        {
+          "id": "base-building-da",
+          "what": "'The tower was approved under DA 2004/0617 and its occupation certificate was issued in 2008' is the base building's history (DOMAIN.md section 10).",
+          "expect": "hdr.cond.planning comes from this job's DA documents (d01, d11, d20), not from the tower's DA number"
+        },
+        {
+          "id": "base-building-nabers",
+          "what": "'The building holds a 5.5 star NABERS Energy base building rating' is the landlord's rating (DOMAIN.md section 10).",
+          "expect": "flag.sustainability_target stays no"
+        },
+        {
+          "id": "sprinklered-not-works",
+          "what": "'The building is sprinklered throughout' describes the base building.",
+          "expect": "det.sprinklered is true; it adds no sprinkler work by itself (sprinkler works come from the design documents)"
+        },
+        {
+          "id": "storeys-of-building",
+          "what": "'24-storey' gives the building's storeys, not the extent of the works (DOMAIN.md section 10).",
+          "expect": "hdr.scale.storeys and det.rise_in_storeys are 24; the works stay on one floor"
+        }
+      ],
+      "content": "The landlord's base-building information pack and fit-out guide under the agreement for lease. Sections: '## The building' (24-storey A-grade tower, constructed in 2008, Class 5 office levels, sprinklered throughout, the DA and OC history sentence, the NABERS base building rating sentence, typical floor plate), '## Level 14 handover' (Level 14 is handed over in base-building condition: suspended grid and base-building lighting, VAV air-conditioning, sprinklers, detection and EWIS, tenant distribution board; amenities on the core are base building), '## Services' (no gas supply; tenant water and waste points in the core; spare AC capacity and after-hours AC on request; the landlord's nominated fire and BMS contractors; no Sydney Water assets within the tenancy), '## Building rules' (occupied floors, after-hours rule, lift and dock bookings, hot-works permits, isolations restored every night), '## Approvals' (concept and detailed design approval by the landlord's engineers, contractor approval). Do not use 'stair', 'bathroom', 'strip-out' or 'demolition'."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Access date and program.md",
+      "title": "RE: Access date and program",
+      "author_role": "consultant.project_manager",
+      "firm": "Larchmont Project Services Pty Ltd",
+      "date": "2026-02-24",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread, the project manager's reply on top)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "The agreement for lease gives us access to Level 14 on 7 September 2026, and the fit-out contractor starts that day"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Priya Nandakumar (Avenor COO) writes on 23 February 2026 (Subject: Access date and program) asking when work can start and when staff can move in. Daniel Okafor of Larchmont Project Services replies on 24 February 2026 (Subject: RE: Access date and program): the access date sentence; council needs to determine the DA by the end of July and the certifier to issue the construction certificate by late August; tender in July; joinery and glazed partitions are long-lead items; move-in before the rent-free period ends in early December."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Interior design services - Level 14 Wenlock Place.md",
+      "title": "Fee proposal: interior design services",
+      "author_role": "consultant.interior_design",
+      "firm": "Corrigan Hale Interiors Pty Ltd",
+      "date": "2026-03-04",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: CHI-FP-2603, Date: 4 March 2026, Client: Avenor Capital Partners Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "Documentation, specification, DA drawings and CC documentation"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $130,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Interior designer's fee proposal as design lead. Scope and fee table by named phase (no numbered stages): brief and test fit $14,000; concept design including landlord concept approval submission $22,000; design development including finishes and FF&E selection $28,000; documentation, specification, DA drawings and CC documentation $38,000; tender documents and evaluation input $8,000; construction-phase services $20,000; total $130,000 ex GST. Optional FF&E procurement management $12,000 ex GST; additional services at $210 per hour. Exclusions: services engineering, BCA, access, certifier, landlord review fees."
+    },
+    {
+      "id": "d06",
+      "filename": "Meridale - building services fee - Wenlock Place L14.md",
+      "title": "Fee proposal: building services engineering",
+      "author_role": "consultant.services",
+      "firm": "Meridale Building Services Engineers Pty Ltd",
+      "date": "2026-03-06",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | MBS-P-2611 | | Date | 06/03/2026 | | Attention | Daniel Okafor |; # heading 'Fee proposal: building services engineering'",
+      "carries": [
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Our scope runs through construction-phase inspections, witness testing and completion certification"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Documentation for the CC and tender"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $68,200 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "Multi-services engineer's proposal for mechanical, electrical, hydraulic (kitchenette only) and fire services design of the tenancy against the base-building systems. Fee table, every figure GST-inclusive: investigation of base-building services and capacity $6,600; concept and design development $19,800; documentation for the CC and tender $26,400; tender and tender review $3,300; construction-phase inspections, witness testing and completion certification $12,100; total $68,200 incl GST. Exclusions: the landlord's nominated contractors' design, BMS programming, landlord review fees."
+    },
+    {
+      "id": "d07",
+      "filename": "BCA consultancy fee proposal TBR-26-044.md",
+      "title": "Fee proposal: BCA consultancy",
+      "author_role": "consultant.bca",
+      "firm": "Tallowood Building Regulations Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "row:consultant.bca",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: TBR-26-044, Date: 9 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "BCA assessment report to accompany the development application and the construction certificate"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $10,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "BCA consultant's fee proposal, dropped on the BCA row. Inception and design advice $3,500; BCA assessment report for the DA and CC, including an assessment of the existing building's fire safety against any upgrade the consent requires, $6,500; total $10,000 ex GST. Option: construction-phase advice $2,400 ex GST. States that the firm is not the certifier and performs no statutory functions."
+    },
+    {
+      "id": "d08",
+      "filename": "Access consultancy fee proposal - Clearpath - Wenlock Place.md",
+      "title": "Fee proposal: access consultancy",
+      "author_role": "consultant.access",
+      "firm": "Clearpath Access Consultants Pty Ltd",
+      "date": "2026-03-10",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: CAC-0318, Date: 10 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "Design review and access report for the DA and CC"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $5,500 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Access consultant's fee proposal: design review and access report for the DA and CC $4,200; final inspection and access statement $1,300; total $5,500 ex GST. Covers the accessible path of travel in the tenancy, door circulation, hearing augmentation in the boardroom and the shared lifts."
+    },
+    {
+      "id": "d09",
+      "filename": "Certifier fee proposal HGC-26-0219.md",
+      "title": "Fee proposal: certification services",
+      "author_role": "consultant.certifier",
+      "firm": "Harbourgate Certifiers Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: HGC-26-0219, Date: 11 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "Assessment and determination of the construction certificate after development consent"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $17,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Private certifier's fee proposal: construction certificate assessment and determination with the fire safety schedule, after council's development consent, $9,800; principal certifier appointment and mandatory inspections (commencement and final) $4,200; final fire safety certificate review and occupation certificate $3,000; total $17,000 ex GST. Excludes Planning Portal and council fees and the long service levy."
+    },
+    {
+      "id": "d10",
+      "filename": "Quantity surveying fee proposal - Baxter Lane.md",
+      "title": "Fee proposal: quantity surveying",
+      "author_role": "consultant.quantity_surveyor",
+      "firm": "Baxter Lane Cost Consultants Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: BLC-2612, Date: 12 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total fee $16,500 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Quantity surveyor's fee proposal: concept cost plan including the total project budget (FF&E, IT, AV, relocation and landlord charges) $4,500; design development cost plan $5,000; pre-tender estimate $4,000; tender evaluation $3,000; total $16,500 ex GST. After-hours and isolation costs are priced in each estimate."
+    },
+    {
+      "id": "d11",
+      "filename": "BCA assessment report TBR-R-26044-01 - Level 14 Wenlock Place.md",
+      "title": "BCA assessment report",
+      "author_role": "consultant.bca",
+      "firm": "Tallowood Building Regulations Pty Ltd",
+      "date": "2026-04-22",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: TBR-R-26044-01, Date: 22 April 2026, Prepared by; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "The office levels are a Class 5 building"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "The building has a rise in storeys of 24"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "The building has a rise in storeys of 24 (24 storeys above ground)"
+        },
+        {
+          "key": "det.type_of_construction",
+          "says": "The building is of Type A construction"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is sprinklered throughout to AS 2118.1"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The existing building was constructed in 2008"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The existing building was constructed in 2008"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "This report supports the development application and the construction certificate"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The Design and Building Practitioners Act does not apply to this Class 5 fit-out"
+        },
+        {
+          "key": "flag.fire_vulnerable_occupants",
+          "says": "There are no vulnerable occupants: office staff do not need assisted evacuation"
+        },
+        {
+          "key": "flag.fire_special_hazards",
+          "says": "There are no special hazards and no dangerous goods storage on the floor"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "The fit-out involves no facade, cladding, timber or structural work that would need a fire performance solution"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fire-stairs",
+          "what": "'Egress is via the two base-building fire stairs in the core' matches the stair implied pattern (DOMAIN.md section 10).",
+          "expect": "No access-egress.stairs-and-ramps work item and no stairs cost line"
+        },
+        {
+          "id": "basix-not-applicable",
+          "what": "'BASIX is not applicable to a Class 5 building' matches the energy-rating pattern (DOMAIN.md section 10).",
+          "expect": "No envelope.thermal-performance work item; det.basix_required false"
+        }
+      ],
+      "content": "BCA consultant's assessment of the fit-out layout against NCC 2022 for the DA and CC. Sections: '## Building description' (Class 5, rise in storeys, Type A, sprinklered, constructed in 2008, climate zone 5), '## Egress' (travel distances to the exits; the fire stairs sentence; the layout complies with the DTS provisions and no performance solution is proposed), '## Fire safety measures' (sprinkler, detection, EWIS and emergency lighting alterations; the fire safety schedule; no special hazards; no vulnerable occupants; no specialist systems), '## Energy efficiency' (Section J lighting and power for the new work; the BASIX sentence), '## Approvals' (the DA sentence; an assessment of the existing building's fire safety against any upgrade the consent may require, verified: false; the DBP Act sentence)."
+    },
+    {
+      "id": "d12",
+      "filename": "Access report CAC-R-0318 - Level 14 Wenlock Place.md",
+      "title": "Access report",
+      "author_role": "consultant.access",
+      "firm": "Clearpath Access Consultants Pty Ltd",
+      "date": "2026-04-24",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: CAC-R-0318, Date: 24 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "This report supports the development application and the construction certificate"
+        }
+      ],
+      "traps": [],
+      "content": "Access consultant's design review of the tenancy layout against AS 1428.1 (clauses verified: false): accessible path of travel from the lift lobby, door circulation spaces, glazing manifestation, reception counter, hearing augmentation in the boardroom, signage. Accessible sanitary facilities are base building on the core and outside the works. Do not use 'bathroom', 'toilet' or 'stair'."
+    },
+    {
+      "id": "d13",
+      "filename": "Concept design report - Avenor Level 14 fit-out.md",
+      "title": "Concept design report",
+      "author_role": "consultant.interior_design",
+      "firm": "Corrigan Hale Interiors Pty Ltd",
+      "date": "2026-04-15",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: CHI-R-2603-01, Date: 15 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.nla_sqm",
+          "says": "The tenancy is the whole of Level 14, 1,200 m2 NLA"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "A high-quality A-grade head-office fit-out with premium finishes"
+        }
+      ],
+      "traps": [
+        {
+          "id": "no-strip-out",
+          "what": "'No strip-out or demolition is required: the floor is in base-building condition' matches the strip-out implied pattern (DOMAIN.md section 10).",
+          "expect": "No site.demolition work item"
+        },
+        {
+          "id": "core-bathrooms",
+          "what": "'The base-building bathrooms on the core are not in scope' matches the wet-room implied pattern (DOMAIN.md section 10).",
+          "expect": "No interiors.wet-area-waterproofing or interiors.tiling; hydraulic scope stays the kitchenette only"
+        }
+      ],
+      "content": "Interior designer's concept report after the test fit. Sections: '## Tenancy' (NLA sentence; the no-strip-out sentence; the core-bathrooms sentence), '## Layout' (work points, offices, meeting rooms, boardroom, reception, kitchenette and breakout, comms room, storage), '## Interiors' (plasterboard and acoustic partitions, glazed meeting-room fronts with manifestation, altered base-building ceiling grid with tiles and lights stored for the landlord, plasterboard bulkheads, doors, reception and kitchenette joinery, carpet tiles and vinyl, painting, acoustic treatment, signage), '## Services' (relocate and add sprinkler heads, detectors and EWIS speakers; emergency lighting; VAV re-zoning, flexible duct and diffusers, kitchenette and print-room exhaust, BMS points; kitchenette water and waste; tenant sub-board and power poles; data cabling, comms room, access control; AV conduits), '## Quality' (quality sentence; long-lead joinery and glazing)."
+    },
+    {
+      "id": "d14",
+      "filename": "ID-101 Rev A - General arrangement plan.md",
+      "title": "General arrangement plan - Level 14",
+      "author_role": "consultant.interior_design",
+      "firm": "Corrigan Hale Interiors Pty Ltd",
+      "date": "2026-04-29",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: ID-101, Revision: A, Title: General arrangement plan - Level 14, Date: 29 April 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: ID-101"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: A"
+        },
+        {
+          "key": "hdr.scale.nla_sqm",
+          "says": "NLA 1,200 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes on the room schedule, partition types, glazed fronts, the kitchenette, comms room and reception, and NLA 1,200 m2. Issue: for landlord concept approval."
+    },
+    {
+      "id": "d15",
+      "filename": "ID-101 Rev B - General arrangement plan.md",
+      "title": "General arrangement plan - Level 14",
+      "author_role": "consultant.interior_design",
+      "firm": "Corrigan Hale Interiors Pty Ltd",
+      "date": "2026-05-13",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: ID-101, Revision: B, Title: General arrangement plan - Level 14, Date: 13 May 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: ID-101"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: B"
+        },
+        {
+          "key": "hdr.scale.nla_sqm",
+          "says": "NLA 1,200 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of the general arrangement plan: meeting room 4 enlarged and the comms room moved next to the riser after landlord comments; revision note says 'Amended for DA lodgement'."
+    },
+    {
+      "id": "d16",
+      "filename": "Tax invoice CHI-INV-0418 Corrigan Hale.md",
+      "title": "Tax invoice CHI-INV-0418",
+      "author_role": "consultant.interior_design",
+      "firm": "Corrigan Hale Interiors Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: CHI-INV-0418, Date: 30 April 2026, ABN: 41 727 862 569",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $15,400.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$14,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$1,400.00"
+        }
+      ],
+      "traps": [],
+      "content": "Interior designer's invoice for brief and test fit, 100% complete, to Avenor Capital Partners Pty Ltd."
+    },
+    {
+      "id": "d17",
+      "filename": "Meridale invoice 2291.md",
+      "title": "Tax invoice 2291",
+      "author_role": "consultant.services",
+      "firm": "Meridale Building Services Engineers Pty Ltd",
+      "date": "2026-05-29",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Tax invoice | 2291 | | Date | 29/05/2026 | | ABN | 78 303 243 509 |",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $6,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $600.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total due $6,900.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "total-misadded",
+          "what": "The invoice totals $6,000.00 + $600.00 as $6,900.00.",
+          "expect": "The ledger flags arithmetic; ex GST $6,000.00 and GST $600.00 are as stated"
+        }
+      ],
+      "content": "Services engineer's invoice for investigation of base-building services and capacity, 100% complete. Amounts in a table; the total line is wrong by $300."
+    },
+    {
+      "id": "d18",
+      "filename": "Tax invoice TBR-INV-1187 Tallowood.md",
+      "title": "Tax invoice TBR-INV-1187",
+      "author_role": "consultant.bca",
+      "firm": "Tallowood Building Regulations Pty Ltd",
+      "date": "2026-05-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: TBR-INV-1187, Date: 15 May 2026, ABN: 41 819 041 186",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $3,850.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$3,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$350.00"
+        }
+      ],
+      "traps": [],
+      "content": "BCA consultant's invoice for inception and design advice, 100% complete."
+    },
+    {
+      "id": "d19",
+      "filename": "Fee proposal - Town planning - Level 14 Wenlock Place.md",
+      "title": "Fee proposal: town planning services",
+      "author_role": "consultant.town_planner",
+      "firm": "Ellery Town Planning Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: ETP-FP-26031, Date: 13 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "Statement of environmental effects and lodgement of the development application"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $12,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Town planner's fee proposal for the fit-out DA: review of planning controls and pre-lodgement advice $2,800; statement of environmental effects and lodgement $7,200; responses to council requests $2,000; total $12,000 ex GST. Excludes council DA fees and contributions. Do not write 'public exhibition' or 'community consultation'."
+    },
+    {
+      "id": "d20",
+      "filename": "Statement of environmental effects ETP-26-031 - Level 14 Wenlock Place.md",
+      "title": "Statement of environmental effects",
+      "author_role": "consultant.town_planner",
+      "firm": "Ellery Town Planning Pty Ltd",
+      "date": "2026-05-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: ETP-26-031, Date: 20 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "A development application will be lodged with council for the fit-out"
+        },
+        {
+          "key": "proj.zone",
+          "says": "The land is zoned E2 Commercial Centre under North Sydney Local Environmental Plan 2013"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application will be determined by council staff under delegation and is not referred to the local planning panel"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "No clause 4.6 variation is sought"
+        }
+      ],
+      "traps": [],
+      "content": "Town planner's SEE for the fit-out DA. Sections: '## The site' (Level 14 of an existing 24-storey office tower, zone sentence), '## The proposal' (the DA sentence; internal office fit-out, no change of use, no external works), '## Planning controls' (LEP and DCP; why the works fall outside the complying development standards; no clause 4.6 variation), '## Assessment' (no environmental impact beyond the building; council notification under its participation plan; determination under delegation, not the panel). Do not write 'public exhibition', 'community consultation', 'heritage' or 'stair'."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief states the DA (trigger evidence) in place of the CDC sentence; clause 4.6 and panel sentences reworded for a DA (values unchanged)"
+    },
+    {
+      "doc": "d03",
+      "change": "changed",
+      "why": "Trap expectation points to this job's DA documents; document text unchanged"
+    },
+    {
+      "doc": "d02",
+      "change": "changed",
+      "why": "Trap expectation lists d20 among the pathway sources; document text unchanged"
+    },
+    {
+      "doc": "d04",
+      "change": "changed",
+      "why": "The PM's reply times the start on DA determination and the CC instead of the CDC"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Interior designer prepares DA drawings and CC documentation instead of CDC drawings; amounts unchanged"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "Services documentation for the CC instead of the CDC; amounts unchanged"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "BCA report for the DA and CC, adding the existing building's fire safety against any upgrade the consent requires; amounts unchanged"
+    },
+    {
+      "doc": "d08",
+      "change": "changed",
+      "why": "Access report for the DA and CC instead of the CDC; amounts unchanged"
+    },
+    {
+      "doc": "d09",
+      "change": "changed",
+      "why": "Certifier assesses a construction certificate after development consent instead of a CDC; amounts unchanged"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "BCA report supports the DA and CC instead of the CDC"
+    },
+    {
+      "doc": "d12",
+      "change": "changed",
+      "why": "Access report supports the DA and CC instead of the CDC"
+    },
+    {
+      "doc": "d15",
+      "change": "changed",
+      "why": "Rev B note says 'Amended for DA lodgement' instead of CDC"
+    },
+    {
+      "doc": "d19",
+      "change": "added",
+      "why": "The trigger adds the town planner: fee proposal for the SEE and lodgement"
+    },
+    {
+      "doc": "d20",
+      "change": "added",
+      "why": "The DA needs a statement of environmental effects"
+    }
+  ]
+}
