@@ -1,0 +1,20 @@
+T10 Knock-down rebuild house (da-pathway)
+  Procurement [scored]: matched 9/13, missed 4 (0 built in, 4 known gaps), extra 0, false positives 3
+    false positives: consultant.electrical; consultant.hydraulic; consultant.mechanical
+  Cost plan [scored]: matched 26/40, missed 14 (0 built in, 14 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 10, typed 0)
+    false positives: Electrical; Hydraulic; Mechanical; Active fire protection
+  Program [scored]: skeleton sk.new-traditional-da (match), matched 56/104, missed 48 (12 built in, 36 known gaps), extra 17, false positives 0, wrong stage 4; links holds 42, violated 5, unknown 0, unscored 71; orphans 4, cycles 0
+    missed built in: Stand wall frames; Install roof trusses and bracing; Deliver windows and external doors; Install windows and external doors; Frame internal partitions; Sheet and set plasterboard (+6 more)
+    violated: Client sign-off for lodgement after Prepare construction documentation; Client sign-off for lodgement after Coordinate consultant documentation; Install erosion and sediment controls after Establish the site; Reinforce and pour slab after Reinforcement inspection before slab pour; Install stormwater drainage after Install gutters and downpipes
+  RFPs: found 9/12 (0 built-in missing), not expected present 0, extra 3; expect ok 134, new failures 19, known differences 21, fixed 7, awaiting user input 47; must_include missing 38 (unknown 6); must_not_include present 11 (known 0)
+    consultant.architect: stage.planning_response; position.existing_interfaces; position.water_asset; blocking.details; missing 'Concept and schematic design on the survey of the existing site'; missing 'Demolition plan of every structure to go; investigations needed; trees to keep (existing_interfaces)' (+6 more)
+    consultant.structural: stage.authority_asset; position.dilapidation; position.retention_design; position.temporary_works_interfaces; blocking.details; missing 'Design basis with site class and AS 4055 wind class' (+9 more)
+    consultant.civil: position.retained_services; position.shoring; blocking.details; missing 'Investigation of the existing drainage and kerb outlet (CCTV or locating) and how findings change the design'; missing 'Stormwater design for the CDC with discharge point confirmed'; missing 'Detailed design incl. rainwater tank overflow' (+5 more)
+    consultant.geotechnical: stage.g4_planning; blocking.details; missing 'Investigation plan with boreholes or test pits clear of the existing house'; missing 'Field work and laboratory reactivity testing'; missing 'AS 2870 site classification and footing advice noting uncertainty under the house footprint'; missing 'Advice on removing old footings and fill' (+5 more)
+    consultant.surveyor: position.access; blocking.details; blocking.fact:flag.live_operations; missing 'Detail and contour survey on AHD showing the existing house, garage and shed with floor and ridge levels, trees, pits, kerb outlet, sewer junction and crossing'; missing 'Boundary identification with easements and encroachments of old structures or fences'; missing 'Adjoining windows and ridge heights for the Housing Code' (+3 more)
+    consultant.certifier: stage.b1_preliminary; blocking.details; missing 'CDC assessment and determination for demolition and the new dwelling, with neighbour notification'; missing 'Pre-start site inspection before determining the CDC (R7 item 1)'; missing 'Every R7 critical-stage inspection'; missing 'Occupation certificate with BASIX completion check' (+2 more)
+    consultant.basix: missing
+    consultant.building: missing
+    consultant.quantity_surveyor: missing
+    consultant.town_planner: missing 'SEE covering demolition and the new dwelling'
+    consultant.landscape: missing 'DA landscape plan to the DCP'

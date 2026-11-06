@@ -1,0 +1,356 @@
+{
+  "scenario": "ST10-base",
+  "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "0ee5b223a139bac4e9748417c476a483f29a9980",
+    "app_files_modified": 14
+  },
+  "started": "20261106-t10-t12",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.9
+    },
+    {
+      "wave": 2,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 6,
+      "seconds": 14.8
+    },
+    {
+      "wave": 3,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 14.9
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 22 Marrakai Close.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a9efdcd4-b326-4d53-944b-ba194f7a7fe3",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Owner brief - 22 Marrakai Close.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:05.762969+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 31 DP 216847.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2b03b38f-fe53-4049-9d70-65c199f70866",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Planning certificate s10.7 - Lot 31 DP 216847.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:05.811439+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 22 Marrakai Close.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "beb46963-fc74-4d15-b90c-53d85a75508f",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Detail and boundary survey report - 22 Marrakai Close.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:05.846321+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Timing for the build.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "0945b302-afa0-43f8-9baa-287720cc1c20",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "RE Timing for the build.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:05.857909+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - 22 Marrakai Close.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "cedc7e8e-722c-4002-9170-7e969dc7ce14",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Fee proposal - Architectural services - 22 Marrakai Close.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:18.810188+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal PKE-2604.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "5d939f63-e87d-474d-aa96-ad4e4b38a66f",
+        "submission_id": "52dfd1a5-dbc6-493c-8b9e-430c9c7294c4"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Drummond Civil - stormwater fee - Marrakai Close.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b1e44fdb-adda-4cc1-86ad-3d99b6523db1",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Drummond Civil - stormwater fee - Marrakai Close.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:18.923276+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Strata Line.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f90237c4-99ea-4635-8110-cbc7ba767247",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Geotechnical investigation fee proposal - Strata Line.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:18.954218+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Hazardous materials survey proposal - Clearfield.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a907ce68-3c01-415a-b3a6-e064084be0db",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Hazardous materials survey proposal - Clearfield.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:18.96016+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "BASIX and NatHERS fee proposal - Solace.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a77aa1fc-6778-4559-9833-46f5b19bf8d4",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "BASIX and NatHERS fee proposal - Solace.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:18.98421+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Hazardous materials survey report CHS-26-0733.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "905f649c-fee2-44a1-ba70-3f1f8c4db60f",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Hazardous materials survey report CHS-26-0733.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:33.879922+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Geotechnical report SLG-26-0461 - 22 Marrakai Close.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5749e39b-67c0-4add-9bd9-7de22d069aec",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Geotechnical report SLG-26-0461 - 22 Marrakai Close.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:33.886123+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Architectural design statement - 22 Marrakai Close.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "280b5ea6-7b16-4a10-b1ee-319c5eae95ec",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Architectural design statement - 22 Marrakai Close.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:33.891429+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Site plan A-101 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "e1a2b643-2722-48f5-8a14-e19084d41376",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Site plan A-101 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:33.896404+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Site plan A-101 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "170f3767-4cd4-4eb6-aa79-e529a727847e",
+        "project_id": "b1da4ab2-c1f0-4b24-88fd-6f46a4e0e775",
+        "filename": "Site plan A-101 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:26:33.926704+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice CHS-INV-1904 Clearfield.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "73f2407f-8da9-4a5b-b113-8198981a738f",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "Tax invoice MHA-INV-0503 Marlowe Hart.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "2bb127d5-402a-45bc-b214-2f16d17addc9",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "SLG invoice 7731.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "9e476c6b-a150-4f4c-bb58-54507d84d4bb",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

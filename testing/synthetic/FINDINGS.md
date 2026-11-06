@@ -189,6 +189,219 @@ Minor: `proj.client` read as "The Owners - Strata Plan No. 912345, c/-
 Rhiannon Teale, Northgate Strata Management" (the care-of party is kept).
 The predicted cut at " - " did not happen.
 
+### From run `runs/20261106-t10-t12` (T10, T11, T12; app at `0ee5b22`), 6 November 2026
+
+Run report: `runs/20261106-t10-t12/REPORT.md`.
+
+**Repeats.**
+- F6: the T10 BASIX fee proposal files blank in all three runs (Jev 0.31
+  to 0.35). It was borderline in the pilots; here it fails every time.
+- The T01 open items are still open: missed "no" flags (groundwater,
+  multi_building and excavation_adjoining in T12), unread
+  `proj.regulated_design`, and `flag.community` read from "neighbour
+  notification" (T11).
+
+A theme runs through F17 to F19: on a knock-down, the documents describe
+two buildings, and some readings take the house being demolished as the
+project.
+
+**F17. `det.existing_building` is false or blank on knock-down and dual
+occupancy jobs.**
+- *Expected:* true. The shapes key demolition as work to an existing
+  building (T10 REVIEW §2.4).
+- *Actual:* `stated_false` in all three T10 runs and in T11 base and
+  three-plus. In T10 it came from "This is a new house: we will knock down
+  the existing house…" (0.91). In T11 it came from "The site contains an
+  existing building … to be demolished" (0.61). T11 CDC was blank (0.56).
+- *Cause:* the question's criteria say nothing about demolition, so Jev
+  reads "new house" or "to be demolished" as a denial.
+- *Location:* `knowledge/determinants.yaml` `existing_building`.
+- *Knock-on:* the RFP `existing_building` module is off, which drops the
+  architect's `existing_interfaces` and the civil `retained_services` (12
+  RFP new failures).
+- *Owner call:* does demolition count? If yes, the question needs a
+  criterion. If no, the T10 and T11 keys change.
+
+**F18. Consultant scope and old-house passages set work actions to
+`investigate`.**
+- *Expected:* `new` for the new building's systems.
+- *Actual (ST10-base, `work_items`):* windows, wall linings, ceilings,
+  floor finishes, footings and lighting are `investigate`. They came from
+  "lead paint on the window frames…" and "the old brick strip footings …
+  are to be excavated". In ST12-base, footings, slab and timber framing are
+  `investigate`, from "Inspections of the footings and the slab
+  reinforcement before the pour" and the structural fee scope.
+- *Cause (traced to the data, not the code):* a document action replaces
+  the work-type default even when it describes a consultant's service or
+  the demolished house.
+- *Location:* the system action reading in `internal/profile` (action
+  shape) and the work items it writes.
+- *Knock-on:* the 1a construction fragments need `new`, so most program
+  built-in misses follow. Missed rows include excavate and pour footings,
+  under-slab drainage, slab, wall frames, trusses, windows, plasterboard
+  and ceilings; generic rows such as "Pad and strip footings" appear
+  instead. Every RFP also gets a seven-item "Investigations" list.
+
+**F19. The T11 subclass is a conflict, and the residential fallback is
+the apartment scope list.**
+- *Expected:* `hdr.subclass` townhouses, and only house-scale systems in
+  scope.
+- *Actual:* "house" has 10 sources against 11 for "townhouses", in all
+  three T11 runs. The "house" sources are hazmat, survey and geotechnical
+  passages about the existing house. With the subclass blank, the scope
+  defaults use `categories: residential`, which is the Class 2 list
+  (`*id001`): passenger lifts, lift shafts, hydrants, accessible access
+  and livable housing. The package scope additions then add Vertical
+  Transport, Fire Services and Access consultants, and the harness made
+  RFPs for all three in every T11 run, not only CDC.
+  `hdr.scale.avg_dwelling_size_sqm` has no row at all.
+- *Location:* `knowledge/profile/scope_defaults.yaml` `categories`;
+  `knowledge/works/package_defaults.yaml` scope additions.
+
+**F20. "DA fees and contributions" is kept on every CDC job (traced).**
+- *Expected:* the `da-fees` starter is dropped when `hdr.cond.planning` is
+  cdc.
+- *Actual:* it is kept with "Applicability is unknown" in all six CDC runs.
+- *Cause:* `costSuggestInput` reads profile values with `bool_and(value_state='known')`.
+  Profile rows store `set` (7,447 rows) or `absent`, never `known`. So every
+  field-gated starter sees an empty value and is kept as unknown.
+- *Location:* `internal/store/cost_suggest.go` `costSuggestInput`.
+- *Note:* `cost_budget.go` uses `value_state='set'` correctly. The shapes
+  assumed the starter is dropped.
+
+**F21. A suburb whose second word is a direction is cut (traced).**
+- *Expected:* "22 Marrakai Close, Caringbah South NSW 2229".
+- *Actual:* "22 Marrakai Close, Caringbah", in all T10 runs, although every
+  source prints the full address.
+- *Cause:* `addressCandidates` keeps a second suburb word only after a
+  `suburbFirst` word ("South Hurstville"). In "Caringbah South", the first
+  word is not in that list, so the address ends at "Caringbah", and the
+  state and postcode go with it.
+- *Location:* `internal/profile/details.go` `addressCandidates`.
+
+**F22. The client is blank when a proposal is addressed "To: agent, for
+client" (traced).**
+- *Expected:* "Hamish and Rosa Delaney".
+- *Actual:* a conflict. Six sources read the right name. Three read the
+  whole line, "Ines Hart, Marlowe Hart Architects, for (or on behalf of)
+  Hamish and Rosa Delaney", from the T10 geotechnical, hazmat and
+  structural proposals.
+- *Cause:* `addresseeCandidates` offers the whole "To:" line. It cuts only
+  at c/- and "as trustee for", not at "for" or "on behalf of".
+- *Location:* `internal/profile/addressee.go`.
+- *Knock-on:* all five T10 RFPs block on `details` (Client).
+
+**F23. The letterhead's descriptor line is read as the firm name
+(traced).**
+- *Expected:* "Drummond Civil Pty Ltd".
+- *Actual:* "Civil and stormwater engineers", in all T10 runs.
+- *Cause:* `letterhead()` walks up from the ABN line and takes the first
+  line that matches `companyRe`. "engineers" matches, and that line sits
+  between "DRUMMOND CIVIL PTY LTD" and the address. Checked offline with
+  `Harvest`: the letterhead name is the descriptor, and `HeaderFirm` is
+  right.
+- *Location:* `internal/proposals/letterhead.go` `letterhead`.
+
+**F24. The fee total is lost when a proposal quotes the cost of work
+(traced offline).**
+- *Expected:* a stated total of $4,700 for the T12 certifier (d10).
+- *Actual:* blank in all three T12 runs, with GST basis "unknown".
+- *Cause:* the proposal's notes print "$250,000 or more including GST" and
+  "$231,000 including GST", for the long service levy threshold and the
+  owner's cost of work. `Harvest` keeps both as fees:
+  - `settleTotal` refuses the total because a larger "fee" is on the page;
+  - the GST basis is split, three ex against two inc;
+  - both figures become priced quote rows ($227,272.73 and $210,000).
+  The stated total and the GST basis then go to Jev, and the run stored
+  neither.
+- *Location:* `internal/proposals/harvest.go` (amount kinds),
+  `internal/proposals/read.go` `settleTotal`.
+
+**F25. "Building designer" is not a discipline alias.**
+- *Expected:* `consultant.architect`. T12's designer is a building
+  designer, as on most granny flats.
+- *Actual:* the fee proposal, design statement and site plans file with
+  no discipline, at Jev 0.35 to 0.52. That is four of five design
+  documents in each T12 run, and one site plan filed as `none`.
+- *Location:* `data/intake/disciplines.json` `consultant.architect`
+  aliases.
+- *Knock-on:* in T12 base there is no architect package from the fee
+  proposal, so the designer's invoice gets no supplier.
+- *Related:* the T12 stormwater fee proposal (d07, "Garrick Stormwater")
+  filed as hydraulic, not civil, at 0.66 to 0.70. The T12 DA SEE filed as
+  `consultant.building`.
+
+**F26. A house connected to the street water main is read as building
+next to an authority asset.**
+- *Expected:* `flag.authority_asset` no.
+- *Actual:* yes in ST11-cdc. It is a conflict in ST10-da, ST10-sep and all
+  three T12 runs, and blank in T11 base and three-plus.
+- *Cause:* the trigger `(?:sewer|water) (?:main|asset)` matches "Water main
+  in Wattlebird Street; the house is connected to it". Jev answers yes at
+  0.60 to 0.82. The denial in the next bullet ("No Sydney Water assets are
+  within the property") scored 0.37 to 0.43 when it lost.
+- *Location:* `knowledge/profile/flag_readings.yaml` `authority_asset`. This
+  was listed in pilots as "conflict, check wording"; the wording is now
+  traced.
+- *Knock-on:* the architect `water_asset` and the structural
+  `authority_asset` stage are included in eight runs (16 RFP new failures).
+
+**F27. The F15 majority rule counts passages, not documents.**
+- *Expected:* `hdr.cond.access_constraints` unrestricted. The survey says
+  so at 0.99.
+- *Actual:* `urban_constrained`, in all T10 runs. It rests on five passages
+  from two geotechnical documents, about a small track-mounted rig and the
+  site classification (0.37 to 0.91).
+- *Location:* `internal/profile/reconcile.go` `lopsidedChoice`, which counts
+  `len(byValue[v])`. This is a side effect of the F15 fix.
+- *Knock-on:* the surveyor RFP's `access` position.
+
+**F28. The reinforcement hold point comes after the pour (traced).**
+- *Expected:* the inspection before "Reinforce and pour slab".
+- *Actual:* "Reinforce and pour slab" → "Hold point: Reinforcement
+  inspection release identifying the pour" → "Cure slab". Seen in five
+  runs, and once in the T01 pilot.
+- *Cause:* `holdPointRows` puts a hold after the last activity tagged with
+  the interface's `after` system (`structure.concrete`). The one
+  fr.slab-on-ground-1a activity is tagged with both `structure.concrete`
+  and `substructure.slab-on-ground`, so the hold lands after the pour.
+- *Location:* `internal/program/generate.go` `holdPointRows`;
+  `knowledge/clusters/structure/interfaces.yaml` hold point.
+
+**F29. The house construction fragments float apart (suspected: missing
+attach links).** Seen in all nine runs; T05 in the pilots showed the same.
+- "Establish the site" has no predecessor or successor, and starts the same
+  day as erosion control.
+- The fit-offs (sanitary, water, electrical) link only to their rough-ins.
+  They finish before plasterboard and joinery start.
+- Hydraulic rough-in follows "Cure slab", before the frame and roof.
+- Site stormwater is not after gutters and downpipes.
+- Wrap and cladding are not after the windows.
+
+Location: `knowledge/program/fragments.yaml` (fr.site-establishment-1a,
+fr.hydraulic-*-1a, fr.electrical-1a, fr.stormwater-1a, fr.cladding).
+
+**F30. A dangerous-goods process is read on houses.**
+- *Expected:* no `hdr.cond.hazardous_process` row. The taxonomy limits it
+  to industrial.
+- *Actual:* "Dangerous goods", from the demolition and asbestos passages.
+  It is printed in seven RFP briefs across T10, T11 and T12, and is hidden
+  in the profile view.
+- *Location:* `knowledge/profile/taxonomy.yaml` `hazardous_process`
+  `applies_to`, which the header question routing appears to ignore
+  (suspected).
+
+**Harness: two RFP drafts returned 409** (Hazmat in ST10-da, BASIX in
+ST12-sewer).
+- Both happened while three projects in the same organisation were
+  drafting.
+- No reading jobs were queued, and the ensure call uses the last completed
+  profile, so this is not `reading_incomplete`.
+- Suspected: `refreshReport` gave up after three serialisation failures
+  and returned `ErrVersionConflict`.
+- Those reports have no draft. Run scenarios one at a time, or log the 409
+  body.
+
 ## Known gaps confirmed (already named in the shape)
 
 - Electrical, hydraulic and mechanical consultants are suggested for a
@@ -199,13 +412,26 @@ The predicted cut at " - " did not happen.
   fees, preliminaries and margin, PC and provisional sums, owner supply,
   balustrades.
 - CDC: the town planner, "DA fees and contributions" and "Construction
-  certificate and certifier fees" stay in.
+  certificate and certifier fees" stay in. *(6 Nov: the DA fees line is a
+  defect, F20, not knowledge.)*
 - Trees: no "Tree protection" cost line.
 - Supersession is never written (A-101 Rev A → Rev B), as DISCOVERY.md
   §4.5 predicted. Lifecycle is mostly blank, as Jev lifecycle answers are
   never applied.
 - Title blocks laid out as a table (the messy tier) give no number or date,
   by design.
+- T10 to T12 (run `20261106-t10-t12`):
+  - No hazmat RFP template. The hazmat RFP is the generic draft, so none
+    of its phrases match.
+  - No BASIX, QS or building-consultant package.
+  - Demolition is one row, with no services-off, clearance or SafeWork
+    holds.
+  - No subdivision content (T11).
+  - Construction certificate before construction documentation (T11).
+  - No construction-documentation stage on the CDC skeleton, so client
+    sign-off for lodgement comes before construction documents (T10,
+    T12).
+  - Air conditioning after the linings.
 
 ## Key or harness issues (not app defects)
 
@@ -247,6 +473,62 @@ The predicted cut at " - " did not happen.
   change. **Owner question:** under scope by stage, an open client
   question (`ask`) is issued as included and priced; a key that calls it
   absent now stays a known difference.
+
+- **T10 to T12 (6 Nov).**
+  - **Scorer fixes.**
+    - *Skeleton.* `score_shapes.py` let only `program.skeleton` set the
+      expected skeleton. A trigger may now set `skeleton:`
+      (`validate_shape.py` checks it). The T10 and T12 `da-pathway` and
+      T11 `cdc-low-rise-code` triggers set theirs, so their skeleton
+      "mismatches" were the scorer's. T01 `cdc-pathway` and T07
+      heritage have the same gap; add `skeleton:` there too.
+    - *`no_supplier`.* `harness/score.py` expected the flag on every
+      invoice. Since F8 the reader picks a supplier, and `ledger.go`
+      raises `no_supplier` only when there is no supplier package. The
+      flag is now expected only when the app read no supplier (27
+      false "missed" in this run; the pilots' after-fix scores had the
+      same artefact).
+  - **Shape fixes (reasons in each DOMAIN.md).**
+    - *Architect budget block.* `expect.blocking: ["fact:budget"]` became
+      `[]`: the budget is stated (SCORING.md §7.5, as T01). This was 9
+      false new failures.
+    - *DA cost lines.* The pathway triggers now add the CC fee line, and
+      T12 adds the town planner line. The DA's correct CC line had been
+      scored as a false positive.
+    - *Building designer.* The T12 "Building designer" line has
+      `aliases: ["Architect"]`.
+    - *T12 certifier.* It no longer expects the pre-F9
+      `pathway_unsupported` block.
+    - *T10 certifier.* The four client-flag positions are keyed as in
+      T11.
+  - **Key fix.** ST10 `proj.lga` also accepts "Sutherland", as ST12
+    does for the same council. The app keeps the area name without
+    "Shire" or "City of" (`lgaTrailing`). Whether it should keep "Shire"
+    is an owner call.
+  - **Still a scorer limitation.**
+    - A trigger cannot change `rfps[].expect`. So in ST12-sewer, the
+      architect `water_asset` and structural `authority_asset` rows the
+      trigger wants count as new failures. So do the planning-response
+      and B2 stage differences in the pathway variants.
+    - `proj.regulated_design` has no reading, but the ST11 and ST12 keys
+      derive `read_by_design: true`, so it scores as missed.
+  - **Not app defects.**
+    - The T12 surveyor invoice gets no supplier because no surveyor
+      package exists when it is read. The surveyor is only a suggestion
+      until the cost plan is prepared. The ledger asks the user to add
+      the package; this is by design.
+    - The T10 occupancy conflict is genuine: geotechnical fieldwork ran
+      while the house was occupied. GFA 300 against 302 m² and site area
+      700 against 700.4 m² are planned conflicts.
+    - The T10 geotechnical `g4_planning` is a priced option after the
+      boundary. The T10 shape keys it absent, an owner call.
+    - The T10 and T12 certifier `b1_preliminary` is keyed absent, while
+      T11 keys it as an option.
+    - d04 (the architect's email) is filed as architect, where the key
+      says none. This is the same question as T05 d04.
+  - **Owner questions.**
+    - Does demolition make `det.existing_building` true (F17)?
+    - Should one strong document outweigh several weak passages (F27)?
 
 ## What worked
 

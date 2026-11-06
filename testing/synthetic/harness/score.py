@@ -200,11 +200,15 @@ def state_flags(expected, app):
 
     The keys list only what the document itself causes. These follow from
     what the harness does (internal/invoices/ledger.go Check): it never
-    allocates an invoice to a cost line (unmapped) or confirms a supplier
-    (no_supplier), and `period` fires when the invoice is dated in a month
-    before the upload month, which a run made later than the invoice date
-    always is."""
-    out = {"unmapped", "no_supplier"}
+    allocates an invoice to a cost line (unmapped) or picks a supplier
+    (no_supplier, raised only while the invoice has no supplier package; a
+    missed supplier is scored once, as the supplier), and `period` fires when
+    the invoice is dated in a month before the upload month, which a run made
+    later than the invoice date always is."""
+    out = {"unmapped"}
+    supplier = app.get("supplier_id") or ((app.get("fields") or {}).get("supplier") or {}).get("value")
+    if not supplier:
+        out.add("no_supplier")
     # Period needs a date the app read; a missed date is scored once, as a date.
     read = ((app.get("fields") or {}).get("date") or {}).get("value") or app.get("date")
     date = str(expected.get("invoice_date") or "") if read else ""

@@ -1,0 +1,325 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Fernleigh Architects Pty Ltd",
+        "abn": "27 990 538 406",
+        "contact": "Sofia Brandt",
+        "email": "sofia.fernleigh@example.com",
+        "phone": "02 9871 4410",
+        "address": "Suite 6, 22 Lilly Pilly Lane, Epping NSW 2121"
+      },
+      "stated_total_cents": 8500000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Concept design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1600000
+        },
+        {
+          "label": "Stage 2 DA documentation and lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2400000
+        },
+        {
+          "label": "Stage 3 Construction documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3800000
+        },
+        {
+          "label": "Stage 4 Tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 700000
+        },
+        {
+          "label": "Option: contract administration",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Additional services: hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 22000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Coolabah Structural Engineers Pty Ltd",
+        "abn": "92 503 647 071",
+        "contact": "Ravi Menon",
+        "email": "ravi.coolabah@example.com",
+        "phone": "02 9630 2218",
+        "address": "Level 1, 9 Quandong Place, Baulkham Hills NSW 2153"
+      },
+      "stated_total_cents": 980000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept and DA structural advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 180000
+        },
+        {
+          "label": "Detailed design and CC documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Site inspections: per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 36000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Merriden Civil Engineering Pty Ltd",
+        "abn": "62 562 651 327",
+        "contact": "Hannah Price",
+        "email": "hannah.merriden@example.com",
+        "phone": "02 9683 7741",
+        "address": "14 Ironstone Close, North Parramatta NSW 2151"
+      },
+      "stated_total_cents": 1300000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Stormwater concept plan with OSD for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 420000
+        },
+        {
+          "label": "Detailed stormwater and OSD design, common driveway long section and erosion and sediment control plan for the CC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 660000
+        },
+        {
+          "label": "Works-as-executed review and OSD certification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 220000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Basalt Ridge Geotechnical Pty Ltd",
+        "abn": "27 811 849 176",
+        "contact": "Liam Ostrowski",
+        "email": "liam.basaltridge@example.com",
+        "phone": "02 9899 3056",
+        "address": "3/41 Kurrawong Road, Castle Hill NSW 2154"
+      },
+      "stated_total_cents": 410000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Investigation plan and fieldwork",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 250000
+        },
+        {
+          "label": "Laboratory reactivity testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 70000
+        },
+        {
+          "label": "Report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 90000
+        },
+        {
+          "label": "Footing inspection: per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 45000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.hazmat",
+      "firm": {
+        "name": "Greyfield Environmental Pty Ltd",
+        "abn": "75 480 048 249",
+        "contact": "Mei Lin Tan",
+        "email": "meilin.greyfield@example.com",
+        "phone": "02 9858 1192",
+        "address": "Unit 2, 77 Corkwood Drive, Eastwood NSW 2122"
+      },
+      "stated_total_cents": 260000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Pre-demolition survey with sampling",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 160000
+        },
+        {
+          "label": "Laboratory analysis",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 60000
+        },
+        {
+          "label": "Register and report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 40000
+        },
+        {
+          "label": "Option: asbestos clearance inspection and certificate",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 75000
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.town_planner",
+      "firm": {
+        "name": "Halden Planning Pty Ltd",
+        "abn": "41 440 778 152",
+        "contact": "George Antoniou",
+        "email": "george.haldenplanning@example.com",
+        "phone": "02 9891 6620",
+        "address": "Suite 11, 5 Tallowood Parade, Parramatta NSW 2150"
+      },
+      "stated_total_cents": 1100000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Controls review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 250000
+        },
+        {
+          "label": "Stage 2 Statement of environmental effects",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 650000
+        },
+        {
+          "label": "Stage 3 Assessment support and responses to requests for information",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 200000
+        },
+        {
+          "label": "Planning panel attendance",
+          "kind": "stage",
+          "state": "excluded",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d20",
+      "kind": "fee_proposal",
+      "discipline": "consultant.traffic",
+      "firm": {
+        "name": "Wayfinder Traffic Engineering Pty Ltd",
+        "abn": "76 815 008 823",
+        "contact": "Priya Desai",
+        "email": "priya.wayfinder@example.com",
+        "phone": "02 9806 4471",
+        "address": "Level 3, 18 Bloodwood Street, Parramatta NSW 2150"
+      },
+      "stated_total_cents": 650000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Parking and access advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 180000
+        },
+        {
+          "label": "Traffic and parking report for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 320000
+        },
+        {
+          "label": "Swept paths for the common driveway and waste collection",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        }
+      ]
+    },
+    {
+      "doc": "d21",
+      "kind": "fee_proposal",
+      "discipline": "consultant.waste",
+      "firm": {
+        "name": "Binley Waste Consulting Pty Ltd",
+        "abn": "53 082 828 049",
+        "contact": "Owen Clarke",
+        "email": "owen.binley@example.com",
+        "phone": "02 9874 0935",
+        "address": "8 Sheoak Court, Ermington NSW 2115"
+      },
+      "stated_total_cents": 250000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Waste management plan for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 190000
+        },
+        {
+          "label": "Bin store sizing and kerbside collection advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 60000
+        }
+      ]
+    }
+  ]
+}

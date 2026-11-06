@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "FLA-INV-1031",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "27 990 538 406",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 1600000,
+      "gst_cents": 160000,
+      "total_cents": 1760000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stage 1 Concept design (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "BRG-0522",
+      "invoice_date": "2026-04-24",
+      "issuer_abn": "27 811 849 176",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 410000,
+      "gst_cents": 41000,
+      "total_cents": 461000,
+      "flags": [
+        "arithmetic"
+      ],
+      "unsupported": {
+        "claim_stage": "Investigation and report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d19",
+      "kind": "invoice",
+      "number": "2207",
+      "invoice_date": "2026-04-17",
+      "issuer_abn": "75 480 048 249",
+      "supplier_discipline": "consultant.hazmat",
+      "ex_gst_cents": 260000,
+      "gst_cents": 26000,
+      "total_cents": 286000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Survey, sampling and report (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

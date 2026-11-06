@@ -44,6 +44,15 @@ class Rules(unittest.TestCase):
         self.assertEqual(s.state_flags({"invoice_date": "2026-10-03"}, {"period": "2026-10-01"}),
                          {"unmapped", "no_supplier"})
 
+    def test_no_supplier_is_expected_only_when_no_supplier_was_read(self):
+        # ledger.go raises no_supplier when the invoice has no supplier package;
+        # since F8 the reader picks one, and then the flag is rightly absent.
+        read = {"period": "2026-11-01", "date": "2026-04-30", "supplier_id": "pkg-1", "supplier": "Geotechnical"}
+        self.assertEqual(s.state_flags({"invoice_date": "2026-04-30"}, read), {"unmapped", "period"})
+        blank = {"period": "2026-11-01", "date": "2026-04-30", "supplier_id": None,
+                 "fields": {"supplier": {"value": "", "band": "blank"}}}
+        self.assertEqual(s.state_flags({"invoice_date": "2026-04-30"}, blank), {"unmapped", "no_supplier", "period"})
+
     def test_profile_conflict(self):
         profile = {"header": [{"key": "hdr.cond.planning", "value": "", "alternatives": [{"value": "da"}, {"value": "cdc"}]}]}
         rows = s.score_profile({"values": {"hdr.cond.planning": {"value": "da", "read_by_design": True}}}, profile)

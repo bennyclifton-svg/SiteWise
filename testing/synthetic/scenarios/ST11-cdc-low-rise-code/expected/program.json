@@ -1,0 +1,7 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T11-dual-occupancy-townhouses/shape.yaml",
+  "triggers": [
+    "cdc-low-rise-code"
+  ]
+}

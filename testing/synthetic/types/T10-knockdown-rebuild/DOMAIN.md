@@ -36,7 +36,8 @@ Greater Sydney a code-compliant knock-down rebuild usually goes CDC because it i
 council assessment. [D] The base keeps T01's traditional, consultant-led procurement so that the two maps
 differ only in the existing house and the pathway. The project-home "knock-down rebuild package", where
 the builder designs and demolishes, is very common by volume. It is the trigger `builder-designs`, as it
-is in T01, because the app models it badly (§11). Reviewer accepted this base (T10 REVIEW §2); the owner may override.
+is in T01, because the app models it badly (§11). Reviewer accepted this base (T10 REVIEW §2); the owner may override. After the ST10 scenario review, the base profile also carries site class M and no
+neighbouring or street trees affected (as R10 for T01); the owner should confirm.
 
 **Who procures it and how.** The owner is usually a private individual or couple who has lived in the
 house. They engage the architect or designer first. The architect brings in:
@@ -976,3 +977,16 @@ What is missing, and what the app will probably produce wrongly as a result. The
   removal.
 - That contributions are usually nil or small for a one-for-one replacement.
 - Keying `det.existing_building: true` for a demolished house: accepted at review (T10 REVIEW §2.4).
+
+## Shape corrections after run `20261106-t10-t12` (6 November 2026)
+
+- `da-pathway` now sets `skeleton: sk.new-traditional-da`. Its own `why` already said so; the scorer could
+  not change the expected skeleton until a trigger could set one (`tools/score_shapes.py`, SCORING.md §2).
+- `da-pathway` now also adds the cost line "Construction certificate and certifier fees". The trigger removed
+  the base CDC fee line, which is anchored to the same `cc-fees` starter, and added nothing back, so the CC
+  line a DA job needs scored as a false positive. T01 and T11 (DA bases) expect the same line.
+- The architect RFP's `expect.blocking` is now `[]`, not `["fact:budget"]`: the scenarios state the budget
+  and the app reads it (SCORING.md §7.5, as T01). The old key described the app before the budget is read.
+- The certifier RFP has `app_differs` for the positions `existing_assessment`, `classification_map`,
+  `staged_occupation` and `fire_referrals`: client flags that cannot be keyed, so they ask. T11 already keyed
+  them this way.

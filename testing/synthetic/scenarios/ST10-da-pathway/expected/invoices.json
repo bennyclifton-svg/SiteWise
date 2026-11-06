@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "CHS-INV-1904",
+      "invoice_date": "2026-04-15",
+      "issuer_abn": "35 331 591 766",
+      "supplier_discipline": "consultant.hazmat",
+      "ex_gst_cents": 265000,
+      "gst_cents": 26500,
+      "total_cents": 291500,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Survey, analysis and report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "MHA-INV-0503",
+      "invoice_date": "2026-05-29",
+      "issuer_abn": "27 365 699 632",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 1900000,
+      "gst_cents": 190000,
+      "total_cents": 2090000,
+      "flags": [
+        "abn_invalid"
+      ],
+      "unsupported": {
+        "claim_stage": "Stage 1 Concept design (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "7731",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "71 046 338 591",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 410000,
+      "gst_cents": 41000,
+      "total_cents": 451000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Investigation, testing and report (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

@@ -758,3 +758,29 @@ reply is in REVIEW.md, "Round 1 response".
 ## Disputed review findings
 
 None.
+
+## Scenario review applied (6 November 2026)
+
+`det.site_class: M` added to the base profile in `shape.yaml`: owner ruling R10 (T01, site class M for a new
+house) applied by analogy. **Pending owner confirmation for T12.** No T12 trigger changes the site class; the
+scenarios key it from the geotechnical report.
+
+## Shape corrections after run `20261106-t10-t12` (6 November 2026)
+
+- `da-pathway` now sets `skeleton: sk.new-traditional-da`. Its own `why` already said so; the scorer could
+  not change the expected skeleton until a trigger could set one (`tools/score_shapes.py`, SCORING.md §2).
+- `da-pathway` adds "Construction certificate and certifier fees" in place of "Construction certificate
+  fee". Same expectation (a CC fee line, `cc-fees`), worded as T01 and T11 word it so the scorer can match
+  it; the old wording could never match and the right line scored as a false positive.
+- The "Building designer" cost line has `aliases: ["Architect"]`. Its `why` already says the app's line is
+  the F-line "Architect" from the adopted package; without the alias that line scored as extra and the
+  expected line as a built-in miss.
+- `da-pathway` also adds the cost line "Town planner". The trigger adds the town planner package, and T10's
+  `da-pathway` adds the same line; without it the base `not_expected_cost_plan` entry ("on a CDC job")
+  still counted the planner's fee line as a false positive on a DA.
+- The architect RFP's `expect.blocking` is now `[]`, not `["fact:budget"]`: the scenarios state the budget
+  and the app reads it (SCORING.md §7.5, as T01). The old key described the app before the budget is read.
+- The certifier RFP's `expect` was keyed to the template before F9 was fixed (blocking `pathway_unsupported`,
+  every B stage absent), which contradicted the entry's own `must_include` (principal certifier, R7
+  inspections, OC). It now expects `b3_construction` and `b4_occupation` included and no blocking check.
+  `b1_preliminary` stays absent; whether a CDC certifier RFP needs it is an owner call (T11 keys it option).

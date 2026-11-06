@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d15",
+      "kind": "invoice",
+      "number": "SBD-INV-0331",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "87 495 969 976",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 280000,
+      "gst_cents": 28000,
+      "total_cents": 308000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stage 1 Concept design (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "2207",
+      "invoice_date": "2026-04-15",
+      "issuer_abn": "69 993 653 725",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 170000,
+      "gst_cents": 17000,
+      "total_cents": 178000,
+      "flags": [
+        "arithmetic"
+      ],
+      "unsupported": {
+        "claim_stage": "Investigation, testing and report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "BHS-1043",
+      "invoice_date": "2026-02-27",
+      "issuer_abn": "62 452 058 759",
+      "supplier_discipline": "consultant.surveyor",
+      "ex_gst_cents": 245000,
+      "gst_cents": 24500,
+      "total_cents": 269500,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Detail, level and boundary survey (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

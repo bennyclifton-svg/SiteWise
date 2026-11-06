@@ -1,0 +1,796 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST12-sewer-main-in-backyard",
+  "type_id": "T12",
+  "base": "ST12-base",
+  "triggers": [
+    "sewer-main-in-backyard"
+  ],
+  "project": {
+    "name": "Whitfield granny flat, 18 Tuckeroo Crescent",
+    "address": "18 Tuckeroo Crescent, Gymea NSW 2227",
+    "lga": "Sutherland Shire",
+    "summary": "The base Whitfield granny flat, but a Sydney Water sewer main runs along the rear boundary and the flat sits within its zone of influence, so the rear edge is carried on piers and Sydney Water approves building next to the asset before the CDC is determined. Everything else is unchanged."
+  },
+  "invented": {
+    "lots": [],
+    "abns": [],
+    "firms": [],
+    "emails": []
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Owner brief - 18 Tuckeroo Crescent.md",
+      "title": "Owner's brief: secondary dwelling at 18 Tuckeroo Crescent",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date: 2 February 2026, Client, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "The project comprises a new detached secondary dwelling (granny flat) in the backyard of our family home"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "The project comprises a new detached secondary dwelling (granny flat) in the backyard of our family home"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "The project comprises a new detached secondary dwelling (granny flat) in the backyard of our family home"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "It will be a single-storey flat with 2 bedrooms and 1 bathroom, with a European laundry in the bathroom"
+        },
+        {
+          "key": "hdr.scale.bedrooms",
+          "says": "2 bedrooms"
+        },
+        {
+          "key": "hdr.scale.bathrooms",
+          "says": "1 bathroom"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The owners will continue to live in the main house throughout the works"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "We are the sole owners and the only decision makers"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Our designer is to keep the flat within the complying development standards so that a CDC can be sought from a registered certifier"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "Standard project-home finishes from the builder's range: durable and easy to keep, nothing custom"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $210,000 excluding GST"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "We will engage our own designer and consultants, then take lump sum quotes from three licensed builders"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The builder will be engaged under the HIA NSW Residential Building Contract for New Dwellings"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "for a fixed lump sum price"
+        },
+        {
+          "key": "flag.staged",
+          "says": "No staged construction: one builder, one contract, one continuous job"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "We are not planning multiple buildings: just the one secondary dwelling"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement or cellar"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "There is no gas supply to the property, and the flat will be all-electric"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or similar rating target beyond BASIX"
+        },
+        {
+          "key": "flag.country",
+          "says": "We do not need any Connecting with Country input for this lot"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Graham and Lena Whitfield"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 18 Tuckeroo Crescent, Gymea NSW 2227"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 18 Tuckeroo Crescent, Gymea NSW 2227"
+        }
+      ],
+      "traps": [],
+      "content": "The owners' brief to their building designer, in plain first-person prose. Sections: '## Project description' (first passage is the 'The project comprises a new detached secondary dwelling (granny flat)...' sentence; the single-storey, 2 bedrooms and 1 bathroom sentence written with digits; about 60 m2 of floor area, written without the words 'gross floor area'; the flat is for their daughter now and may be rented later; the owners continue to live in the main house; sole owners; the CDC sentence), '## What we want' (open kitchen and living to a small private courtyard, built-in robes, split-system air-conditioning, a path from the street to the flat's door; the flat needs no garage or car space), '## Scope, budget and quality' (quality sentence and the budget line), '## Contract and procurement' (route, contract form and lump sum sentences; no staged construction; no multiple buildings), '## Services and sustainability' (no gas supply, all-electric, heat-pump hot water, BASIX only, no Connecting with Country input, no basement or cellar). Do not describe the main house by storeys, bedrooms, bathrooms or floor area, and do not use the words 'existing building', 'renovation' or 'dual occupancy'."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 32 DP 237114.md",
+      "title": "Planning certificate under section 10.7",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-04417 | | Issue date | 09/02/2026 | | Applicant | Graham Whitfield |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Sutherland Shire Council"
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 32 DP 237114"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R2 Low Density Residential under Sutherland Shire Local Environmental Plan 2015"
+        },
+        {
+          "key": "proj.address",
+          "says": "18 Tuckeroo Crescent, Gymea NSW 2227"
+        },
+        {
+          "key": "det.state",
+          "says": "Gymea NSW 2227"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [],
+      "content": "A Sutherland Shire Council s10.7(2) and (5) planning certificate, numbered items in the usual order: zoning and LEP/DCP (permitted with consent includes dwelling houses and secondary dwellings), complying development (may be carried out on the land), heritage, bush fire, flood, acid sulfate soils, contamination, coastal, rail corridor, road widening (none). Fixed council wording; identity sits in a table, not label lines. The opening sentence names 'Sutherland Shire Council' as the issuing council, ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 18 Tuckeroo Crescent.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Brindle & Hart Surveyors Pty Ltd",
+      "date": "2026-02-23",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: BHS-26-0119, Date: 23 February 2026, Prepared by; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 600.0 m2"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Construction access is constrained: the only way to the backyard is the side driveway past the occupied house, through a double gate. A 3 m driveway along the eastern side of the house gives truck access to the rear yard through a double gate; it is the only way in, as there is no rear lane, and it is also the family's parking"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "The sewer diagram shows a Sydney Water main running along the rear boundary"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "The house drains by gravity to the Sydney Water sewer main along the rear boundary; the house drain runs down the western side of the yard"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Water main in Tuckeroo Crescent; the house is connected to it"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot; roof water drains by gravity to the kerb"
+        }
+      ],
+      "traps": [
+        {
+          "id": "existing-building-retained",
+          "what": "'The existing building on the lot, the brick house at the front, is retained' matches the existing_building trigger (DOMAIN.md §10 trap 1).",
+          "expect": "det.existing_building stays false: the works are a new detached building, not work to the main house; hdr.work_type stays new (no code path from existing_building to work type; a refurb or extend pick here is a Jev reading error)"
+        },
+        {
+          "id": "trees-listed-not-affected",
+          "what": "Lists a lemon tree and a crepe myrtle in the rear yard and a bottlebrush street tree on the verge.",
+          "expect": "d03 alone sets no arborist flag: presence is not an impact"
+        }
+      ],
+      "content": "Surveyor's report with the detail, level and boundary survey on AHD, prepared for the design of a secondary dwelling. Sections: '## Site description' (600.0 m2, 15.24 m frontage, 39.37 m deep; the backyard is generally level, with a fall of about 200 mm across the yard; the two access sentences: the constrained-access sentence first, then the driveway sentence), '## Boundaries and easements' (no easements; fences on or near the boundaries), '## Existing house' (the 'existing building ... is retained' sentence; floor level of the rear door, eaves and roof levels; rear wall about 21.5 m from the front boundary), '## Trees' (lemon tree and crepe myrtle in the rear yard, bottlebrush on the verge, with heights and spreads), '## Services' (the sewer diagram sentence: a 150 mm Sydney Water sewer main about 1.0 m inside the rear boundary, about 2.0 m deep, with a maintenance hole near the south-western corner; the house drain sentence; the water sentence; house drain inspection opening and gully located; overhead electricity supply to the house; no gas main connection; the on-site detention sentence). Do not describe the house by storeys or floor area and do not give a year of construction."
+    },
+    {
+      "id": "d04",
+      "filename": "RE When can the builder start.md",
+      "title": "RE: When can the builder start?",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-26",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "We'd like the builder to start by 1 September 2026 so the flat is ready before Christmas"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread between Graham Whitfield and Mia Castellano, the building designer. Graham writes on 25 February 2026 with the target start; Mia replies on 26 February 2026 that it depends on how long the certifier takes to determine the CDC and on the builders' quotes, and that she will send her fee proposal next week."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural design - 18 Tuckeroo Crescent.md",
+      "title": "Fee proposal: architectural design and documentation services",
+      "author_role": "consultant.architect",
+      "firm": "Saltbush Building Design Pty Ltd",
+      "date": "2026-03-04",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: SBD-FP-0226, Date: 4 March 2026, Client; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.architect_lodges",
+          "says": "The designer will lodge the application for a complying development certificate with the certifier on the NSW Planning Portal"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "This is a Class 1a dwelling, so the Design and Building Practitioners Act registered-design obligations do not apply"
+        },
+        {
+          "key": "det.ncc_class",
+          "says": "This is a Class 1a dwelling"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Stage 2: CDC documentation and lodgement with the certifier"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $9,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Building designer's fee proposal; the firm describes itself as accredited building designers, not architects. Scope and fee by stage: Stage 1 concept design (site analysis on the survey, placing the flat clear of the house drain and inside the setbacks, one round of changes) $2,800; Stage 2 CDC documentation and lodgement (CDC drawings, site plan with setbacks and services routes from the main house, BASIX commitments on the drawings, certifier liaison, and the water authority asset submission: Sydney Water Tap in building plan approval with the asset assessment for building next to the main along the rear boundary) $4,200; Stage 3 construction drawings, finishes and fixtures schedule and specification for builders' quotes $2,000; total $9,000 ex GST. Option: quote-period support (answering builders' questions, comparing quotes) $600 ex GST. Additional services at $140 per hour ex GST. Exclusions: other consultants, certifier, council and Sydney Water fees. The 'Stage 1 ... Stage 3' fee stages are not construction stages."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal PRS-2611.md",
+      "title": "Structural engineering fee proposal",
+      "author_role": "consultant.structural",
+      "firm": "Pillar Rock Structural Engineers Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: PRS-2611, Date: 9 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "No transfer structures are required for a single-storey timber-framed dwelling"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "building next to a Sydney Water asset: the sewer main along the rear boundary"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "a single-storey timber-framed dwelling"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $2,250 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's quote: slab and footing design to AS 2870 on the geotechnical site class, with footings clear of the house drain, and construction drawings for the CDC $1,250; authority asset assessment and pier design to Sydney Water's guidelines, for building next to a Sydney Water asset (the sewer main along the rear boundary), with piers along the rear edge founded below the zone of influence $650; review of the supplier's frame, truss and tie-down layouts and design certificate for the certifier $350; total $2,250 ex GST. Site inspections of footings, piers and slab reinforcement at $280 per visit ex GST. Dropped on the structural procurement row."
+    },
+    {
+      "id": "d07",
+      "filename": "Garrick Stormwater - fee - Tuckeroo Cres.md",
+      "title": "Fee proposal: stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Garrick Stormwater Consulting Pty Ltd",
+      "date": "2026-03-10",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | GSC-P-0412 | | Date | 10/03/2026 | | Attention | Mia Castellano |; # heading 'Fee proposal: stormwater engineering'",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "The development is exempt from on-site detention under council's stormwater policy"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "No stormwater quality treatment or MUSIC modelling is required for a secondary dwelling"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "The site is outside the drinking water catchment, so no NorBE assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No public road works are required"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $1,870 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "osd-negated",
+          "what": "'exempt from on-site detention' matches the osd_required trigger, and 'no existing on-site detention' the osd_existing trigger (DOMAIN.md §9 osd-required negation).",
+          "expect": "flag.osd_required and flag.osd_existing both stay no"
+        }
+      ],
+      "content": "Stormwater engineer's fee proposal for the flat's new roof: roof water from the flat is piped by gravity to the existing system and the kerb. Stages: stormwater plan for the CDC with the discharge point confirmed $1,320 inc GST; works-as-executed review and stormwater certificate for the occupation certificate $550 inc GST; total $1,870 inc GST. Every figure is GST-inclusive. Reimbursable, not priced: CCTV and locating of the existing stormwater line where the flat connects, at cost if needed."
+    },
+    {
+      "id": "d08",
+      "filename": "Geotechnical investigation fee proposal - Tessellate.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Tessellate Geotechnical Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal ref: TG-P-0307, Date: 11 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $1,700 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical fee proposal for an AS 2870 site classification of the flat's footprint: investigation plan and fieldwork (two boreholes with DCP tests, hand auger or small rig brought down the side driveway, the owners to arrange access past the house) $950; laboratory reactivity testing $300; report with the site classification and footing recommendations $450; total $1,700 ex GST. Optional footing inspection at $380 per visit ex GST."
+    },
+    {
+      "id": "d09",
+      "filename": "BASIX fee proposal - Evenstar.md",
+      "title": "Fee proposal: BASIX certificate for a secondary dwelling",
+      "author_role": "consultant.basix",
+      "firm": "Evenstar Energy Ratings Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: EE-1182, Date: 12 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5."
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $800 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "BASIX assessor's fee proposal: BASIX certificate (thermal, energy and water) for the new dwelling using the NatHERS thermal method, with the commitments marked on the CDC plans, $650; one revised certificate if the design changes before the CDC, $150; total $800 ex GST. Excludes any assessment of the main house."
+    },
+    {
+      "id": "d10",
+      "filename": "Certifier fee proposal LBC-26-0318.md",
+      "title": "Fee proposal: complying development certificate and principal certifier services",
+      "author_role": "consultant.certifier",
+      "firm": "Larkin Building Certification Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: LBC-26-0318, Date: 16 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "We will assess and determine the complying development certificate for the secondary dwelling"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $4,700 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Our fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Registered certifier's fee proposal. Stages: CDC eligibility check, assessment and determination, including the neighbour notices we give before determining, $2,400; appointment as principal certifier and the critical-stage inspections (pre-commencement, footings, slab, frame, wet areas, stormwater) $1,800; final inspection and occupation certificate $500; total $4,700 ex GST. Additional or failed inspections at $260 per visit ex GST. Not priced, paid at cost: council's CDC registration fee. Sydney Water's Tap in building plan approval is needed before we determine. The long service levy is payable only where the cost of work is $250,000 or more including GST; on the estimated cost of work you gave us, $231,000 including GST, it does not apply."
+    },
+    {
+      "id": "d11",
+      "filename": "Geotechnical report TG-26-0307 - 18 Tuckeroo Crescent.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Tessellate Geotechnical Pty Ltd",
+      "date": "2026-04-08",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: TG-26-0307, Revision: 0, Report date: 8 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.site_class",
+          "says": "Site classification: Class M in accordance with AS 2870"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "No groundwater was encountered in the boreholes to 2.5 m"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "No excavation is proposed next to the neighbouring dwellings; the slab edge beams are shallow"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed; the flat is a slab on ground"
+        }
+      ],
+      "traps": [
+        {
+          "id": "excavate-to-depth",
+          "what": "Recommends 'excavate to a depth of 200 mm to strip topsoil under the slab platform', which matches the basement trigger 'excavat\\w* to a depth'.",
+          "expect": "flag.basement stays no"
+        },
+        {
+          "id": "excavation-near-boundary",
+          "what": "'Edge beam excavations along the western side, 900 mm from the boundary fence, are shallow and do not undermine the fence or the neighbour's footings' matches the excavation_adjoining trigger (DOMAIN.md §10 trap 6).",
+          "expect": "flag.excavation_adjoining stays no: a shallow edge beam near a fence is not adjoining excavation"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (two boreholes by hand auger with DCP tests, equipment brought down the side driveway), subsurface profile (topsoil over stiff silty clay over weathered sandstone at about 1.6 m), laboratory shrink-swell results, AS 2870 site classification Class M, footing and slab recommendations (stiffened raft or waffle slab; along the rear edge, where the flat sits within the zone of influence of the sewer main, bored piers founded in the weathered sandstone below the zone of influence, at about 2.2 m to 2.5 m, below the invert of the main; allowable end bearing 600 kPa in the weathered sandstone), earthworks advice (topsoil strip), site drainage advice. The groundwater, excavation and basement sentences. Do not mention the planning pathway."
+    },
+    {
+      "id": "d12",
+      "filename": "Design statement - 18 Tuckeroo Crescent.md",
+      "title": "Design statement: secondary dwelling",
+      "author_role": "consultant.architect",
+      "firm": "Saltbush Building Design Pty Ltd",
+      "date": "2026-05-12",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: SBD-DS-01, Revision: A, Date: 12 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "The secondary dwelling is a Class 1a building under the NCC"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "The secondary dwelling is a new detached building"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The secondary dwelling is a new detached building; the works do not alter the existing building on the lot, the main house"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Secondary dwelling gross floor area: 60 m2 (main house unchanged)"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "The secondary dwelling is a single-storey building with 2 bedrooms and 1 bathroom"
+        },
+        {
+          "key": "hdr.scale.bedrooms",
+          "says": "2 bedrooms"
+        },
+        {
+          "key": "hdr.scale.bathrooms",
+          "says": "1 bathroom"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Garage spaces: 0 (no garage or car space; the occupant parks on the street)"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The proposal meets the complying development standards and a CDC will be sought"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "the flat sits within the zone of influence of the sewer main"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "The site is a standard suburban lot with no environmental sensitivities such as bushland, creeks or threatened species"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "Climate zone 5"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees on or next to the site are affected by the works"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "No neighbouring or street trees are affected by the works"
+        },
+        {
+          "key": "flag.arborist_pruning",
+          "says": "No tree removal or pruning is proposed"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "As complying development, no clause 4.6 variation is sought or possible"
+        },
+        {
+          "key": "flag.panel",
+          "says": "As complying development, the application is not referred to the local planning panel"
+        },
+        {
+          "key": "flag.community",
+          "says": "No public exhibition or community consultation; the certifier notifies the neighbours before determining the CDC"
+        }
+      ],
+      "traps": [
+        {
+          "id": "existing-building-main-house",
+          "what": "'the works do not alter the existing building on the lot, the main house' matches the existing_building trigger (DOMAIN.md §10 trap 1).",
+          "expect": "det.existing_building is false"
+        },
+        {
+          "id": "no-demolition",
+          "what": "States 'The rear yard is clear lawn; no demolition is required'.",
+          "expect": "No site.demolition work item (DOMAIN.md §10 trap 3)"
+        },
+        {
+          "id": "no-separating-wall",
+          "what": "States 'As the flat is detached, no separating wall is needed', which matches implied_by party-wall.",
+          "expect": "No fire-passive.compartments or interiors.acoustic-separation work item (DOMAIN.md §10 trap 4)"
+        },
+        {
+          "id": "not-dual-occupancy",
+          "what": "States 'This is a secondary dwelling, not a dual occupancy, and it cannot be subdivided'.",
+          "expect": "hdr.subclass stays house; no subdivision or strata titling scope (DOMAIN.md §10 trap 8)"
+        },
+        {
+          "id": "garage-zero",
+          "what": "'Garage spaces: 0' names a garage.",
+          "expect": "hdr.scale.garage_spaces is 0 and det.ncc_class stays [1a]: no Class 10a (DOMAIN.md §10 trap 7)"
+        }
+      ],
+      "content": "Designer's design statement for the CDC set. Sections: '## Project description' (the Class 1a sentence, the new detached building sentence, the GFA line, the single-storey sentence with digits, the 'Garage spaces: 0' line, the CDC sentence), '## Site description and context' (standard suburban lot sentence; 'The flat is about 7 m clear of the main house and at least 900 mm from every boundary'; 3.0 m rear setback, 0.9 m western side setback; private open space), '## Design' ('The secondary dwelling is detached and free-standing'; open kitchen and living to the courtyard; the no-demolition, separating-wall and dual-occupancy sentences), '## Materials' ('Built on site in timber frame by the builder'; fibre cement cladding, metal skillion roof, aluminium windows; BASIX commitments; Climate zone 5), '## Services' ('The electrician's maximum demand calculation confirms the existing supply is adequate'; sub-main from the main house's switchboard to a sub-board in the flat; water branched after the meter; drainage to the house drain by gravity; 'The sewer diagram shows a Sydney Water main running along the rear boundary, and the flat sits within the zone of influence of the sewer main.' Building next to a Sydney Water asset: the rear edge is carried on piers founded below the zone of influence, and the plans go to Sydney Water for building plan approval and asset assessment before the CDC is determined; the main will be CCTV-inspected before and after construction; the builder keeps the maintenance hole near the south-western corner clear and accessible), '## Trees' (the three tree sentences), '## Planning' (cl 4.6, panel and community sentences). Do not describe the main house by storeys, bedrooms or floor area."
+    },
+    {
+      "id": "d13",
+      "filename": "Site plan A-101 Rev A.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Saltbush Building Design Pty Ltd",
+      "date": "2026-04-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: A, Title: Site plan, Date: 20 April 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 600.0 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Secondary dwelling GFA 60 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes: site area, flat's GFA, setbacks (rear 3.0 m, western side 0.9 m, about 7 m to the main house), private open space, path from the street along the driveway, Sydney Water sewer main along the rear boundary with its zone of influence hatched, piers along the flat's rear edge, the house drain route to the main, stormwater line to the existing system, sub-main trench from the house. Issue: preliminary."
+    },
+    {
+      "id": "d14",
+      "filename": "Site plan A-101 Rev B.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Saltbush Building Design Pty Ltd",
+      "date": "2026-05-11",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: B, Title: Site plan, Date: 11 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 600.0 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Secondary dwelling GFA 60 m2"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of the site plan: the flat's entry path moved and the clothes line relocated; revision note says 'Amended for CDC lodgement'. Notes otherwise as Rev A, including the Sydney Water sewer main along the rear boundary, its zone of influence and the piers along the flat's rear edge."
+    },
+    {
+      "id": "d15",
+      "filename": "Tax invoice SBD-INV-0331.md",
+      "title": "Tax invoice SBD-INV-0331",
+      "author_role": "consultant.architect",
+      "firm": "Saltbush Building Design Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: SBD-INV-0331, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $3,080.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$2,800.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$280.00"
+        }
+      ],
+      "traps": [],
+      "content": "Building designer's invoice for Stage 1 concept design, 100% complete. No mention of the approval pathway."
+    },
+    {
+      "id": "d16",
+      "filename": "TG invoice 2207.md",
+      "title": "Tax invoice 2207",
+      "author_role": "consultant.geotechnical",
+      "firm": "Tessellate Geotechnical Pty Ltd",
+      "date": "2026-04-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 2207 | | Date | 15/04/2026 | | ABN | 69 993 653 725 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $1,780.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $1,700.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $170.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "arithmetic",
+          "what": "The stated total $1,780.00 does not equal $1,700.00 + $170.00 = $1,870.00 (digits transposed).",
+          "expect": "The ledger flags arithmetic"
+        }
+      ],
+      "content": "Geotechnical invoice for the investigation and report, 100% of the proposal. The total line has two digits transposed."
+    },
+    {
+      "id": "d17",
+      "filename": "Tax invoice BHS-1043 Brindle and Hart.md",
+      "title": "Tax invoice BHS-1043",
+      "author_role": "consultant.surveyor",
+      "firm": "Brindle & Hart Surveyors Pty Ltd",
+      "date": "2026-02-27",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: BHS-1043, Date: 27 February 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $2,695.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $2,450.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $245.00"
+        }
+      ],
+      "traps": [],
+      "content": "Surveyor's invoice for the detail, level and boundary survey and report, 100% complete."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d03",
+      "change": "changed",
+      "why": "Survey shows the Sydney Water main along the rear boundary instead of 'no Sydney Water assets ... main in the street'; sewer-main-in-street trap removed"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Stage 2 adds the water authority asset submission; fee unchanged"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "Adds the authority asset assessment and pier design stage ($650); carries the building-next-to-asset evidence"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "Recommends piers below the sewer main's zone of influence"
+    },
+    {
+      "doc": "d12",
+      "change": "changed",
+      "why": "Design statement carries the zone-of-influence evidence, piers, Sydney Water approval and CCTV"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "Site plan shows the main and its zone of influence instead of a front-boundary sewer junction"
+    },
+    {
+      "doc": "d14",
+      "change": "changed",
+      "why": "Site plan Rev B shows the main and its zone of influence"
+    }
+  ]
+}

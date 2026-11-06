@@ -62,6 +62,9 @@ profile:
   flag.staged: "no"
   flag.multi_building: "no"
   flag.architect_lodges: "yes"
+  # Added after the ST10 review (ruling 1, as OWNER_RULINGS R10 for T01); pending owner confirmation.
+  det.site_class: M
+  flag.arborist_offsite_trees: "no"
 
 expected_derived:
   - {key: det.basix_required, value: true, source: "knowledge/clusters/envelope/rules.yaml rule.basix.certificate-required", note: "A knock-down rebuild is a new dwelling for BASIX; derivation pending in the rule, returns unknown today"}
@@ -318,7 +321,7 @@ rfps:
       stages_option: [construction_support, contract_admin]
       stages_absent: [brief_masterplan, planning_response, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, existing_interfaces: I, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent, live_staging: absent}
-      blocking: ["fact:budget"]
+      blocking: []   # the scenario states the budget (SCORING.md §7.5, as T01)
       sources:
         - "existing_interfaces I because det.existing_building is true (module existing_building)"
         - "planning_response absent: pathway cdc is not in its when list"
@@ -435,6 +438,10 @@ rfps:
       - {key: stage.a1_inception, app: ask, expect: absent, why: "boundary falls back to a1..a3 without the client flag bca_certification"}
       - {key: stage.a3_tender, app: ask, expect: absent, why: "as above"}
       - {key: position.statutory_functions, app: ask, expect: I, why: "row needs the client flag bca_certification"}
+      - {key: position.existing_assessment, app: ask, expect: absent, why: "client flag bca_existing_assessment (as T11)"}
+      - {key: position.classification_map, app: ask, expect: absent, why: "client flag bca_classification_map (as T11)"}
+      - {key: position.staged_occupation, app: ask, expect: absent, why: "client flag bca_staged_occupation (as T11)"}
+      - {key: position.fire_referrals, app: ask, expect: absent, why: "client flag bca_fire_referrals (as T11)"}
       - {key: position.residential_evidence, app: ask, expect: I, why: "client flag bca_residential_evidence"}
   - discipline: consultant.hazmat
     template: null
@@ -476,13 +483,14 @@ triggers:
     profile: [hdr.cond.planning]
     adds:
       procurement: [consultant.town_planner, consultant.landscape]
-      cost_plan: ["DA fees and contributions", "Landscape designer", "Town planner"]
+      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees", "Landscape designer", "Town planner"]
       program: ["Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
       rfps: [{discipline: consultant.town_planner, must_include: ["SEE covering demolition and the new dwelling"]}, {discipline: consultant.landscape, must_include: ["DA landscape plan to the DCP"]}, {discipline: consultant.certifier, must_include: ["CC assessment (package B)"]}]
       authority: ["DA for demolition and the new dwelling; construction certificate"]
     removes:
       cost_plan: ["CDC fee and certifier's lodgement charges"]
       program: ["Prepare and lodge the complying development certificate", "Certifier notifies neighbours of the CDC application", "Certifier determination", "CDC eligibility check against the Housing Code"]
+    skeleton: sk.new-traditional-da   # new + traditional + this pathway (knowledge/program/skeletons.yaml)
     why: "Skeleton becomes sk.new-traditional-da; town planner becomes needed, its RFP stops blocking; certifier B stages become available"
     built_in: {procurement: "partial", program: "yes", cost_plan: "yes", rfps: "partial"}
     source: "knowledge/costs/starter_lines.yaml da-fees"
@@ -509,7 +517,7 @@ triggers:
       cost_plan: ["Demolition contract (separate)", "Provisional sum for latent conditions and asbestos variations (owner-held)"]
       program: ["Engage the demolition contractor", "Demolition-only CDC, only where demolition is approved apart from the dwelling (verified: false)", "Hand over a clear site to the builder"]
       authority: ["A separate demolisher can work under the same CDC; a demolition-only CDC under the Demolition Code only where demolition is approved separately (verified: false)"]
-    why: "No demolition trade id exists for the separate works package; the owner takes the latent-condition risk; 'Stage 1' wakes flag.staged. fr.demolition-1a already fires in the base, so the trigger adds nothing the app produces"
+    why: "No demolition trade id exists for the separate works package; the owner takes the latent-condition risk; 'Stage 1' wakes the staged question; the expected answer stays no (DOMAIN.md §10 trap 7). fr.demolition-1a already fires in the base, so the trigger adds nothing the app produces"
     built_in: {program: "no", cost_plan: "no"}
   - id: loose-fill-asbestos
     label: Loose-fill asbestos insulation (LFAI register)

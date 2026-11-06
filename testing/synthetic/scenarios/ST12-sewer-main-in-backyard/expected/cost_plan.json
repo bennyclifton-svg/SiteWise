@@ -1,0 +1,7 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T12-granny-flat/shape.yaml",
+  "triggers": [
+    "sewer-main-in-backyard"
+  ]
+}

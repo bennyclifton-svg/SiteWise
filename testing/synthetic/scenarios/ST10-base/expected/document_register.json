@@ -1,0 +1,265 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Owner's brief: new house at 22 Marrakai Close",
+      "date": "2026-02-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-00318",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sutherland Shire Council"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "BV-26-0144",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-02-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Brennock & Vale Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": {
+        "accept": [
+          "consultant.architect",
+          "none"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Timing for the build",
+      "date": "2026-03-03",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Marlowe Hart Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "MHA-FP-2607",
+      "revision": null,
+      "title": "Fee proposal: architectural services",
+      "date": "2026-03-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Marlowe Hart Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "PKE-2604",
+      "revision": null,
+      "title": "Structural engineering fee proposal",
+      "date": "2026-03-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Penfold Kerr Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "DC-P-0219",
+      "revision": null,
+      "title": "Fee proposal: civil and stormwater engineering",
+      "date": "2026-03-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Drummond Civil Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "SLG-P-0461",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Strata Line Geotechnics Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.hazmat",
+      "lifecycle": "consultant",
+      "number": "CHS-Q-0733",
+      "revision": null,
+      "title": "Fee proposal: demolition hazardous materials survey",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Clearfield Hazmat Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.basix",
+      "lifecycle": "consultant",
+      "number": "STA-0882",
+      "revision": null,
+      "title": "Fee proposal: NatHERS assessment and BASIX certificate",
+      "date": "2026-03-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Solace Thermal Assessments Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.hazmat",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "CHS-26-0733",
+      "revision": "0",
+      "title": "Demolition hazardous materials survey report",
+      "date": "2026-04-08",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Clearfield Hazmat Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "design",
+      "number": "SLG-26-0461",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Strata Line Geotechnics Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "MHA-DS-01",
+      "revision": "A",
+      "title": "Architectural design statement",
+      "date": "2026-05-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Marlowe Hart Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "A",
+      "title": "Site plan",
+      "date": "2026-05-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Marlowe Hart Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "B",
+      "title": "Site plan",
+      "date": "2026-05-25",
+      "supersedes": "d14",
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Marlowe Hart Architects Pty Ltd"
+      }
+    }
+  ]
+}

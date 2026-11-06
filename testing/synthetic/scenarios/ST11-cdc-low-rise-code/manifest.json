@@ -1,0 +1,818 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST11-cdc-low-rise-code",
+  "type_id": "T11",
+  "base": "ST11-base",
+  "triggers": [
+    "cdc-low-rise-code"
+  ],
+  "project": {
+    "name": "Kovac dual occupancy, 18 Wattlebird Street",
+    "address": "18 Wattlebird Street, Carlingford NSW 2118",
+    "lga": "Parramatta",
+    "summary": "Demolition of a 1958 single-storey brick house and construction of an attached dual occupancy (two two-storey, four-bedroom townhouses, 460 m2 GFA in total, each with an attached garage, own driveway and crossing) on a 700 m2 R2 lot in Carlingford, approved by a registered certifier as complying development under the Low Rise Housing Diversity Code, with the Torrens subdivision into proposed Lots 1 and 2 under its own complying development certificate. On-site detention required by council's policy, architect-led tender to residential builders under an HIA lump-sum contract; budget $1,650,000 ex GST."
+  },
+  "invented": {
+    "lots": [
+      "Lot 9 DP 236154"
+    ],
+    "abns": [],
+    "firms": [],
+    "emails": []
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Owner brief - 18 Wattlebird Street.md",
+      "title": "Owner's brief: dual occupancy at 18 Wattlebird Street",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date: 2 February 2026, Client, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "The project comprises demolition of the existing house and construction of an attached dual occupancy (two attached two-storey townhouses) with Torrens title subdivision"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "The project comprises demolition of the existing house and construction of an attached dual occupancy (two attached two-storey townhouses) with Torrens title subdivision"
+        },
+        {
+          "key": "hdr.scale.dwellings",
+          "says": "2 dwellings on proposed Lots 1 and 2"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "Both dwellings are new builds on the cleared lot"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The site contains an existing building (a single-storey dwelling and garage), to be demolished"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The existing dwelling was built in 1958"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "We will seek a complying development certificate for an attached dual occupancy under the Low Rise Housing Diversity Code"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Architect-led traditional lump-sum tender to three or four residential builders"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The builder will be engaged under the HIA NSW Lump Sum building contract"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "Mid-range finishes: good quality and durable, nothing high end"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The house is let until the lease ends on 31 October 2026 and will be empty before demolition starts, so the site will be vacant for the whole of the works"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "We are the sole owners and the only decision makers"
+        },
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area about 700 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Target gross floor area about 460 m2 in total"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget for both dwellings: $1,650,000 excluding GST"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Marko and Ana Kovac"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 18 Wattlebird Street, Carlingford NSW 2118"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 18 Wattlebird Street, Carlingford NSW 2118"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "Both dwellings will be all-electric, with no natural gas connection"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement or cellar"
+        },
+        {
+          "key": "flag.staged",
+          "says": "No staged construction: one builder, one contract, both dwellings built together"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "We are not planning multiple buildings: the dwellings are attached under one roof"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or similar rating target beyond BASIX"
+        },
+        {
+          "key": "flag.country",
+          "says": "We do not need any Connecting with Country input for this lot"
+        }
+      ],
+      "traps": [
+        {
+          "id": "rainwater-tank",
+          "what": "'a BASIX rainwater tank for each dwelling' matches the water_supply_source trigger 'rain ?water tanks?'.",
+          "expect": "det.water_supply_source stays reticulated"
+        }
+      ],
+      "content": "The owners' brief to the architect in plain first-person prose. Sections: '## Project description' (first passage: the 'The project comprises ...' sentence and '2 dwellings on proposed Lots 1 and 2' in the same paragraph; the existing building sentence; built in 1958; both dwellings new builds on the cleared lot; the lease and vacant-site sentence; sole owners; we keep one dwelling and sell the other), '## What we want' (4 bedrooms, open-plan living to a rear courtyard and a garage for each dwelling; no further dwellings are proposed), '## Scope, budget and quality' (site area, target GFA, the budget sentence, mid-range finishes, no basement or cellar), '## Planning and contract' (the complying development sentence; the subdivision follows under its own complying development certificate once the dual occupancy is approved; the architect lodges the CDC application; the procurement sentence; the HIA sentence; the staged and multiple-buildings sentences), '## Services and sustainability' (all-electric sentence, heat-pump hot water, BASIX rainwater tank each, no rating target, no Connecting with Country). Do not give a bathroom count, do not write 'two dwellings' with a digit anywhere except '2 dwellings on proposed Lots 1 and 2', and do not use the words 'renovation', 'heritage' or 'flood'."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 9 DP 236154.md",
+      "title": "Planning certificate under section 10.7",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-03318 | | Issue date | 09/02/2026 | | Applicant | Marko Kovac |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: City of Parramatta."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 9 DP 236154"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R2 Low Density Residential under Parramatta Local Environmental Plan 2023"
+        },
+        {
+          "key": "proj.address",
+          "says": "18 Wattlebird Street, Carlingford NSW 2118"
+        },
+        {
+          "key": "det.state",
+          "says": "Carlingford NSW 2118"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-land-eligible",
+          "what": "Item 4 says complying development under the Low Rise Housing Diversity Code may be carried out on the land.",
+          "expect": "hdr.cond.planning comes from the documents that state the chosen pathway (brief, architect's proposal, design statement), not from land eligibility; a certificate gets no header questions"
+        }
+      ],
+      "content": "A council s10.7(2) and (5) planning certificate, numbered items in the usual order: zoning and LEP/DCP (land-use table quoted without naming this proposal), complying development (Housing Code and Low Rise Housing Diversity Code may be carried out on the land), heritage, bush fire, flood, acid sulfate soils, contamination, coastal, rail corridor, road widening (none). Fixed council wording; identity sits in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 18 Wattlebird Street.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Ashby & Quail Surveyors Pty Ltd",
+      "date": "2026-02-23",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: AQ-26-0193, Date: 23 February 2026, Prepared by; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 700.4 m2"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The site contains an existing building: a single-storey brick dwelling with a detached fibro garage"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Full-width street frontage of 17.0 m with unrestricted vehicle access from Wattlebird Street"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "No Sydney Water assets are within the property; the sewer main is in the street"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "The house drains to the Sydney Water sewer main in the street; the junction is at the front boundary"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Water main in Wattlebird Street; the house is connected to it"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "There is no gas main in Wattlebird Street"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot; roof water drains by gravity to the kerb"
+        }
+      ],
+      "traps": [
+        {
+          "id": "sewer-main-in-street",
+          "what": "'the sewer main is in the street' matches the authority_asset trigger '(sewer|water) main' (DOMAIN.md §10 trap 12).",
+          "expect": "flag.authority_asset stays no: the main is in the street and no Sydney Water assets are within the property"
+        },
+        {
+          "id": "trees-present-not-affected",
+          "what": "Lists a large gum near the rear boundary (present but unaffected) and a street tree on the verge, well clear of the frontage.",
+          "expect": "d03 alone sets neither arborist flag: presence is not an impact"
+        }
+      ],
+      "content": "Surveyor's report with the detail, level and boundary survey on AHD. Sections: '## Site description' (700.4 m2, 17.0 m frontage, about 41.2 m deep, gentle 0.8 m fall from the rear to the street, unrestricted access), '## Boundaries and easements' (identified against the DP; no easements), '## Existing structures' (the existing building sentence; slab and floor levels; paths and driveway), '## Trees' (large gum near the rear boundary, about 12 m from the house, present but unaffected; street tree on the verge in front of the northern neighbour, about 8 m beyond the northern side boundary, well clear of both new crossings), '## Services' (sewer and water mains in the street, the house connected to both; no gas main; overhead electricity from a pole on the verge; NBN pit at the front; no existing on-site detention)."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Timing for the build.md",
+      "title": "RE: Timing for the build",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-03-03",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "We would like the builder to start on site by 1 February 2027"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread between Marko Kovac and the architect. Marko writes on 2 March 2026 with the target start and says the tenants leave at the end of October; the architect replies on 3 March 2026 that it depends on the certifier's determination of the CDC and the tender."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural services - 18 Wattlebird Street.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Fernleigh Architects Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: FLA-FP-2618, Date: 9 March 2026, Client; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.architect_lodges",
+          "says": "The architect's services run from concept design through to lodging the CDC application on the NSW Planning Portal"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Stage 2: CDC documentation and lodgement"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $85,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fee-stages-not-staged",
+          "what": "The fee table numbers its stages 'Stage 1', 'Stage 2' and so on, which matches the flag.staged trigger 'stages? [1-9]'.",
+          "expect": "flag.staged stays no: fee stages are not construction stages (d01 says no staged construction)"
+        }
+      ],
+      "content": "Architect's fee proposal for the demolition, the attached dual occupancy under the Low Rise Housing Diversity Code and the subdivision. Fee table: Stage 1 concept design tested against the code's standards $16,000; Stage 2 CDC documentation and lodgement (construction-level drawings for the certifier, demolition and waste management plans, coordination of the subdivision plan) $24,000; Stage 3 construction documentation $38,000; Stage 4 tender $7,000; total $85,000 ex GST. Optional contract administration $18,000 ex GST; additional services at $220 per hour; exclusions (other consultants, certifier and council fees)."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal CSE-2607.md",
+      "title": "Structural engineering fee proposal",
+      "author_role": "consultant.structural",
+      "firm": "Coolabah Structural Engineers Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: CSE-2607, Date: 11 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "No transfer structures are required; the timber-framed upper floors bear on the ground-floor walls and beams"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $9,800 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "party-wall-not-neighbour",
+          "what": "'the separating wall' (the footing under the wall between the two new dwellings) matches implied_by party-wall (DOMAIN.md §10 trap 1).",
+          "expect": "No site.adjoining-structures work item"
+        }
+      ],
+      "content": "Structural engineer's quote for the dual occupancy: concept and CDC structural advice $1,800; detailed design and CDC documentation (AS 2870 slabs for both dwellings, the thickened footing under the separating wall, steel beams over the garage doors, framing review, tie-down, design certificates) $8,000; total $9,800 ex GST; site inspections at $360 per visit. Dropped on the structural row."
+    },
+    {
+      "id": "d07",
+      "filename": "Merriden Civil - stormwater fee - Wattlebird St.md",
+      "title": "Fee proposal: civil and stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Merriden Civil Engineering Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | MCE-P-0412 | | Date | 12/03/2026 | | Attention | Sofia Brandt |; # heading 'Fee proposal: civil and stormwater engineering'",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "Council's stormwater management policy requires on-site detention for the dual occupancy"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "No stormwater quality treatment or MUSIC modelling is required at this scale"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "The site is outside the drinking water catchment, so no NorBE assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "No public road works are required."
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $14,300 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "osd-existing-negated",
+          "what": "'There is no existing on-site detention' matches the osd_existing trigger 'existing ... on-site detention'.",
+          "expect": "flag.osd_existing stays no while flag.osd_required is yes"
+        }
+      ],
+      "content": "Civil engineer's fee proposal. Stages: stormwater concept plan with OSD for the CDC application, gravity discharge to the kerb confirmed, $4,620 inc GST; detailed stormwater and OSD design, driveway long sections and erosion and sediment control plan for the certifier $7,260 inc GST; works-as-executed review and OSD certification $2,420 inc GST; total $14,300 inc GST. Every figure is GST-inclusive. Exclusions: the vehicular crossings are designed and built by the builder to council's standard drawings; CCTV of the old drainage at cost."
+    },
+    {
+      "id": "d08",
+      "filename": "Geotechnical investigation fee proposal - Basalt Ridge.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal ref: BRG-P-0655, Date: 13 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $4,100 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical fee proposal for an AS 2870 site classification across the footprint of the new attached two-storey townhouses: investigation plan and fieldwork (four boreholes with DCP tests, drilled before demolition, clear of the house, with access to the front and rear yards arranged through the owners' managing agent) $2,500; laboratory reactivity testing $700; report $900; total $4,100 ex GST; optional footing inspection at $450 per visit."
+    },
+    {
+      "id": "d09",
+      "filename": "Hazardous materials survey proposal - Greyfield.md",
+      "title": "Fee proposal: pre-demolition hazardous materials survey",
+      "author_role": "consultant.hazmat",
+      "firm": "Greyfield Environmental Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: GE-Q-2214, Date: 16 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $2,600 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Hazardous materials surveyor's fee proposal: pre-demolition survey of the whole house and garage including roof space, subfloor and eaves, with sampling $1,600; NATA-accredited laboratory analysis of up to eight samples $600; register and report for the demolition and tender documents $400; total $2,600 ex GST. Option: asbestos clearance inspection and certificate after removal $750 ex GST."
+    },
+    {
+      "id": "d11",
+      "filename": "Hazardous materials survey report GE-26-0217.md",
+      "title": "Pre-demolition hazardous materials survey report",
+      "author_role": "consultant.hazmat",
+      "firm": "Greyfield Environmental Pty Ltd",
+      "date": "2026-04-13",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: GE-26-0217, Revision: 0, Report date: 13 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building",
+          "says": "Survey of the existing building and garage before demolition"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The existing dwelling was built in 1958"
+        }
+      ],
+      "traps": [
+        {
+          "id": "loose-fill-register-negative",
+          "what": "States 'The register search returned no listing for the property.' for the NSW loose-fill asbestos insulation register.",
+          "expect": "No loose-fill asbestos consequence; the bonded asbestos found is removed by a licensed removalist as in the base program"
+        }
+      ],
+      "content": "Hazmat report. Sections: '## Introduction' (survey of the existing building and garage before demolition; built in 1958; whole house, roof space, subfloor, eaves and garage surveyed), '## Sampling' (table of eight samples), '## Findings' (bonded asbestos-containing fibre-cement sheeting in the eaves, the bathroom and laundry wall linings and the garage walls; lead paint on the window frames above the threshold; loose-fill register search: 'The register search returned no listing for the property.'), '## Recommendations' (licensed bonded asbestos removal before demolition, SafeWork notification, clearance certificate, register in the tender documents). Do not use the word 'contaminated' and do not describe the house by its number of storeys outside the Introduction."
+    },
+    {
+      "id": "d12",
+      "filename": "Geotechnical report BRG-26-0655 - 18 Wattlebird Street.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-04-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: BRG-26-0655, Revision: 0, Report date: 20 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.site_class",
+          "says": "Site classification: Class M in accordance with AS 2870"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "Groundwater is not expected above the base of the footing excavations, and no dewatering is needed"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "No excavation is proposed next to the neighbouring dwellings; the slabs sit on a shallow cut and fill platform"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed; the townhouses are slabs on ground"
+        }
+      ],
+      "traps": [
+        {
+          "id": "excavate-to-depth",
+          "what": "Recommends 'excavate to a depth of 300 mm to remove topsoil and the old garage slab under the new slab platforms', which matches the basement trigger 'excavat\\w* to a depth'.",
+          "expect": "flag.basement stays no"
+        },
+        {
+          "id": "party-wall-not-neighbour",
+          "what": "'the separating wall' (the footing under the wall between the two new dwellings) matches implied_by party-wall (DOMAIN.md §10 trap 1).",
+          "expect": "No site.adjoining-structures work item"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (four boreholes and DCP tests clear of the house), subsurface profile (fill and topsoil over stiff silty clay over weathered shale), laboratory shrink-swell results, AS 2870 site classification Class M, waffle or stiffened raft slabs with a thickened footing under the separating wall, removal of the old footings, slab and fill after demolition, earthworks and site drainage advice."
+    },
+    {
+      "id": "d13",
+      "filename": "Architectural design statement - 18 Wattlebird Street.md",
+      "title": "Architectural design statement",
+      "author_role": "consultant.architect",
+      "firm": "Fernleigh Architects Pty Ltd",
+      "date": "2026-05-18",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: FLA-DS-01, Revision: A, Date: 18 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.subclass",
+          "says": "The development comprises an attached dual occupancy of two two-storey townhouses with Torrens title subdivision"
+        },
+        {
+          "key": "hdr.scale.dwellings",
+          "says": "2 dwellings on proposed Lots 1 and 2"
+        },
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: two Class 1a dwellings, each with an attached Class 10a garage"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Gross floor area: 460 m2 in total"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5."
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Complying development certificate for an attached dual occupancy under the Low Rise Housing Diversity Code: the design meets the code's lot size, frontage and height standards so a certifier can approve it"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "The lot is a standard suburban lot with no environmental sensitivities such as bushland, creeks or steep slopes"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees on the site are affected by the works; the large gum near the rear boundary is retained well clear of the works"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "No neighbouring or street trees are affected by the works"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The parent lot meets the code's minimum lot size and frontage for a dual occupancy. A complying development certificate cannot vary a development standard, so no clause 4.6 variation is involved"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application is determined by a registered certifier, not by council or the local planning panel"
+        },
+        {
+          "key": "flag.community",
+          "says": "No public exhibition or community consultation applies; neighbours receive notice before work starts"
+        }
+      ],
+      "traps": [
+        {
+          "id": "building-a-dual-occupancy",
+          "what": "'The owners are building a dual occupancy to keep one dwelling and sell the other' matches the multi_building trigger '\\bbuildings? [a-d]\\b' (DOMAIN.md §10 trap 6).",
+          "expect": "flag.multi_building stays no"
+        },
+        {
+          "id": "party-wall-not-neighbour",
+          "what": "Describes the 'separating wall' (also called the party wall) between the two new dwellings, which matches implied_by party-wall (DOMAIN.md §10 trap 1).",
+          "expect": "No site.adjoining-structures work item: the wall is between two new dwellings on this site, not a neighbour's structure"
+        },
+        {
+          "id": "fire-rated-wall",
+          "what": "Calls the separating wall 'fire-rated' and 'acoustic' (Rw + Ctr 50) (DOMAIN.md §10 trap 15).",
+          "expect": "No fire engineer or acoustic consultant package"
+        },
+        {
+          "id": "rainwater-tank",
+          "what": "BASIX section: 'a 3,000 litre rainwater tank for each dwelling' matches the water_supply_source trigger 'rain ?water tanks?'.",
+          "expect": "det.water_supply_source stays reticulated: the tanks supplement the town supply"
+        },
+        {
+          "id": "dual-occupancy-as-house",
+          "what": "The words 'dual occupancy' and 'dwelling' may be read as a house (DOMAIN.md §10 trap 2).",
+          "expect": "hdr.subclass is townhouses"
+        }
+      ],
+      "content": "Architect's design statement for the complying development certificate application. Sections: '## Project description' (the development sentence and '2 dwellings on proposed Lots 1 and 2' in the same paragraph; demolition of the existing house; the building-a-dual-occupancy sentence; building classification; GFA 460 m2 in total with no per-dwelling area; two storeys each), '## Site description and context' (standard suburban lot sentence; 17 m frontage; each dwelling has its own driveway and vehicle crossing; side-by-side, both dwellings face the street), '## Design' (4 bedrooms each, living to rear courtyards, garages under a lower roof that ties into the main roof), '## Separating wall' (fire-rated separating wall on the proposed lot boundary from the slab to the underside of the metal roof, Rw + Ctr 50, discontinuous construction where a wet area adjoins a habitable room next door), '## Materials' (face brickwork ground floor, lightweight cladding above, metal roof), '## BASIX' (climate zone sentence, heat-pump hot water, rainwater tank sentence), '## Trees' (the two tree sentences), '## Planning' (the complying development sentence; the subdivision follows under its own complying development certificate; the cl 4.6, certifier and neighbour-notice sentences)."
+    },
+    {
+      "id": "d14",
+      "filename": "Site and subdivision plan A-101 Rev A.md",
+      "title": "Site and subdivision plan",
+      "author_role": "consultant.architect",
+      "firm": "Fernleigh Architects Pty Ltd",
+      "date": "2026-05-04",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: A, Title: Site and subdivision plan, Date: 4 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 700.4 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Total GFA 460 m2"
+        },
+        {
+          "key": "hdr.scale.avg_dwelling_size_sqm",
+          "says": "Area schedule: Dwelling 1 230 m2, Dwelling 2 230 m2; average dwelling size 230 m2"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "General note: Class 1a and 10a only; the Design and Building Practitioners Act registered-design obligations do not apply"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the proposed lot boundary on the separating wall line, proposed Lots 1 and 2 with their areas, setbacks, two driveways and crossings, OSD tank location, rainwater tanks, the area schedule and the general note. Issue: preliminary."
+    },
+    {
+      "id": "d15",
+      "filename": "Site and subdivision plan A-101 Rev B.md",
+      "title": "Site and subdivision plan",
+      "author_role": "consultant.architect",
+      "firm": "Fernleigh Architects Pty Ltd",
+      "date": "2026-05-25",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: B, Title: Site and subdivision plan, Date: 25 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 700.4 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Total GFA 460 m2"
+        },
+        {
+          "key": "hdr.scale.avg_dwelling_size_sqm",
+          "says": "Area schedule: Dwelling 1 230 m2, Dwelling 2 230 m2; average dwelling size 230 m2"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "General note: Class 1a and 10a only; the Design and Building Practitioners Act registered-design obligations do not apply"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of the site and subdivision plan: OSD tank moved under the Lot 1 driveway and the front fence line amended; revision note says 'Amended for CDC lodgement'."
+    },
+    {
+      "id": "d17",
+      "filename": "Tax invoice FLA-INV-1031.md",
+      "title": "Tax invoice FLA-INV-1031",
+      "author_role": "consultant.architect",
+      "firm": "Fernleigh Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: FLA-INV-1031, Date: 30 April 2026, ABN; # heading 'Tax invoice'",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $17,600.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$16,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$1,600.00"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's invoice for Stage 1 concept design, 100% complete."
+    },
+    {
+      "id": "d18",
+      "filename": "Tax invoice BRG-0522.md",
+      "title": "Tax invoice BRG-0522",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-04-24",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: BRG-0522, Date: 24 April 2026, ABN; # heading 'Tax invoice'",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $4,610.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $4,100.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $410.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "arithmetic",
+          "what": "The stated total $4,610.00 does not equal $4,100.00 + $410.00 = $4,510.00.",
+          "expect": "The ledger flags arithmetic"
+        }
+      ],
+      "content": "Geotechnical invoice for the investigation and report, 100% of the proposal. The total line is wrong by $100."
+    },
+    {
+      "id": "d19",
+      "filename": "Greyfield invoice 2207.md",
+      "title": "Tax invoice 2207",
+      "author_role": "consultant.hazmat",
+      "firm": "Greyfield Environmental Pty Ltd",
+      "date": "2026-04-17",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 2207 | | Date | 17/04/2026 | | ABN | 75 480 048 249 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $2,860.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$2,600.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$260.00"
+        }
+      ],
+      "traps": [],
+      "content": "Hazmat surveyor's invoice for the survey, sampling and report, 100% of the proposal."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief states the CDC under the Low Rise Housing Diversity Code instead of the DA sentence; the subdivision follows by its own CDC"
+    },
+    {
+      "doc": "d04",
+      "change": "changed",
+      "why": "Architect's reply names the certifier's CDC determination instead of council's determination"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Stage 2 is CDC documentation and lodgement; architect lodges the CDC application; amounts unchanged"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "Names the CDC instead of the DA and CC; amounts unchanged"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "Names the CDC application and the certifier instead of the DA and CC; amounts unchanged"
+    },
+    {
+      "doc": "d10",
+      "change": "removed",
+      "why": "Town planner removed: no SEE or DA under a CDC (trigger removes consultant.town_planner)"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "Design statement carries the trigger evidence (meets the code's standards) instead of the landscaped-area DA negation; panel, community and cl 4.6 sentences reworded for a certifier, values unchanged; issue status for CDC"
+    },
+    {
+      "doc": "d15",
+      "change": "changed",
+      "why": "Revision note 'Amended for CDC lodgement' instead of DA lodgement; issue status for CDC"
+    },
+    {
+      "doc": "d16",
+      "change": "removed",
+      "why": "Statement of environmental effects removed: no DA"
+    }
+  ]
+}

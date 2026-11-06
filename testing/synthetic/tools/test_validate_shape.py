@@ -105,6 +105,16 @@ class ValidateShapeTests(unittest.TestCase):
         for word in ["evidence", "negation", "adds", "not-a-trigger"]:
             self.assertIn(word, joined)
 
+    def test_trigger_skeleton_must_be_a_skeleton_id(self):
+        ok = yaml.safe_load(yaml.safe_dump(GOOD))
+        ok["triggers"][0]["skeleton"] = "sk.new-traditional-cdc"
+        errors, _ = check(ok)
+        self.assertEqual(errors, [])
+        bad = yaml.safe_load(yaml.safe_dump(GOOD))
+        bad["triggers"][0]["skeleton"] = "sk.moat"
+        errors, _ = check(bad)
+        self.assertTrue(any("sk.moat" in e for e in errors))
+
     def test_unquoted_yaml_yes_no_are_accepted(self):
         # PyYAML reads bare yes/no as booleans; authors should not have to quote them.
         ok = yaml.safe_load(yaml.safe_dump(GOOD))

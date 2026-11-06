@@ -1,0 +1,253 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Marlowe Hart Architects Pty Ltd",
+        "abn": "27 365 969 632",
+        "contact": "Ines Hart",
+        "email": "ines.hart@example.com",
+        "phone": "02 9524 6610",
+        "address": "Suite 3, 41 Kingsway, Cronulla NSW 2230"
+      },
+      "stated_total_cents": 8600000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Concept design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1900000
+        },
+        {
+          "label": "Stage 2 Design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Stage 3 CDC documentation, demolition plan and lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 4200000
+        },
+        {
+          "label": "Stage 4 Tender, including demolition quotations",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 700000
+        },
+        {
+          "label": "Option: contract administration",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 1600000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 23000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Penfold Kerr Consulting Engineers Pty Ltd",
+        "abn": "67 262 569 169",
+        "contact": "Sam Penfold",
+        "email": "sam.penfold.pke@example.com",
+        "phone": "02 9542 3318",
+        "address": "Level 1, 7 Eton Street, Sutherland NSW 2232"
+      },
+      "stated_total_cents": 860000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Design basis and concept advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 160000
+        },
+        {
+          "label": "Detailed design, CDC documentation and design certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 700000
+        },
+        {
+          "label": "Site inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 36000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Drummond Civil Pty Ltd",
+        "abn": "29 559 935 012",
+        "contact": "Kate Drummond",
+        "email": "kate.drummondcivil@example.com",
+        "phone": "02 9525 8804",
+        "address": "14 Taren Point Road, Taren Point NSW 2229"
+      },
+      "stated_total_cents": 1050000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Investigation of the existing drainage and kerb outlet (CCTV)",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 180000
+        },
+        {
+          "label": "Stormwater design for the CDC with the discharge point confirmed",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 420000
+        },
+        {
+          "label": "Detailed design, driveway long section and erosion and sediment control plan",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        },
+        {
+          "label": "Works-as-executed review and stormwater certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Strata Line Geotechnics Pty Ltd",
+        "abn": "71 046 338 591",
+        "contact": "Raj Menon",
+        "email": "raj.stratalinegeo@example.com",
+        "phone": "02 9710 4425",
+        "address": "Unit 5, 12 Bay Road, Taren Point NSW 2229"
+      },
+      "stated_total_cents": 410000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Investigation plan and fieldwork",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 230000
+        },
+        {
+          "label": "Laboratory reactivity testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 65000
+        },
+        {
+          "label": "Geotechnical report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 115000
+        },
+        {
+          "label": "Post-demolition confirmation and footing inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 46000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.hazmat",
+      "firm": {
+        "name": "Clearfield Hazmat Services Pty Ltd",
+        "abn": "35 331 591 766",
+        "contact": "Mel Okoro",
+        "email": "mel.clearfieldhazmat@example.com",
+        "phone": "0417 380 226",
+        "address": "PO Box 266, Miranda NSW 1490"
+      },
+      "stated_total_cents": 265000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Demolition survey with destructive sampling",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 150000
+        },
+        {
+          "label": "NATA laboratory analysis",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 65000
+        },
+        {
+          "label": "Asbestos register and removal scope report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 50000
+        },
+        {
+          "label": "Option: clearance inspection and certificate",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 75000
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.basix",
+      "firm": {
+        "name": "Solace Thermal Assessments Pty Ltd",
+        "abn": "49 729 726 270",
+        "contact": "Oliver Strand",
+        "email": "oliver.solacethermal@example.com",
+        "phone": "0422 815 093",
+        "address": "PO Box 91, Gymea NSW 2227"
+      },
+      "stated_total_cents": 210000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "NatHERS assessment and BASIX certificate for the CDC lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 175000
+        },
+        {
+          "label": "Revision for the construction documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 35000
+        }
+      ]
+    }
+  ]
+}

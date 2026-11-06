@@ -1,0 +1,337 @@
+{
+  "scenario": "ST12-sewer-main-in-backyard",
+  "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "0ee5b223a139bac4e9748417c476a483f29a9980",
+    "app_files_modified": 14
+  },
+  "started": "20261106-t10-t12",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.4
+    },
+    {
+      "wave": 2,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 6,
+      "seconds": 29.6
+    },
+    {
+      "wave": 3,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 2,
+      "seconds": 39.8
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 14.9
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 18 Tuckeroo Crescent.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "48c2adb5-2dd4-411d-819e-e14b8ed0599b",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Owner brief - 18 Tuckeroo Crescent.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:08.555756+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 32 DP 237114.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "bb0adbea-3eb9-4ff4-b559-aea2c14844f4",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Planning certificate s10.7 - Lot 32 DP 237114.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:08.560032+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 18 Tuckeroo Crescent.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "5057c4fb-3421-42c5-b15a-313558d2cc80",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Detail and boundary survey report - 18 Tuckeroo Crescent.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:08.567018+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE When can the builder start.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "d8442742-ce3c-4d58-84c4-e7a8eb3e2453",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "RE When can the builder start.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:08.571178+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural design - 18 Tuckeroo Crescent.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b0e5340a-919d-4bc2-a842-17f023cb705d",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Fee proposal - Architectural design - 18 Tuckeroo Crescent.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:21.137549+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal PRS-2611.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "ae50cc6a-747f-46cc-9b14-3aa12e95b8dc",
+        "submission_id": "eca61896-4e2a-4402-a846-6cee507aa942"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Garrick Stormwater - fee - Tuckeroo Cres.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "89cc63b7-a67e-4b76-9f73-bdcfdb4a0856",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Garrick Stormwater - fee - Tuckeroo Cres.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:21.200206+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Tessellate.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "0d43e5d9-c404-4755-b9bc-34f447a2ca3d",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Geotechnical investigation fee proposal - Tessellate.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:21.204228+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "BASIX fee proposal - Evenstar.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "655fb91d-4355-4a75-8838-a9d613e578da",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "BASIX fee proposal - Evenstar.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:21.231665+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Certifier fee proposal LBC-26-0318.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "75419c5e-cf91-42b5-9258-655c0b08d0f6",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Certifier fee proposal LBC-26-0318.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:21.23795+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Geotechnical report TG-26-0307 - 18 Tuckeroo Crescent.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "03ccd7cf-26cf-48db-bdf5-06f829e3a2e6",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Geotechnical report TG-26-0307 - 18 Tuckeroo Crescent.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:50.969492+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "Design statement - 18 Tuckeroo Crescent.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "29ee0c06-ec4d-474f-bda3-e50b1aab4701",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Design statement - 18 Tuckeroo Crescent.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:50.985403+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Site plan A-101 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "3c396b2f-ed2d-41ab-9af0-d586c4ae410f",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Site plan A-101 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:51.000061+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Site plan A-101 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "8be69c9a-26dc-4438-8156-5eec1f68149f",
+        "project_id": "b5a628e9-22ab-418a-9a57-cdf78cbd6e8d",
+        "filename": "Site plan A-101 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T15:32:51.015815+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Tax invoice SBD-INV-0331.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "619cbd00-251d-4bf4-a08e-34348c12951d",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d16",
+      "filename": "TG invoice 2207.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "9dd2ce5e-5812-4c1c-8269-fd05c7987653",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "Tax invoice BHS-1043 Brindle and Hart.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "b760762b-fb74-42b8-bf85-b627e1c61502",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

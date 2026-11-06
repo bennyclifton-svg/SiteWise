@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T10-knockdown-rebuild/shape.yaml",
+  "triggers": [
+    "separate-demolition-contract"
+  ],
+  "scenario_facts": {
+    "program": {
+      "target_construction_start": "2027-02-01"
+    }
+  }
+}

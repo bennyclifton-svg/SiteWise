@@ -556,6 +556,17 @@ class TriggerTests(unittest.TestCase):
         self.assertNotIn("Contamination or waste classification", geo_exp["must_not_include"])
         self.assertEqual(len(geo_exp["must_include"]), len(geo["must_include"]))  # one dropped, one added
 
+    def test_trigger_can_change_the_expected_skeleton(self):
+        sh = shape()
+        app = app_from_shape(sh)
+        app["program"]["skeleton"] = {"id": "sk.new-traditional-cdc"}
+        sh["triggers"][0]["skeleton"] = "sk.new-traditional-cdc"
+        tid = sh["triggers"][0]["id"]
+        self.assertEqual(s.expectations(sh, [tid])["skeleton"], "sk.new-traditional-cdc")
+        result = s.score(sh, app, triggers=[tid])
+        self.assertTrue(result["program"]["skeleton"]["match"])
+        self.assertFalse(s.score(sh, app)["program"]["skeleton"]["match"])  # the base still expects its own
+
     def test_unknown_trigger_is_an_error(self):
         with self.assertRaises(ValueError):
             s.score(shape(), app_from_shape(shape()), triggers=["moat"])

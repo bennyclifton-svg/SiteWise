@@ -172,6 +172,10 @@ def expectations(shape, triggers=()):
         adds, removes = t.get("adds") or {}, t.get("removes") or {}
         claim = {k: _claim(v) for k, v in (t.get("built_in") or {}).items()}
         why = f"removed by trigger {tid}"
+        # A trigger that changes the approval or procurement path changes the
+        # skeleton the app should pick (a CDC variant of a DA base, say).
+        if t.get("skeleton"):
+            e["skeleton"] = t["skeleton"]
 
         gone = set(removes.get("procurement") or [])
         e["not_procurement"] += [dict(p, why=why) for p in e["procurement"] if p["discipline"] in gone]

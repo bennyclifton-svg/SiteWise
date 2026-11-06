@@ -330,7 +330,7 @@ rfps:
       stages_option: [construction_support, contract_admin]
       stages_absent: [brief_masterplan, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, existing_interfaces: I, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent, live_staging: absent}
-      blocking: ["fact:budget"]
+      blocking: []   # the scenario states the budget (SCORING.md §7.5, as T01)
       sources:
         - "blocking: fact:budget holds while proj.budget_stated is unread (architecture.yaml required_facts); the scenario states the budget"
         - "existing_interfaces I because det.existing_building is true (module existing_building)"
@@ -530,7 +530,7 @@ triggers:
   - id: cdc-low-rise-code
     label: Complying development under the Low Rise Housing Diversity Code instead of a DA
     evidence: ["Complying development certificate for an attached dual occupancy under the Low Rise Housing Diversity Code", "the design meets the code's lot size, frontage and height standards so a certifier can approve it"]
-    negation: ["A development application will be lodged with council for the dual occupancy and subdivision", "The design exceeds the code's height standard, so a DA will be lodged"]
+    negation: ["A development application will be lodged with council for the dual occupancy and subdivision", "The design does not meet the code's landscaped area standard, so a DA will be lodged"]
     profile: [hdr.cond.planning]
     adds:
       program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Separate approval for the subdivision"]
@@ -542,6 +542,7 @@ triggers:
       cost_plan: ["DA fees and contributions"]
       program: ["Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
       rfps: [consultant.town_planner]
+    skeleton: sk.new-traditional-cdc   # new + traditional + this pathway (knowledge/program/skeletons.yaml)
     why: "The CC and certifier fees line stays (cc-fees always applies; the certifier is paid for the CDC). The app keeps the town planner through baselines[0], then its RFP and the certifier's block on cdc; it drops the whole DA-fees starter, losing the contributions; and the skeleton becomes sk.new-traditional-cdc, which has no construction_documentation stage although a CDC needs construction-level documents before lodgement"
     built_in: {program: "yes", cost_plan: "partial", procurement: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"
@@ -574,9 +575,9 @@ triggers:
     source: "knowledge/rfp/civil.yaml roads"
   - id: three-plus-townhouses
     label: Three or more townhouses (multi dwelling housing)
-    evidence: ["Multi dwelling housing comprising 4 two-storey townhouses", "community title subdivision into 4 lots with a common driveway", "R3 Medium Density Residential zone"]
+    evidence: ["Multi dwelling housing comprising 4 two-storey townhouses", "community title subdivision into 4 lots with a common driveway"]
     negation: ["Attached dual occupancy (two dwellings only)", "No further dwellings are proposed"]
-    profile: [hdr.scale.dwellings]
+    profile: [hdr.scale.dwellings, hdr.scale.avg_dwelling_size_sqm]
     adds:
       procurement: [consultant.traffic, consultant.waste]
       cost_plan: ["Traffic and parking consultant", "Waste management consultant", "Common driveway, bin store and mailboxes"]

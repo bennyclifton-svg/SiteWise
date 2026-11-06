@@ -597,7 +597,7 @@ Sixteen conditions. The machine-readable form is in `shape.yaml`.
 
 | Id | How a document shows it | How a document denies it | What it adds |
 |---|---|---|---|
-| `cdc-low-rise-code` | "CDC for an attached dual occupancy under the Low Rise Housing Diversity Code"; "the design meets the code's standards" | "A DA will be lodged"; "the design exceeds the code's height standard, so a DA will be lodged" | CDC rows (`fr.cdc-application`); contributions still payable; separate subdivision approval; no town planner. The CC and certifier fees line stays, because the certifier is paid for the CDC. The app keeps the town planner, blocks the town-planning and certifier RFPs on `cdc`, drops the whole DA-fees line, and moves to `sk.new-traditional-cdc`, which has no construction-documentation stage |
+| `cdc-low-rise-code` | "CDC for an attached dual occupancy under the Low Rise Housing Diversity Code"; "the design meets the code's standards" | "A DA will be lodged"; "the design does not meet the code's landscaped area standard, so a DA will be lodged" | CDC rows (`fr.cdc-application`); contributions still payable; separate subdivision approval; no town planner. The CC and certifier fees line stays, because the certifier is paid for the CDC. The app keeps the town planner, blocks the town-planning and certifier RFPs on `cdc`, drops the whole DA-fees line, and moves to `sk.new-traditional-cdc`, which has no construction-documentation stage |
 | `strata-subdivision` | "Strata subdivision into two lots and common property"; "the driveway will be common property"; "SP plan and by-laws" | "Torrens title subdivision, each lot with its own frontage" | Strata plan, certificate, by-laws, owners corporation; replaces the Torrens certificate and 88B rows |
 | `front-rear-shared-driveway` | "Dwelling 2 at the rear, reached by a shared driveway"; "right of carriageway over Lot 1"; "battle-axe handle" | "Each dwelling has its own driveway and crossing" | Shared driveway; right of carriageway and services easements; the rear lot's water line in a protective conduit (guide §4.5); one crossing, still under s138 |
 | `three-plus-townhouses` | "Multi dwelling housing comprising 4 townhouses"; "community title into 4 lots"; "R3 zone" | "Attached dual occupancy (two dwellings only)" | Traffic and waste consultants (never suggested); common driveway, bin store, mailboxes |
@@ -783,3 +783,11 @@ All 11 findings in `REVIEW.md` were applied to this file and `shape.yaml`, with 
 change is F1: demolition of the existing house is now in the base, handled as in T10. The pre-start
 inspection sits before the CC, and `vacant-lot` is the variant. The coordinator's direction also marks
 the reinforcement hold point `yes`, because it fires through `fr.slab-on-ground-1a`.
+
+## Shape corrections after run `20261106-t10-t12` (6 November 2026)
+
+- `cdc-low-rise-code` now sets `skeleton: sk.new-traditional-cdc`. Its own `why` already said so; the scorer
+  could not change the expected skeleton until a trigger could set one (`tools/score_shapes.py`,
+  SCORING.md §2).
+- The architect RFP's `expect.blocking` is now `[]`, not `["fact:budget"]`: the scenarios state the budget
+  and the app reads it (SCORING.md §7.5, as T01). The old key described the app before the budget is read.

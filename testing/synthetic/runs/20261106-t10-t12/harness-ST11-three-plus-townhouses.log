@@ -1,0 +1,47 @@
+ST11-three-plus-townhouses: project 64f7a4f9-60bd-4b07-ac4a-4fbd389c0c72
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued 3, 14.8 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 8 documents filing, proposals reading, 8 jobs queued
+    waiting: settling
+    waiting: 8 documents in profile reading, 8 jobs queued
+    waiting: 9 documents in profile reading, 8 jobs queued
+    waiting: 8 documents in profile reading, 7 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: settling
+  wave 2: 8 dropped, profile queued 8, 17.1 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 17.2 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.6 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hazmat -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+    RFP for Waste -> 201
+done: testing\synthetic\runs\20261106-t10-t12

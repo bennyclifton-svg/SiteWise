@@ -1,0 +1,281 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Owner's brief: dual occupancy at 18 Wattlebird Street",
+      "date": "2026-02-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-03318",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "City of Parramatta"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "AQ-26-0193",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-02-23",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ashby & Quail Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Timing for the build",
+      "date": "2026-03-03",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "FLA-FP-2618",
+      "revision": null,
+      "title": "Fee proposal: architectural services",
+      "date": "2026-03-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Fernleigh Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "CSE-2607",
+      "revision": null,
+      "title": "Structural engineering fee proposal",
+      "date": "2026-03-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Coolabah Structural Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "MCE-P-0412",
+      "revision": null,
+      "title": "Fee proposal: civil and stormwater engineering",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Merriden Civil Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "BRG-P-0655",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Basalt Ridge Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.hazmat",
+      "lifecycle": "consultant",
+      "number": "GE-Q-2214",
+      "revision": null,
+      "title": "Fee proposal: pre-demolition hazardous materials survey",
+      "date": "2026-03-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Greyfield Environmental Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.town_planner",
+      "lifecycle": "consultant",
+      "number": "HP-2603-07",
+      "revision": null,
+      "title": "Fee proposal: town planning services",
+      "date": "2026-03-17",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Halden Planning Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.hazmat",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "GE-26-0217",
+      "revision": "0",
+      "title": "Pre-demolition hazardous materials survey report",
+      "date": "2026-04-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Greyfield Environmental Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "BRG-26-0655",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Basalt Ridge Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "FLA-DS-01",
+      "revision": "A",
+      "title": "Architectural design statement",
+      "date": "2026-05-18",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Fernleigh Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "A",
+      "title": "Site and subdivision plan",
+      "date": "2026-05-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Fernleigh Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "B",
+      "title": "Site and subdivision plan",
+      "date": "2026-05-25",
+      "supersedes": "d14",
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Fernleigh Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d16",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.town_planner",
+      "lifecycle": "authorities",
+      "number": "HP-SEE-2603",
+      "revision": null,
+      "title": "Statement of environmental effects",
+      "date": "2026-05-27",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Halden Planning Pty Ltd"
+      }
+    }
+  ]
+}

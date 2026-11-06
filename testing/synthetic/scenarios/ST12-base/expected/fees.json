@@ -1,0 +1,247 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Saltbush Building Design Pty Ltd",
+        "abn": "87 495 969 976",
+        "contact": "Mia Castellano",
+        "email": "mia.saltbush@example.com",
+        "phone": "02 9524 3170",
+        "address": "Suite 4, 21 Waratah Lane, Miranda NSW 2228"
+      },
+      "stated_total_cents": 900000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Concept design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 280000
+        },
+        {
+          "label": "Stage 2 CDC documentation and lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 420000
+        },
+        {
+          "label": "Stage 3 Construction drawings, schedule and specification for quotes",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 200000
+        },
+        {
+          "label": "Option: quote-period support",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 60000
+        },
+        {
+          "label": "Additional services: hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 14000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Pillar Rock Structural Engineers Pty Ltd",
+        "abn": "35 596 751 515",
+        "contact": "Dev Raman",
+        "email": "dev.pillarrock@example.com",
+        "phone": "02 9540 6612",
+        "address": "Level 1, 9 Banksia Street, Sutherland NSW 2232"
+      },
+      "stated_total_cents": 160000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Slab and footing design and construction drawings for the CDC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 125000
+        },
+        {
+          "label": "Frame, truss and tie-down review and design certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 35000
+        },
+        {
+          "label": "Site inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 28000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Garrick Stormwater Consulting Pty Ltd",
+        "abn": "22 465 375 515",
+        "contact": "Tom Garrick",
+        "email": "tom.garrickstormwater@example.com",
+        "phone": "0412 774 309",
+        "address": "PO Box 318, Caringbah NSW 2229"
+      },
+      "stated_total_cents": 170000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Stormwater plan for the CDC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 120000
+        },
+        {
+          "label": "Works-as-executed review and stormwater certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 50000
+        },
+        {
+          "label": "CCTV and locating of the existing stormwater line",
+          "kind": "reimbursable",
+          "state": "not_priced",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Tessellate Geotechnical Pty Ltd",
+        "abn": "69 993 653 725",
+        "contact": "Hannah Byrne",
+        "email": "hannah.tessellategeo@example.com",
+        "phone": "02 9531 2048",
+        "address": "Unit 7, 44 Corymbia Road, Kirrawee NSW 2232"
+      },
+      "stated_total_cents": 170000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Investigation plan and fieldwork",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 95000
+        },
+        {
+          "label": "Laboratory reactivity testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 30000
+        },
+        {
+          "label": "Geotechnical report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 45000
+        },
+        {
+          "label": "Footing inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 38000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.basix",
+      "firm": {
+        "name": "Evenstar Energy Ratings Pty Ltd",
+        "abn": "14 012 252 919",
+        "contact": "Kim Pham",
+        "email": "kim.evenstar@example.com",
+        "phone": "0433 618 205",
+        "address": "PO Box 52, Jannali NSW 2226"
+      },
+      "stated_total_cents": 80000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "BASIX certificate with commitments on the CDC plans",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 65000
+        },
+        {
+          "label": "Revised certificate before the CDC",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 15000
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.certifier",
+      "firm": {
+        "name": "Larkin Building Certification Pty Ltd",
+        "abn": "59 827 508 564",
+        "contact": "Paul Larkin",
+        "email": "paul.larkincert@example.com",
+        "phone": "02 9589 4471",
+        "address": "Suite 2, 160 Wattlebird Avenue, Gymea NSW 2227"
+      },
+      "stated_total_cents": 470000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "CDC eligibility check, assessment and determination",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 240000
+        },
+        {
+          "label": "Principal certifier appointment and critical-stage inspections",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 180000
+        },
+        {
+          "label": "Final inspection and occupation certificate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 50000
+        },
+        {
+          "label": "Additional inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 26000
+        },
+        {
+          "label": "Council CDC registration fee",
+          "kind": "reimbursable",
+          "state": "not_priced",
+          "amount_cents": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Owner's brief: secondary dwelling at 18 Tuckeroo Crescent",
+      "date": "2026-02-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-04417",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Sutherland Shire Council"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "BHS-26-0119",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-02-23",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Brindle & Hart Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: When can the builder start?",
+      "date": "2026-02-26",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "SBD-FP-0226",
+      "revision": null,
+      "title": "Fee proposal: architectural design and documentation services",
+      "date": "2026-03-04",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Saltbush Building Design Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "PRS-2611",
+      "revision": null,
+      "title": "Structural engineering fee proposal",
+      "date": "2026-03-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Pillar Rock Structural Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "GSC-P-0412",
+      "revision": null,
+      "title": "Fee proposal: stormwater engineering",
+      "date": "2026-03-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Garrick Stormwater Consulting Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "TG-P-0307",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tessellate Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.basix",
+      "lifecycle": "consultant",
+      "number": "EE-1182",
+      "revision": null,
+      "title": "Fee proposal: BASIX certificate for a secondary dwelling",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Evenstar Energy Ratings Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.certifier",
+      "lifecycle": "consultant",
+      "number": "LBC-26-0318",
+      "revision": null,
+      "title": "Fee proposal: complying development certificate and principal certifier services",
+      "date": "2026-03-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Larkin Building Certification Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "design",
+      "number": "TG-26-0307",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-08",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tessellate Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "SBD-DS-01",
+      "revision": "A",
+      "title": "Design statement: secondary dwelling",
+      "date": "2026-05-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Saltbush Building Design Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "A",
+      "title": "Site plan",
+      "date": "2026-04-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Saltbush Building Design Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-101",
+      "revision": "B",
+      "title": "Site plan",
+      "date": "2026-05-11",
+      "supersedes": "d13",
+      "unsupported": {
+        "issue_status": "for CDC",
+        "originating_org": "Saltbush Building Design Pty Ltd"
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T10-knockdown-rebuild/shape.yaml",
+  "triggers": [],
+  "scenario_facts": {
+    "rfps": {
+      "budget_stated_cents": 152000000
+    }
+  }
+}

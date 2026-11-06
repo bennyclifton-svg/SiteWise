@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T10-knockdown-rebuild/shape.yaml",
+  "triggers": [
+    "separate-demolition-contract"
+  ],
+  "scenario_facts": {
+    "rfps": {
+      "budget_stated_cents": 152000000
+    }
+  }
+}

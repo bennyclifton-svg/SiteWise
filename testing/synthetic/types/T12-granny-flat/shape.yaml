@@ -40,6 +40,8 @@ profile:
   det.potentially_contaminated_land: false
   det.acid_sulfate_soils_mapped: false
   det.climate_zone: "5"
+  # Owner ruling R10 (T01) applied by analogy: base soil class M. Pending owner confirmation for T12.
+  det.site_class: M
   det.sewer_connection: reticulated
   det.water_supply_source: reticulated
   det.gas_supply: none
@@ -155,7 +157,7 @@ cost_plan:
   - {line: "Long service levy (cost of work $250,000 or more incl. GST, 0.25%; Long Service Corporation; figure for owner confirmation)", section: fees_and_charges, built_in: "no", why: "Conditional: paid before the CDC issues only when the cost of work is at or above the threshold"}
   - {line: "Sydney Water Tap in and service connection fees", section: fees_and_charges, built_in: "partial", source: "knowledge/costs/starter_lines.yaml service-authority", why: "One generic service-authority line; no DNSP fee in the base because supply comes from the main house"}
   - {line: "Home Building Compensation Fund insurance", section: fees_and_charges, built_in: "no", why: "Required above $20,000 (owner ruling R4); builder's premium inside the contract sum, listed so an exclusion is caught"}
-  - {line: "Building designer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "F-line 'Architect' from the adopted package"}
+  - {line: "Building designer", aliases: ["Architect"], section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "F-line 'Architect' from the adopted package"}
   - {line: "Structural engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package"}
   - {line: "Civil (stormwater) engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line; often one fee with the structural engineer"}
   - {line: "Geotechnical engineer", section: consultants, built_in: "yes", source: "knowledge/works/package_defaults.yaml baselines[0]", why: "Fee line from the adopted package"}
@@ -285,7 +287,7 @@ rfps:
       stages_option: [bidding, construction_support, contract_admin]
       stages_absent: [brief_masterplan, planning_response, interiors, tender_traditional, dnc_tender, regulated_design, for_construction, post_novation]
       positions: {coordination: I, input_schedule: I, specialist_coordination: I, specification: I, house_interiors: I, house_selections: I, door_schedule: I, certifier_liaison: I, document_uploads: I, lodgement: I, live_staging: I, consultant_selection: O, ffe: O, modifications: O, value_management: O, marketing_renders: X, court: X, as_built: X, others_fees: X, water_asset: absent, sustainability_docs: absent, country: absent, existing_interfaces: absent, bim_model: absent, tenant_fitout: absent, signage: absent, facade_certification: absent, community: absent, apartment_design: absent}
-      blocking: ["fact:budget"]
+      blocking: []   # the scenario states the budget (SCORING.md §7.5, as T01)
       sources:
         - "planning_approval: the CDC is a planning approval (pathway cdc); planning_response is da/ssd/planning_permit/modification only"
         - "bidding: a granny-flat owner takes quotes; the designer answers questions, so bidding is an option, matching the app (after the house boundary end)"
@@ -397,10 +399,10 @@ rfps:
     must_include: ["CDC eligibility check against the secondary dwelling standards and the planning certificate", "CDC assessment and determination", "Neighbour notices the certifier gives (verified: false)", "Principal certifier appointment", "Every critical-stage inspection in owner ruling R7, incl. the pre-commencement inspection", "Occupation certificate with the BASIX completion check"]
     must_not_include: ["Package A BCA advisory", "Construction certificate (there is none under a CDC)", "Performance solution authorship", "Design", "Building supervision", "Classification map", "Staged occupation", "Fire referrals"]
     expect:
-      stages_include: []
+      stages_include: [b3_construction, b4_occupation]   # principal certifier, R7 inspections and OC (this entry's must_include; F9 fixed)
       stages_option: []
-      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
-      blocking: ["pathway_unsupported"]
+      stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval]
+      blocking: []
       sources:
         - "data/eval/rfp/answer-keys/bca-unsupported-cdc.yaml: CDC must receive its own scope; existing CC stages cannot be relabelled"
     app_differs:
@@ -455,13 +457,14 @@ triggers:
     profile: [hdr.cond.planning]
     adds:
       procurement: [consultant.town_planner]
-      cost_plan: ["DA fees and contributions", "Construction certificate fee"]
+      cost_plan: ["DA fees and contributions", "Construction certificate and certifier fees", "Town planner"]
       program: ["Statement of environmental effects", "Lodge the DA", "Neighbour notification", "DA assessment and determination", "Construction certificate"]
       rfps: [{discipline: consultant.architect, must_include: ["Planning response to council requests"]}, {discipline: consultant.certifier, must_include: ["Package B: CC assessment, principal certifier, inspections, OC"]}]
       authority: ["DA to council under SEPP (Housing) 2021 secondary dwelling provisions (verified: false); CC before work"]
     removes:
       program: ["Prepare and lodge the complying development certificate", "Certifier determination", "Certifier notifies neighbours within 20 m (14 days before determination)", "Give neighbours notice of commencement (at least 7 days before work)"]
       cost_plan: ["Complying development certificate fee (certifier's determination and council registration)"]
+    skeleton: sk.new-traditional-da   # new + traditional + this pathway (knowledge/program/skeletons.yaml)
     why: "Town planner is optional (the designer often writes the SEE). The app moves to sk.new-traditional-da, adds fr.da-*, fr.construction-certificate and the da-fees starter, and the certifier RFP no longer blocks"
     built_in: {program: "yes", cost_plan: "yes", procurement: "yes", rfps: "partial"}
     source: "knowledge/program/fragments.yaml fr.da-lodgement"

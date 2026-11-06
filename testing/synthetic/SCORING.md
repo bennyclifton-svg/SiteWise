@@ -113,6 +113,9 @@ is also accepted.
   under `cdc-pathway` counts as a false positive.
 - **Added items are expected.** They take the trigger's `built_in` claim
   for that area.
+- **A trigger may set `skeleton:`.** A pathway or route variant (a CDC
+  variant of a DA base, say) then expects that skeleton instead of
+  `program.skeleton`. The last trigger that sets one wins.
 - **Links follow the removals.** An `after` link to a removed activity is
   dropped.
 - **Removing an RFP or only its phrases.** A `removes.rfps` item that is a

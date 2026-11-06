@@ -1,0 +1,36 @@
+ST12-da-pathway
+  Register (per field):
+    status      correct 15
+    kind        correct 15
+    discipline  correct 8, missed 4, wrong 3
+    lifecycle   correct 7, missed 8
+    number      correct 11, correct_blank 2, missed 2
+    revision    correct 4, correct_blank 11
+    title       correct 15
+    date        correct 13, missed 2
+    supersedes  missed 1
+  Profile: conflict_true 2, correct 54, missed 5, missed_by_design 1
+    conflict_true    hdr.cond.access_constraints: expected 'urban_constrained', app ''
+    missed           hdr.cond.environmental_sensitivity: expected 'standard', app ''
+    missed           proj.regulated_design: expected 'no', app ''
+    missed_by_design proj.target_construction_start: expected '2026-09-01', app ''
+    missed           flag.excavation_adjoining: expected 'no', app ''
+    conflict_true    flag.authority_asset: expected 'no', app ''
+    missed           flag.groundwater: expected 'no', app ''
+    missed           flag.multi_building: expected 'no', app ''
+  Invoices (per field):
+    kind               correct 3
+    number             correct 3
+    invoice_date       correct 3
+    issuer_abn         correct 3
+    ex_gst_cents       correct 3
+    gst_cents          correct 3
+    total_cents        correct 3
+    supplier           correct 2, missed 1
+    flag.period        correct 3
+    flag.unmapped      correct 3
+    flag.arithmetic    correct 1
+    flag.no_supplier   correct 1
+  Fees (per field):
+    stated_total_cents correct 5, missed 1
+    firm_name          correct 6

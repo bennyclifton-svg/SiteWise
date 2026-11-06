@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T12-granny-flat/shape.yaml",
+  "triggers": [
+    "sewer-main-in-backyard"
+  ],
+  "scenario_facts": {
+    "program": {
+      "target_construction_start": "2026-09-01"
+    }
+  }
+}

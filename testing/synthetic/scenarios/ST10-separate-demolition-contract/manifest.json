@@ -1,0 +1,853 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST10-separate-demolition-contract",
+  "type_id": "T10",
+  "base": "ST10-base",
+  "triggers": [
+    "separate-demolition-contract"
+  ],
+  "project": {
+    "name": "Delaney house, 22 Marrakai Close",
+    "address": "22 Marrakai Close, Caringbah South NSW 2229",
+    "lga": "Sutherland Shire",
+    "summary": "Knock-down rebuild: the 1962 brick-veneer and fibro house, detached garage and shed on a 620 m2 R2 lot in Caringbah South are demolished (bonded asbestos removed under licence) and replaced by a new architect-designed two-storey, four-bedroom house with a double garage. One complying development certificate covers demolition and the new house; the owners engage a licensed demolisher under a separate contract, then hand a clear site to the builder chosen by select tender under an HIA lump-sum contract."
+  },
+  "invented": {
+    "lots": [
+      "Lot 31 DP 216847"
+    ],
+    "abns": [
+      "27 365 969 632",
+      "27 365 699 632",
+      "67 262 569 169",
+      "29 559 935 012",
+      "71 046 338 591",
+      "35 331 591 766",
+      "49 729 726 270",
+      "35 111 191 155"
+    ],
+    "firms": [
+      "Marlowe Hart Architects Pty Ltd",
+      "Penfold Kerr Consulting Engineers Pty Ltd",
+      "Drummond Civil Pty Ltd",
+      "Strata Line Geotechnics Pty Ltd",
+      "Clearfield Hazmat Services Pty Ltd",
+      "Solace Thermal Assessments Pty Ltd",
+      "Brennock & Vale Surveyors Pty Ltd"
+    ],
+    "emails": [
+      "rosa.delaney@example.com",
+      "ines.hart@example.com",
+      "sam.penfold.pke@example.com",
+      "kate.drummondcivil@example.com",
+      "raj.stratalinegeo@example.com",
+      "mel.clearfieldhazmat@example.com",
+      "oliver.solacethermal@example.com",
+      "joel.brennockvale@example.com"
+    ],
+    "traps": {
+      "27 365 699 632": "d17 abn-transposed: fails the checksum on purpose"
+    }
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Owner brief - 22 Marrakai Close.md",
+      "title": "Owner's brief: new house at 22 Marrakai Close",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Date: 2 February 2026, Client, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "We want to build a new two-storey detached family house"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "We want to build a new two-storey detached family house"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This is a new house: we will knock down the existing house and build a new two-storey home in its place"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The site contains an existing building (a dwelling, detached garage and shed), all to be demolished"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The existing dwelling was built in 1962"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "Two storeys"
+        },
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "The lot is about 620 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Target gross floor area about 300 m2"
+        },
+        {
+          "key": "hdr.scale.bedrooms",
+          "says": "4 bedrooms"
+        },
+        {
+          "key": "hdr.scale.bathrooms",
+          "says": "3 bathrooms plus a powder room"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage (2 spaces) under the main roof"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "We will move out of the house before demolition, so the site will be empty from the day the builder starts until handover"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "We are the sole owners and the only decision makers"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "We want a high-quality, architect-designed home with durable, high-end finishes"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The demolition and new dwelling will be approved by a complying development certificate"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Architect-designed house, select tender to three builders; an architect-led traditional lump-sum tender"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The builder will be engaged under the HIA NSW Lump Sum building contract"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $1,520,000 excluding GST, including demolition"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Hamish and Rosa Delaney"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 22 Marrakai Close, Caringbah South NSW 2229"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 22 Marrakai Close, Caringbah South NSW 2229"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "We want an all-electric house with no gas supply: induction cooktop and heat-pump hot water"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement or cellar"
+        },
+        {
+          "key": "flag.staged",
+          "says": "Demolition before the builder starts is not staged construction; the new house is built by one builder under one contract"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "We are not planning multiple buildings: just the one house"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or similar rating target beyond BASIX"
+        },
+        {
+          "key": "flag.country",
+          "says": "We do not need any Connecting with Country input for this lot"
+        }
+      ],
+      "traps": [
+        {
+          "id": "stage-1-demolition",
+          "what": "'Stage 1: demolition by a separately engaged licensed demolisher; Stage 2: the new dwelling' matches the staged trigger '\\bstages? [1-9a-c]\\b' (DOMAIN.md §10 trap 7).",
+          "expect": "flag.staged stays no: demolition by a separate contractor before the house is built is not staged delivery of the works"
+        }
+      ],
+      "content": "The owners' brief to the architect in plain first-person prose. Sections: '## Project description' (first passage: the new two-storey detached family house sentence; the 'This is a new house: we will knock down…' sentence; the existing building sentence; 'The existing dwelling was built in 1962'; lot about 620 m2; we move out before demolition; sole owners), '## What we want' (4 bedrooms, 3 bathrooms plus a powder room, double garage under the main roof, target GFA about 300 m2, two storeys, internal stair, rainwater tank, ducted air-conditioning), '## Scope, budget and quality' (quality sentence; 'Construction budget: $1,520,000 excluding GST, including demolition'), '## Contract and procurement' (the CDC sentence 'The demolition and new dwelling will be approved by a complying development certificate'; 'Architect-designed house, select tender to three builders'; the HIA building contract sentence; 'Stage 1: demolition by a separately engaged licensed demolisher; Stage 2: the new dwelling'; 'We will engage the demolisher ourselves, and the site will be handed to the builder clear and level', and in the same paragraph 'Demolition before the builder starts is not staged construction; the new house is built by one builder under one contract'), '## Services and sustainability' (all-electric sentence, BASIX only, no Connecting with Country, no basement, one house). Do not describe the existing house by its number of storeys or its floor area. Do not use the words 'replace' or 'renovation'."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lot 31 DP 216847.md",
+      "title": "Planning certificate under section 10.7",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-09",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-00318 | | Issue date | 09/02/2026 | | Applicant | Rosa Delaney |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: Sutherland Shire."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lot 31 DP 216847"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R2 Low Density Residential under Sutherland Shire Local Environmental Plan 2015"
+        },
+        {
+          "key": "proj.address",
+          "says": "22 Marrakai Close, Caringbah South NSW 2229"
+        },
+        {
+          "key": "det.state",
+          "says": "Caringbah South NSW 2229"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-land-eligible",
+          "what": "Item 4 says complying development under the Housing Code and the Demolition Code may be carried out on the land.",
+          "expect": "hdr.cond.planning comes from the documents that state the chosen pathway (brief, architect's fee proposal, design statement), not from land eligibility"
+        }
+      ],
+      "content": "A council s10.7(2) and (5) planning certificate, numbered items in the usual order: zoning and LEP/DCP, complying development (may be carried out under the Housing Code and the Demolition Code), heritage, bush fire, flood, acid sulfate soils, contamination, loose-fill asbestos insulation (the land does not include residential premises listed on the LFAI register), coastal, rail corridor, road widening (none). Fixed council wording; identity sits in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 22 Marrakai Close.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Brennock & Vale Surveyors Pty Ltd",
+      "date": "2026-02-20",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: BV-26-0144, Date: 20 February 2026, Prepared by; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 619.8 m2"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "The lot has a full-width 15.85 m street frontage with an existing driveway and vehicle crossing, and unrestricted vehicle access"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "No Sydney Water assets are within the property"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "The house drains to the Sydney Water sewer main in the street; the junction is near the front boundary"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Water main in Marrakai Close; the house is connected to it"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention system on the lot"
+        }
+      ],
+      "traps": [
+        {
+          "id": "sewer-main-in-street",
+          "what": "'drains to the Sydney Water sewer main in the street' matches the authority_asset trigger '(sewer|water) main' (DOMAIN.md §10 trap 11).",
+          "expect": "flag.authority_asset stays no: the main is in the street, and the report says no Sydney Water assets are within the property"
+        },
+        {
+          "id": "trees-listed-not-affected",
+          "what": "Lists a brush box street tree on the council verge and a spotted gum and a jacaranda near the rear boundary.",
+          "expect": "d03 alone sets neither arborist flag: presence is not an impact"
+        },
+        {
+          "id": "no-existing-osd",
+          "what": "'no existing on-site detention' matches the osd_existing trigger (DOMAIN.md §10 trap 13).",
+          "expect": "flag.osd_existing stays no"
+        }
+      ],
+      "content": "Surveyor's report with the detail, level and boundary survey on AHD. Sections: '## Site description' (619.8 m2, 15.85 m frontage, existing driveway and crossing, falls about 1.1 m from the street to the rear, unrestricted access), '## Boundaries and easements' (no easements; the old timber paling fences sit up to 0.2 m off the boundaries), '## Existing structures' (existing house, detached garage and garden shed with floor, eave and ridge levels; concrete paths), '## Trees' (brush box street tree on the council verge; spotted gum and jacaranda near the rear boundary, about 13 m from the rear wall of the house), '## Services' (the sewer and water sentences; overhead electricity from the street pole; a gas meter is on the northern side wall of the house, supplied from the street; NBN pit; kerb outlet of the old stormwater line; no Sydney Water assets within the property; no existing on-site detention). Do not describe the house by its number of storeys or its floor area."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Timing for the build.md",
+      "title": "RE: Timing for the build",
+      "author_role": "consultant.architect",
+      "firm": "Marlowe Hart Architects Pty Ltd",
+      "date": "2026-03-03",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread, the architect's reply on top)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "We'd really like the builder on site by 1 February 2027"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "As a Class 1a house it is not caught by the Design and Building Practitioners Act registered-design obligations"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Rosa Delaney writes on 2 March 2026 (Subject: Timing for the build), asking when building could start, stating the target, and asking whether the new design practitioner laws apply to a house. Ines Hart of Marlowe Hart Architects replies on 3 March 2026 (Subject: RE: Timing for the build): the date is achievable if the CDC is determined by July and the tender runs in August, with the demolition quotations alongside so the site is clear before the builder starts; the electricity and gas disconnections need ordering well before the demolisher starts; and the DBP Act sentence."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural services - 22 Marrakai Close.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Marlowe Hart Architects Pty Ltd",
+      "date": "2026-03-06",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: MHA-FP-2607, Date: 6 March 2026, Client; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.architect_lodges",
+          "says": "The architect's services run from concept design through to lodging the complying development certificate application on the NSW Planning Portal"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Stage 3: CDC documentation, demolition plan and lodgement"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee $86,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's fee proposal. Scope by stage, a fee table (Stage 1 concept design on the survey of the existing site $19,000; Stage 2 design development $18,000; Stage 3 CDC documentation, demolition plan and lodgement $42,000; Stage 4 tender $7,000, including a separate request for quotation to three licensed demolishers for the owners' demolition contract; total $86,000 ex GST), an optional contract administration stage at $16,000 ex GST, additional services at $230 per hour, and exclusions (other consultants, certifier and authority fees). The 'Stage 1 … Stage 4' fee stages are not construction stages."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal PKE-2604.md",
+      "title": "Structural engineering fee proposal",
+      "author_role": "consultant.structural",
+      "firm": "Penfold Kerr Consulting Engineers Pty Ltd",
+      "date": "2026-03-10",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: PKE-2604, Date: 10 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "No transfer structures are needed for a two-storey timber-framed house"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $8,600 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's quote for an AS 2870 slab and footings (noting old footings and fill are removed after demolition), framing review and tie-down: design basis and concept advice $1,600; detailed design, CDC documentation and design certificate $7,000; total $8,600 ex GST; site inspections at $360 per visit. Dropped on the structural row."
+    },
+    {
+      "id": "d07",
+      "filename": "Drummond Civil - stormwater fee - Marrakai Close.md",
+      "title": "Fee proposal: civil and stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Drummond Civil Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | DC-P-0219 | | Date | 11/03/2026 | | Attention | Ines Hart |; # heading 'Fee proposal: civil and stormwater engineering'",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "No OSD is required for a replacement dwelling of similar impervious area"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on the lot"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "No stormwater quality treatment or MUSIC modelling is required for a single dwelling"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "The site is outside the drinking water catchment, so no NorBE assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "The civil scope includes no public road works; the builder rebuilds the vehicle crossing to council's standard drawing under council's approval"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $11,550 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "osd-negated",
+          "what": "'No OSD is required' matches the osd_required trigger \\bosd\\b, and 'no existing on-site detention' matches the osd_existing trigger.",
+          "expect": "flag.osd_required and flag.osd_existing both stay no"
+        }
+      ],
+      "content": "Civil engineer's fee proposal. Background: stormwater discharges by gravity to the kerb through the existing outlet, to be replaced. Stages, every figure GST-inclusive: investigation of the existing drainage and kerb outlet by CCTV $1,980; stormwater design for the CDC with the discharge point confirmed $4,620; detailed design, driveway long section and erosion and sediment control plan effective from the start of demolition $3,300; works-as-executed review and stormwater certificate for the OC $1,650; total $11,550 inc GST. The public road sentence: 'The civil scope includes no public road works; the builder rebuilds the vehicle crossing to council's standard drawing under council's approval.'"
+    },
+    {
+      "id": "d08",
+      "filename": "Geotechnical investigation fee proposal - Strata Line.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Strata Line Geotechnics Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal ref: SLG-P-0461, Date: 13 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $4,100 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical fee proposal for an AS 2870 site classification with the existing house still standing: investigation plan and fieldwork (three boreholes clear of the existing house) $2,300; laboratory reactivity testing $650; report $1,150; total $4,100 ex GST. Optional confirmation of the site class after demolition and footing inspections at $460 per visit."
+    },
+    {
+      "id": "d09",
+      "filename": "Hazardous materials survey proposal - Clearfield.md",
+      "title": "Fee proposal: demolition hazardous materials survey",
+      "author_role": "consultant.hazmat",
+      "firm": "Clearfield Hazmat Services Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: CHS-Q-0733, Date: 12 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $2,650 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Hazardous materials consultant's fee proposal for a demolition survey of the house, garage and shed with destructive sampling $1,500; NATA-accredited laboratory analysis of up to ten samples $650; asbestos register and removal scope report for the demolition quotation documents and the demolisher's demolition work plan $500; total $2,650 ex GST. Option: clearance inspection and certificate after removal by the licensed removalist $750 ex GST."
+    },
+    {
+      "id": "d10",
+      "filename": "BASIX and NatHERS fee proposal - Solace.md",
+      "title": "Fee proposal: NatHERS assessment and BASIX certificate",
+      "author_role": "consultant.basix",
+      "firm": "Solace Thermal Assessments Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote number: STA-0882, Date: 16 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5."
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $2,100 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Assessor's fee proposal: NatHERS thermal assessment with stamped plans and the BASIX certificate for a new dwelling, for the CDC lodgement $1,750; one revision for the construction documentation $350; total $2,100 ex GST."
+    },
+    {
+      "id": "d11",
+      "filename": "Hazardous materials survey report CHS-26-0733.md",
+      "title": "Demolition hazardous materials survey report",
+      "author_role": "consultant.hazmat",
+      "firm": "Clearfield Hazmat Services Pty Ltd",
+      "date": "2026-04-08",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: CHS-26-0733, Revision: 0, Report date: 8 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building",
+          "says": "Survey of the existing building and outbuildings before demolition"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The house was built in 1962"
+        }
+      ],
+      "traps": [
+        {
+          "id": "existing-storeys",
+          "what": "'The existing building is a single-storey dwelling' names the storeys of the house to be demolished.",
+          "expect": "hdr.scale.storeys stays 2: the storeys key describes the new house"
+        },
+        {
+          "id": "not-contaminated-land",
+          "what": "'This survey covers building materials only; it is not a contaminated land assessment' matches the contamination trigger 'contaminat' (DOMAIN.md §10 trap 5).",
+          "expect": "det.potentially_contaminated_land stays false (from d02)"
+        },
+        {
+          "id": "asbestos-negations",
+          "what": "Uses the negations 'No friable asbestos was identified; all asbestos-containing materials are bonded', 'A search of the LFAI register returned no listing', 'No asbestos-containing material was observed in soil' and 'Dividing fences are timber paling and are retained'.",
+          "expect": "No friable-asbestos, loose-fill, asbestos-in-soil or dividing-fence consequence; the hazmat package stays a survey with the clearance option"
+        }
+      ],
+      "content": "Hazmat report. Sections: '## Introduction' (survey of the existing building and outbuildings before demolition; the existing building is a single-storey dwelling; the house was built in 1962; scope limited to building materials, with the not-a-contaminated-land-assessment sentence), '## Sampling' (table of nine samples), '## Findings' (bonded asbestos cement in the eaves linings, bathroom and laundry wall linings and the garage cladding; vinyl kitchen floor tiles with asbestos backing; lead in paint on the window frames above the threshold; no PCB capacitors in the light fittings; the friable, LFAI, soil and fence negation sentences), '## Recommendations' (register in the demolition quotation documents so the demolishers can price the removal; removal of all asbestos-containing materials by a licensed asbestos removalist before demolition, with a clearance certificate before demolition proceeds; lead paint handled under the demolisher's demolition work plan; unexpected-finds procedure). Do not state the house's floor area."
+    },
+    {
+      "id": "d12",
+      "filename": "Geotechnical report SLG-26-0461 - 22 Marrakai Close.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Strata Line Geotechnics Pty Ltd",
+      "date": "2026-04-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: SLG-26-0461, Revision: 0, Report date: 20 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.site_class",
+          "says": "Site classification: Class M in accordance with AS 2870"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "No groundwater was encountered in the boreholes to refusal on sandstone at about 2.6 m"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "Slab on ground at natural level; no excavation near the boundaries"
+        },
+        {
+          "key": "flag.basement",
+          "says": "No basement is proposed; the house is a slab on ground"
+        }
+      ],
+      "traps": [
+        {
+          "id": "old-footings-boundary",
+          "what": "'The old brick strip footings along the southern side boundary are to be excavated and removed after demolition' matches the excavation_adjoining trigger 'excavat…boundar' (DOMAIN.md §10 trap 12).",
+          "expect": "flag.excavation_adjoining stays no: removing old shallow footings is not excavation next to a neighbour"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (three boreholes clear of the existing house, which is still standing), subsurface profile (topsoil and some fill over stiff silty clay over sandstone at about 2.6 m), laboratory shrink-swell results, AS 2870 site classification Class M with a note that the house footprint could not be tested, the old footings sentence, followed by 'The demolisher's scope should include removing the old footings and slabs; fill removal and backfill are the builder's earthworks', footing and slab recommendations, an option to confirm the site class once the site is cleared, earthworks and site drainage advice."
+    },
+    {
+      "id": "d13",
+      "filename": "Architectural design statement - 22 Marrakai Close.md",
+      "title": "Architectural design statement",
+      "author_role": "consultant.architect",
+      "firm": "Marlowe Hart Architects Pty Ltd",
+      "date": "2026-05-18",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: MHA-DS-01, Revision: A, Date: 18 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: Class 1a dwelling with an attached Class 10a garage"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "The new house is two storeys"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Gross floor area 302 m2"
+        },
+        {
+          "key": "hdr.scale.bedrooms",
+          "says": "Four bedrooms, the main with ensuite"
+        },
+        {
+          "key": "hdr.scale.bathrooms",
+          "says": "Three bathrooms (main, ensuite, upstairs family) and a ground-floor powder room"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage under the main roof"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "Climate zone 5"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "The new house is all-electric with no gas supply"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The design meets the Housing Code standards, and the demolition and new dwelling will be approved by a complying development certificate"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "The site is a standard suburban lot with no environmental sensitivities such as bushland, waterways or contamination"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees are affected; all works are outside tree protection zones"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "No neighbouring or street trees are affected by the works"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "As complying development, no clause 4.6 variation is sought or possible"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The registered certifier determines the application; there is no council or local planning panel determination"
+        },
+        {
+          "key": "flag.community",
+          "says": "There is no public exhibition or community consultation; the certifier notifies the neighbours of the application"
+        }
+      ],
+      "traps": [
+        {
+          "id": "gas-abolished",
+          "what": "'The existing natural gas service is abolished and the meter removed before demolition' mentions natural gas (DOMAIN.md §10 trap 6).",
+          "expect": "det.gas_supply stays none; no hydraulic.gas new item"
+        },
+        {
+          "id": "demolish-near-trees",
+          "what": "'The old garage beside the rear trees is demolished from the driveway side, outside their tree protection zones' matches the arborist_tree_impacts trigger 'demoli…tree' (DOMAIN.md §10 trap 8).",
+          "expect": "flag.arborist_tree_impacts stays no"
+        },
+        {
+          "id": "environmental-negation-contamination",
+          "what": "'no environmental sensitivities such as bushland, waterways or contamination' matches the contamination trigger 'contaminat' (DOMAIN.md §10 trap 5).",
+          "expect": "det.potentially_contaminated_land stays false (from d02)"
+        }
+      ],
+      "content": "Architect's design statement for the CDC. Sections: '## Project description' (Class 1a and 10a; the new house is two storeys; GFA 302 m2; rooms), '## Site description and context' (the standard suburban lot sentence; street frontage, fall to the rear), '## Demolition' (the existing house, detached garage, shed, slabs, paths and old driveway are demolished; hazmat survey and licensed asbestos removal with clearance first; the gas sentence; 'Demolition and asbestos removal are by a separately engaged licensed demolisher under its own contract with the owners, working under the same complying development certificate; the site will be handed to the builder clear and level'), '## Design' (built form, internal stair, materials: face brickwork veneer to the ground floor, lightweight cladding above, metal roof; all-electric sentence), '## Trees' (the demolish-near-trees sentence with 'the trees are retained and protected with fencing'; the two tree negation sentences), '## Planning' (the CDC sentence; cl 4.6, certifier and notification sentences). Climate zone 5 and BASIX approach. Do not describe the existing house by its number of storeys."
+    },
+    {
+      "id": "d14",
+      "filename": "Site plan A-101 Rev A.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Marlowe Hart Architects Pty Ltd",
+      "date": "2026-05-04",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: A, Title: Site plan, Date: 4 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 619.8 m2"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the outline of the existing structures to be demolished (dashed), setbacks, site area, landscaped area, new driveway and crossing, rainwater tank location, the retained street and rear trees with protection fencing. Issue: preliminary."
+    },
+    {
+      "id": "d15",
+      "filename": "Site plan A-101 Rev B.md",
+      "title": "Site plan",
+      "author_role": "consultant.architect",
+      "firm": "Marlowe Hart Architects Pty Ltd",
+      "date": "2026-05-25",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-101, Revision: B, Title: Site plan, Date: 25 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area 619.8 m2"
+        },
+        {
+          "key": "hdr.scale.garage_spaces",
+          "says": "Double garage"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of the site plan: driveway moved 0.5 m north and the rainwater tank relocated; revision note says 'Amended for CDC lodgement'."
+    },
+    {
+      "id": "d16",
+      "filename": "Tax invoice CHS-INV-1904 Clearfield.md",
+      "title": "Tax invoice CHS-INV-1904",
+      "author_role": "consultant.hazmat",
+      "firm": "Clearfield Hazmat Services Pty Ltd",
+      "date": "2026-04-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: CHS-INV-1904, Date: 15 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $2,915.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $2,650.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $265.00"
+        }
+      ],
+      "traps": [],
+      "content": "Hazmat consultant's invoice for the demolition survey, sampling, laboratory analysis and report, 100% of the proposal."
+    },
+    {
+      "id": "d17",
+      "filename": "Tax invoice MHA-INV-0503 Marlowe Hart.md",
+      "title": "Tax invoice MHA-INV-0503",
+      "author_role": "consultant.architect",
+      "firm": "Marlowe Hart Architects Pty Ltd",
+      "date": "2026-05-29",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "adversarial",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: MHA-INV-0503, Date: 29 May 2026, ABN: 27 365 699 632",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $20,900.00 incl GST"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$19,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$1,900.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "abn-transposed",
+          "what": "The ABN on the invoice is 27 365 699 632, two digits transposed from the firm's ABN 27 365 969 632 in d05; it fails the ABN checksum.",
+          "expect": "The ledger flags abn_invalid"
+        }
+      ],
+      "content": "Architect's invoice for Stage 1 concept design, 100% complete. The ABN line carries the transposed ABN."
+    },
+    {
+      "id": "d18",
+      "filename": "SLG invoice 7731.md",
+      "title": "Tax invoice 7731",
+      "author_role": "consultant.geotechnical",
+      "firm": "Strata Line Geotechnics Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 7731 | | Date | 30/04/2026 | | ABN | 71 046 338 591 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $4,510.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$4,100.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$410.00"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical engineer's invoice for the investigation, laboratory testing and report, 100% of the proposal."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief carries the trigger evidence (Stage 1 separate demolisher, site handed over clear and level) in place of 'Demolition and asbestos removal are included in the builder's contract'; the staged sentence is reworded so it stays a no; tier becomes adversarial with the stage-1 trap"
+    },
+    {
+      "doc": "d04",
+      "change": "changed",
+      "why": "Disconnections are ordered before the demolisher starts, not the builder; the demolition quotations run alongside the tender so the site is clear before the builder starts"
+    },
+    {
+      "doc": "d05",
+      "change": "changed",
+      "why": "Architect's tender stage adds the demolition quotations; amounts unchanged"
+    },
+    {
+      "doc": "d09",
+      "change": "changed",
+      "why": "Removal scope goes into the demolition quotation documents and the demolisher's demolition work plan, not the builder's tender"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "Recommendations 1 and 3 name the demolition quotation documents and the demolisher's work plan in place of the builders' tender"
+    },
+    {
+      "doc": "d12",
+      "change": "changed",
+      "why": "Adds that the demolisher removes the old footings and slabs and the builder's earthworks cover fill removal and backfill; the old-footings trap sentence is unchanged"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "Design statement says demolition and asbestos removal are by a separately engaged demolisher under its own contract, site handed to the builder clear and level; the temporary electricity supply is set up for the builder once the site is handed over"
+    }
+  ]
+}

@@ -327,6 +327,8 @@ def validate(path, ids):
         adds = t.get("adds") or {}
         if not any(adds.get(k) for k in ("procurement", "work_items", "cost_plan", "program", "rfps", "authority", "profile")):
             err(f"{where}: adds must name at least one consequence")
+        if t.get("skeleton") is not None and t["skeleton"] != "missing" and t["skeleton"] not in ids["skeletons"]:
+            err(f"{where}: skeleton {t['skeleton']} is not in skeletons.yaml (use 'missing')")
         for key in t.get("profile") or []:
             if not _profile_key_ok(key, ids):
                 err(f"{where}: profile key {key} is not an app row key")

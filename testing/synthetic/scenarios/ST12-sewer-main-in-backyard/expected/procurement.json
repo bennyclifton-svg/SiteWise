@@ -1,0 +1,41 @@
+{
+  "schema": "sitewise-synthetic-procurement/1",
+  "shape": "types/T12-granny-flat/shape.yaml",
+  "triggers": [
+    "sewer-main-in-backyard"
+  ],
+  "from_proposals": [
+    {
+      "doc": "d05",
+      "discipline": "consultant.architect",
+      "kind": "services"
+    },
+    {
+      "doc": "d06",
+      "discipline": "consultant.structural",
+      "kind": "services"
+    },
+    {
+      "doc": "d07",
+      "discipline": "consultant.civil",
+      "kind": "services"
+    },
+    {
+      "doc": "d08",
+      "discipline": "consultant.geotechnical",
+      "kind": "services"
+    },
+    {
+      "doc": "d09",
+      "discipline": "consultant.basix",
+      "kind": "services"
+    },
+    {
+      "doc": "d10",
+      "discipline": "consultant.certifier",
+      "kind": "services"
+    }
+  ],
+  "route": "traditional",
+  "novation": {}
+}
