@@ -20,11 +20,16 @@ type workContext struct {
 func workContextFor(rows []Row, whole string) workContext {
 	c := workContext{whole: whole, types: map[string]string{}, actions: map[[2]string]string{}, actionRows: map[[2]string]Row{}, contractor: map[[2]string]bool{}}
 	for _, r := range rows {
+		if r.Key == "hdr.work_type" && appliedWorkRow(r) {
+			c.types[r.PartID] = r.Value
+		}
+	}
+	for _, r := range rows {
 		if !appliedWorkRow(r) {
 			continue
 		}
-		if r.Key == "hdr.work_type" {
-			c.types[r.PartID] = r.Value
+		if strings.HasPrefix(r.Key, "sys.") && strings.HasSuffix(r.Key, ".action") && c.oldBuildingAction(r) {
+			continue
 		}
 		if strings.HasPrefix(r.Key, "sys.") && strings.HasSuffix(r.Key, ".action") && (works.ValidAction(r.Value) || r.Value == "several") {
 			c.actions[[2]string{r.PartID, strings.TrimSuffix(r.Key, ".action")}] = r.Value
@@ -35,6 +40,16 @@ func workContextFor(rows []Row, whole string) workContext {
 		}
 	}
 	return c
+}
+
+// oldBuildingAction is a document's investigate or remove reading in a part
+// whose work is new. On new work these describe the building being
+// demolished or an inspection of the new work, not what the works do to the
+// new building's system, so the work-type default stands (knock-down
+// design D2, docs/plans/2026-11-06-knockdown-two-buildings.md). The user's
+// own action is final.
+func (c workContext) oldBuildingAction(r Row) bool {
+	return r.Band != bandUser && (r.Value == "investigate" || r.Value == "remove") && c.workType(r.PartID) == "new"
 }
 
 func appliedWorkRow(r Row) bool {

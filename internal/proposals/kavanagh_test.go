@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"sitewise/internal/identity"
@@ -90,6 +91,20 @@ func TestEmphasisedDirectoryNameIsNotReused(t *testing.T) {
 	}
 	d := NewDraft(Harvest(k.file, kavanaghText(t, k.file)), Context{Discipline: k.discipline, Lookup: lookup}, nil)
 	if got, _ := d.Decided(FieldFirmName); got.Value != k.name {
+		t.Fatalf("firm name %+v", got)
+	}
+}
+
+// F23: a descriptor line between the firm's legal name and its address
+// ("Civil and stormwater engineers") is not the firm name.
+func TestLetterheadPrefersTheLegalNameOverADescriptor(t *testing.T) {
+	md := "DRUMMOND CIVIL PTY LTD\nCivil and stormwater engineers\n14 Taren Point Road, Taren Point NSW 2229\nABN 29 559 935 012 | 02 9525 8804 | kate.drummondcivil@example.com\n\n# Fee proposal\n\n| Stage | Fee ex GST |\n| --- | ---: |\n| **Total professional fee** | **$10,000.00** |\n"
+	text, err := identity.Extract(context.Background(), "md", bytes.NewReader([]byte(md)), int64(len(md)), ExtractLimits())
+	if err != nil {
+		t.Fatal(err)
+	}
+	d := NewDraft(Harvest("proposal.md", text), Context{Discipline: "consultant.civil"}, nil)
+	if got, ok := d.Decided(FieldFirmName); !ok || !strings.EqualFold(got.Value, "Drummond Civil Pty Ltd") {
 		t.Fatalf("firm name %+v", got)
 	}
 }

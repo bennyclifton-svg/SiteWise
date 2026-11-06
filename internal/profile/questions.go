@@ -22,7 +22,10 @@ import (
 // profile-11: architect-lodges accepts services "through to DA lodgement";
 // owner targets, builder's estimate, existing/added/proposed GFA and the
 // party-wall signal; room words route passages (Walsh review, 2026-10-27).
-const QuestionVersion = "profile-11"
+// profile-12: demolishing an existing building is work to an existing
+// building, and the building type is the building delivered, not one the
+// works demolish or a survey describes (knock-down D1 and D3, 2026-11-06).
+const QuestionVersion = "profile-12"
 
 // ReadRevision says which families of profile questions a document's label
 // reading covered. Raise it when a new family of questions is added without
@@ -340,7 +343,7 @@ func headerQuestions(t knowledge.Taxonomy) map[string]jev.Question {
 	}
 	ask := func(id, label string, crit map[string]string) {
 		qs[id] = jev.Question{Type: jev.TypeChoice,
-			Instructions: "Using the project description in `text`, which " + label + " describes this project? Classify the principal building use from the project description. An ancillary office or amenity does not change the main building type. Classify the physical development, never the document kind or consultant service. A fee proposal is not a commercial building; a survey or consultant advice is not an advisory-only project. Choose not_stated unless this passage describes the building use or project works. Fees, service scope, signatures and headings alone do not describe the building.",
+			Instructions: "Using the project description in `text`, which " + label + " describes this project? Classify the principal building use from the project description. An ancillary office or amenity does not change the main building type. Classify the physical development, never the document kind or consultant service. A fee proposal is not a commercial building; a survey or consultant advice is not an advisory-only project. Choose not_stated unless this passage describes the building use or project works. Fees, service scope, signatures and headings alone do not describe the building. An existing building that the works demolish, or that a survey, hazardous materials report or inspection describes, is not the project's building.",
 			Criteria:     crit}
 	}
 	ask("hdr.building_class", "building class", classes)

@@ -442,9 +442,10 @@ determinants:
       conditions or conflicting statements.
     criteria:
       stated_true: The passage explicitly affirms this condition for the identified building, part or
-        site.
+        site. Demolishing an existing building on the site is work to an existing building.
       stated_false: The passage explicitly denies this condition for the identified building, part or
-        site.
+        site. Calling the project a new house or new building does not deny it when an existing building
+        on the site is to be demolished.
       not_stated: No explicit conclusion is given, the condition is optional, or the passage contradicts
         itself.
     runs_on:

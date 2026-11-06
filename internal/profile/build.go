@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -125,6 +126,7 @@ func Build(in Input, cat *knowledge.Catalog) []Row {
 		in.Suggested = suggested
 	}
 	rows = Reconcile(in, cat)
+	rows = withoutInapplicableConditions(rows, category, class, cat)
 	rows = withExistingSystems(rows, whole)
 	rows = withScope(rows, whole, suggested)
 	rows = withImpliedScope(rows, whole, implied)
@@ -217,9 +219,10 @@ func withScope(rows []Row, whole string, defaults []string) []Row {
 			notIncluded[strings.TrimSuffix(leaf, ".presence")] = true
 		}
 	}
+	ctx := workContextFor(rows, whole)
 	for _, r := range rows {
 		leaf, ok := strings.CutPrefix(r.Key, "sys.")
-		if !ok || r.PartID != whole || !strings.HasSuffix(leaf, ".action") || !appliedWorkRow(r) || !scopeAction[r.Value] {
+		if !ok || r.PartID != whole || !strings.HasSuffix(leaf, ".action") || !appliedWorkRow(r) || !scopeAction[r.Value] || ctx.oldBuildingAction(r) {
 			continue
 		}
 		leaf = strings.TrimSuffix(leaf, ".action")
@@ -306,6 +309,41 @@ func withProposedGFA(rows []Row, whole string) []Row {
 
 // scopeAction are the works actions that do work on a system.
 var scopeAction = map[string]bool{"new": true, "replace": true, "upgrade": true, "alter": true, "repair": true, "remove": true}
+
+// withoutInapplicableConditions drops a read header condition whose
+// taxonomy applies_to leaves out the project's building category, so a
+// house is not given an industrial hazardous process from asbestos
+// passages (knock-down D5, docs/plans/2026-11-06-knockdown-two-buildings.md).
+// The user's value is kept; an unknown category keeps every row.
+func withoutInapplicableConditions(rows []Row, category, class string, cat *knowledge.Catalog) []Row {
+	tax := cat.Taxonomy()
+	if category == "" {
+		for _, bc := range tax.BuildingClasses {
+			for _, s := range bc.Subclasses {
+				if class != "" && s.ID == class {
+					category = bc.ID
+				}
+			}
+		}
+	}
+	if category == "" {
+		return rows
+	}
+	limited := map[string]bool{}
+	for _, c := range tax.Conditions {
+		if len(c.AppliesTo) > 0 && !slices.Contains(c.AppliesTo, category) {
+			limited["hdr.cond."+c.Key] = true
+		}
+	}
+	out := rows[:0]
+	for _, r := range rows {
+		if limited[r.Key] && r.Band != bandUser {
+			continue
+		}
+		out = append(out, r)
+	}
+	return out
+}
 
 func firstExcerpt(r Row) string {
 	for _, s := range r.Sources {

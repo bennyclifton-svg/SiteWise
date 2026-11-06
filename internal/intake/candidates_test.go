@@ -195,6 +195,9 @@ func TestRuleCatalogPreservesReferenceAndFireServicesSplit(t *testing.T) {
 			t.Fatalf("doctrine field %s copied", banned)
 		}
 	}
+	if architect := findDiscipline(t, cat, "consultant.architect"); !contains(architect.Aliases, "Building designer") {
+		t.Fatalf("architect aliases: %v", architect.Aliases)
+	}
 	civil := findDiscipline(t, cat, "consultant.civil")
 	if !contains(civil.Aliases, "Stormwater") {
 		t.Fatalf("civil aliases: %v", civil.Aliases)

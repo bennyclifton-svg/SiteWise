@@ -103,3 +103,33 @@ func TestRiseInStoreysAndEffectiveHeightAreReadWhereStated(t *testing.T) {
 		}
 	}
 }
+
+// F21: a suburb whose second word is a compass point ("Caringbah South"),
+// or any two-word suburb followed by the state, keeps both words.
+func TestAddressKeepsTwoWordSuburbEndingInADirection(t *testing.T) {
+	for text, want := range map[string]string{
+		"Site: 22 Marrakai Close, Caringbah South NSW 2229":    "22 Marrakai Close, Caringbah South NSW 2229",
+		"Site: 22 Marrakai Close, Caringbah South\nDate: 2026": "22 Marrakai Close, Caringbah South",
+		"22 MARRAKAI CLOSE, CARINGBAH SOUTH NSW 2229":          "22 Marrakai Close, Caringbah South NSW 2229",
+		"Site: 9 Avon Street, Glebe Point NSW 2037":            "9 Avon Street, Glebe Point NSW 2037",
+	} {
+		if got := candidateNorms(t, text, "site.address"); !sameNorms(got, []string{want}) {
+			t.Errorf("%q: address = %q, want %q", text, got, want)
+		}
+	}
+}
+
+// F22: a letter sent to an agent "for" or "on behalf of" the client offers
+// the client, not the agent's whole line.
+func TestClientIsThePartyAnAgentActsFor(t *testing.T) {
+	for _, text := range []string{
+		"To: Ines Hart, Marlowe Hart Architects, for Hamish and Rosa Delaney\nProject: New house",
+		"To: Ines Hart, Marlowe Hart Architects, on behalf of Hamish and Rosa Delaney\nProject: New house",
+		"**To:** Ines Hart, Marlowe Hart Architects; for Hamish and Rosa Delaney",
+	} {
+		got := candidateNorms(t, text, "proj.client")
+		if !sameNorms(got, []string{"Hamish and Rosa Delaney"}) {
+			t.Errorf("%q: client = %q", text, got)
+		}
+	}
+}

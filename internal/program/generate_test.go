@@ -823,3 +823,38 @@ func TestLoopGuardSkipsLinks(t *testing.T) {
 		t.Fatal("forward link refused")
 	}
 }
+
+// F28: the house slab's pour activity both places and conceals the
+// reinforcement, so the reinforcement hold point goes before it, after the
+// work that precedes it.
+func TestReinforcementHoldPointPrecedesTheHousePour(t *testing.T) {
+	cat := testCatalog(t, nil, "")
+	in := GenInput{
+		WorkTypes:  []string{"new"},
+		Conditions: map[string]string{"planning": "da", "procurement_route": "traditional"},
+		Values:     map[string]string{"ncc_class": "1a", "rise_in_storeys": "1"},
+		WorkItems:  []WorkItem{{ID: "slab", System: "substructure.slab-on-ground", Action: "new", Title: "Slab on ground"}},
+	}
+	p := mustGenerate(t, cat, in)
+	hold := "hold:if.reinforcement-inspected-before-pour"
+	if _, ok := p.Row(hold); !ok {
+		t.Fatal("no reinforcement hold point")
+	}
+	under, pour := "fragment:fr.slab-on-ground-1a:slab:under-slab", "fragment:fr.slab-on-ground-1a:slab:pour"
+	if _, ok := hasLink(p, pour, hold); ok {
+		t.Fatal("hold point after the pour")
+	}
+	for _, pair := range [][2]string{{under, hold}, {hold, pour}} {
+		if _, ok := hasLink(p, pair[0], pair[1]); !ok {
+			t.Fatalf("missing link %v", pair)
+		}
+	}
+	for _, c := range p.Notes {
+		if c.ActivityID == hold || strings.Contains(c.Message, "Reinforcement inspection") {
+			t.Fatalf("note on the hold point: %+v", c)
+		}
+	}
+	if out := Compute(p.Input(Calendar{})); out.Cycle != nil {
+		t.Fatalf("generated a loop: %v", out.Cycle)
+	}
+}

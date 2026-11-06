@@ -2,6 +2,7 @@ package knowledge_test
 
 import (
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -210,5 +211,33 @@ func TestKeyScopeFollowsD04(t *testing.T) {
 		if got := cat.KeyScope(key); got != want {
 			t.Errorf("%s: %q, want %q", key, got, want)
 		}
+	}
+}
+
+// Knock-down D4 (F19): a residential project whose type is unknown is not
+// offered the apartment list. It gets what every residential new-build list
+// shares; a known type keeps its own list.
+func TestUnknownResidentialTypeGetsOnlySharedDefaults(t *testing.T) {
+	cat, err := knowledge.Load("../../knowledge")
+	if err != nil {
+		t.Fatal(err)
+	}
+	shared := cat.ScopeDefaults("residential", "", "new")
+	if len(shared) == 0 {
+		t.Fatal("no shared residential defaults")
+	}
+	house := cat.ScopeDefaults("residential", "house", "new")
+	for _, s := range shared {
+		if !slices.Contains(house, s) {
+			t.Fatalf("%s is not in the house list", s)
+		}
+	}
+	for _, s := range shared {
+		if strings.Contains(s, "lift") || strings.Contains(s, "hydrant") {
+			t.Fatalf("apartment system %s offered for an unknown residential type", s)
+		}
+	}
+	if apartments := cat.ScopeDefaults("residential", "apartments", "new"); !slices.ContainsFunc(apartments, func(s string) bool { return strings.Contains(s, "lift") }) {
+		t.Fatalf("apartments lost the lift: %v", apartments)
 	}
 }

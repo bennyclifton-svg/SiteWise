@@ -60,6 +60,9 @@ func addressee(s string) bool {
 	return addresseeRe.MatchString(s) || bareLabelRe.MatchString(s)
 }
 
+// legalNameRe is a registered company suffix.
+var legalNameRe = regexp.MustCompile(`(?i)\b(?:pty\.?\s*ltd|pty\.?\s*limited|limited|ltd)\b`)
+
 // letterhead reads the firm from the lines around the proposal's only ABN:
 // the company name printed just above it (or before it on its line) and the
 // one street address beside it. Any addressee label near the ABN means the
@@ -93,8 +96,10 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 			return nil
 		}
 	}
-	name := ""
-	for j := at; j >= top && name == ""; j-- {
+	// A legal name ("Drummond Civil Pty Ltd") beats a descriptor line that
+	// also reads like a firm ("Civil and stormwater engineers").
+	name, legal := "", false
+	for j := at; j >= top && !legal; j-- {
 		t := stripEmphasis(lines[j].Text)
 		if j == at {
 			cut := strings.Index(strings.ToUpper(t), "ABN")
@@ -105,7 +110,10 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 		}
 		t = strings.Trim(t, " ,.-|")
 		if companyRe.MatchString(t) && len(strings.Fields(t)) <= 8 && !moneyRe.MatchString(t) && !emailRe.MatchString(t) && !addressRe.MatchString(t) {
-			name = cleanFirmCandidate(t)
+			legal = legalNameRe.MatchString(t)
+			if legal || name == "" {
+				name = cleanFirmCandidate(t)
+			}
 		}
 	}
 	if name == "" {

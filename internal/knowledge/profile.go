@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"regexp/syntax"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -437,7 +438,11 @@ func (c *Catalog) Taxonomy() Taxonomy { return c.profile.taxonomy }
 // Refurbishment, remediation and advisory start empty. New build and
 // extension use the class's list for the work type, else its new-build list,
 // else its category's list; the category is taken from the class when not
-// given. Defaults are suggestions, never evidence.
+// given. With the category known and no class, a category whose classes
+// have lists gets only what every one of those new-build lists shares, so a
+// house whose type is still unknown is not offered a lift (knock-down D4,
+// docs/plans/2026-11-06-knockdown-two-buildings.md). Defaults are
+// suggestions, never evidence.
 func (c *Catalog) ScopeDefaults(category, class, workType string) []string {
 	if workType == "" {
 		return nil
@@ -463,12 +468,53 @@ func (c *Catalog) ScopeDefaults(category, class, workType string) []string {
 			}
 		}
 	}
+	if class == "" && category != "" {
+		if shared := c.sharedClassDefaults(category); shared != nil {
+			return shared
+		}
+	}
 	for _, e := range c.profile.scope.Categories {
 		if category != "" && e.Category == category {
 			return e.Systems
 		}
 	}
 	return nil
+}
+
+// sharedClassDefaults is the systems every new-build class list in the
+// category shares, in the first list's order, or nil when no class of the
+// category has a new-build list.
+func (c *Catalog) sharedClassDefaults(category string) []string {
+	var lists [][]string
+	for _, bc := range c.profile.taxonomy.BuildingClasses {
+		if bc.ID != category {
+			continue
+		}
+		for _, sub := range bc.Subclasses {
+			for _, e := range c.profile.scope.Classes {
+				if e.Class == sub.ID && e.WorkType == "new" {
+					lists = append(lists, e.Systems)
+				}
+			}
+		}
+	}
+	if len(lists) == 0 {
+		return nil
+	}
+	shared := []string{}
+	for _, s := range lists[0] {
+		inAll := true
+		for _, l := range lists[1:] {
+			if !slices.Contains(l, s) {
+				inAll = false
+				break
+			}
+		}
+		if inAll {
+			shared = append(shared, s)
+		}
+	}
+	return shared
 }
 
 // Presets are the scope picker's one-click system sets.

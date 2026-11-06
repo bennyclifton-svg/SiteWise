@@ -22,6 +22,8 @@ var (
 	suburbFirst = map[string]bool{"Mount": true, "Mt": true, "North": true, "South": true, "East": true, "West": true, "St": true,
 		"Port": true, "Lake": true, "Glen": true, "Castle": true, "New": true, "Old": true, "Upper": true, "Lower": true,
 		"Surry": true, "Rose": true, "Bella": true, "Kings": true, "Point": true, "Bondi": true, "Darling": true}
+	// suburbLast are second words of two-word suburbs (Caringbah South).
+	suburbLast = map[string]bool{"North": true, "South": true, "East": true, "West": true, "Central": true}
 
 	lotRe = regexp.MustCompile(`(?i)\bLots?\s+\d+[A-Z]?(?:\s*(?:,|and|&)\s*\d+[A-Z]?)*(?:\s+(?:in|on|of))?(?:,?\s+Section\s+\d+[A-Z]?)?,?\s*(?:DP|D\.P\.|SP|RP|PS|CP|Deposited Plan|Strata Plan)\s*\d+`)
 	lotIn = regexp.MustCompile(`(?i)\s+(?:in|on|of)\s+`)
@@ -211,9 +213,11 @@ func addressCandidates(text string) []Candidate {
 		if m[6] >= 0 && !notSuburb[group(3)] && !sentenceEnd && !labelAt(titled, m[7]) {
 			end = m[7]
 			// A second word is a suburb only after a word that starts two-word
-			// suburbs; otherwise it is the next sentence ("Petersham Principal").
+			// suburbs, when it is a compass point, or when the state follows;
+			// otherwise it is the next sentence ("Petersham Principal").
 			if group(4) != "" {
-				if !suburbFirst[group(3)] || labelAt(titled, m[9]) {
+				twoWord := suburbFirst[group(3)] || suburbLast[group(4)] || group(5) != ""
+				if !twoWord || labelAt(titled, m[9]) {
 					spans = append(spans, span{m[0], end, writeOutStreetType(titled[m[0]:end], titled[m[4]:m[5]])})
 					continue
 				}

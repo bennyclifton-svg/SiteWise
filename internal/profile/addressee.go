@@ -17,6 +17,11 @@ var trusteeRe = regexp.MustCompile(`(?i)\s+(?:as\s+trustee\s+for|atf)\s+`)
 // Management".
 var careOfRe = regexp.MustCompile(`(?i)[,;]?\s+(?:c/-|c/o|care\s+of)\s`)
 
+// actingForRe starts the party an agent is addressed for: "Ines Hart,
+// Marlowe Hart Architects, for Hamish and Rosa Delaney". The comma keeps
+// "X Pty Ltd as trustee for" out.
+var actingForRe = regexp.MustCompile(`(?i)[,;]\s+(?:for|on\s+behalf\s+of)\s+`)
+
 // addresseeCandidates offers the party a proposal or letter is addressed to
 // as a client candidate: the whole line, and the entity alone when it acts
 // as trustee. Jev picks the project's client or none; a consultant or
@@ -27,6 +32,10 @@ func addresseeCandidates(text string) []Candidate {
 	for _, m := range addresseeRe.FindAllStringSubmatchIndex(text, -1) {
 		start, end := m[2], m[3]
 		line := text[start:end]
+		if at := actingForRe.FindStringIndex(line); at != nil {
+			start += at[1]
+			line = line[at[1]:]
+		}
 		if at := careOfRe.FindStringIndex(line); at != nil {
 			line = line[:at[0]]
 		}

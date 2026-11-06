@@ -3,6 +3,7 @@ package program
 import (
 	"fmt"
 	"math/big"
+	"slices"
 	"sort"
 	"strings"
 	"unicode/utf8"
@@ -357,6 +358,9 @@ type holdRow struct {
 	key, iface string
 	after      []string
 	before     []string
+	// conceals is an activity tagged with both systems; the hold takes its
+	// predecessors and goes before it.
+	conceals string
 }
 
 func newGen(cat *knowledge.Catalog, in GenInput) *gen {
@@ -841,11 +845,18 @@ func (g *gen) holdPointRows() {
 			continue
 		}
 		last := after[len(after)-1]
+		// One activity can carry both systems ("Reinforce and pour slab"):
+		// it places and conceals the work, so the hold goes before it, and
+		// only that activity and the before rows after it follow the hold.
+		conceals := ""
+		if i := slices.Index(before, last); i >= 0 {
+			conceals, before = last, before[i:]
+		}
 		key := "hold:" + iface.ID
 		zero := 0
 		g.addRow(Row{SourceKey: key, ParentKey: g.plan.Rows[g.byKey[last]].ParentKey, Kind: KindHoldPoint,
 			Label: "Hold point: " + hp.Evidence, InterfaceID: iface.ID, Systems: []string{hp.After, hp.Before}, Duration: &zero})
-		g.holds = append(g.holds, holdRow{key: key, iface: iface.ID, after: after, before: before})
+		g.holds = append(g.holds, holdRow{key: key, iface: iface.ID, after: after, before: before, conceals: conceals})
 	}
 }
 
@@ -961,7 +972,17 @@ func (g *gen) fragmentLinks() {
 // activity, FS with no lag, origin interface.
 func (g *gen) holdPointLinks() {
 	for _, h := range g.holds {
+		if h.conceals != "" {
+			for _, l := range slices.Clone(g.plan.Links) {
+				if l.SuccKey == h.conceals {
+					g.addGuarded(PlanLink{PredKey: l.PredKey, SuccKey: h.key, Type: LinkFS, Origin: LinkOriginInterface, InterfaceID: h.iface})
+				}
+			}
+		}
 		for _, a := range h.after {
+			if a == h.conceals {
+				continue
+			}
 			g.addGuarded(PlanLink{PredKey: a, SuccKey: h.key, Type: LinkFS, Origin: LinkOriginInterface, InterfaceID: h.iface})
 		}
 		for _, b := range h.before {

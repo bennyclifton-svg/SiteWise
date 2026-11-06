@@ -205,3 +205,32 @@ func TestCostAutofillLatency(t *testing.T) {
 		}
 	}
 }
+
+// F20: profile rows store value_state 'set', so a field-gated starter must
+// read them; the DA fees line goes on a CDC job and comes back on a DA.
+func TestCostStarterReadsSetProfileValue(t *testing.T) {
+	ctx := context.Background()
+	s, _, part := workStore(t)
+	has := func(pathway string) bool {
+		t.Helper()
+		if _, e := s.SetUserValue(ctx, orgA, projectA, part, userA, "hdr.cond.planning", store.UserWrite{Scope: "project", Value: strPtr(pathway)}); e != nil {
+			t.Fatal(e)
+		}
+		p, e := s.ReadCostPlan(ctx, orgA, projectA, "")
+		if e != nil {
+			t.Fatal(e)
+		}
+		for _, sg := range p.Suggestions {
+			if sg.Key == "pw:da-fees" {
+				return true
+			}
+		}
+		return false
+	}
+	if has("cdc") {
+		t.Fatal("DA fees suggested on a CDC job")
+	}
+	if !has("da") {
+		t.Fatal("DA fees missing on a DA job")
+	}
+}
