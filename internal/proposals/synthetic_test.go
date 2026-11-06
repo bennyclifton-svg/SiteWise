@@ -5,6 +5,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"sitewise/internal/identity"
@@ -90,5 +91,107 @@ func TestIncGSTStatedTotalStoredExGST(t *testing.T) {
 	r := d.Finish()
 	if r.GSTBasis != "inc" || r.StatedTotal == nil || *r.StatedTotal != 909182 {
 		t.Fatalf("basis %q total %v, want inc and 909182", r.GSTBasis, r.StatedTotal)
+	}
+}
+
+// F37: a directory firm that matches only by name is not the firm when the
+// page prints a different valid ABN. T02's civil proposal carries the
+// descriptor "Civil and stormwater engineers", the name another firm was once
+// saved under; T02's Basalt Ridge prints a different ABN from T11's.
+func TestNameMatchedDirectoryFirmYieldsToPrintedABN(t *testing.T) {
+	for _, tc := range []struct{ file, firm, abn, stored, storedABN string }{
+		{"Northfall - civil fee - Calloway Street.md", "NORTHFALL CIVIL ENGINEERING PTY LTD", "36979312905", "Civil and stormwater engineers", "29559935012"},
+		{"Geotechnical investigation fee proposal - Basalt Ridge.md", "Basalt Ridge Geotechnical Pty Ltd", "49518838449", "Basalt Ridge Geotechnical Pty Ltd", "27811849176"},
+	} {
+		t.Run(tc.file, func(t *testing.T) {
+			stored := Firm{ID: "f-old", Name: tc.stored, ABN: tc.storedABN, Address: "14 Taren Point Road, Taren Point NSW 2229"}
+			// Mirrors FirmLookup: ABN first, then the name key.
+			lookup := func(abns, keys []string) *Firm {
+				for _, a := range abns {
+					if a == stored.ABN {
+						return &stored
+					}
+				}
+				for _, k := range keys {
+					if k == NameKey(stored.Name) {
+						return &stored
+					}
+				}
+				return nil
+			}
+			d := NewDraft(Harvest(tc.file, syntheticText(t, tc.file)), Context{Lookup: lookup}, nil)
+			if d.firm != nil {
+				t.Fatalf("matched directory firm %+v", d.firm)
+			}
+			if got, _ := d.Decided(FieldFirmABN); got.Value != tc.abn {
+				t.Errorf("ABN %+v, want %s", got, tc.abn)
+			}
+			if got, _ := d.Decided(FieldFirmName); !strings.EqualFold(got.Value, tc.firm) {
+				t.Errorf("firm %+v, want %s", got, tc.firm)
+			}
+		})
+	}
+}
+
+// A name match still fills the firm when the page prints no ABN, or the
+// same one.
+func TestNameMatchedDirectoryFirmKeptWithoutConflictingABN(t *testing.T) {
+	file := "Geotechnical investigation fee proposal - Basalt Ridge.md"
+	for _, abn := range []string{"", "49518838449"} {
+		stored := Firm{ID: "f1", Name: "Basalt Ridge Geotechnical Pty Ltd", ABN: abn}
+		lookup := func(_, keys []string) *Firm {
+			for _, k := range keys {
+				if k == NameKey(stored.Name) {
+					return &stored
+				}
+			}
+			return nil
+		}
+		d := NewDraft(Harvest(file, syntheticText(t, file)), Context{Lookup: lookup}, nil)
+		if d.firm == nil || d.firm.ID != "f1" {
+			t.Errorf("stored ABN %q: directory firm not matched", abn)
+		}
+	}
+}
+
+// F38: a larger optional fee ("Option: post-novation services ... $210,000
+// ex GST") does not block the printed total (T02 structural, d06).
+// F39: a QS service named "DA cost estimate report" is a fee row, not a
+// total; the total is $49,500 inc GST, $45,000 ex (T17 QS, d11).
+func TestStatedTotalBesideOptionalFeeAndCostEstimateService(t *testing.T) {
+	for _, tc := range []struct {
+		file  string
+		total int64
+	}{
+		{"Structural engineering fee proposal KBS-Q-2604.md", 15600000},
+		{"Quoin fee submission - Tideway Crescent.md", 4500000},
+	} {
+		t.Run(tc.file, func(t *testing.T) {
+			r := NewDraft(Harvest(tc.file, syntheticText(t, tc.file)), Context{}, nil).Finish()
+			if r.StatedTotal == nil || *r.StatedTotal != tc.total {
+				t.Fatalf("stated total %v, want %d ex GST", r.StatedTotal, tc.total)
+			}
+		})
+	}
+}
+
+// F39: the QS's cost estimate service is not marked a total.
+func TestCostEstimateServiceIsNotATotal(t *testing.T) {
+	file := "Quoin fee submission - Tideway Crescent.md"
+	for _, a := range Harvest(file, syntheticText(t, file)).Amounts {
+		if a.Total && a.Cents != 4950000 {
+			t.Errorf("%s %q marked total", a.Display, a.Context)
+		}
+	}
+}
+
+// The larger-fee guard stays for fees that are not optional: a
+// disbursements total beside a larger certification fee is not the stated
+// total (the guard F24 relies on).
+func TestTotalBesideLargerNonOptionalFeeStaysUnset(t *testing.T) {
+	md := "# Fee proposal\n\nFees exclude GST.\n\n## Certification\n\n| Item | Fee (ex GST) |\n|---|---|\n| Construction certificate and inspections | $12,000 |\n\n## Disbursements\n\n| Item | Fee (ex GST) |\n|---|---|\n| Council lodgement | $400 |\n| | **Total** | **$900** |\n"
+	r := NewDraft(Harvest("fee.md", mdText(t, md)), Context{}, nil).Finish()
+	if r.StatedTotal != nil {
+		t.Fatalf("stated total %d beside a larger fee", *r.StatedTotal)
 	}
 }

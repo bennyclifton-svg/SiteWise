@@ -321,7 +321,10 @@ func (s *Store) FirmLookup(ctx context.Context, org string) func(abns, keys []st
 			}
 		}
 		if len(keys) > 0 {
-			rows, err := s.pool.Query(ctx, `SELECT id::text,name,COALESCE(abn,''),address,contact,email,phone FROM firms WHERE org_id=$1::uuid AND name_key = ANY($2::text[]) LIMIT 2`, org, keys)
+			// The page's ABNs matched no firm, so a name match with another ABN
+			// is a different or stale firm (F37); only a firm with no ABN may
+			// match by name then.
+			rows, err := s.pool.Query(ctx, `SELECT id::text,name,COALESCE(abn,''),address,contact,email,phone FROM firms WHERE org_id=$1::uuid AND name_key = ANY($2::text[]) AND (abn IS NULL OR NOT $3) LIMIT 2`, org, keys, len(abns) > 0)
 			if err != nil {
 				return nil
 			}
@@ -625,7 +628,9 @@ func (s *Store) resolveFirm(ctx context.Context, tx pgx.Tx, org string, match *p
 	if name == "" || key == "" {
 		return "", nil
 	}
-	rows, err := tx.Query(ctx, `SELECT id::text FROM firms WHERE org_id=$1::uuid AND name_key=$2 LIMIT 2`, org, key)
+	// With a decided ABN that no firm holds, a same-named firm with another
+	// ABN is not this firm (F37): a new draft firm keeps the printed ABN.
+	rows, err := tx.Query(ctx, `SELECT id::text FROM firms WHERE org_id=$1::uuid AND name_key=$2 AND (abn IS NULL OR $3 = '') LIMIT 2`, org, key, abn)
 	if err != nil {
 		return "", err
 	}
