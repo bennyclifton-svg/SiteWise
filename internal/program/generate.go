@@ -846,11 +846,17 @@ func (g *gen) holdPointRows() {
 		}
 		last := after[len(after)-1]
 		// One activity can carry both systems ("Reinforce and pour slab"):
-		// it places and conceals the work, so the hold goes before it, and
-		// only that activity and the before rows after it follow the hold.
+		// it places and conceals the work, so the hold goes before the first
+		// such activity, and only it and the before rows after it follow the
+		// hold. First, not last: when every pour carries both (basement slab,
+		// floor cycle, roof slab) the inspection precedes the first pour (F42).
 		conceals := ""
-		if i := slices.Index(before, last); i >= 0 {
-			conceals, before = last, before[i:]
+		for j, a := range after {
+			if i := slices.Index(before, a); i >= 0 {
+				// Later after rows are pours the hold releases, not work it waits on.
+				conceals, last, before, after = a, a, before[i:], after[:j]
+				break
+			}
 		}
 		key := "hold:" + iface.ID
 		zero := 0

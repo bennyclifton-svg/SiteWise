@@ -253,6 +253,7 @@ interfaces:
   - structure.concrete
   to:
   - substructure.slab-on-ground
+  - substructure.basement-retention
   summary: Reinforcement must be inspected before concrete conceals it.
   governed_by:
   - rule.project.structural-inspections
@@ -273,8 +274,12 @@ interfaces:
   sources:
   - seed: structural-commercial-industrial-guide.md
     anchor: '### Construction and completion [construction_completion]'
+  # Before and after are both structure.concrete: every reinforced pour
+  # (ground slab, basement slab, floor cycle) is tagged with it, and the hold
+  # goes before the first, so a basement building without a slab on ground
+  # still gets it (F42).
   hold_point:
-    before: substructure.slab-on-ground
+    before: structure.concrete
     after: structure.concrete
     evidence: Reinforcement inspection release identifying the pour.
 - id: if.frame-inspected-before-roof

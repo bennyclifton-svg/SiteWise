@@ -111,6 +111,7 @@ func SuggestedPackages(cat *knowledge.Catalog, in SuggestionInputs) []PackageSug
 	}
 	for _, rule := range defaults.ComplexityAdditions {
 		value, known := in.Facts[rule.Field]
+		value = booleanFact(cat, rule.Field, value)
 		if !known || !slices.Contains(rule.Values, value) || !packageFieldValue(cat, rule.Field, value) {
 			continue
 		}
@@ -155,6 +156,20 @@ func scopeMatch(systems, scope []string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// booleanFact maps the Profile's stored yes/no (stated_true, stated_false)
+// to the true/false a package rule names; other values pass through.
+func booleanFact(cat *knowledge.Catalog, field, value string) string {
+	if d, ok := cat.Determinant(field); ok && d.Value == "boolean" {
+		switch value {
+		case "stated_true":
+			return "true"
+		case "stated_false":
+			return "false"
+		}
+	}
+	return value
 }
 
 func packageFieldValue(cat *knowledge.Catalog, field, value string) bool {

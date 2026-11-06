@@ -834,7 +834,7 @@ fragments:
     - {key: shoring, label: "Install retention shoring", systems: [substructure.basement-retention], duration: du.basement-shoring-2}
     - {key: excavate, label: "Excavate the basement", systems: [substructure.basement-retention], duration: du.basement-excavate-2}
     - {key: anchors, label: "Install anchors or props", systems: [substructure.basement-retention], duration: du.basement-anchors-2}
-    - {key: slab, label: "Pour the basement slab", systems: [substructure.basement-retention], duration: du.basement-slab-2}
+    - {key: slab, label: "Pour the basement slab", systems: [substructure.basement-retention, structure.concrete], duration: du.basement-slab-2}
     - {key: cure, label: "Cure the basement slab", systems: [substructure.basement-retention], duration: du.concrete-cure}
   links:
     - {from: shoring, to: excavate, type: FS, lag: null}
@@ -870,7 +870,7 @@ fragments:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: pour, label: "Reinforce and pour the ground slab", systems: [substructure.slab-on-ground], duration: du.slab-2}
+    - {key: pour, label: "Reinforce and pour the ground slab", systems: [substructure.slab-on-ground, structure.concrete], duration: du.slab-2}
   attach: {after: fr.footings-2}
   status: draft
   sources:
@@ -1727,7 +1727,7 @@ fragments:
       - {det: ncc_class, any_of: ["9b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: pour, label: "Reinforce and pour the ground slab", systems: [substructure.slab-on-ground], duration: du.slab-9b}
+    - {key: pour, label: "Reinforce and pour the ground slab", systems: [substructure.slab-on-ground, structure.concrete], duration: du.slab-9b}
     - {key: cure, label: "Cure the slab", systems: [substructure.slab-on-ground], duration: du.concrete-cure}
   links:
     - {from: pour, to: cure, type: FS, lag: null}

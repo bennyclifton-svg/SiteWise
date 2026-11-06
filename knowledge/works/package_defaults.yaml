@@ -132,11 +132,12 @@ complexity_additions:
   - state_register
   consultants:
   - Heritage
-- field: contamination_level
+# A site with a potentially contaminating history needs the environmental
+# consultant's preliminary site investigation (F41: the old
+# contamination_level key was never a determinant, so this never fired).
+- field: potentially_contaminated_land
   values:
-  - minor
-  - significant
-  - heavily_contaminated
+  - 'true'
   consultants:
   - Environmental
 - field: environmental_sensitivity

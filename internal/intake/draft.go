@@ -86,7 +86,7 @@ func (d *Draft) Call() (jev.Call, bool) {
 
 func (d *Draft) questionVersion() string {
 	if d.text.Format == "md" || d.text.Format == "markdown" {
-		return QuestionVersion + "+markdown-1"
+		return QuestionVersion + "+markdown-2"
 	}
 	return QuestionVersion
 }
@@ -203,6 +203,7 @@ func (d *Draft) open() []builtQuestion {
 					Question: "Which professional discipline is explicitly evidenced for the author or issuer of this primary document? A named author without a stated professional role is none. For an email use the sender's own professional role, if stated. Select none for an owner email or an author whose profession is unstated.",
 					NotFor:   "The subject of the document, a recommended future consultant, an email recipient, or the author of an attachment. Planning advice does not establish that its author is a town planner. An appointment email is not authored by the consultant it appoints. Do not infer a profession from a company name such as Studio alone.",
 				}
+				describeDisciplines(q.Options, d.catalog)
 			}
 			// Unrepresented issuers and contract parties must not force a
 			// consultant/trade guess. https://docs.typesafe.ai/model-jaggedness/jev-1.13
@@ -243,4 +244,24 @@ func (d *Draft) open() []builtQuestion {
 		}
 	}
 	return out
+}
+
+// describeDisciplines replaces a bare label with the discipline's one-sentence
+// description where the catalog has one, so similar roles (a town planner, a
+// BCA consultant, a certifier) are told apart by what each does. Criterion
+// values are option descriptions: https://docs.typesafe.ai/primitives
+// Markdown only for now: PDF requests stay byte-identical to the recorded
+// intake-eval replays until a live recording run covers them.
+func describeDisciplines(opts []choice, cat Catalog) {
+	describe := make(map[string]string, len(cat.Disciplines))
+	for _, d := range cat.Disciplines {
+		if d.Describe != "" {
+			describe[d.ID] = d.Describe
+		}
+	}
+	for i := range opts {
+		if text, ok := describe[opts[i].ID]; ok {
+			opts[i].Describe = text
+		}
+	}
 }

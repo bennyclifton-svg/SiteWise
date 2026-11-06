@@ -28,6 +28,7 @@ func TestComplexityPackagesStayDraftAndRejectUnmappedValues(t *testing.T) {
 	cat := loadCatalog(t)
 	facts := map[string]string{"heritage_status": "local_item", "bal": "BAL-40", "planning": "da", "environmental_sensitivity": "protected_habitat",
 		"contamination_level": "significant", "flood_exposure": "floodway"}
+	// contamination_level is not a determinant: it must not activate Environmental.
 	got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{"industrial"}, WorkTypes: []string{"new"}, Facts: facts})
 	for _, p := range got {
 		if !p.Draft || p.LifecycleStatus != "proposed" || p.ReviewStatus != "proposed" {
@@ -51,6 +52,26 @@ func TestComplexityPackagesStayDraftAndRejectUnmappedValues(t *testing.T) {
 	}
 	if got := SuggestedPackages(cat, SuggestionInputs{Facts: map[string]string{"heritage_status": "local_heritage_item", "bal": "bal_40", "planning": "legacy_da", "contamination_level": "minor"}}); len(got) != 0 {
 		t.Fatalf("legacy values activated: %+v", got)
+	}
+}
+
+// F41: the environmental consultant keyed on contamination_level, which is
+// neither a determinant nor a condition, so it never fired. It is keyed on
+// det.potentially_contaminated_land, which the Profile stores as stated_true
+// or stated_false (ST13-contaminated-land read it stated_true).
+func TestPotentiallyContaminatedLandSuggestsEnvironmental(t *testing.T) {
+	cat := loadCatalog(t)
+	got := SuggestedPackages(cat, SuggestionInputs{Facts: map[string]string{"potentially_contaminated_land": "stated_true"}})
+	if !slices.Equal(titles(got), []string{"Environmental"}) {
+		t.Fatalf("stated_true: %v", titles(got))
+	}
+	if got[0].MatchedFields["potentially_contaminated_land"] != "true" {
+		t.Fatalf("matching reason: %+v", got[0].MatchedFields)
+	}
+	for _, value := range []string{"stated_false", "not_stated", ""} {
+		if got := SuggestedPackages(cat, SuggestionInputs{Facts: map[string]string{"potentially_contaminated_land": value}}); len(got) != 0 {
+			t.Fatalf("%q suggested: %v", value, titles(got))
+		}
 	}
 }
 

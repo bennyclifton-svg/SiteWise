@@ -419,6 +419,9 @@ type Discipline struct {
 	ID      string   `json:"id"`
 	Label   string   `json:"label"`
 	Aliases []string `json:"aliases"`
+	// Describe is a one-sentence Jev criterion for options the bare label
+	// leaves ambiguous (F40). Empty means the label is the criterion.
+	Describe string `json:"describe,omitempty"`
 }
 
 // Kind is one document kind from the reference vocabulary.
