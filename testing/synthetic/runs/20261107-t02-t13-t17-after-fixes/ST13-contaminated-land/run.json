@@ -1,0 +1,375 @@
+{
+  "scenario": "ST13-contaminated-land",
+  "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "d3146527bb3f8cbf1bcda2e931bd4e8d64a8efae",
+    "app_files_modified": 16
+  },
+  "started": "20261107-t02-t13-t17-after-fixes",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 14.8
+    },
+    {
+      "wave": 2,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 6,
+      "seconds": 14.9
+    },
+    {
+      "wave": 3,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 14.9
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.4
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Development brief - 40-44 Halloran Street Eastwood.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "a7ce9911-d809-43eb-a590-dc17420dea26",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Development brief - 40-44 Halloran Street Eastwood.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:30.620196+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lots 4-6 DP 18273.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c910f4b1-bb9c-45e9-ba46-c1fb7d485f72",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Planning certificate s10.7 - Lots 4-6 DP 18273.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:30.649208+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 40-44 Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "14675d20-9d70-4df5-9ba6-3fee0d6dc2d8",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Detail and boundary survey report - 40-44 Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:30.655276+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Programme and DA timing.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f49fb26c-d1f7-47a5-bcdf-fc1b2d12e26e",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "RE Programme and DA timing.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:30.65975+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Preliminary site investigation KE-26-0310 - 40-44 Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "840b67d5-53a5-49e4-8c2d-851473205524",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Preliminary site investigation KE-26-0310 - 40-44 Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:30.686517+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d06",
+      "filename": "Fee proposal - Architectural services - 40-44 Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "1b0fd229-f8fc-4bb3-99c4-3078ec8fa97d",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Fee proposal - Architectural services - 40-44 Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:45.534051+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Ironbark Structures fee proposal ISE-2603.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "c3f333df-71bd-4104-a2e8-92610a3853bc",
+        "submission_id": "32228f85-4a7a-4a19-abe6-1a451808e9b0"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Larkspur Civil - stormwater fee - Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "d374d5ed-f210-4c90-8a7d-5eb79ff4b143",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Larkspur Civil - stormwater fee - Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:45.59264+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Fee proposal - Geotechnical investigation - Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "56fac826-5775-46cb-9857-43755375f899",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Fee proposal - Geotechnical investigation - Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:45.603231+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Ashgrove Planning fee proposal APL-26-031.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "95e6a468-905d-4a26-a647-1d52299f6d8f",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Ashgrove Planning fee proposal APL-26-031.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:45.609732+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d19",
+      "filename": "Kestrel Environmental fee proposal KE-FP-0611.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "c65c4934-38f2-45de-a558-3d73d2d95f88",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Kestrel Environmental fee proposal KE-FP-0611.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:50:45.61523+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Geotechnical report BRG-26-0412 - 40-44 Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "568914c7-c8e9-4b62-8cf1-a6c5a1d7bbab",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Geotechnical report BRG-26-0412 - 40-44 Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:51:00.671153+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "BCA report NBR-26-118 - 40-44 Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "35574a17-c6eb-442a-9d01-23abfad0cdf4",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "BCA report NBR-26-118 - 40-44 Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:51:00.689736+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Statement of environmental effects - 40-44 Halloran Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "10d71dce-a5ad-4734-8ba9-18bf06ba36ae",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "Statement of environmental effects - 40-44 Halloran Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:51:00.693583+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "A-DA-1100 Rev A - Ground floor plan.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "17566749-d52c-4418-94cc-1240ea4ceae0",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "A-DA-1100 Rev A - Ground floor plan.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:51:00.707697+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "A-DA-1100 Rev B - Ground floor plan.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b758313c-c1f2-4dc6-beb8-12ffc04b34ca",
+        "project_id": "acf01784-5989-4950-a68a-184a34dfb877",
+        "filename": "A-DA-1100 Rev B - Ground floor plan.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T07:51:00.711911+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice CRA-INV-1027 Calder Rowe.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "80b027dd-8aa1-49b7-a0ff-c4521adc9e66",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "Ashgrove invoice 2214.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "e351c61e-e549-4433-8503-ec4d5f6fdda4",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "Tax invoice BRG-INV-0388 Bellbird Range.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "1fdd08ce-9300-4171-9d45-a4e689fb3baa",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

@@ -1,0 +1,34 @@
+ST02-groundwater-dewatering
+  Register (per field):
+    status      correct 15
+    kind        correct 15
+    discipline  correct 15
+    lifecycle   correct 6, missed 9
+    number      correct 10, correct_blank 2, missed 3
+    revision    correct 5, correct_blank 9, missed 1
+    title       correct 15
+    date        correct 12, missed 3
+    supersedes  missed 1
+  Profile: conflict_true 2, correct 67, missed 4, missed_by_design 1
+    missed           hdr.cond.quality_level: expected 'mid', app ''
+    missed           hdr.cond.environmental_sensitivity: expected 'standard', app ''
+    conflict_true    hdr.scale.gfa_sqm: expected {'accept': [6200, 6184]}, app ''
+    missed           hdr.scale.avg_unit_size_sqm: expected 80, app ''
+    missed           proj.regulated_design: expected 'yes', app ''
+    missed_by_design proj.target_construction_start: expected '2027-11-01', app ''
+    conflict_true    flag.multi_building: expected 'no', app ''
+  Invoices (per field):
+    kind               correct 3
+    number             correct 3
+    invoice_date       correct 3
+    issuer_abn         correct 3
+    ex_gst_cents       correct 3
+    gst_cents          correct 3
+    total_cents        correct 3
+    supplier           correct 3
+    flag.period        correct 3
+    flag.unmapped      correct 3
+    flag.gst_rate      correct 1
+  Fees (per field):
+    stated_total_cents correct 5
+    firm_name          correct 5

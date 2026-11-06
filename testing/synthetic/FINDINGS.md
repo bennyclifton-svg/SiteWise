@@ -36,6 +36,21 @@ changes filing, because Jev sees only the label. Plan:
 
 Still open: F6; F24, F26, F27 and F29.
 
+## Status after the fixes (7 November 2026)
+
+Owner rulings R11 to R14 (`reference/OWNER_RULINGS.md`). Fixed and
+confirmed by re-running the eight live T02, T13 and T17 scenarios on a
+fresh database (`runs/20261107-t02-t13-t17-after-fixes/REPORT.md`): F31,
+F32 (units, shop area, site area; R14), F34, F35 (R12, majority by
+documents at 2x), F36, F37, F38, F39, F40, F41, F42, F27 (R12 counts
+documents) and R13 (architect brief always, masterplan only when large).
+F33 is fixed in code, but `flag.cl46` stays blank live with the other
+missed "no" flags. Plan: `docs/plans/2026-11-07-synthetic-findings-f31-f42.md`.
+
+Still open: the missed "no" flags (T13 `cl46`, `public_road`, `community`,
+`architect_lodges`); `proj.regulated_design`; the survey's site-area line;
+F6, F24, F26 and F29.
+
 Owner ruling on the T11 subclass (6 November 2026): a dual occupancy is a
 house, because there is no strata scheme. Townhouses are a registered
 strata or community scheme with shared common property. The T11 base and

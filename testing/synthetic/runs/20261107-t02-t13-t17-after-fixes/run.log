@@ -1,0 +1,334 @@
+ST02-base: project 441e276e-51cf-4f81-9af9-7e8341269c65
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued 3, 14.8 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 14.8 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 12.7 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+ST02-groundwater-dewatering: project 5eadb9a2-9180-45dc-b338-bd65715335f7
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued 3, 12.6 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 14.9 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 16.9 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.4 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+ST02-traditional-procurement: project d9165347-e0b6-45d8-812c-139238fcecdd
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued 3, 12.6 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 14.8 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 15.0 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+ST13-base: project 93f81993-aa0e-4b85-9a45-164c7d2a7233
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.8 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 14.8 s
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 5 dropped, profile queued 3, 12.8 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+ST13-rise-three-storeys: project 4cd021f8-f5d5-4e9d-9557-83de823dc8a5
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.7 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 12.8 s
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 5 dropped, profile queued 3, 12.7 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.4 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+ST13-contaminated-land: project acf01784-5989-4950-a68a-184a34dfb877
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.8 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 6 documents filing, proposals reading, 6 jobs queued
+    waiting: settling
+    waiting: 6 documents in profile reading, 6 jobs queued
+    waiting: 7 documents in profile reading, 6 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: settling
+  wave 2: 6 dropped, profile queued 6, 14.9 s
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 5 dropped, profile queued 3, 14.9 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.4 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Environmental -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+ST17-base: project e1b31cfa-1ca6-4405-a6ef-1eacc5fef987
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.6 s
+    created the consultant.town_planner row to drop on, as a user would
+    waiting: 7 documents filing, proposals reading, 7 jobs queued
+    waiting: settling
+    waiting: 7 documents in profile reading, 7 jobs queued
+    waiting: 8 documents in profile reading, 7 jobs queued
+    waiting: 7 documents in profile reading, 6 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 7 dropped, profile queued 7, 17.0 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 14.8 s
+    waiting: 2 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 2 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for Facade -> 201
+    RFP for Fire Engineer -> 201
+    RFP for Project Manager -> 201
+    RFP for Quantity Surveyor -> 201
+    RFP for Structural -> 201
+    RFP for Town Planner -> 201
+ST17-project-remediate: project 5c76ff16-0afc-4fe2-b596-70f59165715a
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 16.8 s
+    created the consultant.town_planner row to drop on, as a user would
+    waiting: 6 documents filing, proposals reading, 6 jobs queued
+    waiting: settling
+    waiting: 6 documents in profile reading, 6 jobs queued
+    waiting: 7 documents in profile reading, 6 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: settling
+  wave 2: 6 dropped, profile queued 6, 14.9 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 14.8 s
+    waiting: 2 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 2 dropped, profile queued 0, 6.6 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for Facade -> 201
+    RFP for Fire Engineer -> 201
+    RFP for Quantity Surveyor -> 201
+    RFP for Structural -> 201
+    RFP for Town Planner -> 201
+done: testing\synthetic\runs\20261107-t02-t13-t17-after-fixes
