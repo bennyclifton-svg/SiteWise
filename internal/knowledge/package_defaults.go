@@ -9,11 +9,14 @@ import (
 )
 
 // PackageBaseline suggests consultants for a work type. No BuildingClasses
-// means any class, less ExceptBuildingClasses.
+// means any class, less ExceptBuildingClasses. Systems, when set, also needs
+// a listed system (or one below it) in scope: a refurb's consultants differ
+// between a fit-out and a services-only upgrade (F50).
 type PackageBaseline struct {
 	BuildingClasses       []string `yaml:"building_classes"`
 	ExceptBuildingClasses []string `yaml:"except_building_classes"`
 	WorkTypes             []string `yaml:"work_types"`
+	Systems               []string `yaml:"systems"`
 	Consultants           []string `yaml:"consultants"`
 }
 
@@ -105,6 +108,11 @@ func (c *Catalog) loadPackageDefaults(path string) error {
 		for _, id := range b.WorkTypes {
 			if !types[id] {
 				return fmt.Errorf("%s: unknown work type %q", path, id)
+			}
+		}
+		for _, id := range b.Systems {
+			if _, ok := c.System(id); !ok {
+				return fmt.Errorf("%s: unknown system %q", path, id)
 			}
 		}
 	}

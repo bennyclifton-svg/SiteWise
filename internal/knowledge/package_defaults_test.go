@@ -54,6 +54,8 @@ func TestPackageDefaultsRejectsUnknownNamesAndSystems(t *testing.T) {
 		"consultant": {"  - Vertical Transport\n", "  - Lift Wizard\n"},
 		"system":     {"  - vertical-transport\n", "  - lifts-magic\n"},
 		"class":      {"  except_building_classes:\n  - infrastructure\n", "  except_building_classes:\n  - spaceport\n"},
+		// A baseline's scope condition must name real systems too (F50).
+		"baseline system": {"  systems:\n  - interiors\n", "  systems:\n  - interiors-magic\n"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			root := copyKnowledge(t)

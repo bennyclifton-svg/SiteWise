@@ -675,7 +675,7 @@ stages:
 
 Clerk's consultant rosters, copied as data, never code.
 
-- **`baselines`** suggest consultants by work type. A baseline with no `building_classes` applies to any class, less `except_building_classes`; one with `building_classes` applies when any known class is listed. Every matching baseline adds its consultants, so a project with two classes gets the union.
+- **`baselines`** suggest consultants by work type. A baseline with no `building_classes` applies to any class, less `except_building_classes`; one with `building_classes` applies when any known class is listed. A baseline with `systems` also needs a listed system, or one below it, in the scope of works, so a refurb suggests Interior Design only when interiors work is in scope. Every matching baseline adds its consultants, so a project with two classes gets the union.
 - **`scope_additions`** add a consultant when a listed system, or one below it, is in the scope of works (`scope.<system>` = `in`). List only systems that are in scope when the building needs them (lifts, sprinklers). A system every building has (a facade) belongs in `complexity_additions`, triggered by a reading of how complex it is.
 - **`complexity_additions`** add a consultant when a profile field has one of the listed values. A `field` keeps Clerk's name. The checker warns when it is neither a determinant nor a taxonomy condition, so the owner can map it.
 

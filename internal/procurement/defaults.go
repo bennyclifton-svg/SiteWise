@@ -79,6 +79,12 @@ func SuggestedPackages(cat *knowledge.Catalog, in SuggestionInputs) []PackageSug
 		if classes == nil {
 			continue
 		}
+		// A scope-conditioned baseline waits for that work to be in scope;
+		// an unread scope suggests nothing rather than guessing a fit-out.
+		system, scoped := scopeMatch(b.Systems, in.Scope)
+		if len(b.Systems) > 0 && !scoped {
+			continue
+		}
 		for _, w := range in.WorkTypes {
 			if !slices.Contains(b.WorkTypes, w) {
 				continue
@@ -93,6 +99,9 @@ func SuggestedPackages(cat *knowledge.Catalog, in SuggestionInputs) []PackageSug
 						if !slices.Contains(strings.Split(s.BuildingClass, ","), c) {
 							s.BuildingClass = strings.TrimPrefix(s.BuildingClass+","+c, ",")
 						}
+					}
+					if scoped {
+						match(s, "scope", system)
 					}
 				}
 			}

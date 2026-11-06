@@ -92,8 +92,8 @@ func TestWorkTypeAloneSuggestsEachService(t *testing.T) {
 func TestClassesAddTopUpsWithoutDuplicates(t *testing.T) {
 	cat := loadCatalog(t)
 	got := titles(SuggestedPackages(cat, SuggestionInputs{Classes: []string{"commercial"}, WorkTypes: []string{"refurb"}}))
-	if !slices.Equal(got, []string{"Access", "Architect", "BCA", "Certifier", "Electrical", "Fire Services", "Hydraulic", "Interior Design", "Mechanical"}) {
-		t.Fatalf("commercial fit-out: %v", got)
+	if !slices.Equal(got, []string{"Access", "Architect", "BCA", "Certifier", "Electrical", "Fire Services", "Hydraulic", "Mechanical"}) {
+		t.Fatalf("commercial refurb, scope unread: %v", got)
 	}
 	got = titles(SuggestedPackages(cat, SuggestionInputs{Classes: []string{"commercial", "residential"}, WorkTypes: []string{"new", "extend"}}))
 	if len(slices.Compact(slices.Clone(got))) != len(got) || !slices.Contains(got, "Traffic") || !slices.Contains(got, "Architect") || slices.Contains(got, "Services Engineer") {
@@ -105,6 +105,35 @@ func TestClassesAddTopUpsWithoutDuplicates(t *testing.T) {
 	}
 	if got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{"commercial"}, WorkTypes: []string{"advisory"}}); len(got) != 0 {
 		t.Fatalf("invented a list for advisory: %v", titles(got))
+	}
+}
+
+// F50: ST06-pump-tank-only (a sprinkler pump and tank upgrade, no fit-out)
+// was offered an Interior Design package because the commercial refurb
+// baseline added it unconditionally. It now needs interiors work in scope.
+func TestRefurbInteriorDesignNeedsInteriorsScope(t *testing.T) {
+	cat := loadCatalog(t)
+	services := []string{"fire-active.sprinklers", "fire-active.fire-water", "hydraulic.cold-water", "electrical.switchboards"}
+	for _, class := range []string{"commercial", "institution", "mixed"} {
+		got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{class}, WorkTypes: []string{"refurb"}, Scope: services})
+		if slices.Contains(titles(got), "Interior Design") {
+			t.Fatalf("%s services-only upgrade: %v", class, titles(got))
+		}
+		if !slices.Contains(titles(got), "Fire Services") {
+			t.Fatalf("%s services upgrade lost its services consultant: %v", class, titles(got))
+		}
+	}
+	got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{"commercial"}, WorkTypes: []string{"refurb"},
+		Scope: append(slices.Clone(services), "interiors.ceilings")})
+	i := slices.Index(titles(got), "Interior Design")
+	if i < 0 {
+		t.Fatalf("fit-out with interiors scope: %v", titles(got))
+	}
+	if got[i].MatchedFields["scope"] != "interiors.ceilings" {
+		t.Fatalf("scope reason lost: %+v", got[i].MatchedFields)
+	}
+	if got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{"residential"}, WorkTypes: []string{"refurb"}, Scope: []string{"interiors.ceilings"}}); slices.Contains(titles(got), "Interior Design") {
+		t.Fatalf("scope must not widen the class list: %v", titles(got))
 	}
 }
 

@@ -43,7 +43,14 @@ var (
 	// ("City of Ryde" over "Duty planner") is not part of it.
 	lgaAreaRe  = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})\s+(?i:local\s+government\s+area|LGA)\b`)
 	lgaCouncil = regexp.MustCompile(`((?:[A-Z][A-Za-z'’-]*)(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})\s+Council\b`)
-	lgaCityOf  = regexp.MustCompile(`\b((?:City|Shire|Municipality|Town|Borough|Rural City|Regional Council) of[ \t]+[A-Z][A-Za-z'’-]*(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})`)
+	// lgaLabel is a certificate's "Local government area: North Sydney": the
+	// name follows the label, where lgaAreaRe reads the name before it.
+	lgaLabel = regexp.MustCompile(`(?i:\blocal\s+government\s+area|\bLGA)[ \t]*:[ \t]*([A-Z][A-Za-z'’-]*(?:[ \t]+(?:of[ \t]+)?[A-Z][A-Za-z'’-]*){0,3})`)
+	// lgaCapsHeading is a council's letterhead in capitals on a line of its
+	// own ("NORTH SYDNEY COUNCIL"). Only a whole line counts, so a sentence in
+	// capitals ("APPROVED BY COUNCIL") is not read as a name.
+	lgaCapsHeading = regexp.MustCompile(`(?m)^[ \t#*_]*([A-Z][A-Z'’-]*(?:[ \t]+[A-Z][A-Z'’-]*){0,2})[ \t]+COUNCIL[ \t*_]*$`)
+	lgaCityOf      = regexp.MustCompile(`\b((?:City|Shire|Municipality|Town|Borough|Rural City|Regional Council) of[ \t]+[A-Z][A-Za-z'’-]*(?:[ \t]+[A-Z][A-Za-z'’-]*){0,2})`)
 	// lgaStop begin a plan title or a role after a council's name: "City of
 	// Ryde Section 7.11 Contributions Plan", "City of Ryde Duty planner".
 	lgaStop = map[string]bool{"Section": true, "Duty": true, "Development": true, "Contributions": true, "Local": true,
@@ -356,10 +363,15 @@ func lgaCandidates(text string) []Candidate {
 		}
 		spans = append(spans, span{start, end, name})
 	}
-	for _, re := range []*regexp.Regexp{lgaAreaRe, lgaCouncil} {
+	for _, re := range []*regexp.Regexp{lgaLabel, lgaAreaRe, lgaCouncil} {
 		for _, m := range re.FindAllStringSubmatchIndex(text, -1) {
 			add(m[0], m[1], text[m[2]:m[3]])
 		}
+	}
+	// The heading's name is written in title case so it agrees with the same
+	// council named in running text.
+	for _, m := range lgaCapsHeading.FindAllStringSubmatchIndex(text, -1) {
+		add(m[2], m[1], titleCaseCaps(text[m[2]:m[3]]))
 	}
 	for _, m := range lgaCityOf.FindAllStringSubmatchIndex(text, -1) {
 		end := m[3]
