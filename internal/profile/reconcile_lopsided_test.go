@@ -38,7 +38,9 @@ func TestLopsidedChoiceSettlesAmberWithDissentVisible(t *testing.T) {
 		{"det.heritage_status", "conservation_area", "none", 14, 1},
 		{"fact.contract_basis", "lump_sum", "schedule_of_rates", 13, 3},
 		{"det.existing_building", "stated_true", "stated_false", 3, 1},
-		{"hdr.work_type", "extend", "refurb", 3, 1}, // the floor: 3 sources, exactly 3x
+		{"hdr.work_type", "extend", "refurb", 3, 1}, // the floor: 3 documents
+		{"hdr.work_type", "remediation", "refurb", 11, 4}, // T17 cladding: 11 documents vs 4 (R12)
+		{"hdr.work_type", "extend", "refurb", 4, 2},       // exactly 2x
 	}
 	for _, c := range cases {
 		r := reconcileVotes(t, c.q, votes(c.q, c.lead, c.n, "a"), votes(c.q, c.other, c.m, "b"))
@@ -57,7 +59,7 @@ func TestCloseChoiceStaysConflict(t *testing.T) {
 		n, m           int
 	}{
 		{"det.existing_building", "stated_true", "stated_false", 2, 1}, // fewer than 3 sources
-		{"hdr.work_type", "extend", "refurb", 5, 2},                    // under 3x
+		{"hdr.work_type", "extend", "refurb", 5, 3},                    // under 2x
 		{"hdr.work_type", "extend", "refurb", 1, 1},
 	}
 	for _, c := range cases {
@@ -68,16 +70,16 @@ func TestCloseChoiceStaysConflict(t *testing.T) {
 	}
 }
 
-// Three values: the leader must beat all the others combined, three times over.
+// Three values: the leader must beat all the others combined, twice over.
 func TestLopsidedRuleCountsAllOtherValuesTogether(t *testing.T) {
 	q := "hdr.work_type"
-	r := reconcileVotes(t, q, votes(q, "extend", 8, "a"), votes(q, "refurb", 2, "b"), votes(q, "new", 1, "c"))
+	r := reconcileVotes(t, q, votes(q, "extend", 5, "a"), votes(q, "refurb", 2, "b"), votes(q, "new", 1, "c"))
 	if r.Band != "red" {
-		t.Fatalf("8 vs 2+1 must stay a conflict: %+v", r)
+		t.Fatalf("5 vs 2+1 must stay a conflict: %+v", r)
 	}
-	r = reconcileVotes(t, q, votes(q, "extend", 9, "a"), votes(q, "refurb", 2, "b"), votes(q, "new", 1, "c"))
+	r = reconcileVotes(t, q, votes(q, "extend", 6, "a"), votes(q, "refurb", 2, "b"), votes(q, "new", 1, "c"))
 	if r.Band != "amber" || r.Value != "extend" || len(r.Alternatives) != 2 {
-		t.Fatalf("9 vs 2+1 settles: %+v", r)
+		t.Fatalf("6 vs 2+1 settles: %+v", r)
 	}
 }
 

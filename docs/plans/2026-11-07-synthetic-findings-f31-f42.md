@@ -29,7 +29,7 @@ scenarios are re-run unchanged to measure each fix.
 
 **R12, majority by documents.** A choice, flag or free-text detail takes
 its leading value when that value comes from at least 3 distinct
-documents and at least 3 times as many documents as all other values
+documents and at least twice as many documents as all other values
 combined. Passages are counted per document (one document, one vote; this
 also fixes F27). The other values stay visible as alternatives and the band
 is amber. Anything closer stays a conflict, as today. Numbers and money

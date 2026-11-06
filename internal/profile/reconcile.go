@@ -492,10 +492,12 @@ func bySupport(order []string, byValue map[string][]Fact) []string {
 // the documents of all other values combined. One document is one vote,
 // however many of its passages read the value (F27: five passages from two
 // geotechnical reports must not outvote one survey). Anything closer is a
-// conflict.
+// conflict. The ratio is 2, not 3: counted by documents, T17's eleven
+// documents saying remediation against four saying refurbishment is the
+// strong majority R12 means, and 3x left it a conflict.
 const (
 	lopsidedMin   = 3
-	lopsidedRatio = 3
+	lopsidedRatio = 2
 )
 
 // lopsidedChoice returns the value a lopsided field settles on, or "".
