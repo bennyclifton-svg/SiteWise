@@ -1,0 +1,942 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST13-rise-three-storeys",
+  "type_id": "T13",
+  "base": "ST13-base",
+  "triggers": [
+    "rise-three-storeys"
+  ],
+  "project": {
+    "name": "Halloran Street mixed-use, 40-44 Halloran Street",
+    "address": "40-44 Halloran Street, Eastwood NSW 2122",
+    "lga": "City of Ryde",
+    "summary": "The base project cut to a three-storey shop-top building: three ground-floor shell shops under 18 apartments on two levels, over one basement level of parking (30 spaces), rise in storeys of 3 and not sprinklered. DA to the Local Planning Panel, AS 4902 D&C lump sum with novation; budget $10,800,000 ex GST; the builder provides HBCF insurance."
+  },
+  "invented": {
+    "lots": [
+      "Lots 4, 5 and 6 in DP 18273"
+    ],
+    "abns": [
+      "65 746 806 298",
+      "95 450 712 332",
+      "99 320 946 170",
+      "65 534 253 982",
+      "33 860 699 272",
+      "27 861 838 947",
+      "67 997 338 822",
+      "49 158 413 829",
+      "57 054 986 466"
+    ],
+    "firms": [
+      "Calder Rowe Architects Pty Ltd",
+      "Ironbark Structures Pty Ltd",
+      "Larkspur Civil Engineering Pty Ltd",
+      "Basalt Ridge Geotechnical Pty Ltd",
+      "Ashgrove Planning Pty Ltd",
+      "Kestrel Environmental Pty Ltd",
+      "Tallis & Moore Surveyors Pty Ltd",
+      "Northpoint Building Regulations Pty Ltd",
+      "Halcyon Eastwood Pty Ltd"
+    ],
+    "emails": [
+      "nadia.calder@example.com",
+      "tom.okafor@example.com",
+      "priya.raman@example.com",
+      "grant.ellery@example.com",
+      "lucia.ferraro@example.com",
+      "hannah.wu@example.com",
+      "ben.tallis@example.com",
+      "sam.oduya@example.com",
+      "marcus.lee@example.com"
+    ],
+    "streets": [
+      "Halloran Street, Eastwood",
+      "Wattle Lane, Eastwood"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Development brief - 40-44 Halloran Street Eastwood.md",
+      "title": "Development brief: mixed-use building at 40-44 Halloran Street, Eastwood",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date: 2 February 2026, Client: Halcyon Eastwood Pty Ltd, Site; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "Halcyon Eastwood Pty Ltd will develop a new three-storey mixed-use building: ground-floor retail with 18 apartments on the two levels above"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "A three-storey shop-top housing development: ground-floor shops with two levels of apartments above"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This is a new building: each existing building on the site is to be demolished and the new mixed-use building built in their place"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The site contains an existing building on each lot (two single-storey shops and a dwelling)"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The existing shops were built in 1965"
+        },
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "The consolidated site is about 1,800 m2"
+        },
+        {
+          "key": "hdr.scale.total_storeys",
+          "says": "Three storeys: ground-floor retail with two residential levels above, over one basement level of car parking; rise in storeys of 3"
+        },
+        {
+          "key": "hdr.scale.podium_levels",
+          "says": "The ground floor is a one-level retail podium; the two residential levels sit above it"
+        },
+        {
+          "key": "hdr.scale.tower_levels",
+          "says": "The ground floor is a one-level retail podium; the two residential levels sit above it"
+        },
+        {
+          "key": "hdr.scale.total_gfa_sqm",
+          "says": "Total gross floor area about 2,700 m2"
+        },
+        {
+          "key": "hdr.scale.residential_units",
+          "says": "18 apartments (a mix of one, two and three bedrooms)"
+        },
+        {
+          "key": "hdr.scale.retail_gla_sqm",
+          "says": "About 600 m2 of retail GLA in three shell tenancies"
+        },
+        {
+          "key": "hdr.scale.car_parks",
+          "says": "30 car parking spaces in the basement"
+        },
+        {
+          "key": "flag.basement",
+          "says": "one basement level of car parking"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The existing tenants will have left before demolition starts, so the site is vacant for the whole of the works"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "Halcyon Eastwood Pty Ltd is the sole owner of all three lots and the only decision maker"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Construction access is constrained: a busy main-street frontage, nil-setback neighbours on both sides and the rear lane as the only vehicle access"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "There are no ecological or habitat constraints on the site, and no Aboriginal sites are recorded on it"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "A development application will be submitted to the City of Ryde and determined by the Local Planning Panel"
+        },
+        {
+          "key": "flag.panel",
+          "says": "determined by the Local Planning Panel"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "The project will be procured as a design and construct contract with novation of the design team"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The builder will be engaged under AS 4902 general conditions of contract for design and construct, as a lump sum"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "under AS 4902 general conditions of contract for design and construct, as a lump sum"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $10,800,000 excluding GST"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The building contains a Class 2 part, so the Design and Building Practitioners Act 2020 applies: regulated designs and design compliance declarations are required"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Halcyon Eastwood Pty Ltd"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 40-44 Halloran Street, Eastwood NSW 2122"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 40-44 Halloran Street, Eastwood NSW 2122"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "A natural gas supply will serve the retail tenancies only; the apartments are all-electric"
+        },
+        {
+          "key": "flag.staged",
+          "says": "The building will be built in one continuous stage under one contract; there is no staged construction or staged handover"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "This is one building; we are not planning multiple buildings"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or net zero target: BASIX for the apartments and Section J for the retail only"
+        },
+        {
+          "key": "flag.country",
+          "says": "No Connecting with Country input is required for this site"
+        }
+      ],
+      "traps": [],
+      "content": "The developer's brief to the design team, written by its development manager Marcus Lee. Sections: '## The project' (the three-storey shop-top housing sentence; the new building sentence; the existing building sentence; 'The existing shops were built in 1965'; site about 1,800 m2; sole owner; site vacant for the whole of the works), '## Accommodation' (three storeys over one basement level, rise in storeys of 3; one-level retail podium with two residential levels above; 18 apartments; about 600 m2 of retail GLA in three shell tenancies, shell and core only, no fit-out; total GFA about 2,700 m2; 30 car parking spaces in the basement; communal open space on the roof), '## Site and access' (access sentence; ecology sentence; no Connecting with Country input), '## Approvals and procurement' (DA and Local Planning Panel sentence; D&C with novation sentence; AS 4902 lump sum sentence; DBP Act sentence; the one-continuous-stage sentence; one building; the apartments will be sold off the plan and with a rise in storeys of 3 the builder must provide Home Building Compensation Fund (HBCF) insurance before starting work), '## Budget' ('Construction budget: $10,800,000 excluding GST'), '## Services and sustainability' (gas to retail only; BASIX and Section J only). Do not say who prepares or submits the DA. Never write 'building a', 'building b', 'buildings a', a number followed by 'buildings', 'Stage 1' (or any 'stage' followed by a digit or a single letter), 'staged construction certificates', 'water main', 'road reserve', 'MRV', 'HRV' or 'SRV'."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lots 4-6 DP 18273.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-10",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-01187 | | Issue date | 10/02/2026 | | Applicant | Halcyon Eastwood Pty Ltd |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: City of Ryde."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lots 4, 5 and 6 in DP 18273"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone E1 Local Centre under Ryde Local Environmental Plan 2014"
+        },
+        {
+          "key": "proj.address",
+          "says": "40-44 Halloran Street, Eastwood NSW 2122"
+        },
+        {
+          "key": "det.state",
+          "says": "Eastwood NSW 2122"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not in a heritage conservation area"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "potentially-contaminated-negated",
+          "what": "'no record that the land is contaminated or potentially contaminated' contains the phrase it denies.",
+          "expect": "det.potentially_contaminated_land stays false"
+        }
+      ],
+      "content": "A City of Ryde s10.7(2) and (5) planning certificate with numbered items in the usual order: zoning and LEP/DCP (E1 Local Centre; shop-top housing is permitted with consent), complying development (not available for this development), heritage, bush fire, flood, acid sulfate soils, contamination, loose-fill asbestos (not on the register), coastal, rail corridor, road widening (none). Fixed council wording; identity in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 40-44 Halloran Street.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Tallis & Moore Surveyors Pty Ltd",
+      "date": "2026-02-24",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: TMS-26-0207, Date: 24 February 2026, Prepared for: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 1,802.4 m2 (three lots)"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "There is an existing building on each lot: single-storey shops on Nos. 42 and 44 and a dwelling on No. 40"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "No Sydney Water assets are within the site"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "Each lot drains to the Sydney Water sewer main in the rear lane"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "Each lot is connected to mains water from Halloran Street"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on any of the lots"
+        }
+      ],
+      "traps": [
+        {
+          "id": "sewer-main-in-lane",
+          "what": "'drains to the Sydney Water sewer main in the rear lane' matches the authority_asset trigger '(sewer|water) main' (DOMAIN.md §10 phrase table).",
+          "expect": "flag.authority_asset stays no: the main is in the lane, and the report says no Sydney Water assets are within the site"
+        },
+        {
+          "id": "street-trees-listed",
+          "what": "Lists two council plane trees on the Halloran Street footpath ('street ... trees' matches arborist_offsite_trees; 'trees within the site' is near no impact word).",
+          "expect": "d03 alone sets neither arborist flag: presence is not an impact; both stay no from d13"
+        },
+        {
+          "id": "no-existing-osd",
+          "what": "'no existing on-site detention' matches the osd_existing trigger.",
+          "expect": "flag.osd_existing stays no"
+        }
+      ],
+      "content": "Surveyor's report on the detail, level and boundary survey (AHD, MGA). Sections: '## Site description' (three lots, 1,802.4 m2, 40.2 m frontage to Halloran Street and the same to Wattle Lane at the rear, fall of about 2.3 m from the lane to the street), '## Existing structures' (the existing building sentence with floor and ridge levels; the two-storey shop at No. 38 and the three-storey commercial building at No. 46 are both built to the common boundaries), '## Boundaries and easements' (no easements; minor encroachment of the No. 38 parapet flashing), '## Trees' (two council plane trees on the Halloran Street footpath; no trees within the site), '## Services' (sewer, water and OSD sentences; electricity from the pole in Wattle Lane; NBN pit; gas meters on each shop; no Sydney Water assets within the site). Do not describe the existing shops by year."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Programme and DA timing.md",
+      "title": "RE: Programme and DA timing",
+      "author_role": "consultant.architect",
+      "firm": "Calder Rowe Architects Pty Ltd",
+      "date": "2026-03-03",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread, the architect's reply on top)",
+      "carries": [
+        {
+          "key": "proj.target_da_lodgement",
+          "says": "Our target is to have the DA in with council by 31 July 2026"
+        },
+        {
+          "key": "proj.target_construction_start",
+          "says": "and the builder on site by 1 June 2027"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Marcus Lee of Halcyon Eastwood writes on 2 March 2026 (Subject: Programme and DA timing) giving the two targets and asking whether they are realistic. Nadia Calder of Calder Rowe Architects replies on 3 March 2026 (Subject: RE: Programme and DA timing): the DA date is achievable if the survey and geotechnical work start now and the urban design review meeting is booked in April; the construction start depends on the panel's timetable and the D&C tender. No storey count, apartment count or contamination wording."
+    },
+    {
+      "id": "d05",
+      "filename": "Preliminary site investigation KE-26-0310 - 40-44 Halloran Street.md",
+      "title": "Preliminary site investigation",
+      "author_role": "consultant.environmental",
+      "firm": "Kestrel Environmental Pty Ltd",
+      "date": "2026-03-10",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: KE-26-0310, Revision: 0, Report date: 10 March 2026, Prepared for: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "The PSI found a low risk of contamination and no further investigation is required"
+        }
+      ],
+      "traps": [
+        {
+          "id": "contamination-denied",
+          "what": "The site history names 'service station', 'dry cleaner' and 'underground tanks' only to deny them; the conclusion fires 'contaminat'.",
+          "expect": "det.potentially_contaminated_land stays false"
+        }
+      ],
+      "content": "A preliminary site investigation for the change from commercial to residential use. Sections: '## Site history' (title search, aerial photographs from 1943 and council records: only retail shops, a newsagent, a bakery and a hairdresser, and a dwelling since 1965; no service station, dry cleaner or other potentially contaminating activity was identified; no underground tanks), '## Site inspection' (no staining, odours or stockpiles), '## Limited sampling' (six shallow test pits through the rear car park; results below the residential criteria), '## Conclusions' (the conclusion sentence; the land is suitable for the proposed residential use; spoil to be classified before disposal). Do not use the words 'groundwater', 'dewater' or 'water table'."
+    },
+    {
+      "id": "d06",
+      "filename": "Fee proposal - Architectural services - 40-44 Halloran Street.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Calder Rowe Architects Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: CRA-FP-2611, Date: 9 March 2026, To: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "After the D&C tender our appointment will be novated to the successful design and construct contractor"
+        },
+        {
+          "key": "det.facade_type",
+          "says": "The facade is face brick and fibre cement cladding with aluminium windows; there is no curtain wall or unitised facade system"
+        },
+        {
+          "key": "flag.architect_lodges",
+          "says": "Our DA documentation is issued to the town planner, who will lodge the development application"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee to the D&C tender: $424,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's fee proposal for the three-storey shop-top housing building of 18 apartments over three ground-floor shops and one basement level. Scope by phase, then a fee table: concept design and urban design review $68,000; DA documentation, ADG compliance and design verification statement $142,000; design development $118,000; D&C tender documentation $96,000; total to the D&C tender $424,000 ex GST. Then an optional post-novation construction documentation and services fee of $264,000 ex GST, payable by the contractor after novation; additional services at $260 per hour; exclusions (other consultants, authority fees, models). The facade sentence and the lodgement sentence. Fee phases are named, never numbered. Never write 'building a', 'building b', 'buildings a', a number followed by 'buildings', 'Stage 1' (or any 'stage' followed by a digit or a single letter), 'staged construction certificates', 'water main', 'road reserve', 'MRV', 'HRV' or 'SRV'."
+    },
+    {
+      "id": "d07",
+      "filename": "Ironbark Structures fee proposal ISE-2603.md",
+      "title": "Fee proposal: structural engineering",
+      "author_role": "consultant.structural",
+      "firm": "Ironbark Structures Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: ISE-2603, Date: 11 March 2026, To: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "A transfer slab at level 1 picks up the residential columns over the retail and car-park grid"
+        },
+        {
+          "key": "flag.basement",
+          "says": "one basement level of car parking"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "Bulk excavation to the eastern boundary adjoining the two-storey shop at No. 38 needs piled retention with temporary anchors"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $103,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's fee proposal. Background: reinforced concrete, post-tensioned slabs, one basement level, the transfer slab sentence and the excavation sentence. Fee table: concept and DA structural advice $18,500; design development including retention design and the transfer slab $46,000; D&C tender documentation $38,500; total $103,000 ex GST. Optional post-novation construction documentation $92,000 ex GST; hourly rate $240. Exclusions: dilapidation surveys, temporary works design by the contractor. Never write 'building a', 'building b', 'buildings a', a number followed by 'buildings', 'Stage 1' (or any 'stage' followed by a digit or a single letter), 'staged construction certificates', 'water main', 'road reserve', 'MRV', 'HRV' or 'SRV'."
+    },
+    {
+      "id": "d08",
+      "filename": "Larkspur Civil - stormwater fee - Halloran Street.md",
+      "title": "Fee proposal: civil and stormwater engineering",
+      "author_role": "consultant.civil",
+      "firm": "Larkspur Civil Engineering Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | LCE-P-0388 | | Date | 13/03/2026 | | Attention | Marcus Lee |; # heading 'Fee proposal: civil and stormwater engineering'",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "On-site detention is required under council's stormwater policy"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "Stormwater quality treatment (WSUD) to council's targets, modelled in MUSIC"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention to retain or modify"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "The site is not in a drinking water catchment, so no neutral or beneficial effect assessment applies"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "The civil scope includes no public road works; the only work outside the boundary is the new vehicle crossing in Wattle Lane and making good the footpath, under council's approval"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $52,800 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "Civil engineer's fee proposal. Background: OSD tank under the ramp, WSUD treatment, basement pump-out, driveway from Wattle Lane. Stages, every figure GST-inclusive: concept stormwater and OSD design for the DA $15,400; design development and civil design $20,900; D&C tender documentation $16,500; total $52,800 inc GST. Optional post-novation documentation and certification $27,500 inc GST. The public road sentence verbatim. No storey or apartment counts."
+    },
+    {
+      "id": "d09",
+      "filename": "Fee proposal - Geotechnical investigation - Halloran Street.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal no: BRG-P-0412, Date: 12 March 2026, To: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.basement",
+          "says": "one basement level with bulk excavation to about 3.8 m below the street"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $26,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Prices exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical engineer's fee proposal for a basement investigation: four cored boreholes to 9 m, two through the rear car park and two in the rear yard of No. 40 after access is arranged. Fee table: field investigation $16,800; laboratory testing $3,400; geotechnical report with retention and footing parameters $5,800; total $26,000 ex GST. Optional additional borehole $3,900 ex GST. Waste classification of spoil is excluded. Do not use the words 'groundwater', 'dewater' or 'water table'."
+    },
+    {
+      "id": "d10",
+      "filename": "Ashgrove Planning fee proposal APL-26-031.md",
+      "title": "Fee proposal: town planning services",
+      "author_role": "consultant.town_planner",
+      "firm": "Ashgrove Planning Pty Ltd",
+      "date": "2026-03-16",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: APL-26-031, Date: 16 March 2026, To: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "a development application for the three-storey shop-top housing development"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application will be determined by the Local Planning Panel"
+        },
+        {
+          "key": "flag.architect_lodges",
+          "says": "We will lodge the development application on the NSW Planning Portal for Halcyon Eastwood"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $54,500 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "planner-lodges",
+          "what": "'We will lodge the development application' matches the architect_lodges trigger \\blodge\\b, but the town planner lodges, not the architect.",
+          "expect": "flag.architect_lodges stays no"
+        }
+      ],
+      "content": "Town planner's fee proposal for a development application for the three-storey shop-top housing development. Fee table: pre-lodgement meeting and planning advice $9,500; statement of environmental effects and ADG compliance table $28,000; DA lodgement and assessment liaison $12,500; Local Planning Panel attendance $4,500; total $54,500 ex GST. Hourly rate $250. The panel sentence and the lodgement sentence. Never write 'building a', 'building b', 'buildings a', a number followed by 'buildings', 'Stage 1' (or any 'stage' followed by a digit or a single letter), 'staged construction certificates', 'water main', 'road reserve', 'MRV', 'HRV' or 'SRV'."
+    },
+    {
+      "id": "d11",
+      "filename": "Geotechnical report BRG-26-0412 - 40-44 Halloran Street.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-04-24",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: BRG-26-0412, Revision: 0, Report date: 24 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.groundwater",
+          "says": "No groundwater was encountered to the base of the boreholes; seepage only at the clay and shale contact, which a drained basement handles"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "Bulk excavation to the eastern boundary adjoining the two-storey shop at No. 38"
+        },
+        {
+          "key": "flag.basement",
+          "says": "one basement level, bulk excavation to about 3.8 m below Halloran Street"
+        }
+      ],
+      "traps": [
+        {
+          "id": "groundwater-negated",
+          "what": "'No groundwater was encountered ... seepage only' matches the groundwater trigger 'ground ?water' (DOMAIN.md §10 phrase table).",
+          "expect": "flag.groundwater stays no"
+        }
+      ],
+      "content": "Geotechnical report: fieldwork (four cored boreholes to 9 m), subsurface profile (fill, residual clay, weathered shale from about 3 m, then Ashfield Shale of medium strength from about 6 m; depths are below the rear borehole collars, about 2.3 m above Halloran Street), the groundwater sentence, the excavation sentence and the neighbour's footings ('The adjoining shop at No. 38 is founded on shale at shallow depth; no underpinning is needed'), retention recommendations (soldier piles with shotcrete and temporary anchors), pad footings on shale, spoil to be classified before disposal, vibration limits for neighbours. Do not use the word 'dewatering'."
+    },
+    {
+      "id": "d12",
+      "filename": "BCA report NBR-26-118 - 40-44 Halloran Street.md",
+      "title": "BCA assessment report",
+      "author_role": "consultant.bca",
+      "firm": "Northpoint Building Regulations Pty Ltd",
+      "date": "2026-05-08",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: NBR-26-118, Revision: A, Report date: 8 May 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: Class 6 (ground-floor retail), Class 2 (levels 1-2 residential), Class 7a (basement car park)"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "The building has a rise in storeys of 3"
+        },
+        {
+          "key": "det.effective_height",
+          "says": "Effective height: 7.6 m. The effective height is less than 25 m"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is not sprinklered: at a rise in storeys of 3 no sprinkler system is required for the Class 2 part, and the 30-space car park and the retail do not need one"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "NCC climate zone 5"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The building contains a Class 2 part, so the Design and Building Practitioners Act 2020 applies: regulated designs and design compliance declarations are required"
+        },
+        {
+          "key": "flag.fire_vulnerable_occupants",
+          "says": "No vulnerable occupants requiring assisted evacuation are expected in any part of the building"
+        },
+        {
+          "key": "flag.fire_special_hazards",
+          "says": "No special fire hazards or dangerous goods storage are proposed"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "The fire safety strategy is deemed-to-satisfy throughout; no performance solutions are proposed for the facade, cladding or structure"
+        }
+      ],
+      "traps": [],
+      "content": "BCA assessment against NCC 2022 for the DA. Sections: '## Building description' (classification sentence; rise in storeys of 3; effective height sentences; Type A for the Class 2 part and Type B for Class 6 under Table C2D2; C2D4 makes the whole building Type A; climate zone 5), '## Fire resistance and separation' (fire separation between the Class 6, Class 7a and Class 2 parts; the not-sprinklered sentence; hydrants and booster; detection and occupant warning), '## Access and egress' (two fire-isolated stairs, separate retail exits), '## Sound and energy' (sound insulation between units and the retail below; BASIX for the apartments; Section J for the retail), '## Fire engineering' (the three fire-flag sentences), '## Regulatory' (the DBP Act sentence). Do not put 'electric vehicle' or 'EV' in a sentence with 'fire'. Never write 'building a', 'building b', 'buildings a', a number followed by 'buildings', 'Stage 1' (or any 'stage' followed by a digit or a single letter), 'staged construction certificates', 'water main', 'road reserve', 'MRV', 'HRV' or 'SRV'."
+    },
+    {
+      "id": "d13",
+      "filename": "Statement of environmental effects - 40-44 Halloran Street.md",
+      "title": "Statement of environmental effects",
+      "author_role": "consultant.town_planner",
+      "firm": "Ashgrove Planning Pty Ltd",
+      "date": "2026-05-22",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: APL-26-031-SEE, Date: 22 May 2026, Prepared for: Halcyon Eastwood Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.subclass",
+          "says": "shop-top housing: three ground-floor shops with 18 apartments on the two levels above"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application will be determined by the Local Planning Panel"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The proposal complies with the height and floor space ratio standards; no clause 4.6 variation request is required"
+        },
+        {
+          "key": "flag.community",
+          "says": "Council will notify neighbours and place the DA on public exhibition under its community participation plan; the developer is not running any separate community consultation"
+        },
+        {
+          "key": "det.noise_affected_site",
+          "says": "Traffic noise from Halloran Street sets the facade glazing and ventilation in the acoustic report"
+        },
+        {
+          "key": "flag.heavy_vehicles",
+          "says": "The development does not generate heavy vehicle movements; waste is collected on site by council's standard collection vehicle"
+        },
+        {
+          "key": "flag.state_road",
+          "says": "The site fronts a local road; no classified road frontage"
+        },
+        {
+          "key": "flag.tfnsw_referral",
+          "says": "The development is not traffic-generating development and will not be referred to TfNSW"
+        },
+        {
+          "key": "flag.intersection_modelling",
+          "says": "No intersection modelling or SIDRA analysis is required"
+        },
+        {
+          "key": "flag.gtp_required",
+          "says": "A green travel plan is not required"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees on or next to the site, including the two street trees in Halloran Street, are affected by the works"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "No trees on or next to the site, including the two street trees in Halloran Street, are affected by the works"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "The PSI found a low risk of contamination and the land is suitable for the proposed residential use"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone E1 Local Centre under Ryde Local Environmental Plan 2014"
+        },
+        {
+          "key": "proj.lga",
+          "says": "City of Ryde"
+        }
+      ],
+      "traps": [
+        {
+          "id": "design-review-panel",
+          "what": "'council's Urban Design Review Panel saw the scheme at pre-lodgement' (DOMAIN.md §10 'Panel').",
+          "expect": "Not a determination: flag.panel is yes from the Local Planning Panel sentence, not from the design review panel"
+        },
+        {
+          "id": "shop-top-housing",
+          "what": "'shop-top housing' is a planning land-use term (DOMAIN.md §10).",
+          "expect": "hdr.subclass stays residential_retail and det.ncc_class stays 2, 6 and 7a from d12"
+        },
+        {
+          "id": "strata-subdivision",
+          "what": "'Strata subdivision of the apartments and the three retail lots' (DOMAIN.md §10 'Strata').",
+          "expect": "hdr.cond.stakeholder_complexity stays single_owner: strata means an existing owners corporation"
+        },
+        {
+          "id": "public-exhibition",
+          "what": "'public exhibition' matches the community trigger.",
+          "expect": "flag.community stays no: council's notification is not community consultation by the design team"
+        }
+      ],
+      "content": "SEE for the DA. Sections: '## Site and context' (E1 zone; Eastwood town centre; nil-setback neighbours), '## The proposal' (demolition, three storeys, the shop-top housing sentence, one basement level, 30 car spaces, roof communal open space), '## Planning controls' (Housing SEPP Chapter 4 and the ADG; the height and FSR sentence; SEPP (Resilience and Hazards) sentence), '## Design review' (council's Urban Design Review Panel saw the scheme at pre-lodgement), '## Traffic and parking' (the heavy vehicle, classified road, TfNSW, SIDRA and green travel plan sentences; loading bay for small delivery vans), '## Noise', '## Trees', '## Notification', '## Subdivision' ('Strata subdivision of the apartments and the three retail lots will be sought in a separate application after completion'), '## Determination' (council's pre-lodgement advice that, given the objections it expects from the neighbours, it proposes to refer the application to the Local Planning Panel; then the Local Planning Panel sentence). Never write 'building a', 'building b', 'buildings a', a number followed by 'buildings', 'Stage 1' (or any 'stage' followed by a digit or a single letter), 'staged construction certificates', 'water main', 'road reserve', 'MRV', 'HRV' or 'SRV'."
+    },
+    {
+      "id": "d14",
+      "filename": "A-DA-1100 Rev A - Ground floor plan.md",
+      "title": "Ground floor plan",
+      "author_role": "consultant.architect",
+      "firm": "Calder Rowe Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-DA-1100, Revision: A, Title: Ground floor plan, Date: 30 April 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.retail_gla_sqm",
+          "says": "Retail GLA total 600 m2"
+        },
+        {
+          "key": "hdr.scale.car_parks",
+          "says": "Ramp down to the basement level (30 spaces)"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the three retail tenancies with GLA areas, the residential lobby, lift core and fire stairs, bin rooms, loading bay, substation, the car-park ramp from Wattle Lane down to the basement level (30 spaces), and the awning line. Issue: preliminary."
+    },
+    {
+      "id": "d15",
+      "filename": "A-DA-1100 Rev B - Ground floor plan.md",
+      "title": "Ground floor plan",
+      "author_role": "consultant.architect",
+      "firm": "Calder Rowe Architects Pty Ltd",
+      "date": "2026-05-20",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-DA-1100, Revision: B, Title: Ground floor plan, Date: 20 May 2026",
+      "carries": [
+        {
+          "key": "hdr.scale.retail_gla_sqm",
+          "says": "Retail GLA total 600 m2"
+        },
+        {
+          "key": "hdr.scale.car_parks",
+          "says": "Ramp down to the basement level (30 spaces)"
+        }
+      ],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the three retail tenancies with GLA areas, the residential lobby, lift core and fire stairs, bin rooms, loading bay, substation, the car-park ramp from Wattle Lane down to the basement level (30 spaces), and the awning line. Revision B: loading bay widened by 0.6 m and retail tenancy 2 split into 2A and 2B; revision note 'Amended for DA'."
+    },
+    {
+      "id": "d16",
+      "filename": "Tax invoice CRA-INV-1027 Calder Rowe.md",
+      "title": "Tax invoice CRA-INV-1027",
+      "author_role": "consultant.architect",
+      "firm": "Calder Rowe Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: CRA-INV-1027, Date: 30 April 2026, ABN: 65 746 806 298",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $74,800.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $68,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $6,800.00"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's invoice for concept design and urban design review, 100% of that phase."
+    },
+    {
+      "id": "d17",
+      "filename": "Ashgrove invoice 2214.md",
+      "title": "Tax invoice 2214",
+      "author_role": "consultant.town_planner",
+      "firm": "Ashgrove Planning Pty Ltd",
+      "date": "2026-05-29",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 2214 | | Date | 29/05/2026 | | ABN | 33 860 699 272 |",
+      "carries": [
+        {
+          "key": "invoice.total",
+          "says": "Total $25,850.00"
+        },
+        {
+          "key": "invoice.ex_gst",
+          "says": "$23,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$2,350.00"
+        }
+      ],
+      "traps": [],
+      "content": "Town planner's invoice: pre-lodgement meeting and planning advice $9,500 (100%) and statement of environmental effects $14,000 (50%)."
+    },
+    {
+      "id": "d18",
+      "filename": "Tax invoice BRG-INV-0388 Basalt Ridge.md",
+      "title": "Tax invoice BRG-INV-0388",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-05-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "adversarial",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: BRG-INV-0388, Date: 15 May 2026, ABN: 65 534 253 982",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $20,200.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $2,020.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $22,420.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "total-mistyped",
+          "what": "Subtotal $20,200.00 plus GST $2,020.00 is $22,220.00, but the invoice prints Total $22,420.00.",
+          "expect": "The ledger flags arithmetic"
+        }
+      ],
+      "content": "Geotechnical engineer's invoice for the field investigation ($16,800) and laboratory testing ($3,400), 100% of both. The total line is wrong."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d01",
+      "change": "changed",
+      "why": "Brief carries the trigger evidence: three storeys, two apartment levels over a shop, one basement level, rise in storeys of 3, 18 apartments, GFA about 2,700 m2, 30 spaces, budget $10,800,000; HBCF replaces the strata building bond"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "Architect's scope names the three-storey, 18-apartment building over one basement level; fees unchanged"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "One basement level instead of two; transfer slab and excavation unchanged; fees unchanged"
+    },
+    {
+      "doc": "d09",
+      "change": "changed",
+      "why": "One basement level, excavation about 3.8 m, boreholes to 9 m; fees unchanged"
+    },
+    {
+      "doc": "d10",
+      "change": "changed",
+      "why": "Planner's proposal names a three-storey development; fees unchanged"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "One basement level, excavation about 3.8 m; groundwater and neighbour wording unchanged"
+    },
+    {
+      "doc": "d12",
+      "change": "changed",
+      "why": "BCA report: levels 1-2 residential, rise in storeys of 3, effective height 7.6 m, not sprinklered, C2D4 note on Type A/B"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "SEE describes three storeys, 18 apartments, one basement level and 30 spaces"
+    },
+    {
+      "doc": "d14",
+      "change": "changed",
+      "why": "Ground floor plan ramp note: one basement level, 30 spaces"
+    },
+    {
+      "doc": "d15",
+      "change": "changed",
+      "why": "Ground floor plan ramp note: one basement level, 30 spaces"
+    }
+  ]
+}

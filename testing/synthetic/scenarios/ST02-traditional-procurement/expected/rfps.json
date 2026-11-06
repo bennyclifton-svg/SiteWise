@@ -1,0 +1,12 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T02-apartments/shape.yaml",
+  "triggers": [
+    "traditional-procurement"
+  ],
+  "scenario_facts": {
+    "rfps": {
+      "budget_stated_cents": 2760000000
+    }
+  }
+}

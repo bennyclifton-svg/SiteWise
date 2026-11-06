@@ -1,0 +1,417 @@
+{
+  "schema": "sitewise-synthetic-profile/1",
+  "values": {
+    "hdr.building_class": {
+      "value": "residential",
+      "sources": [
+        "d02",
+        "d04",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.subclass": {
+      "value": "apartments",
+      "sources": [
+        "d02",
+        "d04",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.work_type": {
+      "value": "remediation",
+      "sources": [
+        "d02",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.planning": {
+      "value": "cdc",
+      "sources": [
+        "d02",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.procurement_route": {
+      "value": "traditional",
+      "sources": [
+        "d02",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.stakeholder_complexity": {
+      "value": "strata",
+      "sources": [
+        "d02",
+        "d04"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.operational_constraints": {
+      "value": {
+        "accept": [
+          "24_7_occupied",
+          "live_environment",
+          "partial_occupation"
+        ]
+      },
+      "sources": [
+        "d02",
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "hdr.cond.access_constraints": {
+      "value": "urban_constrained",
+      "sources": [
+        "d02",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.storeys": {
+      "value": 8,
+      "sources": [
+        "d02",
+        "d04",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "hdr.scale.units": {
+      "value": 56,
+      "sources": [
+        "d02",
+        "d04",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "det.ncc_class": {
+      "value": [
+        "2"
+      ],
+      "sources": [
+        "d04",
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "det.state": {
+      "value": "NSW",
+      "sources": [
+        "d02",
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building": {
+      "value": true,
+      "sources": [
+        "d04",
+        "d13",
+        "d15"
+      ],
+      "read_by_design": true
+    },
+    "det.existing_building_year": {
+      "value": 2011,
+      "sources": [
+        "d02",
+        "d04",
+        "d15"
+      ],
+      "read_by_design": true
+    },
+    "det.rise_in_storeys": {
+      "value": 8,
+      "sources": [
+        "d04",
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "det.type_of_construction": {
+      "value": "A",
+      "sources": [],
+      "read_by_design": false,
+      "stated_in": [
+        "d14"
+      ]
+    },
+    "det.sprinklered": {
+      "value": false,
+      "sources": [
+        "d04",
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "det.heritage_status": {
+      "value": "none",
+      "sources": [
+        "d03",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "det.facade_type": {
+      "value": "complex",
+      "sources": [
+        "d09",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "det.flood_hazard": {
+      "value": false,
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "det.potentially_contaminated_land": {
+      "value": false,
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_form": {
+      "value": "as4000",
+      "sources": [
+        "d06",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "fact.contract_basis": {
+      "value": "lump_sum",
+      "sources": [
+        "d02",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "proj.regulated_design": {
+      "value": "yes",
+      "sources": [],
+      "read_by_design": false,
+      "stated_in": [
+        "d07",
+        "d13",
+        "d15"
+      ]
+    },
+    "proj.client": {
+      "value": {
+        "accept": [
+          "The Owners - Strata Plan No. 87654",
+          "The Owners - Strata Plan 87654"
+        ]
+      },
+      "sources": [
+        "d02",
+        "d04",
+        "d06",
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "proj.budget_stated": {
+      "value": 685000000,
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "proj.address": {
+      "value": "27 Tideway Crescent, Meadowbank NSW 2114",
+      "sources": [
+        "d02",
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "proj.lga": {
+      "value": {
+        "accept": [
+          "City of Ryde",
+          "Ryde"
+        ]
+      },
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "proj.zone": {
+      "value": {
+        "accept": [
+          "R4 High Density Residential",
+          "R4"
+        ]
+      },
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "proj.lot": {
+      "value": {
+        "accept": [
+          "SP 87654",
+          "Strata Plan 87654",
+          "Strata Plan 87654 (Lots 1 to 56 and common property)"
+        ]
+      },
+      "sources": [],
+      "read_by_design": false,
+      "stated_in": [
+        "d03"
+      ]
+    },
+    "proj.target_construction_start": {
+      "value": "2027-03-01",
+      "sources": [
+        "d05"
+      ],
+      "read_by_design": false
+    },
+    "flag.basement": {
+      "value": "no",
+      "sources": [
+        "d10",
+        "d15"
+      ],
+      "read_by_design": true
+    },
+    "flag.excavation_adjoining": {
+      "value": "no",
+      "sources": [
+        "d15"
+      ],
+      "read_by_design": true
+    },
+    "flag.authority_asset": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.rail": {
+      "value": "no",
+      "sources": [
+        "d03"
+      ],
+      "read_by_design": true
+    },
+    "flag.transfer_structures": {
+      "value": "no",
+      "sources": [
+        "d15"
+      ],
+      "read_by_design": true
+    },
+    "flag.osd_existing": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.staged": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.multi_building": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.cl46": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.panel": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.community": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.country": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.sustainability_target": {
+      "value": "no",
+      "sources": [
+        "d13"
+      ],
+      "read_by_design": true
+    },
+    "flag.fire_vulnerable_occupants": {
+      "value": "no",
+      "sources": [
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "flag.fire_special_hazards": {
+      "value": "no",
+      "sources": [
+        "d14"
+      ],
+      "read_by_design": true
+    },
+    "flag.fire_specialist_systems": {
+      "value": "yes",
+      "sources": [
+        "d04",
+        "d14"
+      ],
+      "read_by_design": true
+    }
+  },
+  "conflicts": [],
+  "derived": [
+    {
+      "key": "det.ncc_class",
+      "value": [
+        "2"
+      ]
+    },
+    {
+      "key": "det.existing_building",
+      "value": true
+    },
+    {
+      "key": "det.type_of_construction",
+      "value": "A"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T17-cladding-remediation/shape.yaml",
+  "triggers": [],
+  "scenario_facts": {
+    "program": {
+      "target_construction_start": "2027-03-01",
+      "fire_safety_order_compliance_date": "2027-12-17"
+    }
+  }
+}

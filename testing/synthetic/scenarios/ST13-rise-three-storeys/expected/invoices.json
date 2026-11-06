@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "CRA-INV-1027",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "65 746 806 298",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 6800000,
+      "gst_cents": 680000,
+      "total_cents": 7480000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Concept design and urban design review (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "2214",
+      "invoice_date": "2026-05-29",
+      "issuer_abn": "33 860 699 272",
+      "supplier_discipline": "consultant.town_planner",
+      "ex_gst_cents": 2350000,
+      "gst_cents": 235000,
+      "total_cents": 2585000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Pre-lodgement advice (100%) and SEE (50%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "BRG-INV-0388",
+      "invoice_date": "2026-05-15",
+      "issuer_abn": "65 534 253 982",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 2020000,
+      "gst_cents": 202000,
+      "total_cents": 2242000,
+      "flags": [
+        "arithmetic"
+      ],
+      "unsupported": {
+        "claim_stage": "Field investigation and laboratory testing (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

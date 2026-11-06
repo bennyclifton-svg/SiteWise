@@ -1,0 +1,356 @@
+{
+  "scenario": "ST02-traditional-procurement",
+  "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "6284fa19781eaedf8be9905af3410ad10c058482",
+    "app_files_modified": 16
+  },
+  "started": "20261106-t02-t13-t17",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 3,
+      "seconds": 12.6
+    },
+    {
+      "wave": 2,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 5,
+      "seconds": 12.7
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 14.9
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.5
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Development brief - 18-22 Calloway Street West Ryde.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "d3951ace-d40a-460a-85b6-1963ba0c3f78",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Development brief - 18-22 Calloway Street West Ryde.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:06:49.945729+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lots 11-13 DP 236418.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "accfffc6-97cd-4064-8299-6f39cea30bb1",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Planning certificate s10.7 - Lots 11-13 DP 236418.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:06:49.977094+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Detail and boundary survey report - 18-22 Calloway Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "fe418a60-db17-43df-b458-c7cd57652f06",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Detail and boundary survey report - 18-22 Calloway Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:06:49.983576+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "RE Program for the Calloway Street apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "56495619-9667-425d-9aa1-099e4f56d4c8",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "RE Program for the Calloway Street apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:06:49.989222+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Architectural services - Calloway Street apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9903766c-5a0a-4263-a103-cb98ec19c49d",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Fee proposal - Architectural services - Calloway Street apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:02.769342+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal KBS-Q-2604.md",
+      "drop": "row:consultant.structural",
+      "http": 201,
+      "response": {
+        "document_id": "256b2d5a-fdcf-41eb-a80a-d3dd48d64c68",
+        "submission_id": "b1c002b5-8fdb-4506-a2e8-5eb6157b9a7a"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Northfall - civil fee - Calloway Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "cad8e0d8-d740-4d47-bb96-dec53d4fc5d6",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Northfall - civil fee - Calloway Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:02.800878+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Geotechnical investigation fee proposal - Basalt Ridge.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "80fd3672-23e9-40a1-818f-667f5ffc860d",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Geotechnical investigation fee proposal - Basalt Ridge.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:02.808325+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Town planning fee proposal - Hollis Planning.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "bf612a89-5f71-4a2e-8653-1887bfcf3c4e",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Town planning fee proposal - Hollis Planning.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:02.813776+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Geotechnical report BRG-R-1152-01 - 18-22 Calloway Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "157e5091-d3d7-4d6d-bec0-16c1a8c44342",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Geotechnical report BRG-R-1152-01 - 18-22 Calloway Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:15.717291+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d11",
+      "filename": "Architectural design report - Calloway Street apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f1605f3e-a916-426f-ac9a-869b1c147ccc",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Architectural design report - Calloway Street apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:15.723222+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d12",
+      "filename": "BCA assessment report FBR-26-118.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f81a1c44-2af8-4942-a1e8-eed206bf9ff5",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "BCA assessment report FBR-26-118.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:15.728347+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Acoustic report RA-26-0412-R01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "38f02830-813d-48c9-ae90-e22eb6c0debb",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Acoustic report RA-26-0412-R01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:15.733776+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Ground floor plan A-DA-1101 Rev A.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "51f0e921-94b7-4482-8b6f-84fc0f68cca1",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Ground floor plan A-DA-1101 Rev A.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:15.738782+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Ground floor plan A-DA-1101 Rev B.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "3e5ff759-be05-40f0-a18a-f5c09ec56383",
+        "project_id": "584b5e6e-16e5-4ece-80d9-e7b9349ef5bd",
+        "filename": "Ground floor plan A-DA-1101 Rev B.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:07:15.743472+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Tax invoice AVA-INV-0214 Arden Vale.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "334c9436-adde-4fa9-adc8-424ae2113487",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d17",
+      "filename": "BRG invoice 4471.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "34af2df4-8ce7-414e-ad66-c27f575e37e1",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d18",
+      "filename": "Tax invoice HP-0093 Hollis Planning.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "58a1f852-ce8b-4e9e-82a6-91d3d18217d2",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

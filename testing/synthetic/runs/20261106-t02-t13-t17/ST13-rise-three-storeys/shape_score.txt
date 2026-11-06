@@ -1,0 +1,29 @@
+T13 Mixed-use shop-top housing (rise-three-storeys)
+  Procurement [scored]: matched 15/25, missed 10 (0 built in, 10 known gaps), extra 0, false positives 0
+  Cost plan [scored]: matched 38/55, missed 17 (0 built in, 17 known gaps), extra 0, false positives 0, fabricated amounts 0 (from documents 11, typed 0)
+  Program [scored]: skeleton sk.new-dc-da (match), matched 74/109, missed 35 (2 built in, 33 known gaps), extra 16, false positives 0, wrong stage 1; links holds 0, violated 0, unknown 77, unscored 62; orphans 1, cycles 0
+    missed built in: Reinforcement inspection before slab pour; Reinforce and pour the ground slab
+  RFPs: found 15/23 (0 built-in missing), not expected present 0, extra 0; expect ok 317, new failures 28, known differences 20, fixed 0, awaiting user input 141; must_include missing 55 (unknown 0); must_not_include present 13 (known 1)
+    consultant.architect: blocking.fact:budget; missing 'Concept and schematic design'; missing 'DA planning approval documentation'; missing 'D&C tender documents with performance brief'; missing 'Post-novation documentation'; missing 'ADG design verification statement' (+2 more)
+    consultant.structural: missing 'Transfer slab'; missing 'Delegated design schedule for PT slabs'; missing 'Post-novation documentation'; missing 'Construction-phase inspections with inspection schedule'; has 'Authority asset stage'; has 'Super-flat floor'
+    consultant.civil: blocking.fact:regulated_design; missing 'Stormwater concept for the DA with discharge confirmed'; missing 'OSD design'; missing 'MUSIC water quality'; missing 'Post-novation design'; missing 'As-built and OSD certification'
+    consultant.town_planner: stage.variation_request; missing 'Statement of environmental effects with ADG compliance'; has 'Clause 4.6 variation request'
+    consultant.bca: stage.b2_construction_approval; stage.b3_construction; stage.b4_occupation; position.existing_assessment; missing 'A1-A3 advisory'; has 'Package B statutory functions'
+    consultant.certifier: stage.a2_planning; stage.a3_tender; stage.a4_construction; position.existing_assessment; missing 'B2 CC assessment (staged CCs)'; missing 'Staged occupation: residential and retail shells' (+2 more)
+    consultant.hydraulic: position.treatment; position.process; position.staging; missing 'Authority stage: Sydney Water and Section 73'; missing 'Water Servicing Coordinator role or appointment for the Section 73 application'; missing 'Trade-waste drainage and grease-arrestor provision' (+6 more)
+    consultant.fire_services: position.plant; position.upgrade; position.remediation; missing 'Pressure and flow enquiry'; missing 'Detection and occupant warning'; missing 'D&C documentation' (+3 more)
+    consultant.mechanical: stage.investigation; position.staging; position.remediation; missing 'Car-park ventilation and local exhaust'; missing 'Retail kitchen-exhaust riser provision'; missing 'Apartment AC' (+3 more)
+    consultant.electrical: stage.investigation; position.dry_fire; missing 'DNSP application and substation'; missing 'Distribution and metering incl. retail shell energisation'; missing 'EV-ready car park'; missing 'ICT pathways' (+3 more)
+    consultant.traffic: blocking.slot:project:assessment_quantities
+    consultant.waste: missing
+    consultant.access: missing 'DA access report'; missing 'CC access report'; missing 'Livable and adaptable housing'; missing 'Facilities review'
+    consultant.geotechnical: position.asset_exposure; position.ass; position.handback; missing 'Boreholes with rock coring and groundwater observation'; missing 'Report with retention and founding parameters'; missing 'Preliminary advice for the DA' (+3 more)
+    consultant.surveyor: position.buried; position.sewer; missing 'Detail survey with neighbours' windows and heights'; has 'Interior scan'
+    consultant.landscape: missing
+    consultant.quantity_surveyor: missing
+    consultant.fire_engineer: missing
+    consultant.acoustic: missing
+    consultant.esd: missing
+    consultant.hazmat: missing
+    consultant.environmental: missing
+    consultant.vertical_transport: missing 'Lift traffic analysis'; missing 'Performance specification for the D&C tender'

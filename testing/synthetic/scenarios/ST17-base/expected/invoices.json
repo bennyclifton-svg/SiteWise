@@ -1,0 +1,39 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d19",
+      "kind": "invoice",
+      "number": "BLA-INV-2207",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "51 607 700 281",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 3800000,
+      "gst_cents": 380000,
+      "total_cents": 4180000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Existing facade survey and remediation options (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d20",
+      "kind": "invoice",
+      "number": "K-26-0412",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "44 838 361 336",
+      "supplier_discipline": "consultant.fire_engineer",
+      "ex_gst_cents": 1450000,
+      "gst_cents": 145000,
+      "total_cents": 1685000,
+      "flags": [
+        "arithmetic"
+      ],
+      "unsupported": {
+        "claim_stage": "Audit review and fire risk assessment (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

@@ -920,7 +920,7 @@ triggers:
     label: Three-storey shop-top (two apartment levels over a shop)
     evidence: ["A three-storey shop-top housing development: ground-floor shop with two levels of apartments above", "rise in storeys of 3; one basement level"]
     negation: ["Six storeys: ground-floor retail with five residential levels above"]
-    profile: [det.rise_in_storeys, hdr.scale.total_storeys, det.effective_height, det.sprinklered]
+    profile: [det.rise_in_storeys, hdr.scale.total_storeys, det.effective_height, det.sprinklered, hdr.scale.tower_levels, hdr.scale.residential_units, hdr.scale.total_gfa_sqm, hdr.scale.car_parks, proj.budget_stated]
     adds:
       cost_plan: ["Home Building Compensation Fund insurance"]
       program: ["Builder provides HBCF insurance certificate"]
@@ -929,7 +929,7 @@ triggers:
     removes:
       cost_plan: ["Strata building bond"]
       program: ["Lodge the strata building bond", "Strata bond interim and final inspections", "Sprinkler rough-in", "Sprinkler pressure test before ceilings", "Fit off and commission sprinklers"]
-    why: "The scenario sets det.sprinklered: false and leaves the fire-active.sprinklers scope row out. HBCF exemption needs a rise of more than 3 with 2 or more dwellings (R4; verified: false); Class 2 sprinklers need a rise of 4 or more (verified: false); Table C2D2 gives A for the Class 2 part and B for Class 6 at a rise of 3, so C2D4 decides the building (verified: false). No generator reads these thresholds"
+    why: "The scenario sets det.sprinklered: false and leaves the fire-active.sprinklers scope row out. HBCF exemption needs a rise of more than 3 with 2 or more dwellings (R4; verified: false); Class 2 sprinklers need a rise of 4 or more (verified: false); Table C2D2 gives A for the Class 2 part and B for Class 6 at a rise of 3, and C2D4 applies the top storey's class (Class 2) to the whole building, so it is Type A throughout (verified: false). No generator reads these thresholds"
     built_in: {cost_plan: "no", program: "no", rfps: "no"}
   - id: trees-affected
     label: Street or neighbour trees affected by the works

@@ -420,6 +420,265 @@ ST12-sewer).
 - Those reports have no draft. Run scenarios one at a time, or log the 409
   body.
 
+### From run `runs/20261106-t02-t13-t17` (T02, T13, T17; app at `6284fa1` plus another session's uncommitted Profile display edits), 6 November 2026
+
+The run report is `runs/20261106-t02-t13-t17/REPORT.md`.
+
+**Repeats.**
+- `proj.regulated_design` is still unread. The civil RFP blocks on it in
+  every T02 and T13 run. The structural RFP also blocks in
+  ST02-traditional and in every T17 run.
+- Missed "no" flags (the T01 open item). `flag.architect_lodges` is blank
+  in T13, although the architect says the town planner lodges.
+- F5 is back, for an ex-GST line labelled "Fee" (F31).
+- F23's letterhead fix is defeated by a directory name match (F37).
+- F24's guard loses another total (F38).
+- F6 and F25 family: discipline is blank for planning documents (F40).
+- F15 and F27 family: neither free text nor flags settle on a majority
+  (F35, F36).
+
+**F31. The F5 fix misses an ex-GST line labelled "Fee" (traced).**
+- *Expected:* the T17 fire engineer's invoice, K-26-0412, is $14,500 ex GST
+  plus $1,450 GST. It prints a total of $16,850, which should be $15,950.
+  The ledger should flag `arithmetic`.
+- *Actual:* ex GST is $15,400, `gst_rate` is raised and `arithmetic` is
+  missed. This happened in all three T17 runs.
+- *Cause:* `settlePrinted` keeps printed amounts only when the ex-GST label
+  is "subtotal", "ex GST", "excl" or "before GST". That test is `exish`, at
+  `internal/invoices/read.go:262-326`. The invoice's ex-GST line says "Fee",
+  so this route fails.
+  - Jev then picks the total and the GST.
+  - `Resolve` sets ex GST to total less GST (`read.go:755`).
+  - The ledger sees ex + GST = total, so it raises no `arithmetic`. It sees
+    $1,450 ≠ 10 % of $15,400, so it raises `gst_rate`
+    (`internal/invoices/ledger.go:305-313`).
+- *Contrast:* T13's arithmetic invoice says "Sub-total ex GST" and was
+  right.
+- *Location:* `internal/invoices/read.go` `exish` and `printedAmounts`.
+
+**F32. Most subclass scale fields are never read (traced).**
+- *Expected:* T13 `residential_units` 42, `retail_gla_sqm` 600,
+  `podium_levels` 1, `tower_levels` 5 and `site_sqm` 1,800. T02
+  `avg_unit_size_sqm` 80.
+- *Actual:* all blank, with no sources, in every run.
+- *Cause:* `HarvestOwn` asks a scale question only when the field's trigger
+  matches (`internal/profile/harvest.go:121-125`). These fields have no
+  `triggers:` (`knowledge/profile/taxonomy.yaml:131-135`, `1426-1440` and
+  the other mixed subclasses). Of the 147 distinct scale fields, 127 have
+  none. `scaleCandidates` has an extractor for `residential_units`
+  (`harvest.go:214`), but it is never reached.
+- *The same facts are read under generic keys:* units 42 (18 in the
+  three-storey variant), `gla_sqm` 600, `total_storeys` 6.
+- *`site_sqm`, separately:*
+  - The T13 brief and architect say "consolidated site … about 1,800 m2",
+    which misses the triggers "site area" and "lot size"
+    (`taxonomy.yaml:40-42`).
+  - The survey's "Site area by survey:" ends a line with a colon, so the
+    figure is cut into the next passage with the label as context
+    (`internal/jobs/source.go:207`).
+  - No survey produced a site-area reading, in T13 or in T02 (where label
+    and figure share a line). Not traced further.
+- *Location:* `knowledge/profile/taxonomy.yaml` `scale_fields`.
+- *Owner call:* add triggers or aliases, or key these as unread.
+
+**F33. A trigger phrase broken by a line wrap is missed (traced).**
+- *Expected:* `flag.cl46` no. The T13 SEE says "…no clause⏎4.6 variation
+  request is required."
+- *Actual:* blank, in all three T13 runs.
+- *Cause:* the trigger `clause 4\.6` has a literal space, and its literal
+  prefilter checks the raw passage text, which keeps the newline
+  (`internal/knowledge/profile.go:349-398`; `knowledge/profile/flag_readings.yaml:71-73`).
+- *Scope:* any multi-word trigger can miss on text extracted from a PDF.
+- *Knock-on:* the town planner's `variation_request` stage is priced as an
+  option, which is 1 RFP new failure per run.
+- *Location:* trigger matching in `internal/knowledge/profile.go`.
+  Normalising whitespace before matching would cover every trigger.
+
+**F34. "Road traffic noise … is low" is read as a noise-affected site
+(traced).**
+- *Expected:* `det.noise_affected_site` false. This is the planned d13 trap.
+- *Actual:* `stated_true` in all three T02 runs, from the acoustic report,
+  at 0.73 to 0.82.
+- *Cause:* the trigger matches "traffic noise", and the criteria do not say
+  that a low or compliant level is a denial
+  (`knowledge/determinants.yaml:809-830`).
+- *Knock-on:* small. One unforeseen record (T02 shape).
+
+**F35. Two spellings of the owners corporation make the client a conflict
+(traced).**
+- *Expected:* "The Owners - Strata Plan No. 87654".
+- *Actual:* a red conflict, in all three T17 runs. Eleven sources say "The
+  Owners - Strata Plan No. 87654". One, the audit's "Owner: Strata Plan
+  87654, managed by…", says "Strata Plan 87654".
+- *Cause:* `mergeExtendedText` merges only when one value is the first
+  words of the other (`internal/profile/reconcile.go:541-578`).
+  `lopsidedChoice` excludes free-text details (`reconcile.go:498-519`).
+- *Knock-on:* every T17 RFP that needs the client blocks on `details`:
+  architect, fire engineer, structural, town planner and QS. That is 5 of
+  the 9 RFP new failures in base, and 4 of 9 in CDC.
+- *Owner call:* see F27. Should a strong majority settle free text?
+
+**F36. An existing basement is read as basement works (traced).**
+- *Expected:* `flag.basement` no. This is the T17 d04 trap; the works are
+  external walls only.
+- *Actual:* a conflict between no (2 sources) and yes (1 source, "The
+  building is wholly residential above the basement car park", 0.98).
+- *Cause:* the question asks whether the project "includes a basement"
+  (`knowledge/profile/flag_readings.yaml:26-28`), and an existing building
+  does. Flags have no majority rule.
+- *Knock-on:* structural `dilapidation`, `retention_design` and
+  `temporary_works_interfaces` fall back to option, which shows as
+  included. That is 3 RFP new failures per T17 run.
+
+**F37. A directory firm matched by name overwrites the ABN printed on the
+proposal (traced).**
+- *Expected:* the T02 civil proposal is from Northfall Civil Engineering,
+  ABN 36 979 312 905.
+- *Actual:* it is attached to the T10 firm saved as "Civil and stormwater
+  engineers" (Drummond's descriptor, saved before F23 was fixed). That firm
+  brings ABN 29 559 935 012, a Taren Point address and Kate Drummond as
+  contact.
+- *Same defect elsewhere:* the T02 and T13 Basalt Ridge proposals print ABNs
+  49 518 838 449 and 65 534 253 982. Both took the T11 Basalt Ridge firm,
+  ABN 27 811 849 176.
+- *Cause:*
+  - `settleFirm` looks up the directory by every name found on the page,
+    including Northfall's descriptor line (`internal/proposals/read.go:276-303`).
+  - `FirmLookup` tries the ABN first, then the name key
+    (`internal/store/submissions.go:314-345`).
+  - A name match then fills every firm field by rule, though the page
+    prints a different valid ABN.
+- *Location:* `settleFirm` and `FirmLookup`. A name match should be refused
+  when the page's only valid ABN differs from the directory firm's (lane A).
+- *Harness:* the directory is organisation-wide, so this depends on run
+  order (see "Harness" in the report).
+
+**F38. A larger optional fee blocks the stated total (traced).**
+- *Expected:* $156,000 for the T02 structural proposal (d06). It prints a
+  `| | **Total** | **$156,000** |` row and "Total $156,000 + GST".
+- *Actual:* blank, in base and groundwater.
+- *Cause:* the page also offers "Option: post-novation services … $210,000
+  ex GST". `settleTotal` refuses a total when any larger fee is on the page
+  (`internal/proposals/read.go:486-490`).
+- *Contrast:* the traditional variant has no larger option and was right.
+- *Related:* the same guard as F24 (there, the cost of work).
+- *Location:* `settleTotal`. Optional or conditional fees should not count
+  as larger fees.
+
+**F39. A quantity surveyor's "cost estimate" service is read as a total
+(traced).**
+- *Expected:* $45,000 ex GST for the T17 QS proposal (d11). It prints
+  "Total fee $49,500 including GST" in a plain-text table.
+- *Actual:* no stated total, in all three T17 runs.
+- *Cause:* "DA cost estimate report (registered quantity surveyor) $3,300"
+  matches `totalWords` `(?:cost|fee) estimate`
+  (`internal/proposals/harvest.go:246, 390`). That gives two distinct
+  totals, so `settleTotal` sets none.
+- *Second effect:* the listed appointment sum is $42,000, because the
+  $3,000 row is treated as a total. The correct sum is $45,000.
+- *Location:* `internal/proposals/harvest.go` `totalWords`.
+
+**F40. Planning documents file with no discipline, and BCA reports file as
+certifier.**
+- *Expected:* `consultant.town_planner` and `consultant.bca`.
+- *Actual:*
+  - planning documents with no discipline: the T02 Hollis fee proposal
+    (0.50), the T13 SEE (0.53 to 0.54), and the T17 Ridgeway fee proposal
+    (0.56) and SEE (0.53);
+  - the BCA assessment report filed as `consultant.certifier` in T02 and
+    T13 (0.92 to 0.97).
+- *Knock-on:* the T02 town planner's invoice gets no supplier, because no
+  firm is linked to the town planner package.
+- *Location:* `data/intake/disciplines.json` (same family as F6 and F25).
+  Not traced further.
+
+**F41. The contamination package rule can never fire (traced; already
+noted in the knowledge index).**
+- *Expected:* an environmental consultant suggested when land is
+  potentially contaminated.
+- *Actual:* in ST13-contaminated-land the environmental package came only
+  from the d19 proposal (`origin: document`, "proposal received"). There is
+  no suggestion, although `det.potentially_contaminated_land` is
+  `stated_true`.
+- *Cause:* the rule keys `field: contamination_level`
+  (`knowledge/works/package_defaults.yaml:135-141`). That is neither a
+  determinant nor a taxonomy condition, so `packageFieldValue` rejects
+  every value (`internal/procurement/defaults.go:160-186`). See
+  `reference/index/procurement.md:36`.
+- *Location:* key the rule on `potentially_contaminated_land`.
+
+**F42. No reinforcement hold point on a basement building (traced to the
+data).**
+- *Expected:* a reinforcement inspection before the slab pours (T13 shape,
+  built in).
+- *Actual:* no reinforcement hold in any T13 run. There is no fr.slab-2
+  row; the basement slab and floor-cycle pours have no hold.
+- *Cause:* `if.reinforcement-inspected-before-pour` sequences
+  `structure.concrete` before `substructure.slab-on-ground`
+  (`knowledge/clusters/structure/interfaces.yaml:250-256`). No
+  slab-on-ground system is in scope on a building with a basement.
+- *Location:* the interface's systems. The T13 shape's built-in claim also
+  changes (see below).
+
+**Shape and key gaps (recommended, not applied).**
+- *T02 `traditional-procurement`:*
+  - add `skeleton: sk.new-traditional-da`;
+  - remove "Prepare construction documentation before tender" and
+    "Construction certificate before award" from `adds.program`. They are
+    base rows the app makes ("Prepare construction documentation",
+    "Construction certificate"), reworded past the 0.75 match.
+- *T02 RFPs:* add to architect `app_differs`
+  `{key: stage.brief_masterplan, app: include, expect: absent}`, and to
+  certifier `app_differs`
+  `{key: stage.a4_construction, app: option, expect: absent}`.
+- *T13 architect:* `blocking: ["fact:budget"]` becomes `[]`. The budget is
+  stated, as in T10 to T12.
+- *T13 `app_differs`* (`expect: absent`, or `exclude` for stages):
+  - bca: b2, b3 and b4 stages (option); `existing_assessment` (ask);
+  - certifier: a2 and a3 (ask); a4 (option); `existing_assessment` (ask);
+  - hydraulic: `treatment` and `process` (ask); `staging` (option);
+  - fire services: `plant` and `upgrade` (ask); `remediation` (O);
+  - mechanical: stage `investigation` (ask); `staging` and `remediation`
+    (O);
+  - electrical: stage `investigation` and `dry_fire` (ask);
+  - geotechnical: `asset_exposure`, `ass` and `handback` (ask);
+  - surveyor: `buried` and `sewer` (ask).
+  - That is 24 of the 28 base RFP new failures.
+- *T13 program:* the reinforcement-hold and ground-slab rows become
+  `built_in: "no"` (F42).
+- *T13 keys:*
+  - `podium_levels` and `tower_levels`: `read_by_design: false`;
+  - `residential_units` and `retail_gla_sqm`: the owner's choice (F32).
+- *T17 `cdc-pathway`:*
+  - add "Town planner" to `removes.cost_plan`;
+  - rename "Prepare and lodge the CDC" to the app's "Prepare and lodge the
+    complying development certificate";
+  - change `built_in.program` to `"partial"`.
+- *ST17 key, d01:* if the owner agrees, the council fire safety order may
+  also be `statutory_instrument`.
+
+**Scorer limits.**
+- A trigger cannot change `rfps[].expect` (known). This gives 16 false new
+  failures in ST02-traditional, `earthworks_suitability` in ST02-groundwater
+  and ST13-contaminated, and `planning_response` in ST17-cdc.
+- `blocking.slot:project:assessment_quantities` (the design vehicle, typed
+  by the user) should be user input in `user_input_check`
+  (`tools/score_shapes.py:46-52`). This is 1 per T02 and T13 run.
+
+**Harness.**
+- The firm directory is organisation-wide and keeps firms from earlier runs
+  (F37).
+- Fictional firm names repeat across types: Basalt Ridge Geotechnical is in
+  T02, T11 and T13, with three ABNs.
+
+**Owner questions.**
+- Is a CDC lawful for an 8-storey Class 2 recladding? The Codes SEPP Fire
+  Safety Code lists three categories, and cladding is not one. The
+  ST17-cdc premise is doubtful and is kept as an app test.
+- Should free text and flags settle on a strong majority (F35, F36, F27)?
+- Should a single-building architect RFP always price "Brief and
+  masterplan" (`architecture.yaml:62-66`)?
+
 ## Known gaps confirmed (already named in the shape)
 
 - Electrical, hydraulic and mechanical consultants are suggested for a

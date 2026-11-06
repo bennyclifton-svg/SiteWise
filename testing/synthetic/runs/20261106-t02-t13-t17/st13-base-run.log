@@ -1,0 +1,44 @@
+ST13-base: project 85304819-f0cb-44f0-bb11-2b046adf6665
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.5 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 14.8 s
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 5 dropped, profile queued 3, 12.9 s
+    waiting: 3 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 3 dropped, profile queued 0, 6.5 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+    RFP for Vertical Transport -> 201
+done: testing\synthetic\runs\20261106-t02-t13-t17

@@ -1,0 +1,401 @@
+{
+  "scenario": "ST17-base",
+  "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "6284fa19781eaedf8be9905af3410ad10c058482",
+    "app_files_modified": 16
+  },
+  "started": "20261106-t02-t13-t17",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 5,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 14.6
+    },
+    {
+      "wave": 2,
+      "documents": 7,
+      "idle": true,
+      "profile_queued": 7,
+      "seconds": 17.2
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 15.0
+    },
+    {
+      "wave": 4,
+      "documents": 2,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.6
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "City of Ryde fire safety order FSO-2026-0031.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "e5a24723-38ff-4ab5-b9f4-fbc5222af08f",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "City of Ryde fire safety order FSO-2026-0031.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:27.224136+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Owners brief - Tideway Apartments cladding remediation.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9dcc2824-2548-442d-af84-6fac65c3f6af",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Owners brief - Tideway Apartments cladding remediation.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:27.251903+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Planning certificate s10.7 - SP 87654.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "617cf1d7-6541-4bf6-b9ef-d8b8b2e5dfd0",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Planning certificate s10.7 - SP 87654.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:27.257081+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "Combustible cladding audit report KFE-A-2519.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "ae030c44-9ab7-44af-bc94-564b45a38e0c",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Combustible cladding audit report KFE-A-2519.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:27.281929+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "RE Timing of the cladding works.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "628e75f0-d76c-4e14-8f37-344a7e2f7962",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "RE Timing of the cladding works.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:27.286931+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d06",
+      "filename": "Fee proposal - Corbel Project Services - Tideway Apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4832ba53-b6e5-490f-be6e-d7fd0eaa5802",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Fee proposal - Corbel Project Services - Tideway Apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:42.034457+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Fee proposal - Brightline Architects - Tideway facade.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "14cba19a-6db8-40bb-b208-c33dc52d8f4b",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Fee proposal - Brightline Architects - Tideway facade.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:42.040461+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Fee proposal - Kestrel Fire Engineering - Tideway Apartments.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "daa8f049-6351-4704-85eb-24bf9603abab",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Fee proposal - Kestrel Fire Engineering - Tideway Apartments.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:42.046684+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Fee proposal - Mullion Facade Engineering - MFE-P-0211.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2399d0e5-b4e4-4dfb-b49f-674ba429c03f",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Fee proposal - Mullion Facade Engineering - MFE-P-0211.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:42.071697+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Structural engineering fee proposal TCE-Q-3381.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9e06511b-23b7-47b7-bf3a-2c92a8bb1e59",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Structural engineering fee proposal TCE-Q-3381.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:42.096433+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Quoin fee submission - Tideway Crescent.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "e62ac23e-2c45-4233-960c-a9e3dd0627e5",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Quoin fee submission - Tideway Crescent.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:42.115862+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d12",
+      "filename": "Fee proposal - Ridgeway Planning - Tideway Apartments.md",
+      "drop": "row:consultant.town_planner",
+      "http": 201,
+      "response": {
+        "document_id": "07f40760-cde8-48a6-a666-3e7eb87ea0e1",
+        "submission_id": "8725c1cb-5e2d-4921-9903-60a86d02cf8c"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d13",
+      "filename": "Facade remediation options report BLA-R-014-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "900b972b-abed-4bf3-ab58-11c309267b73",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Facade remediation options report BLA-R-014-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:59.472961+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Fire engineering risk assessment KFE-R-2604-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "25f97a5a-2226-4c75-abb4-a27b994450f7",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Fire engineering risk assessment KFE-R-2604-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:59.492065+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Slab edge investigation and anchor pull-out results TCE-R-3381-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "de9832f4-726c-4e90-bcb9-44c9a3ee6056",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Slab edge investigation and anchor pull-out results TCE-R-3381-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:59.496529+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "Statement of environmental effects RP-26-047-SEE.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "b9a6bbf1-ec5f-4c21-9c9f-c6180c205be4",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "Statement of environmental effects RP-26-047-SEE.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:59.501076+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d17",
+      "filename": "A-201 Rev A - North and east elevations.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2b1cdb2d-7875-47f2-934e-9b022fa4d904",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "A-201 Rev A - North and east elevations.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:59.50555+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d18",
+      "filename": "A-201 Rev B - North and east elevations.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "4d3c0502-65d4-4754-89d9-ae30b89f3527",
+        "project_id": "a06563ac-3db9-46ec-872c-c5620bab4722",
+        "filename": "A-201 Rev B - North and east elevations.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-06T20:08:59.523175+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d19",
+      "filename": "Tax invoice BLA-INV-2207.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "a05ff191-f47d-4333-b563-87827df651a8",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d20",
+      "filename": "Kestrel invoice K-26-0412.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "9e015532-a379-4721-a81e-5aea6989a075",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}

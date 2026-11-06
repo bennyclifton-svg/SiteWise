@@ -1,0 +1,36 @@
+ST17-project-remediate: project 58b0b8a0-e004-4c08-a166-62665c68d177
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.7 s
+    created the consultant.town_planner row to drop on, as a user would
+    waiting: 6 documents filing, proposals reading, 6 jobs queued
+    waiting: settling
+    waiting: 6 documents in profile reading, 6 jobs queued
+    waiting: 7 documents in profile reading, 6 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: settling
+  wave 2: 6 dropped, profile queued 6, 15.1 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 15.1 s
+    waiting: 2 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 2 dropped, profile queued 0, 6.6 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for Facade -> 201
+    RFP for Fire Engineer -> 201
+    RFP for Quantity Surveyor -> 201
+    RFP for Structural -> 201
+    RFP for Town Planner -> 201
+done: testing\synthetic\runs\20261106-t02-t13-t17

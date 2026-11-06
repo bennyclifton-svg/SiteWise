@@ -1,0 +1,10 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T17-cladding-remediation/shape.yaml",
+  "triggers": [],
+  "scenario_facts": {
+    "rfps": {
+      "budget_stated_cents": 685000000
+    }
+  }
+}

@@ -5,8 +5,8 @@ name: Façade or combustible cladding remediation
 reviewed: false
 state: NSW
 
-# Base scenario: an occupied 8-storey, 56-unit NSW strata Class 2 residential flat
-# building completed in 2011, Type A, not sprinklered. An audit found PE-core ACP on
+# Base scenario: an occupied 8-storey, 56-apartment NSW strata Class 2 residential flat
+# building constructed in 2011, Type A, not sprinklered. An audit found PE-core ACP on
 # the balcony spandrels and blades and an EPS render system on the setback levels.
 # Council has issued a fire safety order. The owners corporation funds the works by
 # special levies, appoints a project manager and a consultant team, lodges a DA for
@@ -37,7 +37,7 @@ profile:
   fact.contract_form: as4000
   fact.contract_basis: lump_sum
   proj.regulated_design: "yes"      # DBP Act applies to Class 2 remedial work (owner ruling R3)
-  proj.client: "The Owners - Strata Plan 87654 (fictional)"
+  proj.client: "The Owners - Strata Plan No. 87654"
   # RFP flags set explicitly so unknowns do not turn rows into options or decisions.
   flag.basement: "no"               # the basement exists but nothing is excavated (basement trap)
   flag.excavation_adjoining: "no"
@@ -59,19 +59,19 @@ profile:
 expected_derived:
   - {key: det.ncc_class, value: ["2"], source: "knowledge/profile/taxonomy.yaml apartments ncc_class", note: "The subclass apartments implies Class 2, but det.ncc_class is never derived from the subclass (KNOWLEDGE_INDEX §0 rule 3)."}
   - {key: det.existing_building, value: true, source: "internal/rfp/drivers.go deriveFlags", note: "The RFP drivers derive flag.existing_building from work type remediation; the profile row itself is not derived."}
-  - {key: det.type_of_construction, value: A, source: "knowledge/determinants.yaml type_of_construction", note: "A Class 2 building with a rise of 4 or more storeys needs Type A construction (NCC 2022 Vol One Table C2D2, verified: false). No derivation exists; it is read or typed only."}
+  - {key: det.type_of_construction, value: A, source: "knowledge/clusters/fire/rules.yaml rule.ncc.type-of-construction", note: "rule.ncc.type-of-construction derives it from det.ncc_class and det.rise_in_storeys (knowledge/tables/type_of_construction.yaml, NCC 2022 Vol One Table C2D2, verified: true). The determinant has no triggers, so Jev never reads it, and the derived row replaces any read value. The rule and the table are status: draft, so Derive returns unknown (reason unreviewed) and the app shows it blank until the owner reviews them."}
 
 scenario_inputs:
-  - {key: det.existing_building_year, note: "Stated in the audit or strata records. Gates the hazardous-materials trigger.", phrasing: "The building was completed in <year>."}
+  - {key: det.existing_building_year, note: "Stated in the audit or strata records. Gates the hazardous-materials trigger.", phrasing: "The building was constructed in <year>."}
   - {key: hdr.scale.storeys, note: "Also gives det.rise_in_storeys, which decides the HBCF exemption (low-rise-hbcf).", phrasing: "an <n>-storey residential flat building"}
-  - {key: hdr.scale.units, note: "Use 'units' or 'apartments', not 'lots', so the units trigger matches.", phrasing: "<n> residential units"}
+  - {key: hdr.scale.units, note: "Put 'apartments' or 'units' directly after the number (unitCountRe); '56 residential units', '56-unit' and '56 lots' match nothing.", phrasing: "<n> apartments"}
   - {key: proj.client, note: "The owners corporation is the client; the strata manager is its agent.", phrasing: "Client: The Owners - Strata Plan No. <number>"}
   - {key: proj.regulated_design, note: "Needs an explicit statement in a read document; the class alone does not decide it.", phrasing: "The remediation is building work under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required."}
   - {key: hdr.cond.planning, note: "Stated in the planner's or PM's report.", phrasing: "A development application is required for the change to the external materials and appearance."}
   - {key: det.heritage_status, note: "Enumerated none is evidence; silence is not.", phrasing: "The site is not a heritage item and is not within a heritage conservation area."}
   - {key: det.facade_type, note: "Needs a named system to read complex.", phrasing: "The replacement is a ventilated rainscreen cladding system of solid aluminium panels designed by the facade engineer."}
   - {key: det.sprinklered, note: "Stated in the fire engineer's report.", phrasing: "The building is not sprinkler protected."}
-  - {key: det.type_of_construction, note: "Stated in the BCA report.", phrasing: "The building is required to be of Type A construction."}
+  - {key: det.type_of_construction, note: "Stated in the BCA or fire report for realism only; it is derived, never read.", phrasing: "The building is required to be of Type A construction."}
   - {key: fact.contract_form, note: "Stated in the tender documents.", phrasing: "AS 4000-1997 General conditions of contract, with special conditions"}
   - {key: hdr.cond.operational_constraints, note: "Any of 24_7_occupied, live_environment or partial_occupation is acceptable.", phrasing: "The building will remain fully occupied throughout the works."}
   - {key: proj.budget_stated, note: "The QS order of cost for the recommended option. The architecture RFP blocks without a budget (required_facts).", phrasing: "Estimated construction cost for the recommended option: $<amount> excluding GST"}
@@ -471,7 +471,7 @@ triggers:
       - "Project Remediate's appointed project manager will coordinate the design team and builder from the program panels."
     negation:
       - "The owners corporation is funding the works through special levies without government assistance."
-    profile: [proj.client]
+    profile: []
     adds:
       program: ["Project Remediate eligibility and registration", "General meeting resolves to enter the remediation and loan agreements", "Program-appointed project manager mobilised (verified: false)", "Design team and builder selected from Project Remediate panels"]
       cost_plan: ["Loan establishment and repayment levies (no amount)"]
@@ -504,12 +504,12 @@ triggers:
   - id: hazardous-materials
     label: Building old enough to contain asbestos in the facade build-up
     evidence:
-      - "The building was completed in 1998."
+      - "The building was constructed in 1998."
       - "The asbestos register lists fibre cement soffit linings behind the balcony ACP."
       - "Mastic sealants to the original panel joints are of unknown composition."
     negation:
       - "The 2020 hazardous materials survey found no asbestos in the facade."
-      - "Construction completed in 2011."
+      - "The building was constructed in 2011."
     profile: [det.existing_building_year]
     adds:
       procurement: [consultant.hazmat]
@@ -664,14 +664,32 @@ triggers:
       - "Council has advised that a development application is required."
     profile: [hdr.cond.planning]
     adds:
-      program: ["Prepare and lodge the CDC", "Certifier determination"]
-      rfps: [{discipline: consultant.certifier, must_include: ["CDC assessment and determination"]}]
+      program:
+        - "General meeting resolves option, design fees and first levy, and owners' consent to lodge the CDC (verified: false)"
+        - "CDC documentation: drawings, BCA report, fire engineer's DTS confirmation, structural fixing details, QS cost report"
+        - "Prepare and lodge the CDC"
+        - "Certifier determination"
+      rfps:
+        - {discipline: consultant.certifier, must_include: ["CDC assessment and determination, including regulated designs lodged (DBP Act, owner ruling R3; lodgement timing verified: false)"]}
+        - {discipline: consultant.architect, must_include: ["CDC drawings, with photomontages for the general meeting"]}
+        - {discipline: consultant.fire_engineer, must_include: ["Fire engineering support letter for the CDC"]}
     removes:
       procurement: [consultant.town_planner]
       cost_plan: ["DA fees and contributions"]
-      program: ["Lodge DA", "DA notification", "DA assessment and determination", "Construction certificate"]
-      rfps: [consultant.town_planner]
-    why: "Whether cladding replacement on a Class 2 building can be complying development (Codes SEPP Fire Safety Code) is verified: false. Both consultant.bca and consultant.certifier RFPs block (bca-certification unsupported_pathways cdc); the town-planning RFP is removed."
+      program:
+        - "Lodge DA"
+        - "DA notification"
+        - "DA assessment and determination"
+        - "Construction certificate"
+        - "General meeting resolves option, design fees and first levy, and owners' consent to lodge the DA (verified: false)"
+        - "DA documentation: drawings, photomontages, SEE, BCA and fire letters, QS cost report"
+        - "Satisfy pre-CC conditions of consent (colours and materials, dilapidation, LSL)"
+      rfps:
+        - consultant.town_planner
+        - {discipline: consultant.certifier, must_include: ["Construction certificate assessment, including regulated designs lodged (DBP Act, owner ruling R3; lodgement timing verified: false)"]}
+        - {discipline: consultant.architect, must_include: ["DA drawings and photomontages for the change of appearance"]}
+        - {discipline: consultant.fire_engineer, must_include: ["Early approval support letter for the DA"]}
+    why: "Whether cladding replacement on a Class 2 building can be complying development is verified: false, and the evidence points against it: NSW Planning's Codes SEPP Fire Safety Code page lists only three complying-development categories (fire sprinklers in residential aged care, alterations to hydraulic fire safety systems, fire alarm communication link works), and cladding is not one (verified: false). Kept as a test of a pathway the documents state, pending the owner. Both consultant.bca and consultant.certifier RFPs block (bca-certification unsupported_pathways cdc); the town-planning RFP is removed. A CDC is a combined planning and building approval, so no CC follows: the certifier's b2_construction_approval stage stands for the CDC, and the BCA consultant's a2_planning report is the one lodged with the CDC application, so the BCA consultant is appointed before the CDC drawings are lodged. The CDC documentation follows design development (a CDC must show NCC compliance when determined). The cost line 'Construction certificate and certifier fees' means CDC and principal certifier fees on this path. The scorer cannot re-point after links: 'Pay long service levy' (paid before the CDC issues), 'Report progress to council' (after the CDC is lodged), 'Contract award' (after the certifier's determination) and the colours hold point (the CDC colours condition) keep their other links and lose the removed DA and CC predecessors."
     built_in: {program: "yes", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"
   - id: design-and-construct
@@ -697,7 +715,7 @@ triggers:
       - "The building is within the period for a building work rectification order under the RAB Act."
     negation:
       - "No claim is being pursued."
-      - "The building was completed in 2011, outside the statutory warranty and rectification order periods."
+      - "The building was constructed in 2011, outside the statutory warranty and rectification order periods."
     profile: [det.existing_building_year]
     why: "Needs det.existing_building_year of 2017 or later for this variant (RAB Act rectification order about 10 years, HBA major-defect warranty 6 years; verified: false). On the 2011 base only a contract or product-liability claim against the panel supplier survives."
     adds:

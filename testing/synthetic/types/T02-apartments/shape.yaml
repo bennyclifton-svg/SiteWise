@@ -779,7 +779,7 @@ triggers:
     label: Full documentation and lump-sum tender instead of D&C with novation
     evidence: ["The architect will prepare full construction documentation for a lump-sum tender under AS 4000", "Consultants remain engaged by the developer through construction; no novation"]
     negation: ["Design and construct with novation of the design team after DA"]
-    profile: [hdr.cond.procurement_route]
+    profile: [hdr.cond.procurement_route, fact.contract_form]
     adds:
       program: ["Prepare construction documentation before tender", "Construction certificate before award"]
       rfps:
@@ -799,7 +799,7 @@ triggers:
     source: "knowledge/program/skeletons.yaml sk.new-traditional-da"
   - id: groundwater-dewatering
     label: Groundwater above the base of the basement
-    evidence: ["Groundwater was measured at RL 14.2, about 3 m above bulk excavation level", "dewatering will be required during excavation", "a tanked basement is recommended"]
+    evidence: ["Groundwater was measured at RL 37.2 AHD, about 3 m above bulk excavation level", "dewatering will be required during excavation", "a tanked basement is recommended"]
     negation: ["No groundwater was encountered in the boreholes to the depth investigated"]
     profile: [flag.groundwater]
     adds:

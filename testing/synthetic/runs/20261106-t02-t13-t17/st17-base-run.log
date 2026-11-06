@@ -1,0 +1,37 @@
+ST17-base: project a06563ac-3db9-46ec-872c-c5620bab4722
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 4 documents in profile reading, 4 jobs queued
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 5 dropped, profile queued 4, 14.6 s
+    created the consultant.town_planner row to drop on, as a user would
+    waiting: 7 documents filing, proposals reading, 7 jobs queued
+    waiting: settling
+    waiting: 7 documents in profile reading, 7 jobs queued
+    waiting: 8 documents in profile reading, 7 jobs queued
+    waiting: 7 documents in profile reading, 5 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 7 dropped, profile queued 7, 17.2 s
+    waiting: 6 documents filing, 6 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 4 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 6 dropped, profile queued 4, 15.0 s
+    waiting: 2 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 2 dropped, profile queued 0, 6.6 s
+    program prepare -> 200
+    RFP for Architect -> 201
+    RFP for Facade -> 201
+    RFP for Fire Engineer -> 201
+    RFP for Project Manager -> 201
+    RFP for Quantity Surveyor -> 201
+    RFP for Structural -> 201
+    RFP for Town Planner -> 201
+done: testing\synthetic\runs\20261106-t02-t13-t17

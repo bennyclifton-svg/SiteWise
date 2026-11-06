@@ -1,0 +1,28 @@
+T02 Multi-residential apartments, 4–8 storeys (traditional-procurement)
+  Procurement [scored]: matched 15/23, missed 8 (0 built in, 8 known gaps), extra 0, false positives 0
+  Cost plan [scored]: matched 38/59, missed 21 (0 built in, 21 known gaps), extra 0, false positives 0, fabricated amounts 0 (from documents 11, typed 0)
+  Program [scored]: skeleton sk.new-traditional-da (expected sk.new-dc-da), matched 64/104, missed 40 (3 built in, 37 known gaps), extra 24, false positives 0, wrong stage 1; links holds 0, violated 0, unknown 70, unscored 70; orphans 1, cycles 0
+    missed built in: Landscape the ground and podium; Prepare construction documentation before tender; Construction certificate before award
+  RFPs: found 15/22 (0 built-in missing), not expected present 0, extra 0; expect ok 305, new failures 21, known differences 44, fixed 0, awaiting user input 141; must_include missing 65 (unknown 0); must_not_include present 18 (known 0)
+    consultant.architect: stage.dnc_tender; stage.post_novation; stage.brief_masterplan; stage.tender_traditional; stage.bidding; stage.for_construction (+9 more)
+    consultant.structural: stage.dnc_tender; stage.post_novation; stage.tender_traditional; stage.construction_documents; position.specialist_element_design; blocking.fact:regulated_design (+6 more)
+    consultant.civil: stage.dnc_tender; stage.post_novation; stage.detailed_tender; stage.for_construction; blocking.fact:regulated_design; missing 'Stormwater concept with OSD and MUSIC for the DA' (+4 more)
+    consultant.geotechnical: missing 'Cored boreholes to below basement level'; missing 'Groundwater standpipes and readings'; missing 'Report with retention, anchor, footing and pavement parameters'; missing 'DA geotechnical report'; missing 'Reliance for the D&C contractor'; has 'Acid sulfate soils (base)' (+1 more)
+    consultant.surveyor: missing 'Detail and contour survey on AHD'; missing 'Neighbouring building heights and windows'; missing 'Strata plan and strata certificate support'; has 'Interior scan'
+    consultant.certifier: stage.a4_construction; missing 'Package B: CC assessment'; missing 'Class 2 critical-stage inspections'; missing 'Fire safety schedule and FRNSW referrals'; missing 'Occupation certificate with BASIX completion'; missing 'Strata certificate (if the certifier issues it)' (+2 more)
+    consultant.bca: missing 'Schematic BCA advice'; missing 'BCA report for the DA'; missing 'Detailed design and D&C tender advice'; missing 'Class 2/7a classification and separation map'; missing 'Performance solution list for the fire engineer'; has 'Design'
+    consultant.town_planner: missing 'Preliminary LEP, DCP, Housing SEPP and ADG advice'; missing 'Statement of environmental effects with ADG compliance table'; missing 'Assessment and RFI responses'
+    consultant.traffic: blocking.slot:project:assessment_quantities; missing 'Swept paths for the waste vehicle and ramp'; missing 'Assessment response and conditions review'
+    consultant.access: missing 'Concept access advice'; missing 'DA access report incl. ADG livable and council adaptable units'; missing 'CC access review'; has 'Remediation access options'; has 'Operational advisory'
+    consultant.fire_services: missing 'Car park sprinklers to AS 2118.1'; missing 'Sydney Water pressure enquiry and fire service connection'; missing 'Detection and occupant warning'; missing 'D&C tender documentation'; missing 'Option: post-novation design (CONVENTIONS C1)'; has 'Upgrade design'
+    consultant.hydraulic: missing 'Rainwater reuse to BASIX'; missing 'Sydney Water s73 coordination'; missing 'D&C tender documentation'; missing 'Option: post-novation design (CONVENTIONS C1)'; has 'Trade waste'; has 'Onsite treatment' (+1 more)
+    consultant.electrical: missing 'Maximum demand and DNSP application'; missing 'Substation coordination with the ASP Level 3'; missing 'Distribution and lighting design'; missing 'Embedded-network or DNSP metering'; missing 'EV-ready car park circuits'; missing 'Passive ICT, intercom, CCTV' (+2 more)
+    consultant.mechanical: missing 'Car park ventilation to AS 1668.2'; missing 'Bathroom, laundry and garbage room exhaust'; missing 'Apartment AC and condenser locations'; missing 'D&C tender documentation'; missing 'Option: post-novation design (CONVENTIONS C1)'; has 'Smoke control (base, under 25 m)' (+1 more)
+    consultant.landscape: missing
+    consultant.waste: missing
+    consultant.quantity_surveyor: missing
+    consultant.fire_engineer: missing
+    consultant.acoustic: missing
+    consultant.basix: missing
+    consultant.hazmat: missing
+    consultant.vertical_transport: missing 'Lift traffic analysis'; missing 'Lift performance specification'; missing 'Shaft and pit coordination'

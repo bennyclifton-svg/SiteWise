@@ -1,0 +1,10 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T02-apartments/shape.yaml",
+  "triggers": [],
+  "scenario_facts": {
+    "program": {
+      "target_construction_start": "2027-11-01"
+    }
+  }
+}

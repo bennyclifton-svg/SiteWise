@@ -1,0 +1,5 @@
+{
+  "schema": "sitewise-synthetic-from-shape/1",
+  "shape": "types/T02-apartments/shape.yaml",
+  "triggers": []
+}

@@ -1,0 +1,259 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d05",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Arden Vale Architects Pty Ltd",
+        "abn": "40 096 569 489",
+        "contact": "Priya Raman",
+        "email": "priya.raman.ardenvale@example.com",
+        "phone": "02 9807 4410",
+        "address": "Level 2, 14 Church Street, Ryde NSW 2112"
+      },
+      "stated_total_cents": 110000000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Concept design and yield study",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 18500000
+        },
+        {
+          "label": "Stage 2 DA documentation, design verification statement and design report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 31000000
+        },
+        {
+          "label": "Stage 3 DA assessment, responses and planning panel",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 4500000
+        },
+        {
+          "label": "Stage 4 Tender documents",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 42000000
+        },
+        {
+          "label": "Stage 5 For-construction documents, regulated designs and declarations",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 14000000
+        },
+        {
+          "label": "Option: design support during construction",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 26000000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 26000
+        }
+      ]
+    },
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Kestrel Bridge Structural Engineers Pty Ltd",
+        "abn": "62 920 074 427",
+        "contact": "Tom Haddad",
+        "email": "tom.haddad.kestrel@example.com",
+        "phone": "02 9874 2261",
+        "address": "Suite 6, 3 Anthony Road, West Ryde NSW 2114"
+      },
+      "stated_total_cents": 30900000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept structure and grid advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2800000
+        },
+        {
+          "label": "DA structural advice and retention concept",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3600000
+        },
+        {
+          "label": "Tender documents",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 15000000
+        },
+        {
+          "label": "Construction documents, regulated designs and declarations",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 9500000
+        },
+        {
+          "label": "Option: construction phase services",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 6000000
+        },
+        {
+          "label": "Site inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 42000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Northfall Civil Engineering Pty Ltd",
+        "abn": "36 979 312 905",
+        "contact": "Lena Fischer",
+        "email": "lena.fischer.northfall@example.com",
+        "phone": "02 9858 3307",
+        "address": "22 Rowe Street, Eastwood NSW 2122"
+      },
+      "stated_total_cents": 10600000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Concept stormwater and OSD",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "DA stormwater plan and MUSIC model",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2400000
+        },
+        {
+          "label": "Detailed design for tender",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3600000
+        },
+        {
+          "label": "Final design for construction",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2000000
+        },
+        {
+          "label": "s138 road works drawings",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1200000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Basalt Ridge Geotechnical Pty Ltd",
+        "abn": "49 518 838 449",
+        "contact": "Aaron Wu",
+        "email": "aaron.wu.basaltridge@example.com",
+        "phone": "02 9888 1945",
+        "address": "Unit 4, 9 Waterloo Road, Macquarie Park NSW 2113"
+      },
+      "stated_total_cents": 4800000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Six cored boreholes",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2450000
+        },
+        {
+          "label": "Standpipes and water level readings",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 720000
+        },
+        {
+          "label": "Laboratory testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 680000
+        },
+        {
+          "label": "Geotechnical report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 950000
+        },
+        {
+          "label": "Excavation inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 48000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.town_planner",
+      "firm": {
+        "name": "Hollis Planning Pty Ltd",
+        "abn": "34 273 771 467",
+        "contact": "Megan Hollis",
+        "email": "megan.hollis.planning@example.com",
+        "phone": "0412 664 380",
+        "address": "PO Box 318, Gladesville NSW 1675"
+      },
+      "stated_total_cents": 7200000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Pre-DA advice and meeting",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1200000
+        },
+        {
+          "label": "SEE and DA lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3800000
+        },
+        {
+          "label": "Assessment, responses and planning panel",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2200000
+        },
+        {
+          "label": "Additional meetings, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 24000
+        }
+      ]
+    }
+  ]
+}

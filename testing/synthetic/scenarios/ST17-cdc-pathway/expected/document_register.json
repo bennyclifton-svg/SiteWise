@@ -1,0 +1,292 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": {
+        "accept": [
+          "correspondence",
+          "certificate"
+        ]
+      },
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "FSO-2026-0031",
+      "revision": null,
+      "title": "Fire safety order: external wall cladding",
+      "date": "2026-01-19",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "City of Ryde"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": "HSM-87654-CR01",
+      "revision": null,
+      "title": "Owners' brief: combustible cladding remediation project team",
+      "date": "2026-02-03",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Harbourline Strata Management Pty Ltd"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-0277",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-06",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "City of Ryde"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.fire_engineer",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant",
+          "reporting"
+        ]
+      },
+      "number": "KFE-A-2519",
+      "revision": "0",
+      "title": "Combustible external wall cladding audit",
+      "date": "2025-09-15",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Kestrel Fire Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": "none",
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Timing of the cladding works",
+      "date": "2026-02-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.project_manager",
+      "lifecycle": "consultant",
+      "number": "CPS-FP-2611",
+      "revision": null,
+      "title": "Fee proposal: project management of cladding remediation",
+      "date": "2026-02-20",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Corbel Project Services Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "BLA-2026-014",
+      "revision": null,
+      "title": "Fee proposal: architectural services for facade remediation",
+      "date": "2026-02-24",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Brightline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.fire_engineer",
+      "lifecycle": "consultant",
+      "number": "KFE-Q-2604",
+      "revision": null,
+      "title": "Fee proposal: fire safety engineering for cladding remediation",
+      "date": "2026-02-25",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Kestrel Fire Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.facade",
+      "lifecycle": "consultant",
+      "number": "MFE-P-0211",
+      "revision": null,
+      "title": "Fee proposal: facade engineering",
+      "date": "2026-02-26",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Mullion Facade Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "TCE-Q-3381",
+      "revision": null,
+      "title": "Fee proposal: structural engineering for facade fixings",
+      "date": "2026-02-26",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tallow Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.quantity_surveyor",
+      "lifecycle": "consultant",
+      "number": "QCC-26-118",
+      "revision": null,
+      "title": "Fee proposal: quantity surveying services",
+      "date": "2026-02-27",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Quoin Cost Consultants Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.architect",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "BLA-R-014-01",
+      "revision": "1",
+      "title": "Facade remediation options report",
+      "date": "2026-04-21",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Brightline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.fire_engineer",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "KFE-R-2604-01",
+      "revision": "0",
+      "title": "Fire engineering risk assessment and interim fire safety strategy",
+      "date": "2026-04-07",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Kestrel Fire Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.structural",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "TCE-R-3381-01",
+      "revision": "0",
+      "title": "Slab edge investigation and pull-out test report",
+      "date": "2026-04-14",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tallow Consulting Engineers Pty Ltd"
+      }
+    },
+    {
+      "doc": "d17",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-201",
+      "revision": "A",
+      "title": "North and east elevations: proposed cladding",
+      "date": "2026-05-19",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Brightline Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d18",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-201",
+      "revision": "B",
+      "title": "North and east elevations: proposed cladding",
+      "date": "2026-06-05",
+      "supersedes": "d17",
+      "unsupported": {
+        "issue_status": "for approval",
+        "originating_org": "Brightline Architects Pty Ltd"
+      }
+    }
+  ]
+}

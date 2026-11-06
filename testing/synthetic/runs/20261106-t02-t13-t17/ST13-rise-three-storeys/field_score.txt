@@ -1,0 +1,37 @@
+ST13-rise-three-storeys
+  Register (per field):
+    status      correct 15
+    kind        correct 15
+    discipline  correct 13, missed 1, wrong 1
+    lifecycle   correct 6, missed 9
+    number      correct 11, correct_blank 2, missed 2
+    revision    correct 5, correct_blank 10
+    title       correct 15
+    date        correct 13, missed 2
+    supersedes  missed 1
+  Profile: correct 66, missed 8, missed_by_design 2
+    missed           hdr.scale.site_sqm: expected {'accept': [1800, 1802.4]}, app ''
+    missed           hdr.scale.podium_levels: expected 1, app ''
+    missed           hdr.scale.tower_levels: expected 2, app ''
+    missed           hdr.scale.residential_units: expected 18, app ''
+    missed           hdr.scale.retail_gla_sqm: expected 600, app ''
+    missed           proj.regulated_design: expected 'yes', app ''
+    missed_by_design proj.target_da_lodgement: expected '2026-07-31', app ''
+    missed_by_design proj.target_construction_start: expected '2027-06-01', app ''
+    missed           flag.cl46: expected 'no', app ''
+    missed           flag.architect_lodges: expected 'no', app ''
+  Invoices (per field):
+    kind               correct 3
+    number             correct 3
+    invoice_date       correct 3
+    issuer_abn         correct 3
+    ex_gst_cents       correct 3
+    gst_cents          correct 3
+    total_cents        correct 3
+    supplier           correct 3
+    flag.period        correct 3
+    flag.unmapped      correct 3
+    flag.arithmetic    correct 1
+  Fees (per field):
+    stated_total_cents correct 5
+    firm_name          correct 5

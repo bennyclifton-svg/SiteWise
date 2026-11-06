@@ -1,0 +1,409 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.project_manager",
+      "firm": {
+        "name": "Corbel Project Services Pty Ltd",
+        "abn": "80 848 775 257",
+        "contact": "Daniel Okafor",
+        "email": "daniel.okafor@example.com",
+        "phone": "02 9809 4417",
+        "address": "Suite 3, 12 Church Street, Ryde NSW 2112"
+      },
+      "stated_total_cents": 18200000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Stage 1 Investigation and consultant procurement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2800000
+        },
+        {
+          "label": "Stage 2 Design and approvals management",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3600000
+        },
+        {
+          "label": "Stage 3 Tender and contract award",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "Stage 4 Construction phase and superintendent",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 9600000
+        },
+        {
+          "label": "Stage 5 Completion and order closure",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Additional general meeting, each",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 75000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 22000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Brightline Architects Pty Ltd",
+        "abn": "51 607 700 281",
+        "contact": "Mei Lin Chau",
+        "email": "meilin.chau@example.com",
+        "phone": "02 9878 2290",
+        "address": "Level 4, 9 Devlin Street, Ryde NSW 2112"
+      },
+      "stated_total_cents": 23400000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Existing facade survey and remediation options",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3800000
+        },
+        {
+          "label": "Schematic facade design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2600000
+        },
+        {
+          "label": "DA drawings and photomontages",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3200000
+        },
+        {
+          "label": "Design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 4400000
+        },
+        {
+          "label": "Regulated designs, construction documentation and tender documents",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 5800000
+        },
+        {
+          "label": "Design support during construction, including shop drawing review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3600000
+        },
+        {
+          "label": "Printing and photomontage disbursements",
+          "kind": "reimbursable",
+          "state": "included",
+          "amount_cents": null
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 24000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.fire_engineer",
+      "firm": {
+        "name": "Kestrel Fire Engineering Pty Ltd",
+        "abn": "44 838 361 336",
+        "contact": "Tomasz Wrobel",
+        "email": "tomasz.wrobel@example.com",
+        "phone": "02 9887 3051",
+        "address": "Unit 7, 2 Rhodes Street, West Ryde NSW 2114"
+      },
+      "stated_total_cents": 4800000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Audit review and fire risk assessment",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1450000
+        },
+        {
+          "label": "Interim fire safety measures and staged strategy",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 450000
+        },
+        {
+          "label": "DA fire engineering support letter",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        },
+        {
+          "label": "Design review and confirmation of deemed-to-satisfy compliance",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 900000
+        },
+        {
+          "label": "Construction inspections of cavity barriers and slab-edge protection",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1200000
+        },
+        {
+          "label": "Verification for the occupation certificate and order closure",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 500000
+        },
+        {
+          "label": "Laboratory combustibility testing (at cost, estimate)",
+          "kind": "reimbursable",
+          "state": "priced",
+          "amount_cents": 660000
+        },
+        {
+          "label": "Performance solution",
+          "kind": "option",
+          "state": "not_priced",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.facade",
+      "firm": {
+        "name": "Mullion Facade Engineering Pty Ltd",
+        "abn": "32 678 620 577",
+        "contact": "Aisha Rahimi",
+        "email": "aisha.rahimi@example.com",
+        "phone": "02 9411 6728",
+        "address": "Level 2, 101 Pacific Highway, North Sydney NSW 2060"
+      },
+      "stated_total_cents": 7600000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Records review and sampling",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1200000
+        },
+        {
+          "label": "System options and performance specification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1600000
+        },
+        {
+          "label": "Subframe and fixing design review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1800000
+        },
+        {
+          "label": "Facade regulated design and declaration",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Shop drawing review, installation inspections and facade water testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2200000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 23000
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Tallow Consulting Engineers Pty Ltd",
+        "abn": "40 032 241 007",
+        "contact": "Callum Reid",
+        "email": "callum.reid@example.com",
+        "phone": "02 9858 1904",
+        "address": "41 Victoria Road, Gladesville NSW 2111"
+      },
+      "stated_total_cents": 3300000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Existing structure assessment of slab edges and pull-out test regime",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1100000
+        },
+        {
+          "label": "Fixing design and certification, provisional slab-edge repair specification",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 950000
+        },
+        {
+          "label": "Structural regulated design and declaration",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 400000
+        },
+        {
+          "label": "Construction-phase inspection of brackets and fixings",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 850000
+        },
+        {
+          "label": "Pull-out testing contractor (at cost, estimate)",
+          "kind": "reimbursable",
+          "state": "priced",
+          "amount_cents": 580000
+        },
+        {
+          "label": "Additional inspection, per visit",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 52000
+        }
+      ]
+    },
+    {
+      "doc": "d11",
+      "kind": "fee_proposal",
+      "discipline": "consultant.quantity_surveyor",
+      "firm": {
+        "name": "Quoin Cost Consultants Pty Ltd",
+        "abn": "56 011 388 320",
+        "contact": "Fiona Galloway",
+        "email": "fiona.galloway@example.com",
+        "phone": "02 9816 5532",
+        "address": "Suite 11, 4 Victoria Road, Drummoyne NSW 2047"
+      },
+      "stated_total_cents": 4500000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Option estimates for the general meeting",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 900000
+        },
+        {
+          "label": "DA cost estimate report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 300000
+        },
+        {
+          "label": "Pre-tender estimate",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 800000
+        },
+        {
+          "label": "Tender assessment and normalisation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 500000
+        },
+        {
+          "label": "Progress-claim assessment reports",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2000000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 18000
+        }
+      ]
+    },
+    {
+      "doc": "d12",
+      "kind": "fee_proposal",
+      "discipline": "consultant.town_planner",
+      "firm": {
+        "name": "Ridgeway Planning Pty Ltd",
+        "abn": "14 270 817 793",
+        "contact": "Ben Hartigan",
+        "email": "ben.hartigan@example.com",
+        "phone": "02 9874 0663",
+        "address": "3/18 Blaxland Road, Ryde NSW 2112"
+      },
+      "stated_total_cents": 1650000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Preliminary advice and pre-lodgement meeting",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 250000
+        },
+        {
+          "label": "Statement of environmental effects",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 850000
+        },
+        {
+          "label": "Lodgement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 100000
+        },
+        {
+          "label": "Assessment and responses to council requests",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 350000
+        },
+        {
+          "label": "Review of the determination and conditions",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 100000
+        }
+      ]
+    }
+  ]
+}

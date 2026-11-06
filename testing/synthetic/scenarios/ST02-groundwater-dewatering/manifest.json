@@ -1,0 +1,865 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST02-groundwater-dewatering",
+  "type_id": "T02",
+  "base": "ST02-base",
+  "triggers": [
+    "groundwater-dewatering"
+  ],
+  "project": {
+    "name": "Calloway Street apartments, 18-22 Calloway Street, West Ryde",
+    "address": "18-22 Calloway Street, West Ryde NSW 2114",
+    "lga": "City of Ryde",
+    "summary": "A new six-storey residential flat building of 64 apartments (NCC Class 2) over two basement levels of car parking (Class 7a) on three amalgamated R4 lots in West Ryde, replacing three 1962 dwellings. DA to the City of Ryde determined by the Ryde Local Planning Panel, then a D&C contract under AS 4902 with the architect, structural and civil engineers novated to the builder; construction budget $27,600,000 ex GST. Groundwater sits about 3 m above bulk excavation level, so the basement is dewatered during excavation and tanked."
+  },
+  "invented": {
+    "lots": [
+      "Lot 11 DP 236418",
+      "Lot 12 DP 236418",
+      "Lot 13 DP 236418"
+    ],
+    "abns": [
+      "40 096 569 489",
+      "62 920 074 427",
+      "36 979 312 905",
+      "49 518 838 449",
+      "34 273 771 467",
+      "18 568 916 604",
+      "76 827 666 579",
+      "23 181 239 043"
+    ],
+    "firms": [
+      "Tallis Grove Developments Pty Ltd",
+      "Arden Vale Architects Pty Ltd",
+      "Kestrel Bridge Structural Engineers Pty Ltd",
+      "Northfall Civil Engineering Pty Ltd",
+      "Basalt Ridge Geotechnical Pty Ltd",
+      "Hollis Planning Pty Ltd",
+      "Corrigan Lane Surveyors Pty Ltd",
+      "Firecode Building Regulations Pty Ltd",
+      "Resonance Acoustics Pty Ltd"
+    ],
+    "emails": [
+      "daniel.okafor.tallisgrove@example.com",
+      "priya.raman.ardenvale@example.com",
+      "tom.haddad.kestrel@example.com",
+      "lena.fischer.northfall@example.com",
+      "aaron.wu.basaltridge@example.com",
+      "megan.hollis.planning@example.com",
+      "joe.corrigan.surveys@example.com",
+      "hannah.ostrowski.firecode@example.com",
+      "marco.bellini.resonance@example.com"
+    ],
+    "streets": [
+      "18-22 Calloway Street, West Ryde (invented street in a real suburb)"
+    ],
+    "people": [
+      "Daniel Okafor (Tallis Grove Developments)",
+      "Priya Raman",
+      "Tom Haddad",
+      "Lena Fischer",
+      "Aaron Wu",
+      "Megan Hollis",
+      "Joe Corrigan",
+      "Hannah Ostrowski",
+      "Marco Bellini"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "Development brief - 18-22 Calloway Street West Ryde.md",
+      "title": "Development brief: residential flat building, 18-22 Calloway Street, West Ryde",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-02",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Date: 2 February 2026, Client: Tallis Grove Developments Pty Ltd, Site: 18-22 Calloway Street, West Ryde NSW 2114; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.building_class",
+          "says": "A new six-storey residential flat building of 64 apartments"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "A new six-storey residential flat building of 64 apartments"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This is a new building on an amalgamated site"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "64 apartments: a mix of one-, two- and three-bedroom apartments"
+        },
+        {
+          "key": "hdr.scale.avg_unit_size_sqm",
+          "says": "Average apartment size about 80 m2 internal"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "Six storeys above two basement levels"
+        },
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "The amalgamated site area is about 2,400 m2"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Target gross floor area about 6,200 m2"
+        },
+        {
+          "key": "flag.basement",
+          "says": "Two basement levels of car parking"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The existing dwellings will be demolished; no existing building is retained or altered"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The three existing dwellings were built in 1962"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "We will have vacant possession of all three lots before demolition; the site is vacant for the whole of the works"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "Tallis Grove Developments Pty Ltd is the sole owner of the three lots and the only decision maker"
+        },
+        {
+          "key": "hdr.cond.quality_level",
+          "says": "Mid-range quality finishes pitched at owner-occupiers and investors"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "A development application will be lodged with the City of Ryde"
+        },
+        {
+          "key": "proj.target_da_lodgement",
+          "says": "Target: lodge the development application by 31 August 2026"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Design and construct under AS 4902, with the architect and engineering consultants novated to the contractor after DA"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "The builder will be engaged under AS 4902 General conditions of contract for design and construct"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The building is a Class 2 building under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Construction budget: $27,600,000 excluding GST"
+        },
+        {
+          "key": "proj.client",
+          "says": "Client: Tallis Grove Developments Pty Ltd"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 18-22 Calloway Street, West Ryde NSW 2114"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 18-22 Calloway Street, West Ryde NSW 2114"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "All-electric building: induction cooktops and heat-pump hot water; no natural gas supply"
+        },
+        {
+          "key": "flag.staged",
+          "says": "No staged construction: the works are delivered in one stage"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "There are not multiple buildings: a single residential flat building is proposed"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or net zero target beyond BASIX"
+        },
+        {
+          "key": "flag.country",
+          "says": "No Connecting with Country input is required for this site"
+        }
+      ],
+      "traps": [],
+      "content": "The developer's brief to the design team in plain prose. Sections: '## The project' (the new six-storey residential flat building sentence; 'This is a new building on an amalgamated site'; the 64 apartments sentence with the mix 14 one-bedroom, 38 two-bedroom, 12 three-bedroom; average apartment size; six storeys above two basement levels of car parking for about 70 cars; site area about 2,400 m2; target GFA about 6,200 m2), '## The site' (three lots amalgamated; the 1962 sentence; the demolition sentence exactly as carried; vacant possession; sole owner), '## Quality, budget and program' (quality sentence; 'Construction budget: $27,600,000 excluding GST'; the DA lodgement target), '## Approvals and procurement' (the DA sentence; the D&C sentence exactly as carried; the AS 4902 sentence; the DBP Act sentence; the no-staged-construction sentence; 'Strata subdivision on completion, with the apartments sold off the plan'), '## Services and sustainability' (all-electric sentence; BASIX only, the no-target sentence; the Connecting with Country sentence; the single-building sentence). Do not use the words 'water main', 'sewer main', 'excavation' or 'Stage'."
+    },
+    {
+      "id": "d02",
+      "filename": "Planning certificate s10.7 - Lots 11-13 DP 236418.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-11",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-01147 | | Issue date | 11/02/2026 | | Applicant | Tallis Grove Developments Pty Ltd |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "Local government area: City of Ryde."
+        },
+        {
+          "key": "proj.lot",
+          "says": "Lots 11, 12 and 13 DP 236418"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R4 High Density Residential under Ryde Local Environmental Plan 2014"
+        },
+        {
+          "key": "proj.address",
+          "says": "18-22 Calloway Street, West Ryde NSW 2114"
+        },
+        {
+          "key": "det.state",
+          "says": "West Ryde NSW 2114"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item, is not in a heritage conservation area and is not in the vicinity of a heritage item"
+        },
+        {
+          "key": "det.bushfire_prone_land",
+          "says": "The land is not identified as bush fire prone land"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "det.acid_sulfate_soils_mapped",
+          "says": "The land is not mapped as acid sulfate soils"
+        },
+        {
+          "key": "flag.coastal",
+          "says": "The land is not within a coastal management area"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        },
+        {
+          "key": "flag.state_road",
+          "says": "The land does not front a classified road"
+        }
+      ],
+      "traps": [],
+      "content": "A council s10.7(2) and (5) planning certificate for the three lots, numbered items in the usual order: zoning and LEP/DCP (R4 High Density Residential, Ryde LEP 2014, height and FSR controls), complying development (the land is not excluded, but no code is named for this proposal), heritage, bush fire, flood, acid sulfate soils, contamination, loose-fill asbestos (no listed premises), coastal, rail corridor, classified road, road widening (none). Fixed council wording; identity sits in a table, not label lines. The LGA sentence ends with a full stop and is followed by a blank line."
+    },
+    {
+      "id": "d03",
+      "filename": "Detail and boundary survey report - 18-22 Calloway Street.md",
+      "title": "Detail and boundary survey report",
+      "author_role": "consultant.surveyor",
+      "firm": "Corrigan Lane Surveyors Pty Ltd",
+      "date": "2026-02-24",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Ref: CLS-26-0217, Date: 24 February 2026, Prepared by: Corrigan Lane Surveyors Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.scale.site_sqm",
+          "says": "Site area by survey: 2,403.6 m2"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "Construction access is constrained: the site fronts a narrow local street with kerbside parking on both sides, adjoins dwellings on three sides, and all deliveries and cranage must work from the street frontage"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "Connection to the existing water main in the street; no Sydney Water assets cross the site"
+        },
+        {
+          "key": "det.water_supply_source",
+          "says": "The three dwellings are connected to the water main in Calloway Street"
+        },
+        {
+          "key": "det.sewer_connection",
+          "says": "Each dwelling drains to the Sydney Water sewer in the street"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "There is no existing on-site detention on any of the three lots"
+        }
+      ],
+      "traps": [
+        {
+          "id": "three-buildings",
+          "what": "'The three buildings and their garages are to be demolished' matches the multi_building pattern '(two|three|…) buildings' (DOMAIN.md §10).",
+          "expect": "flag.multi_building stays no (from d01): the three buildings are the dwellings to be demolished"
+        },
+        {
+          "id": "water-main-in-street",
+          "what": "'Connection to the existing water main in the street' matches the authority_asset trigger '(sewer|water) main' (DOMAIN.md §10).",
+          "expect": "flag.authority_asset stays no: the main is in the street and no Sydney Water asset crosses or adjoins the site"
+        },
+        {
+          "id": "street-trees-listed",
+          "what": "Lists three brush box street trees on the council verge, matching the arborist_offsite_trees pattern 'street … trees'.",
+          "expect": "flag.arborist_offsite_trees stays no (from d11): presence is not an impact"
+        },
+        {
+          "id": "existing-single-storey",
+          "what": "'Each lot contains a single-storey brick dwelling' names the storeys of the dwellings to be demolished.",
+          "expect": "hdr.scale.storeys stays 6: the storeys key describes the new building"
+        }
+      ],
+      "content": "Surveyor's report with the detail, level and boundary survey on AHD. Sections: '## Site description' (site area by survey 2,403.6 m2, 54.2 m frontage to Calloway Street, fall of about 2.5 m from the south-west corner to the street; the access sentence), '## Existing structures' ('Each lot contains a single-storey brick dwelling with a detached garage'; 'The three buildings and their garages are to be demolished'; floor and ridge levels; neighbouring dwellings' wall offsets and floor levels on the northern, southern and western boundaries), '## Boundaries and easements' (no easements; fences within 0.15 m of the boundaries), '## Trees' (three brush box street trees on the council verge; no trees within the lots other than shrubs), '## Services' (water and sewer sentences; the authority asset sentence; overhead electricity from the street poles; NBN pit; kerb outlets; the no-existing-OSD sentence)."
+    },
+    {
+      "id": "d04",
+      "filename": "RE Program for the Calloway Street apartments.md",
+      "title": "RE: Program for the Calloway Street apartments",
+      "author_role": "consultant.architect",
+      "firm": "Arden Vale Architects Pty Ltd",
+      "date": "2026-03-03",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread, the architect's reply on top)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "We need the builder on site by 1 November 2027 to meet our finance terms"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Daniel Okafor of Tallis Grove Developments writes on 2 March 2026 (Subject: Program for the Calloway Street apartments), stating the target start sentence and asking whether it is realistic. Priya Raman of Arden Vale Architects replies on 3 March 2026 (Subject: RE: Program for the Calloway Street apartments): the date is achievable if the DA is lodged by August, the panel determines it by March 2027 and the D&C tender runs in April and May 2027 with novation of the design team at award; the DNSP substation enquiry should start in design development."
+    },
+    {
+      "id": "d05",
+      "filename": "Fee proposal - Architectural services - Calloway Street apartments.md",
+      "title": "Fee proposal: architectural services",
+      "author_role": "consultant.architect",
+      "firm": "Arden Vale Architects Pty Ltd",
+      "date": "2026-03-09",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Proposal no: AVA-FP-2611, Date: 9 March 2026, Client: Tallis Grove Developments Pty Ltd; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "Stage 4: D&C tender documentation. On award the architect is novated to the D&C contractor, and post-novation services are priced separately"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "Stage 2: DA documentation, design verification statement and SEPP Housing Chapter 4 design report"
+        },
+        {
+          "key": "flag.architect_lodges",
+          "says": "The town planner lodges the DA on the NSW Planning Portal; we provide the drawings and the design verification statement"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee to the D&C tender: $780,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "planner-lodges",
+          "what": "'The town planner lodges the DA' matches the architect_lodges trigger '\\blodge(d|s|ment)?\\b' (DOMAIN.md §10).",
+          "expect": "flag.architect_lodges is no: the town planner lodges"
+        }
+      ],
+      "content": "Architect's fee proposal for the 64-apartment building. Scope by stage and a fee table: Stage 1 concept design and yield study $185,000; Stage 2 DA documentation, design verification statement and SEPP Housing Chapter 4 design report $310,000; Stage 3 DA assessment, responses to council and the planning panel $45,000; Stage 4 D&C tender documentation $240,000; total $780,000 ex GST. Then 'Post-novation services (option, engaged by the D&C contractor): construction documentation, regulated designs and design compliance declarations $520,000 ex GST'. Additional services at $260 per hour. Exclusions: other consultants, authority fees. The 'Stage 1 … Stage 4' fee stages are not construction stages."
+    },
+    {
+      "id": "d06",
+      "filename": "Structural engineering fee proposal KBS-Q-2604.md",
+      "title": "Structural engineering fee proposal",
+      "author_role": "consultant.structural",
+      "firm": "Kestrel Bridge Structural Engineers Pty Ltd",
+      "date": "2026-03-12",
+      "wave": 2,
+      "drop": "row:consultant.structural",
+      "tier": "clean",
+      "title_block": "label lines: Title, Quote no: KBS-Q-2604, Date: 12 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.transfer_structures",
+          "says": "Columns run straight from the basement to the roof; no transfer structure"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $156,000 + GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees are exclusive of GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's quote for the reinforced concrete frame, post-tensioned slabs and the basement retention (piled wall with temporary anchors). Fee table: concept structure and grid advice $28,000; DA structural advice and retention concept $36,000; D&C tender documentation $92,000; total $156,000 ex GST. Option: post-novation documentation, regulated designs and design compliance declarations, engaged by the D&C contractor, $210,000 ex GST. Site inspections at $420 per visit. Do not mention fire resistance or groundwater. Dropped on the structural row."
+    },
+    {
+      "id": "d07",
+      "filename": "Northfall - civil fee - Calloway Street.md",
+      "title": "Fee proposal: civil engineering",
+      "author_role": "consultant.civil",
+      "firm": "Northfall Civil Engineering Pty Ltd",
+      "date": "2026-03-13",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | NCE-P-0388 | | Date | 13/03/2026 | | Attention | Priya Raman |; # heading 'Fee proposal: civil engineering'",
+      "carries": [
+        {
+          "key": "flag.osd_required",
+          "says": "On-site detention is required under council's stormwater policy"
+        },
+        {
+          "key": "flag.stormwater_quality",
+          "says": "MUSIC modelling is required to show the pollutant reduction targets are met"
+        },
+        {
+          "key": "flag.public_road",
+          "says": "Works within the road reserve: new footpath, kerb and gutter and vehicle crossing under a s138 consent"
+        },
+        {
+          "key": "flag.norbe",
+          "says": "The site is outside the drinking water catchment, so no NorBE assessment applies"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $90,200 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "Civil engineer's fee proposal. Background: the site drains to the street; OSD tank under the driveway; basement pump-out. Stages, every figure GST-inclusive: concept stormwater and OSD $15,400; DA stormwater plan and MUSIC model $26,400; design for the D&C tender $35,200; s138 road works drawings for the footpath, kerb and gutter and crossing $13,200; total $90,200 inc GST. Option: final design after novation, engaged by the D&C contractor, $19,800 inc GST."
+    },
+    {
+      "id": "d08",
+      "filename": "Geotechnical investigation fee proposal - Basalt Ridge.md",
+      "title": "Fee proposal: geotechnical investigation",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-03-11",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Proposal ref: BRG-P-1152, Date: 11 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $48,000 excluding GST"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical fee proposal for a basement investigation: six cored boreholes to 12 m $24,500; two standpipes with water level readings over four weeks $7,200; laboratory testing $6,800; geotechnical report with retention parameters $9,500; total $48,000 ex GST. Option: excavation inspections at $480 per visit. Do not use the words 'groundwater' or 'water table'."
+    },
+    {
+      "id": "d09",
+      "filename": "Town planning fee proposal - Hollis Planning.md",
+      "title": "Fee proposal: town planning services",
+      "author_role": "consultant.town_planner",
+      "firm": "Hollis Planning Pty Ltd",
+      "date": "2026-03-10",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Proposal number: HP-FP-2603, Date: 10 March 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "hdr.cond.planning",
+          "says": "Preparation and lodgement of the development application and statement of environmental effects"
+        },
+        {
+          "key": "flag.panel",
+          "says": "The application will be determined by the Ryde Local Planning Panel"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The proposal complies with the height and FSR development standards; no clause 4.6 variation request is required"
+        },
+        {
+          "key": "flag.community",
+          "says": "Council will notify the application and place it on public exhibition; no community consultation beyond that is proposed"
+        },
+        {
+          "key": "flag.architect_lodges",
+          "says": "We will lodge the DA on the NSW Planning Portal; the architect does not lodge"
+        },
+        {
+          "key": "flag.tfnsw_referral",
+          "says": "The development is not traffic-generating development and is not referred to Transport for NSW"
+        },
+        {
+          "key": "flag.intersection_modelling",
+          "says": "No intersection modelling or SIDRA analysis is required"
+        },
+        {
+          "key": "flag.gtp_required",
+          "says": "No green travel plan is required"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $72,000 excluding GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "public-exhibition",
+          "what": "'place it on public exhibition' matches the community trigger 'public exhibition' (DOMAIN.md §10).",
+          "expect": "flag.community stays no: exhibition is statutory notification, not consultation"
+        },
+        {
+          "id": "we-lodge",
+          "what": "'We will lodge the DA' matches the architect_lodges trigger.",
+          "expect": "flag.architect_lodges stays no: the planner lodges"
+        }
+      ],
+      "content": "Town planner's fee proposal. Scope: Housing SEPP Chapter 4 and ADG compliance, Ryde LEP 2014 and DCP assessment, pre-DA meeting, SEE, lodgement, assessment and the panel. Fee table: pre-DA advice and meeting $12,000; SEE and DA lodgement $38,000; assessment, responses to council and the planning panel $22,000; total $72,000 ex GST. Additional meetings at $240 per hour."
+    },
+    {
+      "id": "d10",
+      "filename": "Geotechnical report BRG-R-1152-01 - 18-22 Calloway Street.md",
+      "title": "Geotechnical investigation report",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-04-24",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Title, Report no: BRG-R-1152-01, Revision: 0, Report date: 24 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.basement",
+          "says": "Two basement levels excavated to a depth of about 7 m"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "Excavation extends to within 1 m of the northern boundary and the neighbouring dwelling"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "Groundwater was measured at RL 37.2 AHD, about 3 m above bulk excavation level; dewatering will be required during excavation, and a tanked basement is recommended"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical report: fieldwork (six cored boreholes, two standpipes), subsurface profile (fill and residual clay over Ashfield shale, then sandstone from about 5 m), '## Groundwater' ('Groundwater was measured at RL 37.2 AHD, about 3 m above bulk excavation level' in both standpipes over four weeks; 'dewatering will be required during excavation', with a WaterNSW dewatering approval and treatment before discharge; groundwater monitoring to continue until excavation), retention recommendations (contiguous piled wall with temporary anchors, with the pile toes cut off into sandstone to limit inflow; anchors under neighbouring lots need the owners' consent), the basement sentence, the boundary excavation sentence, 'a tanked basement is recommended' (no drained basement), dilapidation surveys of neighbouring dwellings before excavation, excavation inspections. No sentence says groundwater was not encountered."
+    },
+    {
+      "id": "d11",
+      "filename": "Architectural design report - Calloway Street apartments.md",
+      "title": "Architectural design report",
+      "author_role": "consultant.architect",
+      "firm": "Arden Vale Architects Pty Ltd",
+      "date": "2026-06-15",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Document number: AVA-DR-01, Revision: A, Date: 15 June 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "NCC building classification: Class 2 apartments over a Class 7a basement car park"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "The building is six storeys above two basement levels"
+        },
+        {
+          "key": "hdr.scale.gfa_sqm",
+          "says": "Gross floor area 6,184 m2"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "64 apartments: 14 one-bedroom, 38 two-bedroom and 12 three-bedroom"
+        },
+        {
+          "key": "flag.basement",
+          "says": "Two basement levels with 71 car spaces"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is sprinkler protected throughout"
+        },
+        {
+          "key": "det.facade_type",
+          "says": "Facade system: face brick and rendered masonry with standard aluminium windows; no curtain wall or rainscreen"
+        },
+        {
+          "key": "det.climate_zone",
+          "says": "The site is in NCC climate zone 5"
+        },
+        {
+          "key": "det.gas_supply",
+          "says": "All-electric building: induction cooktops and heat-pump hot water; no natural gas supply"
+        },
+        {
+          "key": "hdr.cond.environmental_sensitivity",
+          "says": "The site is a standard urban infill site with no environmental sensitivities such as bushland, waterways or habitat"
+        },
+        {
+          "key": "flag.arborist_tree_impacts",
+          "says": "No trees on or next to the site are affected by the works"
+        },
+        {
+          "key": "flag.arborist_offsite_trees",
+          "says": "New street trees will be planted; no existing street or neighbouring trees are affected"
+        },
+        {
+          "key": "flag.arborist_pruning",
+          "says": "No trees are pruned or removed"
+        },
+        {
+          "key": "flag.heavy_vehicles",
+          "says": "The basement serves cars only; no heavy vehicle access is needed and waste is collected from the kerb"
+        },
+        {
+          "key": "flag.staged",
+          "says": "The works are delivered in one stage; the construction certificate is issued in two parts"
+        },
+        {
+          "key": "flag.groundwater",
+          "says": "The basement is tanked because groundwater sits above bulk excavation level"
+        }
+      ],
+      "traps": [
+        {
+          "id": "stage-1-cc",
+          "what": "'Stage 1 CC (excavation and shoring) and Stage 2 CC (building)' matches the staged pattern '\\bstages? [1-9a-c]\\b' (DOMAIN.md §10).",
+          "expect": "flag.staged stays no: CC stages are not construction stages"
+        },
+        {
+          "id": "new-street-trees",
+          "what": "'New street trees will be planted' matches the arborist_offsite_trees pattern (DOMAIN.md §10).",
+          "expect": "flag.arborist_offsite_trees stays no: new planting affects no existing tree"
+        }
+      ],
+      "content": "Architect's design report for the DA (SEPP Housing Chapter 4 and ADG). Sections: '## Project description' (class sentence; storeys; GFA 6,184 m2; apartment mix; two basement levels with 71 car spaces and a ramp from Calloway Street), '## Site and context' (environmental sentence; R4 neighbours), '## Built form and facade' (facade sentence; balconies; rooftop communal open space), '## Services' (sprinkler sentence; all-electric sentence; EV-ready car park circuits; climate zone 5 and BASIX; 'The basement is tanked because groundwater sits above bulk excavation level'), '## Landscape and public domain' (deep soil; the two tree sentences; no pruning or removal), '## Access and waste' (heavy vehicle sentence), '## Delivery' (the one-stage sentence, then 'Stage 1 CC (excavation and shoring) and Stage 2 CC (building)'). Do not put the words 'fire' or 'explosion' in a sentence about the EV-ready car park or the facade."
+    },
+    {
+      "id": "d12",
+      "filename": "BCA assessment report FBR-26-118.md",
+      "title": "BCA assessment report",
+      "author_role": "consultant.bca",
+      "firm": "Firecode Building Regulations Pty Ltd",
+      "date": "2026-06-08",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Report | FBR-26-118 | | Revision | 1 | | Date | 08/06/2026 | | Client | Tallis Grove Developments Pty Ltd |; # heading 'BCA assessment report'",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "Building classification: Class 2 (apartments) and Class 7a (basement car park)"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "Rise in storeys: 6"
+        },
+        {
+          "key": "det.effective_height",
+          "says": "Effective height: about 18.6 m"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is sprinkler protected throughout"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The building is a Class 2 building under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required"
+        },
+        {
+          "key": "flag.fire_vulnerable_occupants",
+          "says": "There are no vulnerable occupants needing assisted evacuation"
+        },
+        {
+          "key": "flag.fire_special_hazards",
+          "says": "No special fire hazards or dangerous goods are present"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "No performance solution is proposed for the facade or structure; the external walls are non-combustible masonry"
+        }
+      ],
+      "traps": [],
+      "content": "BCA consultant's DA-stage report against NCC 2022 Volume One. Sections: classification table (Class 2 and 7a), rise in storeys 6, 'Effective height: about 18.6 m', Type A construction, sprinkler sentence, fire-isolated stairs, hydrants and booster, smoke detection, the three fire-flag sentences, the DBP Act sentence, accessibility. Identity sits in a table, not label lines."
+    },
+    {
+      "id": "d13",
+      "filename": "Acoustic report RA-26-0412-R01.md",
+      "title": "DA acoustic report",
+      "author_role": "consultant.acoustic",
+      "firm": "Resonance Acoustics Pty Ltd",
+      "date": "2026-06-05",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines: Title, Report no: RA-26-0412-R01, Revision: 0, Date: 5 June 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.noise_affected_site",
+          "says": "Road traffic noise from the local street is low and standard glazing achieves the internal criteria"
+        }
+      ],
+      "traps": [
+        {
+          "id": "road-traffic-noise",
+          "what": "The section heading 'Road traffic noise assessment' and the noise sentence match the noise_affected_site trigger '\\b(road|rail|aircraft|traffic) noise\\b' (DOMAIN.md §10).",
+          "expect": "det.noise_affected_site stays false: the report finds the local street quiet"
+        }
+      ],
+      "content": "Acoustic consultant's DA report. Sections: '## Road traffic noise assessment' (unattended logging on Calloway Street; the noise sentence), '## Mechanical plant' (rooftop condensers and car park fans meet the noise policy at the nearest neighbour with screening), '## Internal sound insulation' (NCC Part F7 sound insulation between apartments), '## Recommendations'."
+    },
+    {
+      "id": "d14",
+      "filename": "Ground floor plan A-DA-1101 Rev A.md",
+      "title": "Ground floor plan",
+      "author_role": "consultant.architect",
+      "firm": "Arden Vale Architects Pty Ltd",
+      "date": "2026-05-25",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-DA-1101, Revision: A, Title: Ground floor plan, Date: 25 May 2026",
+      "carries": [],
+      "traps": [],
+      "content": "Drawing sheet as Markdown: title block, then notes for the ground floor apartments, lobby, bin room, basement ramp, deep soil zones and communal open space. Issue: preliminary."
+    },
+    {
+      "id": "d15",
+      "filename": "Ground floor plan A-DA-1101 Rev B.md",
+      "title": "Ground floor plan",
+      "author_role": "consultant.architect",
+      "firm": "Arden Vale Architects Pty Ltd",
+      "date": "2026-06-12",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-DA-1101, Revision: B, Title: Ground floor plan, Date: 12 June 2026",
+      "carries": [],
+      "traps": [],
+      "content": "Revision B of the ground floor plan: bin room enlarged and the lobby moved 1.2 m east; revision note says 'Amended for DA lodgement'."
+    },
+    {
+      "id": "d16",
+      "filename": "Tax invoice AVA-INV-0214 Arden Vale.md",
+      "title": "Tax invoice AVA-INV-0214",
+      "author_role": "consultant.architect",
+      "firm": "Arden Vale Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Title: Tax invoice, Invoice no: AVA-INV-0214, Date: 30 April 2026, ABN: 40 096 569 489",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $185,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $18,500.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $203,500.00"
+        }
+      ],
+      "traps": [],
+      "content": "Architect's invoice for Stage 1 concept design and yield study, 100% complete."
+    },
+    {
+      "id": "d17",
+      "filename": "BRG invoice 4471.md",
+      "title": "Tax invoice 4471",
+      "author_role": "consultant.geotechnical",
+      "firm": "Basalt Ridge Geotechnical Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | 4471 | | Date | 30/04/2026 | | ABN | 49 518 838 449 |",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "$48,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "$4,800.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $52,800.00"
+        }
+      ],
+      "traps": [],
+      "content": "Geotechnical engineer's invoice for the boreholes, standpipes, laboratory testing and report, 100% of the proposal."
+    },
+    {
+      "id": "d18",
+      "filename": "Tax invoice HP-0093 Hollis Planning.md",
+      "title": "Tax invoice HP-0093",
+      "author_role": "consultant.town_planner",
+      "firm": "Hollis Planning Pty Ltd",
+      "date": "2026-04-15",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "adversarial",
+      "title_block": "label lines: Title: Tax invoice, Invoice number: HP-0093, Date: 15 April 2026, ABN: 34 273 771 467",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Pre-DA advice and meeting $12,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $1,800.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $13,800.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "gst-15-percent",
+          "what": "GST is charged at $1,800 on $12,000 (15%); the arithmetic adds up.",
+          "expect": "The ledger flags gst_rate (GST is not 10%) and not arithmetic"
+        }
+      ],
+      "content": "Town planner's invoice for the pre-DA advice and meeting stage, 100% complete; the GST line is wrong."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d10",
+      "change": "changed",
+      "why": "Geotechnical report states the trigger evidence (groundwater at RL 37.2 AHD, about 3 m above bulk excavation level; dewatering; tanked basement) in place of 'No groundwater was encountered in the boreholes to the depth investigated'; the seepage trap and the drained-basement advice are removed"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "Design report's passing mention 'drained cavity basement walls with sub-floor drainage' becomes the tanked basement sentence; the basement-drained trap is removed"
+    }
+  ]
+}

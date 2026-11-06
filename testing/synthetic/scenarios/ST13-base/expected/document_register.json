@@ -1,0 +1,275 @@
+{
+  "schema": "sitewise-synthetic-register/1",
+  "documents": [
+    {
+      "doc": "d01",
+      "status": "filed",
+      "kind": "design_brief",
+      "discipline": "none",
+      "lifecycle": "brief",
+      "number": null,
+      "revision": null,
+      "title": "Development brief: mixed-use building at 40-44 Halloran Street, Eastwood",
+      "date": "2026-02-02",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "owner"
+      }
+    },
+    {
+      "doc": "d02",
+      "status": "filed",
+      "kind": "certificate",
+      "discipline": "none",
+      "lifecycle": "authorities",
+      "number": "PC-2026-01187",
+      "revision": null,
+      "title": "Planning Certificate",
+      "date": "2026-02-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "City of Ryde"
+      }
+    },
+    {
+      "doc": "d03",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.surveyor",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "TMS-26-0207",
+      "revision": null,
+      "title": "Detail and boundary survey report",
+      "date": "2026-02-24",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Tallis & Moore Surveyors Pty Ltd"
+      }
+    },
+    {
+      "doc": "d04",
+      "status": "filed",
+      "kind": "correspondence",
+      "discipline": {
+        "accept": [
+          "consultant.architect",
+          "none"
+        ]
+      },
+      "lifecycle": {
+        "accept": [
+          "project",
+          "brief"
+        ]
+      },
+      "number": null,
+      "revision": null,
+      "title": "RE: Programme and DA timing",
+      "date": "2026-03-03",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Calder Rowe Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d05",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.environmental",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "KE-26-0310",
+      "revision": "0",
+      "title": "Preliminary site investigation",
+      "date": "2026-03-10",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Kestrel Environmental Pty Ltd"
+      }
+    },
+    {
+      "doc": "d06",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.architect",
+      "lifecycle": "consultant",
+      "number": "CRA-FP-2611",
+      "revision": null,
+      "title": "Fee proposal: architectural services",
+      "date": "2026-03-09",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Calder Rowe Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d07",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.structural",
+      "lifecycle": "consultant",
+      "number": "ISE-2603",
+      "revision": null,
+      "title": "Fee proposal: structural engineering",
+      "date": "2026-03-11",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ironbark Structures Pty Ltd"
+      }
+    },
+    {
+      "doc": "d08",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.civil",
+      "lifecycle": "consultant",
+      "number": "LCE-P-0388",
+      "revision": null,
+      "title": "Fee proposal: civil and stormwater engineering",
+      "date": "2026-03-13",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Larkspur Civil Engineering Pty Ltd"
+      }
+    },
+    {
+      "doc": "d09",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": "consultant",
+      "number": "BRG-P-0412",
+      "revision": null,
+      "title": "Fee proposal: geotechnical investigation",
+      "date": "2026-03-12",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Basalt Ridge Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d10",
+      "status": "filed",
+      "kind": "commercial",
+      "discipline": "consultant.town_planner",
+      "lifecycle": "consultant",
+      "number": "APL-26-031",
+      "revision": null,
+      "title": "Fee proposal: town planning services",
+      "date": "2026-03-16",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Ashgrove Planning Pty Ltd"
+      }
+    },
+    {
+      "doc": "d11",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.geotechnical",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "BRG-26-0412",
+      "revision": "0",
+      "title": "Geotechnical investigation report",
+      "date": "2026-04-24",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for information",
+        "originating_org": "Basalt Ridge Geotechnical Pty Ltd"
+      }
+    },
+    {
+      "doc": "d12",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.bca",
+      "lifecycle": {
+        "accept": [
+          "design",
+          "consultant"
+        ]
+      },
+      "number": "NBR-26-118",
+      "revision": "A",
+      "title": "BCA assessment report",
+      "date": "2026-05-08",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Northpoint Building Regulations Pty Ltd"
+      }
+    },
+    {
+      "doc": "d13",
+      "status": "filed",
+      "kind": "report",
+      "discipline": "consultant.town_planner",
+      "lifecycle": "authorities",
+      "number": "APL-26-031-SEE",
+      "revision": null,
+      "title": "Statement of environmental effects",
+      "date": "2026-05-22",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Ashgrove Planning Pty Ltd"
+      }
+    },
+    {
+      "doc": "d14",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-DA-1100",
+      "revision": "A",
+      "title": "Ground floor plan",
+      "date": "2026-04-30",
+      "supersedes": null,
+      "unsupported": {
+        "issue_status": "preliminary",
+        "originating_org": "Calder Rowe Architects Pty Ltd"
+      }
+    },
+    {
+      "doc": "d15",
+      "status": "filed",
+      "kind": "drawing",
+      "discipline": "consultant.architect",
+      "lifecycle": "design",
+      "number": "A-DA-1100",
+      "revision": "B",
+      "title": "Ground floor plan",
+      "date": "2026-05-20",
+      "supersedes": "d14",
+      "unsupported": {
+        "issue_status": "for DA",
+        "originating_org": "Calder Rowe Architects Pty Ltd"
+      }
+    }
+  ]
+}

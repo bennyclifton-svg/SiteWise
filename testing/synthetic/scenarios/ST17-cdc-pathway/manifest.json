@@ -1,0 +1,881 @@
+{
+  "schema": "sitewise-synthetic-manifest/1",
+  "scenario": "ST17-cdc-pathway",
+  "type_id": "T17",
+  "base": "ST17-base",
+  "triggers": [
+    "cdc-pathway"
+  ],
+  "project": {
+    "name": "Tideway Apartments cladding remediation, 27 Tideway Crescent",
+    "address": "27 Tideway Crescent, Meadowbank NSW 2114",
+    "lga": "City of Ryde",
+    "summary": "The owners corporation of Tideway Apartments, a fully occupied 8-storey, 56-apartment Class 2 strata building in Meadowbank constructed in 2011, must remove PE-core ACP and an EPS render system under a council fire safety order. Funded by special levies, it appoints a project manager and consultant team, obtains a complying development certificate from the certifier for the change of appearance and will let one AS 4000 lump sum contract for a ventilated rainscreen of solid aluminium panels, worked from a perimeter scaffold over the council footpath."
+  },
+  "invented": {
+    "lots": [
+      "SP 87654",
+      "Strata Plan 87654 (Lots 1 to 56 and common property)"
+    ],
+    "abns": [
+      "64 233 108 392",
+      "80 848 775 257",
+      "51 607 700 281",
+      "44 838 361 336",
+      "32 678 620 577",
+      "40 032 241 007",
+      "56 011 388 320"
+    ],
+    "firms": [
+      "Harbourline Strata Management Pty Ltd",
+      "Corbel Project Services Pty Ltd",
+      "Brightline Architects Pty Ltd",
+      "Kestrel Fire Engineering Pty Ltd",
+      "Mullion Facade Engineering Pty Ltd",
+      "Tallow Consulting Engineers Pty Ltd",
+      "Quoin Cost Consultants Pty Ltd"
+    ],
+    "emails": [
+      "priya.nandakumar@example.com",
+      "graham.whitcombe@example.com",
+      "daniel.okafor@example.com",
+      "meilin.chau@example.com",
+      "tomasz.wrobel@example.com",
+      "aisha.rahimi@example.com",
+      "callum.reid@example.com",
+      "fiona.galloway@example.com"
+    ]
+  },
+  "documents": [
+    {
+      "id": "d01",
+      "filename": "City of Ryde fire safety order FSO-2026-0031.md",
+      "title": "Fire safety order: external wall cladding",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-01-19",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Ref: FSO-2026-0031, Date: 19 January 2026, To: The Owners - Strata Plan No. 87654; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Ref: FSO-2026-0031"
+        }
+      ],
+      "traps": [
+        {
+          "id": "balcony-storage-not-special-hazard",
+          "what": "The order's interim measure 'no storage or barbecues on balconies' sits near 'fire safety measures'; matches the fire_special_hazards storage pattern.",
+          "expect": "flag.fire_special_hazards stays no (d14)"
+        }
+      ],
+      "content": "City of Ryde's fire safety order to the owners corporation of Tideway Apartments, 27 Tideway Crescent, Meadowbank, after the notice of intention and the owners corporation's representations. Sections: ## Order (remove the polyethylene-core aluminium composite panels on the balcony spandrels and blades and the expanded polystyrene render system on the level 7 and 8 setback walls, and replace them with a compliant external wall; the order relates to the external wall cladding only), ## Compliance date (17 December 2027), ## Interim fire safety measures (no storage or barbecues on balconies, a hot-works permit system, monthly inspection of the essential fire safety measures, resident information notice), ## Progress reports (every three months to council's fire safety officer, Karen Liu), ## Reasons (the 2025 cladding audit). Formal council wording; it does not say how the works are to be approved."
+    },
+    {
+      "id": "d02",
+      "filename": "Owners brief - Tideway Apartments cladding remediation.md",
+      "title": "Owners' brief: combustible cladding remediation project team",
+      "author_role": "owner",
+      "firm": "Harbourline Strata Management Pty Ltd",
+      "date": "2026-02-03",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Ref: HSM-87654-CR01, Date: 3 February 2026, Client: The Owners - Strata Plan No. 87654, Site: 27 Tideway Crescent, Meadowbank NSW 2114; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: The Owners - Strata Plan No. 87654"
+        },
+        {
+          "key": "proj.address",
+          "says": "Site: 27 Tideway Crescent, Meadowbank NSW 2114"
+        },
+        {
+          "key": "det.state",
+          "says": "Site: 27 Tideway Crescent, Meadowbank NSW 2114"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "Tideway Apartments is an 8-storey residential flat building of 56 apartments, constructed in 2011"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "Tideway Apartments is an 8-storey residential flat building of 56 apartments, constructed in 2011"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "an 8-storey residential flat building"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "Tideway Apartments is an 8-storey residential flat building of 56 apartments, constructed in 2011"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "constructed in 2011"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "The owners corporation is undertaking the remediation of the combustible external wall cladding of the existing building, as required by council's fire safety order"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The works will be approved by a complying development certificate; the certifier will determine the CDC for the cladding replacement"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "The building is a strata scheme; the owners corporation acts through its strata committee, with Harbourline Strata Management as its strata managing agent, and every spending decision needs a committee or general meeting resolution"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The building will remain fully occupied throughout the works"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "The building stands on the street boundary on both frontages, so the perimeter scaffold and an overhead hoarding must stand over the council footpath, with deliveries from the street"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "The consultant team will fully document the works for a lump sum tender to remedial builders"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "a lump sum tender to remedial builders"
+        }
+      ],
+      "traps": [
+        {
+          "id": "remediation-not-contamination",
+          "what": "'Remediation' and 'remediate' appear throughout; site.contamination is labelled 'Contaminated land and remediation' (DOMAIN.md §10).",
+          "expect": "det.potentially_contaminated_land stays false; no environmental consultant and no site.contamination scope"
+        },
+        {
+          "id": "rfp-cued-as-proposal",
+          "what": "The brief asks each consultant to 'submit a fee proposal by 27 February 2026'; proposals.Cue matches 'fee proposal' anywhere in the text.",
+          "expect": "d02 files as design_brief and opens no submission and no procurement package"
+        }
+      ],
+      "content": "The strata manager's brief, approved by the strata committee, inviting a project manager and the consultant team to propose. Sections: ## The building (8 storeys, 56 apartments, constructed in 2011, reinforced concrete frame, on the street boundary on both frontages), ## The order (council's fire safety order of 19 January 2026, compliance date 17 December 2027; the 2025 audit found PE-core ACP and an EPS render system), ## Funding (the owners corporation is funding the works through special levies without government assistance), ## Approvals (the works will be approved by a complying development certificate; the certifier will determine the CDC for the cladding replacement), ## Team sought (project manager, architect, fire safety engineer, facade engineer, structural engineer, quantity surveyor; BCA consultant and the certifier who will determine the CDC later), ## Delivery (the consultant team will fully document the works for a lump sum tender to remedial builders; fully occupied throughout; scaffold over the council footpath), ## Submission (submit a fee proposal by 27 February 2026 to Priya Nandakumar). Plain prose."
+    },
+    {
+      "id": "d03",
+      "filename": "Planning certificate s10.7 - SP 87654.md",
+      "title": "Planning Certificate",
+      "author_role": "council",
+      "firm": null,
+      "date": "2026-02-06",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Certificate no | PC-2026-0277 | | Issue date | 6/02/2026 | | Applicant | Harbourline Strata Management |; # heading 'Planning Certificate'",
+      "carries": [
+        {
+          "key": "proj.lga",
+          "says": "City of Ryde"
+        },
+        {
+          "key": "proj.lot",
+          "says": "Strata Plan 87654 (Lots 1 to 56 and common property)"
+        },
+        {
+          "key": "proj.zone",
+          "says": "Zone R4 High Density Residential under Ryde Local Environmental Plan 2014"
+        },
+        {
+          "key": "proj.address",
+          "says": "27 Tideway Crescent, Meadowbank NSW 2114"
+        },
+        {
+          "key": "det.state",
+          "says": "Meadowbank NSW 2114"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The land is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "det.flood_hazard",
+          "says": "The land is not subject to flood related development controls"
+        },
+        {
+          "key": "det.potentially_contaminated_land",
+          "says": "Council has no record that the land is contaminated or potentially contaminated"
+        },
+        {
+          "key": "flag.rail",
+          "says": "The land is not within or next to a rail corridor"
+        }
+      ],
+      "traps": [
+        {
+          "id": "cdc-eligible-land",
+          "what": "Item 4 says 'Complying development under the Codes SEPP may be carried out on the land'; the certificate is read.",
+          "expect": "hdr.cond.planning is cdc from d02 and d13; the certificate's land-eligibility wording agrees but is not the works' pathway and is not a source"
+        },
+        {
+          "id": "acid-sulfate-class-not-ncc",
+          "what": "'acid sulfate soils class 5' names a class that is not an NCC building class",
+          "expect": "det.ncc_class stays [\"2\"]"
+        }
+      ],
+      "content": "A council s10.7(2) planning certificate for the strata land, numbered items in the usual order: zoning and LEP (R4, Ryde LEP 2014), DCP, complying development ('Complying development under the Codes SEPP may be carried out on the land'), heritage (not an item, not in a conservation area), bush fire (not bush fire prone), flood (not subject to flood related development controls), acid sulfate soils (class 5), contamination (no record), rail corridor (not within or next to one), road widening (none). Fixed council wording; identity sits in a table, not label lines."
+    },
+    {
+      "id": "d04",
+      "filename": "Combustible cladding audit report KFE-A-2519.md",
+      "title": "Combustible external wall cladding audit",
+      "author_role": "consultant.fire_engineer",
+      "firm": "Kestrel Fire Engineering Pty Ltd",
+      "date": "2025-09-15",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Report no: KFE-A-2519, Revision: 0, Report date: 15 September 2025, Client: The Owners - Strata Plan No. 87654; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: The Owners - Strata Plan No. 87654"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "an 8-storey residential flat building of 56 apartments"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "an 8-storey residential flat building of 56 apartments"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "8-storey"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "56 apartments"
+        },
+        {
+          "key": "det.ncc_class",
+          "says": "NCC building classification: Class 2"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "The audit covers the external walls of the existing building"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 2011"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "The building has a rise in storeys of 8"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is not sprinkler protected"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "Our assessment identifies the external wall cladding as a facade fire performance issue requiring rectification"
+        },
+        {
+          "key": "hdr.cond.stakeholder_complexity",
+          "says": "Strata Plan 87654, managed by Harbourline Strata Management for the owners corporation"
+        }
+      ],
+      "traps": [
+        {
+          "id": "bedroom-window",
+          "what": "Sample S7 is recorded as 'taken beside a bedroom window on level 3'; 'bedroom' implies internal doors in code (DOMAIN.md §10).",
+          "expect": "No interiors internal-doors scope"
+        },
+        {
+          "id": "basement-exists-not-excavated",
+          "what": "States 'The building is wholly residential above the basement car park'; matches the basement trigger \\bbasement.",
+          "expect": "flag.basement stays no: the basement exists and nothing is excavated"
+        }
+      ],
+      "content": "Kestrel's 2025 audit for the owners corporation. Sections: ## Building (existing building constructed in 2011, Class 2, rise in storeys of 8, 56 apartments, not sprinkler protected, wholly residential above the basement car park, balconies with glass balustrades, which are retained), ## Method (visual survey of all elevations, 12 samples, laboratory combustibility testing), ## Findings (PE-core ACP on balcony spandrels and blades on all four elevations; EPS render system on the level 7 and 8 setback walls; combustible foil sarking behind the ACP; the 2020 hazardous materials survey found no asbestos in the facade; no services are fixed to or through the cladding; sample S7 beside a bedroom window), ## Risk (the fire engineer's assessment identifies the external wall cladding as a facade fire performance issue requiring rectification), ## Recommendation (full removal and replacement). Samples tabled by elevation and level."
+    },
+    {
+      "id": "d05",
+      "filename": "RE Timing of the cladding works.md",
+      "title": "RE: Timing of the cladding works",
+      "author_role": "owner",
+      "firm": null,
+      "date": "2026-02-12",
+      "wave": 1,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "email header: From, To, Subject, Date (two-message thread between the committee chair and the strata manager)",
+      "carries": [
+        {
+          "key": "proj.target_construction_start",
+          "says": "The committee wants the builder on site by 1 March 2027 so we can meet council's December 2027 date"
+        }
+      ],
+      "traps": [],
+      "content": "Short email thread. Graham Whitcombe (strata committee chair) asks when work can start and states the target start of 1 March 2027; Priya Nandakumar replies that a general meeting must first approve the design fees and the first special levy, and later the contract and the construction levy."
+    },
+    {
+      "id": "d06",
+      "filename": "Fee proposal - Corbel Project Services - Tideway Apartments.md",
+      "title": "Fee proposal: project management of cladding remediation",
+      "author_role": "consultant.project_manager",
+      "firm": "Corbel Project Services Pty Ltd",
+      "date": "2026-02-20",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Proposal no: CPS-FP-2611, Date: 20 February 2026, Client: The Owners - Strata Plan No. 87654; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: The Owners - Strata Plan No. 87654"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "We will act as superintendent under AS 4000-1997 General conditions of contract, with special conditions"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee, Stages 1 to 5: $182,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "fee-stages-not-staged-works",
+          "what": "The fee table is headed 'Stage 1' to 'Stage 5', which matches the staged trigger \\bstages? [1-9a-c]\\b.",
+          "expect": "flag.staged stays no: these are fee stages, not construction stages"
+        }
+      ],
+      "content": "Project manager's proposal signed by Daniel Okafor. Sections: understanding (fire safety order, occupied building, committee and general meeting gates), scope (council liaison on the order, consultant procurement, program against the compliance date, reports to the committee and general meetings, resident communication, superintendent under AS 4000-1997 with special conditions), fee table (Stage 1 Investigation and consultant procurement $28,000; Stage 2 Design and approvals management $36,000; Stage 3 Tender and contract award $14,000; Stage 4 Construction phase and superintendent $96,000; Stage 5 Completion and order closure $8,000; total $182,000 ex GST), additional general meetings at $750 each, hourly rate $220 ex GST, exclusions (design, certification, cost estimating)."
+    },
+    {
+      "id": "d07",
+      "filename": "Fee proposal - Brightline Architects - Tideway facade.md",
+      "title": "Fee proposal: architectural services for facade remediation",
+      "author_role": "consultant.architect",
+      "firm": "Brightline Architects Pty Ltd",
+      "date": "2026-02-24",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Proposal no: BLA-2026-014, Date: 24 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.regulated_design",
+          "says": "Stage 5 includes the architectural regulated designs and design compliance declarations: the remediation is building work under the Design and Building Practitioners Act 2020"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee: $234,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [
+        {
+          "id": "stage-5-fee-stage",
+          "what": "'Stage 5 includes the architectural regulated designs' matches the staged trigger.",
+          "expect": "flag.staged stays no (d13)"
+        }
+      ],
+      "content": "Architect's proposal signed by Mei Lin Chau, registered architect and registered design practitioner. Fee table: 1 Existing facade survey and remediation options $38,000; 2 Schematic facade design $26,000; 3 Design development $44,000; 4 CDC drawings, with photomontages for the general meeting $32,000; 5 Regulated designs, construction documentation and tender documents $58,000; 6 Design support during construction, including shop drawing review $36,000; total $234,000 ex GST. Printing and photomontage disbursements included. Hourly rate $240 ex GST. Excludes fire engineering, facade engineering and interiors."
+    },
+    {
+      "id": "d08",
+      "filename": "Fee proposal - Kestrel Fire Engineering - Tideway Apartments.md",
+      "title": "Fee proposal: fire safety engineering for cladding remediation",
+      "author_role": "consultant.fire_engineer",
+      "firm": "Kestrel Fire Engineering Pty Ltd",
+      "date": "2026-02-25",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Quote no: KFE-Q-2604, Date: 25 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total $48,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Fire engineer's proposal signed by Tomasz Wrobel. Fee table: audit review and fire risk assessment $14,500; interim fire safety measures and staged strategy $4,500; design review and confirmation of deemed-to-satisfy compliance of the replacement wall $9,000; fire engineering support letter for the CDC $3,000; construction inspections of cavity barriers and slab-edge protection $12,000; verification for the occupation certificate and order closure $5,000; total $48,000 ex GST. Further laboratory combustibility testing passed through at cost, estimated $6,600 ex GST. A performance solution, if needed, is priced separately."
+    },
+    {
+      "id": "d09",
+      "filename": "Fee proposal - Mullion Facade Engineering - MFE-P-0211.md",
+      "title": "Fee proposal: facade engineering",
+      "author_role": "consultant.facade",
+      "firm": "Mullion Facade Engineering Pty Ltd",
+      "date": "2026-02-26",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Proposal ref: MFE-P-0211, Date: 26 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.facade_type",
+          "says": "Our scope covers the replacement ventilated rainscreen cladding system: system options, performance specification and subframe design review"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total fee: $76,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Facade engineer's proposal signed by Aisha Rahimi. Fee table: records review and sampling $12,000; system options and performance specification (wind, water, movement, fire) $16,000; subframe and fixing design review $18,000; facade regulated design and declaration $8,000; shop drawing review, installation inspections and facade water testing $22,000; total $76,000 ex GST. Hourly rate $230 ex GST. Excludes architectural design and fire engineering conclusions."
+    },
+    {
+      "id": "d10",
+      "filename": "Structural engineering fee proposal TCE-Q-3381.md",
+      "title": "Fee proposal: structural engineering for facade fixings",
+      "author_role": "consultant.structural",
+      "firm": "Tallow Consulting Engineers Pty Ltd",
+      "date": "2026-02-26",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Quote no: TCE-Q-3381, Date: 26 February 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "flag.basement",
+          "says": "No excavation, basement or ground works are included, so no geotechnical input is required"
+        },
+        {
+          "key": "fee.total",
+          "says": "Total $33,000 excluding GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "Fees exclude GST"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's quote signed by Callum Reid. Fee table: existing structure assessment of slab edges and pull-out test regime $11,000; fixing design and certification, provisional slab-edge repair specification $9,500; structural regulated design and declaration $4,000; construction-phase inspection of brackets and fixings $8,500; total $33,000 ex GST. Pull-out testing contractor passed through at cost, estimated $5,800 ex GST. Additional inspections $520 per visit."
+    },
+    {
+      "id": "d11",
+      "filename": "Quoin fee submission - Tideway Crescent.md",
+      "title": "Fee proposal: quantity surveying services",
+      "author_role": "consultant.quantity_surveyor",
+      "firm": "Quoin Cost Consultants Pty Ltd",
+      "date": "2026-02-27",
+      "wave": 2,
+      "drop": "repository",
+      "tier": "messy",
+      "title_block": "Markdown table title block: | Our ref | QCC-26-118 | | Date | 27/02/2026 | | Attention | Strata committee, SP 87654 |; one # heading 'Fee proposal: quantity surveying services'",
+      "carries": [
+        {
+          "key": "fee.total",
+          "says": "Total fee $49,500 including GST"
+        },
+        {
+          "key": "fee.gst_basis",
+          "says": "All amounts include GST"
+        }
+      ],
+      "traps": [],
+      "content": "QS proposal from Fiona Galloway. Every figure GST-inclusive: option estimates for the general meeting $9,900; CDC cost estimate report (registered QS) $3,300; pre-tender estimate $8,800; tender assessment and normalisation $5,500; progress-claim assessment reports $22,000; total $49,500 inc GST. Hourly rate $198 inc GST."
+    },
+    {
+      "id": "d13",
+      "filename": "Facade remediation options report BLA-R-014-01.md",
+      "title": "Facade remediation options report",
+      "author_role": "consultant.architect",
+      "firm": "Brightline Architects Pty Ltd",
+      "date": "2026-04-21",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Report no: BLA-R-014-01, Revision: 1, Report date: 21 April 2026, Client: The Owners - Strata Plan No. 87654; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "proj.client",
+          "says": "Client: The Owners - Strata Plan No. 87654"
+        },
+        {
+          "key": "hdr.work_type",
+          "says": "This report sets out options for the remediation of the combustible cladding on the existing building"
+        },
+        {
+          "key": "hdr.building_class",
+          "says": "an 8-storey residential flat building of 56 apartments"
+        },
+        {
+          "key": "hdr.subclass",
+          "says": "an 8-storey residential flat building of 56 apartments"
+        },
+        {
+          "key": "hdr.scale.storeys",
+          "says": "8-storey"
+        },
+        {
+          "key": "hdr.scale.units",
+          "says": "56 apartments"
+        },
+        {
+          "key": "det.existing_building",
+          "says": "existing building"
+        },
+        {
+          "key": "hdr.cond.planning",
+          "says": "The works will be approved by a complying development certificate; the certifier will determine the CDC for the cladding replacement"
+        },
+        {
+          "key": "hdr.cond.procurement_route",
+          "says": "The consultant team will fully document the works for a lump sum tender; traditional procurement"
+        },
+        {
+          "key": "hdr.cond.access_constraints",
+          "says": "The building is on the street boundary on both frontages: the perimeter scaffold and an overhead hoarding stand over the council footpath"
+        },
+        {
+          "key": "det.facade_type",
+          "says": "The replacement is a ventilated rainscreen cladding system of solid aluminium panels designed by the facade engineer"
+        },
+        {
+          "key": "det.heritage_status",
+          "says": "The site is not a heritage item and is not within a heritage conservation area"
+        },
+        {
+          "key": "fact.contract_form",
+          "says": "AS 4000-1997 General conditions of contract, with special conditions"
+        },
+        {
+          "key": "fact.contract_basis",
+          "says": "lump sum contract"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The remediation is building work under the Design and Building Practitioners Act 2020; regulated designs and design compliance declarations are required"
+        },
+        {
+          "key": "proj.budget_stated",
+          "says": "Estimated construction cost for the recommended option: $6,850,000 excluding GST. We recommend the owners corporation adopts this as its construction budget"
+        },
+        {
+          "key": "flag.authority_asset",
+          "says": "The works do not build over or next to any sewer main or water main"
+        },
+        {
+          "key": "flag.osd_existing",
+          "says": "The existing building stormwater system, which has no on-site detention, is not altered"
+        },
+        {
+          "key": "flag.staged",
+          "says": "There will be no staged delivery: all elevations will be completed in one continuous stage"
+        },
+        {
+          "key": "flag.multi_building",
+          "says": "The site has a single residential flat building; there are no multiple buildings"
+        },
+        {
+          "key": "flag.cl46",
+          "says": "The works do not change the height or floor space ratio, and as complying development need no clause 4.6 variation"
+        },
+        {
+          "key": "flag.panel",
+          "says": "As complying development determined by the certifier, it does not go to a planning panel"
+        },
+        {
+          "key": "flag.community",
+          "says": "No community consultation is planned beyond the owners corporation's own resident meetings and the neighbour notice the certifier gives"
+        },
+        {
+          "key": "flag.country",
+          "says": "No connecting with Country or Aboriginal cultural heritage input is required for a recladding"
+        },
+        {
+          "key": "flag.sustainability_target",
+          "says": "No Green Star, NABERS or net zero target applies"
+        }
+      ],
+      "traps": [
+        {
+          "id": "basement-scaffold",
+          "what": "The access section says 'scaffold base plates sit on the podium slab over the basement car park'; matches the basement trigger (DOMAIN.md §10).",
+          "expect": "flag.basement stays no; no structural retention, dilapidation or complex-scale consequence"
+        },
+        {
+          "id": "basix-does-not-apply",
+          "what": "States 'BASIX does not apply because the works are to common property'; the energy-rating implied_by pattern fires on 'BASIX' with no negation handling (DOMAIN.md §10).",
+          "expect": "No envelope.thermal-performance work item and no BASIX package or cost line"
+        }
+      ],
+      "content": "The architect's options report with QS, fire, facade and structural input, for the general meeting. Sections: ## Building (existing building, 8-storey, 56 apartments, constructed in 2011), ## Findings summary (from the audit and investigations; windows are retained and protected throughout; balconies have glass balustrades, which are retained), ## Options (1 ACP replacement with solid aluminium panels on a direct fix; 2 ventilated rainscreen cladding system of solid aluminium panels designed by the facade engineer, with mineral wool insulation and non-combustible sarking, recommended; 3 fibre cement rainscreen), ## Order of cost (estimated construction cost for the recommended option $6,850,000 ex GST; recommend adopting it as the construction budget; funded through special levies without government assistance), ## Approvals (the works will be approved by a complying development certificate and the certifier will determine the CDC for the cladding replacement; not a heritage item; no clause 4.6 variation; not a planning panel matter as complying development determined by the certifier; no community consultation beyond resident meetings and the certifier's neighbour notice; no connecting with Country input; no Green Star, NABERS or net zero target; BASIX does not apply because the works are to common property; DBP Act regulated designs), ## Delivery (the consultant team will fully document the works for a lump sum tender; AS 4000-1997 with special conditions, lump sum contract; all combustible cladding and insulation removed; a full perimeter scaffold is used, with base plates on the podium slab over the basement car park; all elevations face the street or common property; no staged delivery; one building; no sewer or water main; existing stormwater with no on-site detention not altered; HBCF cover is not required because the building has a rise of more than three storeys; no claim is being pursued)."
+    },
+    {
+      "id": "d14",
+      "filename": "Fire engineering risk assessment KFE-R-2604-01.md",
+      "title": "Fire engineering risk assessment and interim fire safety strategy",
+      "author_role": "consultant.fire_engineer",
+      "firm": "Kestrel Fire Engineering Pty Ltd",
+      "date": "2026-04-07",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "adversarial",
+      "title_block": "label lines before the first ##: Title, Report no: KFE-R-2604-01, Revision: 0, Report date: 7 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.ncc_class",
+          "says": "NCC building classification: Class 2"
+        },
+        {
+          "key": "det.rise_in_storeys",
+          "says": "The building has a rise in storeys of 8"
+        },
+        {
+          "key": "det.type_of_construction",
+          "says": "The building is required to be of Type A construction"
+        },
+        {
+          "key": "det.sprinklered",
+          "says": "The building is not sprinkler protected"
+        },
+        {
+          "key": "hdr.cond.operational_constraints",
+          "says": "The building will remain fully occupied throughout the works"
+        },
+        {
+          "key": "flag.fire_specialist_systems",
+          "says": "The fire engineer's assessment identifies the external wall cladding as a facade fire performance issue requiring rectification"
+        },
+        {
+          "key": "flag.fire_vulnerable_occupants",
+          "says": "There are no vulnerable occupants who need assisted evacuation beyond the general resident population"
+        },
+        {
+          "key": "flag.fire_special_hazards",
+          "says": "There are no special fire hazards or dangerous goods in the building"
+        }
+      ],
+      "traps": [
+        {
+          "id": "type-a-not-a-class",
+          "what": "'Type A construction' sits beside 'Class 2'; 'Type A' is not an NCC building class (DOMAIN.md §10).",
+          "expect": "det.ncc_class stays [\"2\"]"
+        },
+        {
+          "id": "not-sprinklered-is-evidence",
+          "what": "'The building is not sprinkler protected' matches the sprinkler trigger and names sprinklers.",
+          "expect": "det.sprinklered false; no fire-active.sprinklers work item and no fire services consultant"
+        }
+      ],
+      "content": "Fire engineer's report after the laboratory results. Sections: ## Building (NCC building classification: Class 2, rise in storeys of 8, Type A construction, not sprinkler protected, fully occupied throughout), ## Risk assessment (external wall cladding is a facade fire performance issue requiring rectification; no vulnerable occupants needing assisted evacuation; no special fire hazards or dangerous goods), ## Removal extent (all combustible cladding and insulation will be removed and replaced to the deemed-to-satisfy provisions), ## Interim strategy (measures in the order plus a removal sequence that never leaves exposed EPS overnight), ## The order (the order relates to the external wall cladding only), ## Inspections (cavity barriers and slab-edge protection before close-up)."
+    },
+    {
+      "id": "d15",
+      "filename": "Slab edge investigation and anchor pull-out results TCE-R-3381-01.md",
+      "title": "Slab edge investigation and pull-out test report",
+      "author_role": "consultant.structural",
+      "firm": "Tallow Consulting Engineers Pty Ltd",
+      "date": "2026-04-14",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines before the first ##: Title, Report no: TCE-R-3381-01, Revision: 0, Report date: 14 April 2026; one # heading identical to Title",
+      "carries": [
+        {
+          "key": "det.existing_building",
+          "says": "The slab edges and columns of the existing building are reinforced concrete"
+        },
+        {
+          "key": "det.existing_building_year",
+          "says": "The building was constructed in 2011"
+        },
+        {
+          "key": "proj.regulated_design",
+          "says": "The bracket fixings into the primary structure are part of the regulated design under the Design and Building Practitioners Act 2020"
+        },
+        {
+          "key": "flag.transfer_structures",
+          "says": "The building has no transfer slabs or transfer beams in the zones where the brackets fix"
+        },
+        {
+          "key": "flag.excavation_adjoining",
+          "says": "No excavation is involved, and nothing is done near the adjoining boundaries or neighbouring structures"
+        },
+        {
+          "key": "flag.basement",
+          "says": "The works are confined to the external walls; no basement or ground works are involved"
+        }
+      ],
+      "traps": [],
+      "content": "Structural engineer's report from six sample openings on four elevations. Sections: ## Existing structure (reinforced concrete flat plates constructed in 2011, cover and edge distance measured, no transfer slabs or beams in the fixing zones), ## Openings (the substrate and fixings were sound in all sample openings; balcony waterproofing upturns were found intact in all sample openings), ## Pull-out tests (24 anchors tested to 1.5 times the working load, all passed), ## Recommendations (bracket layout, minimum edge distance, provisional slab-edge repair method), ## Scope limits (no excavation, basement or ground works; nothing near the adjoining boundaries)."
+    },
+    {
+      "id": "d17",
+      "filename": "A-201 Rev A - North and east elevations.md",
+      "title": "North and east elevations: proposed cladding",
+      "author_role": "consultant.architect",
+      "firm": "Brightline Architects Pty Ltd",
+      "date": "2026-05-19",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-201, Revision: A, Title: North and east elevations: proposed cladding, Date: 19 May 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: A-201"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: A"
+        }
+      ],
+      "traps": [],
+      "content": "Elevation sheet as Markdown: title block, then notes on the panel layout, colour codes, cavity barrier lines at each slab edge and the retained windows. Revision note 'Preliminary, for consultant coordination'."
+    },
+    {
+      "id": "d18",
+      "filename": "A-201 Rev B - North and east elevations.md",
+      "title": "North and east elevations: proposed cladding",
+      "author_role": "consultant.architect",
+      "firm": "Brightline Architects Pty Ltd",
+      "date": "2026-06-05",
+      "wave": 3,
+      "drop": "repository",
+      "tier": "clean",
+      "title_block": "label lines: Drawing number: A-201, Revision: B, Title: North and east elevations: proposed cladding, Date: 5 June 2026",
+      "carries": [
+        {
+          "key": "register.number",
+          "says": "Drawing number: A-201"
+        },
+        {
+          "key": "register.revision",
+          "says": "Revision: B"
+        }
+      ],
+      "traps": [],
+      "content": "Revision B of A-201: panel joints realigned to the facade engineer's subframe grid and the colour scheme updated; revision note 'Issued for approval'."
+    },
+    {
+      "id": "d19",
+      "filename": "Tax invoice BLA-INV-2207.md",
+      "title": "Tax invoice BLA-INV-2207",
+      "author_role": "consultant.architect",
+      "firm": "Brightline Architects Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "clean",
+      "title_block": "label lines: Tax invoice, Invoice no: BLA-INV-2207, Date: 30 April 2026, ABN",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Subtotal $38,000.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $3,800.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total $41,800.00"
+        }
+      ],
+      "traps": [],
+      "content": "Brightline's invoice for fee stage 1, existing facade survey and remediation options, 100% complete."
+    },
+    {
+      "id": "d20",
+      "filename": "Kestrel invoice K-26-0412.md",
+      "title": "Tax invoice K-26-0412",
+      "author_role": "consultant.fire_engineer",
+      "firm": "Kestrel Fire Engineering Pty Ltd",
+      "date": "2026-04-30",
+      "wave": 4,
+      "drop": "invoices",
+      "tier": "messy",
+      "title_block": "Markdown table: | Invoice | K-26-0412 | | Date | 30/04/2026 | | ABN | 44 838 361 336 |",
+      "carries": [
+        {
+          "key": "invoice.ex_gst",
+          "says": "Fee $14,500.00"
+        },
+        {
+          "key": "invoice.gst",
+          "says": "GST $1,450.00"
+        },
+        {
+          "key": "invoice.total",
+          "says": "Total due $16,850.00"
+        }
+      ],
+      "traps": [
+        {
+          "id": "total-arithmetic",
+          "what": "The total is printed $16,850.00; fee $14,500.00 plus GST $1,450.00 is $15,950.00 (digits transposed).",
+          "expect": "The ledger flags arithmetic"
+        }
+      ],
+      "content": "Fire engineer's invoice for the audit review and fire risk assessment, 100% complete. The total line carries a transposition error."
+    }
+  ],
+  "changed_from_base": [
+    {
+      "doc": "d02",
+      "change": "changed",
+      "why": "The trigger's evidence (approved by a complying development certificate; the certifier will determine the CDC) replaces 'Council has advised that a development application is required'; the town planner is no longer sought"
+    },
+    {
+      "doc": "d03",
+      "change": "changed",
+      "why": "Only the trap's expectation changes (planning is cdc here); the document is unchanged"
+    },
+    {
+      "doc": "d06",
+      "change": "changed",
+      "why": "The understanding section allowed for council's assessment of the development application; it now allows for the certifier's assessment of the CDC application; amounts unchanged"
+    },
+    {
+      "doc": "d07",
+      "change": "changed",
+      "why": "Architect's DA drawings stage becomes CDC drawings (with photomontages for the general meeting) and moves after design development, since a CDC must show NCC compliance; amounts unchanged"
+    },
+    {
+      "doc": "d08",
+      "change": "changed",
+      "why": "Fire engineer's support letter is for the CDC instead of the DA and follows the DTS design review; amounts unchanged"
+    },
+    {
+      "doc": "d11",
+      "change": "changed",
+      "why": "QS cost estimate report is for the CDC instead of the DA; amounts unchanged"
+    },
+    {
+      "doc": "d12",
+      "change": "removed",
+      "why": "Trigger removes consultant.town_planner: no town planning fee proposal under a CDC"
+    },
+    {
+      "doc": "d13",
+      "change": "changed",
+      "why": "Approvals section carries the CDC evidence instead of 'A development application is required'; clause 4.6, panel and consultation denials reworded for complying development; budget unchanged"
+    },
+    {
+      "doc": "d16",
+      "change": "removed",
+      "why": "No statement of environmental effects under a CDC"
+    }
+  ]
+}

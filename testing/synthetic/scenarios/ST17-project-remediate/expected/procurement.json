@@ -1,0 +1,41 @@
+{
+  "schema": "sitewise-synthetic-procurement/1",
+  "shape": "types/T17-cladding-remediation/shape.yaml",
+  "triggers": [
+    "project-remediate"
+  ],
+  "from_proposals": [
+    {
+      "doc": "d07",
+      "discipline": "consultant.architect",
+      "kind": "services"
+    },
+    {
+      "doc": "d08",
+      "discipline": "consultant.fire_engineer",
+      "kind": "services"
+    },
+    {
+      "doc": "d09",
+      "discipline": "consultant.facade",
+      "kind": "services"
+    },
+    {
+      "doc": "d10",
+      "discipline": "consultant.structural",
+      "kind": "services"
+    },
+    {
+      "doc": "d11",
+      "discipline": "consultant.quantity_surveyor",
+      "kind": "services"
+    },
+    {
+      "doc": "d12",
+      "discipline": "consultant.town_planner",
+      "kind": "services"
+    }
+  ],
+  "route": "traditional",
+  "novation": {}
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "sitewise-synthetic-invoices/1",
+  "invoices": [
+    {
+      "doc": "d16",
+      "kind": "invoice",
+      "number": "AVA-INV-0214",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "40 096 569 489",
+      "supplier_discipline": "consultant.architect",
+      "ex_gst_cents": 18500000,
+      "gst_cents": 1850000,
+      "total_cents": 20350000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Stage 1 Concept design and yield study (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d17",
+      "kind": "invoice",
+      "number": "4471",
+      "invoice_date": "2026-04-30",
+      "issuer_abn": "49 518 838 449",
+      "supplier_discipline": "consultant.geotechnical",
+      "ex_gst_cents": 4800000,
+      "gst_cents": 480000,
+      "total_cents": 5280000,
+      "flags": [],
+      "unsupported": {
+        "claim_stage": "Investigation, testing and report (100%)",
+        "retention": null
+      }
+    },
+    {
+      "doc": "d18",
+      "kind": "invoice",
+      "number": "HP-0093",
+      "invoice_date": "2026-04-15",
+      "issuer_abn": "34 273 771 467",
+      "supplier_discipline": "consultant.town_planner",
+      "ex_gst_cents": 1200000,
+      "gst_cents": 180000,
+      "total_cents": 1380000,
+      "flags": [
+        "gst_rate"
+      ],
+      "unsupported": {
+        "claim_stage": "Pre-DA advice and meeting (100%)",
+        "retention": null
+      }
+    }
+  ]
+}

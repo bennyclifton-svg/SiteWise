@@ -1,0 +1,1470 @@
+{
+  "schema": "sitewise-synthetic-score/1",
+  "type_id": "T17",
+  "name": "Fa\u00e7ade or combustible cladding remediation",
+  "scenario": {
+    "triggers": [
+      "cdc-pathway"
+    ]
+  },
+  "procurement": {
+    "status": "scored",
+    "matched": [
+      {
+        "expected": "consultant.project_manager",
+        "app": "Project Manager",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.architect",
+        "app": "Architect",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.fire_engineer",
+        "app": "Fire Engineer",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.facade",
+        "app": "Facade",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.structural",
+        "app": "Structural",
+        "state": "package",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "consultant.quantity_surveyor",
+        "app": "Quantity Surveyor",
+        "state": "package",
+        "matched_by": "discipline"
+      }
+    ],
+    "missed": [
+      {
+        "expected": "consultant.bca",
+        "built_in": "no",
+        "need": null,
+        "trigger": null
+      },
+      {
+        "expected": "consultant.certifier",
+        "built_in": "no",
+        "need": null,
+        "trigger": null
+      },
+      {
+        "expected": "trade.main_works",
+        "built_in": "partial",
+        "need": null,
+        "trigger": null
+      }
+    ],
+    "extra": [],
+    "false_positive": [],
+    "kind_mismatch": []
+  },
+  "cost_plan": {
+    "status": "scored",
+    "matched": [
+      {
+        "expected": "Construction certificate and certifier fees",
+        "app": "Construction certificate and certifier fees",
+        "code": "P05",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Project manager",
+        "app": "Project Manager",
+        "code": "F04",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Architect",
+        "app": "Architect",
+        "code": "F01",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Fire safety engineer",
+        "app": "Fire Engineer",
+        "code": "F03",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Facade engineer",
+        "app": "Facade",
+        "code": "F02",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Structural engineer",
+        "app": "Structural",
+        "code": "F06",
+        "state": "item",
+        "matched_by": "discipline"
+      },
+      {
+        "expected": "Quantity surveyor",
+        "app": "Quantity Surveyor",
+        "code": "F05",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Subframe and bracket fixings",
+        "app": "Building envelope",
+        "code": "04",
+        "state": "item",
+        "matched_by": "source"
+      },
+      {
+        "expected": "Cavity barriers and slab-edge fire protection",
+        "app": "Passive fire protection",
+        "code": "06",
+        "state": "item",
+        "matched_by": "source"
+      },
+      {
+        "expected": "Design contingency",
+        "app": "Design contingency",
+        "code": "P01",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Construction contingency",
+        "app": "Construction contingency",
+        "code": "P02",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Escalation",
+        "app": "Escalation",
+        "code": "P03",
+        "state": "item",
+        "matched_by": "label"
+      },
+      {
+        "expected": "Exclusions",
+        "app": "Exclusions: GST",
+        "code": "P07",
+        "state": "item",
+        "matched_by": "prefix"
+      }
+    ],
+    "missed": [
+      {
+        "expected": "Long service levy",
+        "section": "fees_and_charges",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Council hoarding, footpath occupation and road occupancy fees",
+        "section": "fees_and_charges",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "BCA consultant",
+        "section": "consultants",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Principal certifier",
+        "section": "consultants",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Town planner",
+        "section": "consultants",
+        "built_in": "yes",
+        "trigger": null
+      },
+      {
+        "expected": "Investigation disbursements: sampling, laboratory combustibility testing, opening-up and pull-out testing",
+        "section": "consultants",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Preliminaries and occupied-building controls",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Perimeter scaffold, shade cloth and edge protection, incl. engineering and certification",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Footpath hoarding or overhead protection",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Pre-commencement condition surveys of units, footpath and neighbours",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Equipotential bonding and earthing of the aluminium cladding and subframe (verified: false)",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Remove and dispose of combustible cladding and EPS render system",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Non-combustible cladding system supply and install",
+        "section": "construction",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Non-combustible insulation and sarking",
+        "section": "construction",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Flashings, sealants and window interfaces",
+        "section": "construction",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Interim fire safety measures during the works",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Facade water testing and hold-point inspections",
+        "section": "construction",
+        "built_in": "no",
+        "trigger": null
+      },
+      {
+        "expected": "Provisional sums: slab-edge repairs and concealed conditions behind the cladding",
+        "section": "construction",
+        "built_in": "partial",
+        "trigger": null
+      },
+      {
+        "expected": "Owners corporation costs: strata manager, legal review of contract and levy or loan, finance costs",
+        "section": "contingency",
+        "built_in": "no",
+        "trigger": null
+      }
+    ],
+    "extra": [
+      {
+        "app": "Interiors and finishes",
+        "code": "05",
+        "section": "construction",
+        "state": "item"
+      },
+      {
+        "app": "Compliant balustrades and barriers",
+        "code": "13.3",
+        "section": "construction",
+        "state": "item"
+      }
+    ],
+    "false_positive": [
+      {
+        "expected": "Service authority connection fees",
+        "app": "Service authority connection fees",
+        "code": "P06",
+        "matched_by": "app_label",
+        "why": "Always suggested; no authority connection is made."
+      }
+    ],
+    "section_mismatch": [],
+    "groups": 1,
+    "fabricated": [],
+    "amounts": {
+      "document": 0,
+      "user": 0,
+      "fabricated": 0
+    }
+  },
+  "program": {
+    "status": "scored",
+    "skeleton": {
+      "expected": "missing",
+      "app": "sk.generic",
+      "match": false
+    },
+    "activities": {
+      "matched": [
+        {
+          "expected": "Certifier determination",
+          "app": "Certifier determination",
+          "matched_by": "label"
+        }
+      ],
+      "missed": [
+        {
+          "expected": "Receive fire safety order and confirm the compliance date",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Strata committee appoints project manager and approves investigation budget",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Collect records: approvals, facade drawings, product data, cladding registration, audit, fire safety schedule",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Facade survey, sampling and laboratory combustibility testing",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Put interim fire safety measures in place",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Fire engineering risk assessment and removal-extent advice",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Intrusive opening-up and pull-out testing of fixing substrates",
+          "stage": "investigation",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Remediation options report with order of cost",
+          "stage": "investigation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Concept and schematic facade design",
+          "stage": "concept_design",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Report progress to council and seek extension of the order's compliance date",
+          "stage": "approvals",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Design development: system, subframe, cavity barriers and fixings",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Product compliance evidence and BCA compliance report",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Regulated designs and design compliance declarations",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Tender documents",
+          "stage": "construction_documentation",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Pay long service levy",
+          "stage": "approvals",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Tender period with site inspection",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Tender evaluation and recommendation",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "General meeting resolves contract award and construction levy",
+          "stage": "procurement",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Contract award",
+          "stage": "procurement",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Hold point: panel samples, colour and visual mock-up approved",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Council hoarding and footpath approval",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Resident notices and pre-commencement condition surveys",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Site establishment and scaffold erection and certification",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Remove combustible cladding and EPS, elevation by elevation",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Hold point: substrate, subframe and fixings inspection",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Install insulation, sarking and cavity barriers",
+          "stage": "construction",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Hold point: cavity barriers and slab-edge fire protection before close-up",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Flashings and window interfaces",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Install non-combustible cladding",
+          "stage": "construction",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Facade water test on sample areas",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Strike scaffold and make good",
+          "stage": "construction",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Building compliance declaration (DBP Act)",
+          "stage": "completion",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Final inspection, fire safety certificate and occupation certificate",
+          "stage": "completion",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Council confirms compliance with or revokes the fire safety order; cladding registration and fire safety schedule updated",
+          "stage": "completion",
+          "built_in": "no",
+          "trigger": null
+        },
+        {
+          "expected": "Practical completion inspection",
+          "stage": "completion",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Handover: product register, test evidence, warranties and as-built records",
+          "stage": "completion",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "Defects liability period and final inspection",
+          "stage": "defects",
+          "built_in": "partial",
+          "trigger": null
+        },
+        {
+          "expected": "General meeting resolves option, design fees and first levy, and owners' consent to lodge the CDC (verified: false)",
+          "stage": null,
+          "built_in": "yes",
+          "trigger": "cdc-pathway"
+        },
+        {
+          "expected": "CDC documentation: drawings, BCA report, fire engineer's DTS confirmation, structural fixing details, QS cost report",
+          "stage": null,
+          "built_in": "yes",
+          "trigger": "cdc-pathway"
+        },
+        {
+          "expected": "Prepare and lodge the CDC",
+          "stage": null,
+          "built_in": "yes",
+          "trigger": "cdc-pathway"
+        }
+      ],
+      "extra": [
+        {
+          "app": "Fire compartments and separation",
+          "fragment": null,
+          "stage": "investigation"
+        },
+        {
+          "app": "Prepare and lodge the complying development certificate",
+          "fragment": "fr.cdc-application",
+          "stage": "approvals"
+        }
+      ],
+      "false_positive": [],
+      "wrong_stage": []
+    },
+    "links": {
+      "holds": [],
+      "violated": [],
+      "unknown": [],
+      "unscored": [
+        {
+          "activity": "Strata committee appoints project manager and approves investigation budget",
+          "after": "Receive fire safety order and confirm the compliance date",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Collect records: approvals, facade drawings, product data, cladding registration, audit, fire safety schedule",
+          "after": "Strata committee appoints project manager and approves investigation budget",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Facade survey, sampling and laboratory combustibility testing",
+          "after": "Collect records: approvals, facade drawings, product data, cladding registration, audit, fire safety schedule",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Put interim fire safety measures in place",
+          "after": "Receive fire safety order and confirm the compliance date",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Fire engineering risk assessment and removal-extent advice",
+          "after": "Facade survey, sampling and laboratory combustibility testing",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Intrusive opening-up and pull-out testing of fixing substrates",
+          "after": "Facade survey, sampling and laboratory combustibility testing",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Remediation options report with order of cost",
+          "after": "Fire engineering risk assessment and removal-extent advice",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Remediation options report with order of cost",
+          "after": "Intrusive opening-up and pull-out testing of fixing substrates",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Design development: system, subframe, cavity barriers and fixings",
+          "after": "Concept and schematic facade design",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Product compliance evidence and BCA compliance report",
+          "after": "Design development: system, subframe, cavity barriers and fixings",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Regulated designs and design compliance declarations",
+          "after": "Product compliance evidence and BCA compliance report",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender documents",
+          "after": "Regulated designs and design compliance declarations",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender period with site inspection",
+          "after": "Tender documents",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Tender evaluation and recommendation",
+          "after": "Tender period with site inspection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "General meeting resolves contract award and construction levy",
+          "after": "Tender evaluation and recommendation",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Contract award",
+          "after": "General meeting resolves contract award and construction levy",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Hold point: panel samples, colour and visual mock-up approved",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Council hoarding and footpath approval",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Resident notices and pre-commencement condition surveys",
+          "after": "Contract award",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Site establishment and scaffold erection and certification",
+          "after": "Council hoarding and footpath approval",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Site establishment and scaffold erection and certification",
+          "after": "Resident notices and pre-commencement condition surveys",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Remove combustible cladding and EPS, elevation by elevation",
+          "after": "Site establishment and scaffold erection and certification",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Hold point: substrate, subframe and fixings inspection",
+          "after": "Remove combustible cladding and EPS, elevation by elevation",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install insulation, sarking and cavity barriers",
+          "after": "Hold point: substrate, subframe and fixings inspection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Hold point: cavity barriers and slab-edge fire protection before close-up",
+          "after": "Install insulation, sarking and cavity barriers",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Flashings and window interfaces",
+          "after": "Hold point: cavity barriers and slab-edge fire protection before close-up",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install non-combustible cladding",
+          "after": "Flashings and window interfaces",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Install non-combustible cladding",
+          "after": "Hold point: panel samples, colour and visual mock-up approved",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Facade water test on sample areas",
+          "after": "Install non-combustible cladding",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Strike scaffold and make good",
+          "after": "Facade water test on sample areas",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Building compliance declaration (DBP Act)",
+          "after": "Strike scaffold and make good",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Final inspection, fire safety certificate and occupation certificate",
+          "after": "Building compliance declaration (DBP Act)",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Council confirms compliance with or revokes the fire safety order; cladding registration and fire safety schedule updated",
+          "after": "Final inspection, fire safety certificate and occupation certificate",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Practical completion inspection",
+          "after": "Final inspection, fire safety certificate and occupation certificate",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Handover: product register, test evidence, warranties and as-built records",
+          "after": "Practical completion inspection",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Defects liability period and final inspection",
+          "after": "Handover: product register, test evidence, warranties and as-built records",
+          "reason": "activity missed"
+        }
+      ]
+    },
+    "orphans": [
+      {
+        "app": "Fire compartments and separation",
+        "id": "84eff0be-8f41-4d75-bb46-b8e3d3da89f3",
+        "stage": "investigation"
+      }
+    ],
+    "cycles": [],
+    "cycle_labels": []
+  },
+  "rfps": [
+    {
+      "discipline": "consultant.project_manager",
+      "template": null,
+      "built_in": "no",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "2310d182-98de-4371-af03-5d5c05223de5",
+      "app_template": null,
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": [
+          {
+            "key": "text.template",
+            "why": "No knowledge/rfp file lists consultant.project_manager"
+          }
+        ],
+        "awaiting_user": []
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Liaison with council on the fire safety order: representations, progress reports, extensions and closure",
+          "Consultant procurement and management of the design team",
+          "Attendance and reports at strata committee and general meetings; levy or loan cash-flow input",
+          "Program management against the order's compliance date",
+          "Superintendent under AS 4000, including payment schedules under the NSW Security of Payment Act (verified: false)",
+          "Resident communication plan for an occupied building"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 2,
+        "present": [],
+        "unknown": [],
+        "known": []
+      }
+    },
+    {
+      "discipline": "consultant.architect",
+      "template": "architecture",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "028c17e0-dec8-418e-b0a0-4a0b043e5b53",
+      "app_template": "architecture",
+      "expect": {
+        "ok": 29,
+        "new_failure": [
+          {
+            "key": "stage.planning_response",
+            "want": "include",
+            "app": "exclude",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.details",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "position.bim_model",
+            "want": "absent",
+            "app": "I",
+            "why": "service_level complex I because of the Class 2 part"
+          },
+          {
+            "key": "position.bim_coordination",
+            "want": "absent",
+            "app": "I",
+            "why": "service_level complex O"
+          },
+          {
+            "key": "position.door_schedule",
+            "want": "absent",
+            "app": "I",
+            "why": "always I; no doors in a cladding job"
+          },
+          {
+            "key": "position.typical_interiors",
+            "want": "absent",
+            "app": "I",
+            "why": "service_level complex I"
+          },
+          {
+            "key": "position.tenant_fitout",
+            "want": "absent",
+            "app": "I",
+            "why": "O whenever work type is not refurb"
+          },
+          {
+            "key": "position.ffe",
+            "want": "absent",
+            "app": "I",
+            "why": "always O"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:client_presentations",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
+      },
+      "must_include": {
+        "present": 1,
+        "missing": [
+          "Existing facade survey and record drawings",
+          "Replacement cladding options and schematic design",
+          "Design development and documentation of the replacement facade",
+          "Tender documents, bidding and for-construction documents",
+          "Design support during construction, including shop drawing review",
+          "Staging and occupancy inputs for the occupied building",
+          "CDC drawings, with photomontages for the general meeting"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 3,
+        "present": [],
+        "unknown": [],
+        "known": [
+          {
+            "phrase": "BIM model for the design team",
+            "where": "control:position.bim_model"
+          },
+          {
+            "phrase": "Door and hardware schedules",
+            "where": "control:position.door_schedule"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.fire_engineer",
+      "template": "fire-engineering",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "9ac88e0c-7ac2-49d1-9fb3-eacecea80bb5",
+      "app_template": "fire-engineering",
+      "expect": {
+        "ok": 25,
+        "new_failure": [
+          {
+            "key": "blocking.details",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.s9_advisory",
+            "want": "exclude",
+            "app": "include",
+            "why": "after the boundary end; not an advisory appointment"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:evidence",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:issues",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:options",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.fe_existing_reconciliation",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.fe_solutions",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Review of the audit, laboratory results and existing fire safety records",
+          "Interim fire safety measures and staged strategy while combustible cladding remains in an occupied building",
+          "Advice on removal extent and confirmation of DTS compliance of the replacement external wall",
+          "Tender integration and construction-stage inspection of cavity barriers and slab-edge protection",
+          "Verification for the occupation certificate and closure evidence for the fire safety order",
+          "Fire engineering support letter for the CDC"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 3,
+        "present": [],
+        "unknown": [],
+        "known": []
+      }
+    },
+    {
+      "discipline": "consultant.facade",
+      "template": null,
+      "built_in": "no",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "19839352-dd5b-4fee-b41c-5aacb4a5fe89",
+      "app_template": null,
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": [
+          {
+            "key": "text.template",
+            "why": "No knowledge/rfp file lists consultant.facade"
+          }
+        ],
+        "awaiting_user": []
+      },
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Review of existing facade records and samples",
+          "System options and performance specification: wind, water, movement, fire",
+          "Subframe and fixing design, or review of the supplier's design",
+          "Product test evidence for non-combustibility (AS 1530.1, CodeMark or equivalent, verified: false)",
+          "Regulated design and design compliance declaration for the facade (DBP Act, owner ruling R3; practitioner class verified: false)",
+          "Shop drawing review, installation inspections and facade water testing"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 3,
+        "present": [],
+        "unknown": [],
+        "known": []
+      }
+    },
+    {
+      "discipline": "consultant.structural",
+      "template": "structural",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "2c5bfe87-a85b-4d01-a403-4500487ab976",
+      "app_template": "structural",
+      "expect": {
+        "ok": 20,
+        "new_failure": [
+          {
+            "key": "position.dilapidation",
+            "want": "absent",
+            "app": "I",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.retention_design",
+            "want": "absent",
+            "app": "I",
+            "app_differs_said": null
+          },
+          {
+            "key": "position.temporary_works_interfaces",
+            "want": "absent",
+            "app": "I",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.details",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          },
+          {
+            "key": "blocking.fact:regulated_design",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "stage.concept_schematic",
+            "want": "exclude",
+            "app": "include",
+            "why": "always included; a remediation appointment starts with the existing assessment"
+          },
+          {
+            "key": "stage.planning_approval",
+            "want": "exclude",
+            "app": "include",
+            "why": "pathway da; the DA for a facade change needs no structural input"
+          },
+          {
+            "key": "position.geotech_brief",
+            "want": "absent",
+            "app": "I",
+            "why": "always I; no ground works"
+          },
+          {
+            "key": "position.shared_model",
+            "want": "absent",
+            "app": "I",
+            "why": "service_level complex I because of the Class 2 part"
+          },
+          {
+            "key": "position.specialist_element_design",
+            "want": "absent",
+            "app": "I",
+            "why": "O whenever procurement is not design_construct"
+          },
+          {
+            "key": "position.services_fixings",
+            "want": "absent",
+            "app": "I",
+            "why": "always O"
+          },
+          {
+            "key": "position.super_flat_floor",
+            "want": "absent",
+            "app": "I",
+            "why": "client flag cannot be set; if_unknown option"
+          },
+          {
+            "key": "position.services_footings",
+            "want": "absent",
+            "app": "I",
+            "why": "always I; no footings"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [],
+        "awaiting_user": [
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
+      },
+      "must_include": {
+        "present": 1,
+        "missing": [
+          "Existing structure assessment of slab edges and fixing zones",
+          "Pull-out test regime and review of results",
+          "Design and certification of fixings into the primary structure",
+          "Provisional slab-edge repair specification",
+          "Construction-phase inspection of brackets and fixings"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 3,
+        "present": [
+          {
+            "phrase": "Super-flat floor design",
+            "where": "control:position.super_flat_floor",
+            "coverage": 1.0
+          }
+        ],
+        "unknown": [],
+        "known": [
+          {
+            "phrase": "Geotechnical brief",
+            "where": "control:position.geotech_brief"
+          },
+          {
+            "phrase": "Revit model shared with the design team",
+            "where": "control:position.shared_model"
+          }
+        ]
+      }
+    },
+    {
+      "discipline": "consultant.bca",
+      "template": "bca-certification",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "missing",
+      "found": false,
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "NCC compliance assessment of the remediation design (external wall non-combustibility, cavity barriers, spandrels; verified: false)",
+          "Existing-building assessment and fire safety schedule changes",
+          "Advice on staged works in an occupied building",
+          "Planning-stage and tender-stage compliance reports"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 0,
+        "present": [],
+        "unknown": [],
+        "known": []
+      },
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": [],
+        "awaiting_user": []
+      }
+    },
+    {
+      "discipline": "consultant.certifier",
+      "template": "bca-certification",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "missing",
+      "found": false,
+      "must_include": {
+        "present": 0,
+        "missing": [
+          "Principal certifier inspections during the works",
+          "Final fire safety certificate and occupation certificate for the altered part (verified: false)",
+          "Updated fire safety schedule",
+          "CDC assessment and determination, including regulated designs lodged (DBP Act, owner ruling R3; lodgement timing verified: false)"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 0,
+        "present": [],
+        "unknown": [],
+        "known": []
+      },
+      "expect": {
+        "ok": 0,
+        "new_failure": [],
+        "known_difference": [],
+        "fixed": [],
+        "not_checked": [],
+        "awaiting_user": []
+      }
+    },
+    {
+      "discipline": "consultant.quantity_surveyor",
+      "template": "cost-planning",
+      "built_in": "partial",
+      "trigger": null,
+      "status": "found",
+      "found": true,
+      "report": "93e4d6ba-2ce6-495c-a4d4-496cb0841446",
+      "app_template": "cost-planning",
+      "expect": {
+        "ok": 19,
+        "new_failure": [
+          {
+            "key": "blocking.details",
+            "want": "not blocking",
+            "app": "blocking",
+            "app_differs_said": null
+          }
+        ],
+        "known_difference": [
+          {
+            "key": "position.operator",
+            "want": "absent",
+            "app": "I",
+            "why": "client flag cost_operator"
+          },
+          {
+            "key": "position.allocation",
+            "want": "absent",
+            "app": "I",
+            "why": "client flag cost_allocation"
+          }
+        ],
+        "fixed": [],
+        "not_checked": [
+          {
+            "key": "text.remediation",
+            "why": "the row label also names contamination; a wording scorer must not read it as contaminated-land scope"
+          }
+        ],
+        "awaiting_user": [
+          {
+            "key": "blocking.allowance:plans",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:review",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:specialist",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.allowance:visits",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_allocation",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_authority",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_concept",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_contract_allowances",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_design",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_operator",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_remediation",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fact:flag.cost_total_budget",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.fields",
+            "want": "not blocking",
+            "app": "blocking"
+          },
+          {
+            "key": "blocking.terms",
+            "want": "not blocking",
+            "app": "blocking"
+          }
+        ]
+      },
+      "must_include": {
+        "present": 1,
+        "missing": [
+          "Option estimates for the general meeting and levy",
+          "DA cost estimate report (registered QS above the value threshold, verified: false)",
+          "Design cost plans and pre-tender estimate",
+          "Tender normalisation, including provisional sums"
+        ],
+        "unknown": [],
+        "known": []
+      },
+      "must_not_include": {
+        "absent": 2,
+        "present": [],
+        "unknown": [],
+        "known": []
+      }
+    }
+  ],
+  "summary": {
+    "procurement": {
+      "expected": 9,
+      "matched": 6,
+      "missed": 3,
+      "missed_built_in": 0,
+      "missed_known_gap": 3,
+      "extra": 0,
+      "false_positive": 0,
+      "kind_mismatch": 0
+    },
+    "cost_plan": {
+      "expected": 32,
+      "matched": 13,
+      "missed": 19,
+      "missed_built_in": 1,
+      "missed_known_gap": 18,
+      "extra": 2,
+      "false_positive": 1,
+      "section_mismatch": 0,
+      "fabricated": 0,
+      "amounts_document": 0,
+      "amounts_user": 0
+    },
+    "program": {
+      "expected": 41,
+      "matched": 1,
+      "missed": 40,
+      "missed_built_in": 3,
+      "missed_known_gap": 37,
+      "extra": 2,
+      "false_positive": 0,
+      "wrong_stage": 0,
+      "skeleton_match": false,
+      "links_holds": 0,
+      "links_violated": 0,
+      "links_unknown": 0,
+      "links_unscored": 36,
+      "orphans": 1,
+      "cycles": 0
+    },
+    "rfps": {
+      "expected": 8,
+      "found": 6,
+      "missing": 2,
+      "missing_built_in": 0,
+      "not_expected_present": 0,
+      "extra": 0,
+      "expect_ok": 93,
+      "expect_new_failure": 9,
+      "expect_known_difference": 17,
+      "expect_fixed": 0,
+      "expect_awaiting_user": 26,
+      "must_include_missing": 34,
+      "must_include_unknown": 0,
+      "must_not_include_present": 1,
+      "must_not_include_known": 4
+    }
+  }
+}

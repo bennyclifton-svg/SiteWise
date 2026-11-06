@@ -1,0 +1,247 @@
+{
+  "schema": "sitewise-synthetic-fees/1",
+  "submissions": [
+    {
+      "doc": "d06",
+      "kind": "fee_proposal",
+      "discipline": "consultant.architect",
+      "firm": {
+        "name": "Calder Rowe Architects Pty Ltd",
+        "abn": "65 746 806 298",
+        "contact": "Nadia Calder",
+        "email": "nadia.calder@example.com",
+        "phone": "02 9874 3360",
+        "address": "Level 4, 120 Rowe Street, Eastwood NSW 2122"
+      },
+      "stated_total_cents": 42400000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept design and urban design review",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 6800000
+        },
+        {
+          "label": "DA documentation, ADG compliance and design verification statement",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 14200000
+        },
+        {
+          "label": "Design development",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 11800000
+        },
+        {
+          "label": "D&C tender documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 9600000
+        },
+        {
+          "label": "Option: post-novation construction documentation and services",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 26400000
+        },
+        {
+          "label": "Additional services, hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 26000
+        }
+      ]
+    },
+    {
+      "doc": "d07",
+      "kind": "fee_proposal",
+      "discipline": "consultant.structural",
+      "firm": {
+        "name": "Ironbark Structures Pty Ltd",
+        "abn": "95 450 712 332",
+        "contact": "Tom Okafor",
+        "email": "tom.okafor@example.com",
+        "phone": "02 9411 7085",
+        "address": "Suite 12, 3 Victoria Avenue, Chatswood NSW 2067"
+      },
+      "stated_total_cents": 10300000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Concept and DA structural advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1850000
+        },
+        {
+          "label": "Design development including retention design and transfer slab",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 4600000
+        },
+        {
+          "label": "D&C tender documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 3850000
+        },
+        {
+          "label": "Option: post-novation construction documentation",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 9200000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 24000
+        }
+      ]
+    },
+    {
+      "doc": "d08",
+      "kind": "fee_proposal",
+      "discipline": "consultant.civil",
+      "firm": {
+        "name": "Larkspur Civil Engineering Pty Ltd",
+        "abn": "99 320 946 170",
+        "contact": "Priya Raman",
+        "email": "priya.raman@example.com",
+        "phone": "02 9477 2251",
+        "address": "Level 1, 27 Hunter Street, Hornsby NSW 2077"
+      },
+      "stated_total_cents": 4800000,
+      "gst_basis": "inc",
+      "flags": [
+        "gst_inc_normalised"
+      ],
+      "prices": [
+        {
+          "label": "Concept stormwater and OSD design for the DA",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1400000
+        },
+        {
+          "label": "Design development and civil design",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1900000
+        },
+        {
+          "label": "D&C tender documentation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1500000
+        },
+        {
+          "label": "Option: post-novation documentation and certification",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 2500000
+        }
+      ]
+    },
+    {
+      "doc": "d09",
+      "kind": "fee_proposal",
+      "discipline": "consultant.geotechnical",
+      "firm": {
+        "name": "Basalt Ridge Geotechnical Pty Ltd",
+        "abn": "65 534 253 982",
+        "contact": "Grant Ellery",
+        "email": "grant.ellery@example.com",
+        "phone": "02 9868 5512",
+        "address": "Unit 8, 44 Carlingford Road, Epping NSW 2121"
+      },
+      "stated_total_cents": 2600000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Field investigation",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1680000
+        },
+        {
+          "label": "Laboratory testing",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 340000
+        },
+        {
+          "label": "Geotechnical report",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 580000
+        },
+        {
+          "label": "Option: additional borehole",
+          "kind": "option",
+          "state": "priced",
+          "amount_cents": 390000
+        },
+        {
+          "label": "Waste classification of spoil",
+          "kind": "element",
+          "state": "excluded",
+          "amount_cents": null
+        }
+      ]
+    },
+    {
+      "doc": "d10",
+      "kind": "fee_proposal",
+      "discipline": "consultant.town_planner",
+      "firm": {
+        "name": "Ashgrove Planning Pty Ltd",
+        "abn": "33 860 699 272",
+        "contact": "Lucia Ferraro",
+        "email": "lucia.ferraro@example.com",
+        "phone": "02 9635 1840",
+        "address": "Suite 5, 60 Church Street, Parramatta NSW 2150"
+      },
+      "stated_total_cents": 5450000,
+      "gst_basis": "ex",
+      "flags": [],
+      "prices": [
+        {
+          "label": "Pre-lodgement meeting and planning advice",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 950000
+        },
+        {
+          "label": "Statement of environmental effects and ADG compliance table",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 2800000
+        },
+        {
+          "label": "DA lodgement and assessment liaison",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 1250000
+        },
+        {
+          "label": "Local Planning Panel attendance",
+          "kind": "stage",
+          "state": "priced",
+          "amount_cents": 450000
+        },
+        {
+          "label": "Hourly rate",
+          "kind": "rate",
+          "state": "priced",
+          "amount_cents": 25000
+        }
+      ]
+    }
+  ]
+}
