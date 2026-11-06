@@ -858,3 +858,72 @@ func TestReinforcementHoldPointPrecedesTheHousePour(t *testing.T) {
 		t.Fatalf("generated a loop: %v", out.Cycle)
 	}
 }
+
+// F42: a building with a basement has no slab-on-ground system, so the
+// reinforcement hold keyed to that system never appeared (T13). The hold now
+// goes before the first pour that conceals reinforcement: the basement slab,
+// then every suspended slab follows it. F28 (hold before the pour) holds.
+func TestReinforcementHoldPointPrecedesTheBasementSlab(t *testing.T) {
+	cat := testCatalog(t, nil, "")
+	in := GenInput{
+		WorkTypes:  []string{"new"},
+		Conditions: map[string]string{"planning": "da", "procurement_route": "traditional"},
+		Values:     map[string]string{"ncc_class": "2", "rise_in_storeys": "6"},
+		WorkItems: []WorkItem{
+			{ID: "basement", System: "substructure.basement-retention", Action: "new", Title: "Basement"},
+			{ID: "frame", System: "structure.concrete", Action: "new", Title: "Concrete structure"},
+		},
+	}
+	p := mustGenerate(t, cat, in)
+	hold := "hold:if.reinforcement-inspected-before-pour"
+	if _, ok := p.Row(hold); !ok {
+		t.Fatal("no reinforcement hold point on a basement building")
+	}
+	anchors, slab := "fragment:fr.basement-2:basement:anchors", "fragment:fr.basement-2:basement:slab"
+	cycle, roof := "fragment:fr.structure-concrete-2:frame:cycle", "fragment:fr.structure-concrete-2:frame:roof"
+	for _, key := range []string{anchors, slab, cycle, roof} {
+		if _, ok := p.Row(key); !ok {
+			t.Fatalf("missing row %s", key)
+		}
+	}
+	for _, pair := range [][2]string{{anchors, hold}, {hold, slab}, {hold, cycle}} {
+		if _, ok := hasLink(p, pair[0], pair[1]); !ok {
+			t.Fatalf("missing link %v", pair)
+		}
+	}
+	for _, after := range []string{slab, cycle, roof} {
+		if _, ok := hasLink(p, after, hold); ok {
+			t.Fatalf("hold point after the pour %s", after)
+		}
+	}
+	if out := Compute(p.Input(Calendar{})); out.Cycle != nil {
+		t.Fatalf("generated a loop: %v", out.Cycle)
+	}
+}
+
+// F42 with a ground slab and a concrete frame (T02 shape): the hold goes
+// before the ground slab pour, not after the roof slab.
+func TestReinforcementHoldPointPrecedesTheApartmentGroundSlab(t *testing.T) {
+	cat := testCatalog(t, nil, "")
+	in := GenInput{
+		WorkTypes:  []string{"new"},
+		Conditions: map[string]string{"planning": "da", "procurement_route": "traditional"},
+		Values:     map[string]string{"ncc_class": "2", "rise_in_storeys": "4"},
+		WorkItems: []WorkItem{
+			{ID: "slab", System: "substructure.slab-on-ground", Action: "new", Title: "Ground slab"},
+			{ID: "frame", System: "structure.concrete", Action: "new", Title: "Concrete structure"},
+		},
+	}
+	p := mustGenerate(t, cat, in)
+	hold := "hold:if.reinforcement-inspected-before-pour"
+	pour, roof := "fragment:fr.slab-2:slab:pour", "fragment:fr.structure-concrete-2:frame:roof"
+	if _, ok := hasLink(p, hold, pour); !ok {
+		t.Fatal("hold point does not precede the ground slab pour")
+	}
+	if _, ok := hasLink(p, roof, hold); ok {
+		t.Fatal("hold point after the roof slab")
+	}
+	if out := Compute(p.Input(Calendar{})); out.Cycle != nil {
+		t.Fatalf("generated a loop: %v", out.Cycle)
+	}
+}
