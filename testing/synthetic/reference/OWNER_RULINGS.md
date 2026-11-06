@@ -162,3 +162,9 @@ A building over the height standard needs a clause 4.6 variation to the LEP,
 and that is one of many reasons for a DA. The ST04 base, which denies any
 clause 4.6 variation, now gives the code's rear setback standard as its
 reason for a DA.
+
+### R19. Occupied tower and constrained access
+
+An empty floor in an occupied tower is both partial occupation and a live
+environment, so the T03 keys accept either. T06 site access likewise
+accepts restricted hours or urban constrained.
