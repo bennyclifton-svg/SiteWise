@@ -227,6 +227,9 @@ type ScopeTerm struct {
 // Find returns the first match of the term in text, or nil.
 func (t ScopeTerm) Find(text string) []int { return t.re.FindStringIndex(text) }
 
+// FindAll returns every match of the term in text, in order.
+func (t ScopeTerm) FindAll(text string) [][]int { return t.re.FindAllStringIndex(text, -1) }
+
 // ScopeTerms are the words that imply systems as scope suggestions.
 func (c *Catalog) ScopeTerms() []ScopeTerm { return c.profile.scope.ImpliedBy }
 
