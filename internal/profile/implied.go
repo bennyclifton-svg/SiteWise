@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"regexp"
 	"strings"
 
 	"sitewise/internal/knowledge"
@@ -21,11 +22,10 @@ func ImpliedReadings(text string, cat *knowledge.Catalog) []Reading {
 	var out []Reading
 	seen := map[string]bool{}
 	for _, term := range cat.ScopeTerms() {
-		at := term.Find(text)
-		if at == nil {
+		excerpt, ok := affirmedMatch(text, term)
+		if !ok {
 			continue
 		}
-		excerpt := sentenceAround(text, at[0], at[1])
 		for _, leaf := range term.Systems {
 			if seen[leaf] {
 				continue
@@ -37,16 +37,49 @@ func ImpliedReadings(text string, cat *knowledge.Catalog) []Reading {
 	return out
 }
 
-// sentenceAround is the sentence or line holding text[start:end], at most
-// 120 characters (the stored excerpt limit), centred on the match.
-func sentenceAround(text string, start, end int) string {
+// affirmedMatch is the excerpt of the term's first match whose sentence does
+// not deny the work (F45: "the core bathrooms are not in scope" implies no
+// wet-area works).
+func affirmedMatch(text string, term knowledge.ScopeTerm) (string, bool) {
+	for _, at := range term.FindAll(text) {
+		lo, hi := sentenceBounds(text, at[0], at[1])
+		if !deniesWork(text[lo:hi]) {
+			return sentenceAround(text, at[0], at[1]), true
+		}
+	}
+	return "", false
+}
+
+var (
+	// notLimited is boilerplate that affirms a list ("including but not
+	// limited to"), so its "not" denies nothing.
+	notLimited = regexp.MustCompile(`(?i)\bnot\s+limited\s+to\b`)
+	// denial covers the forms the documents use to exclude work: a "not"
+	// or "no" clause, an exclusion, work outside scope or by others. A
+	// sentence holding one is treated as denying every term in it; a missed
+	// suggestion costs one click, a wrong one adds works to the program.
+	denial = regexp.MustCompile(`(?i)\b(?:not|isn't|aren't|won't|nil)\b|^\W*no\b|\bno\b.{0,60}\b(?:required|proposed|planned|included|allowed|works?)\b|\bexclu(?:ded|des|ding|sions?)\b|\boutside\s+(?:the\s+)?scope\b|\bby\s+others\b`)
+)
+
+// deniesWork reports whether a sentence excludes the work it names.
+func deniesWork(sentence string) bool {
+	return denial.MatchString(notLimited.ReplaceAllString(sentence, ""))
+}
+
+// sentenceBounds is the sentence or line holding text[start:end].
+func sentenceBounds(text string, start, end int) (int, int) {
 	lo := strings.LastIndexAny(text[:start], ".\n;") + 1
 	hi := strings.IndexAny(text[end:], ".\n;")
 	if hi < 0 {
-		hi = len(text)
-	} else {
-		hi += end
+		return lo, len(text)
 	}
+	return lo, hi + end
+}
+
+// sentenceAround is the sentence or line holding text[start:end], at most
+// 120 characters (the stored excerpt limit), centred on the match.
+func sentenceAround(text string, start, end int) string {
+	lo, hi := sentenceBounds(text, start, end)
 	s := strings.Join(strings.Fields(strings.Trim(text[lo:hi], "*_-•# ")), " ")
 	if len(s) <= 120 {
 		return s

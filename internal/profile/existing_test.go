@@ -2,6 +2,7 @@ package profile_test
 
 import (
 	"sitewise/internal/profile"
+	"strings"
 	"testing"
 )
 
@@ -125,5 +126,70 @@ func TestContractorProvidedSystemIsWorksInRefurb(t *testing.T) {
 	rows = profile.Build(in, cat)
 	if r := row(t, rows, whole, "sys.electrical.lighting.existing"); r.Value != "present" {
 		t.Fatalf("owner-supplied presence should stay existing: %+v", r)
+	}
+}
+
+// refurbWithActions is an office refurb whose documents include a system and
+// read the given actions for it, with the real action floor (0.85).
+func refurbWithActions(leaf string, actions ...profile.Fact) profile.Input {
+	in := input(append([]profile.Fact{jevFact("sys."+leaf+".presence", "included", "brief", .9)}, actions...)...)
+	in.Thresholds.Amber["action"] = .85
+	in.User = header("office", "refurb")
+	return in
+}
+
+// R16 (F43): on a refurb, an included system whose works action is unsettled
+// is in scope. T03 read "new" for its interiors below the action floor; T06
+// read upgrade against alter for its sprinklers. Neither is existing building.
+func TestRefurbUnsettledWorksActionStaysInScope(t *testing.T) {
+	cat := repoCatalog(t)
+	cases := map[string]profile.Input{
+		"below the floor": refurbWithActions("interiors.joinery", jevFact("sys.interiors.joinery.action", "new", "brief", .73)),
+		"works actions conflict": refurbWithActions("fire-active.sprinklers",
+			jevFact("sys.fire-active.sprinklers.action", "upgrade", "brief", .99),
+			jevFact("sys.fire-active.sprinklers.action", "alter", "spec", 1)),
+		"works against retain": refurbWithActions("fire-active.fire-water",
+			jevFact("sys.fire-active.fire-water.action", "upgrade", "brief", .99),
+			jevFact("sys.fire-active.fire-water.action", "retain", "spec", .97)),
+	}
+	for name, in := range cases {
+		t.Run(name, func(t *testing.T) {
+			leaf := strings.TrimSuffix(strings.TrimPrefix(in.Facts[0].QuestionID, "sys."), ".presence")
+			rows := profile.Build(in, cat)
+			noRow(t, rows, whole, "sys."+leaf+".existing")
+			if r := row(t, rows, whole, "scope."+leaf); r.Value != "in" || r.Band != "amber" {
+				t.Fatalf("unsettled works left scope: %+v", r)
+			}
+			if a := row(t, rows, whole, "sys."+leaf+".action"); a.Value != "" {
+				t.Fatalf("the action must stay unsettled for the user: %+v", a)
+			}
+			if items := profile.ProposedWorks("project", rows, in.Parts, cat); len(items) != 1 || items[0].SystemID != leaf {
+				t.Fatalf("want one work item for %s: %+v", leaf, items)
+			}
+		})
+	}
+}
+
+// No action read, or a conflict with no works action in it, keeps D-27: the
+// system is existing building, not scope. (A settled action keeps its own,
+// earlier behaviour and is not this rule's business.)
+func TestRefurbSettledOrNonWorksActionStaysExisting(t *testing.T) {
+	cat := repoCatalog(t)
+	cases := map[string]profile.Input{
+		"retain against investigate": refurbWithActions("fire-active.hydrants",
+			jevFact("sys.fire-active.hydrants.action", "retain", "spec", .97),
+			jevFact("sys.fire-active.hydrants.action", "investigate", "report", .91)),
+		"no action read": refurbWithActions("fire-active.hydrants"),
+	}
+	for name, in := range cases {
+		t.Run(name, func(t *testing.T) {
+			rows := profile.Build(in, cat)
+			if r := row(t, rows, whole, "sys.fire-active.hydrants.existing"); r.Value != "present" {
+				t.Fatalf("existing building lost: %+v", r)
+			}
+			if r, ok := scopeRow(rows, "fire-active.hydrants"); ok && r.Band != "suggested" {
+				t.Fatalf("existing building put in scope from evidence: %+v", r)
+			}
+		})
 	}
 }
