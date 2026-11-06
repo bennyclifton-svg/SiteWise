@@ -364,7 +364,12 @@ func TestDetailValuesThatExtendEachOtherAgree(t *testing.T) {
 	if r.Band != "amber" || r.Value != "88 Westgate Street, Parramatta NSW 2150" || len(r.Sources) != 3 {
 		t.Fatalf("one address read as several: %+v", r)
 	}
+	// R12: three documents against one settle amber, the other address listed.
 	in.Facts = append(in.Facts, jevFact("site.address", "100 George Street, Parramatta NSW 2150", "planner", 1))
+	if r := row(t, profile.Reconcile(in, cat), whole, "site.address"); r.Band != "amber" || len(r.Alternatives) != 1 {
+		t.Fatalf("3 documents vs 1 settles with the other address visible: %+v", r)
+	}
+	in.Facts = append(in.Facts, jevFact("site.address", "100 George Street, Parramatta NSW 2150", "survey", 1))
 	if r := row(t, profile.Reconcile(in, cat), whole, "site.address"); r.Band != "red" || len(r.Alternatives) != 2 {
 		t.Fatalf("different addresses must conflict: %+v", r)
 	}

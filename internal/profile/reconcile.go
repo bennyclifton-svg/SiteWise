@@ -486,36 +486,59 @@ func bySupport(order []string, byValue map[string][]Fact) []string {
 	return order
 }
 
-// Owner rule (F15, 2026-11-04): a choice settles on its leading value when
-// that value has at least lopsidedMin sources and at least lopsidedRatio
-// times the sources of all other values combined. A source is one reading
-// passage, as listed in the row's alternatives. Anything closer is a conflict.
+// Owner rules F15 (2026-11-04) and R12 (2026-11-07): a choice, flag or
+// free-text detail settles on its leading value when that value comes from
+// at least lopsidedMin distinct documents and at least lopsidedRatio times
+// the documents of all other values combined. One document is one vote,
+// however many of its passages read the value (F27: five passages from two
+// geotechnical reports must not outvote one survey). Anything closer is a
+// conflict.
 const (
 	lopsidedMin   = 3
 	lopsidedRatio = 3
 )
 
-// lopsidedChoice returns the value a lopsided choice settles on, or "".
-// Only choice fields take part: the project header and enumerated or
-// true/false determinants and facts. Flags, scope presence, providers,
-// actions, signals, free-text details and numbers keep their own rules.
+// lopsidedChoice returns the value a lopsided field settles on, or "".
+// Choice fields (the project header and enumerated or true/false
+// determinants and facts) and project and site details take part. Scope
+// presence, providers, actions, signals, numbers and money keep their own
+// rules.
 func lopsidedChoice(key, shape string, order []string, byValue map[string][]Fact, cat *knowledge.Catalog) string {
-	if len(order) < 2 || !choiceField(key, shape, cat) {
+	if len(order) < 2 || !(choiceField(key, shape, cat) || majorityDetail(key, shape)) {
 		return ""
 	}
 	lead, total := "", 0
 	for _, v := range order {
-		n := len(byValue[v])
+		n := distinctDocs(byValue[v])
 		total += n
-		if lead == "" || n > len(byValue[lead]) {
+		if lead == "" || n > distinctDocs(byValue[lead]) {
 			lead = v
 		}
 	}
-	n := len(byValue[lead])
+	n := distinctDocs(byValue[lead])
 	if n < lopsidedMin || n < lopsidedRatio*(total-n) {
 		return ""
 	}
 	return lead
+}
+
+// figureDetails are the details whose text is a number or an amount of
+// money. R12 leaves them alone: two different figures are a conflict
+// however many documents state each, because Go reads money from the text
+// and a majority does not make a figure right.
+var figureDetails = map[string]bool{
+	"proj.max_construction_months":         true,
+	"proj.preliminary_estimate":            true,
+	"proj.preliminary_construction_months": true,
+	"proj.budget_stated":                   true,
+	"proj.contingency_stated":              true,
+	"proj.owner_supply_stated":             true, // items with allowances
+}
+
+// majorityDetail reports whether a project or site detail (free text or a
+// proj.flag yes/no) settles on a strong majority under R12.
+func majorityDetail(key, shape string) bool {
+	return shape == "detail" && !figureDetails[key]
 }
 
 func choiceField(key, shape string, cat *knowledge.Catalog) bool {
