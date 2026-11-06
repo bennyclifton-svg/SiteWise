@@ -86,7 +86,7 @@ func (d *Draft) Call() (jev.Call, bool) {
 
 func (d *Draft) questionVersion() string {
 	if d.text.Format == "md" || d.text.Format == "markdown" {
-		return QuestionVersion + "+markdown-2"
+		return QuestionVersion + "+markdown-3"
 	}
 	return QuestionVersion
 }
