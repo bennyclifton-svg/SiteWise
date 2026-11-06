@@ -287,11 +287,23 @@ func printedAmounts(amounts []Candidate) (ex, gst, total int64, ok bool) {
 		}
 		return got0(got)
 	}
+	gstAt := func(ex int64) (int64, bool) {
+		return pick(func(v int64, c Candidate) bool { return gstish(c.Labels) && !exish(c.Labels) && abs(GSTOf(ex)-v) <= 1 })
+	}
 	ex, ok = pick(func(_ int64, c Candidate) bool { return exish(c.Labels) && !totalish(c.Labels) })
+	if !ok {
+		// Many invoices label the ex-GST line just "Fee" or "Amount" (F31).
+		// Such a word also heads line items, so it counts only for the one
+		// amount the printed GST is 10 % of.
+		ex, ok = pick(func(v int64, c Candidate) bool {
+			_, has := gstAt(v)
+			return feeish(c.Labels) && !totalish(c.Labels) && !gstish(c.Labels) && has
+		})
+	}
 	if !ok {
 		return 0, 0, 0, false
 	}
-	gst, ok = pick(func(v int64, c Candidate) bool { return gstish(c.Labels) && !exish(c.Labels) && abs(GSTOf(ex)-v) <= 1 })
+	gst, ok = gstAt(ex)
 	if !ok {
 		return 0, 0, 0, false
 	}
@@ -320,6 +332,19 @@ func exish(labels []string) bool {
 			if strings.Contains(l, w) {
 				return true
 			}
+		}
+	}
+	return false
+}
+
+// feeish is a label that is only the word for a priced amount, such as
+// "| Fee |" or "Amount:". Longer labels ("Fee for stage 2", "Amount due")
+// are left to the other tests.
+func feeish(labels []string) bool {
+	for _, l := range labels {
+		switch strings.Trim(l, " |:") {
+		case "fee", "fees", "amount", "professional fee", "professional fees", "our fee":
+			return true
 		}
 	}
 	return false

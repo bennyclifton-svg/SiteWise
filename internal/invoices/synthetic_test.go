@@ -99,6 +99,34 @@ func TestPrintedExGSTShowsAnArithmeticError(t *testing.T) {
 	}
 }
 
+// F31: the T17 fire engineer prints "Fee $14,500.00, GST $1,450.00, Total
+// due $16,850.00". A "Fee" line before the GST is the ex-GST figure, so the
+// ledger says the totals don't add up, not that GST isn't 10 %.
+func TestPrintedFeeLineIsTheExGST(t *testing.T) {
+	out := readMarkdown(t, "kestrel-k-26-0412.md", Context{})
+	if out.Ex == nil || *out.Ex != 1450000 || out.GST == nil || *out.GST != 145000 || out.Total == nil || *out.Total != 1685000 {
+		t.Fatalf("amounts ex=%v gst=%v total=%v", out.Ex, out.GST, out.Total)
+	}
+	flags := ledgerFlags(out)
+	if !flags["arithmetic"] || flags["gst_rate"] {
+		t.Fatalf("flags %v", flags)
+	}
+}
+
+// Of several "Amount" lines, only the one the GST is 10 % of is the ex GST.
+func TestFeeLineNeedsItsGST(t *testing.T) {
+	cands := []Candidate{
+		{Value: "50000", Labels: []string{"amount"}},
+		{Value: "100000", Labels: []string{"| amount |"}},
+		{Value: "10000", Labels: []string{"| gst |"}},
+		{Value: "120000", Labels: []string{"| total |"}},
+	}
+	e, g, tot, ok := printedAmounts(cands)
+	if !ok || e != 100000 || g != 10000 || tot != 120000 {
+		t.Fatalf("got %d %d %d %v", e, g, tot, ok)
+	}
+}
+
 // The printed ex GST survives a later recompute from stored decisions.
 func TestResolveKeepsAPrintedExGST(t *testing.T) {
 	out := readMarkdown(t, "rg-0418.md", Context{})
