@@ -120,9 +120,11 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     <button className="btn btn-small" disabled={busy || !draft.text.trim()}>Save line</button>
     <button type="button" className="btn btn-small" disabled={busy} onClick={() => setDraft(null)}>Cancel</button>
   </form>;
+  // The stage name opens and closes the stage (owner direction, 7 November
+  // 2026: no button box); a small caret shows which way.
   const head = (key: string, name: string, isOpen: boolean) => <th scope="row" className="rfp-stage-name">
     <button type="button" className="rfp-stage-toggle" aria-expanded={isOpen} aria-controls={`rfp-stage-${key || "all"}`} onClick={() => toggle(key)}>
-      <span className="rfp-stage-chevron" aria-hidden="true">{isOpen ? "▾" : "▸"}</span><span>{name}</span>
+      <span className="rfp-stage-caret" aria-hidden="true" /><span>{name}</span>
     </button>
   </th>;
   const serviceRows = (key: string, stageOut: boolean) => held(key).map(s => <tr key={s.key} className="rfp-stage-line" data-control={s.control ?? `position:${s.key}`}>
@@ -150,7 +152,9 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
         return <tbody key={s.key} id={`rfp-stage-${s.key}`} data-stage-state={s.state}>
           <tr className="rfp-stage-row" data-control={`stage:${s.key}`}>
             {head(s.key, s.name, isOpen)}
-            <td>{isOpen ? <span className="rfp-stage-whole">Whole stage{note && <span className="hydraulic-detail"> · {note}</span>}</span> : <span className="rfp-stage-count">{out ? "Excluded" : itemCount(values)}</span>}
+            <td className="rfp-stage-summary" onClick={e => { if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains("rfp-stage-count")) toggle(s.key); }}>
+              <span className="rfp-stage-count">{out ? "Excluded" : itemCount(values)}</span>
+              {isOpen && note && <p className="hydraulic-detail">{note}</p>}
               <ScopeChecks controls={controls} controlKey={`stage:${s.key}`} label={s.name} busy={busy} onWrite={onWrite} />
               {isOpen && <ScopeInputs controls={controls} target={`stage:${s.key}`} busy={busy} onWrite={onWrite} />}</td>
             <InOut label={s.name} value={out ? "X" : "I"} disabled={busy || !!control?.locked} onChoose={v => choose(`stage:${s.key}`, v, () => onWrite(`stage:${s.key}`, v === "I" ? "include" : "exclude"))} />

@@ -379,27 +379,32 @@
 
 .rfp-page-one > *, .rfp-transmittal { min-width: 0; }
 
-/* Scope by stage: stage, scope line, In, Excluded, fee. Large targets:
-   the whole stage name opens it, and each tick box sits in a 44 px cell. */
+/* Scope by stage: stage, scope line, In, Excluded, fee. The stage name
+   opens it; rows are compact (owner direction, 7 November 2026). */
 .rfp-stage-scope { min-width: 760px; table-layout: fixed; font-size: var(--fs-md); }
 .rfp-stage-scope th:first-child { width: 24%; }
 .rfp-stage-scope .rfp-inout { width: 108px; text-align: center; vertical-align: middle; white-space: nowrap; overflow-wrap: normal; }
 .rfp-stage-scope .rfp-fee { width: 14%; }
-.rfp-stage-scope td, .rfp-stage-scope th { vertical-align: middle; padding: 6px 12px; }
+.rfp-stage-scope td, .rfp-stage-scope th { vertical-align: middle; padding: 4px 10px; }
 .rfp-stage-row th, .rfp-stage-row td { border-top: 2px solid var(--line-strong, var(--line)); background: var(--sw-surface, var(--paper)); }
-.rfp-stage-toggle { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 36px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
-.rfp-stage-chevron { display: grid; place-items: center; flex: 0 0 36px; height: 36px; border: 1px solid var(--line-strong, var(--line)); border-radius: 8px; color: var(--ink); font-size: 18px; }
-.rfp-stage-toggle:hover .rfp-stage-chevron { background: var(--sw-hover-bg, var(--ground)); }
-.rfp-stage-count, .rfp-stage-whole { color: var(--sw-text-secondary, var(--ink)); }
-.rfp-tick { display: grid; place-items: center; width: 100%; padding: 4px 0; line-height: 1; cursor: pointer; }
+.rfp-stage-toggle { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 28px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.rfp-stage-toggle:hover span:last-child { text-decoration: underline; text-underline-offset: 3px; }
+.rfp-stage-toggle:focus-visible { outline: 2px solid var(--sw-focus, var(--ink)); outline-offset: 2px; border-radius: 4px; }
+/* A thin chevron: points right when closed, down when open. */
+.rfp-stage-caret { flex: none; width: 6px; height: 6px; margin: 0 2px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; color: var(--sw-text-secondary, var(--ink)); transform: rotate(-45deg); transition: transform 120ms ease; }
+.rfp-stage-toggle[aria-expanded="true"] .rfp-stage-caret { transform: rotate(45deg); margin-top: -3px; }
+@media (prefers-reduced-motion: reduce) { .rfp-stage-caret { transition: none; } }
+.rfp-stage-summary { cursor: pointer; }
+.rfp-stage-count { color: var(--sw-text-secondary, var(--ink)); }
+.rfp-tick { display: grid; place-items: center; width: 100%; padding: 2px 0; line-height: 1; cursor: pointer; }
 .rfp-tick input[type="checkbox"] { display: block; margin: 0; }
-.rfp-tick input[type="checkbox"] { width: 22px; height: 22px; }
+.rfp-tick input[type="checkbox"] { width: 18px; height: 18px; }
 .rfp-stage-line td { background: transparent; padding-top: 0; padding-bottom: 0; }
 .rfp-stage-line td:nth-child(2) { padding-left: 16px; }
 .rfp-own-actions { display: inline-flex; gap: 8px; margin-left: 12px; vertical-align: middle; }
 .rfp-own-line { display: flex; gap: 8px; align-items: center; }
 .rfp-own-line input { flex: 1; min-width: 0; }
-.rfp-stage-add td { padding-top: 4px; padding-bottom: 10px; }
+.rfp-stage-add td { padding-top: 2px; padding-bottom: 6px; }
 .rfp-stage-total th, .rfp-stage-total td { font-weight: 600; border-top: 2px solid var(--line-strong, var(--line)); }
 .rfp-stage-more { margin-top: 12px; }
 tbody[data-stage-state="exclude"] .rfp-stage-row th, tbody[data-stage-state="exclude"] .rfp-stage-row td:nth-child(2) { color: var(--sw-text-tertiary, var(--ink)); }
