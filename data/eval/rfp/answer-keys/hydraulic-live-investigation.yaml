@@ -50,8 +50,8 @@ fields:
 settings:
   hydraulic-services:
     boundary:range:
-      start: investigation
-      end: investigation
+      start: brief_concept
+      end: brief_concept
     allowance:extent: '2'
     allowance:investigation: '2'
     allowance:design: '2'
@@ -64,16 +64,16 @@ sources:
 - docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
 scenario: hydraulic-live-investigation
-description: Occupied apartment investigation distinguishes observed/tested/assumed condition; remedy and later
+description: Occupied apartment investigation distinguishes observed/tested/assumed condition; remedy and later 
   design remain options.
 snapshot: false
 expect:
   hydraulic-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [investigation]
+    stages_include: [brief_concept]
     positions:
       existing: I
       domestic: X
       witness: X
       advice: X
-    stages_absent: [design, construction, advisory]
+    stages_absent: [design_development, advisory]

@@ -42,28 +42,40 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 	for _, id := range ids {
 		t.Run(id, func(t *testing.T) {
 			old, d, sk := baseline[id], discipline(t, id), skeleton(t)
-			// A stage summary and a service's home stage only place scope on
-			// the page, like a group; the scope itself must not change.
-			// Lines split a deliverable at its semicolons and sentences; read
-			// both as one list so a split loses no words.
-			placed := append([]knowledge.RFPStage(nil), d.Stages...)
-			for i := range placed {
-				placed[i].Lines = nil
+			// Seven project stages (owner direction, 7 November 2026): stages
+			// were merged, so stage definitions and every rule that tests a
+			// stage changed on purpose. What must hold is that no scope
+			// wording is lost: each part of an old stage's deliverable is in
+			// a stage now, and elements and positions keep their wording and
+			// values. Lines split a deliverable at its semicolons and
+			// sentences, so both are read as parts.
+			parts := func(stages []knowledge.RFPStage) map[string]bool {
+				out := map[string]bool{}
+				for _, s := range stages {
+					for _, f := range strings.Split(strings.ReplaceAll(s.Deliverable, ". ", "; "), "; ") {
+						out[normalize(strings.TrimSpace(f))] = true
+					}
+				}
+				return out
 			}
-			oldStages := append([]knowledge.RFPStage(nil), old.Stages...)
-			if d.ScopeByStage {
-				for i := range placed {
-					placed[i].Deliverable = strings.ReplaceAll(placed[i].Deliverable, ". ", "; ")
+			now := parts(d.Stages)
+			for f := range parts(old.Stages) {
+				if !now[f] {
+					t.Errorf("stage wording lost: %s", f)
 				}
-				for i := range oldStages {
-					oldStages[i].Deliverable = strings.ReplaceAll(oldStages[i].Deliverable, ". ", "; ")
+			}
+			unruled := func(es []knowledge.RFPElement) []knowledge.RFPElement {
+				out := append([]knowledge.RFPElement(nil), es...)
+				for i := range out {
+					out[i].When = nil
 				}
+				return out
 			}
 			ledger = append(ledger, "## "+d.Title, "", "| Original item | Destination |", "| --- | --- |")
 			for _, pair := range []struct {
 				name          string
 				before, after any
-			}{{"role", old.Role, d.Role}, {"scope schedule", old.ScopeSchedule, d.ScopeSchedule}, {"stages", oldStages, placed}, {"elements", old.Elements, d.Elements}} {
+			}{{"role", old.Role, d.Role}, {"scope schedule", old.ScopeSchedule, d.ScopeSchedule}, {"elements", unruled(old.Elements), unruled(d.Elements)}} {
 				if normalize(pair.before) != normalize(pair.after) {
 					t.Errorf("%s definitions changed or lost", pair.name)
 				}
@@ -77,7 +89,7 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 					t.Errorf("ungrouped scope %s", q.Key)
 				}
 				q.Group, q.Stage = p.Group, p.Stage
-				if normalize(p) != normalize(q) {
+				if normalize(unruledPosition(p)) != normalize(unruledPosition(q)) {
 					t.Errorf("scope %s content/rules changed", p.Key)
 				}
 				destination := "Scope of services / " + d.Positions[i].Group
@@ -253,4 +265,18 @@ func TestCivilElementUnknownAndOptionalFeeRows(t *testing.T) {
 	if count == 0 {
 		t.Fatal("element pricing disappeared")
 	}
+}
+
+// unruledPosition is a position without the conditions that may test a
+// stage: its wording, kind, party and cell values remain.
+func unruledPosition(p knowledge.RFPPosition) knowledge.RFPPosition {
+	p.When = nil
+	for _, c := range []**knowledge.RFPCell{&p.Value, &p.Simple, &p.Complex} {
+		if *c != nil {
+			cell := **c
+			cell.When = nil
+			*c = &cell
+		}
+	}
+	return p
 }

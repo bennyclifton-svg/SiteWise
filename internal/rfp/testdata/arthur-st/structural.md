@@ -28,7 +28,10 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Concept and schematic design |  | Included |  |
+| Brief and concept |  | Included |  |
+|  | Adequacy assessment of the existing structures the works load or connect to: extent, missing drawings, testing and opening-up needed, findings and limitations | Included |  |
+|  | Strengthening design is priced separately until the extent is known | Included |  |
+| Schematic design |  | Included |  |
 |  | Briefing | Included |  |
 |  | Site visit | Included |  |
 |  | Review of existing information and authority requirements | Included |  |
@@ -38,13 +41,9 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Preliminary CAD drawings for coordination | Included |  |
 |  | Design-basis schedule: geotechnical reliance, design life, importance level, loads, wind and earthquake inputs, durability and fire-resistance coordination; missing values referred to the responsible engineer | Included |  |
 |  | Geotechnical brief for the client to commission | Included |  |
-| Existing structure assessment |  | Included |  |
-|  | Adequacy assessment of the existing structures the works load or connect to: extent, missing drawings, testing and opening-up needed, findings and limitations | Included |  |
-|  | Strengthening design is priced separately until the extent is known | Included |  |
-| Planning approval |  | Included |  |
+| Planning |  | Included |  |
 |  | Structural design statement for the application | Included |  |
 |  | Responses to authority requests during assessment, up to 1 | Included |  |
-| Authority asset assessment |  | Included |  |
 |  | Specialist engineering assessment for building over or next to the water authority's assets | Included |  |
 |  | Rail corridor interface assessment where the site adjoins rail | Included |  |
 |  | Program: 2 to 6 months to prepare and 3 to 6 months for the authority's review (estimate) | Included |  |
@@ -61,7 +60,8 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Retention, underpinning, temporary works and monitoring interfaces: designer and reviewer named, permanent and temporary loads stated | Included |  |
 |  | Strengthening design found necessary by the existing structure assessment | Included |  |
 |  | Footings affected by in-ground services | Included |  |
-| Tender documents | You hold the structural design except the contractor-designed elements. | Included |  |
+| Tender documentation |  | Included |  |
+|  | You hold the structural design except the contractor-designed elements. | Included |  |
 |  | Drawings, specification and tender schedules | Included |  |
 |  | Typical connection details | Included |  |
 |  | Safety in design report | Included |  |
@@ -71,7 +71,7 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Miscellaneous metalwork: balustrades, screens, sunshades, fences | Included |  |
 |  | Super-flat floor design | Included |  |
 |  | Demolition drawings (engineering demolition and propping design is not replaced by them) | Excluded |  |
-| Construction documents |  | Included |  |
+| Design finalisation | The contractor holds the design after novation. | Included |  |
 |  | Construction issue | Included |  |
 |  | Design certification for the construction certificate | Included |  |
 |  | 1 round(s) of peer review or certifier comments | Included |  |
@@ -79,7 +79,7 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Detailed design of post-tensioned slabs and piles | Included |  |
 |  | Shoring and piled retention design | Included |  |
 |  | Inspection schedule by element and hold point, with notification lead time and the basis for reinspection | Included |  |
-| Construction phase |  | Included |  |
+| Delivery |  | Included |  |
 |  | 4 inspections at the hold points in your inspection schedule | Included |  |
 |  | RFIs | Included |  |
 |  | Shop drawing review including contractor-designed elements | Included |  |

@@ -21,7 +21,7 @@ func assignScopeInputs(c *Controls, d knowledge.RFPDiscipline, sk knowledge.RFPS
 					if name == key {
 						return true
 					}
-					if name == "flag" && strings.HasPrefix(key, "flag.") && contains(values, strings.TrimPrefix(key, "flag.")) {
+					if (name == "flag" || name == "flag_all") && strings.HasPrefix(key, "flag.") && contains(values, strings.TrimPrefix(key, "flag.")) {
 						return true
 					}
 				}
@@ -54,7 +54,11 @@ func assignScopeInputs(c *Controls, d knowledge.RFPDiscipline, sk knowledge.RFPS
 				continue
 			}
 			for _, stage := range d.Stages {
-				if uses(key, stage.Module, stage.When, stage.Suggest, stage.IncludeWhen) {
+				whens := []knowledge.RFPWhen{stage.When, stage.Suggest, stage.IncludeWhen}
+				for _, l := range stage.Lines {
+					whens = append(whens, l.When, l.Suggest)
+				}
+				if uses(key, stage.Module, whens...) {
 					input.Target = "stage:" + stage.Key
 					break
 				}

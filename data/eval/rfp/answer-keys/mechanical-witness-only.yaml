@@ -42,8 +42,8 @@ fields:
 settings:
   mechanical-services:
     boundary:range:
-      start: handover
-      end: handover
+      start: delivery
+      end: delivery
     allowance:extent: '2'
     allowance:investigation: '2'
     allowance:design: '2'
@@ -52,7 +52,7 @@ settings:
     allowance:construction: '2'
     allowance:completion: '2'
     allowance:access: '2'
-    stage:handover: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/mechanical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/mechanical-services/ledger.md #1-54'
@@ -62,8 +62,8 @@ snapshot: false
 expect:
   mechanical-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [handover]
-    stages_absent: [design, tender]
+    stages_include: [delivery]
+    stages_absent: [design_development, tender_documentation]
     positions:
       hvac: absent
       smoke: absent

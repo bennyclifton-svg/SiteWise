@@ -38,15 +38,28 @@ func ownerTargets(st ProgramState, stated map[string]string) []ProgramTarget {
 		}
 		times[id] = t
 	}
-	var lodge, construction *engine.Times
+	// Construction starts with the Delivery stage. Delivery also holds the
+	// defects period, so time on site ends at practical completion when the
+	// program has it.
+	var lodge, construction, completion *engine.Times
 	for _, a := range st.Activities {
 		key := string(a.SourceKey)
-		if t, ok := times[a.ID]; ok && strings.HasPrefix(key, "fragment:fr.da-lodgement:") && strings.HasSuffix(key, ":lodge") && lodge == nil {
+		t, ok := times[a.ID]
+		switch {
+		case !ok:
+		case strings.HasPrefix(key, "fragment:fr.da-lodgement:") && strings.HasSuffix(key, ":lodge") && lodge == nil:
 			lodge = &t
-		}
-		if t, ok := times[a.ID]; ok && a.Kind == "stage" && string(a.CatalogueStageID) == "construction" && construction == nil {
+		case a.Kind == "stage" && string(a.CatalogueStageID) == "delivery" && construction == nil:
 			construction = &t
+		case strings.HasPrefix(key, "fragment:fr.practical-completion:") && completion == nil:
+			completion = &t
 		}
+	}
+	onSite := construction
+	if construction != nil && completion != nil && !completion.Unknown && completion.Finish != "" {
+		span := *construction
+		span.Finish = completion.Finish
+		onSite = &span
 	}
 	out := []ProgramTarget{}
 	if v := strings.TrimSpace(stated["proj.target_da_lodgement"]); v != "" {
@@ -55,7 +68,7 @@ func ownerTargets(st ProgramState, stated map[string]string) []ProgramTarget {
 	if v := strings.TrimSpace(stated["proj.target_construction_start"]); v != "" {
 		out = append(out, dateTarget("proj.target_construction_start", "Construction start", v, construction, func(t engine.Times) string { return t.Start }))
 	}
-	months, known := constructionMonths(construction)
+	months, known := constructionMonths(onSite)
 	for _, k := range []struct{ key, label string }{{"proj.max_construction_months", "Maximum time on site"}, {"proj.preliminary_construction_months", "Builder's estimated time on site"}} {
 		v := strings.TrimSpace(stated[k.key])
 		if v == "" {

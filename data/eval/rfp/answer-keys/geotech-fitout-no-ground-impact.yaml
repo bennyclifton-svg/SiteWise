@@ -32,13 +32,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory
+  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory 
     suite, owners and reliance recipients); quantities are client test-fixture choices.
 settings:
   geotechnical:
     boundary:range:
-      start: g1_plan
-      end: g3_report
+      start: brief_concept
+      end: brief_concept
     allowance:mobilisation: '2'
     allowance:boreholes: '2'
     allowance:pits: '2'
@@ -51,13 +51,13 @@ sources:
 - docs/rfp-golden/geotechnical/rfp.md Sections 1-7
 - 'docs/rfp-golden/geotechnical/ledger.md #1-54'
 scenario: geotech-fitout-no-ground-impact
-description: 'Office fit-out with no load/ground disturbance: evidence review/report, no intrusive fieldwork or
-  service clearance assumed.'
+description: 'Office fit-out with no load/ground disturbance: evidence review/report, no intrusive fieldwork or service
+  clearance assumed.'
 expect:
   geotechnical:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [g1_plan, g3_report]
-    stages_absent: [g2_field, g4_planning, g5_design, g6_construction, g7_transfer]
+    stages_include: [brief_concept]
+    stages_absent: [planning, design_development, design_finalisation, delivery]
     positions:
       plan: I
       foundation: absent

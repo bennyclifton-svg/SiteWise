@@ -35,8 +35,8 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
-    scheduled.
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review 
+    coverage scheduled.
 settings:
   fire-engineering:
     allowance:solutions: '2'
@@ -53,13 +53,13 @@ sources:
 - docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
 - 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
 scenario: fire-engineering-advisory-only
-description: Advisory aged-care review ends at report/response; no full FER, construction verification or independent
-  peer appointment implied.
+description: Advisory aged-care review ends at report/response; no full FER, construction verification or 
+  independent peer appointment implied.
 expect:
   fire-engineering:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     stages_include: [s9_advisory]
-    stages_absent: [s1_strategy, s3_brief, s4_report, s7_verification, s9_peer]
+    stages_absent: [brief_concept, design_development, s9_peer]
     positions:
       wet_design: X
       dry_design: X

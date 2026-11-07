@@ -33,13 +33,14 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy,
-    methods and named third-party responsibilities. Quantities are client fixture selections.
+  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed 
+    datum/control/accuracy, methods and named third-party responsibilities. Quantities are client fixture 
+    selections.
 settings:
   land-surveying:
     boundary:range:
-      start: s1_plan
-      end: s4_services
+      start: brief_concept
+      end: brief_concept
     allowance:features: '2'
     allowance:control: '2'
     allowance:visits: '2'
@@ -52,7 +53,8 @@ sources:
 - docs/rfp-golden/land-surveying/rfp.md Sections 1-7
 - 'docs/rfp-golden/land-surveying/ledger.md #1-33'
 scenario: survey-live-extension
-description: Occupied extension buys separate detail/boundary/services evidence; later construction remains optional.
+description: Occupied extension buys separate detail/boundary/services evidence; later construction remains 
+  optional.
 expect:
   land-surveying:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
@@ -70,8 +72,8 @@ expect:
       buried: I
       sewer: I
       access: I
-    stages_include: [s1_plan, s2_detail, s3_boundary, s4_services]
+    stages_include: [brief_concept]
     blocking_only: true
     blocking: []
-    stages_absent: [s5_support, s6_construction, s7_completion]
+    stages_absent: [planning, delivery]
 snapshot: true

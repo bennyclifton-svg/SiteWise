@@ -42,8 +42,8 @@ fields:
 settings:
   electrical-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
 sources:
 - docs/rfp-golden/electrical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/electrical-services/ledger.md #1-54'
@@ -52,9 +52,7 @@ description: Residential known negatives omit unused systems without inferred in
 snapshot: false
 expect:
   electrical-services:
-    stages_absent:
-    - planning
-    - investigation
+    stages_absent: [planning]
     positions:
       lighting: I
       controls: absent

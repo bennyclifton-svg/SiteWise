@@ -26,27 +26,25 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Basis/system register | Included |  |
 |  | Accessible survey, observed/tested/assumed gaps | Included |  |
 |  | Supply/capacity investigation brief and inputs/owners | Included |  |
-| S2 Investigation |  | Included |  |
 |  | Defined surveys/tests/operator/reinstatement | Included |  |
 |  | Retained supply/plant/network suitability, uncertainty/options | Included |  |
 |  | Upgrade design separate | Included |  |
 |  | Defined investigation; records are not condition proof; upgrade separate | Included |  |
-| S3 Concept |  | Included |  |
+| Schematic design |  | Included |  |
 |  | Demand/options/indicative duties | Included |  |
 |  | Plant/booster/valve space, routes/access/power/drainage/brigade | Included |  |
 |  | Listed planning notes/responses | Included |  |
 |  | Unresolved pipework | Included |  |
 |  | Fire strategy and performance solutions | Excluded |  |
-| S4 Developed design | Not part of this appointment | Excluded | — |
-| S5 Documentation | Not part of this appointment | Excluded | — |
-| S6 Post-contract | Not part of this appointment | Excluded | — |
-| S7 Construction | Not part of this appointment | Excluded | — |
-| S8 Commissioning | Not part of this appointment | Excluded | — |
-| S9 Advisory | Not part of this appointment | Excluded | — |
+| Design development | Not part of this appointment | Excluded | — |
+| Tender documentation | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Advisory | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent | Included |  |
 |  | Listed enquiry/test/meter/backflow/connection/augmentation duties; operator/payer named | Included |  |

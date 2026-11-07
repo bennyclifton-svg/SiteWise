@@ -36,13 +36,11 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and masterplan |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Confirmed, quantified brief (1 draft, 1 final) | Included |  |
 |  | Up to 2 masterplan options | Included |  |
 |  | Preferred masterplan report | Included |  |
 |  | Approval strategy workshop | Included |  |
-|  | Help selecting other consultants | Included |  |
-| Concept |  | Included |  |
 |  | Site inspection | Included |  |
 |  | Review of existing information and brief gaps | Included |  |
 |  | Up to 2 options | Included |  |
@@ -50,6 +48,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Area schedule | Included |  |
 |  | Check against budget | Included |  |
 |  | Brief gaps, required-input schedule, responsibility matrix and decisions register | Included |  |
+|  | Help selecting other consultants | Included |  |
 |  | Connecting with Country input | Included |  |
 |  | Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces | Included |  |
 | Schematic design |  | Included |  |
@@ -59,32 +58,31 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Photoreal renders, marketing CGI, models | Included |  |
 |  | Community consultation | Included |  |
 |  | Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables | Included |  |
-| Planning approval |  | Included |  |
+| Planning |  | Included |  |
 |  | Architectural drawings and input to the Statement of Environmental Effects: one preliminary and one final issue | Included |  |
 |  | Who lodges is set in section 2 | Included |  |
-|  | Modification applications after approval | Included |  |
-| Planning response | Fee ceiling: hours × R3 rate. | Included |  |
 |  | Authority information requests and design changes during assessment | Included |  |
 |  | Actual time at R3 rates up to 40 hours | Included |  |
+|  | Modification applications after approval | Included |  |
 |  | Court appeals | Excluded |  |
 | Design development |  | Included |  |
 |  | Coordinated design to the approval and consent conditions | Included |  |
 |  | Finishes and typical details | Included |  |
 |  | BCA strategy with the BCA consultant | Included |  |
+|  | Interior layouts, finishes and joinery for the base building and common areas | Included |  |
 |  | Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | Included |  |
 |  | BIM model issued to the design team (level in section 4) | Included |  |
 |  | BIM coordination meetings, clash detection | Included |  |
-|  | Value management redesign (at R3 rates) | Included |  |
-|  | Performance solutions (fire, access, weatherproofing) | Excluded |  |
-|  | Green Star or NABERS documentation | Included |  |
-|  | Signage and wayfinding | Included |  |
-| Interiors |  | Included |  |
-|  | Interior layouts, finishes and joinery for the base building and common areas | Included |  |
 |  | Interior layouts for typical rooms | Included |  |
 |  | Base-building and common-area interiors | Included |  |
 |  | Tenant fit-out design | Included |  |
 |  | Loose furniture and FF&E selection | Included |  |
-| D&C tender documents | You hold the design to tender issue; the contractor holds it after award. | Included |  |
+|  | Value management redesign (at R3 rates) | Included |  |
+|  | Performance solutions (fire, access, weatherproofing) | Excluded |  |
+|  | Green Star or NABERS documentation | Included |  |
+|  | Signage and wayfinding | Included |  |
+| Tender documentation |  | Included |  |
+|  | You hold the design to tender issue; the contractor holds it after award. | Included |  |
 |  | Design-intent drawings and performance brief | Included |  |
 |  | Schedule of the design you retain and the design the contractor completes | Included |  |
 |  | Review of tenderers' departures | Included |  |
@@ -94,10 +92,8 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | External and base-building finishes schedules | Included |  |
 |  | Tender evaluation input | Included |  |
 |  | Performance brief; retained versus contractor design schedule | Included |  |
-|  | Façade performance certification (NCC Part F3) | Excluded |  |
-| Regulated design | Not part of this appointment | Excluded | — |
-| Contract administration | Not part of this appointment | Excluded | — |
-| Post-novation | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Coordinating and integrating consultants' work | Included |  |
 |  | Liaison with the certifier | Included |  |

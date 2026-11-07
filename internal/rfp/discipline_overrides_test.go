@@ -9,9 +9,9 @@ import (
 
 func TestPositionFollowsAppointedStage(t *testing.T) {
 	d := ruled(t, "structural")
-	d.Positions = append(d.Positions, knowledge.RFPPosition{Key: "appointment_test", Label: "Construction attendance", Kind: "technical", Value: &knowledge.RFPCell{Value: "I", When: knowledge.RFPWhen{{"stage_included": {"construction_phase"}}}, Else: "O"}})
+	d.Positions = append(d.Positions, knowledge.RFPPosition{Key: "appointment_test", Label: "Construction attendance", Kind: "technical", Value: &knowledge.RFPCell{Value: "I", When: knowledge.RFPWhen{{"stage_included": {"delivery"}}}, Else: "O"}})
 	for _, c := range []struct{ state, want string }{{Include, "I"}, {Option, "O"}, {Exclude, "O"}} {
-		r := Resolve(d, skeleton(t), facts(t), set("stage:construction_phase", `"`+c.state+`"`))
+		r := Resolve(d, skeleton(t), facts(t), set("stage:delivery", `"`+c.state+`"`))
 		if p := r.Position("appointment_test"); p.Value != c.want {
 			t.Fatalf("stage %s: got %s, want %s", c.state, p.Value, c.want)
 		}

@@ -31,13 +31,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
-    are fixture choices.
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected 
+    counts are fixture choices.
 settings:
   cost-planning:
     boundary:range:
-      start: s1_basis
-      end: s4_design
+      start: brief_concept
+      end: design_development
     allowance:plans: '2'
     allowance:authority: '2'
     allowance:review: '2'
@@ -57,4 +57,4 @@ expect:
       total_budget: I
       operator: I
     blocking: ['fact:flag.cost_authority', 'fact:flag.cost_total_budget', 'fact:flag.cost_operator']
-    stages_include: [s3_authority]
+    stages_include: [planning]

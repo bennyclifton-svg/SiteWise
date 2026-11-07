@@ -53,12 +53,12 @@ sources:
 - docs/rfp-golden/bca-certification/rfp.md Sections 2-7
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
 scenario: bca-combined-boundary-unconfirmed
-description: Requesting both packages still requires appointment confirmation; suggested
-  A tender boundary prices B as options.
+description: Requesting both packages still requires appointment confirmation; suggested A tender boundary prices B 
+  as options.
 expect:
   bca-certification:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+    stages_include: [schematic_design, planning, design_development, design_finalisation, delivery]
     positions:
       statutory_functions: I
     role: [advisory, statutory]

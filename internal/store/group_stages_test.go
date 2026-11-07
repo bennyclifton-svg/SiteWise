@@ -291,8 +291,8 @@ func TestGroupStageSyncOfferedOnceAndRestoredOnUncombine(t *testing.T) {
 		before[p.ID] = stageRows(t, s, p.ID)
 	}
 
-	concept := programStageID(t, st, "concept_design")
-	documentation := programStageID(t, st, "construction_documentation")
+	concept := programStageID(t, st, "brief_concept")
+	documentation := programStageID(t, st, "design_development")
 	renameStage(t, s, concept, "Sketch design")
 	deleteStage(t, s, documentation)
 	st, added := addStage(t, s, "Feasibility")
@@ -468,7 +468,7 @@ func TestAwardedGroupFollowsTheProgram(t *testing.T) {
 		t.Fatalf("contract %d", contract)
 	}
 
-	concept := programStageID(t, st, "concept_design")
+	concept := programStageID(t, st, "brief_concept")
 	renameStage(t, s, concept, "Sketch design")
 	deleteStage(t, s, concept)
 	st, added := addStage(t, s, "Feasibility")

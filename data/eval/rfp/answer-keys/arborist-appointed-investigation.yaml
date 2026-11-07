@@ -35,12 +35,12 @@ fields:
   client: Example Client
   pi: Client-selected $5m
   pl: Client-selected $20m
-  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with 
     explicit limits.
 settings:
   arborist:
     boundary:range:
-      start: s1_inventory
+      start: brief_concept
       end: s7_advisory
     allowance:coverage: '2'
     allowance:reports: '2'
@@ -52,7 +52,7 @@ sources:
 - docs/rfp-golden/arborist/rfp.md Sections 1-7
 - 'docs/rfp-golden/arborist/ledger.md #1-32'
 scenario: arborist-appointed-investigation
-description: Industrial remediation buys diagnostics only in addition to inventory/advice; risk and monitoring
+description: Industrial remediation buys diagnostics only in addition to inventory/advice; risk and monitoring 
   remain optional.
 expect:
   arborist:

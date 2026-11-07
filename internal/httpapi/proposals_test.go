@@ -182,7 +182,7 @@ func TestProposalDecisionAPI(t *testing.T) {
 	var pkg, again procurement.Package
 	m.call(t, http.MethodPost, disciplineURL, disciplineBody, http.StatusOK, &pkg)
 	m.call(t, http.MethodPost, disciplineURL, disciplineBody, http.StatusOK, &again)
-	if pkg.Kind != "services" || pkg.ID == "" || again.ID != pkg.ID || len(pkg.Stages) != 4 {
+	if pkg.Kind != "services" || pkg.ID == "" || again.ID != pkg.ID || len(pkg.Stages) != 7 {
 		t.Fatalf("package accept/retry %+v %+v", pkg, again)
 	}
 	disciplineUndo := strings.TrimSuffix(disciplineURL, "/accept") + "/decision"

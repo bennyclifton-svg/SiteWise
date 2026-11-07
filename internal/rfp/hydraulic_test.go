@@ -9,7 +9,7 @@ func TestHydraulicPilotSelectionsAndLegacyChoices(t *testing.T) {
 	d, sk := ruled(t, "hydraulic-services"), skeleton(t)
 	drivers := facts(t, "class=2", "work_type=new", "procurement=traditional", "pathway=da")
 	r := Resolve(d, sk, drivers, nil)
-	if r.HasCheck("boundary") || r.Stage("design").State != Include || r.Stage("tender").State != Option {
+	if r.HasCheck("boundary") || r.Stage("design_development").State != Include || r.Stage("tender_documentation").State != Option {
 		t.Fatalf("design-first appointment: %+v", r.Boundary)
 	}
 	for _, key := range []string{"rainwater", "pumps", "roof", "interfaces"} {
@@ -20,7 +20,7 @@ func TestHydraulicPilotSelectionsAndLegacyChoices(t *testing.T) {
 	if r.Position("alternative_sources").Value != "O" {
 		t.Fatal("unusual sources should be separately priced until specified")
 	}
-	settings := set("stage:design", `"option"`)
+	settings := set("stage:design_development", `"option"`)
 	r = Resolve(d, sk, drivers, settings)
 	if r.Position("rainwater").Value != "O" || r.Position("domestic").Value != "O" {
 		t.Fatal("optional design leaked into the base fee")

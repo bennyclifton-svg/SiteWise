@@ -35,13 +35,13 @@ fields:
   client: Example Client
   pi: Client-selected $5m
   pl: Client-selected $20m
-  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with 
     explicit limits.
 settings:
   arborist:
     boundary:range:
-      start: s1_inventory
-      end: s3_protection
+      start: brief_concept
+      end: planning
     allowance:coverage: '2'
     allowance:reports: '2'
     allowance:investigations: '2'
@@ -51,12 +51,12 @@ sources:
 - docs/rfp-golden/arborist/rfp.md Sections 1-7
 - 'docs/rfp-golden/arborist/ledger.md #1-32'
 scenario: arborist-campus-extension
-description: Occupied school extension appoints inventory/impact/protection; offsite assessment with lawful access;
+description: Occupied school extension appoints inventory/impact/protection; offsite assessment with lawful access; 
   later construction and investigations remain options.
 expect:
   arborist:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inventory, s2_impact, s3_protection]
+    stages_include: [brief_concept, planning]
     positions:
       inventory: I
       offsite: I
@@ -70,5 +70,5 @@ expect:
       landscape: X
     blocking_only: true
     blocking: []
-    stages_absent: [s4_tender, s5_construction, s6_investigation, s6_risk, s7_advisory, s7_monitoring, s7_peer]
+    stages_absent: [tender_documentation, delivery, s6_investigation, s6_risk, s7_advisory, s7_monitoring, s7_peer]
 snapshot: true

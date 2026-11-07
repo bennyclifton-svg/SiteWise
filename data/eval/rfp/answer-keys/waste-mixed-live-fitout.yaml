@@ -37,13 +37,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
-    owners. Fixture quantities are client choices, not generation-rate defaults.
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection 
+    confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 settings:
   waste-management:
     boundary:range:
-      start: s1_inception
-      end: s3_cd
+      start: brief_concept
+      end: planning
     allowance:coverage: '2'
     allowance:plans: '2'
     allowance:meetings: '2'
@@ -54,12 +54,12 @@ sources:
 - docs/rfp-golden/waste-management/rfp.md Sections 1-7
 - 'docs/rfp-golden/waste-management/ledger.md #1-45'
 scenario: waste-mixed-live-fitout
-description: Occupied mixed-use fit-out buys separately scoped plans and shared tenancy/operator coordination; D&C
+description: Occupied mixed-use fit-out buys separately scoped plans and shared tenancy/operator coordination; D&C 
   does not novate.
 expect:
   waste-management:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception, s2_concept, s3_operational, s3_cd]
+    stages_include: [brief_concept, planning]
     positions:
       operational: I
       cd: I
@@ -68,5 +68,5 @@ expect:
       completion: X
       swept_paths: X
       equipment: X
-    stages_absent: [s4_review, s5_tender, s6_contractor, s7_completion]
+    stages_absent: [design_development, tender_documentation, design_finalisation]
 snapshot: true

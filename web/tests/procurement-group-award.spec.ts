@@ -73,7 +73,7 @@ test("a group's proposal is compared by discipline, awarded under member lines a
   await expect(toggle).toBeVisible();
   // Collapsed, the group's row is the one contract sum, computed in Go.
   if ((await toggle.getAttribute("aria-expanded")) === "true") await toggle.click();
-  await expect(page.getByRole("row").filter({ has: page.getByRole("button", { name: `Expand ${group.title}`, exact: true }) })).toContainText(dollars(expected).slice(1));
+  await expect(page.getByRole("row").filter({ has: page.getByRole("button", { name: `Expand ${group.title}`, exact: true }) })).toContainText((expected / 100).toLocaleString("en-AU")); // the cost plan shows whole dollars
   await page.getByRole("button", { name: `Expand ${group.title}`, exact: true }).click();
   await page.screenshot({ path: testInfo.outputPath("group-cost-plan.png"), fullPage: true });
   const plan = await (await page.request.get(`${api}/cost-plan`)).json();

@@ -634,7 +634,7 @@ summary.
 Shapes for the next wave's packages, costs and reports (`docs/plans/2026-10-04-next-wave-implementation-plan.md` §4 and package WP-K0). Each shape is documented here before any data is written in it. Everything is `status: draft` until the owner reviews it. Only `reviewed` content may set a standard obligation, clause or benchmark; draft content stays visibly provisional.
 
 ```text
-knowledge/works/stages.yaml            delivery stages and editable design sub-stages
+knowledge/works/stages.yaml            the seven project stages
 knowledge/works/package_defaults.yaml  default consultant packages, copied as data from Clerk
 knowledge/profile/planning_keys.yaml   keys a planning value (assumption or calculation) may use
 knowledge/profile/key_scope.yaml       whether each profile key belongs to the site or the project
@@ -646,29 +646,29 @@ knowledge/costs/benchmarks.yaml        cost benchmarks an estimate may use
 
 ### Stages (`works/stages.yaml`)
 
-The top-level ids are the stage targets of unforeseen conditions:
+The seven project stages every RFP, package, Program and the Cost Plan use,
+in order (owner direction, 7 November 2026):
 
-- `investigation`
-- `design`
-- `approvals`
-- `procurement`
-- `construction`
-- `completion`
-- `defects`
+- `brief_concept` Brief and concept
+- `schematic_design` Schematic design
+- `planning` Planning
+- `design_development` Design development
+- `tender_documentation` Tender documentation
+- `design_finalisation` Design finalisation
+- `delivery` Delivery (contract administration, construction, completion and defects)
 
-`substages` are editable suggestions for staged fee lines, never requirements. `novation` says which side of a novation a sub-stage usually falls on (`pre` or `post`); a package may change it.
+`novation` says which side of a novation a stage usually falls on (`pre` or `post`); a package may change it.
 
-One more top-level id, `other` (label "Other stage", draft, owner answer Q5), is where a stage a user makes in Program maps until the user picks the catalogue stage it really is. It is a valid stage id everywhere a stage id is checked, but it is never a default or a suggestion, it is not an unforeseen-condition target, and library rows never use it.
+One more id, `other` (label "Other stage", draft, owner answer Q5), is where a stage a user makes in Program maps until the user picks the catalogue stage it really is. It is a valid stage id everywhere a stage id is checked, but it is never a default or a suggestion, and library rows never use it.
+
+Unforeseen conditions attach to their own coarse phase list (`investigation`, `design`, `approvals`, `procurement`, `construction`, `completion`, `defects`), not to these stages: they say when a condition bites, not when a fee is paid.
 
 ```yaml
 version: 1
 status: draft
 sources: [...]
 stages:
-  - id: design
-    label: Design
-    substages:
-      - {id: concept_design, label: Concept design, novation: pre}
+  - {id: brief_concept, label: Brief and concept, novation: pre}
 ```
 
 ### Package defaults (`works/package_defaults.yaml`)
@@ -957,17 +957,14 @@ ids of the same row, and a row's links form no cycle.
 ```
 
 - `stages` lists catalogue stage ids (`works/stages.yaml`) in order as one
-  flat tier; catalogue sub-stages appear here as ordinary stages. `other` is
-  never listed. `links` reference ids in `stages`.
+  flat tier. `other` is never listed. `links` reference ids in `stages`.
 - v1 applies one skeleton per project. Generation picks the matching skeleton
   with the most predicate terms (leaf conditions); a predicate must hold, so
   an unknown determinant or condition never selects one. A tie is kept and
   reported as a check message. Two skeletons with identical predicates (list
   order inside `all`, `any` and `any_of` ignored) are an error.
 - Exactly one fallback `sk.generic`, with no `applies_when`: every catalogue
-  stage in order, a top-level stage replaced by its sub-stages where it has
-  more than one (a single sub-stage is a fee item inside its stage, so
-  Construction stays), without `other`, chained `FS` with no lags. The checker and the loader
+  stage in order, without `other`, chained `FS` with no lags. The checker and the loader
   derive this list from `stages.yaml` and refuse a file that differs.
 
 ### Fragments (`program/fragments.yaml`)

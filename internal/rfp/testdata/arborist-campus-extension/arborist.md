@@ -25,27 +25,26 @@ Written instruction/agreed inputs to named output/response end. Price once acros
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Inventory / condition |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests | Included |  |
 |  | No impact report | Included |  |
-|  | Onsite tree survey/condition assessment; method, date and uncertainty stated | Included |  |
-|  | Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence limits | Included |  |
-|  | Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3 plan separate; investigate before root attribution, structure/geotech diagnose | Included |  |
-| S2 Concept / impact |  | Included |  |
 |  | Retention and footprint/access/services alternatives | Included |  |
 |  | Impact report by design revision, per-tree/cumulative encroachment, pruning/removal reasons and protection | Included |  |
 |  | Application responses to named milestone | Included |  |
+|  | Onsite tree survey/condition assessment; method, date and uncertainty stated | Included |  |
+|  | Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence limits | Included |  |
 |  | Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure design, surveyor locations | Included |  |
 |  | Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor executes/disposes/reinstates | Included |  |
-| S3 Consent / protection |  | Included |  |
+|  | Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3 plan separate; investigate before root attribution, structure/geotech diagnose | Included |  |
+| Planning |  | Included |  |
 |  | Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions | Included |  |
-| S4 Tender / contractor design | Not part of this appointment | Excluded | — |
-| S5 Construction / completion | Not part of this appointment | Excluded | — |
-| S6a Specialist investigation | Not part of this appointment | Excluded | — |
-| S6b Formal risk assessment | Not part of this appointment | Excluded | — |
-| S7a Advisory / remediation | Not part of this appointment | Excluded | — |
-| S7b Ongoing monitoring | Not part of this appointment | Excluded | — |
-| S7c Independent peer review | Not part of this appointment | Excluded | — |
+| Tender documentation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Specialist investigation | Not part of this appointment | Excluded | — |
+| Formal risk assessment | Not part of this appointment | Excluded | — |
+| Advisory / remediation | Not part of this appointment | Excluded | — |
+| Ongoing monitoring | Not part of this appointment | Excluded | — |
+| Independent peer review | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Replacement planting / landscape design | Excluded |  |
 |  | Ecology, bushfire and heritage assessment | Excluded |  |

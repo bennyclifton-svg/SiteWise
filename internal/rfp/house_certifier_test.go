@@ -61,15 +61,21 @@ func TestClassTenDoesNotMakeMixedUse(t *testing.T) {
 func TestHouseCertifierDefaultsToCertification(t *testing.T) {
 	sk, d := skeleton(t), discipline(t, "bca-certification")
 	r := Resolve(d, sk, houseDrivers(t, "da", nil), Settings{})
-	for _, k := range []string{"b1_preliminary", "b2_construction_approval", "b3_construction", "b4_occupation"} {
-		if s := r.Stage(k); s.State != Include {
-			t.Errorf("house: %s want include, got %s (%s)", k, s.State, s.Why)
+	// Certification scope: the preliminary assessment, the construction
+	// certificate, inspections and the occupation certificate.
+	for k, line := range map[string]string{"planning": "preliminary_document_assessment", "design_finalisation": "determine_each_cc", "delivery": "determine_each_oc"} {
+		if s := r.Stage(k); s.State != Include || !hasLine(s, line) {
+			t.Errorf("house: %s want include with %s, got %s %v (%s)", k, line, s.State, lineKeys(s), s.Why)
 		}
 	}
-	for _, k := range []string{"a1_inception", "a2_planning", "a3_tender", "a4_construction"} {
+	// No BCA advice.
+	for _, k := range []string{"schematic_design", "design_development"} {
 		if s := r.Stage(k); s.State != Exclude {
 			t.Errorf("house: %s want exclude, got %s (%s)", k, s.State, s.Why)
 		}
+	}
+	if hasLine(r.Stage("planning"), "review_planning_drawings") || hasLine(r.Stage("delivery"), "bca_query_changed") {
+		t.Errorf("house: advisory lines in a certification RFP: %v %v", lineKeys(r.Stage("planning")), lineKeys(r.Stage("delivery")))
 	}
 	if f := r.Facts["flag.bca_certification"]; f.Source != "derived" {
 		t.Errorf("the house default is derived, not the user's word: %+v", f)
@@ -88,8 +94,8 @@ func TestHouseCertifierDefaultsToCertification(t *testing.T) {
 
 	// The client's saved answer wins over the house default.
 	r = Resolve(d, sk, houseDrivers(t, "da", map[string]string{"bca_certification": "no", "bca_advisory": "yes"}), Settings{})
-	if r.Stage("b3_construction").State != Exclude || r.Stage("a1_inception").State != Include {
-		t.Errorf("a saved advisory-only answer wins: b3 %s, a1 %s", r.Stage("b3_construction").State, r.Stage("a1_inception").State)
+	if r.Stage("design_finalisation").State != Exclude || r.Stage("schematic_design").State != Include || hasLine(r.Stage("delivery"), "determine_each_oc") {
+		t.Errorf("a saved advisory-only answer wins: certificate %s, schematic advice %s", r.Stage("design_finalisation").State, r.Stage("schematic_design").State)
 	}
 
 	// An office keeps the advisory default and its scope decisions.
@@ -111,21 +117,21 @@ func TestCertifierSupportsCDC(t *testing.T) {
 	if r.HasCheck("pathway_unsupported") {
 		t.Fatalf("a CDC has a certifier stage bundle: %s", describeChecks(r))
 	}
-	for k, want := range map[string]string{
-		"b1_preliminary": Include, "b2_cdc": Include, "b2_construction_approval": Exclude,
-		"b3_construction": Include, "b4_occupation": Include,
-	} {
+	for k, want := range map[string]string{"planning": Include, "design_finalisation": Exclude, "delivery": Include} {
 		if s := r.Stage(k); s.State != want {
 			t.Errorf("cdc: %s want %s, got %s (%s)", k, want, s.State, s.Why)
 		}
+	}
+	if s := r.Stage("planning"); !hasLine(s, "cdc_determine") || !hasLine(s, "preliminary_document_assessment") {
+		t.Errorf("cdc: planning holds the CDC determination: %v", lineKeys(s))
 	}
 	if p := r.Position("critical_stage_inspections"); p.Value != "I" {
 		t.Errorf("cdc: critical-stage inspections stay: %q", p.Value)
 	}
 	// Under a DA the CDC stage does not apply.
 	r = Resolve(d, sk, houseDrivers(t, "da", nil), Settings{})
-	if s := r.Stage("b2_cdc"); s.State != Exclude {
-		t.Errorf("da: b2_cdc want exclude, got %s", s.State)
+	if s := r.Stage("planning"); hasLine(s, "cdc_determine") {
+		t.Errorf("da: no CDC determination: %v", lineKeys(s))
 	}
 }
 
@@ -157,4 +163,21 @@ func TestStructuralRootZoneFootings(t *testing.T) {
 			t.Errorf("label names the structural root zone: %q", p.Label)
 		}
 	}
+}
+
+func lineKeys(s StageResult) []string {
+	keys := []string{}
+	for _, l := range s.Lines {
+		keys = append(keys, l.Key)
+	}
+	return keys
+}
+
+func hasLine(s StageResult, key string) bool {
+	for _, l := range s.Lines {
+		if l.Key == key {
+			return true
+		}
+	}
+	return false
 }

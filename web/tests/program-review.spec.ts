@@ -248,7 +248,7 @@ test("hold-point evidence, an awarded proposal's reading and evidence without a 
   await build(page);
   const real = await read(page, project);
   const stages = real.activities.filter((a) => !a.parent_id);
-  const design = stages.find((s) => s.catalogue_stage_id === "concept_design")!;
+  const design = stages.find((s) => s.catalogue_stage_id === "brief_concept")!;
   // The server's lines, on a live program with one hold point added: these
   // readings come from background jobs (the passage pipeline, an award)
   // that the browser suite cannot drive, so the view is served with them.
@@ -259,11 +259,11 @@ test("hold-point evidence, an awarded proposal's reading and evidence without a 
     ...real,
     activities: [...real.activities, hold],
     readings: [
-      reading("00000000-0000-4000-8000-000000000001", { target_activity_id: design.id, catalogue_stage_id: "concept_design", value: "6 weeks", text: "From the awarded proposal: Concept design 6 weeks" }),
-      reading("00000000-0000-4000-8000-000000000002", { catalogue_stage_id: "approval_documentation", value: "4 weeks", text: "From the awarded proposal: Approval documentation 4 weeks" }),
+      reading("00000000-0000-4000-8000-000000000001", { target_activity_id: design.id, catalogue_stage_id: "brief_concept", value: "6 weeks", text: "From the awarded proposal: Concept design 6 weeks" }),
+      reading("00000000-0000-4000-8000-000000000002", { catalogue_stage_id: "planning", value: "4 weeks", text: "From the awarded proposal: Approval documentation 4 weeks" }),
     ],
     readings_pending: 3,
-    checks: [...((real as unknown as { checks: unknown[] }).checks ?? []), { code: "evidence_without_stage", message: "Evidence for approval_documentation has no stage. Add the stage back or dismiss." }],
+    checks: [...((real as unknown as { checks: unknown[] }).checks ?? []), { code: "evidence_without_stage", message: "Evidence for planning has no stage. Add the stage back or dismiss." }],
     hold_points: [
       {
         activity_id: hold.id,

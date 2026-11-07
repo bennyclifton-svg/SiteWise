@@ -24,29 +24,27 @@ Start on instruction/agreed inputs; end at named output/response. Price once. R1
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Evidence / strategy |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Records/inspection, gaps/departures and strategy/markups: active/passive measures, egress/brigade access, options/operating consequences | Included |  |
 |  | Existing extent | Included |  |
-| S2 Early approval support |  | Included |  |
+| Planning |  | Included |  |
 |  | Defined preliminary letter/report and bounded responses | Included |  |
 |  | Partial-upgrade needs | Included |  |
 |  | Not final brief/FER or construction authority | Included |  |
-| S3 Performance design brief |  | Included |  |
+| Design development |  | Included |  |
 |  | PBDB/FEB: IDs/departures, verified requirements, methods/scenarios/criteria, inputs/limits | Included |  |
 |  | Consultation and team/operator/certifier comment closure | Included |  |
-|  | Brief for scheduled solutions | Included |  |
-| S4 Analysis / FER |  | Included |  |
 |  | Analysis/calculations/models/sensitivity, draft/final FER/plans and limits | Included |  |
 |  | Owned construction/system/commissioning/management requirements, acceptance/open items | Included |  |
+|  | Brief for scheduled solutions | Included |  |
 |  | FER for scheduled solutions | Included |  |
 |  | Smoke-control/cause-and-effect and selected services strategy review | Included |  |
-| S5 Tender / integration | Not part of this appointment | Excluded | — |
-| S6 Construction support | Not part of this appointment | Excluded | — |
-| S7 Verification / occupation | Not part of this appointment | Excluded | — |
-| S8a Specialist investigation | Not part of this appointment | Excluded | — |
-| S8b Interim / staged strategy | Not part of this appointment | Excluded | — |
-| S9a Defined advisory | Not part of this appointment | Excluded | — |
-| S9b Independent peer review | Not part of this appointment | Excluded | — |
+| Tender documentation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Specialist investigation | Not part of this appointment | Excluded | — |
+| Interim / staged strategy | Not part of this appointment | Excluded | — |
+| Defined advisory | Not part of this appointment | Excluded | — |
+| Independent peer review | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Bushfire, legal/expert-witness and statutory BCA certification | Excluded |  |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |

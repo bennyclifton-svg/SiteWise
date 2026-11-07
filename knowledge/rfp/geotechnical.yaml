@@ -16,10 +16,11 @@ field_defaults:
   pl: ''
 evaluation_note: Check coverage, competence, insurance and departures first. Normalise quantities, labs, monitoring,
   restoration and options; lowest price need not win.
-allowances_note: Client completes the reconciled plan and quantities. Guaranteed work is separate from time permitting;
-  return insufficiency and fee effects before issue.
+allowances_note: Client completes the reconciled plan and quantities. Guaranteed work is separate from time 
+  permitting; return insufficiency and fee effects before issue.
 scale:
-  text: Investigation follows the actual footprint, loads, disturbance and risk; building use never sets test quantities.
+  text: Investigation follows the actual footprint, loads, disturbance and risk; building use never sets test 
+    quantities.
   complex: []
 thresholds:
 - key: geotech_commercial
@@ -81,8 +82,8 @@ project_rows:
     why: Delivery route cannot appoint or transfer this consultant.
 - key: ground_brief
   label: Ground brief
-  text: Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance recipients;
-    reconcile conflicting plans.
+  text: Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance 
+    recipients; reconcile conflicting plans.
   provenance:
   - kind: evidence
     ref: geotechnical#2,3,4,5,6,7,8,20,21,22,23,24
@@ -112,65 +113,52 @@ role:
     text: "For advice or defect work, state the decision, the date the evidence stops, who may rely on the advice, the gaps and the further tests needed. Observations do not prove cause or unconditional suitability. Preserve the evidence before any repair."
     when: [{"work_type": ["advisory", "remediation"]}]
     provenance: [{"kind": "seed", "ref": "geotechnical#48,49"}]
-stage_intro: Base stages only, from written instruction/input-access milestone to the selected deliverable. Later options
-  require written instruction; agree interim reports and monitoring endpoint.
+stage_intro: Base stages only, from written instruction/input-access milestone to the selected deliverable. Later 
+  options require written instruction; agree interim reports and monitoring endpoint.
 boundary:
-- start: g1_plan
-  end: g3_report
+- start: brief_concept
+  end: brief_concept
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 stages:
-- key: g1_plan
-  name: G1 Brief / plan
+- key: brief_concept
+  name: Brief and concept
   lines:
-  - {key: review_design_prior, text: "Review design and prior tests for relevance"}
-  - {key: agree_location_method, text: "agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe fieldwork, access and handback"}
-  - {key: reconcile_counts_levels, text: "reconcile counts/levels"}
-  - {key: deliver_plan_inputs, text: "Deliver plan, inputs and issues register."}
+  - {key: review_design_prior, text: Review design and prior tests for relevance}
+  - {key: agree_location_method, text: 'agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe
+      fieldwork, access and handback'}
+  - {key: reconcile_counts_levels, text: reconcile counts/levels}
+  - {key: deliver_plan_inputs, text: 'Deliver plan, inputs and issues register.'}
+  - {key: scheduled_locating_clearance, text: 'Scheduled locating/clearance, drilling/coring/pits, sampling and tests',
+    when: [flag: [geotech_intrusive]], if_unknown: ask}
+  - {key: competent_supervision, text: competent supervision, when: [flag: [geotech_intrusive]], if_unknown: ask}
+  - {key: record_locations_datum, text: 'Record locations/datum/precision, logs/photos, groundwater and incomplete/refusal
+      points', when: [flag: [geotech_intrusive]], if_unknown: ask}
+  - {key: traceable_lab_records, text: traceable lab records and scheduled site handback., when: [flag: [
+            geotech_intrusive]], if_unknown: ask}
+  - {key: factual_results_ground, text: 'Factual results, ground model, limitations and selected footing/settlement, earthworks,
+      excavation, groundwater, aggressivity, pavement and classification parameters'}
+  - {key: location_plan_designer, text: location plan and designer parameter schedule}
+  - {key: identify_pending_tests, text: Identify pending tests and further evidence.}
   fee_basis: fixed
+  shown_when: Always
   provenance:
   - kind: evidence
     ref: geotechnical#2,3,4,5,6,7,8,21,22,23,24
   - kind: seed
     ref: geotechnical#44,47
-  shown_when: Appointed brief and report
-- key: g2_field
-  name: G2 Field / laboratory
-  lines:
-  - {key: scheduled_locating_clearance, text: "Scheduled locating/clearance, drilling/coring/pits, sampling and tests"}
-  - {key: competent_supervision, text: "competent supervision"}
-  - {key: record_locations_datum, text: "Record locations/datum/precision, logs/photos, groundwater and incomplete/refusal points"}
-  - {key: traceable_lab_records, text: "traceable lab records and scheduled site handback."}
-  fee_basis: fixed
-  provenance:
   - kind: evidence
     ref: geotechnical#4,5,6,7,8,11,12,13,14,21,22,23,24
   - kind: client_decision
     ref: geotechnical#53
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
-  when:
-  - flag:
-    - geotech_intrusive
-  if_unknown: ask
-  shown_when: Client selects this package
-- key: g3_report
-  name: G3 Interpretation / report
-  lines:
-  - {key: factual_results_ground, text: "Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater, aggressivity, pavement and classification parameters"}
-  - {key: location_plan_designer, text: "location plan and designer parameter schedule"}
-  - {key: identify_pending_tests, text: "Identify pending tests and further evidence."}
-  fee_basis: fixed
-  provenance:
   - kind: evidence
     ref: geotechnical#11,12,13,14,15
   - kind: seed
     ref: geotechnical#44,49
-  - kind: client_decision
-    ref: geotechnical#53
-    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
-  shown_when: Appointed brief and report
-- key: g4_planning
-  name: G4 Concept / planning
+  delivery_stage: brief_concept
+- key: planning
+  name: Planning
   lines:
   - {key: compare_selected_ground, text: "Compare selected ground/foundation options and risk"}
   - {key: nominated_planning_report, text: "nominated planning report and responses"}
@@ -187,8 +175,9 @@ stages:
     - geotech_planning
   if_unknown: ask
   shown_when: Client selects this package
-- key: g5_design
-  name: G5 Design / tender support
+  delivery_stage: planning
+- key: design_development
+  name: Design development
   lines:
   - {key: review_conditions_changed, text: "Review conditions and changed footprint/loads against coverage"}
   - {key: supplementary_work_separately, text: "supplementary work separately priced"}
@@ -201,10 +190,28 @@ stages:
     ref: geotechnical#45
   default: option
   shown_when: Optional later appointment
-- key: g6_construction
-  name: G6 Construction / completion
+  delivery_stage: design_development
+- key: design_finalisation
+  name: Design finalisation
   lines:
-  - {key: scheduled_founding_pile, text: "Scheduled founding/pile/excavation inspections, earthworks tests and monitoring reviews"}
+  - {key: define_contractor_design, text: "Define contractor design review, further investigation, client, reliance and
+      endpoint"}
+  - {key: separate_appointment_fee, text: "Separate appointment and fee for novation/transfer"}
+  fee_basis: option
+  provenance:
+  - kind: seed
+    ref: geotechnical#45
+  - kind: client_decision
+    ref: geotechnical#51
+    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
+  default: option
+  shown_when: Optional later appointment
+  delivery_stage: design_finalisation
+- key: delivery
+  name: Delivery
+  lines:
+  - {key: scheduled_founding_pile, text: "Scheduled founding/pile/excavation inspections, earthworks tests and monitoring
+      reviews"}
   - {key: changed_condition_advice, text: "changed-condition advice, test/issues register and scoped completion statement"}
   - {key: record_missed_inaccessible, text: "Record missed/inaccessible work"}
   - {key: agree_instruments_handover, text: "agree instruments handover/decommissioning"}
@@ -219,20 +226,7 @@ stages:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
   default: option
   shown_when: Optional later appointment
-- key: g7_transfer
-  name: G7 Contractor advice / transfer
-  lines:
-  - {key: define_contractor_design, text: "Define contractor design review, further investigation, client, reliance and endpoint"}
-  - {key: separate_appointment_fee, text: "Separate appointment and fee for novation/transfer"}
-  fee_basis: option
-  provenance:
-  - kind: seed
-    ref: geotechnical#45
-  - kind: client_decision
-    ref: geotechnical#51
-    why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
-  default: option
-  shown_when: Optional later appointment
+  delivery_stage: delivery
 allowances:
 - key: mobilisation
   label: Mobilisation
@@ -241,9 +235,7 @@ allowances:
   provenance:
   - kind: evidence
     ref: geotechnical#21,22
-  when:
-  - stage:
-    - g2_field
+  when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: boreholes
   label: Boreholes / cores
   text: '{n} by location/method/depth; soil/rock metres, penetration/refusal and pavement thickness'
@@ -251,9 +243,7 @@ allowances:
   provenance:
   - kind: evidence
     ref: geotechnical#4,5,6,7
-  when:
-  - stage:
-    - g2_field
+  when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: pits
   label: Pits / exposures
   text: '{n} by location/dimensions/depth; method, target evidence and stopping criteria'
@@ -261,9 +251,7 @@ allowances:
   provenance:
   - kind: evidence
     ref: geotechnical#8,16,17,18,19,20
-  when:
-  - stage:
-    - g2_field
+  when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: tests
   label: In-situ / laboratory
   text: '{n} laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency;
@@ -272,9 +260,7 @@ allowances:
   provenance:
   - kind: evidence
     ref: geotechnical#11,12,13,14,26,27,28
-  when:
-  - stage:
-    - g2_field
+  when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: groundwater
   label: Groundwater option
   text: '{n} optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning
@@ -304,9 +290,7 @@ allowances:
     ref: geotechnical#42
   - kind: seed
     ref: geotechnical#46
-  when:
-  - stage:
-    - g6_construction
+  when: [stage: [delivery]]
 - key: handback
   label: Handback / waste
   text: '{n} repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal
@@ -318,12 +302,10 @@ allowances:
   - kind: client_decision
     ref: geotechnical#53
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
-  when:
-  - stage:
-    - g2_field
+  when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 positions:
 - key: plan
-  stage: [g1_plan]
+  stage: [brief_concept]
   group: Investigation and access
   label: Investigation plan and issues register reconciled to allowances
   kind: technical
@@ -334,7 +316,7 @@ positions:
   - kind: seed
     ref: geotechnical#44,47
 - key: foundation
-  stage: [g3_report]
+  stage: [brief_concept]
   group: Ground design parameters
   label: Foundation/bearing/settlement advice; structural engineer designs
   kind: technical
@@ -351,7 +333,7 @@ positions:
     ref: geotechnical#44,47,48
   if_unknown: ask
 - key: civil_parameters
-  stage: [g3_report]
+  stage: [brief_concept]
   group: Ground design parameters
   label: Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance
   kind: technical
@@ -368,7 +350,7 @@ positions:
     ref: geotechnical#45
   if_unknown: ask
 - key: monitoring
-  stage: [g2_field, g3_report]
+  stage: [brief_concept]
   group: Ground design parameters
   label: Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist
   kind: technical
@@ -379,7 +361,7 @@ positions:
   - kind: seed
     ref: geotechnical#45
 - key: asset_exposure
-  stage: [g2_field, g3_report]
+  stage: [brief_concept]
   group: Investigation and access
   label: Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy
   kind: technical
@@ -394,7 +376,7 @@ positions:
     ref: geotechnical#15,16,17,18,19,20
   if_unknown: ask
 - key: clearance
-  stage: [g2_field, g1_plan]
+  stage: [brief_concept]
   group: Investigation and access
   label: Locating/clearance before intrusive work; name isolation/potholing party
   kind: technical
@@ -411,7 +393,7 @@ positions:
     ref: geotechnical#47
   if_unknown: ask
 - key: access
-  stage: [g2_field, g1_plan]
+  stage: [brief_concept]
   group: Investigation and access
   label: Occupied access, tenant liaison and permits
   kind: technical
@@ -423,7 +405,7 @@ positions:
     ref: geotechnical#47
   responsible: client access lead (name in R4)
 - key: defects
-  stage: [g3_report]
+  stage: [brief_concept]
   group: Specialist assessment
   label: Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy
   kind: technical
@@ -432,7 +414,7 @@ positions:
   - kind: seed
     ref: geotechnical#48,49
 - key: environment
-  stage: [g3_report]
+  stage: [brief_concept]
   group: Specialist assessment
   label: Contamination, waste classification, remediation/validation and independent audit
   kind: technical
@@ -444,7 +426,7 @@ positions:
     ref: geotechnical#50
   responsible: separately appointed environmental consultant (name in R4)
 - key: ass
-  stage: [g3_report]
+  stage: [brief_concept]
   group: Specialist assessment
   label: Acid sulfate soil assessment; define desktop/intrusive/management package from evidence
   kind: technical
@@ -461,7 +443,7 @@ positions:
     ref: geotechnical#50
   if_unknown: ask
 - key: handback
-  stage: [g2_field, g1_plan]
+  stage: [brief_concept]
   group: Investigation and access
   label: Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners
   kind: technical
@@ -479,15 +461,13 @@ positions:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
   if_unknown: ask
 - key: construction
-  stage: [g6_construction]
+  stage: [delivery]
   group: Construction and transfer
   label: G6 inspections/tests/scoped completion; contractor books, named others supervise/design temporary works
   kind: technical
   value:
     value: I
-    when:
-    - stage_included:
-      - g6_construction
+    when: [stage_included: [delivery]]
     else: O
   provenance:
   - kind: evidence
@@ -496,18 +476,16 @@ positions:
     ref: geotechnical#46
   - kind: client_decision
     ref: geotechnical#51
-    why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the purchased
-      stage.
+    why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the 
+      purchased stage.
 - key: transfer
-  stage: [g7_transfer]
+  stage: [design_finalisation]
   group: Construction and transfer
   label: G7 novation/transfer; separate appointment and fee, never inferred from route
   kind: technical
   value:
     value: I
-    when:
-    - stage_included:
-      - g7_transfer
+    when: [stage_included: [design_finalisation]]
     else: O
   provenance:
   - kind: seed
@@ -517,12 +495,12 @@ positions:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
   - kind: client_decision
     ref: geotechnical#51
-    why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the purchased
-      stage.
+    why: Keep the priced option optional until its stage is explicitly appointed; then the position matches the 
+      purchased stage.
 terms:
 - key: agreement
-  text: Agree {field:agreement}, precedence and express departures before instruction; commencing work does not accept
-    competing supplier terms.
+  text: Agree {field:agreement}, precedence and express departures before instruction; commencing work does not 
+    accept competing supplier terms.
   provenance:
   - kind: evidence
     ref: geotechnical#35,36,37,38,39,40,41,42,43
@@ -549,8 +527,8 @@ terms:
     why: Preserve the agreed pricing baseline without charging for own errors.
   replace: true
 - key: payment
-  text: Monthly itemised invoices payable within {field:payment_days} days; disclose deposits/report withholding/licence
-    suspension departures.
+  text: Monthly itemised invoices payable within {field:payment_days} days; disclose deposits/report 
+    withholding/licence suspension departures.
   provenance:
   - kind: evidence
     ref: geotechnical#36,40
@@ -559,14 +537,15 @@ terms:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
   replace: true
 - key: professional
-  text: Client supplies inputs/access; report gaps. Manage agreed work/subcontractors without blanket service waiver.
-    Disclose caps/time bars/indemnities/transfer/IP departures; agree notice/cure, safe handback, records and disputes.
+  text: Client supplies inputs/access; report gaps. Manage agreed work/subcontractors without blanket service 
+    waiver. Disclose caps/time bars/indemnities/transfer/IP departures; agree notice/cure, safe handback, records 
+    and disputes.
   provenance:
   - kind: evidence
     ref: geotechnical#21,22,23,24,38,39,40,41,42,43
 - key: records
-  text: Dated PDFs, logs/lab certificates and editable data/registers; agree project use/reliance, confidentiality, sample
-    retention/evidence preservation, instrument ownership and handover. State storage cost before disposal.
+  text: Dated PDFs, logs/lab certificates and editable data/registers; agree project use/reliance, confidentiality, 
+    sample retention/evidence preservation, instrument ownership and handover. State storage cost before disposal.
   provenance:
   - kind: evidence
     ref: geotechnical#40,42
@@ -601,8 +580,8 @@ returnable_notes:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
 - key: r3
   replace: true
-  text: Role/equipment and extra metre/hole/test/well/visit rates; minimum hire, travel, standby/cancellation, expedited
-    lab/storage/restoration, ceilings and escalation. Expose markups.
+  text: Role/equipment and extra metre/hole/test/well/visit rates; minimum hire, travel, standby/cancellation, 
+    expedited lab/storage/restoration, ceilings and escalation. Expose markups.
   provenance:
   - kind: evidence
     ref: geotechnical#31,32,37,42
@@ -611,8 +590,8 @@ returnable_notes:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
 - key: r4
   replace: true
-  text: Name lead, field supervisor, reviewer, environmental specialist, labs/subcontractors, competence and availability.
-    Allocate clearance, sampling, design, disposal, reinstatement and handover; QA ISO or equivalent.
+  text: Name lead, field supervisor, reviewer, environmental specialist, labs/subcontractors, competence and 
+    availability. Allocate clearance, sampling, design, disposal, reinstatement and handover; QA ISO or equivalent.
   provenance:
   - kind: evidence
     ref: geotechnical#21,22,23,24,41,42,43
@@ -633,8 +612,8 @@ returnable_notes:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
 - key: r6
   replace: true
-  text: List scope/agreement departures, alternatives and fee/time effect, or nil. Include conflicting levels, counts/depths,
-    reliance/environmental scope; authorised assumptions need quantity, decision owner/date.
+  text: List scope/agreement departures, alternatives and fee/time effect, or nil. Include conflicting levels, 
+    counts/depths, reliance/environmental scope; authorised assumptions need quantity, decision owner/date.
   provenance:
   - kind: evidence
     ref: geotechnical#2,3,4,5,6,7,8,9,10,18,20,28,35,36,37,38,39,40,41,42,43
@@ -643,8 +622,8 @@ returnable_notes:
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
 - key: r7
   replace: true
-  text: Input/plan approval, mobilisation, field/lab, preliminary/final report and monitoring endpoint dates; optional
-    construction coverage, booking notice, dependencies/start/pause and interim report limits.
+  text: Input/plan approval, mobilisation, field/lab, preliminary/final report and monitoring endpoint dates; 
+    optional construction coverage, booking notice, dependencies/start/pause and interim report limits.
   provenance:
   - kind: evidence
     ref: geotechnical#9,33,34
@@ -652,8 +631,9 @@ returnable_notes:
     ref: geotechnical#45,46
 - key: r8
   replace: true
-  text: Client-selected PI {field:pi} and PL {field:pl}. Current PI/PL/workers compensation as applicable, claim/aggregate
-    limits, exclusions, continuity and competence/registration. Agree client-selected insurance limits before issue.
+  text: Client-selected PI {field:pi} and PL {field:pl}. Current PI/PL/workers compensation as applicable, 
+    claim/aggregate limits, exclusions, continuity and competence/registration. Agree client-selected insurance 
+    limits before issue.
   provenance:
   - kind: evidence
     ref: geotechnical#41
@@ -670,5 +650,5 @@ returnable_notes:
   - kind: client_decision
     ref: geotechnical#53
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
-durations: R7 states access/input milestones, field/lab dates, interim limitations and monitoring endpoint; no historical
-  program adopted.
+durations: R7 states access/input milestones, field/lab dates, interim limitations and monitoring endpoint; no 
+  historical program adopted.

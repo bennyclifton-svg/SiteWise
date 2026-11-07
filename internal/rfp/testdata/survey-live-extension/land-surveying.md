@@ -25,36 +25,32 @@ From written instruction/inputs/access to named final issue/handover, with agree
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Brief / survey plan |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Review records/currency/conflicts | Included |  |
 |  | Agree extent/features, method/accuracy, datum/control, access and hidden-feature treatment | Included |  |
 |  | Boundary work separately selected | Included |  |
 |  | Deliver marked plan and input/decision schedule | Included |  |
-| S2 Detail / topographic |  | Included |  |
 |  | Measure selected terrain/levels, structures, retained tie-ins, trees and adjoining features | Included |  |
 |  | Dated coordinated PDF/CAD with control, method/accuracy, accessible extent and missing-feature register | Included |  |
 |  | Selected point cloud separately | Included |  |
-|  | Agreed horizontal/vertical control and threshold/slab/outlet/retained levels; record accuracy, resolve datum conflicts before merging | Included |  |
-|  | Neighbour heights/windows/trees/roof; permissions, inferred labels; arborist owns tree health, architect privacy/shadow | Included |  |
-|  | Interior measure-up/scan/point cloud; select rooms/levels, name scan-to-model party; boundaries only if needed | Included |  |
-| S3 Boundary / title |  | Included |  |
 |  | Selected searches and field boundary definition | Included |  |
 |  | Identify discrepancies/encroachments and legal/authority referrals | Included |  |
 |  | Signed plans/report for stated task | Included |  |
 |  | Detail survey is not boundary proof | Included |  |
-|  | Boundary identification for setback/easement design; surveyor reports geometry, solicitor advises rights | Included |  |
-| S4 Services / drainage / sewer |  | Included |  |
 |  | Coordinate locator/surveyor attendance | Included |  |
 |  | Distinguish records, detected markings and exposed measurements | Included |  |
 |  | Selected pits/tanks/pipes and sewer peg-out/report by named provider/method | Included |  |
 |  | List authority deliverables, reconcile detail/stormwater overlap | Included |  |
+|  | Boundary identification for setback/easement design; surveyor reports geometry, solicitor advises rights | Included |  |
+|  | Agreed horizontal/vertical control and threshold/slab/outlet/retained levels; record accuracy, resolve datum conflicts before merging | Included |  |
+|  | Neighbour heights/windows/trees/roof; permissions, inferred labels; arborist owns tree health, architect privacy/shadow | Included |  |
 |  | Underground services records and visible features; locator states methods/limits, surveyed paint is not proof | Included |  |
 |  | Exposure, potholing, isolation and surface restoration | Excluded |  |
 |  | Buried tanks/drainage/sealed pits; measured/inferred separated, name opening party; civil owns capacity, structural adequacy | Included |  |
 |  | Sewer/main peg-out versus condition report; provider/method named, CCTV/cleaning/tracing/approvals separately selected | Included |  |
-| S5 Approval / tender support | Not part of this appointment | Excluded | — |
-| S6 Set-out / checks / monitoring | Not part of this appointment | Excluded | — |
-| S7 Completion / final plans | Not part of this appointment | Excluded | — |
+|  | Interior measure-up/scan/point cloud; select rooms/levels, name scan-to-model party; boundaries only if needed | Included |  |
+| Planning | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Occupied/staged site permissions/hours/daily handback; client obtains occupier/neighbour consent, return inaccessible register | Included |  |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |

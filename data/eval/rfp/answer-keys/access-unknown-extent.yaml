@@ -36,8 +36,8 @@ fields:
 settings:
   access:
     boundary:range:
-      start: s1_inception
-      end: s4_approval
+      start: brief_concept
+      end: design_development
     allowance:coverage: '2'
     allowance:reviews: '2'
     allowance:meetings: '2'
@@ -48,7 +48,7 @@ sources:
 - docs/rfp-golden/access/rfp.md Sections 1-7
 - 'docs/rfp-golden/access/ledger.md #1-43'
 scenario: access-unknown-extent
-description: Unknown report/housing/facility decisions raise questions rather than silently exclude or charge an
+description: Unknown report/housing/facility decisions raise questions rather than silently exclude or charge an 
   option.
 expect:
   access:
@@ -57,4 +57,4 @@ expect:
       housing: I
       facilities: I
     blocking: ['fact:flag.access_planning', 'fact:flag.access_approval', 'fact:flag.access_housing', 'fact:flag.access_facilities']
-    stages_include: [s3_planning, s4_approval]
+    stages_include: [planning, design_development]

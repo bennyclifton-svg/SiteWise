@@ -33,12 +33,12 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
-    owners. Fixture quantities are client choices, not generation-rate defaults.
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection 
+    confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 settings:
   waste-management:
     boundary:range:
-      start: s1_inception
+      start: brief_concept
       end: s8_advisory
     allowance:coverage: '2'
     allowance:plans: '2'
@@ -55,10 +55,10 @@ description: Evidence-limited peer review ends at its report; no automatic opera
 expect:
   waste-management:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception, s8_advisory]
-    stages_absent: [s2_concept, s3_operational, s3_cd, s4_review, s5_tender, s6_contractor, s7_completion]
+    stages_include: [brief_concept, s8_advisory]
+    stages_absent: [planning, design_development, tender_documentation, design_finalisation]
     positions:
       operational: absent
       cd: absent
       independent: I
-      postoccupation: X
+      postoccupation: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.

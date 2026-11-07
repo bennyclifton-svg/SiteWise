@@ -7,7 +7,7 @@ notes: Draft construction fragments for owner review. Project-level process frag
 fragments:
 - id: fr.temporary-power
   label: "Temporary power"
-  stage: construction
+  stage: delivery
   systems: [electrical.temporary-power]
   applies_when: {work_action: {system: electrical.temporary-power, any_of: [new, replace]}}
   activities:
@@ -18,7 +18,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.temporary-power"}
 - id: fr.erosion-control
   label: "Erosion and sediment control"
-  stage: construction
+  stage: delivery
   systems: [site.erosion-sediment-control]
   applies_when: {work_action: {system: site.erosion-sediment-control, any_of: [new, alter]}}
   activities:
@@ -29,7 +29,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.erosion-control"}
 - id: fr.tree-protection
   label: "Tree protection"
-  stage: construction
+  stage: delivery
   systems: [site.trees]
   applies_when: {work_action: {system: site.trees, any_of: [new, alter, repair]}}
   activities:
@@ -40,7 +40,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tree-protection"}
 - id: fr.occupied-protection
   label: "Occupied-building protection"
-  stage: construction
+  stage: delivery
   systems: [site.impact-protection]
   applies_when:
     all:
@@ -56,7 +56,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.occupied-protection"}
 - id: fr.demolition-1a
   label: "Demolition (house)"
-  stage: construction
+  stage: delivery
   systems: [site.demolition]
   applies_when:
     all:
@@ -70,7 +70,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-1a"}
 - id: fr.strip-out-1a
   label: "Strip-out (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [site.demolition]
   applies_when:
     all:
@@ -84,7 +84,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.strip-out-1a"}
 - id: fr.earthworks-1a
   label: "Earthworks (house)"
-  stage: construction
+  stage: delivery
   systems: [site.earthworks]
   applies_when:
     all:
@@ -99,7 +99,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-1a"}
 - id: fr.underpinning-1a
   label: "Underpinning (house)"
-  stage: construction
+  stage: delivery
   systems: [substructure.underpinning]
   applies_when:
     all:
@@ -114,7 +114,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.underpinning-1a"}
 - id: fr.footings-1a
   label: "Footings (house)"
-  stage: construction
+  stage: delivery
   systems: [substructure.footings]
   applies_when:
     all:
@@ -134,7 +134,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-1a"}
 - id: fr.termite-1a
   label: "Termite management (house)"
-  stage: construction
+  stage: delivery
   systems: [substructure.termite-management]
   applies_when:
     all:
@@ -149,7 +149,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.termite-1a"}
 - id: fr.damp-1a
   label: "Damp-proofing (house)"
-  stage: construction
+  stage: delivery
   systems: [substructure.damp-waterproofing]
   applies_when:
     all:
@@ -164,7 +164,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.damp-1a"}
 - id: fr.stormwater-1a
   label: "Stormwater (house)"
-  stage: construction
+  stage: delivery
   systems: [site.stormwater-detention]
   applies_when:
     all:
@@ -179,7 +179,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-1a"}
 - id: fr.flood-1a
   label: "Flood works (house)"
-  stage: construction
+  stage: delivery
   systems: [site.flooding]
   applies_when:
     all:
@@ -195,7 +195,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.flood-1a"}
 - id: fr.slab-on-ground-1a
   label: "Slab on ground (house)"
-  stage: construction
+  stage: delivery
   systems: [substructure.slab-on-ground]
   applies_when:
     all:
@@ -217,7 +217,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-on-ground-1a"}
 - id: fr.frame-timber-1a
   label: "Timber frame (house)"
-  stage: construction
+  stage: delivery
   systems: [structure.timber]
   applies_when:
     all:
@@ -235,7 +235,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.frame-timber-1a"}
 - id: fr.masonry-1a
   label: "Brick veneer (house)"
-  stage: construction
+  stage: delivery
   systems: [structure.masonry]
   applies_when:
     all:
@@ -250,7 +250,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.masonry-1a"}
 - id: fr.roof-1a
   label: "Roof cover (house)"
-  stage: construction
+  stage: delivery
   systems: [envelope.roof-coverings]
   applies_when:
     all:
@@ -268,7 +268,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-1a"}
 - id: fr.external-walls-1a
   label: "External walls (house)"
-  stage: construction
+  stage: delivery
   systems: [envelope.external-walls]
   applies_when:
     all:
@@ -283,7 +283,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.external-walls-1a"}
 - id: fr.insulation-1a
   label: "Insulation (house)"
-  stage: construction
+  stage: delivery
   systems: [envelope.thermal-insulation]
   applies_when:
     all:
@@ -298,7 +298,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.insulation-1a"}
 - id: fr.windows-1a
   label: "Windows and external doors (house)"
-  stage: construction
+  stage: delivery
   systems: [envelope.windows-doors]
   applies_when:
     all:
@@ -316,7 +316,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.windows-1a"}
 - id: fr.bushfire-1a
   label: "Bushfire construction (house)"
-  stage: construction
+  stage: delivery
   systems: [envelope.bushfire-construction]
   applies_when:
     all:
@@ -332,7 +332,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.bushfire-1a"}
 - id: fr.roof-drainage-1a
   label: "Roof drainage (house)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.roof-drainage]
   applies_when:
     all:
@@ -347,7 +347,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-drainage-1a"}
 - id: fr.linings-1a
   label: "Walls and linings (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.walls-linings]
   applies_when:
     all:
@@ -365,7 +365,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-1a"}
 - id: fr.ceilings-1a
   label: "Ceilings (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.ceilings]
   applies_when:
     all:
@@ -380,7 +380,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-1a"}
 - id: fr.wet-area-1a
   label: "Wet-area waterproofing (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.wet-area-waterproofing]
   applies_when:
     all:
@@ -395,7 +395,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-1a"}
 - id: fr.internal-doors-1a
   label: "Internal doors (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.internal-doors]
   applies_when:
     all:
@@ -410,7 +410,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.internal-doors-1a"}
 - id: fr.hydraulic-sanitary-1a
   label: "Sanitary plumbing (house)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.sanitary]
   applies_when:
     all:
@@ -428,7 +428,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-1a"}
 - id: fr.hydraulic-cold-1a
   label: "Cold water (house)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.cold-water]
   applies_when:
     all:
@@ -446,7 +446,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-cold-1a"}
 - id: fr.hydraulic-hot-1a
   label: "Hot water (house)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.hot-water]
   applies_when:
     all:
@@ -464,7 +464,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-hot-1a"}
 - id: fr.gas-1a
   label: "Gas (house)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.gas]
   applies_when:
     all:
@@ -479,7 +479,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.gas-1a"}
 - id: fr.electrical-1a
   label: "Electrical wiring (house)"
-  stage: construction
+  stage: delivery
   systems: [electrical.cabling-wiring]
   applies_when:
     all:
@@ -497,7 +497,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-1a"}
 - id: fr.lighting-1a
   label: "Lighting (house)"
-  stage: construction
+  stage: delivery
   systems: [electrical.lighting]
   applies_when:
     all:
@@ -512,7 +512,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-1a"}
 - id: fr.switchboard-1a
   label: "Switchboard (house)"
-  stage: construction
+  stage: delivery
   systems: [electrical.switchboards]
   applies_when:
     all:
@@ -527,7 +527,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.switchboard-1a"}
 - id: fr.smoke-alarms-1a
   label: "Smoke alarms (house)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.smoke-alarms]
   applies_when:
     all:
@@ -542,7 +542,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.smoke-alarms-1a"}
 - id: fr.ac-1a
   label: "Air-conditioning (house)"
-  stage: construction
+  stage: delivery
   systems: [mechanical.air-conditioning]
   applies_when:
     all:
@@ -557,7 +557,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ac-1a"}
 - id: fr.tiling-1a
   label: "Tiling (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.tiling]
   applies_when:
     all:
@@ -572,7 +572,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tiling-1a"}
 - id: fr.joinery-1a
   label: "Joinery (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.joinery]
   applies_when:
     all:
@@ -590,7 +590,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-1a"}
 - id: fr.painting-1a
   label: "Painting (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.painting]
   applies_when:
     all:
@@ -605,7 +605,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-1a"}
 - id: fr.floors-1a
   label: "Floor finishes (house)"
-  stage: construction
+  stage: delivery
   systems: [interiors.floor-finishes]
   applies_when:
     all:
@@ -620,7 +620,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-1a"}
 - id: fr.landscape-1a
   label: "Landscape (house)"
-  stage: construction
+  stage: delivery
   systems: [site.landscape]
   applies_when:
     all:
@@ -635,7 +635,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-1a"}
 - id: fr.linings-1a-reno
   label: "Linings (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [interiors.walls-linings]
   applies_when:
     all:
@@ -650,7 +650,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-1a-reno"}
 - id: fr.wet-area-1a-reno
   label: "Wet areas (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [interiors.wet-area-waterproofing]
   applies_when:
     all:
@@ -665,7 +665,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-1a-reno"}
 - id: fr.hydraulic-1a-reno
   label: "Sanitary alterations (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.sanitary]
   applies_when:
     all:
@@ -683,7 +683,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-1a-reno"}
 - id: fr.water-1a-reno
   label: "Water alterations (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.cold-water]
   applies_when:
     all:
@@ -698,7 +698,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.water-1a-reno"}
 - id: fr.electrical-1a-reno
   label: "Electrical alterations (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [electrical.cabling-wiring]
   applies_when:
     all:
@@ -716,7 +716,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-1a-reno"}
 - id: fr.joinery-1a-reno
   label: "Joinery (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [interiors.joinery]
   applies_when:
     all:
@@ -731,7 +731,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-1a-reno"}
 - id: fr.painting-1a-reno
   label: "Painting (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [interiors.painting]
   applies_when:
     all:
@@ -746,7 +746,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-1a-reno"}
 - id: fr.floors-1a-reno
   label: "Floors (house renovation)"
-  stage: construction
+  stage: delivery
   systems: [interiors.floor-finishes]
   applies_when:
     all:
@@ -761,7 +761,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-1a-reno"}
 - id: fr.demolition-2
   label: "Demolition (apartments)"
-  stage: construction
+  stage: delivery
   systems: [site.demolition]
   applies_when:
     all:
@@ -775,7 +775,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-2"}
 - id: fr.earthworks-2
   label: "Earthworks (apartments)"
-  stage: construction
+  stage: delivery
   systems: [site.earthworks]
   applies_when:
     all:
@@ -790,7 +790,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-2"}
 - id: fr.underpinning-2
   label: "Underpinning (apartments)"
-  stage: construction
+  stage: delivery
   systems: [substructure.underpinning]
   applies_when:
     all:
@@ -805,7 +805,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.underpinning-2"}
 - id: fr.piles-2
   label: "Piles (apartments)"
-  stage: construction
+  stage: delivery
   systems: [substructure.piles]
   applies_when:
     all:
@@ -823,7 +823,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.piles-2"}
 - id: fr.basement-2
   label: "Basement retention (apartments)"
-  stage: construction
+  stage: delivery
   systems: [substructure.basement-retention]
   applies_when:
     all:
@@ -847,7 +847,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.basement-2"}
 - id: fr.footings-2
   label: "Footings (apartments)"
-  stage: construction
+  stage: delivery
   systems: [substructure.footings]
   applies_when:
     all:
@@ -862,7 +862,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-2"}
 - id: fr.slab-2
   label: "Slab on ground (apartments)"
-  stage: construction
+  stage: delivery
   systems: [substructure.slab-on-ground]
   applies_when:
     all:
@@ -877,7 +877,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-2"}
 - id: fr.lift-shafts-2
   label: "Lift shafts and pits (apartments)"
-  stage: construction
+  stage: delivery
   systems: [vertical-transport.lift-shafts-pits]
   applies_when:
     all:
@@ -895,7 +895,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lift-shafts-2"}
 - id: fr.structure-concrete-2
   label: "Concrete structure (apartments)"
-  stage: construction
+  stage: delivery
   systems: [structure.concrete]
   applies_when:
     all:
@@ -913,7 +913,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.structure-concrete-2"}
 - id: fr.precast-2
   label: "Precast (apartments)"
-  stage: construction
+  stage: delivery
   systems: [structure.precast]
   applies_when:
     all:
@@ -931,7 +931,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.precast-2"}
 - id: fr.stairs-2
   label: "Stairs (apartments)"
-  stage: construction
+  stage: delivery
   systems: [access-egress.stairs-and-ramps]
   applies_when:
     all:
@@ -946,7 +946,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stairs-2"}
 - id: fr.roof-2
   label: "Roof (apartments)"
-  stage: construction
+  stage: delivery
   systems: [envelope.roof-coverings]
   applies_when:
     all:
@@ -961,7 +961,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-2"}
 - id: fr.facade-2
   label: "Facade (apartments)"
-  stage: construction
+  stage: delivery
   systems: [envelope.external-walls]
   applies_when:
     all:
@@ -976,7 +976,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.facade-2"}
 - id: fr.windows-2
   label: "Windows (apartments)"
-  stage: construction
+  stage: delivery
   systems: [envelope.windows-doors]
   applies_when:
     all:
@@ -994,7 +994,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.windows-2"}
 - id: fr.balcony-waterproof-2
   label: "Balcony waterproofing (apartments)"
-  stage: construction
+  stage: delivery
   systems: [envelope.external-waterproofing]
   applies_when:
     all:
@@ -1009,7 +1009,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.balcony-waterproof-2"}
 - id: fr.insulation-2
   label: "Insulation (apartments)"
-  stage: construction
+  stage: delivery
   systems: [envelope.thermal-insulation]
   applies_when:
     all:
@@ -1024,7 +1024,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.insulation-2"}
 - id: fr.roof-drainage-2
   label: "Roof drainage (apartments)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.roof-drainage]
   applies_when:
     all:
@@ -1039,7 +1039,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-drainage-2"}
 - id: fr.linings-2
   label: "Walls and linings (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.walls-linings]
   applies_when:
     all:
@@ -1054,7 +1054,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-2"}
 - id: fr.ceilings-2
   label: "Ceilings (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.ceilings]
   applies_when:
     all:
@@ -1069,7 +1069,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-2"}
 - id: fr.wet-area-2
   label: "Wet-area waterproofing (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.wet-area-waterproofing]
   applies_when:
     all:
@@ -1084,7 +1084,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-2"}
 - id: fr.internal-doors-2
   label: "Internal doors (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.internal-doors]
   applies_when:
     all:
@@ -1099,7 +1099,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.internal-doors-2"}
 - id: fr.hydraulic-sanitary-2
   label: "Sanitary plumbing (apartments)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.sanitary]
   applies_when:
     all:
@@ -1119,7 +1119,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-2"}
 - id: fr.hydraulic-cold-2
   label: "Cold water (apartments)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.cold-water]
   applies_when:
     all:
@@ -1137,7 +1137,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-cold-2"}
 - id: fr.hydraulic-hot-2
   label: "Hot water (apartments)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.hot-water]
   applies_when:
     all:
@@ -1155,7 +1155,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-hot-2"}
 - id: fr.electrical-2
   label: "Electrical wiring (apartments)"
-  stage: construction
+  stage: delivery
   systems: [electrical.cabling-wiring]
   applies_when:
     all:
@@ -1173,7 +1173,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-2"}
 - id: fr.lighting-2
   label: "Lighting (apartments)"
-  stage: construction
+  stage: delivery
   systems: [electrical.lighting]
   applies_when:
     all:
@@ -1188,7 +1188,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-2"}
 - id: fr.sprinklers-2
   label: "Sprinklers (apartments)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.sprinklers]
   applies_when:
     all:
@@ -1206,7 +1206,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-2"}
 - id: fr.hydrants-2
   label: "Hydrants (apartments)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.hydrants]
   applies_when:
     all:
@@ -1221,7 +1221,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydrants-2"}
 - id: fr.detection-2
   label: "Detection (apartments)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.detection]
   applies_when:
     all:
@@ -1236,7 +1236,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.detection-2"}
 - id: fr.smoke-alarms-2
   label: "Smoke alarms (apartments)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.smoke-alarms]
   applies_when:
     all:
@@ -1251,7 +1251,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.smoke-alarms-2"}
 - id: fr.ac-2
   label: "Air-conditioning (apartments)"
-  stage: construction
+  stage: delivery
   systems: [mechanical.air-conditioning]
   applies_when:
     all:
@@ -1271,7 +1271,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ac-2"}
 - id: fr.carpark-vent-2
   label: "Carpark ventilation (apartments)"
-  stage: construction
+  stage: delivery
   systems: [mechanical.carpark-ventilation]
   applies_when:
     all:
@@ -1286,7 +1286,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.carpark-vent-2"}
 - id: fr.comms-2
   label: "Communications (apartments)"
-  stage: construction
+  stage: delivery
   systems: [comms-security.structured-cabling]
   applies_when:
     all:
@@ -1301,7 +1301,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.comms-2"}
 - id: fr.tiling-2
   label: "Tiling (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.tiling]
   applies_when:
     all:
@@ -1316,7 +1316,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tiling-2"}
 - id: fr.joinery-2
   label: "Joinery (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.joinery]
   applies_when:
     all:
@@ -1334,7 +1334,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-2"}
 - id: fr.painting-2
   label: "Painting (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.painting]
   applies_when:
     all:
@@ -1349,7 +1349,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-2"}
 - id: fr.floors-2
   label: "Floor finishes (apartments)"
-  stage: construction
+  stage: delivery
   systems: [interiors.floor-finishes]
   applies_when:
     all:
@@ -1364,7 +1364,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-2"}
 - id: fr.landscape-2
   label: "Landscape (apartments)"
-  stage: construction
+  stage: delivery
   systems: [site.landscape]
   applies_when:
     all:
@@ -1379,7 +1379,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-2"}
 - id: fr.stormwater-2
   label: "Stormwater (apartments)"
-  stage: construction
+  stage: delivery
   systems: [site.stormwater-detention]
   applies_when:
     all:
@@ -1394,7 +1394,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-2"}
 - id: fr.flood-2
   label: "Flood works (apartments)"
-  stage: construction
+  stage: delivery
   systems: [site.flooding]
   applies_when:
     all:
@@ -1410,7 +1410,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.flood-2"}
 - id: fr.demolition-7b
   label: "Demolition (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [site.demolition]
   applies_when:
     all:
@@ -1424,7 +1424,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-7b"}
 - id: fr.earthworks-7b
   label: "Earthworks (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [site.earthworks]
   applies_when:
     all:
@@ -1439,7 +1439,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-7b"}
 - id: fr.footings-7b
   label: "Footings (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [substructure.footings]
   applies_when:
     all:
@@ -1454,7 +1454,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-7b"}
 - id: fr.steel-7b
   label: "Steel portal frame (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [structure.steel]
   applies_when:
     all:
@@ -1472,7 +1472,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.steel-7b"}
 - id: fr.roof-7b
   label: "Roof (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [envelope.roof-coverings]
   applies_when:
     all:
@@ -1487,7 +1487,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-7b"}
 - id: fr.cladding-7b
   label: "Wall cladding (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [envelope.external-walls]
   applies_when:
     all:
@@ -1502,7 +1502,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.cladding-7b"}
 - id: fr.slab-7b
   label: "Slab on ground (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [substructure.slab-on-ground]
   applies_when:
     all:
@@ -1522,7 +1522,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-7b"}
 - id: fr.vehicle-doors-7b
   label: "Vehicle doors (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [envelope.vehicle-doors]
   applies_when:
     all:
@@ -1540,7 +1540,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.vehicle-doors-7b"}
 - id: fr.hydraulic-sanitary-7b
   label: "Amenities plumbing (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.sanitary]
   applies_when:
     all:
@@ -1555,7 +1555,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-7b"}
 - id: fr.electrical-7b
   label: "Electrical (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [electrical.cabling-wiring]
   applies_when:
     all:
@@ -1570,7 +1570,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-7b"}
 - id: fr.lighting-7b
   label: "High-bay lighting (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [electrical.lighting]
   applies_when:
     all:
@@ -1585,7 +1585,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-7b"}
 - id: fr.sprinklers-7b
   label: "Sprinklers (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.sprinklers]
   applies_when:
     all:
@@ -1600,7 +1600,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-7b"}
 - id: fr.hydrants-7b
   label: "Hydrants (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.hydrants]
   applies_when:
     all:
@@ -1615,7 +1615,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydrants-7b"}
 - id: fr.stormwater-7b
   label: "Stormwater (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [site.stormwater-detention]
   applies_when:
     all:
@@ -1630,7 +1630,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-7b"}
 - id: fr.landscape-7b
   label: "Landscape (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [site.landscape]
   applies_when:
     all:
@@ -1645,7 +1645,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-7b"}
 - id: fr.painting-7b
   label: "Painting (warehouse)"
-  stage: construction
+  stage: delivery
   systems: [interiors.painting]
   applies_when:
     all:
@@ -1660,7 +1660,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-7b"}
 - id: fr.demolition-9b
   label: "Demolition (school)"
-  stage: construction
+  stage: delivery
   systems: [site.demolition]
   applies_when:
     all:
@@ -1674,7 +1674,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.demolition-9b"}
 - id: fr.earthworks-9b
   label: "Earthworks (school)"
-  stage: construction
+  stage: delivery
   systems: [site.earthworks]
   applies_when:
     all:
@@ -1689,7 +1689,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.earthworks-9b"}
 - id: fr.piles-9b
   label: "Piles (school)"
-  stage: construction
+  stage: delivery
   systems: [substructure.piles]
   applies_when:
     all:
@@ -1704,7 +1704,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.piles-9b"}
 - id: fr.footings-9b
   label: "Footings (school)"
-  stage: construction
+  stage: delivery
   systems: [substructure.footings]
   applies_when:
     all:
@@ -1719,7 +1719,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.footings-9b"}
 - id: fr.slab-9b
   label: "Slab on ground (school)"
-  stage: construction
+  stage: delivery
   systems: [substructure.slab-on-ground]
   applies_when:
     all:
@@ -1737,7 +1737,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.slab-9b"}
 - id: fr.structure-concrete-9b
   label: "Concrete structure (school)"
-  stage: construction
+  stage: delivery
   systems: [structure.concrete]
   applies_when:
     all:
@@ -1752,7 +1752,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.structure-concrete-9b"}
 - id: fr.steel-9b
   label: "Steel structure (school)"
-  stage: construction
+  stage: delivery
   systems: [structure.steel]
   applies_when:
     all:
@@ -1770,7 +1770,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.steel-9b"}
 - id: fr.roof-9b
   label: "Roof (school)"
-  stage: construction
+  stage: delivery
   systems: [envelope.roof-coverings]
   applies_when:
     all:
@@ -1784,7 +1784,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.roof-9b"}
 - id: fr.external-walls-9b
   label: "External walls (school)"
-  stage: construction
+  stage: delivery
   systems: [envelope.external-walls]
   applies_when:
     all:
@@ -1799,7 +1799,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.external-walls-9b"}
 - id: fr.windows-9b
   label: "Windows (school)"
-  stage: construction
+  stage: delivery
   systems: [envelope.windows-doors]
   applies_when:
     all:
@@ -1817,7 +1817,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.windows-9b"}
 - id: fr.bushfire-9b
   label: "Bushfire construction (school)"
-  stage: construction
+  stage: delivery
   systems: [envelope.bushfire-construction]
   applies_when:
     all:
@@ -1833,7 +1833,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.bushfire-9b"}
 - id: fr.stairs-9b
   label: "Stairs (school)"
-  stage: construction
+  stage: delivery
   systems: [access-egress.stairs-and-ramps]
   applies_when:
     all:
@@ -1848,7 +1848,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stairs-9b"}
 - id: fr.linings-9b
   label: "Walls and linings (school)"
-  stage: construction
+  stage: delivery
   systems: [interiors.walls-linings]
   applies_when:
     all:
@@ -1863,7 +1863,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.linings-9b"}
 - id: fr.ceilings-9b
   label: "Ceilings (school)"
-  stage: construction
+  stage: delivery
   systems: [interiors.ceilings]
   applies_when:
     all:
@@ -1878,7 +1878,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-9b"}
 - id: fr.wet-area-9b
   label: "Wet areas (school)"
-  stage: construction
+  stage: delivery
   systems: [interiors.wet-area-waterproofing]
   applies_when:
     all:
@@ -1893,7 +1893,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-9b"}
 - id: fr.joinery-9b
   label: "Joinery (school)"
-  stage: construction
+  stage: delivery
   systems: [interiors.joinery]
   applies_when:
     all:
@@ -1908,7 +1908,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-9b"}
 - id: fr.painting-9b
   label: "Painting (school)"
-  stage: construction
+  stage: delivery
   systems: [interiors.painting]
   applies_when:
     all:
@@ -1923,7 +1923,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-9b"}
 - id: fr.floors-9b
   label: "Floor finishes (school)"
-  stage: construction
+  stage: delivery
   systems: [interiors.floor-finishes]
   applies_when:
     all:
@@ -1938,7 +1938,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-9b"}
 - id: fr.hydraulic-sanitary-9b
   label: "Sanitary plumbing (school)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.sanitary]
   applies_when:
     all:
@@ -1956,7 +1956,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-9b"}
 - id: fr.electrical-9b
   label: "Electrical (school)"
-  stage: construction
+  stage: delivery
   systems: [electrical.cabling-wiring]
   applies_when:
     all:
@@ -1974,7 +1974,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-9b"}
 - id: fr.lighting-9b
   label: "Lighting (school)"
-  stage: construction
+  stage: delivery
   systems: [electrical.lighting]
   applies_when:
     all:
@@ -1989,7 +1989,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-9b"}
 - id: fr.ac-9b
   label: "Air-conditioning (school)"
-  stage: construction
+  stage: delivery
   systems: [mechanical.air-conditioning]
   applies_when:
     all:
@@ -2009,7 +2009,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ac-9b"}
 - id: fr.sprinklers-9b
   label: "Sprinklers (school)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.sprinklers]
   applies_when:
     all:
@@ -2024,7 +2024,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-9b"}
 - id: fr.detection-9b
   label: "Detection (school)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.detection]
   applies_when:
     all:
@@ -2039,7 +2039,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.detection-9b"}
 - id: fr.comms-9b
   label: "Communications (school)"
-  stage: construction
+  stage: delivery
   systems: [comms-security.structured-cabling]
   applies_when:
     all:
@@ -2054,7 +2054,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.comms-9b"}
 - id: fr.landscape-9b
   label: "Landscape (school)"
-  stage: construction
+  stage: delivery
   systems: [site.landscape]
   applies_when:
     all:
@@ -2069,7 +2069,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.landscape-9b"}
 - id: fr.stormwater-9b
   label: "Stormwater (school)"
-  stage: construction
+  stage: delivery
   systems: [site.stormwater-detention]
   applies_when:
     all:
@@ -2084,7 +2084,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.stormwater-9b"}
 - id: fr.strip-out-fitout
   label: "Strip-out (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [site.demolition]
   applies_when:
     all:
@@ -2104,7 +2104,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.strip-out-fitout"}
 - id: fr.structure-alterations
   label: "Structural alterations"
-  stage: construction
+  stage: delivery
   systems: [structure.alterations]
   applies_when:
     all:
@@ -2118,7 +2118,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.structure-alterations"}
 - id: fr.partitions-fitout
   label: "Partitions (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.walls-linings]
   applies_when:
     all:
@@ -2133,7 +2133,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.partitions-fitout"}
 - id: fr.ceilings-fitout
   label: "Ceilings (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.ceilings]
   applies_when:
     all:
@@ -2148,7 +2148,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ceilings-fitout"}
 - id: fr.wet-area-fitout
   label: "Wet areas (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.wet-area-waterproofing]
   applies_when:
     all:
@@ -2163,7 +2163,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.wet-area-fitout"}
 - id: fr.internal-doors-fitout
   label: "Doors (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.internal-doors]
   applies_when:
     all:
@@ -2178,7 +2178,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.internal-doors-fitout"}
 - id: fr.hydraulic-sanitary-fitout
   label: "Sanitary alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.sanitary]
   applies_when:
     all:
@@ -2196,7 +2196,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-sanitary-fitout"}
 - id: fr.hydraulic-cold-fitout
   label: "Cold-water alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.cold-water]
   applies_when:
     all:
@@ -2211,7 +2211,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-cold-fitout"}
 - id: fr.hydraulic-hot-fitout
   label: "Hot-water alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.hot-water]
   applies_when:
     all:
@@ -2226,7 +2226,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.hydraulic-hot-fitout"}
 - id: fr.electrical-fitout
   label: "Electrical alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [electrical.cabling-wiring]
   applies_when:
     all:
@@ -2244,7 +2244,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.electrical-fitout"}
 - id: fr.lighting-fitout
   label: "Lighting (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [electrical.lighting]
   applies_when:
     all:
@@ -2259,7 +2259,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lighting-fitout"}
 - id: fr.mechanical-fitout
   label: "Air-conditioning alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [mechanical.air-conditioning]
   applies_when:
     all:
@@ -2277,7 +2277,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.mechanical-fitout"}
 - id: fr.ventilation-fitout
   label: "Exhaust ventilation (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [mechanical.ventilation]
   applies_when:
     all:
@@ -2292,7 +2292,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.ventilation-fitout"}
 - id: fr.sprinklers-fitout
   label: "Sprinkler alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.sprinklers]
   applies_when:
     all:
@@ -2314,7 +2314,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.sprinklers-fitout"}
 - id: fr.detection-fitout
   label: "Detection alterations (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [fire-active.detection]
   applies_when:
     all:
@@ -2329,7 +2329,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.detection-fitout"}
 - id: fr.comms-fitout
   label: "Communications (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [comms-security.structured-cabling]
   applies_when:
     all:
@@ -2344,7 +2344,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.comms-fitout"}
 - id: fr.tiling-fitout
   label: "Tiling (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.tiling]
   applies_when:
     all:
@@ -2359,7 +2359,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.tiling-fitout"}
 - id: fr.joinery-fitout
   label: "Joinery (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.joinery]
   applies_when:
     all:
@@ -2377,7 +2377,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.joinery-fitout"}
 - id: fr.painting-fitout
   label: "Painting (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.painting]
   applies_when:
     all:
@@ -2392,7 +2392,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.painting-fitout"}
 - id: fr.floors-fitout
   label: "Floor finishes (fit-out)"
-  stage: construction
+  stage: delivery
   systems: [interiors.floor-finishes]
   applies_when:
     all:
@@ -2407,7 +2407,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.floors-fitout"}
 - id: fr.fire-stopping
   label: "Fire stopping"
-  stage: construction
+  stage: delivery
   systems: [fire-passive.penetrations]
   applies_when:
     all:
@@ -2420,7 +2420,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.fire-stopping"}
 - id: fr.gas-commercial
   label: "Gas (commercial)"
-  stage: construction
+  stage: delivery
   systems: [hydraulic.gas]
   applies_when:
     all:
@@ -2433,7 +2433,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.gas-commercial"}
 - id: fr.lifts
   label: "Passenger lifts"
-  stage: construction
+  stage: delivery
   systems: [vertical-transport.passenger-lifts]
   applies_when:
     all:
@@ -2452,7 +2452,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.lifts"}
 - id: fr.switchboard-2
   label: "Main switchboard (apartments)"
-  stage: construction
+  stage: delivery
   systems: [electrical.switchboards]
   applies_when:
     all:
@@ -2470,7 +2470,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.switchboard-2"}
 - id: fr.switchboard-major
   label: "Main switchboard (commercial or school)"
-  stage: construction
+  stage: delivery
   systems: [electrical.switchboards]
   applies_when:
     all:
@@ -2487,7 +2487,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.switchboard-major"}
 - id: fr.utility-1a
   label: "Utility supply (house)"
-  stage: construction
+  stage: delivery
   systems: [electrical.utility-supply]
   applies_when:
     all:
@@ -2504,7 +2504,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.utility-1a"}
 - id: fr.utility-major
   label: "Utility supply (larger building)"
-  stage: construction
+  stage: delivery
   systems: [electrical.utility-supply]
   applies_when:
     all:
@@ -2521,7 +2521,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.utility-major"}
 - id: fr.services-connections-1a
   label: "Services connections (house)"
-  stage: construction
+  stage: delivery
   systems: [site.services-connections]
   applies_when:
     all:
@@ -2538,7 +2538,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.services-connections-1a"}
 - id: fr.services-connections-major
   label: "Services connections (larger building)"
-  stage: construction
+  stage: delivery
   systems: [site.services-connections]
   applies_when:
     all:
@@ -2556,7 +2556,7 @@ fragments:
 - id: fr.concept-design-1a
   label: "Concept design (1a)"
   scope: project
-  stage: concept_design
+  stage: brief_concept
   systems: [site]
   applies_when:
     all:
@@ -2575,7 +2575,7 @@ fragments:
 - id: fr.concept-design-2
   label: "Concept design (2)"
   scope: project
-  stage: concept_design
+  stage: brief_concept
   systems: [site]
   applies_when:
     all:
@@ -2594,7 +2594,7 @@ fragments:
 - id: fr.concept-design-fitout
   label: "Concept design (fitout)"
   scope: project
-  stage: concept_design
+  stage: brief_concept
   systems: [site]
   applies_when:
     all:
@@ -2613,7 +2613,7 @@ fragments:
 - id: fr.concept-design-7b
   label: "Concept design (7b)"
   scope: project
-  stage: concept_design
+  stage: brief_concept
   systems: [site]
   applies_when:
     all:
@@ -2632,7 +2632,7 @@ fragments:
 - id: fr.concept-design-9b
   label: "Concept design (9b)"
   scope: project
-  stage: concept_design
+  stage: brief_concept
   systems: [site]
   applies_when:
     all:
@@ -2649,76 +2649,76 @@ fragments:
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.concept-design-9b"}
 - id: fr.design-development-1a
-  label: "Design development (1a)"
+  label: "Schematic design (1a)"
   scope: project
-  stage: concept_design
+  stage: schematic_design
   systems: [site]
   applies_when:
     all:
       - {det: ncc_class, any_of: ["1a"]}
       - {det: work_type, any_of: [new, extend, refurb]}
   activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-1a}
+    - {key: develop, label: "Develop the schematic design", systems: [site], duration: du.design-development-1a}
   attach: {after: fr.concept-design-1a}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-1a"}
 - id: fr.design-development-2
-  label: "Design development (2)"
+  label: "Schematic design (2)"
   scope: project
-  stage: concept_design
+  stage: schematic_design
   systems: [site]
   applies_when:
     all:
       - {det: ncc_class, any_of: ["2"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-2}
+    - {key: develop, label: "Develop the schematic design", systems: [site], duration: du.design-development-2}
   attach: {after: fr.concept-design-2}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-2"}
 - id: fr.design-development-fitout
-  label: "Design development (fitout)"
+  label: "Schematic design (fitout)"
   scope: project
-  stage: concept_design
+  stage: schematic_design
   systems: [site]
   applies_when:
     all:
       - {det: ncc_class, any_of: ["5", "6", "9b"]}
       - {det: work_type, eq: refurb}
   activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-fitout}
+    - {key: develop, label: "Develop the schematic design", systems: [site], duration: du.design-development-fitout}
   attach: {after: fr.concept-design-fitout}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-fitout"}
 - id: fr.design-development-7b
-  label: "Design development (7b)"
+  label: "Schematic design (7b)"
   scope: project
-  stage: concept_design
+  stage: schematic_design
   systems: [site]
   applies_when:
     all:
       - {det: ncc_class, any_of: ["7b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-7b}
+    - {key: develop, label: "Develop the schematic design", systems: [site], duration: du.design-development-7b}
   attach: {after: fr.concept-design-7b}
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.design-development-7b"}
 - id: fr.design-development-9b
-  label: "Design development (9b)"
+  label: "Schematic design (9b)"
   scope: project
-  stage: concept_design
+  stage: schematic_design
   systems: [site]
   applies_when:
     all:
       - {det: ncc_class, any_of: ["9b"]}
       - {det: work_type, any_of: [new, extend]}
   activities:
-    - {key: develop, label: "Develop the design", systems: [site], duration: du.design-development-9b}
+    - {key: develop, label: "Develop the schematic design", systems: [site], duration: du.design-development-9b}
   attach: {after: fr.concept-design-9b}
   status: draft
   sources:
@@ -2726,7 +2726,7 @@ fragments:
 - id: fr.approval-docs-1a
   label: "Approval documentation (1a)"
   scope: project
-  stage: approval_documentation
+  stage: planning
   systems: [site]
   applies_when:
     all:
@@ -2746,7 +2746,7 @@ fragments:
 - id: fr.approval-docs-2
   label: "Approval documentation (2)"
   scope: project
-  stage: approval_documentation
+  stage: planning
   systems: [site]
   applies_when:
     all:
@@ -2766,7 +2766,7 @@ fragments:
 - id: fr.approval-docs-7b
   label: "Approval documentation (7b)"
   scope: project
-  stage: approval_documentation
+  stage: planning
   systems: [site]
   applies_when:
     all:
@@ -2786,7 +2786,7 @@ fragments:
 - id: fr.approval-docs-9b
   label: "Approval documentation (9b)"
   scope: project
-  stage: approval_documentation
+  stage: planning
   systems: [site]
   applies_when:
     all:
@@ -2803,10 +2803,95 @@ fragments:
   status: draft
   sources:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.approval-docs-9b"}
+- id: fr.design-development-dc-1a
+  label: "Design development (1a)"
+  scope: project
+  stage: design_development
+  systems: [site]
+  applies_when:
+    all:
+      - {det: ncc_class, any_of: ["1a"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
+  activities:
+    # No sourced duration yet (owner to supply); the generator gives it the
+    # default activity length and says so.
+    - {key: develop, label: "Develop the design for the contractor's tender", systems: [site], duration: null}
+  status: draft
+  sources:
+    - {design: docs/plans/2026-11-07-common-project-stages.md, anchor: "### 4.1 Fragments (activities) move stage"}
+- id: fr.design-development-dc-2
+  label: "Design development (2)"
+  scope: project
+  stage: design_development
+  systems: [site]
+  applies_when:
+    all:
+      - {det: ncc_class, any_of: ["2"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
+  activities:
+    # No sourced duration yet (owner to supply); the generator gives it the
+    # default activity length and says so.
+    - {key: develop, label: "Develop the design for the contractor's tender", systems: [site], duration: null}
+  status: draft
+  sources:
+    - {design: docs/plans/2026-11-07-common-project-stages.md, anchor: "### 4.1 Fragments (activities) move stage"}
+- id: fr.design-development-dc-7b
+  label: "Design development (7b)"
+  scope: project
+  stage: design_development
+  systems: [site]
+  applies_when:
+    all:
+      - {det: ncc_class, any_of: ["7b"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
+  activities:
+    # No sourced duration yet (owner to supply); the generator gives it the
+    # default activity length and says so.
+    - {key: develop, label: "Develop the design for the contractor's tender", systems: [site], duration: null}
+  status: draft
+  sources:
+    - {design: docs/plans/2026-11-07-common-project-stages.md, anchor: "### 4.1 Fragments (activities) move stage"}
+- id: fr.design-development-dc-9b
+  label: "Design development (9b)"
+  scope: project
+  stage: design_development
+  systems: [site]
+  applies_when:
+    all:
+      - {det: ncc_class, any_of: ["9b"]}
+      - {det: work_type, any_of: [new, extend]}
+      - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
+  activities:
+    # No sourced duration yet (owner to supply); the generator gives it the
+    # default activity length and says so.
+    - {key: develop, label: "Develop the design for the contractor's tender", systems: [site], duration: null}
+  status: draft
+  sources:
+    - {design: docs/plans/2026-11-07-common-project-stages.md, anchor: "### 4.1 Fragments (activities) move stage"}
+- id: fr.design-development-dc-fitout
+  label: "Design development (fitout)"
+  scope: project
+  stage: design_development
+  systems: [site]
+  applies_when:
+    all:
+      - {det: ncc_class, any_of: ["5", "6", "9b"]}
+      - {det: work_type, eq: refurb}
+      - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
+  activities:
+    # No sourced duration yet (owner to supply); the generator gives it the
+    # default activity length and says so.
+    - {key: develop, label: "Develop the design for the contractor's tender", systems: [site], duration: null}
+  status: draft
+  sources:
+    - {design: docs/plans/2026-11-07-common-project-stages.md, anchor: "### 4.1 Fragments (activities) move stage"}
 - id: fr.fitout-documentation
   label: "Fit-out documentation"
   scope: project
-  stage: construction_documentation
+  stage: design_finalisation
   systems: [site]
   applies_when:
     all:
@@ -2826,7 +2911,7 @@ fragments:
 - id: fr.construction-docs-1a
   label: "Construction documentation (1a)"
   scope: project
-  stage: construction_documentation
+  stage: design_finalisation
   systems: [site]
   applies_when:
     all:
@@ -2846,7 +2931,7 @@ fragments:
 - id: fr.construction-docs-2
   label: "Construction documentation (2)"
   scope: project
-  stage: construction_documentation
+  stage: design_finalisation
   systems: [site]
   applies_when:
     all:
@@ -2866,7 +2951,7 @@ fragments:
 - id: fr.construction-docs-7b
   label: "Construction documentation (7b)"
   scope: project
-  stage: construction_documentation
+  stage: design_finalisation
   systems: [site]
   applies_when:
     all:
@@ -2886,7 +2971,7 @@ fragments:
 - id: fr.construction-docs-9b
   label: "Construction documentation (9b)"
   scope: project
-  stage: construction_documentation
+  stage: design_finalisation
   systems: [site]
   applies_when:
     all:
@@ -2906,7 +2991,7 @@ fragments:
 - id: fr.existing-conditions
   label: "Existing-conditions investigation"
   scope: project
-  stage: investigation
+  stage: brief_concept
   systems: [site]
   applies_when: {det: work_type, any_of: [refurb, extend]}
   activities:
@@ -2922,7 +3007,7 @@ fragments:
 - id: fr.da-lodgement
   label: "Development-application lodgement"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, any_of: [da, planning_permit]}
   activities:
@@ -2933,7 +3018,7 @@ fragments:
 - id: fr.da-exhibition
   label: "Development-application exhibition"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, any_of: [da, planning_permit]}
   activities:
@@ -2945,7 +3030,7 @@ fragments:
 - id: fr.da-assessment
   label: "Development-application assessment"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, any_of: [da, planning_permit]}
   activities:
@@ -2957,7 +3042,7 @@ fragments:
 - id: fr.cdc-application
   label: "Complying development certificate"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, eq: cdc}
   activities:
@@ -2971,7 +3056,7 @@ fragments:
 - id: fr.exempt-confirmation
   label: "Exempt-development confirmation"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, eq: exempt}
   activities:
@@ -2982,7 +3067,7 @@ fragments:
 - id: fr.ssd-eis
   label: "State significant environmental impact statement"
   scope: project
-  stage: approval_documentation
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, eq: ssd}
   activities:
@@ -2996,7 +3081,7 @@ fragments:
 - id: fr.ssd-assessment
   label: "State significant exhibition and assessment"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {cond: planning, eq: ssd}
   activities:
@@ -3010,7 +3095,7 @@ fragments:
 - id: fr.construction-certificate
   label: "Construction certificate"
   scope: project
-  stage: approvals
+  stage: design_finalisation
   systems: [site]
   applies_when: {cond: planning, any_of: [da, planning_permit, ssd]}
   activities:
@@ -3021,7 +3106,7 @@ fragments:
 - id: fr.heritage-referral
   label: "Heritage referral"
   scope: project
-  stage: approvals
+  stage: planning
   systems: [site]
   applies_when: {det: heritage_status, any_of: [conservation_area, local_item, state_register]}
   activities:
@@ -3033,7 +3118,7 @@ fragments:
 - id: fr.tender-docs-1a
   label: "Tender documentation (1a)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3047,7 +3132,7 @@ fragments:
 - id: fr.tender-docs-2
   label: "Tender documentation (2)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3061,7 +3146,7 @@ fragments:
 - id: fr.tender-docs-fitout
   label: "Tender documentation (fitout)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3075,7 +3160,7 @@ fragments:
 - id: fr.tender-docs-7b
   label: "Tender documentation (7b)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3089,7 +3174,7 @@ fragments:
 - id: fr.tender-docs-9b
   label: "Tender documentation (9b)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3103,7 +3188,7 @@ fragments:
 - id: fr.tender-period-1a
   label: "Tender period (1a)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3118,7 +3203,7 @@ fragments:
 - id: fr.tender-period-2
   label: "Tender period (2)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3133,7 +3218,7 @@ fragments:
 - id: fr.tender-period-fitout
   label: "Tender period (fitout)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3148,7 +3233,7 @@ fragments:
 - id: fr.tender-period-7b
   label: "Tender period (7b)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3163,7 +3248,7 @@ fragments:
 - id: fr.tender-period-9b
   label: "Tender period (9b)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3178,7 +3263,7 @@ fragments:
 - id: fr.tender-evaluation-1a
   label: "Tender evaluation (1a)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3193,7 +3278,7 @@ fragments:
 - id: fr.tender-evaluation-2
   label: "Tender evaluation (2)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3208,7 +3293,7 @@ fragments:
 - id: fr.tender-evaluation-fitout
   label: "Tender evaluation (fitout)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3223,7 +3308,7 @@ fragments:
 - id: fr.tender-evaluation-7b
   label: "Tender evaluation (7b)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3238,7 +3323,7 @@ fragments:
 - id: fr.tender-evaluation-9b
   label: "Tender evaluation (9b)"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when:
     all:
@@ -3253,7 +3338,7 @@ fragments:
 - id: fr.contract-award
   label: "Contract award"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when: {det: work_type, any_of: [new, extend, refurb]}
   activities:
@@ -3264,7 +3349,7 @@ fragments:
 - id: fr.novation
   label: "Novation"
   scope: project
-  stage: procurement
+  stage: tender_documentation
   systems: [site]
   applies_when: {cond: procurement_route, any_of: [design_construct, eci]}
   activities:
@@ -3276,7 +3361,7 @@ fragments:
 - id: fr.site-establishment-1a
   label: "Site establishment (1a)"
   scope: project
-  stage: construction
+  stage: delivery
   systems: [site]
   applies_when:
     all:
@@ -3291,7 +3376,7 @@ fragments:
 - id: fr.site-establishment-2
   label: "Site establishment (2)"
   scope: project
-  stage: construction
+  stage: delivery
   systems: [site]
   applies_when:
     all:
@@ -3306,7 +3391,7 @@ fragments:
 - id: fr.site-establishment-fitout
   label: "Site establishment (fitout)"
   scope: project
-  stage: construction
+  stage: delivery
   systems: [site]
   applies_when:
     all:
@@ -3321,7 +3406,7 @@ fragments:
 - id: fr.site-establishment-7b
   label: "Site establishment (7b)"
   scope: project
-  stage: construction
+  stage: delivery
   systems: [site]
   applies_when:
     all:
@@ -3336,7 +3421,7 @@ fragments:
 - id: fr.site-establishment-9b
   label: "Site establishment (9b)"
   scope: project
-  stage: construction
+  stage: delivery
   systems: [site]
   applies_when:
     all:
@@ -3351,7 +3436,7 @@ fragments:
 - id: fr.practical-completion
   label: "Practical completion inspection"
   scope: project
-  stage: completion
+  stage: delivery
   systems: [site]
   applies_when: {det: work_type, any_of: [new, extend, refurb]}
   activities:
@@ -3362,7 +3447,7 @@ fragments:
 - id: fr.occupation-certificate
   label: "Occupation certificate"
   scope: project
-  stage: completion
+  stage: delivery
   systems: [site]
   applies_when: {det: work_type, any_of: [new, extend, refurb]}
   activities:
@@ -3374,7 +3459,7 @@ fragments:
 - id: fr.handover
   label: "Handover"
   scope: project
-  stage: completion
+  stage: delivery
   systems: [site]
   applies_when: {det: work_type, any_of: [new, extend, refurb]}
   activities:
@@ -3386,7 +3471,7 @@ fragments:
 - id: fr.defects-inspection
   label: "Defects inspection"
   scope: project
-  stage: defects
+  stage: delivery
   systems: [site]
   applies_when: {det: work_type, any_of: [new, extend, refurb]}
   activities:
@@ -3397,7 +3482,7 @@ fragments:
 - id: fr.defects-liability-end
   label: "End of defects liability"
   scope: project
-  stage: defects
+  stage: delivery
   systems: [site]
   applies_when: {det: work_type, any_of: [new, extend, refurb]}
   activities:
@@ -3411,7 +3496,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.defects-liability-end"}
 - id: fr.investigate-geotech
   label: "Geotechnical investigation"
-  stage: investigation
+  stage: brief_concept
   systems: [site.ground-conditions]
   applies_when: {work_action: {system: site.ground-conditions, any_of: [investigate]}}
   activities:
@@ -3422,7 +3507,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-geotech"}
 - id: fr.investigate-survey
   label: "Detail and boundary survey"
-  stage: investigation
+  stage: brief_concept
   systems: [site.survey-boundaries]
   applies_when: {work_action: {system: site.survey-boundaries, any_of: [investigate]}}
   activities:
@@ -3433,7 +3518,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-survey"}
 - id: fr.investigate-contamination
   label: "Contamination investigation"
-  stage: investigation
+  stage: brief_concept
   systems: [site.contamination]
   applies_when: {work_action: {system: site.contamination, any_of: [investigate]}}
   activities:
@@ -3444,7 +3529,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-contamination"}
 - id: fr.investigate-acid-sulfate
   label: "Acid sulfate soils assessment"
-  stage: investigation
+  stage: brief_concept
   systems: [site.acid-sulfate-soils]
   applies_when: {work_action: {system: site.acid-sulfate-soils, any_of: [investigate]}}
   activities:
@@ -3455,7 +3540,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-acid-sulfate"}
 - id: fr.investigate-trees
   label: "Arborist assessment"
-  stage: investigation
+  stage: brief_concept
   systems: [site.trees]
   applies_when: {work_action: {system: site.trees, any_of: [investigate]}}
   activities:
@@ -3466,7 +3551,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-trees"}
 - id: fr.investigate-flooding
   label: "Flood advice"
-  stage: investigation
+  stage: brief_concept
   systems: [site.flooding]
   applies_when: {work_action: {system: site.flooding, any_of: [investigate]}}
   activities:
@@ -3477,7 +3562,7 @@ fragments:
     - {design: docs/research/2026-10-21-program-library.md, anchor: "### fr.investigate-flooding"}
 - id: fr.investigate-services
   label: "Services search and locating"
-  stage: investigation
+  stage: brief_concept
   systems: [site.services-connections]
   applies_when: {work_action: {system: site.services-connections, any_of: [investigate]}}
   activities:

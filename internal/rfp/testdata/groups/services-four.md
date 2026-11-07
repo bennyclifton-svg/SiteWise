@@ -30,20 +30,20 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. A line marke
 
 | Stage | Scope | Position |
 |---|---|---|
-| S1 Evidence |  | Included |
+| Brief and concept |  | Included |
 |  | Brief/system-space register | Included |
 |  | Accessible review, observed/tested/assumed condition/capacity/life | Included |
 |  | Gaps/owners | Included |
-| S2 Investigation |  | Included |
 |  | Surveys/logging/tests, retained capacity/options | Included |
 |  | Intrusion/safety/isolation/operator/reinstatement | Included |
 |  | Upgrades separate | Included |
-| S3 Concept |  | Included |
+|  | Condition/capacity/controls investigation; operation is not proof; upgrade separate | Included |
+| Schematic design |  | Included |
 |  | Options/preliminary loads/zones, plant/routes/replacement access, intakes/discharges/acoustics/cost inputs | Included |
-| S4 Planning |  | Included |
+| Planning |  | Included |
 |  | Listed spatial sketches or formal plans/reports | Included |
 |  | Screening/noise/energy inputs, submissions and bounded responses | Included |
-| S5 Design |  | Included |
+| Design development |  | Included |
 |  | Load/airflow/pressure/selection calculations, layouts/schedules, refrigerant/condensate, energy/controls/fire modes | Included |
 |  | Structure/envelope/power/access coordination | Included |
 |  | Selected detailed HVAC design: duties/air paths/outdoor air; loads/hours/reserve | Included |
@@ -56,28 +56,26 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. A line marke
 |  | Coordinate supports/plinths/openings/power/refrigerant leak/condensate; respective specialists design. Condensate: agree hydraulic/mechanical connection point/level, receiving capacity, falls/traps/tundish/discharge; name upstream/downstream design/install/test owners. Unresolved allocation stays open. R4 names strategy/cause-and-effect authors, mechanical designer, programmer, power/network provider, test performer/leader/witness. | Included |
 |  | Occupied/phased temporary ventilation/isolation/handback by use/phase | Included |
 |  | Laboratory/clean-room/medical gases/process refrigeration/hazardous areas | Excluded |
-| S6 Documentation |  | Included |
+| Tender documentation |  | Included |
 |  | Traditional design/calculations/specs | Included |
 |  | D&C performance/intent, retained/delegated design/test criteria | Included |
 |  | RFIs/addenda/comparison | Included |
 |  | Declarations/lodgement; verify jurisdiction/competence, no approval guarantee | Included |
-| S7 Post-contract |  | Included |
+| Design finalisation |  | Included |
 |  | Retained design/substitutions/declarations | Included |
 |  | Settle novation duties/fee | Included |
 |  | Separate continued design/novation | Included |
-| S8 Construction |  | Included |
+| Delivery |  | Included |
 |  | RFIs/submittals/equipment, hold-point reports/concealed-work limits, test plans/defects | Included |
-|  | Quantified construction support | Included |
-| S9 Commissioning |  | Included |
 |  | Scripts/results | Included |
 |  | Balancing/controls/fire/failure/recovery witnesses, expected/actual/defects/retests | Included |
 |  | As-builts/O&M/settings/trends/training/residuals | Included |
-|  | Selected witnessing/handover | Included |
-|  | Test execution separately priced to named contractors | Included |
-| S10 Seasonal |  | Included |
 |  | Deferred seasonal/tuning/defect reviews, weather/operation prerequisites, closure | Included |
+|  | Quantified construction support | Included |
+|  | Selected witnessing/handover | Included |
 |  | Seasonal/defects reviews | Included |
-| S11 Advisory |  | Included |
+|  | Test execution separately priced to named contractors | Included |
+| Advisory |  | Included |
 |  | Decision/extent/cutoff/reliance/method/confidence/actions | Included |
 |  | Separate diagnosis/remedy/verification | Included |
 |  | Reviewer is not designer | Included |
@@ -111,15 +109,15 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. A line marke
 
 | Stage | Scope | Position |
 |---|---|---|
-| S1 Evidence |  | Included |
+| Brief and concept |  | Included |
 |  | Brief/accessible assets/records | Included |
 |  | Condition/capacity gaps, utility risks and test plan | Included |
-| S3 Concept |  | Included |
+| Schematic design |  | Included |
 |  | Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs | Included |
-| S4 Authority |  | Included |
+| Planning |  | Included |
 |  | Infrastructure/lighting/energy plans | Included |
 |  | Application author/submitter/payer and response cap | Included |
-| S5 Design |  | Included |
+| Design development |  | Included |
 |  | Demand/fault/protection/earthing/lighting calculations | Included |
 |  | Boards/cables/routes, controls, safety and builders work | Included |
 |  | Detailed distribution/protection/earthing/containment; fault/voltage/discrimination | Included |
@@ -135,15 +133,13 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. A line marke
 |  | Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests | Included |
 |  | Hazardous/process/HV/critical distribution studies | Excluded |
 |  | Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor | Included |
-| S6 Tender |  | Included |
+| Tender documentation |  | Included |
 |  | Traditional complete design/specifications | Included |
 |  | D&C intent/performance with delegated design matrix | Included |
 |  | Comparisons/RFIs/addenda | Included |
 |  | Selected declarations/lodgement; verify jurisdiction/competence | Included |
-| S7 Post-contract | Not part of this appointment | Excluded |
-| S8 Support | Not part of this appointment | Excluded |
-| S9 Witness/handover | Not part of this appointment | Excluded |
-| S10 Defects | Not part of this appointment | Excluded |
+| Design finalisation | Not part of this appointment | Excluded |
+| Delivery | Not part of this appointment | Excluded |
 | Across all stages | Services through the whole appointment |  |
 
 **Allowances**: Editable client defaults: 4 design meetings per appointed design stage, 1 consolidated review round per design stage and 1 investigation visit when commissioned. These are pricing assumptions, not measured project quantities. Price later stages separately. In R1/R2, identify the affected buildings and systems from the supplied project information; list assets, tests, durations, authority fees and specialist services separately, with assumptions and excess rates. Do not apply a single count to different units. Agree unresolved scope before the affected work starts.
@@ -168,23 +164,22 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 
 | Stage | Scope | Position |
 |---|---|---|
-| S1 Evidence |  | Included |
+| Brief and concept |  | Included |
 |  | Brief/system map | Included |
 |  | Accessible asset/record review | Included |
 |  | Connections/levels/capacity/easements | Included |
 |  | Evidence gaps | Included |
-| S2 Investigation |  | Included |
 |  | Selected tracing/CCTV/flow/logging/sampling | Included |
 |  | Access/isolation/reinstatement, limits | Included |
 |  | Upgrades separate | Included |
-| S3 Concept |  | Included |
+| Schematic design |  | Included |
 |  | Brief/options/preliminary demands | Included |
 |  | Source/storage/treatment, spatial/access and cost inputs | Included |
-| S4 Authority |  | Included |
+| Planning |  | Included |
 |  | Selected servicing plans/water-efficiency inputs | Included |
 |  | Applications/roles/tracker and bounded responses | Included |
 |  | Coordinate utility connections and approvals. Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water Services Coordinator services are separately appointed. | Included |
-| S5 Design |  | Included |
+| Design development |  | Included |
 |  | Selected calculations/schedules | Included |
 |  | Levels/routes/plant/controls/penetrations/access/overflow/safety | Included |
 |  | Design potable and hot water services. Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature control and metering. | Included |
@@ -201,24 +196,22 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 |  | Select plumbing fixtures. Select fixtures and fittings; coordinate hydraulic demands and connections. Normally selected by the architect. | Excluded |
 |  | Coordinate hydraulic design with other disciplines. Coordinate penetrations, supports, fire stopping, waterproofing, power, controls and condensate connections; specialists retain their design. | Included |
 |  | Design staged and temporary hydraulic services. Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and acceptance arrangements. | Included |
-| S6 Tender |  | Included |
+| Tender documentation |  | Included |
 |  | Traditional complete design | Included |
 |  | D&C intent/remaining design owner | Included |
 |  | Drawings/specs/calculations/RFIs/addenda | Included |
 |  | Prepare hydraulic design declarations. Prepare and lodge applicable design declarations; confirm jurisdiction, competent author and lodgement responsibilities. | Included |
-| S7 Later design |  | Included |
+| Design finalisation |  | Included |
 |  | Complete design/alternatives/construction issue | Included |
 |  | Retained duties and separate novation terms | Included |
-| S8 Support |  | Included |
+| Delivery |  | Included |
 |  | Submittal/RFI reviews | Included |
 |  | Before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points | Included |
 |  | Records | Included |
-| S9 Witness |  | Included |
 |  | Review selected tests, flushing/disinfection, as-builts/O&M and training | Included |
 |  | Witness retests | Included |
 |  | Trades execute tests | Included |
 |  | No unseen-work certification. | Included |
-| S10 Defects |  | Included |
 |  | Deferred tests/visits/monitoring | Included |
 |  | Operating prerequisites/period, closure/residual items | Included |
 | Across all stages | Services through the whole appointment |  |
@@ -251,21 +244,21 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 | Stage | Scope | Position |
 |---|---|---|
-| S1 Evidence |  | Included |
+| Brief and concept |  | Included |
 |  | Basis/system register | Included |
 |  | Accessible survey, observed/tested/assumed gaps | Included |
 |  | Supply/capacity investigation brief and inputs/owners | Included |
-| S2 Investigation |  | Included |
 |  | Defined surveys/tests/operator/reinstatement | Included |
 |  | Retained supply/plant/network suitability, uncertainty/options | Included |
 |  | Upgrade design separate | Included |
-| S3 Concept |  | Included |
+|  | Defined investigation; records are not condition proof; upgrade separate | Included |
+| Schematic design |  | Included |
 |  | Demand/options/indicative duties | Included |
 |  | Plant/booster/valve space, routes/access/power/drainage/brigade | Included |
 |  | Listed planning notes/responses | Included |
 |  | Unresolved pipework | Included |
 |  | Fire strategy and performance solutions | Excluded |
-| S4 Developed design |  | Included |
+| Design development |  | Included |
 |  | Demand/hydraulics/supply cases/storage/pumps/zones/equipment | Included |
 |  | Existing/new, controls/power/loads/maintenance coordination | Included |
 |  | Listed authority tasks | Included |
@@ -278,26 +271,25 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 |  | Existing upgrade design subject to investigation/accepted strategy | Included |
 |  | Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy | Included |
 |  | Special hazards/high storage/process/batteries/special suppression | Excluded |
-| S5 Documentation |  | Included |
+| Tender documentation |  | Included |
 |  | Traditional drawings/calculations/schedules/specification | Included |
 |  | D&C intent/performance/test criteria and contractor-design handover | Included |
 |  | RFIs/addenda/comparison | Included |
 |  | Scoped declarations/lodgement/certification; verify jurisdiction/competence; no approval guarantee | Included |
-| S6 Post-contract |  | Included |
+| Design finalisation |  | Included |
 |  | Retained design/substitutions/updates | Included |
 |  | Agree novation, client/liability, program/duties | Included |
 |  | Express continued design/novation | Included |
-| S7 Construction |  | Included |
+| Delivery |  | Included |
 |  | RFIs/submittals, hold-point inspection/findings, changes/test-plan records | Included |
 |  | Inaccessible work/defect closure | Included |
-|  | Quantified construction support | Included |
-| S8 Commissioning |  | Included |
 |  | Scripts/results | Included |
 |  | Water/integrated failure/recovery test witness, expected/actual results/defects/retests | Included |
 |  | Scoped statements/as-builts/O&M/settings/training/residuals | Included |
+|  | Quantified construction support | Included |
 |  | Selected test witnessing/handover evidence | Included |
 |  | Test execution separately priced to named trades | Included |
-| S9 Advisory |  | Included |
+| Advisory |  | Included |
 |  | Defined question/cutoff/reliance, method/confidence/actions | Included |
 |  | Peer review retains design duty | Included |
 |  | Remedy/annual services separate | Included |
@@ -326,50 +318,42 @@ Fees exclude GST; state GST and the total in your proposal. Options are priced s
 | Discipline and stage | Fee $ |
 |---|---|
 | Mechanical services |  |
-| S1 Evidence |  |
-| S2 Investigation |  |
-| S3 Concept |  |
-| S4 Planning |  |
-| S5 Design |  |
-| S6 Documentation |  |
-| S7 Post-contract |  |
-| S8 Construction |  |
-| S9 Commissioning |  |
-| S10 Seasonal |  |
-| S11 Advisory |  |
+| Brief and concept |  |
+| Schematic design |  |
+| Planning |  |
+| Design development |  |
+| Tender documentation |  |
+| Design finalisation |  |
+| Delivery |  |
+| Advisory |  |
 | Reimbursables |  |
 | Sum for Mechanical services |  |
 | Electrical services |  |
-| S1 Evidence |  |
-| S3 Concept |  |
-| S4 Authority |  |
-| S5 Design |  |
-| S6 Tender |  |
+| Brief and concept |  |
+| Schematic design |  |
+| Planning |  |
+| Design development |  |
+| Tender documentation |  |
 | Reimbursables |  |
 | Sum for Electrical services |  |
 | Hydraulic services |  |
-| S1 Evidence |  |
-| S2 Investigation |  |
-| S3 Concept |  |
-| S4 Authority |  |
-| S5 Design |  |
-| S6 Tender |  |
-| S7 Later design |  |
-| S8 Support |  |
-| S9 Witness |  |
-| S10 Defects |  |
+| Brief and concept |  |
+| Schematic design |  |
+| Planning |  |
+| Design development |  |
+| Tender documentation |  |
+| Design finalisation |  |
+| Delivery |  |
 | Reimbursables |  |
 | Sum for Hydraulic services |  |
 | Fire services |  |
-| S1 Evidence |  |
-| S2 Investigation |  |
-| S3 Concept |  |
-| S4 Developed design |  |
-| S5 Documentation |  |
-| S6 Post-contract |  |
-| S7 Construction |  |
-| S8 Commissioning |  |
-| S9 Advisory |  |
+| Brief and concept |  |
+| Schematic design |  |
+| Design development |  |
+| Tender documentation |  |
+| Design finalisation |  |
+| Delivery |  |
+| Advisory |  |
 | Reimbursables |  |
 | Sum for Fire services |  |
 | Engagement total (the sums above) |  |
@@ -455,9 +439,9 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 **Blocks issue — Mechanical services: Access: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
 
-**Blocks issue — Mechanical services: Investigation selected: not established**: Decide before issue. It changes: S2 Investigation.
+**Blocks issue — Mechanical services: Planning inputs selected: not established**: Decide before issue. It changes: Planning.
 
-**Blocks issue — Mechanical services: Planning inputs selected: not established**: Decide before issue. It changes: S4 Planning.
+**Blocks issue — Mechanical services: Investigation selected: not established**: Decide before issue. It changes: Brief and concept; Condition/capacity/controls investigation; operation is not proof; upgrade separate.
 
 **Blocks issue — Mechanical services: Local exhaust selected: not established**: Decide before issue. It changes: Toilet/laundry/refuse/car-park/charging exhaust; make-up air/discharge separation.
 
@@ -495,9 +479,9 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 **Blocks issue — Hydraulic services: Staging: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
 
-**Blocks issue — Hydraulic services: Investigation selected: not established**: Decide before issue. It changes: S2 Investigation.
+**Blocks issue — Hydraulic services: Authority inputs selected: not established**: Decide before issue. It changes: Planning.
 
-**Blocks issue — Hydraulic services: Authority inputs selected: not established**: Decide before issue. It changes: S4 Authority.
+**Blocks issue — Hydraulic services: Investigation selected: not established**: Decide before issue. It changes: Brief and concept; Retained-system investigation.
 
 **Blocks issue — Hydraulic services: Treatment connection: not established**: Decide before issue. It changes: Design onsite sewage treatment.
 
@@ -543,7 +527,7 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 **Blocks issue — Fire services: Completion: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
 
-**Blocks issue — Fire services: Existing investigation selected: not established**: Decide before issue. It changes: S2 Investigation.
+**Blocks issue — Fire services: Existing investigation selected: not established**: Decide before issue. It changes: Brief and concept; Defined investigation; records are not condition proof; upgrade separate.
 
 **Blocks issue — Fire services: Wet design selected: not established**: Decide before issue. It changes: Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent.
 

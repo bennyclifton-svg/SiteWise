@@ -40,11 +40,11 @@ func sampleProgram() store.ProgramCreate {
 	}
 	return store.ProgramCreate{Surface: "program", SkeletonID: "sk.generic", LibraryVersion: "test", StartDate: "2027-03-01", StartOrigin: "user",
 		Rows: []store.ProgramRowInput{
-			row("design", "", "stage", "Design", "design", nil),
+			row("design", "", "stage", "Design", "schematic_design", nil),
 			row("concept", "design", "activity", "Concept design", "", ip(5)),
 			row("developed", "design", "activity", "Developed design", "", ip(10)),
 			row("approvals", "", "stage", "Approvals", "other", ip(20)),
-			row("construction", "", "stage", "Construction", "construction", nil),
+			row("construction", "", "stage", "Construction", "delivery", nil),
 			row("slab", "construction", "activity", "Slab", "", ip(10)),
 			row("framing", "construction", "activity", "Framing", "", ip(15)),
 			row("roof", "construction", "activity", "Roof", "", ip(5)),
@@ -163,7 +163,7 @@ func TestProgramCreateLoadAndPackageStages(t *testing.T) {
 	if _, err := s.LoadProgram(ctx, orgA, projectA); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("no program yet: %v", err)
 	}
-	pkg, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned", Stages: []procurement.Stage{{StageID: "design", Label: "Design", NovationPhase: "none", Origin: "user"}}})
+	pkg, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned", Stages: []procurement.Stage{{StageID: "schematic_design", Label: "Design", NovationPhase: "none", Origin: "user"}}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -759,11 +759,11 @@ func TestProgramStageRevision(t *testing.T) {
 		{"start", false, []store.ProgramOp{{Op: "set_start", StartDate: sp("2027-04-05")}}},
 		{"calendar", false, []store.ProgramOp{{Op: "calendar_day", Day: "2027-04-26", Kind: sp("public_holiday"), Label: sp("Anzac Day")}}},
 		{"rename stage to the same name", false, []store.ProgramOp{{Op: "update", ID: design, Label: sp("Design")}}},
-		{"remap to the same stage", false, []store.ProgramOp{{Op: "update", ID: design, CatalogueStageID: sp("design")}}},
+		{"remap to the same stage", false, []store.ProgramOp{{Op: "update", ID: design, CatalogueStageID: sp("schematic_design")}}},
 		{"rename stage", true, []store.ProgramOp{{Op: "update", ID: design, Label: sp("Design development")}}},
 		{"add stage", true, []store.ProgramOp{{Op: "add", TempID: "st", Label: sp("Handover")}}},
 		{"reorder stages", true, []store.ProgramOp{{Op: "reorder", IDs: []string{rowID(t, st, "Approvals")}}}},
-		{"remap stage", true, []store.ProgramOp{{Op: "update", ID: rowID(t, st, "Approvals"), CatalogueStageID: sp("design")}}},
+		{"remap stage", true, []store.ProgramOp{{Op: "update", ID: rowID(t, st, "Approvals"), CatalogueStageID: sp("schematic_design")}}},
 		{"delete stage", true, []store.ProgramOp{{Op: "delete", IDs: []string{rowID(t, st, "Approvals")}}}},
 	}
 	for _, step := range steps {
@@ -772,7 +772,7 @@ func TestProgramStageRevision(t *testing.T) {
 		if got := st.Program.StageRevision - before; (got == 1) != step.bump || got > 1 {
 			t.Fatalf("%s: stage revision moved by %d", step.name, got)
 		}
-		if step.name == "remap stage" && rowOf(t, st, "Approvals").CatalogueStageID != "design" {
+		if step.name == "remap stage" && rowOf(t, st, "Approvals").CatalogueStageID != "schematic_design" {
 			t.Fatal("remap not stored")
 		}
 	}

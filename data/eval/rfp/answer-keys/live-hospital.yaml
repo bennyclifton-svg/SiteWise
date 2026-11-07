@@ -16,7 +16,7 @@ flags:
   staged: "yes"
   multi_building: "no"
 parts:
-  - {id: ward, label: Ward, classes: [9a]}
+- {id: ward, label: Ward, classes: [9a]}
 address: "Hospital Rd, Example NSW"
 fields:
   ref: RFP-TEST
@@ -29,18 +29,20 @@ fields:
   lga: Example LGA
 settings:
   architecture:
-    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "boundary:range": {start: brief_concept, end: design_finalisation}
     "allowance:client_presentations": "3"
     "allowance:planning_cap": "20"
     "allowance:ca_inspections": "10"
 expect:
   architecture:
-    stages_include: [brief_masterplan, interiors]
-    stages_absent: [regulated_design]
+    stages_include: [brief_concept, design_development]
+    stages_absent: []
     positions: {live_staging: I, tenant_fitout: I, existing_interfaces: I}
     scale: complex
     blocking: ["fact:budget"]
     blocking_only: true
 sources:
-  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
-  - "Peer review: live institutional sites need operator inputs (access, shutdowns, temporary services, staging); requirements come from this operator's brief."
+- "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction
+  budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
+- "Peer review: live institutional sites need operator inputs (access, shutdowns, temporary services, staging); requirements
+  come from this operator's brief."

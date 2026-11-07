@@ -22,9 +22,11 @@ import (
 // RFPDrivers is the closed condition vocabulary. Numeric keys end in _over.
 // only_class holds when every part's classes are among its values; module
 // holds when a skeleton module is active (modules may not test modules).
+// flag holds when any listed flag is yes, flag_all when every one is, so one
+// clause can test two flags (a merged stage's condition with its own).
 var RFPDrivers = map[string]bool{
 	"class": true, "only_class": true, "module": true, "category": true, "work_type": true, "pathway": true,
-	"procurement": true, "novation": true, "state": true, "flag": true,
+	"procurement": true, "novation": true, "state": true, "flag": true, "flag_all": true,
 	"regulated_design": true, "scale": true, "stage": true, "stage_included": true, "element": true,
 	"budget_over": true, "site_area_over": true, "gfa_over": true, "parking_over": true,
 }
@@ -84,6 +86,15 @@ type RFPLine struct {
 	// unless the condition is true (owner ruling R13: a masterplan is only
 	// for a large project).
 	When RFPWhen `yaml:"when" json:"when,omitempty"`
+	// IfUnknown keeps the line while its condition is unknown: include
+	// keeps it quietly, ask keeps it and raises the decision. A line carried
+	// in from a stage merged into a project stage keeps that stage's handling
+	// this way rather than silently dropping out. Suggest (with its
+	// Threshold) raises the decision as the old stage did; a false
+	// suggestion leaves the line out.
+	IfUnknown string  `yaml:"if_unknown" json:"if_unknown,omitempty"`
+	Suggest   RFPWhen `yaml:"suggest" json:"suggest,omitempty"`
+	Threshold string  `yaml:"threshold" json:"threshold,omitempty"`
 }
 
 type RFPStage struct {
@@ -719,9 +730,20 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 			if !lineKeyRE.MatchString(l.Key) || strings.TrimSpace(l.Text) == "" {
 				return d, fmt.Errorf("stage %s line %q needs a key and text", st.Key, l.Key)
 			}
-			if err := checkWhen("stage "+st.Key+" line "+l.Key, l.When, s); err != nil {
+			where := "stage " + st.Key + " line " + l.Key
+			if err := checkWhen(where, l.When, s); err != nil {
 				return d, err
 			}
+			if l.IfUnknown != "" && l.IfUnknown != "include" && l.IfUnknown != "ask" {
+				return d, fmt.Errorf("%s: if_unknown %q must be include, ask or empty", where, l.IfUnknown)
+			}
+			if (l.IfUnknown != "" || len(l.Suggest) > 0) && len(l.When) == 0 {
+				return d, fmt.Errorf("%s: if_unknown and suggest need a when", where)
+			}
+			if err := checkConditional(where, l.When, l.Suggest, "", "", l.Threshold, "", thresholds, s); err != nil {
+				return d, err
+			}
+
 			texts = append(texts, l.Text)
 		}
 		if err := uniqueKeys("stage "+st.Key+" lines", len(st.Lines), func(j int) string { return st.Lines[j].Key }); err != nil {
@@ -1058,7 +1080,7 @@ func checkWhen(where string, w RFPWhen, s RFPSkeleton) error {
 			for _, v := range values {
 				var ok bool
 				switch key {
-				case "flag":
+				case "flag", "flag_all":
 					ok = optionKey(s.Flags, v)
 				case "pathway":
 					ok = optionKey(s.Pathways, v)

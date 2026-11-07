@@ -1,8 +1,12 @@
 package httpapi
 
 import (
+	"errors"
 	"net/http"
 	"strings"
+
+	"sitewise/internal/procurement"
+	"sitewise/internal/store"
 )
 
 // Combined engagements, slice 1 (docs/plans/2026-11-07-combined-engagements-slice1.md).
@@ -23,11 +27,14 @@ func postPackageCombine(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}
+	// SubmissionID, when given, is an unplaced proposal the group is made
+	// for (slice 5): it is placed on the group in the same transaction.
 	var body struct {
-		PackageIDs []string `json:"package_ids"`
-		Title      string   `json:"title"`
+		PackageIDs   []string `json:"package_ids"`
+		Title        string   `json:"title"`
+		SubmissionID string   `json:"submission_id"`
 	}
-	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || len(body.PackageIDs) > 50 || len(body.Title) > 1000 {
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || len(body.PackageIDs) > 50 || len(body.Title) > 1000 || body.SubmissionID != "" && !uuidPattern.MatchString(body.SubmissionID) {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
@@ -37,7 +44,17 @@ func postPackageCombine(w http.ResponseWriter, r *http.Request, deps Deps) {
 			return
 		}
 	}
-	group, err := deps.Store.CombinePackages(r.Context(), session.OrgID, project, session.UserID, body.PackageIDs, strings.TrimSpace(body.Title))
+	var group procurement.Package
+	var err error
+	if body.SubmissionID != "" {
+		group, err = deps.Store.CombineForProposal(r.Context(), session.OrgID, project, session.UserID, body.PackageIDs, strings.TrimSpace(body.Title), body.SubmissionID)
+	} else {
+		group, err = deps.Store.CombinePackages(r.Context(), session.OrgID, project, session.UserID, body.PackageIDs, strings.TrimSpace(body.Title))
+	}
+	if errors.Is(err, store.ErrConflict) {
+		http.Error(w, "this proposal is already placed", http.StatusConflict)
+		return
+	}
 	if err != nil {
 		packageError(w, err)
 		return

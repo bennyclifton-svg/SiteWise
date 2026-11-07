@@ -19,17 +19,15 @@ const src = `[{design: test-fixture-only, anchor: "# Test"}]`
 
 var genericSkeleton = `  - id: sk.generic
     label: Generic stage sequence
-    stages: [investigation, concept_design, approval_documentation, construction_documentation,
-             approvals, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development,
+             tender_documentation, design_finalisation, delivery]
     links:
-      - {from: investigation, to: concept_design, type: FS, lag: null}
-      - {from: concept_design, to: approval_documentation, type: FS, lag: null}
-      - {from: approval_documentation, to: construction_documentation, type: FS, lag: null}
-      - {from: construction_documentation, to: approvals, type: FS, lag: null}
-      - {from: approvals, to: procurement, type: FS, lag: null}
-      - {from: procurement, to: construction, type: FS, lag: null}
-      - {from: construction, to: completion, type: FS, lag: null}
-      - {from: completion, to: defects, type: FS, lag: null}
+      - {from: brief_concept, to: schematic_design, type: FS, lag: null}
+      - {from: schematic_design, to: planning, type: FS, lag: null}
+      - {from: planning, to: design_development, type: FS, lag: null}
+      - {from: design_development, to: tender_documentation, type: FS, lag: null}
+      - {from: tender_documentation, to: design_finalisation, type: FS, lag: null}
+      - {from: design_finalisation, to: delivery, type: FS, lag: null}
     status: draft
     sources: ` + src + `
 `
@@ -45,16 +43,16 @@ skeletons:
       all:
         - {det: work_type, eq: new}
         - {cond: planning, eq: da}
-    stages: [investigation, concept_design, approval_documentation, approvals,
-             construction_documentation, procurement, construction, completion]
+    stages: [brief_concept, schematic_design, planning, design_development,
+             tender_documentation, delivery]
     links:
-      - {from: approvals, to: construction, type: FS, lag: du.draft}
+      - {from: planning, to: delivery, type: FS, lag: du.draft}
     status: draft
     sources: ` + src + `
   - id: sk.new
     label: Test new
     applies_when: {det: work_type, eq: new}
-    stages: [procurement, construction]
+    stages: [tender_documentation, delivery]
     links: []
     status: draft
     sources: ` + src + `
@@ -64,7 +62,7 @@ skeletons:
       all:
         - {det: work_type, eq: refurb}
         - {cond: planning, eq: cdc}
-    stages: [construction]
+    stages: [delivery]
     links: []
     status: draft
     sources: ` + src + `
@@ -74,7 +72,7 @@ skeletons:
       all:
         - {det: work_type, eq: refurb}
         - {cond: procurement_route, eq: traditional}
-    stages: [construction]
+    stages: [delivery]
     links: []
     status: draft
     sources: ` + src + `
@@ -84,7 +82,7 @@ skeletons:
       all:
         - {det: work_type, eq: remediation}
         - {det: state, eq: NSW}
-    stages: [construction]
+    stages: [delivery]
     links: []
     status: draft
     sources: ` + src + `
@@ -95,7 +93,7 @@ sources: ` + src + `
 fragments:
   - id: fr.slab
     label: Test slab
-    stage: construction
+    stage: delivery
     systems: [substructure]
     applies_when: {work_action: {system: substructure, any_of: [new, replace]}}
     activities:
@@ -108,7 +106,7 @@ fragments:
     sources: ` + src + `
   - id: fr.demo
     label: Test demolition
-    stage: construction
+    stage: delivery
     systems: [structure]
     applies_when: {work_action: {system: structure, any_of: [remove]}}
     activities:
@@ -117,7 +115,7 @@ fragments:
     sources: ` + src + `
   - id: fr.frame
     label: Test frame
-    stage: construction
+    stage: delivery
     systems: [structure]
     applies_when:
       all:
@@ -130,7 +128,7 @@ fragments:
     sources: ` + src + `
   - id: fr.roof
     label: Test roof
-    stage: construction
+    stage: delivery
     systems: [envelope]
     applies_when: {work_action: {system: envelope, any_of: [new]}}
     activities:
@@ -363,15 +361,15 @@ func TestStageChainAndSkeletonLinks(t *testing.T) {
 			t.Fatalf("missing chain %s → %s: %+v", stages[i-1], stages[i], l)
 		}
 	}
-	// approvals → construction names a draft lag: kept with no lag, flagged.
-	l, ok := hasLink(p, "skeleton:sk.new-da:approvals", "skeleton:sk.new-da:construction")
+	// planning → delivery names a draft lag: kept with no lag, flagged.
+	l, ok := hasLink(p, "skeleton:sk.new-da:planning", "skeleton:sk.new-da:delivery")
 	if !ok || l.Origin != LinkOriginLibrary || !l.LagUnknown || l.Lag != 0 || l.LagDurationID != "du.draft" {
 		t.Fatalf("library link %+v", l)
 	}
 	if !hasNote(p, CheckLagUnknown) {
 		t.Fatal("unknown lag not reported")
 	}
-	if p.ConstructionStageKey != "skeleton:sk.new-da:construction" {
+	if p.ConstructionStageKey != "skeleton:sk.new-da:delivery" {
 		t.Fatal(p.ConstructionStageKey)
 	}
 }
@@ -395,7 +393,7 @@ func TestWorkActions(t *testing.T) {
 		}
 	}
 	// investigate adds one activity under Investigation, titled as written.
-	inv := rowKeys(p, "skeleton:sk.new-da:investigation")
+	inv := rowKeys(p, "skeleton:sk.new-da:brief_concept")
 	if len(inv) != 1 || inv[0] != "investigate:wi-geo" {
 		t.Fatalf("investigation rows %v", inv)
 	}
@@ -481,19 +479,19 @@ func TestPackageStagesMapWithoutRows(t *testing.T) {
 	cat := testCatalog(t, testLibrary, "")
 	in := GenInput{WorkTypes: []string{"new"}, Packages: []Package{
 		{ID: "arch", Title: "Architect", Kind: "services", Stages: []PackageStage{
-			{ID: "ps1", CatalogueStageID: "concept_design", Label: "Concept design"},
-			{ID: "ps2", CatalogueStageID: "construction_stage_inspections", Label: "Construction-stage inspections"},
-			{ID: "ps3", CatalogueStageID: "defects", Label: "Defects"},
-			{ID: "ps4", CatalogueStageID: "procurement", Label: "Tender support"},
+			{ID: "ps1", CatalogueStageID: "schematic_design", Label: "Schematic design"},
+			{ID: "ps2", CatalogueStageID: "design_finalisation", Label: "Design finalisation"},
+			{ID: "ps3", CatalogueStageID: "delivery", Label: "Delivery"},
+			{ID: "ps4", CatalogueStageID: "tender_documentation", Label: "Tender support"},
 		}},
 		{ID: "build", Title: "Head contract", Kind: "works"},
 	}}
-	p := mustGenerate(t, cat, in) // sk.new: [procurement, construction]
+	p := mustGenerate(t, cat, in) // sk.new: [tender_documentation, delivery]
 	want := map[string]struct{ stage, rule string }{
-		"ps1": {"skeleton:sk.new:procurement", PlaceFirst},
-		"ps2": {"skeleton:sk.new:construction", PlaceParent},
-		"ps3": {"skeleton:sk.new:construction", PlaceNearest},
-		"ps4": {"skeleton:sk.new:procurement", PlaceExact},
+		"ps1": {"skeleton:sk.new:tender_documentation", PlaceFirst},
+		"ps2": {"skeleton:sk.new:tender_documentation", PlaceNearest},
+		"ps3": {"skeleton:sk.new:delivery", PlaceExact},
+		"ps4": {"skeleton:sk.new:tender_documentation", PlaceExact},
 	}
 	if len(p.StageMap) != 4 {
 		t.Fatalf("stage map %+v", p.StageMap)
@@ -509,11 +507,11 @@ func TestPackageStagesMapWithoutRows(t *testing.T) {
 			t.Fatalf("package row %+v", r)
 		}
 	}
-	// Two sub-stages split a top-level stage: Design goes to the first one.
+	// A user-made stage (`other`) sits last in the catalogue: the last stage.
 	gp := mustGenerate(t, cat, GenInput{Packages: []Package{{ID: "x", Title: "X", Kind: "services",
-		Stages: []PackageStage{{ID: "s", CatalogueStageID: "design", Label: "Design"}}}}})
-	if m := gp.StageMap[0]; m.StageKey != "skeleton:sk.generic:concept_design" || m.Rule != PlaceSubstage {
-		t.Fatalf("design mapping %+v", m)
+		Stages: []PackageStage{{ID: "s", CatalogueStageID: "other", Label: "Other"}}}}})
+	if m := gp.StageMap[0]; m.StageKey != "skeleton:sk.generic:delivery" || m.Rule != PlaceNearest {
+		t.Fatalf("other mapping %+v", m)
 	}
 }
 
@@ -524,7 +522,7 @@ func TestHoldPoints(t *testing.T) {
 	base := GenInput{WorkTypes: []string{"new"}, Values: map[string]string{"flood_hazard": "true"}, WorkItems: items}
 	p := mustGenerate(t, cat, base)
 	h, ok := p.Row("hold:if.test-frame-before-roof")
-	if !ok || h.Kind != KindHoldPoint || h.Label != "Hold point: Test frame inspection record." || h.ParentKey != "skeleton:sk.new:construction" {
+	if !ok || h.Kind != KindHoldPoint || h.Label != "Hold point: Test frame inspection record." || h.ParentKey != "skeleton:sk.new:delivery" {
 		t.Fatalf("hold point %+v", h)
 	}
 	frame, roof := "fragment:fr.frame:wi-frame:frame", "fragment:fr.roof:wi-roof:roof"
@@ -557,7 +555,7 @@ func TestDurationPrecedence(t *testing.T) {
 	cat := testCatalog(t, testLibrary, "")
 	form := "fragment:fr.slab:wi:form"
 	pour := "fragment:fr.slab:wi:pour"
-	stage := "skeleton:sk.new:construction"
+	stage := "skeleton:sk.new:delivery"
 	items := []WorkItem{{ID: "wi", System: "substructure", Action: "new", Title: "Slab"}}
 	base := GenInput{WorkTypes: []string{"new"}, WorkItems: items, Planning: map[string]string{"construction_duration": "10"}}
 
@@ -592,7 +590,7 @@ func TestDurationPrecedence(t *testing.T) {
 	if r, _ := mustGenerate(t, cat, empty).Row(stage); r.Duration == nil || *r.Duration != 50 || r.DurationOrigin != DurationProfile {
 		t.Fatalf("profile duration %+v", r)
 	}
-	empty.StageReadings = map[string]Reading{"construction": {Days: 40, ReadingID: "rd2"}}
+	empty.StageReadings = map[string]Reading{"delivery": {Days: 40, ReadingID: "rd2"}}
 	if r, _ := mustGenerate(t, cat, empty).Row(stage); *r.Duration != 40 || r.DurationOrigin != DurationDocument {
 		t.Fatalf("stage reading %+v", r)
 	}
@@ -632,9 +630,9 @@ func TestEmptyLibrary(t *testing.T) {
 		WorkItems: []WorkItem{{ID: "wi", System: "substructure", Action: "new", Title: "Slab"}},
 		Packages: []Package{
 			{ID: "arch", Title: "Architect", Kind: "services", Stages: []PackageStage{
-				{ID: "a1", CatalogueStageID: "concept_design", Label: "Concept design"},
-				{ID: "a2", CatalogueStageID: "approval_documentation", Label: "Approval documentation"},
-				{ID: "a3", CatalogueStageID: "construction_stage_inspections", Label: "Construction-stage inspections"}}},
+				{ID: "a1", CatalogueStageID: "brief_concept", Label: "Brief and concept"},
+				{ID: "a2", CatalogueStageID: "planning", Label: "Planning"},
+				{ID: "a3", CatalogueStageID: "delivery", Label: "Delivery"}}},
 			{ID: "hc", Title: "Head contract", Kind: "works"},
 		}}
 	p := mustGenerate(t, cat, in)
@@ -657,7 +655,7 @@ func TestEmptyLibrary(t *testing.T) {
 		t.Fatalf("%d activities, %d mappings", activities, len(p.StageMap))
 	}
 	out := Compute(p.Input(Calendar{}))
-	// 9 empty stages and nothing else: an empty stage has nothing to
+	// 7 empty stages and nothing else: an empty stage has nothing to
 	// schedule (F47), so there is no activity to count.
 	if out.Status.Known != 0 || out.Status.Total != 0 || out.Status.Words != "No activities yet" {
 		t.Fatalf("status %+v", out.Status)
@@ -681,7 +679,7 @@ func TestGenerateIsDeterministic(t *testing.T) {
 			{ID: "c", System: "envelope", Action: "new", Title: "Roof"},
 			{ID: "d", System: "site", Action: "investigate", Title: "Survey"}},
 		Packages: []Package{{ID: "p", Title: "Engineer", Kind: "services",
-			Stages: []PackageStage{{ID: "s", CatalogueStageID: "concept_design", Label: "Concept design"}}}}}
+			Stages: []PackageStage{{ID: "s", CatalogueStageID: "brief_concept", Label: "Brief and concept"}}}}}
 	first, _ := json.Marshal(mustGenerate(t, cat, in))
 	for i := 0; i < 5; i++ {
 		again, _ := json.Marshal(mustGenerate(t, cat, in))
@@ -707,7 +705,7 @@ func TestProjectFragmentOnce(t *testing.T) {
   - id: fr.consent
     label: Consent
     scope: project
-    stage: approvals
+    stage: planning
     systems: [site]
     applies_when: {cond: planning, eq: da}
     activities:

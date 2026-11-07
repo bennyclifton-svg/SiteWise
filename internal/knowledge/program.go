@@ -71,14 +71,19 @@ type ProgramLink struct {
 
 // Skeleton picks the stages a program has and how they link.
 type Skeleton struct {
-	ID          string              `yaml:"id" json:"id"`
-	Label       string              `yaml:"label" json:"label"`
-	AppliesWhen any                 `yaml:"applies_when" json:"applies_when,omitempty"`
-	Stages      []string            `yaml:"stages" json:"stages"`
-	Links       []ProgramLink       `yaml:"links" json:"links"`
-	Status      string              `yaml:"status" json:"status"`
-	Sources     []map[string]string `yaml:"sources" json:"sources"`
-	Notes       string              `yaml:"notes" json:"-"`
+	ID          string   `yaml:"id" json:"id"`
+	Label       string   `yaml:"label" json:"label"`
+	AppliesWhen any      `yaml:"applies_when" json:"applies_when,omitempty"`
+	Stages      []string `yaml:"stages" json:"stages"`
+	// FragmentStages moves fragments from their library stage to another
+	// stage on this skeleton. Construction documentation is design
+	// finalisation after a contractor-led tender, but design development
+	// before a traditional one (plan 2026-11-07-common-project-stages 4.1).
+	FragmentStages map[string]string   `yaml:"fragment_stages" json:"fragment_stages,omitempty"`
+	Links          []ProgramLink       `yaml:"links" json:"links"`
+	Status         string              `yaml:"status" json:"status"`
+	Sources        []map[string]string `yaml:"sources" json:"sources"`
+	Notes          string              `yaml:"notes" json:"-"`
 }
 
 // FragmentActivity is one activity a fragment brings. Duration is nil when
@@ -988,6 +993,14 @@ func (c *Catalog) validateSkeleton(s Skeleton) error {
 	if err := c.checkLinks(s.Stages, s.Links); err != nil {
 		return err
 	}
+	for from, to := range s.FragmentStages {
+		if err := c.checkLibraryStage(from); err != nil {
+			return fmt.Errorf("fragment_stages: %w", err)
+		}
+		if !seen[to] || from == to {
+			return fmt.Errorf("fragment_stages: %s must move to another stage of this skeleton, not %s", from, to)
+		}
+	}
 	if s.ID == GenericSkeletonID {
 		if s.AppliesWhen != nil {
 			return fmt.Errorf("the fallback has no applies_when")
@@ -1000,28 +1013,15 @@ func (c *Catalog) validateSkeleton(s Skeleton) error {
 	return c.validateProgramPredicate(s.AppliesWhen, 0)
 }
 
-// GenericStages derives sk.generic's stages from the catalogue: each
-// top-level stage, replaced by its sub-stages where it has more than one,
-// without `other`. A single sub-stage (Construction's inspections fee line)
-// is a fee item inside its stage, not a replacement for it: replacing it
-// would leave a program with no Construction stage (plan 13.3, P1 note).
-// The loader holds the file to this so the two cannot drift.
+// GenericStages derives sk.generic's stages from the catalogue: every
+// stage in order, without `other`. The loader holds the file to this so the
+// two cannot drift.
 func (c *Catalog) GenericStages() []string {
 	var out []string
-	for _, top := range c.stages {
-		if top.ParentID != "" || top.ID == OtherStageID {
-			continue
+	for _, s := range c.stages {
+		if s.ID != OtherStageID {
+			out = append(out, s.ID)
 		}
-		var subs []string
-		for _, s := range c.stages {
-			if s.ParentID == top.ID {
-				subs = append(subs, s.ID)
-			}
-		}
-		if len(subs) < 2 {
-			subs = []string{top.ID}
-		}
-		out = append(out, subs...)
 	}
 	return out
 }

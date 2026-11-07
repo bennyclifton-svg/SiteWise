@@ -13,12 +13,12 @@ func TestScopeLinesIncludeExcludeAndOwnLines(t *testing.T) {
 	d, sk := discipline(t, "architecture"), skeleton(t)
 	drivers := facts(t, "class=1a", "work_type=new", "procurement=traditional", "pathway=cdc")
 	own, _ := json.Marshal([]CustomLine{{ID: "u1", Text: "Survey coordination", Value: "I"}, {ID: "u2", Text: "Pool fencing details", Value: "X"}})
-	settings := set("line:concept.area_schedule", `"X"`)
-	settings["custom:concept"] = Setting{Value: own}
+	settings := set("line:brief_concept.area_schedule", `"X"`)
+	settings["custom:brief_concept"] = Setting{Value: own}
 	r := Resolve(d, sk, drivers, settings)
 
-	concept := r.Stage("concept")
-	if concept.State != Include || len(concept.Lines) != 8 {
+	concept := r.Stage("brief_concept")
+	if concept.State != Include || len(concept.Lines) != 10 {
 		t.Fatalf("concept = %s with %d lines", concept.State, len(concept.Lines))
 	}
 	values := map[string]string{}
@@ -51,7 +51,7 @@ func TestScopeLinesIncludeExcludeAndOwnLines(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := Markdown(sections)
-	for _, want := range []string{"| Concept |  | Included |  |", "|  | Area schedule | Excluded |  |", "|  | Survey coordination | Included |  |", "| Total fee |"} {
+	for _, want := range []string{"| Brief and concept |  | Included |  |", "|  | Area schedule | Excluded |  |", "|  | Survey coordination | Included |  |", "| Total fee |"} {
 		if !strings.Contains(text, want) {
 			t.Errorf("printed RFP lacks %q", want)
 		}
@@ -66,11 +66,11 @@ func TestScopeLinesIncludeExcludeAndOwnLines(t *testing.T) {
 func TestScopeByStageKeepsUserRange(t *testing.T) {
 	d, sk := discipline(t, "architecture"), skeleton(t)
 	drivers := facts(t, "class=1a", "work_type=new", "procurement=traditional", "pathway=cdc")
-	r := Resolve(d, sk, drivers, set("boundary:range", `{"start":"concept","end":"planning_approval"}`))
+	r := Resolve(d, sk, drivers, set("boundary:range", `{"start":"brief_concept","end":"planning"}`))
 	if s := r.Stage("design_development"); s.State != Exclude {
 		t.Fatalf("design development after the range = %s", s.State)
 	}
-	if s := r.Stage("planning_approval"); s.State != Include {
+	if s := r.Stage("planning"); s.State != Include {
 		t.Fatalf("planning approval in the range = %s", s.State)
 	}
 }
@@ -79,10 +79,10 @@ func TestCustomLinesAreValidated(t *testing.T) {
 	d, sk := discipline(t, "architecture"), skeleton(t)
 	drivers := facts(t, "class=1a")
 	ok := `[{"id":"u1","text":"Survey coordination","value":"I"}]`
-	if err := ValidateSetting(d, sk, drivers, "custom:concept", json.RawMessage(ok)); err != nil {
+	if err := ValidateSetting(d, sk, drivers, "custom:brief_concept", json.RawMessage(ok)); err != nil {
 		t.Fatalf("valid lines refused: %v", err)
 	}
-	if err := ValidateSetting(d, sk, drivers, "line:concept.area_schedule", json.RawMessage(`"X"`)); err != nil {
+	if err := ValidateSetting(d, sk, drivers, "line:brief_concept.area_schedule", json.RawMessage(`"X"`)); err != nil {
 		t.Fatalf("line choice refused: %v", err)
 	}
 	for name, raw := range map[string]string{
@@ -93,16 +93,16 @@ func TestCustomLinesAreValidated(t *testing.T) {
 		"option":       `[{"id":"u1","text":"A","value":"O"}]`,
 		"long":         `[{"id":"u1","text":"` + strings.Repeat("a", 301) + `","value":"I"}]`,
 	} {
-		if ValidateSetting(d, sk, drivers, "custom:concept", json.RawMessage(raw)) == nil {
+		if ValidateSetting(d, sk, drivers, "custom:brief_concept", json.RawMessage(raw)) == nil {
 			t.Errorf("%s accepted", name)
 		}
 	}
-	for _, key := range []string{"custom:nostage", "line:concept.nope", "line:nostage.site_inspection"} {
+	for _, key := range []string{"custom:nostage", "line:brief_concept.nope", "line:nostage.site_inspection"} {
 		if ValidateSetting(d, sk, drivers, key, json.RawMessage(`"I"`)) == nil {
 			t.Errorf("%s accepted", key)
 		}
 	}
-	if ValidateSetting(d, sk, drivers, "line:concept.area_schedule", json.RawMessage(`"O"`)) == nil {
+	if ValidateSetting(d, sk, drivers, "line:brief_concept.area_schedule", json.RawMessage(`"O"`)) == nil {
 		t.Error("a line accepted an option")
 	}
 	// Disciplines not yet by stage take no line settings.
@@ -114,8 +114,8 @@ func TestCustomLinesAreValidated(t *testing.T) {
 
 // R13 (owner ruling, 7 November 2026): the brief is typical on every
 // project, so the architect always prices it; a masterplan is only for a
-// large project (more than one building, or staged). The stage name follows
-// what is included.
+// large project (more than one building, or staged). Brief and concept is
+// one stage (owner direction, 7 November 2026), so its name stays.
 func TestArchitectBriefAlwaysMasterplanOnlyWhenLarge(t *testing.T) {
 	d, sk := discipline(t, "architecture"), skeleton(t)
 	lineKeys := func(s StageResult) string {
@@ -132,8 +132,8 @@ func TestArchitectBriefAlwaysMasterplanOnlyWhenLarge(t *testing.T) {
 		{"single house", []string{"class=1a", "work_type=new", "procurement=traditional", "pathway=cdc"}},
 		{"apartment building", []string{"class=2", "work_type=new", "procurement=traditional", "pathway=da", "flag.multi_building=no", "flag.staged=no"}},
 	} {
-		s := Resolve(d, sk, facts(t, c.facts...), Settings{}).Stage("brief_masterplan")
-		if s.State != Include || s.Name != "Brief" || lineKeys(s) != "brief,strategy_workshop" {
+		s := Resolve(d, sk, facts(t, c.facts...), Settings{}).Stage("brief_concept")
+		if s.State != Include || s.Name != "Brief and concept" || !strings.HasPrefix(lineKeys(s), "brief,strategy_workshop,site_inspection") {
 			t.Errorf("%s: %s %q lines %s", c.name, s.State, s.Name, lineKeys(s))
 		}
 		if strings.Contains(s.Text, "masterplan") {
@@ -142,14 +142,14 @@ func TestArchitectBriefAlwaysMasterplanOnlyWhenLarge(t *testing.T) {
 	}
 	for _, flag := range []string{"flag.multi_building=yes", "flag.staged=yes"} {
 		r := Resolve(d, sk, facts(t, "class=9b", "work_type=new", "procurement=traditional", "pathway=da", flag), Settings{})
-		s := r.Stage("brief_masterplan")
-		if s.State != Include || s.Name != "Brief and masterplan" || lineKeys(s) != "brief,masterplan_options,masterplan_report,strategy_workshop" {
+		s := r.Stage("brief_concept")
+		if s.State != Include || s.Name != "Brief and concept" || !strings.HasPrefix(lineKeys(s), "brief,masterplan_options,masterplan_report,strategy_workshop,site_inspection") {
 			t.Errorf("%s: %s %q lines %s", flag, s.State, s.Name, lineKeys(s))
 		}
 	}
-	// Excluding both masterplan lines on a large project names the stage Brief.
-	r := Resolve(d, sk, facts(t, "class=9b", "work_type=new", "flag.staged=yes"), set("line:brief_masterplan.masterplan_options", `"X"`, "line:brief_masterplan.masterplan_report", `"X"`))
-	if s := r.Stage("brief_masterplan"); s.Name != "Brief" {
-		t.Errorf("masterplan excluded: %q", s.Name)
+	// Excluding both masterplan lines on a large project leaves them unpriced.
+	r := Resolve(d, sk, facts(t, "class=9b", "work_type=new", "flag.staged=yes"), set("line:brief_concept.masterplan_options", `"X"`, "line:brief_concept.masterplan_report", `"X"`))
+	if s := r.Stage("brief_concept"); strings.Contains(s.Text, "masterplan") {
+		t.Errorf("masterplan excluded: %q", s.Text)
 	}
 }

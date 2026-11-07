@@ -3,7 +3,9 @@ schema_version: 1
 reviewed: false
 label_source: agent-draft
 scenario: yarramundi
-description: "Camp Yarramundi stage 1 redevelopment (Hawkesbury, 21.6 ha): masterplan plus new accommodation and alterations to an operating camp; Class 3 lodges and a Class 9b conference hall; DA; D&C with novation; flood fringe, NorBE catchment, Springwood Rd intersection upgrade."
+description: "Camp Yarramundi stage 1 redevelopment (Hawkesbury, 21.6 ha): masterplan plus new accommodation and alterations
+  to an operating camp; Class 3 lodges and a Class 9b conference hall; DA; D&C with novation; flood fringe, NorBE catchment,
+  Springwood Rd intersection upgrade."
 facts:
   work_type: extend
   category: institution
@@ -22,13 +24,13 @@ flags:
   public_road: "yes"
   live_operations: "yes"
 parts:
-  - {id: lodges, label: Accommodation lodges, classes: ["3"]}
-  - {id: hall, label: Conference hall, classes: [9b]}
+- {id: lodges, label: Accommodation lodges, classes: ["3"]}
+- {id: hall, label: Conference hall, classes: [9b]}
 address: "Springwood Rd, Yarramundi NSW"
 documents: 30
 consultants:
-  - {title: Architect, status: appointed, engaged_by: client}
-  - {title: Civil, status: to be appointed, engaged_by: client}
+- {title: Architect, status: appointed, engaged_by: client}
+- {title: Civil, status: to be appointed, engaged_by: client}
 fields:
   ref: YMCA-YAR-RFP
   issued: "2026-10-12"
@@ -41,17 +43,18 @@ fields:
   design_vehicle: "14.5 m rigid bus"
 settings:
   architecture:
-    "boundary:range": {start: brief_masterplan, end: dnc_tender}
+    "boundary:range": {start: brief_concept, end: tender_documentation}
     "allowance:client_presentations": "4"
     "allowance:planning_cap": "40"
   civil:
-    "boundary:range": {start: schematic, end: dnc_tender}
+    "boundary:range": {start: schematic_design, end: tender_documentation}
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, interiors, dnc_tender]
-    stages_absent: [tender_traditional, bidding, for_construction, construction_support, regulated_design, post_novation]
-    positions: {live_staging: I, mixed_use_map: I, existing_interfaces: I, dnc_performance_brief: I, extra_declarations: X, tender_evaluation: I}
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation]
+    stages_absent: [design_finalisation]
+    positions: {live_staging: I, mixed_use_map: I, existing_interfaces: I, dnc_performance_brief: I, 
+        extra_declarations: X, tender_evaluation: I}
     allowances_present: [workshops]
     role: [lead, novation]
     role_absent: [dnc_handover]
@@ -60,8 +63,8 @@ expect:
     blocking_only: true
   civil:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [schematic, dnc_tender, as_built]
-    stages_absent: [detailed_tender, for_construction, post_novation, construction_phase]
+    stages_include: [schematic_design, tender_documentation]
+    stages_absent: [design_finalisation, delivery]
     elements_include: [earthworks, roads, stormwater, public_road]
     positions:
       flood_report: I
@@ -79,8 +82,12 @@ expect:
     scale: complex
     blocking_only: true
 sources:
-  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
-  - "Project: civil ledger part 2 (Yarramundi RFT) and architecture ledger (AJC proposal states the DBP Act applies)."
-  - "Regulated design is recorded as a fact because AJC's proposal states the DBP Act applies; it is not inferred from Class 3."
-  - "Novated D&C: the client-side boundary ends at the D&C tender; post-novation and regulated design after it are priced as options."
-  - "The 2.8x civil price spread came from unfixed meetings, inspections, OSD, flood and intersection approvals; each is a stated allowance or position here."
+- "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction
+  budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
+- "Project: civil ledger part 2 (Yarramundi RFT) and architecture ledger (AJC proposal states the DBP Act applies)."
+- "Regulated design is recorded as a fact because AJC's proposal states the DBP Act applies; it is not inferred from Class
+  3."
+- "Novated D&C: the client-side boundary ends at the D&C tender; post-novation and regulated design after it are priced
+  as options."
+- "The 2.8x civil price spread came from unfixed meetings, inspections, OSD, flood and intersection approvals; each is
+  a stated allowance or position here."

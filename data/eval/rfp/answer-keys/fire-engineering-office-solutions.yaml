@@ -35,8 +35,8 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
-    scheduled.
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review 
+    coverage scheduled.
 settings:
   fire-engineering:
     allowance:solutions: '2'
@@ -47,19 +47,19 @@ settings:
     allowance:verification: '2'
     allowance:options: '2'
     boundary:range:
-      start: s1_strategy
-      end: s4_report
+      start: brief_concept
+      end: design_development
 sources:
 - docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
 - 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
 scenario: fire-engineering-office-solutions
-description: Commercial new-build buys defined brief/report; construction, test witnessing and independent review
+description: Commercial new-build buys defined brief/report; construction, test witnessing and independent review 
   remain separate options.
 snapshot: true
 expect:
   fire-engineering:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_strategy, s3_brief, s4_report, s2_early]
+    stages_include: [brief_concept, planning, design_development]
     positions:
       wet_design: X
       dry_design: X
@@ -76,4 +76,4 @@ expect:
       occupants: absent
     blocking_only: true
     blocking: []
-    stages_absent: [s5_integration, s6_construction, s7_verification, s8_specialist, s8_staging, s9_advisory, s9_peer]
+    stages_absent: [tender_documentation, delivery, s8_specialist, s8_staging, s9_advisory, s9_peer]

@@ -42,9 +42,9 @@ fields:
 settings:
   electrical-services:
     boundary:range:
-      start: handover
-      end: handover
-    stage:handover: include
+      start: delivery
+      end: delivery
+    stage:delivery: include
 sources:
 - docs/rfp-golden/electrical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/electrical-services/ledger.md #1-54'
@@ -53,11 +53,8 @@ description: Health facility witnessing is not electrical design or contractor t
 snapshot: false
 expect:
   electrical-services:
-    stages_include:
-    - handover
-    stages_absent:
-    - design
-    - tender
+    stages_include: [delivery]
+    stages_absent: [design_development, tender_documentation]
     positions:
       distribution: absent
       controls: absent

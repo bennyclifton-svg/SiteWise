@@ -170,15 +170,15 @@ func ValidateStage(s Stage, p Package, cat *knowledge.Catalog) error {
 	return nil
 }
 
-// Defaults use the catalogue's editable design/construction substages. Their
-// order is data order; novation labels never imply an appointment or transfer.
+// Defaults are the catalogue's project stages, `other` aside, in catalogue
+// order; novation labels never imply an appointment or transfer.
 func DefaultStages(p Package, cat *knowledge.Catalog) []Stage {
 	out := []Stage{}
 	if cat == nil || p.Kind != "services" {
 		return out
 	}
 	for _, s := range cat.DeliveryStages() {
-		if s.ParentID == "" {
+		if s.ID == knowledge.OtherStageID {
 			continue
 		}
 		phase := "none"
@@ -192,8 +192,7 @@ func DefaultStages(p Package, cat *knowledge.Catalog) []Stage {
 
 // ProgramDefaultStages is DefaultStages once the project has a program
 // (program plan 7.6): a services package gets the program stages whose
-// catalogue stage is one of the catalogue sub-stages DefaultStages copies,
-// in program order, labelled as the program labels them and pointing to
+// catalogue stage is one DefaultStages copies, in program order, labelled as the program labels them and pointing to
 // them. Nothing is copied from the catalogue but the novation side.
 func ProgramDefaultStages(p Package, cat *knowledge.Catalog, plan []ProgramStage, revision int64) []Stage {
 	out := []Stage{}
@@ -205,7 +204,7 @@ func ProgramDefaultStages(p Package, cat *knowledge.Catalog, plan []ProgramStage
 	seen := map[string]bool{}
 	for _, ps := range plan {
 		s, ok := cat.DeliveryStage(ps.CatalogueStageID)
-		if !ok || s.ParentID == "" || seen[ps.Label] {
+		if !ok || s.ID == knowledge.OtherStageID || seen[ps.Label] {
 			continue
 		}
 		seen[ps.Label] = true
@@ -217,7 +216,7 @@ func ProgramDefaultStages(p Package, cat *knowledge.Catalog, plan []ProgramStage
 
 // ProgramNovationPhase is the side of a novation a stage falls on, from the
 // catalogue, for a novated package; "none" otherwise or for a stage the
-// catalogue gives no side (a top-level or user-made stage).
+// catalogue gives no side (a user-made stage).
 func ProgramNovationPhase(p Package, cat *knowledge.Catalog, catalogueStageID string) string {
 	if cat == nil || !p.Novated() || p.Kind != "services" {
 		return "none"

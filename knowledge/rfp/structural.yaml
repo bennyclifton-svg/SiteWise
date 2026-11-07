@@ -12,15 +12,21 @@ heading: "REQUEST FOR PROPOSAL: STRUCTURAL ENGINEERING SERVICES"
 golden: docs/rfp-golden/structural/rfp.md
 discipline_ids: [consultant.structural]
 title_aliases: [structural, structure, structures]
-evidence_limit: "One warehouse extension (BG&E, Northrop and the project manager's normalised comparison). No golden proposal priced construction-phase services or regulated design; those stages come from practice."
+evidence_limit: "One warehouse extension (BG&E, Northrop and the project manager's normalised comparison). No golden proposal
+  priced construction-phase services or regulated design; those stages come from practice."
 
 thresholds:
-  - {key: budget_complex, kind: client_default, text: "A construction budget over $20 million suggests complex service levels", source: "golden structural draft v1 scale rule", verified: false}
-  - {key: dbp_regime, kind: statutory, text: "NSW regulated-design regime applies to the affected work", source: "Design and Building Practitioners Act 2020 (NSW) and Regulation; NSW guidance on existing Class 3 and 9c from 1 July 2028. Not verified against the instrument.", verified: false}
-  - {key: sea_durations, kind: evidence_estimate, text: "Specialist engineering assessment: 2-6 months to prepare, 3-6 months review", source: "structural#47-48", verified: false}
+  - {key: budget_complex, kind: client_default, text: "A construction budget over $20 million suggests complex service
+      levels", source: "golden structural draft v1 scale rule", verified: false}
+  - {key: dbp_regime, kind: statutory, text: "NSW regulated-design regime applies to the affected work", source: "Design
+      and Building Practitioners Act 2020 (NSW) and Regulation; NSW guidance on existing Class 3 and 9c from 1 July 2028.
+      Not verified against the instrument.", verified: false}
+  - {key: sea_durations, kind: evidence_estimate, text: "Specialist engineering assessment: 2-6 months to prepare, 3-6
+      months review", source: "structural#47-48", verified: false}
 
 scale:
-  text: "Service levels (shared model, construction-phase default) are suggested complex for a Class 2-6 or 9 part, a budget over $20 million, a heritage site, transfer structures, a basement or an authority asset."
+  text: "Service levels (shared model, construction-phase default) are suggested complex for a Class 2-6 or 9 part, a
+    budget over $20 million, a heritage site, transfer structures, a basement or an authority asset."
   complex:
     - {class: ["2", "3", "4", "5", "6", 9a, 9b, 9c]}
     - {budget_over: ["20000000"]}
@@ -31,7 +37,8 @@ scale:
     - {flag: [rail]}
 
 project_rows:
-  - {key: design_loads, label: Design loads, text: "{field:design_loads}", provenance: [{kind: evidence, ref: "structural#N p6"}]}
+  - {key: design_loads, label: Design loads, text: "{field:design_loads}", provenance: [{kind: evidence, ref: "structural#N
+            p6"}]}
 
 role:
   - key: engineer
@@ -87,61 +94,63 @@ stage_intro: "Price each stage that applies as a lump sum. Each stage ends at cl
 scope_by_stage: true
 
 boundary:
-  - {when: [{procurement: [design_construct]}], start: concept_schematic, end: dnc_tender}
-  - {when: [{work_type: [advisory]}], start: concept_schematic, end: existing_assessment}
-  - {start: concept_schematic, end: construction_documents}
+  - {when: [procurement: [design_construct]], start: brief_concept, end: tender_documentation}
+  - {when: [work_type: [advisory]], start: brief_concept, end: schematic_design}
+  - {start: brief_concept, end: design_finalisation}
 
 stages:
-  - key: concept_schematic
-    name: Concept and schematic design
+  - key: brief_concept
+    name: Brief and concept
+    lines:
+      - {key: adequacy_assessment_existing, text: "Adequacy assessment of the existing structures the works load or connect
+          to: extent, missing drawings, testing and opening-up needed, findings and limitations"}
+      - {key: strengthening_design_is, text: "Strengthening design is priced separately until the extent is known"}
+    fee_basis: fixed
+    delivery_stage: brief_concept
+    when: [work_type: [refurb, extend, remediation], flag: [existing_building], flag: [osd_existing]]
+    if_unknown: option
+    assumption: "Price as an option: needed only if the works load or connect to existing structures."
+    shown_when: Alteration, extension or building over existing structures
+    provenance: [{kind: evidence, ref: "structural#45"}, {kind: evidence, ref: "structural#56-57"}, {kind: seed, ref: "data/reference/clerk/data/seed/building-remediation-rectification-guide.md
+            (investigation before design)"}]
+  - key: schematic_design
+    name: Schematic design
     items: [design_basis, geotech_brief]
     lines:
       - {key: briefing, text: "Briefing"}
       - {key: site_visit, text: "site visit"}
       - {key: review_existing_information, text: "review of existing information and authority requirements"}
       - {key: geotechnical_brief_liaison, text: "geotechnical brief and liaison"}
-      - {key: structural_scheme_grid, text: "structural scheme (grid, column and wall layout and sizes, floor and roof depths, lateral stability, floor and wall system options, roof steel, transfer evaluation)"}
+      - {key: structural_scheme_grid, text: "structural scheme (grid, column and wall layout and sizes, floor and roof
+          depths, lateral stability, floor and wall system options, roof steel, transfer evaluation)"}
       - {key: input_qs, text: "input for the QS"}
       - {key: preliminary_cad_drawings, text: "preliminary CAD drawings for coordination"}
     fee_basis: fixed
-    delivery_stage: concept_design
+    delivery_stage: schematic_design
     shown_when: Always
     provenance: [{kind: evidence, ref: "structural#1-18"}, {kind: evidence, ref: "structural#21"}]
-  - key: existing_assessment
-    name: Existing structure assessment
+  - key: planning
+    name: Planning
     lines:
-      - {key: adequacy_assessment_existing, text: "Adequacy assessment of the existing structures the works load or connect to: extent, missing drawings, testing and opening-up needed, findings and limitations"}
-      - {key: strengthening_design_is, text: "Strengthening design is priced separately until the extent is known"}
+      - {key: structural_design_statement, text: Structural design statement for the application, when: [pathway: [
+                    cdc, da, ssd, planning_permit, ref, modification]], if_unknown: ask}
+      - {key: responses_authority_requests, text: 'responses to authority requests during assessment, up to {allowance:authority_requests}',
+        when: [pathway: [cdc, da, ssd, planning_permit, ref, modification]], if_unknown: ask}
+      - {key: specialist_engineering_assessment, text: Specialist engineering assessment for building over or next 
+          to the water authority's assets, when: [flag: [authority_asset], flag: [rail]], if_unknown: include}
+      - {key: rail_corridor_interface, text: rail corridor interface assessment where the site adjoins rail, when: [
+                flag: [authority_asset], flag: [rail]], if_unknown: include}
+      - {key: program_2_6, text: "Program: 2 to 6 months to prepare and 3 to 6 months for the authority's review (estimate)",
+        when: [flag: [authority_asset], flag: [rail]], if_unknown: include}
     fee_basis: fixed
-    delivery_stage: concept_design
-    when: [{work_type: [refurb, extend, remediation]}, {flag: [existing_building]}, {flag: [osd_existing]}]
-    if_unknown: option
-    assumption: "Price as an option: needed only if the works load or connect to existing structures."
-    shown_when: Alteration, extension or building over existing structures
-    provenance: [{kind: evidence, ref: "structural#45"}, {kind: evidence, ref: "structural#56-57"}, {kind: seed, ref: "data/reference/clerk/data/seed/building-remediation-rectification-guide.md (investigation before design)"}]
-  - key: planning_approval
-    name: Planning approval
-    lines:
-      - {key: structural_design_statement, text: "Structural design statement for the application"}
-      - {key: responses_authority_requests, text: "responses to authority requests during assessment, up to {allowance:authority_requests}"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [cdc, da, ssd, planning_permit, ref, modification]}]
-    shown_when: An application is lodged
-    provenance: [{kind: evidence, ref: "structural#16"}, {kind: evidence, ref: "structural#20"}]
-  - key: authority_asset
-    name: Authority asset assessment
-    lines:
-      - {key: specialist_engineering_assessment, text: "Specialist engineering assessment for building over or next to the water authority's assets"}
-      - {key: rail_corridor_interface, text: "rail corridor interface assessment where the site adjoins rail"}
-      - {key: program_2_6, text: "Program: 2 to 6 months to prepare and 3 to 6 months for the authority's review (estimate)"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{flag: [authority_asset]}, {flag: [rail]}]
-    if_unknown: option
-    assumption: "Price as an option: needed only if the works are over or next to a water authority asset or rail corridor."
-    shown_when: Authority asset or rail corridor
-    provenance: [{kind: evidence, ref: "structural#47-48"}, {kind: evidence, ref: "structural#51"}]
+    when: [pathway: [cdc, da, ssd, planning_permit, ref, modification], flag: [authority_asset], flag: [rail]]
+    shown_when: An application is lodged; or Authority asset or rail corridor
+    provenance:
+      - {kind: evidence, ref: "structural#16"}
+      - {kind: evidence, ref: "structural#20"}
+      - {kind: evidence, ref: "structural#47-48"}
+      - {kind: evidence, ref: "structural#51"}
+    delivery_stage: planning
   - key: design_development
     name: Design development
     lines:
@@ -154,159 +163,179 @@ stages:
       - {key: costing_review_options, text: "costing review and options"}
       - {key: value_management_input, text: "value management input"}
     fee_basis: fixed
-    delivery_stage: construction_documentation
+    delivery_stage: design_development
     shown_when: Always
-    provenance: [{kind: evidence, ref: "structural#22-26"}, {kind: evidence, ref: "structural#30"}, {kind: evidence, ref: "structural#35-36"}]
-  - key: tender_traditional
-    name: Tender documents
+    provenance: [{kind: evidence, ref: "structural#22-26"}, {kind: evidence, ref: "structural#30"}, {kind: evidence, 
+            ref: "structural#35-36"}]
+  - key: tender_documentation
+    name: Tender documentation
     lines:
-      - {key: drawings_specification_tender, text: "Drawings, specification and tender schedules"}
-      - {key: typical_connection_details, text: "typical connection details"}
-      - {key: safety_design_report, text: "safety in design report"}
-      - {key: tender_queries_addenda, text: "tender queries and addenda"}
-    design_responsibility: "You hold the structural design except the contractor-designed elements."
+      - {key: tender_traditional_responsibility, text: You hold the structural design except the contractor-designed
+          elements., when: [procurement: [traditional, managing_contractor]], if_unknown: ask}
+      - {key: drawings_specification_tender, text: 'Drawings, specification and tender schedules', when: [
+                procurement: [traditional, managing_contractor]], if_unknown: ask}
+      - {key: typical_connection_details, text: typical connection details, when: [procurement: [traditional, 
+                    managing_contractor]], if_unknown: ask}
+      - {key: safety_design_report, text: safety in design report, when: [procurement: [traditional, 
+                    managing_contractor]], if_unknown: ask}
+      - {key: tender_queries_addenda, text: tender queries and addenda, when: [procurement: [traditional, 
+                    managing_contractor]], if_unknown: ask}
+      - {key: dnc_tender_responsibility, text: You hold the design to tender issue; the contractor holds it after 
+          award., when: [procurement: [design_construct]], if_unknown: ask}
+      - {key: structural_design_intent, text: Structural design intent and performance specification for the D&C 
+          tender, when: [procurement: [design_construct]], if_unknown: ask}
+      - {key: schedule_design_retain, text: schedule of the design you retain and the design the contractor 
+          completes, when: [procurement: [design_construct]], if_unknown: ask}
+      - {key: review_tenderers_structural, text: review of tenderers' structural departures, when: [procurement: [
+                    design_construct]], if_unknown: ask}
     fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{procurement: [traditional, managing_contractor]}]
-    shown_when: Traditional or managing contractor
-    provenance: [{kind: evidence, ref: "structural#27-29"}, {kind: evidence, ref: "structural#33-34"}]
-  - key: dnc_tender
-    name: D&C tender documents
+    when: [procurement: [traditional, managing_contractor], procurement: [design_construct]]
+    shown_when: Traditional or managing contractor; or Design and construct
+    provenance:
+      - {kind: evidence, ref: "structural#27-29"}
+      - {kind: evidence, ref: "structural#33-34"}
+      - {kind: evidence, ref: "structural#43"}
+      - {kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md (documentation)"}
+    delivery_stage: tender_documentation
+  - key: design_finalisation
+    name: Design finalisation
+    design_responsibility: The contractor holds the design after novation.
     lines:
-      - {key: structural_design_intent, text: "Structural design intent and performance specification for the D&C tender"}
-      - {key: schedule_design_retain, text: "schedule of the design you retain and the design the contractor completes"}
-      - {key: review_tenderers_structural, text: "review of tenderers' structural departures"}
-    design_responsibility: "You hold the design to tender issue; the contractor holds it after award."
+      - {key: regulated_designs_design, text: Regulated designs and design compliance declarations for one 
+          construction certificate, when: [regulated_design: ["yes"]], suggest: [{state: [NSW], class: ["2", "3", 9c]}],
+        threshold: dbp_regime}
+      - {key: construction_issue, text: Construction issue, when: [procurement: [traditional, managing_contractor, 
+                    eci, alliance, ppp]], if_unknown: ask}
+      - {key: design_certification_construction, text: design certification for the construction certificate, when: [
+           procurement: [traditional, managing_contractor, eci, alliance, ppp]], if_unknown: ask}
+      - {key: round_s_peer, text: '{allowance:review_rounds} round(s) of peer review or certifier comments', when: [
+                procurement: [traditional, managing_contractor, eci, alliance, ppp]], if_unknown: ask}
+      - {key: construction_documents_design, text: Construction documents and design certification for the 
+          contractor, when: [novation: ["option", "yes"]], if_unknown: ask}
+      - {key: rfis, text: RFIs, when: [novation: ["option", "yes"]], if_unknown: ask}
+      - {key: design_changes_contractor, text: design changes the contractor asks for, when: [novation: ["option", "yes"]],
+        if_unknown: ask}
     fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{procurement: [design_construct]}]
-    shown_when: Design and construct
-    provenance: [{kind: evidence, ref: "structural#43"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md (documentation)"}]
-  - key: regulated_design
-    name: Regulated design
-    lines:
-      - {key: regulated_designs_design, text: "Regulated designs and design compliance declarations for one construction certificate"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{regulated_design: ["yes"]}]
-    suggest: [{state: [NSW], class: ["2", "3", 9c]}]
-    threshold: dbp_regime
-    shown_when: Regulated-design regime confirmed for this work
-    provenance: [{kind: practice, ref: "structural golden draft v1 (practice)"}]
-  - key: construction_documents
-    name: Construction documents
-    lines:
-      - {key: construction_issue, text: "Construction issue"}
-      - {key: design_certification_construction, text: "design certification for the construction certificate"}
-      - {key: round_s_peer, text: "{allowance:review_rounds} round(s) of peer review or certifier comments"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{procurement: [traditional, managing_contractor, eci, alliance, ppp]}]
-    shown_when: Not design and construct
-    provenance: [{kind: evidence, ref: "structural#37-38"}]
-  - key: construction_phase
-    name: Construction phase
+    when: [regulated_design: ["yes"], procurement: [traditional, managing_contractor, eci, alliance, ppp], novation: [
+            "option", "yes"]]
+    shown_when: Regulated-design regime confirmed for this work; or Not design and construct; or Novation
+    provenance:
+      - {kind: practice, ref: "structural golden draft v1 (practice)"}
+      - {kind: evidence, ref: "structural#37-38"}
+      - {kind: practice, ref: "structural-commercial-industrial-guide.md novation"}
+    delivery_stage: design_finalisation
+  - key: delivery
+    name: Delivery
     items: [inspection_schedule]
     lines:
-      - {key: inspections_hold_points, text: "{allowance:ca_inspections} inspections at the hold points in your inspection schedule"}
+      - {key: inspections_hold_points, text: "{allowance:ca_inspections} inspections at the hold points in your inspection
+          schedule"}
       - {key: rfis, text: "RFIs"}
       - {key: shop_drawing_review, text: "shop drawing review including contractor-designed elements"}
-      - {key: certificate_completion_structural, text: "certificate of completion of the structural works based on the inspections made"}
+      - {key: certificate_completion_structural, text: "certificate of completion of the structural works based on the
+          inspections made"}
     fee_basis: fixed
-    delivery_stage: construction_stage_inspections
+    delivery_stage: delivery
     default: option
-    include_when: [{scale: [complex]}]
+    include_when: [scale: [complex]]
     shown_when: Client opts in; included for complex projects
     provenance: [{kind: practice, ref: "structural-commercial-industrial-guide.md construction and completion"}]
-  - key: post_novation
-    name: Post-novation
-    lines:
-      - {key: construction_documents_design, text: "Construction documents and design certification for the contractor"}
-      - {key: rfis, text: "RFIs"}
-      - {key: design_changes_contractor, text: "design changes the contractor asks for"}
-    design_responsibility: "The contractor holds the design after novation."
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{novation: ["option", "yes"]}]
-    shown_when: Novation
-    provenance: [{kind: practice, ref: "structural-commercial-industrial-guide.md novation"}]
-
 allowances:
-  - {key: design_meetings, label: Design meetings, text: "{n} per stage", default: "4", owner: client, provenance: [{kind: evidence, ref: "structural#19"}, {kind: evidence, ref: "structural#31"}]}
-  - {key: site_visits, label: Site visits, text: "{n} at concept and 1 at design development", default: "1", owner: client, provenance: [{kind: evidence, ref: "structural#3"}]}
-  - {key: authority_requests, label: Authority requests in assessment, text: "{n} response(s)", default: "1", owner: client, when: [{stage: [planning_approval]}], provenance: [{kind: evidence, ref: "structural#20"}]}
-  - {key: review_rounds, label: Peer review or certifier rounds, text: "{n}", default: "1", owner: client, when: [{stage: [construction_documents, post_novation]}], provenance: [{kind: evidence, ref: "structural#37"}]}
-  - {key: ca_inspections, label: Construction inspections, text: "{n}", owner: client, when: [{stage: [construction_phase]}], provenance: [{kind: practice, ref: "structural-commercial-industrial-guide.md construction"}]}
+  - {key: design_meetings, label: Design meetings, text: "{n} per stage", default: "4", owner: client, provenance: [{
+          kind: evidence, ref: "structural#19"}, {kind: evidence, ref: "structural#31"}]}
+  - {key: site_visits, label: Site visits, text: "{n} at concept and 1 at design development", default: "1", owner: 
+      client, provenance: [{kind: evidence, ref: "structural#3"}]}
+  - {key: authority_requests, label: Authority requests in assessment, text: "{n} response(s)", default: "1", owner: 
+      client, when: [{stage: [planning], pathway: [cdc, da, ssd, planning_permit, ref, modification]}], provenance: [
+       {kind: evidence, ref: "structural#20"}]}
+  - {key: review_rounds, label: Peer review or certifier rounds, text: "{n}", default: "1", owner: client, when: [{
+            stage: [design_finalisation], procurement: [traditional, managing_contractor, eci, alliance, ppp]}, {
+            stage: [design_finalisation], novation: ["option", "yes"]}], provenance: [{kind: evidence, ref: "structural#37"}]}
+  - {key: ca_inspections, label: Construction inspections, text: "{n}", owner: client, when: [stage: [delivery]], 
+      provenance: [{kind: practice, ref: "structural-commercial-industrial-guide.md construction"}]}
 
 positions:
   - key: design_basis
-    stage: [concept_schematic]
+    stage: [schematic_design]
     group: Design basis and coordination
-    label: "Design-basis schedule: geotechnical reliance, design life, importance level, loads, wind and earthquake inputs, durability and fire-resistance coordination; missing values referred to the responsible engineer"
+    label: "Design-basis schedule: geotechnical reliance, design life, importance level, loads, wind and earthquake inputs,
+      durability and fire-resistance coordination; missing values referred to the responsible engineer"
     kind: technical
     value: I
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]
-  - {group: "Design basis and coordination", key: geotech_brief, stage: [concept_schematic], label: "Geotechnical brief for the client to commission", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#4"}]}
+  - {group: "Design basis and coordination", key: geotech_brief, stage: [schematic_design], label: "Geotechnical brief
+      for the client to commission", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#4"}]}
   - key: residential_framing
-    stage: [construction_documents, post_novation, design_development]
+    stage: [design_finalisation, design_development]
     group: Permanent structural design
-    label: "Footing, framing, bracing and tie-down design; review of site and wind classification and of supplier truss and frame design"
+    label: "Footing, framing, bracing and tie-down design; review of site and wind classification and of supplier truss
+      and frame design"
     kind: technical
-    value: {value: I, when: [{class: [1a, 1b, 10a, 10b]}], else: "-"}
+    value: {value: I, when: [class: [1a, 1b, 10a, 10b]], else: "-"}
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md#services-by-stage"}]
-  - {group: "Design basis and coordination", key: shared_model, label: "Revit model shared with the design team", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "structural#39-40"}]}
-  - {group: "Design basis and coordination", key: safety_in_design, stage: [tender_traditional, dnc_tender, construction_documents], label: "Safety in design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#34"}]}
-  - {group: "Design basis and coordination", key: value_management, stage: [design_development, concept_schematic], label: "Value management participation", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "structural#36"}]}
+  - {group: "Design basis and coordination", key: shared_model, label: "Revit model shared with the design team", 
+      kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "structural#39-40"}]}
+  - {group: "Design basis and coordination", key: safety_in_design, stage: [tender_documentation, 
+          design_finalisation], label: "Safety in design report", kind: technical, value: I, provenance: [{kind: 
+            evidence, ref: "structural#34"}]}
+  - {group: "Design basis and coordination", key: value_management, stage: [design_development, schematic_design], 
+      label: "Value management participation", kind: service_level, simple: I, complex: I, provenance: [{kind: 
+            evidence, ref: "structural#36"}]}
   # Owner ruling R9 (testing/synthetic/reference/OWNER_RULINGS.md): an
   # important tree's structural root zone must be avoided, which can change
   # the footing design and where footings go. Root cutting is a root-zone
   # matter, not pruning, so the pruning flag does not drive this row.
   - key: root_zone_footings
-    stage: [construction_documents, post_novation, design_development]
+    stage: [design_finalisation, design_development]
     group: Permanent structural design
-    label: "Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging, piers or suspended slab where needed), coordinated with the arborist's tree protection zone"
+    label: "Footing design and location that avoid the structural root zone of the trees the arborist identifies (bridging,
+      piers or suspended slab where needed), coordinated with the arborist's tree protection zone"
     kind: technical
-    value: {value: I, when: [{flag: [arborist_tree_impacts]}, {flag: [arborist_offsite_trees]}], else: "-"}
+    value: {value: I, when: [flag: [arborist_tree_impacts], flag: [arborist_offsite_trees]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only where footings sit near a tree's structural root zone."
-    provenance: [{kind: client_decision, ref: "testing/synthetic/reference/OWNER_RULINGS.md R9", why: "Owner ruling: footings avoid an important tree's structural root zone, so the structural engineer designs for it."}]
+    provenance: [{kind: client_decision, ref: "testing/synthetic/reference/OWNER_RULINGS.md R9", why: "Owner ruling: footings
+            avoid an important tree's structural root zone, so the structural engineer designs for it."}]
   - key: delegated_design
-    stage: [tender_traditional, dnc_tender, construction_documents]
+    stage: [tender_documentation, design_finalisation]
     group: Permanent structural design
-    label: "Performance specifications and a delegated-design schedule for contractor-designed elements (piles, post-tensioned slabs, specialist floors): criteria, submission, review, acceptance and certificates"
+    label: "Performance specifications and a delegated-design schedule for contractor-designed elements (piles, post-tensioned
+      slabs, specialist floors): criteria, submission, review, acceptance and certificates"
     kind: technical
     value: I
-    provenance: [{kind: evidence, ref: "structural#41-43"}, {kind: seed, ref: "structural-commercial-industrial-guide.md documentation and construction"}]
+    provenance: [{kind: evidence, ref: "structural#41-43"}, {kind: seed, ref: "structural-commercial-industrial-guide.md
+            documentation and construction"}]
   - key: specialist_element_design
-    stage: [construction_documents, post_novation, design_development]
+    stage: [design_finalisation, design_development]
     group: Permanent structural design
     label: "Detailed design of post-tensioned slabs and piles"
     kind: technical
-    value: {value: X, when: [{procurement: [design_construct]}], else: O}
+    value: {value: X, when: [procurement: [design_construct]], else: O}
     responsible: "specialist contractor (D&C element)"
     if_unknown: option
     assumption: "Priced as an option until the procurement route is decided."
     provenance: [{kind: evidence, ref: "structural#41-42"}]
   - key: retention_design
-    stage: [construction_documents, post_novation, design_development]
+    stage: [design_finalisation, design_development]
     group: Excavation and temporary works
     label: "Shoring and piled retention design"
     kind: technical
-    value: {value: I, when: [{flag: [basement]}, {flag: [excavation_adjoining]}], else: "-"}
+    value: {value: I, when: [flag: [basement], flag: [excavation_adjoining]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only for a basement or excavation next to adjoining structures."
     provenance: [{kind: evidence, ref: "structural#58"}]
   - key: temporary_works_interfaces
     stage: [design_development]
     group: Excavation and temporary works
-    label: "Retention, underpinning, temporary works and monitoring interfaces: designer and reviewer named, permanent and temporary loads stated"
+    label: "Retention, underpinning, temporary works and monitoring interfaces: designer and reviewer named, permanent
+      and temporary loads stated"
     kind: technical
-    value: {value: I, when: [{flag: [basement]}, {flag: [excavation_adjoining]}], else: "-"}
+    value: {value: I, when: [flag: [basement], flag: [excavation_adjoining]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only where temporary support or adjoining structures are affected."
     provenance: [{kind: seed, ref: "structural-commercial-industrial-guide.md concept and common failures"}]
   - key: temporary_works_design
-    stage: [construction_phase]
+    stage: [delivery]
     group: Excavation and temporary works
     label: "Temporary works and propping design"
     kind: technical
@@ -318,43 +347,60 @@ positions:
     group: Permanent structural design
     label: "Strengthening design found necessary by the existing structure assessment"
     kind: technical
-    value: {value: O, when: [{stage: [existing_assessment]}], else: "-"}
+    value: {value: O, when: [stage: [brief_concept]], else: "-"}
     provenance: [{kind: evidence, ref: "structural#56-57"}]
-  - {group: "Permanent structural design", key: services_fixings, stage: [construction_phase], label: "Fixing design for services and equipment, including seismic restraint", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#53"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "v1 excluded this on simple jobs; a small project can still need it, so it is always priced as an option."}]}
-  - {group: "Permanent structural design", key: metalwork, stage: [tender_traditional, dnc_tender, construction_documents], label: "Miscellaneous metalwork: balustrades, screens, sunshades, fences", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#55"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "Selected by what the project has, not by class; always priced as an option."}]}
+  - {group: "Permanent structural design", key: services_fixings, stage: [delivery], label: "Fixing design for services
+      and equipment, including seismic restraint", kind: technical, value: O, provenance: [{kind: evidence, ref: "structural#53"},
+       {kind: client_decision, ref: "phase-a-changes structural C3", why: "v1 excluded this on simple jobs; a small project
+            can still need it, so it is always priced as an option."}]}
+  - {group: "Permanent structural design", key: metalwork, stage: [tender_documentation, design_finalisation], label: "Miscellaneous
+      metalwork: balustrades, screens, sunshades, fences", kind: technical, value: O, provenance: [{kind: evidence, 
+            ref: "structural#55"}, {kind: client_decision, ref: "phase-a-changes structural C3", why: "Selected by what
+            the project has, not by class; always priced as an option."}]}
   - key: dilapidation
-    stage: [construction_phase]
+    stage: [delivery]
     group: Excavation and temporary works
     label: "Dilapidation surveys of adjoining structures"
     kind: technical
-    value: {value: O, when: [{flag: [excavation_adjoining]}, {flag: [basement]}], else: X}
+    value: {value: O, when: [flag: [excavation_adjoining], flag: [basement]], else: X}
     responsible: "client (separate survey)"
     if_unknown: option
     assumption: "Price as an option: needed where excavation is next to adjoining structures."
     provenance: [{kind: evidence, ref: "structural#50"}]
-  - {group: "Permanent structural design", key: super_flat_floor, stage: [tender_traditional, dnc_tender, construction_documents], label: "Super-flat floor design", kind: technical, value: {value: O, when: [{flag: [super_flat_floor]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the use needs a super-flat floor.", provenance: [{kind: evidence, ref: "structural#59"}]}
-  - {group: "Inspection and verification", key: compaction, stage: [construction_phase], label: "Ground compaction inspections", kind: technical, value: X, responsible: "geotechnical engineer", provenance: [{kind: evidence, ref: "structural#54"}]}
-  - {group: "Excavation and temporary works", key: demolition_drawings, stage: [tender_traditional, dnc_tender, construction_documents], label: "Demolition drawings (engineering demolition and propping design is not replaced by them)", kind: technical, value: X, responsible: architect, provenance: [{kind: evidence, ref: "structural#52"}]}
-  - {group: "Permanent structural design", key: services_footings, stage: [design_development], label: "Footings affected by in-ground services", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#49"}]}
+  - {group: "Permanent structural design", key: super_flat_floor, stage: [tender_documentation, design_finalisation],
+    label: "Super-flat floor design", kind: technical, value: {value: O, when: [flag: [super_flat_floor]], else: "-"},
+    if_unknown: option, assumption: "Price as an option: needed only if the use needs a super-flat floor.", 
+      provenance: [{kind: evidence, ref: "structural#59"}]}
+  - {group: "Inspection and verification", key: compaction, stage: [delivery], label: "Ground compaction inspections",
+    kind: technical, value: X, responsible: "geotechnical engineer", provenance: [{kind: evidence, ref: "structural#54"}]}
+  - {group: "Excavation and temporary works", key: demolition_drawings, stage: [tender_documentation, 
+          design_finalisation], label: "Demolition drawings (engineering demolition and propping design is not replaced
+      by them)", kind: technical, value: X, responsible: architect, provenance: [{kind: evidence, ref: "structural#52"}]}
+  - {group: "Permanent structural design", key: services_footings, stage: [design_development], label: "Footings affected
+      by in-ground services", kind: technical, value: I, provenance: [{kind: evidence, ref: "structural#49"}]}
   - key: inspection_schedule
-    stage: [construction_documents, post_novation, construction_phase]
+    stage: [design_finalisation, delivery]
     group: Inspection and verification
     label: "Inspection schedule by element and hold point, with notification lead time and the basis for reinspection"
     kind: technical
-    value: {value: I, when: [{stage: [construction_phase]}], else: "-"}
+    value: {value: I, when: [stage: [delivery]], else: "-"}
     provenance: [{kind: seed, ref: "structural-commercial-industrial-guide.md construction and completion; minimum returnables"}]
 
 terms:
   - {key: rates_increase, text: "No automatic annual rate increase.", provenance: [{kind: evidence, ref: "structural#66"}]}
-  - {key: setouts, text: "Set-outs and bulk excavation levels are the architect's.", provenance: [{kind: evidence, ref: "structural#61"}]}
+  - {key: setouts, text: "Set-outs and bulk excavation levels are the architect's.", provenance: [{kind: evidence, 
+            ref: "structural#61"}]}
 
 returnables:
   r1: "Existing-structure and authority-asset stages are their own lines."
   r2: "Drawing list by stage, specification, reports and certificates."
-  r3: "Roles: Director · Associate · Senior engineer · Engineer · Drafting or BIM lead · Drafter. Per-meeting rates if used."
+  r3: "Roles: Director · Associate · Senior engineer · Engineer · Drafting or BIM lead · Drafter. Per-meeting rates if
+    used."
   r4: "Named director and project engineer; CPEng or NER."
   r5: "Projects with the same class and structure type."
 returnable_notes:
-  - {key: r4, text: "NSW design practitioner (structural) registration for the regulated designs.", when: [{stage: [regulated_design]}]}
+  - {key: r4, text: "NSW design practitioner (structural) registration for the regulated designs.", when: [{stage: [
+                design_finalisation], regulated_design: ["yes"]}]}
 
-durations: "From the SiteWise program; otherwise the architect's stage durations (structure runs alongside). The 2023 golden program allowed 6 weeks schematic and 4 weeks tender."
+durations: "From the SiteWise program; otherwise the architect's stage durations (structure runs alongside). The 2023
+  golden program allowed 6 weeks schematic and 4 weeks tender."

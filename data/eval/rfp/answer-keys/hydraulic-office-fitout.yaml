@@ -48,8 +48,8 @@ fields:
 settings:
   hydraulic-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
     allowance:extent: '2'
     allowance:investigation: '2'
     allowance:design: '2'
@@ -66,8 +66,7 @@ description: Internal office kitchenette design buys no whole-site drainage, tra
 snapshot: false
 expect:
   hydraulic-services:
-    stages_absent:
-    - planning
+    stages_absent: [planning]
     positions:
       domestic: I
       existing: I

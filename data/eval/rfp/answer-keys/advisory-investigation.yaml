@@ -12,7 +12,7 @@ facts:
 flags:
   existing_building: "yes"
 parts:
-  - {id: office, label: Office, classes: ["5"]}
+- {id: office, label: Office, classes: ["5"]}
 address: "7 Example St, Example NSW"
 fields:
   ref: RFP-TEST
@@ -25,14 +25,15 @@ fields:
   lga: Example LGA
 settings:
   structural:
-    "boundary:range": {start: concept_schematic, end: existing_assessment}
+    "boundary:range": {start: brief_concept, end: schematic_design}
 expect:
   structural:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [concept_schematic, existing_assessment]
-    stages_absent: [planning_approval, design_development, tender_traditional, construction_documents]
+    stages_include: [brief_concept, schematic_design]
+    stages_absent: [design_development]
     positions:
       strengthening: X
     blocking_only: true
 sources:
-  - "Peer review: advisory or remedial investigation states limits, testing and the next decision; permanent design is not assumed complete."
+- "Peer review: advisory or remedial investigation states limits, testing and the next decision; permanent design is not
+  assumed complete."

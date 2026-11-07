@@ -12,7 +12,7 @@ import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
 import { IconBin, IconUpload } from "./icons";
-import { packageApi, type PackageOverview, type PackageRecord } from "./packageApi";
+import { packageApi, type CombinePrompt, type PackageOverview, type PackageRecord } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
 import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard } from "./submissionApi";
@@ -41,7 +41,7 @@ interface Row {
 
 interface Loaded { overview: PackageOverview; reports: SavedReport[]; board: Board }
 
-export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, transmittal }: { transmittal?: TransmittalSelection; projectId: string; tick: number; onSignedOut: () => void; onOpenCostPlan?: () => void }) {
+export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOpenDocument, transmittal }: { transmittal?: TransmittalSelection; projectId: string; tick: number; onSignedOut: () => void; onOpenCostPlan?: () => void; onOpenDocument?: (documentId: string) => boolean }) {
   const [view, setView] = useState<View>({ at: "table" });
   const [data, setData] = useState<Loaded | null>(null);
   const [disciplines, setDisciplines] = useState<Option[]>([]);
@@ -55,7 +55,11 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   // Consultant rows selected for Combine (click, Ctrl-click, Shift-click, as in
   // Program and the document register), and the combine being confirmed.
   const [selection, setSelection] = useState(emptySelection);
-  const [combining, setCombining] = useState<{ members: PackageRecord[]; names: string[]; title: string; costLabels: string[] } | null>(null);
+  const [combining, setCombining] = useState<{ members: PackageRecord[]; names: string[]; title: string; costLabels: string[]; submissionId?: string } | null>(null);
+  // Members unticked on a combine prompt (slice 5): a prompt starts ticked.
+  const [unticked, setUnticked] = useState<Record<string, string[]>>({});
+  // The unplaced combined proposal being combined for, and the rows ticked.
+  const [forProposal, setForProposal] = useState<{ card: FirmCard; ids: string[] } | null>(null);
 
   // The three reads go out together, so the table waits for one round trip.
   useEffect(() => {
@@ -139,20 +143,31 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   }
   // Combine shows what moves before it moves: the members, their draft fee
   // lines that nest under the group's line, and the group's name.
-  async function reviewCombine(members: PackageRecord[], names: string[]) {
+  async function reviewCombine(members: PackageRecord[], names: string[], submissionId?: string) {
     setBusyRow("combine"); setError("");
     try {
       const plan = await costApi.read(projectId);
       const ids = new Set(members.map(m => m.id));
       const costLabels = plan.items.filter(i => i.line_kind === "fee" && ids.has(i.package_id) && !i.parent_item_id).map(i => i.label);
-      setCombining({ members, names, title: joinNames(names), costLabels });
+      setCombining({ members, names, title: joinNames(names), costLabels, submissionId });
     } catch (e) { fail(e, "group"); } finally { setBusyRow(""); }
   }
   async function combine() {
     if (!combining) return;
     setBusyRow("combine"); setError("");
-    try { await procurementApi.combine(projectId, combining.members.map(m => m.id), combining.title); setSelection(emptySelection); setReload(n => n + 1); }
-    catch (e) { setSelection(emptySelection); fail(e, "group"); } finally { setBusyRow(""); setCombining(null); }
+    try { await procurementApi.combine(projectId, combining.members.map(m => m.id), combining.title, combining.submissionId); setSelection(emptySelection); setForProposal(null); setReload(n => n + 1); }
+    catch (e) {
+      setSelection(emptySelection);
+      if (e instanceof ApiError && e.status === 409 && combining.submissionId && e.message.includes("placed")) { setError("This proposal was placed meanwhile. The table has been refreshed."); setForProposal(null); setReload(n => n + 1); }
+      else fail(e, "group");
+    } finally { setBusyRow(""); setCombining(null); }
+  }
+  // A prompt is the PM's to act on: Combine opens the usual confirmation
+  // with the ticked rows; Dismiss hides it on this project for good.
+  async function dismissPrompt(prompt: CombinePrompt) {
+    setBusyRow(prompt.key); setError("");
+    try { await procurementApi.dismissPrompt(projectId, prompt.key); setReload(n => n + 1); }
+    catch (e) { fail(e); } finally { setBusyRow(""); }
   }
   async function uncombine(group: PackageRecord) {
     setBusyRow(group.id); setError("");
@@ -226,7 +241,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   }
 
   if (view.at === "report") return <Reports transmittal={transmittal} key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
-  if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} />;
+  if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} onOpenDocument={onOpenDocument} />;
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
   const reportOf = (pkg: PackageRecord) => data?.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp");
@@ -306,13 +321,37 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       </div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
+    {data && (data.overview.prompts ?? []).map(prompt => {
+      // Members still live and combinable; the server ticked them all.
+      const members = prompt.package_ids.map(id => live.find(p => p.id === id)).filter((p): p is PackageRecord => !!p && !p.group_id && p.role !== "group");
+      const chosen = members.filter(p => !(unticked[prompt.key] ?? []).includes(p.id));
+      return members.length >= 2 && <div key={prompt.key} className="procurement-line procurement-prompt" role="note" aria-label="Combine suggestion">
+        <p>{prompt.text}</p>
+        {members.map(p => <label key={p.id}><input type="checkbox" aria-label={`Include ${label(p)}`} checked={chosen.includes(p)} disabled={!!busyRow}
+          onChange={e => { const on = e.target.checked; setUnticked(u => ({ ...u, [prompt.key]: on ? (u[prompt.key] ?? []).filter(x => x !== p.id) : [...(u[prompt.key] ?? []), p.id] })); }} /> {label(p)}</label>)}
+        <button type="button" className="btn btn-small" disabled={!!busyRow || chosen.length < 2} onClick={() => void reviewCombine(chosen, chosen.map(label))}>Combine {chosen.length}</button>
+        <button type="button" className="table-action" disabled={!!busyRow} onClick={() => void dismissPrompt(prompt)}>Dismiss</button>
+      </div>;
+    })}
     {data && data.board.unassigned.length > 0 && <div className="procurement-line procurement-unassigned" role="note">
       <p><strong>{data.board.unassigned.length} proposal{data.board.unassigned.length === 1 ? " needs" : "s need"} a package.</strong></p>
-      {data.board.unassigned.map(c => <label key={c.submission_id}>{c.firm_name || c.filename}
-        <select aria-label={`Package for ${c.filename}`} defaultValue="" disabled={busyRow === c.submission_id} onChange={e => void assign(c, e.target.value)}>
-          <option value="">Choose package</option>
-          {live.map(p => <option key={p.id} value={p.id}>{label(p)}</option>)}
-        </select></label>)}
+      {data.board.unassigned.map(c => <div key={c.submission_id}>
+        <label>{c.firm_name || c.filename}{c.combined && " covers several disciplines."}
+          <select aria-label={c.combined ? `Place ${c.filename} on one discipline` : `Package for ${c.filename}`} defaultValue="" disabled={busyRow === c.submission_id} onChange={e => void assign(c, e.target.value)}>
+            <option value="">{c.combined ? "Place on one discipline" : "Choose package"}</option>
+            {live.map(p => <option key={p.id} value={p.id}>{label(p)}</option>)}
+          </select></label>
+        {/* A combined proposal is never guessed onto rows: the PM ticks them. */}
+        {c.combined && (forProposal?.card.submission_id !== c.submission_id
+          ? <button type="button" className="table-action" disabled={!!busyRow} onClick={() => setForProposal({ card: c, ids: [] })}>Combine for this proposal</button>
+          : <fieldset className="procurement-combine-for"><legend>Tick the disciplines this proposal covers</legend>
+            {live.filter(p => p.kind === "services" && p.role !== "group" && !p.group_id).sort((a, b) => label(a).localeCompare(label(b))).map(p => <label key={p.id}>
+              <input type="checkbox" aria-label={`${label(p)} for ${c.filename}`} checked={forProposal.ids.includes(p.id)} disabled={!!busyRow}
+                onChange={e => { const on = e.target.checked; setForProposal(f => f && ({ ...f, ids: on ? [...f.ids, p.id] : f.ids.filter(x => x !== p.id) })); }} /> {label(p)}</label>)}
+            {(() => { const chosen = live.filter(p => forProposal.ids.includes(p.id)); return <button type="button" className="btn btn-small" disabled={!!busyRow || chosen.length < 2} onClick={() => void reviewCombine(chosen, chosen.map(label), c.submission_id)}>Combine {chosen.length}</button>; })()}
+            <button type="button" className="table-action" disabled={!!busyRow} onClick={() => setForProposal(null)}>Cancel</button>
+          </fieldset>)}
+      </div>)}
     </div>}
     {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll">
       <table className="procurement-table">
@@ -337,7 +376,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       {pmp ? <button type="button" className="table-action" aria-label="View project management plan" onClick={() => setView({ at: "report", id: pmp.id })}>View</button>
         : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</p>}
     {combining && <ConfirmDialog tone="plain" title={`Combine ${combining.members.length} consultants?`}
-      message={`${joinNames(combining.names)} become one engagement named “${combining.title}”: one row here and one fee line in the cost plan. ${combining.costLabels.length ? `These fee lines move under it and keep their budgets: ${combining.costLabels.join(", ")}.` : "No fee lines move yet."} Double-click the name to change it. Uncombine reverses this.`}
+      message={`${joinNames(combining.names)} become one engagement named “${combining.title}”: one row here and one fee line in the cost plan. ${combining.costLabels.length ? `These fee lines move under it and keep their budgets: ${combining.costLabels.join(", ")}.` : "No fee lines move yet."}${combining.submissionId ? " The proposal is placed on it." : ""} Double-click the name to change it. Uncombine reverses this.`}
       confirmLabel="Combine" busy={busyRow === "combine"} busyLabel="Combining…" onConfirm={() => void combine()} onCancel={() => setCombining(null)} />}
     {removing && <ConfirmDialog title={`Remove ${removing.label}?`} message={removing.costLabels.length ? `Also delete ${removing.costLabels.length} linked cost-plan line(s), including any subdivisions and their amounts: ${removing.costLabels.join(", ")}? Frozen baselines are kept. Any RFP or RFT will show the package as retired.` : "The row leaves the table. Any RFP or RFT made from it will show its package as retired."} confirmLabel={removing.costLabels.length ? "Remove and delete cost lines" : "Remove"} busy={busyRow === removing.pkg.id} busyLabel="Removing…" onConfirm={() => void remove()} onCancel={() => setRemoving(null)} />}
   </section>;

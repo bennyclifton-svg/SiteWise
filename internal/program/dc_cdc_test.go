@@ -31,7 +31,7 @@ func TestNewDesignConstructCDCOrder(t *testing.T) {
 		}
 		return times[key]
 	}
-	order := []string{"procurement", "construction_documentation", "approval_documentation", "approvals", "construction"}
+	order := []string{"tender_documentation", "design_finalisation", "planning", "delivery"}
 	for i := 1; i < len(order); i++ {
 		before, after := stage(order[i-1]), stage(order[i])
 		if after.ES < before.EF {

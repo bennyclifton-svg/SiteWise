@@ -30,7 +30,7 @@ sources: ` + questionLibrarySrc + `
 fragments:
   - id: fr.flood-check
     label: Test flood check
-    stage: construction
+    stage: delivery
     systems: [structure]
     applies_when: {det: flood_hazard, is: true}
     activities:
@@ -142,12 +142,12 @@ func TestProgramGenInputReadsProfileWorksAndPackages(t *testing.T) {
 		return procurement.Stage{StageID: id, Label: label, NovationPhase: "none", Origin: "user"}
 	}
 	arch, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned",
-		Stages: []procurement.Stage{stage("concept_design", "Concept"), stage("construction", "Site visits")}})
+		Stages: []procurement.Stage{stage("brief_concept", "Concept"), stage("delivery", "Site visits")}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Cancelled engineer", LifecycleStatus: "cancelled",
-		Stages: []procurement.Stage{stage("concept_design", "Concept")}}); err != nil {
+		Stages: []procurement.Stage{stage("brief_concept", "Concept")}}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "works", WorksScope: "head_contract", Title: "Builder", LifecycleStatus: "planned"}); err != nil {
@@ -197,7 +197,7 @@ func TestProgramGenInputReadsProfileWorksAndPackages(t *testing.T) {
 	if len(gi.Packages) != 2 || gi.Packages[0].Title != "Architect" || gi.Packages[1].Title != "Builder" {
 		t.Fatalf("packages %+v", gi.Packages)
 	}
-	if got := gi.Packages[0].Stages; len(got) != 2 || got[0].ID != arch.Stages[0].ID || got[0].CatalogueStageID != "concept_design" || got[1].Label != "Site visits" {
+	if got := gi.Packages[0].Stages; len(got) != 2 || got[0].ID != arch.Stages[0].ID || got[0].CatalogueStageID != "brief_concept" || got[1].Label != "Site visits" {
 		t.Fatalf("stages %+v", got)
 	}
 	if len(gi.Packages[1].Stages) != 0 {
@@ -223,8 +223,8 @@ func TestPrepareProgramIsIdempotentAndLinksPackageStages(t *testing.T) {
 		t.Fatal("unknown surface accepted")
 	}
 	pkg, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned",
-		Stages: []procurement.Stage{{StageID: "concept_design", Label: "Concept", NovationPhase: "none", Origin: "user"},
-			{StageID: "construction", Label: "Site visits", NovationPhase: "none", Origin: "user"}}})
+		Stages: []procurement.Stage{{StageID: "brief_concept", Label: "Concept", NovationPhase: "none", Origin: "user"},
+			{StageID: "delivery", Label: "Site visits", NovationPhase: "none", Origin: "user"}}})
 	if err != nil {
 		t.Fatal(err)
 	}

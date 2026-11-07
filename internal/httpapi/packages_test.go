@@ -15,7 +15,7 @@ func TestPackagesCreateAndListAPI(t *testing.T) {
 	body := []byte(`{"kind":"services","title":"Structural engineering","novation":"option"}`)
 	var p procurement.Package
 	m.call(t, http.MethodPost, path, body, http.StatusCreated, &p)
-	if p.ID == "" || p.LifecycleStatus != "planned" || p.ReviewStatus != "accepted_for_planning" || len(p.Stages) != 4 {
+	if p.ID == "" || p.LifecycleStatus != "planned" || p.ReviewStatus != "accepted_for_planning" || len(p.Stages) != 7 {
 		t.Fatalf("package %+v", p)
 	}
 	var view struct {
@@ -33,12 +33,12 @@ func TestPackagesCreateAndListAPI(t *testing.T) {
 		`{"kind":"services","title":"Design","novation":"maybe"}`,
 		`{"kind":"works","title":"Builder"}`,
 		`{"kind":"services","title":"Design","stages":[{"stage_id":"unknown","label":"Unknown"}]}`,
-		`{"kind":"services","title":"Design","stages":[{"stage_id":"concept_design","label":"Concept","novation_phase":"pre"}]}`,
+		`{"kind":"services","title":"Design","stages":[{"stage_id":"brief_concept","label":"Concept","novation_phase":"pre"}]}`,
 	} {
 		m.call(t, http.MethodPost, path, []byte(bad), http.StatusUnprocessableEntity, nil)
 	}
 	m.call(t, http.MethodPost, path, []byte(`{"kind":"services","title":"Design","review_status":"verified"}`), http.StatusBadRequest, nil)
-	duplicates := map[string]any{"kind": "services", "title": "Duplicate stages", "stages": []any{map[string]any{"stage_id": "design", "label": "Design"}, map[string]any{"stage_id": "design", "label": "Design"}}}
+	duplicates := map[string]any{"kind": "services", "title": "Duplicate stages", "stages": []any{map[string]any{"stage_id": "schematic_design", "label": "Design"}, map[string]any{"stage_id": "schematic_design", "label": "Design"}}}
 	raw, _ := json.Marshal(duplicates)
 	m.call(t, http.MethodPost, path, raw, http.StatusConflict, nil)
 	m.getJSON(t, path, &view)
@@ -63,7 +63,7 @@ func TestPackagesCreateAndListAPI(t *testing.T) {
 		t.Fatal(stage)
 	}
 	m.call(t, http.MethodPatch, stagePath, []byte(`{"version":1,"label":"Stale"}`), http.StatusConflict, nil)
-	m.call(t, http.MethodPost, editPath+"/stages", []byte(`{"stage_id":"completion","label":"Handover","ordinal":5,"novation_phase":"post"}`), http.StatusCreated, &stage)
+	m.call(t, http.MethodPost, editPath+"/stages", []byte(`{"stage_id":"delivery","label":"Handover","ordinal":5,"novation_phase":"post"}`), http.StatusCreated, &stage)
 	if stage.PackageID != p.ID || stage.Origin != "user" {
 		t.Fatal(stage)
 	}

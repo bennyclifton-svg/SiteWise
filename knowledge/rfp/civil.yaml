@@ -13,14 +13,19 @@ heading: "REQUEST FOR PROPOSAL: CIVIL ENGINEERING SERVICES"
 golden: docs/rfp-golden/civil/rfp.md
 discipline_ids: [consultant.civil]
 title_aliases: [civil]
-evidence_limit: "Part 1 is the Arthur St warehouse extension; part 2 is the 2024 Camp Yarramundi RFT, whose stage-by-element grid all four tenderers used."
+evidence_limit: "Part 1 is the Arthur St warehouse extension; part 2 is the 2024 Camp Yarramundi RFT, whose stage-by-element
+  grid all four tenderers used."
 
 thresholds:
-  - {key: civil_site_area, kind: client_default, text: "A site over 2 ha suggests complex service levels", source: "golden civil draft v1 scale rule", verified: false}
-  - {key: dbp_regime, kind: statutory, text: "NSW regulated-design regime applies to the affected work", source: "Design and Building Practitioners Act 2020 (NSW) and Regulation. Not verified against the instrument.", verified: false}
+  - {key: civil_site_area, kind: client_default, text: "A site over 2 ha suggests complex service levels", source: "golden
+      civil draft v1 scale rule", verified: false}
+  - {key: dbp_regime, kind: statutory, text: "NSW regulated-design regime applies to the affected work", source: "Design
+      and Building Practitioners Act 2020 (NSW) and Regulation. Not verified against the instrument.", verified: 
+      false}
 
 scale:
-  text: "Service levels (design criteria document, 3D model, clash check) are suggested complex for a site over 2 ha, works in a public road, a flood-affected site, a drinking water catchment or a Class 3 or 9 part."
+  text: "Service levels (design criteria document, 3D model, clash check) are suggested complex for a site over 2 ha,
+    works in a public road, a flood-affected site, a drinking water catchment or a Class 3 or 9 part."
   complex:
     - {site_area_over: ["20000"]}
     - {flag: [public_road]}
@@ -29,7 +34,8 @@ scale:
     - {class: ["3", 9a, 9b, 9c]}
 
 project_rows:
-  - {key: civil_works, label: Design vehicle, text: "{field:design_vehicle}", provenance: [{kind: evidence, ref: "civil#62"}, {kind: evidence, ref: "civil#T p2"}]}
+  - {key: civil_works, label: Design vehicle, text: "{field:design_vehicle}", provenance: [{kind: evidence, ref: "civil#62"},
+       {kind: evidence, ref: "civil#T p2"}]}
 
 role:
   - key: engineer
@@ -64,18 +70,19 @@ role:
     when: [{"novation": ["option"]}]
     provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", "why": "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
 
-stage_intro: "Each design stage is issued as one draft and one final. Design stages are priced by element so firms can be compared line by line."
+stage_intro: "Each design stage is issued as one draft and one final. Design stages are priced by element so firms can
+  be compared line by line."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 element_intro: "Elements priced in the design stages:"
 
 boundary:
-  - {when: [{procurement: [design_construct]}], start: schematic, end: dnc_tender}
-  - {start: schematic, end: detailed_tender}
+  - {when: [procurement: [design_construct]], start: schematic_design, end: tender_documentation}
+  - {start: schematic_design, end: tender_documentation}
 
 stages:
-  - key: schematic
-    name: Schematic design for planning approval
+  - key: schematic_design
+    name: Schematic design
     items: [discharge, drainage_model, utility_plan]
     lines:
       - {key: review_information, text: "Review of information"}
@@ -89,258 +96,315 @@ stages:
       - {key: combined_utility_plan, text: "combined utility plan"}
     fee_basis: fixed
     by_element: true
-    delivery_stage: concept_design
+    delivery_stage: schematic_design
     shown_when: Always
     provenance: [{kind: evidence, ref: "civil#1-24"}, {kind: evidence, ref: "civil#68-87"}, {kind: evidence, ref: "civil#111-112"}]
-  - key: detailed_tender
-    name: Detailed design for tender
+  - key: tender_documentation
+    name: Tender documentation
     lines:
-      - {key: design_approved_plans, text: "Design to the approved plans and consent conditions, complete enough to price as a lump sum"}
-      - {key: specification, text: "specification"}
-      - {key: design_certificates, text: "design certificates"}
-    design_responsibility: "You hold the civil design."
+      - {key: detailed_tender_responsibility, text: You hold the civil design., when: [procurement: [traditional, 
+                    managing_contractor]], if_unknown: ask}
+      - {key: design_approved_plans, text: 'Design to the approved plans and consent conditions, complete enough to price
+          as a lump sum', when: [procurement: [traditional, managing_contractor]], if_unknown: ask}
+      - {key: specification, text: specification, when: [procurement: [traditional, managing_contractor]], 
+          if_unknown: ask}
+      - {key: design_certificates, text: design certificates, when: [procurement: [traditional, managing_contractor]],
+        if_unknown: ask}
+      - {key: dnc_tender_responsibility, text: You hold the design to tender issue; the contractor holds it after 
+          award., when: [procurement: [design_construct]], if_unknown: ask}
+      - {key: design_developed_approved, text: Design developed to the approved plans and consent conditions as far 
+          as the D&C tender needs, when: [procurement: [design_construct]], if_unknown: ask}
+      - {key: performance_specification, text: performance specification, when: [procurement: [design_construct]], 
+          if_unknown: ask}
+      - {key: schedule_design_retain, text: schedule of the design you retain and the design the contractor 
+          completes, when: [procurement: [design_construct]], if_unknown: ask}
     fee_basis: fixed
+    when: [procurement: [traditional, managing_contractor], procurement: [design_construct]]
     by_element: true
-    delivery_stage: construction_documentation
-    when: [{procurement: [traditional, managing_contractor]}]
-    shown_when: Traditional or managing contractor
-    provenance: [{kind: evidence, ref: "civil#25-41"}, {kind: evidence, ref: "civil#117-119"}]
-  - key: dnc_tender
-    name: Design for the D&C tender
+    shown_when: Traditional or managing contractor; or Design and construct
+    provenance:
+      - {kind: evidence, ref: "civil#25-41"}
+      - {kind: evidence, ref: "civil#117-119"}
+      - {kind: client_decision, ref: "phase-a-changes civil C3", why: "The Yarramundi RFT set a 70% tender stage for a
+          D&C route; a percentage alone is not a priceable deliverable, so the D&C tender deliverable is defined by what
+          the tender needs."}
+    delivery_stage: tender_documentation
+  - key: design_finalisation
+    name: Design finalisation
+    design_responsibility: The contractor holds the design after novation.
     lines:
-      - {key: design_developed_approved, text: "Design developed to the approved plans and consent conditions as far as the D&C tender needs"}
-      - {key: performance_specification, text: "performance specification"}
-      - {key: schedule_design_retain, text: "schedule of the design you retain and the design the contractor completes"}
-    design_responsibility: "You hold the design to tender issue; the contractor holds it after award."
+      - {key: construction_set, text: Construction set, when: [procurement: [traditional, managing_contractor, eci, 
+                    alliance, ppp]], if_unknown: ask}
+      - {key: construction_certificate_issue, text: construction certificate issue, when: [procurement: [traditional,
+                managing_contractor, eci, alliance, ppp]], if_unknown: ask}
+      - {key: construction_set_construction, text: Construction set and construction certificate issue for the 
+          contractor after novation, when: [novation: ["option", "yes"]], if_unknown: ask}
     fee_basis: fixed
-    by_element: true
-    delivery_stage: approval_documentation
-    when: [{procurement: [design_construct]}]
-    shown_when: Design and construct
-    provenance: [{kind: evidence, ref: "civil#25-41"}, {kind: client_decision, ref: "phase-a-changes civil C3", why: "The Yarramundi RFT set a 70% tender stage for a D&C route; a percentage alone is not a priceable deliverable, so the D&C tender deliverable is defined by what the tender needs."}]
-  - key: for_construction
-    name: Final design for construction
+    when: [procurement: [traditional, managing_contractor, eci, alliance, ppp], novation: ["option", "yes"]]
+    shown_when: Not design and construct; or Novation
+    provenance:
+      - {kind: evidence, ref: "civil#121"}
+    delivery_stage: design_finalisation
+  - key: delivery
+    name: Delivery
     lines:
-      - {key: construction_set, text: "Construction set"}
-      - {key: construction_certificate_issue, text: "construction certificate issue"}
+      - {key: inspections_hold_points, text: '{allowance:ca_inspections} inspections at hold points (subgrade, pipes,
+          pavement)'}
+      - {key: rfis_hours, text: 'RFIs up to {allowance:rfi_hours} hours'}
+      - {key: input_construction_certificate, text: 'input to {allowance:cc_inputs} construction certificate(s) and 1
+          occupation certificate'}
+      - {key: certificate_certifier_based, text: certificate to the certifier based on the inspections made}
+      - {key: review_surveyor_s, text: Review of the surveyor's works-as-executed survey}
+      - {key: as_built_drawings, text: as-built drawings}
+      - {key: detention_system_certification, text: detention system certification}
+      - {key: maintenance_information, text: maintenance information}
+      - {key: support_title_covenant, text: 'support for title, covenant or public-asset handover where it applies'}
+      - {key: final_certificate, text: final certificate}
     fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{procurement: [traditional, managing_contractor, eci, alliance, ppp]}]
-    shown_when: Not design and construct
-    provenance: [{kind: evidence, ref: "civil#121"}]
-  - key: post_novation
-    name: Final design after novation
-    lines:
-      - {key: construction_set_construction, text: "Construction set and construction certificate issue for the contractor after novation"}
-    design_responsibility: "The contractor holds the design after novation."
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{novation: ["option", "yes"]}]
-    shown_when: Novation
-    provenance: [{kind: evidence, ref: "civil#121"}]
-  - key: construction_phase
-    name: Construction phase
-    lines:
-      - {key: inspections_hold_points, text: "{allowance:ca_inspections} inspections at hold points (subgrade, pipes, pavement)"}
-      - {key: rfis_hours, text: "RFIs up to {allowance:rfi_hours} hours"}
-      - {key: input_construction_certificate, text: "input to {allowance:cc_inputs} construction certificate(s) and 1 occupation certificate"}
-      - {key: certificate_certifier_based, text: "certificate to the certifier based on the inspections made"}
-    fee_basis: fixed
-    delivery_stage: construction_stage_inspections
-    default: option
-    shown_when: Client opts in
-    provenance: [{kind: evidence, ref: "civil#123-128"}]
-  - key: as_built
-    name: As-built and completion
-    lines:
-      - {key: review_surveyor_s, text: "Review of the surveyor's works-as-executed survey"}
-      - {key: as_built_drawings, text: "as-built drawings"}
-      - {key: detention_system_certification, text: "detention system certification"}
-      - {key: maintenance_information, text: "maintenance information"}
-      - {key: support_title_covenant, text: "support for title, covenant or public-asset handover where it applies"}
-      - {key: final_certificate, text: "final certificate"}
-    fee_basis: fixed
-    delivery_stage: construction_stage_inspections
-    follows: construction_phase
-    shown_when: With the construction phase
-    provenance: [{kind: evidence, ref: "civil#129"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-commercial-industrial-guide.md (completion)"}]
-
+    shown_when: Always
+    provenance:
+      - {kind: evidence, ref: "civil#123-128"}
+      - {kind: evidence, ref: "civil#129"}
+      - {kind: seed, ref: "data/reference/clerk/data/seed/civil-commercial-industrial-guide.md (completion)"}
+    delivery_stage: delivery
 elements:
-  - {key: earthworks, code: A, name: Earthworks and sediment control, includes: "Bulk earthworks, cut and fill volumes; erosion and sediment control; building pads", shown_when: Always, provenance: [{kind: evidence, ref: "civil#18-20"}, {kind: evidence, ref: "civil#84-87"}, {kind: evidence, ref: "civil#102"}]}
-  - {key: roads, code: B, name: Roads pavements and levels, includes: "Internal road and car park geometry; finished levels; pavement profiles from the geotechnical report; signage and line marking; turning paths; retaining wall geometry and levels outside buildings; accessible path grades", shown_when: Always, provenance: [{kind: evidence, ref: "civil#89-90"}, {kind: evidence, ref: "civil#96"}, {kind: evidence, ref: "civil#98-103"}]}
-  - {key: stormwater, code: C, name: Stormwater, includes: "Drainage outside building footprints; overland flow; detention and water quality where section 2 includes them", shown_when: Always, provenance: [{kind: evidence, ref: "civil#12-17"}, {kind: evidence, ref: "civil#104-108"}]}
+  - {key: earthworks, code: A, name: Earthworks and sediment control, includes: "Bulk earthworks, cut and fill volumes;
+      erosion and sediment control; building pads", shown_when: Always, provenance: [{kind: evidence, ref: "civil#18-20"},
+       {kind: evidence, ref: "civil#84-87"}, {kind: evidence, ref: "civil#102"}]}
+  - {key: roads, code: B, name: Roads pavements and levels, includes: "Internal road and car park geometry; finished levels;
+      pavement profiles from the geotechnical report; signage and line marking; turning paths; retaining wall geometry
+      and levels outside buildings; accessible path grades", shown_when: Always, provenance: [{kind: evidence, ref: "civil#89-90"},
+       {kind: evidence, ref: "civil#96"}, {kind: evidence, ref: "civil#98-103"}]}
+  - {key: stormwater, code: C, name: Stormwater, includes: "Drainage outside building footprints; overland flow; detention
+      and water quality where section 2 includes them", shown_when: Always, provenance: [{kind: evidence, ref: "civil#12-17"},
+       {kind: evidence, ref: "civil#104-108"}]}
   - key: public_road
     code: D
     name: Public road works
-    includes: "Intersection or driveway design to Austroads and the traffic engineer's advice; submission for council or TfNSW approval"
-    when: [{flag: [public_road]}]
+    includes: "Intersection or driveway design to Austroads and the traffic engineer's advice; submission for council
+      or TfNSW approval"
+    when: [flag: [public_road]]
     if_unknown: option
     assumption: "Price element D as an option: needed only if works in a public road are required."
     shown_when: Works in a public road
     provenance: [{kind: evidence, ref: "civil#91-92"}]
 
 allowances:
-  - {key: design_meetings, label: Design meetings, text: "{n} per design stage, up to 2 hours, online", default: "10", owner: client, provenance: [{kind: evidence, ref: "civil#68"}]}
-  - {key: authority_meetings, label: Authority meetings, text: "{n}", default: "3", owner: client, provenance: [{kind: evidence, ref: "civil#69"}]}
-  - {key: site_visits, label: Site visits during design, text: "{n}", default: "2", owner: client, provenance: [{kind: evidence, ref: "civil#70"}]}
-  - {key: layouts_reviewed, label: Architect layouts reviewed, text: "{n}", default: "4", owner: client, provenance: [{kind: evidence, ref: "civil#81"}]}
-  - {key: concept_options, label: Civil concept options, text: "{n}, then one agreed", default: "2", owner: client, provenance: [{kind: evidence, ref: "civil#82"}]}
-  - {key: pre_lodgement_revisions, label: Drawing revisions before lodgement, text: "{n}", default: "2", owner: client, provenance: [{kind: evidence, ref: "civil#14"}]}
-  - {key: authority_requests, label: Authority requests in assessment, text: "{n} response(s)", default: "1", owner: client, provenance: [{kind: evidence, ref: "civil#23"}, {kind: evidence, ref: "civil#115"}]}
-  - {key: ca_inspections, label: Construction inspections, text: "{n}", default: "6", owner: client, when: [{stage: [construction_phase]}], provenance: [{kind: evidence, ref: "civil#123"}]}
-  - {key: rfi_hours, label: Construction RFIs, text: "{n} hours", default: "10", owner: client, when: [{stage: [construction_phase]}], provenance: [{kind: evidence, ref: "civil#125"}]}
-  - {key: cc_inputs, label: Construction certificate inputs, text: "{n}, and 1 occupation certificate", default: "2", owner: client, when: [{stage: [construction_phase]}], provenance: [{kind: evidence, ref: "civil#126"}]}
+  - {key: design_meetings, label: Design meetings, text: "{n} per design stage, up to 2 hours, online", default: "10",
+    owner: client, provenance: [{kind: evidence, ref: "civil#68"}]}
+  - {key: authority_meetings, label: Authority meetings, text: "{n}", default: "3", owner: client, provenance: [{
+            kind: evidence, ref: "civil#69"}]}
+  - {key: site_visits, label: Site visits during design, text: "{n}", default: "2", owner: client, provenance: [{
+            kind: evidence, ref: "civil#70"}]}
+  - {key: layouts_reviewed, label: Architect layouts reviewed, text: "{n}", default: "4", owner: client, provenance: [
+       {kind: evidence, ref: "civil#81"}]}
+  - {key: concept_options, label: Civil concept options, text: "{n}, then one agreed", default: "2", owner: client, 
+      provenance: [{kind: evidence, ref: "civil#82"}]}
+  - {key: pre_lodgement_revisions, label: Drawing revisions before lodgement, text: "{n}", default: "2", owner: 
+      client, provenance: [{kind: evidence, ref: "civil#14"}]}
+  - {key: authority_requests, label: Authority requests in assessment, text: "{n} response(s)", default: "1", owner: 
+      client, provenance: [{kind: evidence, ref: "civil#23"}, {kind: evidence, ref: "civil#115"}]}
+  - {key: ca_inspections, label: Construction inspections, text: "{n}", default: "6", owner: client, when: [stage: [
+                delivery]], provenance: [{kind: evidence, ref: "civil#123"}]}
+  - {key: rfi_hours, label: Construction RFIs, text: "{n} hours", default: "10", owner: client, when: [stage: [
+                delivery]], provenance: [{kind: evidence, ref: "civil#125"}]}
+  - {key: cc_inputs, label: Construction certificate inputs, text: "{n}, and 1 occupation certificate", default: "2",
+    owner: client, when: [stage: [delivery]], provenance: [{kind: evidence, ref: "civil#126"}]}
 
 positions:
-  - {group: "Design basis and coordination", key: utility_plan, stage: [schematic], label: "Combined utility plan from others' layouts", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#80"}]}
-  - {group: "Stormwater and water management", key: discharge, stage: [schematic], label: "Discharge point, downstream capacity, easements and approvals confirmed at schematic design", kind: technical, value: I, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-commercial-industrial-guide.md (evidence and common failures)"}, {kind: evidence, ref: "civil#15-17"}, {kind: evidence, ref: "civil#63"}]}
-  - {group: "Stormwater and water management", key: drainage_model, stage: [schematic], label: "Stormwater drainage model (DRAINS or equal)", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#12"}]}
-  - {group: "Design basis and coordination", key: hydraulic_connection, stage: [schematic], label: "Hydraulic-to-civil connections: location, levels and who designs each side", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#42"}, {kind: evidence, ref: "civil#105"}]}
+  - {group: "Design basis and coordination", key: utility_plan, stage: [schematic_design], label: "Combined utility plan
+      from others' layouts", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#80"}]}
+  - {group: "Stormwater and water management", key: discharge, stage: [schematic_design], label: "Discharge point, downstream
+      capacity, easements and approvals confirmed at schematic design", kind: technical, value: I, provenance: [{
+            kind: seed, ref: "data/reference/clerk/data/seed/civil-commercial-industrial-guide.md (evidence and common
+            failures)"}, {kind: evidence, ref: "civil#15-17"}, {kind: evidence, ref: "civil#63"}]}
+  - {group: "Stormwater and water management", key: drainage_model, stage: [schematic_design], label: "Stormwater drainage
+      model (DRAINS or equal)", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#12"}]}
+  - {group: "Design basis and coordination", key: hydraulic_connection, stage: [schematic_design], label: "Hydraulic-to-civil
+      connections: location, levels and who designs each side", kind: technical, value: I, provenance: [{kind: 
+            evidence, ref: "civil#42"}, {kind: evidence, ref: "civil#105"}]}
   - key: water_quality
-    stage: [schematic]
+    stage: [schematic_design]
     group: Stormwater and water management
     label: "Water quality modelling (MUSIC) and treatment design"
     kind: technical
-    value: {value: I, when: [{flag: [stormwater_quality]}, {flag: [norbe]}], else: O}
+    value: {value: I, when: [flag: [stormwater_quality], flag: [norbe]], else: O}
     if_unknown: option
     assumption: "Price as an option: needed if council or the catchment requires stormwater quality modelling."
     provenance: [{kind: evidence, ref: "civil#13"}, {kind: evidence, ref: "civil#48"}]
   - key: norbe
-    stage: [schematic]
+    stage: [schematic_design]
     group: Stormwater and water management
     label: "Neutral or beneficial effect assessment (drinking water catchment)"
     kind: technical
-    value: {value: I, when: [{flag: [norbe]}], else: "-"}
+    value: {value: I, when: [flag: [norbe]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only in a drinking water catchment."
     provenance: [{kind: evidence, ref: "civil#108"}]
   - key: osd_existing
-    stage: [schematic]
+    stage: [schematic_design]
     group: Stormwater and water management
     label: "Feasibility of keeping or modifying the existing on-site detention"
     kind: technical
-    value: {value: I, when: [{flag: [osd_existing]}], else: "-"}
+    value: {value: I, when: [flag: [osd_existing]], else: "-"}
     if_unknown: include
-    assumption: "Included: assess whether existing detention can be kept, using the listed records and agreed investigations; report capacity, access and approval constraints."
-    provenance: [{kind: seed, ref: "peer-review-2026-10-09 civil drainage module; example wording"}, {kind: evidence, ref: "civil#63"}]
+    assumption: "Included: assess whether existing detention can be kept, using the listed records and agreed investigations;
+      report capacity, access and approval constraints."
+    provenance: [{kind: seed, ref: "peer-review-2026-10-09 civil drainage module; example wording"}, {kind: evidence,
+          ref: "civil#63"}]
   - key: osd_replacement
-    stage: [schematic]
+    stage: [schematic_design]
     group: Stormwater and water management
     label: "Replacement on-site detention design, pending the feasibility assessment"
     kind: technical
-    value: {value: O, when: [{flag: [osd_existing]}], else: "-"}
+    value: {value: O, when: [flag: [osd_existing]], else: "-"}
     if_unknown: option
     assumption: "Price replacement design as an option pending the feasibility assessment."
     provenance: [{kind: seed, ref: "peer-review-2026-10-09 civil drainage module"}]
   - key: osd_new
-    stage: [schematic]
+    stage: [schematic_design]
     group: Stormwater and water management
     label: "On-site detention design"
     kind: technical
-    value: {value: I, when: [{flag: [osd_required]}], else: "-"}
+    value: {value: I, when: [flag: [osd_required]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed if council requires on-site detention."
     provenance: [{kind: evidence, ref: "civil#16-17"}, {kind: evidence, ref: "civil#49"}, {kind: evidence, ref: "civil#107"}]
   - key: retained_services
-    stage: [schematic]
+    stage: [schematic_design]
     group: Design basis and coordination
-    label: "Investigation brief for retained drainage and services (CCTV, survey, potholing) and how findings change the design"
+    label: "Investigation brief for retained drainage and services (CCTV, survey, potholing) and how findings change the
+      design"
     kind: technical
     value: I
     module: existing_building
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}, {kind: seed, ref: "civil-commercial-industrial-guide.md inception"}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}, {kind: seed, ref: "civil-commercial-industrial-guide.md
+            inception"}]
   - key: earthworks_suitability
-    stage: [detailed_tender, dnc_tender, for_construction]
+    stage: [tender_documentation, design_finalisation]
     group: Design basis and coordination
-    label: "Geotechnical and environmental advice coordinated into earthworks reuse and disposal (balance depends on material suitability)"
+    label: "Geotechnical and environmental advice coordinated into earthworks reuse and disposal (balance depends on material
+      suitability)"
     kind: technical
-    value: {value: I, when: [{flag: [contamination]}, {flag: [acid_sulfate]}, {flag: [groundwater]}], else: "-"}
+    value: {value: I, when: [flag: [contamination], flag: [acid_sulfate], flag: [groundwater]], else: "-"}
     if_unknown: include
-    assumption: "Included: coordination of geotechnical and environmental advice if contamination, acid sulfate soils or groundwater are found."
-    provenance: [{kind: seed, ref: "civil-commercial-industrial-guide.md evidence sweep; civil-residential.md low-confidence flags"}]
+    assumption: "Included: coordination of geotechnical and environmental advice if contamination, acid sulfate soils
+      or groundwater are found."
+    provenance: [{kind: seed, ref: "civil-commercial-industrial-guide.md evidence sweep; civil-residential.md low-confidence
+            flags"}]
   - key: flood_report
-    stage: [schematic]
+    stage: [schematic_design]
     group: Flood, roads and structures
     label: "Flood: floor levels and flood report for the application"
     kind: technical
-    value: {value: I, when: [{flag: [flood]}], else: "-"}
+    value: {value: I, when: [flag: [flood]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only if the site is flood affected."
     provenance: [{kind: evidence, ref: "civil#46"}, {kind: evidence, ref: "civil#109"}]
-  - {group: "Flood, roads and structures", key: flood_evacuation, stage: [schematic], label: "Flood evacuation plan", kind: technical, value: {value: O, when: [{flag: [flood]}], else: "-"}, if_unknown: option, assumption: "Price as an option: needed only if the site is flood affected.", provenance: [{kind: evidence, ref: "civil#110"}]}
-  - {group: "Flood, roads and structures", key: pavement_design, stage: [detailed_tender, dnc_tender, for_construction], label: "Detailed pavement design where the geotechnical report does not give it (name the designer in R4)", kind: technical, value: O, provenance: [{kind: evidence, ref: "civil#32"}, {kind: evidence, ref: "civil#99"}]}
-  - {group: "Flood, roads and structures", key: retaining_structural, stage: [detailed_tender, dnc_tender, for_construction], label: "Structural design of retaining walls", kind: technical, value: X, responsible: "structural engineer", provenance: [{kind: evidence, ref: "civil#101"}, {kind: evidence, ref: "civil#141"}]}
+  - {group: "Flood, roads and structures", key: flood_evacuation, stage: [schematic_design], label: "Flood evacuation
+      plan", kind: technical, value: {value: O, when: [flag: [flood]], else: "-"}, if_unknown: option, assumption: "Price
+      as an option: needed only if the site is flood affected.", provenance: [{kind: evidence, ref: "civil#110"}]}
+  - {group: "Flood, roads and structures", key: pavement_design, stage: [tender_documentation, design_finalisation], 
+      label: "Detailed pavement design where the geotechnical report does not give it (name the designer in R4)", 
+      kind: technical, value: O, provenance: [{kind: evidence, ref: "civil#32"}, {kind: evidence, ref: "civil#99"}]}
+  - {group: "Flood, roads and structures", key: retaining_structural, stage: [tender_documentation, 
+          design_finalisation], label: "Structural design of retaining walls", kind: technical, value: X, 
+      responsible: "structural engineer", provenance: [{kind: evidence, ref: "civil#101"}, {kind: evidence, ref: "civil#141"}]}
   - key: public_road_approvals
-    stage: [detailed_tender, dnc_tender, for_construction]
+    stage: [tender_documentation, design_finalisation]
     group: Approvals and additional services
     label: "Authority submission schedule: designer, review rounds, asset handover"
     kind: technical
-    value: {value: I, when: [{flag: [public_road]}], else: "-"}
+    value: {value: I, when: [flag: [public_road]], else: "-"}
     if_unknown: option
     assumption: "Price as an option: needed only if public road or authority infrastructure is affected."
     provenance: [{kind: evidence, ref: "civil#43"}, {kind: evidence, ref: "civil#92"}, {kind: evidence, ref: "civil#137"}]
-  - {group: "Design basis and coordination", key: clash_check, stage: [detailed_tender, dnc_tender, for_construction], label: "3D clash check of combined services", kind: service_level, simple: X, complex: O, responsible: not_required, provenance: [{kind: evidence, ref: "civil#S p3"}]}
-  - {group: "Design basis and coordination", key: civil_model, stage: [schematic], label: "Coordinated 3D civil model (surface and earthworks)", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "civil#113"}]}
-  - {group: "Design basis and coordination", key: design_criteria, stage: [schematic], label: "Design criteria document", kind: service_level, simple: X, complex: I, responsible: not_required, provenance: [{kind: evidence, ref: "civil#65"}]}
-  - {group: "Stormwater and water management", key: water_strategy, stage: [schematic], label: "Water management strategy (supply, reuse, effluent)", kind: service_level, simple: X, complex: O, responsible: "hydraulic engineer", provenance: [{kind: evidence, ref: "civil#66"}]}
-  - {group: "Design basis and coordination", key: safety_in_design, stage: [schematic], label: "Civil safety in design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#111"}]}
+  - {group: "Design basis and coordination", key: clash_check, stage: [tender_documentation, design_finalisation], 
+      label: "3D clash check of combined services", kind: service_level, simple: X, complex: O, responsible: 
+      not_required, provenance: [{kind: evidence, ref: "civil#S p3"}]}
+  - {group: "Design basis and coordination", key: civil_model, stage: [schematic_design], label: "Coordinated 3D civil
+      model (surface and earthworks)", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "civil#113"}]}
+  - {group: "Design basis and coordination", key: design_criteria, stage: [schematic_design], label: "Design criteria
+      document", kind: service_level, simple: X, complex: I, responsible: not_required, provenance: [{kind: evidence,
+          ref: "civil#65"}]}
+  - {group: "Stormwater and water management", key: water_strategy, stage: [schematic_design], label: "Water management
+      strategy (supply, reuse, effluent)", kind: service_level, simple: X, complex: O, responsible: "hydraulic engineer",
+    provenance: [{kind: evidence, ref: "civil#66"}]}
+  - {group: "Design basis and coordination", key: safety_in_design, stage: [schematic_design], label: "Civil safety in
+      design report", kind: technical, value: I, provenance: [{kind: evidence, ref: "civil#111"}]}
   - key: civil_declarations
-    stage: [for_construction, post_novation, dnc_tender]
+    stage: [design_finalisation, tender_documentation]
     group: Approvals and additional services
     label: "Civil design compliance declarations for the regulated designs"
     kind: technical
-    value: {value: I, when: [{regulated_design: ["yes"]}], else: "-"}
+    value: {value: I, when: [regulated_design: ["yes"]], else: "-"}
     suggest: [{state: [NSW], class: ["2", "3", 9c]}]
     threshold: dbp_regime
     provenance: [{kind: evidence, ref: "civil#72"}]
-  - {group: "Approvals and additional services", key: quality_audit, stage: [construction_phase], label: "Audit of the contractor's quality system", kind: service_level, simple: X, complex: O, responsible: superintendent, provenance: [{kind: evidence, ref: "civil#124"}]}
-  - {group: "Approvals and additional services", key: services_location, label: "Locating services; designing service relocations", kind: technical, value: X, responsible: "services locator and utility designers", provenance: [{kind: evidence, ref: "civil#77-78"}]}
+  - {group: "Approvals and additional services", key: quality_audit, stage: [delivery], label: "Audit of the contractor's
+      quality system", kind: service_level, simple: X, complex: O, responsible: superintendent, provenance: [{kind: 
+            evidence, ref: "civil#124"}]}
+  - {group: "Approvals and additional services", key: services_location, label: "Locating services; designing service
+      relocations", kind: technical, value: X, responsible: "services locator and utility designers", provenance: [{
+            kind: evidence, ref: "civil#77-78"}]}
   - key: shoring
-    stage: [detailed_tender, dnc_tender, for_construction]
+    stage: [tender_documentation, design_finalisation]
     group: Flood, roads and structures
     label: "Shoring, rock anchors, slope stability"
     kind: technical
-    value: {value: O, when: [{flag: [basement]}, {flag: [excavation_adjoining]}], else: X}
+    value: {value: O, when: [flag: [basement], flag: [excavation_adjoining]], else: X}
     responsible: "structural or geotechnical engineer"
     if_unknown: option
     assumption: "Price as an option: needed only for deep excavation or unstable slopes."
     provenance: [{kind: evidence, ref: "civil#133"}]
   - key: trunk_drainage
-    stage: [schematic]
+    stage: [schematic_design]
     group: Stormwater and water management
     label: "Trunk drainage, external catchments, watercourse works"
     kind: technical
-    value: {value: O, when: [{flag: [flood]}], else: X}
+    value: {value: O, when: [flag: [flood]], else: X}
     responsible: "council or a separate engagement"
     if_unknown: option
     assumption: "Price as an option: needed only if external catchments drain through the site."
     provenance: [{kind: evidence, ref: "civil#47"}, {kind: evidence, ref: "civil#138"}]
-  - {group: "Approvals and additional services", key: sea, stage: [detailed_tender, dnc_tender, for_construction], label: "Authority asset approvals (specialist engineering assessment)", kind: technical, value: X, responsible: "structural engineer", provenance: [{kind: evidence, ref: "civil#137"}]}
+  - {group: "Approvals and additional services", key: sea, stage: [tender_documentation, design_finalisation], label: "Authority
+      asset approvals (specialist engineering assessment)", kind: technical, value: X, responsible: "structural engineer",
+    provenance: [{kind: evidence, ref: "civil#137"}]}
   - key: road_safety_audit
-    stage: [detailed_tender, dnc_tender, for_construction]
+    stage: [tender_documentation, design_finalisation]
     group: Flood, roads and structures
     label: "Road safety audit by an auditor independent of the design"
     kind: technical
-    value: {value: O, when: [{flag: [public_road]}], else: X}
+    value: {value: O, when: [flag: [public_road]], else: X}
     responsible: "independent road safety auditor"
     if_unknown: option
     assumption: "Price as an option: needed only for works in a public road."
     provenance: [{kind: evidence, ref: "civil#140"}]
-  - {group: "Stormwater and water management", key: om_manual, stage: [as_built], label: "Operation and maintenance manual for stormwater devices", kind: service_level, simple: X, complex: O, responsible: contractor, provenance: [{kind: evidence, ref: "civil#142"}]}
-  - {group: "Approvals and additional services", key: quantities, stage: [detailed_tender, dnc_tender, for_construction], label: "Pre-tender estimate or bill of quantities", kind: technical, value: X, responsible: "quantity surveyor", provenance: [{kind: evidence, ref: "civil#120"}]}
-  - {group: "Approvals and additional services", key: modifications, label: "Modification applications", kind: technical, value: X, responsible: "town planner", provenance: [{kind: evidence, ref: "civil#57"}, {kind: evidence, ref: "civil#139"}]}
+  - {group: "Stormwater and water management", key: om_manual, stage: [delivery], label: "Operation and maintenance manual
+      for stormwater devices", kind: service_level, simple: X, complex: O, responsible: contractor, provenance: [{
+            kind: evidence, ref: "civil#142"}]}
+  - {group: "Approvals and additional services", key: quantities, stage: [tender_documentation, design_finalisation],
+    label: "Pre-tender estimate or bill of quantities", kind: technical, value: X, responsible: "quantity surveyor", 
+      provenance: [{kind: evidence, ref: "civil#120"}]}
+  - {group: "Approvals and additional services", key: modifications, label: "Modification applications", kind: 
+      technical, value: X, responsible: "town planner", provenance: [{kind: evidence, ref: "civil#57"}, {kind: 
+            evidence, ref: "civil#139"}]}
 
 terms:
   - {key: conduct, text: "Acceptance by conduct does not adopt your terms.", provenance: [{kind: evidence, ref: "civil#154"}]}
-  - {key: no_provisional_sums, text: "No provisional sums: price the allowances. Work that depends on an uninvestigated condition is priced as an option.", provenance: [{kind: evidence, ref: "civil#En p7"}]}
+  - {key: no_provisional_sums, text: "No provisional sums: price the allowances. Work that depends on an uninvestigated
+      condition is priced as an option.", provenance: [{kind: evidence, ref: "civil#En p7"}]}
 
 returnables:
   r1: "Meetings are inside the stage prices, not a separate line."
   r2: "Drawing list per stage, reports, models (drainage, water quality, 12d or Civil 3D) and certificates."
-  r3: "Roles: Director · Associate · Senior engineer · Engineer · Designer or drafter · Graduate. Per-meeting and per-visit rates if used."
+  r3: "Roles: Director · Associate · Senior engineer · Engineer · Designer or drafter · Graduate. Per-meeting and per-visit
+    rates if used."
   r4: "Named director and design lead; CPEng or NER; the pavement designer."
   r5: "Civil packages for this use and site type, in the same LGA."
 returnable_notes:
-  - {key: r4, text: "NSW design practitioner (civil or drainage) registration for the regulated designs.", when: [{regulated_design: ["yes"]}]}
+  - {key: r4, text: "NSW design practitioner (civil or drainage) registration for the regulated designs.", when: [
+            regulated_design: ["yes"]]}
 
-durations: "From the SiteWise program; otherwise estimates: schematic 6 weeks, detailed design 8 weeks after consent, for construction 4 weeks, construction phase as the construction program, as-built 2 weeks after practical completion."
+durations: "From the SiteWise program; otherwise estimates: schematic 6 weeks, detailed design 8 weeks after consent,
+  for construction 4 weeks, construction phase as the construction program, as-built 2 weeks after practical completion."

@@ -3,7 +3,9 @@ schema_version: 1
 reviewed: false
 label_source: agent-draft
 scenario: arthur-st
-description: "145-151 Arthur St Homebush West NSW: warehouse extension (Class 7b) with a mezzanine office (Class 5), DA, traditional, no novation. The existing on-site detention and a Sydney Water asset affect the design; GFA differs between sources."
+description: "145-151 Arthur St Homebush West NSW: warehouse extension (Class 7b) with a mezzanine office (Class 5), DA,
+  traditional, no novation. The existing on-site detention and a Sydney Water asset affect the design; GFA differs between
+  sources."
 facts:
   work_type: extend
   category: industrial
@@ -20,16 +22,16 @@ flags:
   multi_building: "no"
   staged: "no"
 parts:
-  - {id: warehouse, label: Warehouse, classes: [7b], gfa: "2135"}
-  - {id: office, label: Mezzanine office, classes: ["5"], gfa: "215"}
+- {id: warehouse, label: Warehouse, classes: [7b], gfa: "2135"}
+- {id: office, label: Mezzanine office, classes: ["5"], gfa: "215"}
 address: "145-151 Arthur St, Homebush West NSW"
 documents: 12
 consultants:
-  - {title: Architect, status: to be appointed, engaged_by: client}
-  - {title: Structural, status: to be appointed, engaged_by: client}
-  - {title: Civil, status: to be appointed, engaged_by: client}
-  - {title: Traffic, status: to be appointed, engaged_by: client}
-  - {title: Town Planner, status: to be appointed, engaged_by: client}
+- {title: Architect, status: to be appointed, engaged_by: client}
+- {title: Structural, status: to be appointed, engaged_by: client}
+- {title: Civil, status: to be appointed, engaged_by: client}
+- {title: Traffic, status: to be appointed, engaged_by: client}
+- {title: Town Planner, status: to be appointed, engaged_by: client}
 fields:
   ref: HC-ARTHUR-RFP
   issued: "2026-10-12"
@@ -42,37 +44,40 @@ fields:
   design_vehicle: "B-double"
 settings:
   architecture:
-    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "boundary:range": {start: brief_concept, end: design_finalisation}
     "allowance:client_presentations": "2"
     "allowance:planning_cap": "20"
     "allowance:ca_inspections": "6"
   town-planning:
-    "boundary:range": {start: prelim_advice, end: determination_review}
+    "boundary:range": {start: brief_concept, end: planning}
     "allowance:authority_meetings": "1"
   traffic:
-    "boundary:range": {start: design_advice, end: travel_plan}
+    "boundary:range": {start: brief_concept, end: delivery}
     "allowance:authority_meetings": "1"
     "driver:flag.intersection_modelling": "no"
   civil:
-    "boundary:range": {start: schematic, end: for_construction}
+    "boundary:range": {start: schematic_design, end: design_finalisation}
   structural:
-    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "boundary:range": {start: brief_concept, end: delivery}
     "allowance:ca_inspections": "4"
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded,
     # and an excluded service names no party.
     # The brief is priced on every project (owner ruling R13, 7 November 2026).
-    stages_include: [brief_masterplan, concept, schematic, planning_approval, planning_response, design_development, interiors, tender_traditional, bidding, for_construction]
-    stages_absent: [dnc_tender, post_novation, regulated_design, construction_support, contract_admin]
-    positions: {existing_interfaces: I, mixed_use_map: I, tenant_fitout: I, community: I, apartment_design: absent, live_staging: absent}
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation, 
+        design_finalisation]
+    stages_absent: [delivery]
+    positions: {existing_interfaces: I, mixed_use_map: I, tenant_fitout: I, community: I, apartment_design: absent, 
+        live_staging: absent}
     scale: complex
     blocking: ["fact:budget", "fact:gfa"]
     blocking_only: true
   structural:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [concept_schematic, existing_assessment, planning_approval, authority_asset, design_development, tender_traditional, construction_documents, construction_phase]
-    stages_absent: [dnc_tender, regulated_design, post_novation]
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation, 
+        design_finalisation, delivery]
+    stages_absent: []
     positions:
       strengthening: I
       temporary_works_design: X
@@ -84,8 +89,8 @@ expect:
     blocking_only: true
   civil:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [schematic, detailed_tender, for_construction, as_built]
-    stages_absent: [dnc_tender, post_novation, construction_phase]
+    stages_include: [schematic_design, tender_documentation, design_finalisation]
+    stages_absent: [delivery]
     elements_include: [earthworks, roads, stormwater, public_road]
     positions:
       osd_existing: I
@@ -98,7 +103,7 @@ expect:
     blocking_only: true
   town-planning:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [prelim_advice, pre_lodgement, planning_report, lodgement, assessment, determination_review, variation_request]
+    stages_include: [brief_concept, planning]
     positions:
       submissions_response: I
       panel_attendance: I
@@ -108,11 +113,11 @@ expect:
     role_absent: [adviser]
     blocking: ['fact:gfa']
     blocking_only: true
-    stages_absent: [post_approval]
+    stages_absent: [design_development]
   traffic:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [design_advice, report, assessment_response, conditions_review, ctmp, design_review, car_park_certification, travel_plan]
-    stages_absent: [surveys, modelling]
+    stages_include: [brief_concept, planning, design_development, design_finalisation, delivery]
+    stages_absent: []
     positions:
       microsimulation: X
       vehicle_schedule: I
@@ -121,9 +126,14 @@ expect:
     blocking: ['fact:gfa']
     blocking_only: true
 sources:
-  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
-  - "Parts and areas: architecture ledger header (nettletontribe: warehouse 2,135 m², mezzanine office 215 m², site 31,720 m²)."
-  - "GFA dispute: traffic ledger note (BG&E 2,895 m² vs 2,135 m² elsewhere); the project table must carry one figure, so the conflict blocks issue."
-  - "Existing OSD and Sydney Water asset: civil ledger (keep existing OSD; option to design a new OSD) and structural ledger #47-48."
-  - "Strengthening stays an option pending the existing structure assessment (peer review: no unsupported strengthening assumption)."
-  - "Geotechnical engineer has no package in this fixture, so compaction inspections show as unallocated (advisory)."
+- "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction
+  budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
+- "Parts and areas: architecture ledger header (nettletontribe: warehouse 2,135 m², mezzanine office 215 m², site 31,720
+  m²)."
+- "GFA dispute: traffic ledger note (BG&E 2,895 m² vs 2,135 m² elsewhere); the project table must carry one figure, so
+  the conflict blocks issue."
+- "Existing OSD and Sydney Water asset: civil ledger (keep existing OSD; option to design a new OSD) and structural ledger
+  #47-48."
+- "Strengthening stays an option pending the existing structure assessment (peer review: no unsupported strengthening
+  assumption)."
+- "Geotechnical engineer has no package in this fixture, so compaction inspections show as unallocated (advisory)."

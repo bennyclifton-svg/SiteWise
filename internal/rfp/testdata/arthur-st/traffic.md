@@ -30,13 +30,12 @@ Price each stage that applies as a lump sum; surveys are priced per location. R1
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Parking and access advice |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Site inspection | Included |  |
 |  | Review of plans and controls | Included |  |
 |  | Advice on access, heavy vehicle circulation, loading and parking layout | Included |  |
 |  | Vehicle schedule (waste, emergency, service and operator vehicles); ramps, gradients, headroom, sight lines and pedestrian conflicts checked against the current architect and civil layouts | Included |  |
-|  | Alternative schemes tested | Included |  |
-| Traffic and parking report |  | Included |  |
+| Planning |  | Included |  |
 |  | Traffic generation and distribution | Included |  |
 |  | Network impact (using the modelling stage where it applies) | Included |  |
 |  | Parking provision against the DCP and demand | Included |  |
@@ -44,31 +43,29 @@ Price each stage that applies as a lump sum; surveys are priced per location. R1
 |  | Swept paths for the design vehicle | Included |  |
 |  | Pedestrian, cyclist and end-of-trip review | Included |  |
 |  | Safety. 1 draft, 1 final | Included |  |
+|  | Up to 1 response(s) to council or TfNSW requests | Included |  |
+|  | 1 meeting(s) | Included |  |
+|  | Review of the traffic conditions in the consent | Included |  |
+|  | Reply letter if needed | Included |  |
 |  | Consultation with council traffic engineers and TfNSW while preparing the report | Included |  |
 |  | Bicycle parking and end-of-trip assessment | Included |  |
 |  | Parking demand reduction measures | Included |  |
+|  | Alternative schemes tested | Included |  |
 |  | Swept paths for every loading dock and design vehicle | Included |  |
 |  | Microsimulation beyond SIDRA | Excluded |  |
-| Assessment response |  | Included |  |
-|  | Up to 1 response(s) to council or TfNSW requests | Included |  |
-|  | 1 meeting(s) | Included |  |
-| Conditions review |  | Included |  |
-|  | Review of the traffic conditions in the consent | Included |  |
-|  | Reply letter if needed | Included |  |
 |  | Expert witness, Land and Environment Court | Excluded |  |
-| Review of the developed design |  | Included |  |
+| Design development |  | Included |  |
 |  | Ramps, parking and loading checked against the consent conditions as the design develops or the contractor changes it | Included |  |
 |  | Signage and line-marking submissions to the local traffic committee | Included |  |
+|  | Travel plan meeting the condition or DCP requirement | Included |  |
 |  | Road safety audit by an auditor independent of the design team; state its stage and scope in R2 | Included |  |
 |  | Design of works in the public road (signals, intersections) | Excluded |  |
-| Car park certification |  | Included |  |
-|  | Design certification of the car park, access and loading against AS 2890 for the construction certificate | Included |  |
-|  | Completed car park certification after construction | Included |  |
-| Construction traffic management plan |  | Included |  |
+| Design finalisation |  | Included |  |
 |  | Construction traffic management plan for council approval, or review of the contractor's plan (say which in R2) | Included |  |
 |  | Traffic control plans | Included |  |
-| Green travel plan | Price as an option: needed only if a consent condition or the DCP requires a travel plan. | Included |  |
-|  | Travel plan meeting the condition or DCP requirement | Included |  |
+| Delivery |  | Included |  |
+|  | Design certification of the car park, access and loading against AS 2890 for the construction certificate | Included |  |
+|  | Completed car park certification after construction | Included |  |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
@@ -127,8 +124,6 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 **Rules await owner review**: The traffic and parking services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
 
 **Blocks issue — Gross floor area: sources disagree (2135 vs 2895)**: Set the one figure every firm prices from.
-
-**Green travel plan required by a condition or the DCP: not established**: Priced on a printed assumption until confirmed: Green travel plan.
 
 **Works in a public road or intersection: not established**: Priced on a printed assumption until confirmed: Road safety audit by an auditor independent of the design team; state its stage and scope in R2.
 

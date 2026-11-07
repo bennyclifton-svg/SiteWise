@@ -26,22 +26,21 @@ Confirm base stages, inputs and final query-period end; later services require w
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Inception / cost basis |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Reconcile brief, budget, scope/area/quantity definitions and evidence | Included |  |
 |  | Establish source, gap, risk and priced-assumption registers, reporting/program and input owners | Included |  |
 |  | Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser agreed | Included |  |
-| S4 Design cost planning |  | Included |  |
+|  | Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin | Included |  |
+| Design development |  | Included |  |
 |  | At named milestones measure/price agreed documents | Included |  |
 |  | Coordinate services/siteworks, test value options with designers, reconcile changes/budget and risk/owner costs | Included |  |
 |  | Flag gaps before freeze | Included |  |
 |  | Construction cost plan at selected stages; measured/assumed quantities and missing specialist inputs recorded | Included |  |
 |  | Fit-out/refurb/live-site strip-out, make-good, isolation, after-hours and decanting; designers assess retained systems | Included |  |
 |  | Operator equipment/specialist operations; evidenced requirements or explicit allowances only | Included |  |
-|  | Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin | Included |  |
 |  | Life-cycle/carbon/LCA analysis; horizon/assumptions stated, designers approve performance effects; no compliance certification | Included |  |
-| S5 Procurement / tender | Not part of this appointment | Excluded | — |
-| S6 Post-contract cost advice | Not part of this appointment | Excluded | — |
-| S7 Final account | Not part of this appointment | Excluded | — |
+| Tender documentation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Valuation, insurance replacement value and tax depreciation | Excluded |  |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |

@@ -17,11 +17,11 @@ flags:
   multi_building: "no"
   architect_lodges: "yes"
 parts:
-  - {id: house, label: House, classes: [1a]}
+- {id: house, label: House, classes: [1a]}
 address: "12 Example St, Example NSW"
 consultants:
-  - {title: Architect, status: appointed}
-  - {title: Structural, status: to be appointed, engaged_by: client}
+- {title: Architect, status: appointed}
+- {title: Structural, status: to be appointed, engaged_by: client}
 fields:
   ref: RFP-TEST
   issued: "2026-10-12"
@@ -33,26 +33,28 @@ fields:
   lga: Example LGA
 settings:
   architecture:
-    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "boundary:range": {start: brief_concept, end: design_finalisation}
     "allowance:client_presentations": "1"
     "allowance:ca_inspections": "3"
   structural:
-    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "boundary:range": {start: brief_concept, end: delivery}
     "allowance:ca_inspections": "3"
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     # The brief is priced on every project (owner ruling R13, 7 November 2026).
-    stages_include: [brief_masterplan, concept, schematic, planning_approval, design_development, house_documents, bidding]
-    stages_absent: [planning_response, interiors, regulated_design, dnc_tender, tender_traditional, for_construction, construction_support]
-    positions: {bim_coordination: absent, marketing_renders: X, specification: I, typical_interiors: absent, house_interiors: I, lodgement: I, existing_interfaces: I, mixed_use_map: absent, apartment_design: absent}
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation]
+    stages_absent: []
+    positions: {bim_coordination: absent, marketing_renders: X, specification: I, typical_interiors: absent, 
+        house_interiors: I, lodgement: I, existing_interfaces: I, mixed_use_map: absent, apartment_design: absent}
     allowances_absent: [workshops, planning_cap, bim_lod, qs_reviews]
     scale: simple
     blocking_only: true
   structural:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [concept_schematic, existing_assessment, planning_approval, design_development, tender_traditional, construction_documents, construction_phase, authority_asset]
-    stages_absent: [regulated_design, dnc_tender]
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation, 
+        design_finalisation, delivery]
+    stages_absent: []
     positions:
       residential_framing: I
       shared_model: I
@@ -63,6 +65,11 @@ expect:
     checks: [scale]
     blocking_only: true
 sources:
-  - "Peer review scenario: a small Class 1 extension gets footing and framing scope and existing-work scope, with no warehouse BIM, SIDRA or campus allowances."
-  - "Owner decisions of 13 October 2026 (docs/plans/2026-10-13-house-rfp-brief.md): a Class 1 house gets one documentation set (house_documents replaces tender and for-construction documents), the specification and kitchen, bathroom and joinery design are included, BIM and QS rows leave a house RFP, and the budget, the lodger and each consultant's engagement are stated inputs."
-  - "Structural service level is assumed simple while basement, transfer and asset flags are unknown; the assumption is listed for review."
+- "Peer review scenario: a small Class 1 extension gets footing and framing scope and existing-work scope, with no warehouse
+  BIM, SIDRA or campus allowances."
+- "Owner decisions of 13 October 2026 (docs/plans/2026-10-13-house-rfp-brief.md): a Class 1 house gets one documentation
+  set (house_documents replaces tender and for-construction documents), the specification and kitchen, bathroom and joinery
+  design are included, BIM and QS rows leave a house RFP, and the budget, the lodger and each consultant's engagement
+  are stated inputs."
+- "Structural service level is assumed simple while basement, transfer and asset flags are unknown; the assumption is
+  listed for review."

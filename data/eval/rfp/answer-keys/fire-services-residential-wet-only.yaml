@@ -39,13 +39,13 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
-    R1-R9 schedules.
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; 
+    quantified R1-R9 schedules.
 settings:
   fire-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
     allowance:extent: '2'
     allowance:visits: '2'
     allowance:design: '2'

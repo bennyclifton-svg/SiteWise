@@ -33,21 +33,20 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
-    owners. Fixture quantities are client choices, not generation-rate defaults.
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection 
+    confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 settings:
   waste-management:
     boundary:range:
-      start: s1_inception
-      end: s7_completion
+      start: brief_concept
+      end: delivery
     allowance:coverage: '2'
     allowance:plans: '2'
     allowance:meetings: '2'
     allowance:design: '2'
     allowance:visits: '2'
     allowance:duration: '2'
-    stage:s7_completion: include
-    stage:s8_operational: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/waste-management/rfp.md Sections 1-7
 - 'docs/rfp-golden/waste-management/ledger.md #1-45'
@@ -57,7 +56,7 @@ description: Hospital extension explicitly appoints construction checking; later
 expect:
   waste-management:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s7_completion, s8_operational]
+    stages_include: [delivery]
     positions:
       completion: I
       postoccupation: I

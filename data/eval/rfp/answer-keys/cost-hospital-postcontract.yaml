@@ -34,13 +34,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
-    are fixture choices.
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected 
+    counts are fixture choices.
 settings:
   cost-planning:
     boundary:range:
-      start: s1_basis
-      end: s7_completion
+      start: brief_concept
+      end: delivery
     allowance:plans: '2'
     allowance:authority: '2'
     allowance:review: '2'
@@ -48,9 +48,8 @@ settings:
     allowance:tender: '2'
     allowance:construction: '2'
     allowance:specialist: '2'
-    stage:s5_tender: include
-    stage:s6_construction: include
-    stage:s7_completion: include
+    stage:tender_documentation: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/cost-planning/rfp.md Sections 1-7
 - 'docs/rfp-golden/cost-planning/ledger.md #1-39'
@@ -59,7 +58,7 @@ description: Explicit institutional post-contract appointment promotes claim adv
 expect:
   cost-planning:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_basis, s4_design, s5_tender, s6_construction, s7_completion]
+    stages_include: [brief_concept, design_development, tender_documentation, delivery]
     positions:
       tender: I
       claims: I

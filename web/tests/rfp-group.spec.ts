@@ -31,14 +31,15 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
     // The project's facts may already have made the row.
     await expect(page.getByRole("button", { name: "Add discipline", exact: true })).toBeEnabled();
     await page.waitForLoadState("networkidle");
-    if (await page.getByLabel(`Select ${label} to combine`).count() > 0) continue;
+    if (await page.getByRole("rowheader", { name: label, exact: true }).count() > 0) continue;
     await page.getByRole("button", { name: "Add discipline", exact: true }).click();
     await page.getByLabel("Discipline", { exact: true }).selectOption(discipline);
     await page.getByRole("button", { name: "Add row", exact: true }).click();
-    await expect(page.getByLabel(`Select ${label} to combine`)).toBeVisible();
+    await expect(page.getByRole("rowheader", { name: label, exact: true })).toBeVisible();
   }
-  await page.getByLabel("Select Structural to combine").check();
-  await page.getByLabel("Select Civil to combine").check();
+  // Rows are selected as in Program: click, then Ctrl-click.
+  await page.getByRole("rowheader", { name: "Structural", exact: true }).click();
+  await page.getByRole("rowheader", { name: "Civil", exact: true }).click({ modifiers: ["Control"] });
   await page.getByRole("button", { name: "Combine 2", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Combine", exact: true }).click();
   await expect(page.getByRole("button", { name: "Uncombine Civil and Structural", exact: true })).toBeVisible();

@@ -1,28 +1,23 @@
-# Delivery stages (SCHEMA.md "Delivery and commercial catalogues"). Top-level
-# ids are the unforeseen-condition stage targets. Sub-stages are editable
-# suggestions for staged fee lines, taken from the plan's cost example; the
-# novation side is a typical default a package may change. Draft for owner review.
+# Project stages (SCHEMA.md "Delivery and commercial catalogues"). Every
+# consultant RFP, every package, Program and the Cost Plan use these seven
+# stages, in this order (owner direction, 7 November 2026: one timeline so
+# each fee sits at a known stage for cost management and forecasting).
+# The novation side is a typical default a package may change: everything up
+# to the builder's tender is before novation. Draft for owner review.
 version: 1
 status: draft
 sources:
-  - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Core concepts"}
-  - {design: docs/plans/2026-10-04-next-wave-architecture-schema.md, anchor: "## Cost plan through procurement"}
+  - {design: docs/plans/2026-11-07-common-project-stages.md, anchor: "## 1. Owner decisions (7 November 2026)"}
 stages:
-  - {id: investigation, label: Investigation}
-  - id: design
-    label: Design
-    substages:
-      - {id: concept_design, label: Concept design, novation: pre}
-      - {id: approval_documentation, label: Approval documentation, novation: pre}
-      - {id: construction_documentation, label: Construction documentation, novation: post}
-  - {id: approvals, label: Authorities and approvals}
-  - {id: procurement, label: Procurement}
-  - id: construction
-    label: Construction
-    substages:
-      - {id: construction_stage_inspections, label: Construction-stage inspections, novation: post}
-  - {id: completion, label: Completion}
-  - {id: defects, label: Defects liability}
+  - {id: brief_concept, label: Brief and concept, novation: pre}
+  - {id: schematic_design, label: Schematic design, novation: pre}
+  - {id: planning, label: Planning, novation: pre}
+  - {id: design_development, label: Design development, novation: pre}
+  - {id: tender_documentation, label: Tender documentation, novation: pre}
+  - {id: design_finalisation, label: Design finalisation, novation: post}
+  # Contract administration and the builder's construction, completion and
+  # defects period (owner: "Delivery" is broader and better known).
+  - {id: delivery, label: Delivery, novation: post}
   # A stage a user makes in Program maps to `other` until the user picks the
   # catalogue stage it really is (program plan 4.6, owner answer Q5). It is
   # never a default: procurement and fee defaults offer only real stages.

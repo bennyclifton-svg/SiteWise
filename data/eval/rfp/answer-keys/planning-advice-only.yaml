@@ -10,7 +10,7 @@ facts:
   pathway: advice_only
   state: NSW
 parts:
-  - {id: site, label: Site, kind: whole, classes: ["5"]}
+- {id: site, label: Site, kind: whole, classes: ["5"]}
 address: "9 Example St, Example NSW"
 fields:
   ref: RFP-TEST
@@ -23,15 +23,16 @@ fields:
   lga: Example LGA
 settings:
   town-planning:
-    "boundary:range": {start: prelim_advice, end: prelim_advice}
+    "boundary:range": {start: brief_concept, end: brief_concept}
 expect:
   town-planning:
-    stages_include: [prelim_advice]
-    stages_absent: [pre_lodgement, planning_report, lodgement, assessment, determination_review, post_approval, variation_request]
-    positions: {certificates: I, court: X, specialist_review: absent, compliance_matrix: absent, submissions_response: absent, modification: absent}
+    stages_include: [brief_concept]
+    stages_absent: [planning, design_development]
+    positions: {certificates: I, court: X, specialist_review: absent, compliance_matrix: absent, 
+        submissions_response: absent, modification: absent}
     allowances_absent: [rfi_responses, authority_meetings, pre_lodgement_meetings]
     role: [adviser]
     role_absent: [planner]
     blocking_only: true
 sources:
-  - "Peer review: advice or due diligence only has no automatic lodgement or determination stage."
+- "Peer review: advice or due diligence only has no automatic lodgement or determination stage."

@@ -31,13 +31,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory
+  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory 
     suite, owners and reliance recipients); quantities are client test-fixture choices.
 settings:
   geotechnical:
     boundary:range:
-      start: g1_plan
-      end: g1_plan
+      start: brief_concept
+      end: brief_concept
     allowance:mobilisation: '2'
     allowance:boreholes: '2'
     allowance:pits: '2'
@@ -50,22 +50,22 @@ sources:
 - docs/rfp-golden/geotechnical/rfp.md Sections 1-7
 - 'docs/rfp-golden/geotechnical/ledger.md #1-54'
 scenario: geotech-plan-only-boundary
-description: Plan-only start/end leaves later fieldwork/report as options; clearance responsibility still requires
-  a project decision before disturbance.
+description: Plan-only start/end leaves later fieldwork/report as options; clearance responsibility still requires a
+  project decision before disturbance.
 expect:
   geotechnical:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [g1_plan]
-    stages_absent: [g4_planning, g2_field, g3_report, g5_design, g6_construction, g7_transfer]
+    stages_include: [brief_concept]
+    stages_absent: [planning, design_development, design_finalisation, delivery]
     positions:
       plan: I
       foundation: I
       civil_parameters: I
-      monitoring: X
+      monitoring: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
       asset_exposure: I
-      clearance: X
+      clearance: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
       access: X
-      defects: X
+      defects: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
       environment: X
       ass: I
       handback: I

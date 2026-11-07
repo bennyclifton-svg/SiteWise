@@ -68,13 +68,8 @@ description: Capacity advice does not buy detailed design, upgrade, construction
 snapshot: false
 expect:
   hydraulic-services:
-    stages_include:
-    - advisory
-    stages_absent:
-    - design
-    - tender
-    - construction
-    - handover
+    stages_include: [advisory]
+    stages_absent: [design_development, tender_documentation]
     positions:
       advice: I
       domestic: absent

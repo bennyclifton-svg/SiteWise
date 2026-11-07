@@ -39,8 +39,8 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
-    R1-R9 schedules.
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; 
+    quantified R1-R9 schedules.
 settings:
   fire-services:
     boundary:range:
@@ -63,7 +63,7 @@ expect:
   fire-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     stages_include: [advisory]
-    stages_absent: [inception, concept, design, tender, construction, handover]
+    stages_absent: [schematic_design, design_development, tender_documentation, delivery]
     positions:
       wet: absent
       supply: absent

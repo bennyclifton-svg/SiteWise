@@ -35,7 +35,7 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Preliminary planning advice |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Review of the plans against the LEP, DCP and other controls | Included |  |
 |  | Site constraints | Included |  |
 |  | Historic consents | Included |  |
@@ -47,33 +47,28 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 |  | Planning certificate, title and DP searches (fees at cost) | Included |  |
 |  | Historic consents through GIPA | Included |  |
 |  | Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date | Included |  |
-| Pre-lodgement |  | Included |  |
+| Planning |  | Included |  |
 |  | Book the meeting | Included |  |
 |  | Pre-lodgement letter with a scheme overview and compliance summary | Included |  |
 |  | Attend 1 meeting(s) | Included |  |
 |  | Note of outcomes and plan changes | Included |  |
-|  | Pre-lodgement plans in council's required format | Included |  |
-| Planning report |  | Included |  |
 |  | Statement of Environmental Effects incorporating the specialist reports | Included |  |
 |  | 1 draft, 1 client review, 1 final | Included |  |
-|  | Review of specialist reports for planning compliance before lodgement | Included |  |
-| Variation request | Price as an option: needed only if a development standard is varied. | Included |  |
 |  | Clause 4.6 written request for each varied development standard | Included |  |
-| Lodgement |  | Included |  |
 |  | Forms, owner's consent, checklist, fee advice, collation and portal lodgement | Included |  |
-| Assessment |  | Included |  |
 |  | Monitor and follow up | Included |  |
 |  | Client updates | Included |  |
 |  | Up to 1 response(s) to authority information requests | Included |  |
 |  | 1 meeting(s) with the authority | Included |  |
 |  | Review of the assessment report and draft conditions | Included |  |
-|  | Response to public submissions | Included |  |
-|  | Attendance at planning panel meetings, to the allowance in section 4 | Included |  |
-| Determination review |  | Included |  |
 |  | Review of the consent conditions | Included |  |
 |  | Advice on conditions to challenge or modify | Included |  |
+|  | Review of specialist reports for planning compliance before lodgement | Included |  |
+|  | Response to public submissions | Included |  |
+|  | Attendance at planning panel meetings, to the allowance in section 4 | Included |  |
+|  | Pre-lodgement plans in council's required format | Included |  |
 |  | Land and Environment Court appeal or expert witness | Excluded |  |
-| Post-approval support | Not part of this appointment | Excluded | — |
+| Design development | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Ad hoc planning advice and consultant coordination, within the meeting allowance | Included |  |
 |  | Council, agency and panel fees; contributions | Excluded |  |
@@ -143,8 +138,6 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 **Service level assumed simple**: These facts are not established: Application goes to a planning panel, A development standard is varied (clause 4.6), Heritage item or conservation area, Notification likely to draw objections. Confirm them or set the service level.
 
 **Unallocated: Specialist reports (traffic, acoustic and others)**: Excluded from this RFP, but the project has no specialist consultants engaged by the client package. Add one or name who does it.
-
-**A development standard is varied (clause 4.6): not established**: Priced on a printed assumption until confirmed: Variation request.
 
 **Notification likely to draw objections: not established**: Priced on a printed assumption until confirmed: Response to public submissions.
 

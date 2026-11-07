@@ -62,7 +62,7 @@ func TestPackageCreateStagesAndIsolation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if created.ReviewStatus != "accepted_for_planning" || created.Version != 1 || len(created.Stages) != 4 {
+	if created.ReviewStatus != "accepted_for_planning" || created.Version != 1 || len(created.Stages) != 7 {
 		t.Fatalf("created %+v", created)
 	}
 	pre, post := 0, 0
@@ -77,11 +77,11 @@ func TestPackageCreateStagesAndIsolation(t *testing.T) {
 			t.Fatal(stage)
 		}
 	}
-	if pre != 2 || post != 2 {
+	if pre != 5 || post != 2 {
 		t.Fatalf("novation defaults %d/%d", pre, post)
 	}
 	got, err := s.ReadPackages(ctx, orgA, projectA)
-	if err != nil || len(got) != 1 || got[0].ID != created.ID || len(got[0].Stages) != 4 {
+	if err != nil || len(got) != 1 || got[0].ID != created.ID || len(got[0].Stages) != 7 {
 		t.Fatalf("read %+v %v", got, err)
 	}
 	if _, err := s.ReadPackages(ctx, orgB, projectA); !errors.Is(err, store.ErrNotFound) {

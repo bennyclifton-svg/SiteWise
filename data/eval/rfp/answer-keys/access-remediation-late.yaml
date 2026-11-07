@@ -44,27 +44,27 @@ fields:
 settings:
   access:
     boundary:range:
-      start: s4_approval
-      end: s7_completion
+      start: design_development
+      end: delivery
     allowance:coverage: '2'
     allowance:reviews: '2'
     allowance:meetings: '2'
     allowance:solutions: '2'
     allowance:visits: '2'
     allowance:duration: '2'
-    stage:s6_postcontract: include
-    stage:s7_completion: include
+    stage:design_finalisation: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/access/rfp.md Sections 1-7
 - 'docs/rfp-golden/access/ledger.md #1-43'
 scenario: access-remediation-late
-description: Late mixed-use remediation appointment includes explicit construction/completion review while specialist
-  repair design, field tests and solution authoring remain separately scoped.
+description: Late mixed-use remediation appointment includes explicit construction/completion review while 
+  specialist repair design, field tests and solution authoring remain separately scoped.
 expect:
   access:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s4_approval, s6_postcontract, s7_completion, s5_tender]
-    stages_absent: [s1_inception, s2_concept, s3_planning, s8_advisory]
+    stages_include: [design_development, tender_documentation, design_finalisation, delivery]
+    stages_absent: [brief_concept, planning, s8_advisory]
     positions:
       existing: I
       shared_routes: I

@@ -138,7 +138,7 @@ func TestProgramRoutes(t *testing.T) {
 
 	construction := ""
 	for _, act := range v.Activities {
-		if act.Kind == engine.KindStage && act.CatalogueStageID == "construction" {
+		if act.Kind == engine.KindStage && act.CatalogueStageID == "delivery" {
 			construction = act.ID
 		}
 	}
@@ -274,7 +274,7 @@ sources: ` + programTestSrc + `
 fragments:
   - id: fr.flood-check
     label: Test flood check
-    stage: construction
+    stage: delivery
     systems: [structure]
     applies_when: {det: flood_hazard, is: true}
     activities:

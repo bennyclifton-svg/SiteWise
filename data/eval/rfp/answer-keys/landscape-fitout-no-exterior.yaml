@@ -32,13 +32,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture 
     quantities are client choices.
 settings:
   landscape-architecture:
     boundary:range:
-      start: s1_inception
-      end: s1_inception
+      start: brief_concept
+      end: brief_concept
     allowance:extent: '2'
     allowance:evidence: '2'
     allowance:reviews: '2'
@@ -54,15 +54,8 @@ scenario: landscape-fitout-no-exterior
 description: Known no exterior scope buys no landscape design.
 expect:
   landscape-architecture:
-    stages_include:
-    - s1_inception
-    stages_absent:
-    - s2_concept
-    - s3_approval
-    - s4_developed
-    - s5_tender
-    - s7_construction
-    - s8_establishment
+    stages_include: [brief_concept]
+    stages_absent: [planning, design_development, tender_documentation, delivery]
     positions:
       design: absent
       podium: absent

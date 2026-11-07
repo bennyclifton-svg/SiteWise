@@ -49,14 +49,14 @@ func TestProgramReviewLeavesTheUsersOwnEdits(t *testing.T) {
 	}
 	review("a fresh program")
 
-	concept := rowOf(t, st, "Concept design")
+	concept := rowOf(t, st, "Brief and concept")
 	label := "Sketch design"
 	res := apply(t, s, st, store.ProgramOp{Op: "update", ID: concept.ID, Label: &label})
 	review("a rename")
 
-	def := rowOf(t, res.ProgramState, "Defects liability")
+	def := rowOf(t, res.ProgramState, "Design finalisation")
 	res = apply(t, s, res.ProgramState, store.ProgramOp{Op: "delete", IDs: []string{def.ID}})
-	if hasRow(res.ProgramState, "Defects liability") {
+	if hasRow(res.ProgramState, "Design finalisation") {
 		t.Fatal("delete did not retire the stage")
 	}
 	review("a delete")
@@ -68,7 +68,7 @@ func TestProgramReviewLeavesTheUsersOwnEdits(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if hasRow(ans.ProgramState, "Defects liability") || !hasRow(ans.ProgramState, label) {
+	if hasRow(ans.ProgramState, "Design finalisation") || !hasRow(ans.ProgramState, label) {
 		t.Fatalf("an answer undid the user's edits: %s", labels(ans.ProgramState))
 	}
 }

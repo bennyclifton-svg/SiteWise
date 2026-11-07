@@ -44,8 +44,8 @@ fields:
 settings:
   bca-certification:
     boundary:range:
-      start: a1_inception
-      end: b4_occupation
+      start: schematic_design
+      end: delivery
     allowance:plan_sets: '2'
     allowance:reports: '2'
     allowance:meetings: '2'
@@ -61,13 +61,12 @@ sources:
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
 snapshot: true
 scenario: bca-combined-mixed-use
-description: Separate A/B packages, mixed-use occupied fit-out and D&C transfer request;
-  all conditional extents expressly confirmed. Novation does not add a statutory-transfer
-  stage.
+description: Separate A/B packages, mixed-use occupied fit-out and D&C transfer request; all conditional extents 
+  expressly confirmed. Novation does not add a statutory-transfer stage.
 expect:
   bca-certification:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [a1_inception, a2_planning, a3_tender, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation, a4_construction]
+    stages_include: [schematic_design, planning, design_development, design_finalisation, delivery]
     positions:
       statutory_functions: I
       existing_assessment: I

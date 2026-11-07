@@ -64,7 +64,7 @@ func TestDisciplineProposalAcceptance(t *testing.T) {
 				t.Error(err)
 				return
 			}
-			if got.Kind != "services" || got.ReviewStatus != "accepted_for_planning" || got.LifecycleStatus != "planned" || len(got.Stages) != 4 {
+			if got.Kind != "services" || got.ReviewStatus != "accepted_for_planning" || got.LifecycleStatus != "planned" || len(got.Stages) != 7 {
 				t.Errorf("invalid package %+v", got)
 			}
 			ids <- got.ID
@@ -107,7 +107,7 @@ func TestDisciplineProposalAcceptance(t *testing.T) {
 		t.Fatal("undo did not retire package", packages, err)
 	}
 	restored, err := s.AcceptPackageProposal(ctx, orgA, projectA, p.Key, userA, p.InputsFingerprint)
-	if err != nil || restored.ID != id || restored.Version != 3 || len(restored.Stages) != 4 {
+	if err != nil || restored.ID != id || restored.Version != 3 || len(restored.Stages) != 7 {
 		t.Fatalf("reaccept %+v %v", restored, err)
 	}
 	label := "Edited stage"

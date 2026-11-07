@@ -34,7 +34,10 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 
 | Stage | Scope | Position |
 |---|---|---|
-| Concept and schematic design |  | Included |
+| Brief and concept |  | Included |
+|  | Adequacy assessment of the existing structures the works load or connect to: extent, missing drawings, testing and opening-up needed, findings and limitations | Included |
+|  | Strengthening design is priced separately until the extent is known | Included |
+| Schematic design |  | Included |
 |  | Briefing | Included |
 |  | Site visit | Included |
 |  | Review of existing information and authority requirements | Included |
@@ -44,13 +47,9 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Preliminary CAD drawings for coordination | Included |
 |  | Design-basis schedule: geotechnical reliance, design life, importance level, loads, wind and earthquake inputs, durability and fire-resistance coordination; missing values referred to the responsible engineer | Included |
 |  | Geotechnical brief for the client to commission | Included |
-| Existing structure assessment |  | Included |
-|  | Adequacy assessment of the existing structures the works load or connect to: extent, missing drawings, testing and opening-up needed, findings and limitations | Included |
-|  | Strengthening design is priced separately until the extent is known | Included |
-| Planning approval |  | Included |
+| Planning |  | Included |
 |  | Structural design statement for the application | Included |
 |  | Responses to authority requests during assessment, up to 1 | Included |
-| Authority asset assessment |  | Included |
 |  | Specialist engineering assessment for building over or next to the water authority's assets | Included |
 |  | Rail corridor interface assessment where the site adjoins rail | Included |
 |  | Program: 2 to 6 months to prepare and 3 to 6 months for the authority's review (estimate) | Included |
@@ -67,7 +66,8 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Retention, underpinning, temporary works and monitoring interfaces: designer and reviewer named, permanent and temporary loads stated | Included |
 |  | Strengthening design found necessary by the existing structure assessment | Included |
 |  | Footings affected by in-ground services | Included |
-| Tender documents | You hold the structural design except the contractor-designed elements. | Included |
+| Tender documentation |  | Included |
+|  | You hold the structural design except the contractor-designed elements. | Included |
 |  | Drawings, specification and tender schedules | Included |
 |  | Typical connection details | Included |
 |  | Safety in design report | Included |
@@ -77,7 +77,7 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Miscellaneous metalwork: balustrades, screens, sunshades, fences | Included |
 |  | Super-flat floor design | Included |
 |  | Demolition drawings (engineering demolition and propping design is not replaced by them) | Excluded |
-| Construction documents |  | Included |
+| Design finalisation | The contractor holds the design after novation. | Included |
 |  | Construction issue | Included |
 |  | Design certification for the construction certificate | Included |
 |  | 1 round(s) of peer review or certifier comments | Included |
@@ -85,7 +85,7 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 |  | Detailed design of post-tensioned slabs and piles | Included |
 |  | Shoring and piled retention design | Included |
 |  | Inspection schedule by element and hold point, with notification lead time and the basis for reinspection | Included |
-| Construction phase |  | Included |
+| Delivery |  | Included |
 |  | 4 inspections at the hold points in your inspection schedule | Included |
 |  | RFIs | Included |
 |  | Shop drawing review including contractor-designed elements | Included |
@@ -126,7 +126,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 
 | Stage | Scope | Position |
 |---|---|---|
-| Schematic design for planning approval |  | Included |
+| Schematic design |  | Included |
 |  | Review of information | Included |
 |  | Site visit | Included |
 |  | Survey and services gap analysis (BYDA, existing utilities plan) | Included |
@@ -157,7 +157,8 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Water management strategy (supply, reuse, effluent) | Included |
 |  | Civil safety in design report | Included |
 |  | Trunk drainage, external catchments, watercourse works | Included |
-| Detailed design for tender | You hold the civil design. | Included |
+| Tender documentation |  | Included |
+|  | You hold the civil design. | Included |
 |  | Design to the approved plans and consent conditions, complete enough to price as a lump sum | Included |
 |  | Specification | Included |
 |  | Design certificates | Included |
@@ -172,18 +173,10 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Shoring, rock anchors, slope stability | Included |
 |  | Road safety audit by an auditor independent of the design | Included |
 |  | Pre-tender estimate or bill of quantities | Excluded |
-| Final design for construction |  | Included |
+| Design finalisation | The contractor holds the design after novation. | Included |
 |  | Construction set | Included |
 |  | Construction certificate issue | Included |
-| Construction phase | Not part of this appointment | Excluded |
-| As-built and completion |  | Included |
-|  | Review of the surveyor's works-as-executed survey | Included |
-|  | As-built drawings | Included |
-|  | Detention system certification | Included |
-|  | Maintenance information | Included |
-|  | Support for title, covenant or public-asset handover where it applies | Included |
-|  | Final certificate | Included |
-|  | Operation and maintenance manual for stormwater devices | Included |
+| Delivery | Not part of this appointment | Excluded |
 | Across all stages | Services through the whole appointment |  |
 |  | Locating services; designing service relocations | Excluded |
 |  | Modification applications | Excluded |
@@ -210,21 +203,19 @@ Fees exclude GST; state GST and the total in your proposal. Options are priced s
 | Discipline and stage | Fee $ |
 |---|---|
 | Structural engineering services |  |
-| Concept and schematic design |  |
-| Existing structure assessment |  |
-| Planning approval |  |
-| Authority asset assessment |  |
+| Brief and concept |  |
+| Schematic design |  |
+| Planning |  |
 | Design development |  |
-| Tender documents |  |
-| Construction documents |  |
-| Construction phase |  |
+| Tender documentation |  |
+| Design finalisation |  |
+| Delivery |  |
 | Reimbursables |  |
 | Sum for Structural engineering services |  |
 | Civil engineering services |  |
-| Schematic design for planning approval |  |
-| Detailed design for tender |  |
-| Final design for construction |  |
-| As-built and completion |  |
+| Schematic design |  |
+| Tender documentation |  |
+| Design finalisation |  |
 | Reimbursables |  |
 | Sum for Civil engineering services |  |
 | Engagement total (the sums above) |  |

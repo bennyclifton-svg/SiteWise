@@ -12,17 +12,21 @@ heading: "REQUEST FOR PROPOSAL: TOWN PLANNING SERVICES"
 golden: docs/rfp-golden/town-planning/rfp.md
 discipline_ids: [consultant.town_planner]
 title_aliases: [planner, planning]
-evidence_limit: "All three golden proposals are for one NSW industrial DA. SSD and post-approval scope comes from general NSW practice."
+evidence_limit: "All three golden proposals are for one NSW industrial DA. SSD and post-approval scope comes from general
+  NSW practice."
 
 thresholds:
-  - {key: planning_scale, kind: client_default, text: "SSD, a planning panel, a varied development standard, a heritage site or likely objections suggest complex service levels", source: "golden town-planning draft v1 scale rule", verified: false}
+  - {key: planning_scale, kind: client_default, text: "SSD, a planning panel, a varied development standard, a heritage
+      site or likely objections suggest complex service levels", source: "golden town-planning draft v1 scale rule", 
+      verified: false}
 
 # REF needs its own determining-authority workflow, not DA lodgement wording;
 # CDC, modification and planning proposal have no reviewed bundle yet.
 unsupported_pathways: [cdc, ref, modification, planning_proposal, planning_permit]
 
 scale:
-  text: "Service levels are suggested complex for SSD, a planning panel, a varied development standard, a heritage site or likely objections."
+  text: "Service levels are suggested complex for SSD, a planning panel, a varied development standard, a heritage site
+    or likely objections."
   complex:
     - {pathway: [ssd]}
     - {flag: [panel]}
@@ -30,7 +34,6 @@ scale:
     - {flag: [heritage]}
     - {flag: [objections]}
 
-design_team: true
 role:
   - key: planner
     text: "You are the planning consultant for the applicant. Your job is to get the project the approval it needs, on a sound basis and without avoidable delay: a design the authority can support, and an application it can assess quickly."
@@ -59,17 +62,18 @@ role:
     when: [{"flag": ["heritage"]}]
     provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
 
+design_team: true
 stage_intro: "Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 
 boundary:
-  - {when: [{pathway: [advice_only, exempt]}, {work_type: [advisory]}], start: prelim_advice, end: prelim_advice}
-  - {start: prelim_advice, end: determination_review}
+  - {when: [pathway: [advice_only, exempt], work_type: [advisory]], start: brief_concept, end: brief_concept}
+  - {start: brief_concept, end: planning}
 
 stages:
-  - key: prelim_advice
-    name: Preliminary planning advice
+  - key: brief_concept
+    name: Brief and concept
     lines:
       - {key: review_plans_against, text: "Review of the plans against the LEP, DCP and other controls"}
       - {key: site_constraints, text: "site constraints"}
@@ -80,146 +84,148 @@ stages:
       - {key: information_limits_recommended, text: "information limits and recommended investigations"}
       - {key: advice_report_1, text: "Advice report: 1 draft, 1 final"}
     fee_basis: fixed
-    delivery_stage: concept_design
+    delivery_stage: brief_concept
     shown_when: Always, even where earlier due diligence exists
     provenance: [{kind: evidence, ref: "town-planning#1-15"}, {kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}]
-  - key: pre_lodgement
-    name: Pre-lodgement
+  - key: planning
+    name: Planning
     lines:
-      - {key: book_meeting, text: "Book the meeting"}
-      - {key: pre_lodgement_letter, text: "pre-lodgement letter with a scheme overview and compliance summary"}
-      - {key: attend_meeting_s, text: "attend {allowance:pre_lodgement_meetings} meeting(s)"}
-      - {key: note_outcomes_plan, text: "note of outcomes and plan changes"}
+      - {key: book_meeting, text: Book the meeting, when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: pre_lodgement_letter, text: pre-lodgement letter with a scheme overview and compliance summary, when: [
+           pathway: [da, ssd]], if_unknown: ask}
+      - {key: attend_meeting_s, text: 'attend {allowance:pre_lodgement_meetings} meeting(s)', when: [pathway: [da, 
+                    ssd]], if_unknown: ask}
+      - {key: note_outcomes_plan, text: note of outcomes and plan changes, when: [pathway: [da, ssd]], if_unknown: 
+          ask}
+      - {key: n, text: '{planning_report_long}', when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: 1_draft_1, text: '1 draft, 1 client review, 1 final', when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: clause_4_6, text: Clause 4.6 written request for each varied development standard, when: [{flag: [cl46],
+              pathway: [da, ssd]}], if_unknown: include}
+      - {key: forms_owner_s, text: "Forms, owner's consent, checklist, fee advice, collation and portal lodgement", 
+          when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: monitor_follow, text: Monitor and follow up, when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: client_updates, text: client updates, when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: response_s_authority, text: 'up to {allowance:rfi_responses} response(s) to authority information requests',
+        when: [pathway: [da, ssd]], if_unknown: ask}
+      - {key: meeting_s_authority, text: '{allowance:authority_meetings} meeting(s) with the authority', when: [
+                pathway: [da, ssd]], if_unknown: ask}
+      - {key: review_assessment_report, text: review of the assessment report and draft conditions, when: [pathway: [
+                da, ssd]], if_unknown: ask}
+      - {key: review_consent_conditions, text: Review of the consent conditions, when: [pathway: [da, ssd]], 
+          if_unknown: ask}
+      - {key: advice_conditions_challenge, text: advice on conditions to challenge or modify, when: [pathway: [da, 
+                    ssd]], if_unknown: ask}
     fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd]}]
-    shown_when: DA or SSD; client can switch it off
-    provenance: [{kind: evidence, ref: "town-planning#18-22"}]
-  - key: planning_report
-    name: Planning report
+    when: [pathway: [da, ssd], {flag: [cl46], pathway: [da, ssd]}]
+    shown_when: DA or SSD; client can switch it off; or DA or SSD; or A development standard is varied; or DA or 
+      SSD; priced to the allowances
+    provenance:
+      - {kind: evidence, ref: "town-planning#18-22"}
+      - {kind: evidence, ref: "town-planning#25-27"}
+      - {kind: practice, ref: "NSW SSD practice: SEARs then EIS"}
+      - {kind: evidence, ref: "town-planning#29"}
+      - {kind: evidence, ref: "town-planning#38-41"}
+      - {kind: evidence, ref: "town-planning#43-49"}
+      - {kind: evidence, ref: "town-planning#48"}
+    delivery_stage: planning
+  - key: design_development
+    name: Design development
     lines:
-      - {key: n, text: "{planning_report_long}"}
-      - {key: 1_draft_1, text: "1 draft, 1 client review, 1 final"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd]}]
-    shown_when: DA or SSD
-    provenance: [{kind: evidence, ref: "town-planning#25-27"}, {kind: practice, ref: "NSW SSD practice: SEARs then EIS"}]
-  - key: variation_request
-    name: Variation request
-    lines:
-      - {key: clause_4_6, text: "Clause 4.6 written request for each varied development standard"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{flag: [cl46], pathway: [da, ssd]}]
-    if_unknown: option
-    assumption: "Price as an option: needed only if a development standard is varied."
-    shown_when: A development standard is varied
-    provenance: [{kind: evidence, ref: "town-planning#29"}]
-  - key: lodgement
-    name: Lodgement
-    lines:
-      - {key: forms_owner_s, text: "Forms, owner's consent, checklist, fee advice, collation and portal lodgement"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd]}]
-    shown_when: DA or SSD
-    provenance: [{kind: evidence, ref: "town-planning#38-41"}]
-  - key: assessment
-    name: Assessment
-    lines:
-      - {key: monitor_follow, text: "Monitor and follow up"}
-      - {key: client_updates, text: "client updates"}
-      - {key: response_s_authority, text: "up to {allowance:rfi_responses} response(s) to authority information requests"}
-      - {key: meeting_s_authority, text: "{allowance:authority_meetings} meeting(s) with the authority"}
-      - {key: review_assessment_report, text: "review of the assessment report and draft conditions"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd]}]
-    shown_when: DA or SSD; priced to the allowances
-    provenance: [{kind: evidence, ref: "town-planning#43-49"}]
-  - key: determination_review
-    name: Determination review
-    lines:
-      - {key: review_consent_conditions, text: "Review of the consent conditions"}
-      - {key: advice_conditions_challenge, text: "advice on conditions to challenge or modify"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd]}]
-    shown_when: DA or SSD
-    provenance: [{kind: evidence, ref: "town-planning#48"}]
-  - key: post_approval
-    name: Post-approval support
-    lines:
-      - {key: conditions_register_separating, text: "Conditions register separating pre-construction, pre-occupation and ongoing conditions, with the responsible consultant and the evidence each needs"}
+      - {key: conditions_register_separating, text: "Conditions register separating pre-construction, pre-occupation and
+          ongoing conditions, with the responsible consultant and the evidence each needs"}
       - {key: consistency_review_later, text: "consistency review of later design changes"}
       - {key: condition_compliance_advice, text: "condition compliance advice"}
     fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{pathway: [da, ssd]}]
+    delivery_stage: design_development
+    when: [pathway: [da, ssd]]
     default: option
     shown_when: DA or SSD; client opts in
     provenance: [{kind: practice, ref: "town-planning-guide.md conditions, tender and completion sections"}]
-
 allowances:
-  - {key: design_meetings, label: Project design meetings, text: "{n} of up to 2 hours including preparation and travel", default: "2", owner: client, provenance: [{kind: evidence, ref: "town-planning#17"}]}
-  - {key: site_inspections, label: Site inspections, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, ref: "town-planning#16"}]}
-  - {key: plan_reviews, label: Reviews of draft plans, text: "{n} preliminary, then 1 consolidated set before lodgement", default: "1", owner: client, provenance: [{kind: evidence, ref: "town-planning#1"}, {kind: evidence, ref: "town-planning#27"}]}
-  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 client review, 1 final", default: "1", owner: client, provenance: [{kind: evidence, ref: "town-planning#12"}, {kind: evidence, ref: "town-planning#26"}]}
-  - {key: report_updates, label: Report updates after plan revisions, text: "{n}", default: "1", owner: client, when: [{stage: [planning_report]}], provenance: [{kind: evidence, ref: "town-planning#31"}]}
-  - {key: pre_lodgement_meetings, label: Pre-lodgement meetings, text: "{n}", default: "1", owner: client, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#22"}]}
-  - {key: rfi_responses, label: Authority information requests, text: "{n} response(s)", default: "1", owner: client, when: [{stage: [assessment]}], provenance: [{kind: evidence, ref: "town-planning#45"}]}
-  - {key: authority_meetings, label: Authority meetings in assessment, text: "{n}", owner: client, when: [{stage: [assessment]}], provenance: [{kind: evidence, ref: "town-planning#46"}]}
-  - {key: panel_meetings, label: Planning panel meetings, text: "{n}", default: "1", owner: client, when: [{flag: [panel]}], provenance: [{kind: evidence, ref: "town-planning#51"}]}
+  - {key: design_meetings, label: Project design meetings, text: "{n} of up to 2 hours including preparation and travel",
+    default: "2", owner: client, provenance: [{kind: evidence, ref: "town-planning#17"}]}
+  - {key: site_inspections, label: Site inspections, text: "{n}", default: "1", owner: client, provenance: [{kind: 
+            evidence, ref: "town-planning#16"}]}
+  - {key: plan_reviews, label: Reviews of draft plans, text: "{n} preliminary, then 1 consolidated set before lodgement",
+    default: "1", owner: client, provenance: [{kind: evidence, ref: "town-planning#1"}, {kind: evidence, ref: "town-planning#27"}]}
+  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 client review, 1 final", default: "1", owner: 
+      client, provenance: [{kind: evidence, ref: "town-planning#12"}, {kind: evidence, ref: "town-planning#26"}]}
+  - {key: report_updates, label: Report updates after plan revisions, text: "{n}", default: "1", owner: client, when: [
+       {stage: [planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#31"}]}
+  - {key: pre_lodgement_meetings, label: Pre-lodgement meetings, text: "{n}", default: "1", owner: client, when: [{
+            stage: [planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#22"}]}
+  - {key: rfi_responses, label: Authority information requests, text: "{n} response(s)", default: "1", owner: client,
+    when: [{stage: [planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#45"}]}
+  - {key: authority_meetings, label: Authority meetings in assessment, text: "{n}", owner: client, when: [{stage: [
+                planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#46"}]}
+  - {key: panel_meetings, label: Planning panel meetings, text: "{n}", default: "1", owner: client, when: [flag: [
+                panel]], provenance: [{kind: evidence, ref: "town-planning#51"}]}
 
 positions:
-  - {group: "Planning evidence and submission", key: specialist_review, stage: [planning_report, lodgement], label: "Review of specialist reports for planning compliance before lodgement", kind: technical, value: I, when: [{pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#58"}]}
-  - {group: "Planning evidence and submission", key: certificates, stage: [prelim_advice], label: "Planning certificate, title and DP searches (fees at cost)", kind: technical, value: I, provenance: [{kind: evidence, ref: "town-planning#4-5"}]}
-  - {group: "Planning evidence and submission", key: historic_consents, stage: [prelim_advice], label: "Historic consents through GIPA", kind: technical, value: O, provenance: [{kind: evidence, ref: "town-planning#3"}]}
+  - {group: "Planning evidence and submission", key: specialist_review, stage: [planning], label: "Review of specialist
+      reports for planning compliance before lodgement", kind: technical, value: I, when: [pathway: [da, ssd]], 
+      provenance: [{kind: evidence, ref: "town-planning#58"}]}
+  - {group: "Planning evidence and submission", key: certificates, stage: [brief_concept], label: "Planning certificate,
+      title and DP searches (fees at cost)", kind: technical, value: I, provenance: [{kind: evidence, ref: "town-planning#4-5"}]}
+  - {group: "Planning evidence and submission", key: historic_consents, stage: [brief_concept], label: "Historic consents
+      through GIPA", kind: technical, value: O, provenance: [{kind: evidence, ref: "town-planning#3"}]}
   - key: compliance_matrix
-    stage: [prelim_advice]
+    stage: [brief_concept]
     group: Planning evidence and submission
-    label: "Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date"
+    label: "Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner
+      and required date"
     kind: technical
     value: I
-    when: [{pathway: [da, ssd]}]
+    when: [pathway: [da, ssd]]
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/town-planning-guide.md (concept and common failures)"}]
   - key: submissions_response
-    stage: [assessment]
+    stage: [planning]
     group: Assessment and coordination
     label: "Response to public submissions"
     kind: technical
-    value: {value: I, when: [{flag: [objections]}], else: O}
-    when: [{pathway: [da, ssd]}]
+    value: {value: I, when: [flag: [objections]], else: O}
+    when: [pathway: [da, ssd]]
     if_unknown: option
     assumption: "Price as an option: needed only if notification draws submissions."
     provenance: [{kind: evidence, ref: "town-planning#50"}]
   - key: panel_attendance
-    stage: [assessment]
+    stage: [planning]
     group: Assessment and coordination
     label: "Attendance at planning panel meetings, to the allowance in section 4"
     kind: technical
-    value: {value: I, when: [{flag: [panel]}], else: O}
-    when: [{pathway: [da, ssd]}]
+    value: {value: I, when: [flag: [panel]], else: O}
+    when: [pathway: [da, ssd]]
     if_unknown: option
     assumption: "Price as an option: needed only if the application goes to a planning panel."
     provenance: [{kind: evidence, ref: "town-planning#51"}]
-  - {group: "Assessment and coordination", key: ad_hoc_advice, label: "Ad hoc planning advice and consultant coordination, within the meeting allowance", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "town-planning#55-57"}]}
-  - {group: "Planning evidence and submission", key: lodgement_format, stage: [pre_lodgement], label: "Pre-lodgement plans in council's required format", kind: technical, value: I, when: [{stage: [pre_lodgement]}], provenance: [{kind: evidence, ref: "town-planning#23"}]}
+  - {group: "Assessment and coordination", key: ad_hoc_advice, label: "Ad hoc planning advice and consultant coordination,
+      within the meeting allowance", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "town-planning#55-57"}]}
+  - {group: "Planning evidence and submission", key: lodgement_format, stage: [planning], label: "Pre-lodgement plans
+      in council's required format", kind: technical, value: I, when: [{stage: [planning], pathway: [da, ssd]}], 
+      provenance: [{kind: evidence, ref: "town-planning#23"}]}
   - key: modification
-    stage: [post_approval]
+    stage: [design_development]
     group: Separate services and costs
     label: "Modification application after approval"
     kind: technical
     value: O
-    when: [{pathway: [da, ssd]}]
-    provenance: [{kind: practice, ref: "town-planning-guide.md post-approval; replaces the v1 citation of ledger #62-63 (phase-a-changes C1.2)"}]
-  - {group: "Separate services and costs", key: court, stage: [determination_review, assessment], label: "Land and Environment Court appeal or expert witness", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "town-planning#54"}]}
-  - {group: "Separate services and costs", key: authority_fees, label: "Council, agency and panel fees; contributions", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "town-planning#24"}, {kind: evidence, ref: "town-planning#42"}]}
-  - {group: "Separate services and costs", key: specialist_reports, label: "Specialist reports (traffic, acoustic and others)", kind: technical, value: X, responsible: "specialist consultants engaged by the client", provenance: [{kind: evidence, ref: "town-planning#59"}]}
+    when: [pathway: [da, ssd]]
+    provenance: [{kind: practice, ref: "town-planning-guide.md post-approval; replaces the v1 citation of ledger #62-63
+            (phase-a-changes C1.2)"}]
+  - {group: "Separate services and costs", key: court, stage: [planning], label: "Land and Environment Court appeal or
+      expert witness", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: 
+            evidence, ref: "town-planning#54"}]}
+  - {group: "Separate services and costs", key: authority_fees, label: "Council, agency and panel fees; contributions",
+    kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "town-planning#24"}, {kind: 
+            evidence, ref: "town-planning#42"}]}
+  - {group: "Separate services and costs", key: specialist_reports, label: "Specialist reports (traffic, acoustic and
+      others)", kind: technical, value: X, responsible: "specialist consultants engaged by the client", provenance: [
+       {kind: evidence, ref: "town-planning#59"}]}
 
 terms:
-  - {key: documents, text: "Final draft plans and reports reach you at least 3 weeks before target lodgement; state in R7 the working days you need from final documents to a draft report.", when: [{stage: [planning_report]}], provenance: [{kind: evidence, ref: "town-planning#33-35"}]}
+  - {key: documents, text: "Final draft plans and reports reach you at least 3 weeks before target lodgement; state in
+      R7 the working days you need from final documents to a draft report.", when: [{stage: [planning], pathway: [da,
+            ssd]}], provenance: [{kind: evidence, ref: "town-planning#33-35"}]}
   - {key: mobilisation, text: "No mobilisation payment.", provenance: [{kind: evidence, ref: "town-planning#69"}]}
 
 returnables:
@@ -229,6 +235,8 @@ returnables:
   r5: "Applications on the same pathway for this use, in the same consent authority or LGA, with the outcome."
   r9: "At cost with no handling fee is preferred."
 returnable_notes:
-  - {key: r4, text: "SSD: REAP or EIA accreditation of the EIS author.", when: [{pathway: [ssd]}]}
+  - {key: r4, text: "SSD: REAP or EIA accreditation of the EIS author.", when: [pathway: [ssd]]}
 
-durations: "From the SiteWise program when it holds the stage; otherwise estimates: preliminary advice 2 weeks, pre-lodgement 4 weeks (council booking lead time), planning report 3 weeks from final drawings, lodgement 1 week. Assessment time is set by the authority and is not priced by time."
+durations: "From the SiteWise program when it holds the stage; otherwise estimates: preliminary advice 2 weeks, pre-lodgement
+  4 weeks (council booking lead time), planning report 3 weeks from final drawings, lodgement 1 week. Assessment time
+  is set by the authority and is not priced by time."

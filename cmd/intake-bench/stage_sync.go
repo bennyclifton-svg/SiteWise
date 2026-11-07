@@ -59,7 +59,7 @@ func (a *apiClient) stageSync(ctx context.Context, n int) error {
 	}
 	stage := ""
 	for _, act := range v.Activities {
-		if act.Kind == "stage" && act.CatalogueStageID == "concept_design" {
+		if act.Kind == "stage" && act.CatalogueStageID == "brief_concept" {
 			stage = act.ID
 		}
 	}
@@ -156,7 +156,7 @@ func (a *apiClient) groupStageSync(ctx context.Context, n int) error {
 	}
 	stage := ""
 	for _, act := range v.Activities {
-		if act.Kind == "stage" && act.CatalogueStageID == "concept_design" {
+		if act.Kind == "stage" && act.CatalogueStageID == "brief_concept" {
 			stage = act.ID
 		}
 	}

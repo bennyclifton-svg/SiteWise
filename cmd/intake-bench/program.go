@@ -121,8 +121,14 @@ func (a *apiClient) programGenerate(ctx context.Context, cat *knowledge.Catalog,
 		if err := json.Unmarshal(raw, &v); err != nil {
 			return err
 		}
-		if !v.Created || len(v.Activities) < stages {
-			return fmt.Errorf("prepare made %d rows for %d package stages", len(v.Activities), stages)
+		// Package stages fold into the seven project stage lines, so the
+		// program has fewer rows than package stages; each must be linked.
+		var unlinked int
+		if err := conn.QueryRow(ctx, `SELECT count(*) FROM package_stages WHERE org_id=$1 AND project_id=$2 AND program_stage_id IS NULL`, benchOrg, project).Scan(&unlinked); err != nil {
+			return err
+		}
+		if !v.Created || len(v.Activities) == 0 || unlinked > 0 {
+			return fmt.Errorf("prepare made %d rows and left %d of %d package stages unlinked", len(v.Activities), unlinked, stages)
 		}
 	}
 	return nil

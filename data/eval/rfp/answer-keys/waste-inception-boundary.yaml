@@ -33,13 +33,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
-    owners. Fixture quantities are client choices, not generation-rate defaults.
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection 
+    confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 settings:
   waste-management:
     boundary:range:
-      start: s1_inception
-      end: s1_inception
+      start: brief_concept
+      end: brief_concept
     allowance:coverage: '2'
     allowance:plans: '2'
     allowance:meetings: '2'
@@ -50,15 +50,15 @@ sources:
 - docs/rfp-golden/waste-management/rfp.md Sections 1-7
 - 'docs/rfp-golden/waste-management/ledger.md #1-45'
 scenario: waste-inception-boundary
-description: Early evidence appointment leaves selected operational plan as priced option, not base; no work bought
+description: Early evidence appointment leaves selected operational plan as priced option, not base; no work bought 
   beyond end.
 expect:
   waste-management:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception]
+    stages_include: [brief_concept]
     positions:
       operational: X
-      collection: X
-      rooms: X
-      shared: X
-    stages_absent: [s2_concept, s3_operational]
+      collection: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
+      rooms: I # Seven project stages (7 November 2026): merged with scope inside the appointment.
+      shared: I # Seven project stages (7 November 2026): merged with scope inside the appointment.
+    stages_absent: []

@@ -51,8 +51,8 @@ fields:
 settings:
   hydraulic-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
     allowance:extent: '2'
     allowance:investigation: '2'
     allowance:design: '2'
@@ -65,12 +65,13 @@ sources:
 - docs/rfp-golden/hydraulic-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/hydraulic-services/ledger.md #1-54'
 scenario: hydraulic-camp-design
-description: Camp accommodation/kitchen with separately evidenced carted, rain and river sources; D&C stops at tender.
+description: Camp accommodation/kitchen with separately evidenced carted, rain and river sources; D&C stops at 
+  tender.
 snapshot: true
 expect:
   hydraulic-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [inception, investigation, concept, planning, design, tender]
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation]
     positions:
       domestic: I
       rainwater: I
@@ -85,4 +86,4 @@ expect:
       declarations: I
       continuation: X
       witness: X
-    stages_absent: [continuation, construction, handover, defects]
+    stages_absent: [design_finalisation, delivery]

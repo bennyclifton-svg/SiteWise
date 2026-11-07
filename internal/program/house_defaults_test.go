@@ -24,10 +24,10 @@ func chenHouse() GenInput {
 		items = append(items, WorkItem{ID: "wi" + string(rune('a'+i/26)) + string(rune('a'+i%26)), System: s, Action: "new", Title: s})
 	}
 	stages := func(p string) []PackageStage {
-		return []PackageStage{{ID: p + "1", CatalogueStageID: "concept_design", Label: "Concept design"},
-			{ID: p + "2", CatalogueStageID: "approval_documentation", Label: "Approval documentation"},
-			{ID: p + "3", CatalogueStageID: "construction_documentation", Label: "Construction documentation"},
-			{ID: p + "4", CatalogueStageID: "construction_stage_inspections", Label: "Construction-stage inspections"}}
+		return []PackageStage{{ID: p + "1", CatalogueStageID: "brief_concept", Label: "Brief and concept"},
+			{ID: p + "2", CatalogueStageID: "planning", Label: "Planning"},
+			{ID: p + "3", CatalogueStageID: "design_development", Label: "Design development"},
+			{ID: p + "4", CatalogueStageID: "delivery", Label: "Delivery"}}
 	}
 	return GenInput{
 		WorkTypes:  []string{"new"},
@@ -61,10 +61,14 @@ func TestHouseOpensWithEveryDuration(t *testing.T) {
 		}
 	}
 
-	concept := labelsUnder(p, "skeleton:sk.new-traditional-da:concept_design")
-	want := []string{"Confirm the brief", "Prepare the concept design", "Client review of the concept", "Develop the design"}
+	concept := labelsUnder(p, "skeleton:sk.new-traditional-da:brief_concept")
+	// Investigations inform the brief, so they sit in Brief and concept too.
+	want := []string{"Check the existing roof", "Confirm the brief", "Prepare the concept design", "Client review of the concept", "Geotechnical ground conditions"}
 	if strings.Join(concept, "|") != strings.Join(want, "|") {
-		t.Fatalf("concept design lines %q", concept)
+		t.Fatalf("brief and concept lines %q", concept)
+	}
+	if got := labelsUnder(p, "skeleton:sk.new-traditional-da:schematic_design"); strings.Join(got, "|") != "Develop the schematic design" {
+		t.Fatalf("schematic design lines %q", got)
 	}
 
 	frame, ok := p.Row("fragment:fr.frame-timber-1a:wiag:walls")

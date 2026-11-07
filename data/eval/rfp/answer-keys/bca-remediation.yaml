@@ -40,8 +40,8 @@ fields:
 settings:
   bca-certification:
     boundary:range:
-      start: a1_inception
-      end: a3_tender
+      start: schematic_design
+      end: design_development
     allowance:plan_sets: '2'
     allowance:reports: '2'
     allowance:meetings: '2'
@@ -56,13 +56,13 @@ sources:
 - docs/rfp-golden/bca-certification/rfp.md Sections 2-7
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
 scenario: bca-remediation
-description: Agreed affected existing extent for remediation with occupied staging;
-  does not appoint a statutory certifier.
+description: Agreed affected existing extent for remediation with occupied staging; does not appoint a statutory 
+  certifier.
 expect:
   bca-certification:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [a1_inception, a2_planning, a3_tender]
-    stages_absent: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation, a4_construction]
+    stages_include: [schematic_design, planning, design_development]
+    stages_absent: [design_finalisation, delivery]
     positions:
       existing_assessment: I
       staged_occupation: I

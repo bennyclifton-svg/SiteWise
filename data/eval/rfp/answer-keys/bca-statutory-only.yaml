@@ -40,8 +40,8 @@ fields:
 settings:
   bca-certification:
     boundary:range:
-      start: b1_preliminary
-      end: b4_occupation
+      start: planning
+      end: delivery
     allowance:plan_sets: '2'
     allowance:reports: '2'
     allowance:meetings: '2'
@@ -56,13 +56,13 @@ sources:
 - docs/rfp-golden/bca-certification/rfp.md Sections 2-7
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
 scenario: bca-statutory-only
-description: New office CC/principal-certifier package has no advisory appointment;
-  certification remains independent.
+description: New office CC/principal-certifier package has no advisory appointment; certification remains 
+  independent.
 expect:
   bca-certification:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
-    stages_absent: [a1_inception, a2_planning, a3_tender, a4_construction]
+    stages_include: [planning, design_finalisation, delivery]
+    stages_absent: [schematic_design, design_development]
     positions:
       statutory_functions: I
       existing_assessment: absent

@@ -33,8 +33,8 @@ fields:
 settings:
   bca-certification:
     boundary:range:
-      start: a1_inception
-      end: b4_occupation
+      start: schematic_design
+      end: delivery
     allowance:plan_sets: '2'
     allowance:reports: '2'
     allowance:meetings: '2'
@@ -49,8 +49,8 @@ sources:
 - docs/rfp-golden/bca-certification/rfp.md Sections 2-7
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
 scenario: bca-unknown-decisions
-description: Unknown package and extent decisions stay ask states, not exclusions
-  or optional appointment assumptions.
+description: Unknown package and extent decisions stay ask states, not exclusions or optional appointment 
+  assumptions.
 expect:
   bca-certification:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
@@ -62,6 +62,7 @@ expect:
       fire_referrals: I
       residential_evidence: I
       performance_assessment: I
-    blocking: ['fact:flag.bca_advisory', 'fact:flag.bca_certification', 'fact:flag.bca_existing_assessment', 'fact:flag.bca_classification_map', 'fact:flag.bca_staged_occupation', 'fact:flag.bca_fire_referrals', 'fact:flag.bca_residential_evidence']
+    blocking: ['fact:flag.bca_advisory', 'fact:flag.bca_certification', 'fact:flag.bca_existing_assessment', 'fact:flag.bca_classification_map',
+      'fact:flag.bca_staged_occupation', 'fact:flag.bca_fire_referrals', 'fact:flag.bca_residential_evidence']
     role_absent: [advisory, statutory]
-    stages_include: [a1_inception, a2_planning, a3_tender, a4_construction, b1_preliminary, b2_construction_approval, b3_construction, b4_occupation]
+    stages_include: [schematic_design, planning, design_development, design_finalisation, delivery]

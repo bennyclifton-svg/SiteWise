@@ -35,12 +35,12 @@ fields:
   client: Example Client
   pi: Client-selected $5m
   pl: Client-selected $20m
-  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with 
     explicit limits.
 settings:
   arborist:
     boundary:range:
-      start: s1_inventory
+      start: brief_concept
       end: s7_monitoring
     allowance:coverage: '2'
     allowance:reports: '2'
@@ -53,12 +53,12 @@ sources:
 - docs/rfp-golden/arborist/rfp.md Sections 1-7
 - 'docs/rfp-golden/arborist/ledger.md #1-32'
 scenario: arborist-appointed-risk-monitoring
-description: Residential tree-risk commission explicitly appoints formal risk and finite monitoring independently;
+description: Residential tree-risk commission explicitly appoints formal risk and finite monitoring independently; 
   construction supervision and internal diagnostics remain options.
 expect:
   arborist:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s6_risk, s7_monitoring, s6_investigation]
+    stages_include: [s6_investigation, s6_risk, s7_monitoring]
     positions:
       investigation: I
       risk: I

@@ -20,14 +20,15 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
   for (const [discipline, label] of [["consultant.structural", "Structural"], ["consultant.civil", "Civil"]]) {
     await expect(page.getByRole("button", { name: "Add discipline", exact: true })).toBeEnabled();
     await page.waitForLoadState("networkidle");
-    if (await page.getByLabel(`Select ${label} to combine`).count() > 0) continue;
+    if (await page.getByRole("rowheader", { name: label, exact: true }).count() > 0) continue;
     await page.getByRole("button", { name: "Add discipline", exact: true }).click();
     await page.getByLabel("Discipline", { exact: true }).selectOption(discipline);
     await page.getByRole("button", { name: "Add row", exact: true }).click();
-    await expect(page.getByLabel(`Select ${label} to combine`)).toBeVisible();
+    await expect(page.getByRole("rowheader", { name: label, exact: true })).toBeVisible();
   }
-  await page.getByLabel("Select Structural to combine").check();
-  await page.getByLabel("Select Civil to combine").check();
+  // Rows are selected as in Program: click, then Ctrl-click.
+  await page.getByRole("rowheader", { name: "Structural", exact: true }).click();
+  await page.getByRole("rowheader", { name: "Civil", exact: true }).click({ modifiers: ["Control"] });
   await page.getByRole("button", { name: "Combine 2", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Combine", exact: true }).click();
   await expect(page.getByRole("button", { name: "Uncombine Civil and Structural", exact: true })).toBeVisible();
@@ -47,7 +48,7 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
   const read = await page.request.get(`/api/projects/${project}/program`);
   expect(read.status()).toBe(200);
   let program = await read.json();
-  const concept = program.activities.find((a: { kind: string; catalogue_stage_id: string }) => a.kind === "stage" && a.catalogue_stage_id === "concept_design");
+  const concept = program.activities.find((a: { kind: string; catalogue_stage_id: string }) => a.kind === "stage" && a.catalogue_stage_id === "brief_concept");
   items = await packages();
   const lines = items.find(p => p.id === group.id)!.stages;
   expect(lines.every(l => !!l.program_stage_id), "every group line points at a program stage").toBeTruthy();
@@ -69,7 +70,7 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
   await page.getByRole("button", { name: "View RFP for Civil and Structural", exact: true }).click();
   const notice = page.getByRole("status", { name: "Stage changes for RFP draft" });
-  await expect(notice).toContainText("Concept design renamed Sketch design");
+  await expect(notice).toContainText("Brief and concept renamed Sketch design");
   await expect(notice).toHaveCount(1);
   await page.screenshot({ path: testInfo.outputPath("group-stage-notice.png") });
   const start = Date.now();
@@ -97,7 +98,7 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
   // Uncombine: each member's own lines are live, and offer the rename.
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Uncombine Civil and Structural", exact: true }).click();
-  await expect(page.getByLabel("Select Civil to combine")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Uncombine Civil and Structural", exact: true })).toHaveCount(0);
   for (const m of members) {
     const sync = await (await page.request.get(`/api/projects/${project}/packages/${m.id}/stage-sync`)).json();
     expect(sync.group_id).toBeUndefined();

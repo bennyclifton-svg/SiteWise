@@ -51,6 +51,15 @@ WHERE c.org_id=$1::uuid AND d.project_id=$2::uuid AND c.document_id::text=$3 AND
 	if err != nil || taken {
 		return "", false, err
 	}
+	// A combined services proposal on a project whose services have their
+	// own rows makes no fifth row: it waits on Procurement for the PM to
+	// combine or place it (combined engagements slice 5).
+	if discipline == procurement.ServicesFiling {
+		var split bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND discipline_id=ANY($3::text[]) AND retired_at IS NULL AND lifecycle_status<>'cancelled')`, org, project, procurement.ServicesDisciplineIDs()).Scan(&split); err != nil || split {
+			return "", false, err
+		}
+	}
 	var removed bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND discipline_id=$3 AND retired_at IS NOT NULL)`, org, project, discipline).Scan(&removed); err != nil || removed {
 		return "", false, err

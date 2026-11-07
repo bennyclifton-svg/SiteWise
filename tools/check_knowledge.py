@@ -70,7 +70,12 @@ UC_CATEGORIES = {"ground_and_site", "existing_structure", "hazardous_materials",
                  "design_and_scope", "supply_and_site_operations"}
 UC_EFFECTS = {"cost", "programme", "safety", "compliance", "quality"}
 DISCOVERED_AT = {"design", "demolition_strip_out", "excavation", "construction", "testing_commissioning", "handover_defects"}
+# Unforeseen conditions attach to a coarse phase: when the condition bites.
 UC_STAGES = {"investigation", "design", "approvals", "procurement", "construction", "completion", "defects"}
+# The seven project stages every RFP, package and Program use, in order
+# (owner direction, 7 November 2026).
+PROJECT_STAGES = ["brief_concept", "schematic_design", "planning", "design_development",
+                  "tender_documentation", "design_finalisation", "delivery"]
 PACKAGE_KINDS = {"services", "works", "supply"}
 LEDGER_REJECTIONS = {"duplicate_of", "too_vague", "out_of_scope"}
 WORKS_ID = {
@@ -108,7 +113,7 @@ CALENDAR_KINDS = {"public_holiday", "rdo", "shutdown"}
 CALENDAR_STATES = {"NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"}
 WEEKDAYS = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
 PROGRAM_KEYS = {
-    "skeletons": {"id", "label", "applies_when", "stages", "links", "status", "sources", "notes"},
+    "skeletons": {"id", "label", "applies_when", "stages", "fragment_stages", "links", "status", "sources", "notes"},
     "fragments": {"id", "label", "scope", "stage", "systems", "applies_when", "activities", "links", "attach",
                   "status", "sources", "notes"},
     "durations": {"id", "version", "basis", "driver", "unit_days", "low", "typical", "high", "k", "b",
@@ -1211,24 +1216,18 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
         check_sources(rel, doc.get("sources"), seed_dir, report, cache)
         ids = [s.get("id") for s in doc.get("stages") or [] if isinstance(s, dict)]
         # `other` is the one extra: where a user-made Program stage maps.
-        if set(ids) - {STAGE_OTHER} != UC_STAGES or len(ids) != len(set(ids)):
-            report.error(rel, f"top-level stages must be exactly {sorted(UC_STAGES)}, plus optional {STAGE_OTHER}")
-        seen = set(ids)
+        if [i for i in ids if i != STAGE_OTHER] != PROJECT_STAGES or len(ids) != len(set(ids)):
+            report.error(rel, f"stages must be exactly {PROJECT_STAGES} in that order, plus optional {STAGE_OTHER}")
         for stage in doc.get("stages") or []:
             if not isinstance(stage, dict) or not str(stage.get("label", "")).strip():
                 report.error(rel, f"stage needs id and label: {stage}")
                 continue
-            for sub in stage.get("substages") or []:
-                where = f"{rel} [{stage.get('id')}]"
-                if not isinstance(sub, dict) or not ID_PATTERNS["determinants"].match(str(sub.get("id", ""))) \
-                        or not str(sub.get("label", "")).strip():
-                    report.error(where, f"sub-stage needs a snake_case id and a label: {sub}")
-                    continue
-                if sub.get("novation") is not None and sub.get("novation") not in NOVATION:
-                    report.error(where, f"novation must be one of {sorted(NOVATION)}")
-                if sub["id"] in seen:
-                    report.error(where, f"duplicate stage id {sub['id']}")
-                seen.add(sub["id"])
+            where = f"{rel} [{stage.get('id')}]"
+            if stage.get("id") == STAGE_OTHER:
+                if "novation" in stage:
+                    report.error(where, f"{STAGE_OTHER} takes no novation side")
+            elif stage.get("novation") not in NOVATION:
+                report.error(where, f"novation must be one of {sorted(NOVATION)}")
 
     rel, doc = load_catalogue(KNOWLEDGE / WORKS_DIR / "package_defaults.yaml", "baselines", report, version=2)
     if doc is not None:
@@ -1689,12 +1688,8 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
     stages, generic = set(), []
     for top in catalogue:
         stages.add(top.get("id"))
-        subs = [s.get("id") for s in top.get("substages") or []]
-        stages.update(subs)
         if top.get("id") != STAGE_OTHER:
-            # Only a stage with several sub-stages is replaced by them; one
-            # sub-stage is a fee item inside its stage (GenericStages).
-            generic.extend(subs if len(subs) > 1 else [top.get("id")])
+            generic.append(top.get("id"))
 
     rows: dict = {}
     for name, key in PROGRAM_FILES.items():
@@ -1820,6 +1815,13 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
             if stage not in stages or stage == STAGE_OTHER:
                 report.error(where, f"stage must be a catalogue stage other than {STAGE_OTHER}: {stage}")
         check_program_links(where, listed, sk.get("links") or [], durations, report)
+        moves = sk.get("fragment_stages") or {}
+        if not isinstance(moves, dict):
+            report.error(where, "fragment_stages must map a library stage to a stage of this skeleton")
+            moves = {}
+        for src, dst in moves.items():
+            if src not in stages or src == STAGE_OTHER or dst not in listed or src == dst:
+                report.error(where, f"fragment_stages {src} -> {dst}: move a library stage to another stage of this skeleton")
         if sk.get("id") == GENERIC_SKELETON:
             generic_count += 1
             if "applies_when" in sk:

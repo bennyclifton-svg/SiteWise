@@ -12,7 +12,7 @@ facts:
   novation: "no"
   state: NSW
 parts:
-  - {id: building, label: School building, classes: [9b]}
+- {id: building, label: School building, classes: [9b]}
 address: "School Rd, Example NSW"
 fields:
   ref: RFP-TEST
@@ -25,12 +25,13 @@ fields:
   lga: Example LGA
 settings:
   town-planning:
-    "boundary:range": {start: prelim_advice, end: determination_review}
+    "boundary:range": {start: brief_concept, end: planning}
 expect:
   town-planning:
-    stages_include: [prelim_advice]
-    stages_absent: [planning_report, lodgement, assessment]
+    stages_include: [brief_concept]
+    stages_absent: []
     blocking: [pathway_unsupported]
     blocking_only: true
 sources:
-  - "Peer review: REF needs its own determining-authority workflow and must not fall back to DA lodgement wording; unsupported pathways block issue until a bundle is reviewed."
+- "Peer review: REF needs its own determining-authority workflow and must not fall back to DA lodgement wording; unsupported
+  pathways block issue until a bundle is reviewed."

@@ -101,7 +101,7 @@ func TestProgramReview(t *testing.T) {
 	}
 	rename("Erosion and sediment controls")
 	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Engineer", LifecycleStatus: "planned",
-		Stages: []procurement.Stage{{StageID: "concept_design", Label: "Concept", NovationPhase: "none", Origin: "user"}}}); err != nil {
+		Stages: []procurement.Stage{{StageID: "brief_concept", Label: "Concept", NovationPhase: "none", Origin: "user"}}}); err != nil {
 		t.Fatal(err)
 	}
 	unchanged := func(when string) {

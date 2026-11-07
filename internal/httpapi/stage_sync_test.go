@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"sort"
+	"strconv"
 	"testing"
 	"time"
 
@@ -68,7 +69,7 @@ func TestStageSyncRoutesProcurementFirst(t *testing.T) {
 	if sync.Document != engine.DocDraftRFP || sync.BuiltFrom != v.Program.StageRevision || sync.Offer || len(sync.Rows) == 0 {
 		t.Fatalf("draft sync %+v", sync)
 	}
-	concept := stageOf(t, v, "concept_design")
+	concept := stageOf(t, v, "brief_concept")
 	if sync.Rows[0].ProgramStageID != concept.ID || sync.Rows[0].Label != concept.Label {
 		t.Fatalf("rows %+v", sync.Rows)
 	}
@@ -103,18 +104,30 @@ func TestStageSyncRoutesProcurementFirst(t *testing.T) {
 	if sync.Offer || sync.Acknowledged != v.Program.StageRevision {
 		t.Fatalf("keep %+v", sync)
 	}
+	// The package holds every program stage; untick Delivery so the picker
+	// has one to tick.
 	var defects store.PickerStage
 	for _, s := range sync.Stages {
-		if s.CatalogueStageID == "defects" {
+		if s.CatalogueStageID == "delivery" {
 			defects = s
 		}
 	}
-	if defects.ProgramStageID == "" || defects.Ticked {
+	if defects.ProgramStageID == "" || !defects.Ticked || defects.PackageStageID == "" {
 		t.Fatalf("picker %+v", sync.Stages)
+	}
+	m.call(t, http.MethodPatch, base+"/packages/"+pkg.ID+"/stages/"+defects.PackageStageID, []byte(`{"version":`+strconv.FormatInt(defects.PackageStageVersion, 10)+`,"retired":true}`), http.StatusOK, nil)
+	m.call(t, http.MethodGet, pkgSync, nil, http.StatusOK, &sync)
+	for _, s := range sync.Stages {
+		if s.ProgramStageID == defects.ProgramStageID {
+			defects = s
+		}
+	}
+	if defects.Ticked {
+		t.Fatalf("untick %+v", defects)
 	}
 	var ticked procurement.Stage
 	m.call(t, http.MethodPost, base+"/packages/"+pkg.ID+"/stages", []byte(`{"program_stage_id":"`+defects.ProgramStageID+`"}`), http.StatusCreated, &ticked)
-	if ticked.ProgramStageID != defects.ProgramStageID || ticked.Label != defects.Label || ticked.StageID != "defects" {
+	if ticked.ProgramStageID != defects.ProgramStageID || ticked.Label != defects.Label || ticked.StageID != "delivery" {
 		t.Fatalf("tick %+v", ticked)
 	}
 	m.call(t, http.MethodPatch, base+"/packages/"+pkg.ID+"/stages/"+ticked.ID, []byte(`{"version":1,"retired":true}`), http.StatusOK, nil)

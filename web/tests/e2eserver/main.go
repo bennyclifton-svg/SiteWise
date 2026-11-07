@@ -319,7 +319,7 @@ sources: [{design: test-fixture-only, anchor: "# e2e"}]
 fragments:
   - id: fr.e2e-gas
     label: Gas service
-    stage: construction
+    stage: delivery
     systems: [hydraulic.gas]
     applies_when: {det: work_type, eq: new}
     activities:
