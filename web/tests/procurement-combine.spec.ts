@@ -16,12 +16,12 @@ test("two consultants combine into one engagement and uncombine", async ({page},
   await expect(page.getByRole('button', {name:'Remove Civil', exact:true})).toBeVisible();
   // Opening the cost plan gives each row its draft fee line.
   await page.getByRole('button', {name:'Costs', exact:true}).click();
-  await expect(page.getByRole('button', {name:'Delete Civil', exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Actions for Civil',exact:true})).toBeVisible();
   await page.getByRole('button', {name:'Procurement', exact:true}).click();
 
-  await page.getByLabel('Select Structural to combine').check();
+  await page.getByRole('rowheader', {name:'Structural', exact:true}).click();
   await expect(page.getByRole('button', {name:/^Combine [0-9]/})).toHaveCount(0);
-  await page.getByLabel('Select Civil to combine').check();
+  await page.getByRole('rowheader', {name:'Civil', exact:true}).click({modifiers:['Control']});
   await page.getByRole('button', {name:'Combine 2', exact:true}).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toContainText('Civil and Structural');
@@ -31,7 +31,7 @@ test("two consultants combine into one engagement and uncombine", async ({page},
   await expect(page.getByRole('button', {name:'Uncombine Civil and Structural', exact:true})).toBeVisible();
   testInfo.annotations.push({type:'timing', description:`combine UI: ${Date.now() - start}ms`});
   await expect(page.getByRole('button', {name:'Remove Structural from group', exact:true})).toBeVisible();
-  await expect(page.getByLabel('Select Civil to combine')).toHaveCount(0);
+  await expect(page.locator('tr[data-combinable]').filter({has: page.getByRole('rowheader', {name:'Civil', exact:true})})).toHaveCount(0);
 
   await page.getByTitle('Double-click to rename').dblclick();
   const name = page.getByLabel('Name of Civil and Structural');
@@ -43,13 +43,13 @@ test("two consultants combine into one engagement and uncombine", async ({page},
   // One parent fee line holds both members' lines.
   await page.getByRole('button', {name:'Costs', exact:true}).click();
   await expect(page.getByRole('button', {name:/^(Collapse|Expand) Civil and Structural$/})).toBeVisible();
-  await expect(page.getByRole('button', {name:'Delete Civil', exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Actions for Civil',exact:true})).toBeVisible();
 
   await page.getByRole('button', {name:'Procurement', exact:true}).click();
   await page.getByRole('button', {name:'Uncombine Structural and civil engineering', exact:true}).click();
-  await expect(page.getByLabel('Select Civil to combine')).toBeVisible();
+  await expect(page.locator('tr[data-combinable]').filter({has: page.getByRole('rowheader', {name:'Civil', exact:true})})).toHaveCount(1);
   await expect(page.getByRole('button', {name:/^Uncombine/})).toHaveCount(0);
   await page.getByRole('button', {name:'Costs', exact:true}).click();
-  await expect(page.getByRole('button', {name:'Delete Civil', exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Actions for Civil',exact:true})).toBeVisible();
   await expect(page.getByRole('button', {name:/^(Collapse|Expand) Civil and Structural$/})).toHaveCount(0);
 });

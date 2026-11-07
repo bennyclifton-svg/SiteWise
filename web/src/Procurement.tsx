@@ -20,6 +20,7 @@ import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
 import { InlineCellEditor } from "./table/InlineCellEditor";
+import { clickRow, emptySelection, prune } from "./table/selection";
 import "./reports.css";
 
 type View = { at: "table" } | { at: "report"; id: string } | { at: "prices"; pkg: string; report?: string };
@@ -51,8 +52,9 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
   const [dropRow, setDropRow] = useState("");
-  // Consultant rows ticked for Combine, and the combine being confirmed.
-  const [ticked, setTicked] = useState<string[]>([]);
+  // Consultant rows selected for Combine (click, Ctrl-click, Shift-click, as in
+  // Program and the document register), and the combine being confirmed.
+  const [selection, setSelection] = useState(emptySelection);
   const [combining, setCombining] = useState<{ members: PackageRecord[]; names: string[]; title: string; costLabels: string[] } | null>(null);
 
   // The three reads go out together, so the table waits for one round trip.
@@ -149,8 +151,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   async function combine() {
     if (!combining) return;
     setBusyRow("combine"); setError("");
-    try { await procurementApi.combine(projectId, combining.members.map(m => m.id), combining.title); setTicked([]); setReload(n => n + 1); }
-    catch (e) { setTicked([]); fail(e, "group"); } finally { setBusyRow(""); setCombining(null); }
+    try { await procurementApi.combine(projectId, combining.members.map(m => m.id), combining.title); setSelection(emptySelection); setReload(n => n + 1); }
+    catch (e) { setSelection(emptySelection); fail(e, "group"); } finally { setBusyRow(""); setCombining(null); }
   }
   async function uncombine(group: PackageRecord) {
     setBusyRow(group.id); setError("");
@@ -244,7 +246,14 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
     .map((pkg): Row => ({ key: pkg.id, label: label(pkg), kind: pkg.kind, pkg, report: reportOf(pkg), member: true })).sort(byTitle);
   const consultants = rows.filter(r => r.kind === "services").sort(byTitle).flatMap(r => r.group && r.pkg ? [r, ...membersOf(r.pkg)] : [r]);
   const combinable = (row: Row) => !!row.pkg && row.kind === "services" && !row.group && !row.member;
-  const tickedRows = consultants.filter(r => combinable(r) && ticked.includes(r.pkg!.id));
+  const order = consultants.filter(combinable).map(r => r.pkg!.id);
+  const tickedRows = consultants.filter(r => combinable(r) && selection.ids.includes(r.pkg!.id));
+  // A click on a button, link or field inside the row does its own job.
+  const pick = (row: Row, e: { ctrlKey: boolean; metaKey: boolean; shiftKey: boolean; target: EventTarget }) => {
+    if ((e.target as HTMLElement).closest("button,a,input,select,textarea,[popover]")) return;
+    if (!combinable(row)) { setSelection(emptySelection); return; }
+    setSelection(s => clickRow(prune(s, order), row.pkg!.id, order, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey }));
+  };
   const trades = rows.filter(r => r.kind !== "services").sort(byTitle);
   const used = new Set(live.map(p => p.discipline_id).filter(Boolean));
   const options = (prefix: string) => disciplines.filter(d => d.id.startsWith(prefix) && !used.has(d.id));
@@ -254,15 +263,16 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
     const busy = busyRow === row.key;
     const doc = row.kind === "services" ? "RFP" : "RFT";
     const dropping = row.pkg && dropRow === row.pkg.id;
+    const selectable = combinable(row);
     return <tr key={row.key} className={[row.pkg ? "" : "row-suggested", dropping ? "row-drop" : ""].filter(Boolean).join(" ") || undefined}
-      data-proposal-drop={row.pkg ? "true" : undefined}
+      data-proposal-drop={row.pkg ? "true" : undefined} data-combinable={selectable || undefined}
+      aria-selected={selectable ? selection.ids.includes(row.pkg!.id) : undefined} onClick={e => pick(row, e)}
       onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files") || e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE)) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE) ? "link" : "copy"; setDropRow(row.pkg!.id); } }) : undefined}
       onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
-      {/* The tick box has its own name; the row header stays the discipline. */}
-      <th scope="row" className="discipline-cell" aria-label={combinable(row) ? row.label : undefined} style={row.member ? { paddingLeft: "2rem" } : undefined}>
-        {combinable(row) && <><input type="checkbox" aria-label={`Select ${row.label} to combine`} checked={ticked.includes(row.pkg!.id)} disabled={!!busyRow}
-          onChange={e => { const id = row.pkg!.id; const on = e.target.checked; setTicked(t => on ? [...t, id] : t.filter(x => x !== id)); }} />{" "}</>}
+      {/* Keyboard: Enter selects the row, Space adds or removes it. */}
+      <th scope="row" className="discipline-cell" tabIndex={selectable ? 0 : undefined} style={row.member ? { paddingLeft: "2rem" } : undefined}
+        onKeyDown={selectable ? (e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(row, { ctrlKey: e.key === " ", metaKey: false, shiftKey: e.shiftKey, target: e.currentTarget }); } if (e.key === "Escape") setSelection(emptySelection); }) : undefined}>
         {row.group && row.pkg ? <GroupName group={row.pkg} onRename={title => rename(row.pkg!, title)} /> : row.label}
       </th>
       <FirmSlots busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
@@ -290,8 +300,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   return <section className="procurement" aria-label="Procurement">
     <header className="procurement-head">
       <h1>Procurement</h1>
+      <div className="procurement-actions">
       {tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
       <button type="button" className="btn btn-small" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>Add discipline</button>
+      </div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
     {data && data.board.unassigned.length > 0 && <div className="procurement-line procurement-unassigned" role="note">
@@ -380,7 +392,7 @@ function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen:
     {c.status === "not_proposal" && <span className="firm-chip-status">Named in a document</span>}
     {c.pi_expired && <span className="firm-chip-status warn" title={`Professional indemnity expired ${c.pi_expires_on}: request a current certificate`}>PI expired</span>}
     {/* Shown, not spoken: the description already says the firm is awarded. */}
-    {c.status === "awarded" && <span className="firm-chip-status firm-awarded" aria-hidden="true">Awarded</span>}
+    {c.status === "awarded" && <span className="firm-awarded" aria-hidden="true" title="Awarded"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" focusable="false"><path d="m3.5 8.5 3 3 6-7" /></svg></span>}
     <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? `$${fmt(c.stated_total).replace(/\.00$/, "")}` : "—"}</span>
   </button>
     <button type="button" className="firm-detach" aria-label={`Detach proposal for ${c.firm_name || c.filename}`}
