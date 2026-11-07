@@ -34,13 +34,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
-    are fixture choices.
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected 
+    counts are fixture choices.
 settings:
   cost-planning:
     boundary:range:
-      start: s1_basis
-      end: s4_design
+      start: brief_concept
+      end: design_development
     allowance:plans: '2'
     allowance:authority: '2'
     allowance:review: '2'
@@ -56,8 +56,8 @@ description: Residential cost plans include explicitly selected contract allowan
 expect:
   cost-planning:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_basis, s2_concept, s4_design]
-    stages_absent: [s3_authority, s8_advice, s5_tender, s6_construction, s7_completion]
+    stages_include: [brief_concept, design_development]
+    stages_absent: [planning, tender_documentation, delivery, s8_advice]
     positions:
       construction_plan: I
       contract_allowances: I

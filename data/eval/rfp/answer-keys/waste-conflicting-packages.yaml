@@ -37,13 +37,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation
-    owners. Fixture quantities are client choices, not generation-rate defaults.
+  information: Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection 
+    confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 settings:
   waste-management:
     boundary:range:
-      start: s1_inception
-      end: s3_cd
+      start: brief_concept
+      end: planning
     allowance:coverage: '2'
     allowance:plans: '2'
     allowance:meetings: '2'
@@ -63,4 +63,4 @@ expect:
       collection: I
       rooms: I
     blocking: ['fact:flag.waste_operational']
-    stages_include: [s2_concept, s3_operational]
+    stages_include: [brief_concept, planning]

@@ -39,13 +39,13 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
-    R1-R9 schedules.
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; 
+    quantified R1-R9 schedules.
 settings:
   fire-services:
     boundary:range:
-      start: handover
-      end: handover
+      start: delivery
+      end: delivery
     allowance:extent: '2'
     allowance:visits: '2'
     allowance:design: '2'
@@ -53,7 +53,7 @@ settings:
     allowance:tender: '2'
     allowance:construction: '2'
     allowance:completion: '2'
-    stage:handover: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/fire-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/fire-services/ledger.md #1-55'
@@ -63,8 +63,8 @@ snapshot: false
 expect:
   fire-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [handover]
-    stages_absent: [concept, design, tender]
+    stages_include: [delivery]
+    stages_absent: [schematic_design, design_development, tender_documentation]
     positions:
       wet: absent
       supply: absent

@@ -20,26 +20,25 @@ Select base, options and end boundary; advice-only ends at its report/response r
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Inception / evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Agree brief/basis | Included |  |
 |  | Inspect agreed existing routes, separate observed/measured/reported facts | Included |  |
 |  | Route map/photos, inaccessible areas, upgrade questions and prioritised actions | Included |  |
-|  | Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade or exemption | Included |  |
-| S2 Concept advice |  | Included |  |
 |  | Mark access-chain barriers/options: arrival/parking, entries/levels, routes, lifts and facilities | Included |  |
 |  | Flag solution candidates and required versus voluntary improvements | Included |  |
+|  | Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade or exemption | Included |  |
 |  | Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy reliance | Included |  |
 |  | Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material design | Included |  |
-| S4 Construction approval |  | Included |  |
+| Design development |  | Included |  |
 |  | Review conditions and coordinated drawings/specs | Included |  |
 |  | Preliminary mark-ups/final access report, close earlier findings and schedule product/measurement evidence | Included |  |
 |  | Solution preparation separate | Included |  |
 |  | Hearing/signage/tactile/lift/facility criteria review; services/AV designs hearing, architect signs, lift specialist lifts | Included |  |
 |  | Performance departure: brief/method/report/revisions per departure; author/independent assessor, fire/egress interfaces and acceptance/completion conditions | Included |  |
-| S5 Tender support | Not part of this appointment | Excluded | — |
-| S6 Post-contract review | Not part of this appointment | Excluded | — |
-| S7 Construction / completion | Not part of this appointment | Excluded | — |
-| S8 Advisory / operational | Not part of this appointment | Excluded | — |
+| Tender documentation | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Advisory / operational | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Access review against confirmed basis at appointed stages only | Included |  |
 |  | Occupied/staged route-continuity review at appointed stages; repeat audits only within selected visit/stage allowances; contractor methods/safety, operator management | Included |  |

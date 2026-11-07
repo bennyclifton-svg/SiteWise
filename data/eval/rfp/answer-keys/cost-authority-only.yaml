@@ -34,13 +34,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
-    are fixture choices.
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected 
+    counts are fixture choices.
 settings:
   cost-planning:
     boundary:range:
-      start: s1_basis
-      end: s3_authority
+      start: brief_concept
+      end: planning
     allowance:plans: '2'
     allowance:authority: '2'
     allowance:review: '2'
@@ -56,8 +56,8 @@ description: Industrial extension buys current authority report only; DA/D&C do 
 expect:
   cost-planning:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_basis, s3_authority]
-    stages_absent: [s2_concept, s4_design, s5_tender, s6_construction]
+    stages_include: [brief_concept, planning]
+    stages_absent: [design_development, tender_documentation]
     positions:
       existing_costs: I
       total_budget: absent

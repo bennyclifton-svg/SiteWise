@@ -137,7 +137,7 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if _, err := s.SetReportSetting(ctx, orgB, r.ID, userB, "position:bim_coordination", json.RawMessage(`"I"`), next.Version); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("another org's report: %v", err)
 	}
-	for key, value := range map[string]string{"position:no_such_item": `"I"`, "position:bim_coordination": `"Y"`, "allowance:design_meetings": `"lots"`, "field:closes": `"next week"`, "weight:price": `140`, "driver:flag.flood": `"maybe"`, "boundary:range": `{"start":"for_construction","end":"concept"}`} {
+	for key, value := range map[string]string{"position:no_such_item": `"I"`, "position:bim_coordination": `"Y"`, "allowance:design_meetings": `"lots"`, "field:closes": `"next week"`, "weight:price": `140`, "driver:flag.flood": `"maybe"`, "boundary:range": `{"start":"design_finalisation","end":"brief_concept"}`} {
 		if _, err := s.SetReportSetting(ctx, orgA, r.ID, userA, key, json.RawMessage(value), next.Version); !errors.Is(err, store.ErrInvalidSetting) {
 			t.Fatalf("%s=%s must be refused: %v", key, value, err)
 		}
@@ -218,7 +218,7 @@ func hasCheck(checks []rfp.Check, id string, blocking bool) bool {
 func finishRFP(t *testing.T, s *store.Store, r store.Report, d store.ReportDraft) store.ReportDraft {
 	t.Helper()
 	for key, value := range map[string]string{
-		"boundary:range":                 `{"start":"brief_masterplan","end":"for_construction"}`,
+		"boundary:range":                 `{"start":"brief_concept","end":"design_finalisation"}`,
 		"field:ref":                      `"RFP-1"`,
 		"field:issued":                   `"2026-10-12"`,
 		"field:closes":                   `"2026-10-30"`,

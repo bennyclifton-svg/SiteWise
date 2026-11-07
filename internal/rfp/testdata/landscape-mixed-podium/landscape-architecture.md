@@ -19,20 +19,19 @@ Select base/options and end; later stages require instruction. Fit-out without l
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Inception / evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register | Included |  |
 |  | Missing levels, services, soil, trees and access. | Included |  |
-|  | Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose cause; assign opening-up/testing/reinstatement | Excluded |  |
-| S2 Concept |  | Included |  |
 |  | Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis | Included |  |
 |  | Soil volumes/depths, loads, shade, water and maintenance assumptions. | Included |  |
 |  | Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority | Excluded |  |
 |  | Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists | Included |  |
-| S3 Approval / responses |  | Included |  |
+|  | Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose cause; assign opening-up/testing/reinstatement | Excluded |  |
+| Planning |  | Included |  |
 |  | Pathway-specific plans, planting schedule/details/calculations | Included |  |
 |  | Draft/consolidated comment/final and counted council responses to named milestone | Included |  |
 |  | Scales suit submission. | Included |  |
-| S4 Consent / developed design |  | Included |  |
+| Design development |  | Included |  |
 |  | Conditions/register, hard/soft landscape, soils and planting | Included |  |
 |  | Coordinate irrigation, public domain, civil, structure/waterproofing, access and long-lead items. | Included |  |
 |  | Planting/hardscape/external design only in enabled stages | Included |  |
@@ -40,20 +39,19 @@ Select base/options and end; later stages require instruction. Fit-out without l
 |  | Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named | Included |  |
 |  | Irrigation notation/performance brief; hydraulic/electrical interfaces named | Included |  |
 |  | Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed | Included |  |
-| S5 Traditional documentation |  | Included |  |
+| Tender documentation |  | Included |  |
 |  | Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment requirements/hold points | Included |  |
 |  | Counted queries/substitutions. | Included |  |
 |  | Detailed irrigation design only by expressly selected competent designer | Included |  |
-| S7 Construction / completion |  | Included |  |
+| Delivery |  | Included |  |
 |  | Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits | Included |  |
 |  | Departures/actions/evidence and bounded completion statement, distinct from contract PC/authority acceptance. | Included |  |
-|  | Construction visits/completion report against selected evidenced scope; contract PC remains administrator | Included |  |
-| S8 Establishment review |  | Included |  |
 |  | Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation, erosion/defects | Included |  |
 |  | End report to administrator/operator | Included |  |
 |  | Contractor maintains. | Included |  |
 |  | Plant establishment/maintenance inspections; contractor/operator maintains, quantified visits/end criteria | Included |  |
-| S9 Advice / rectification | Not part of this appointment | Excluded | — |
+|  | Construction visits/completion report against selected evidenced scope; contract PC remains administrator | Included |  |
+| Advice / rectification | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Existing/occupied/mixed/staged work: retained-condition/tie-ins, access and separate acceptance/establishment dates | Included |  |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |

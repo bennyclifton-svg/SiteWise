@@ -12,439 +12,520 @@ heading: "REQUEST FOR PROPOSAL: ARCHITECTURAL SERVICES"
 golden: docs/rfp-golden/architecture/rfp.md
 discipline_ids: [consultant.architect]
 title_aliases: [architect, architectural, architecture]
-evidence_limit: "Three proposals: a masterplan and staged camp (AJC), a fitout (nettletontribe) and the Arthur St warehouse DA (PACE). Construction-phase and post-novation scope comes from practice."
+evidence_limit: "Three proposals: a masterplan and staged camp (AJC), a fitout (nettletontribe) and the Arthur St warehouse
+  DA (PACE). Construction-phase and post-novation scope comes from practice."
 
 thresholds:
-  - {key: budget_complex, kind: client_default, text: "A construction budget over $20 million suggests complex service levels", source: "golden architecture draft v3 scale rule; client preference", verified: false}
-  - {key: dbp_regime, kind: statutory, text: "NSW regulated-design regime applies to the affected work", source: "Design and Building Practitioners Act 2020 (NSW) and Regulation; NSW guidance: existing Class 3 and 9c alteration enters the regime from 1 July 2028, with exemptions. Not verified against the instrument.", verified: false}
+- {key: budget_complex, kind: client_default, text: "A construction budget over $20 million suggests complex service levels",
+  source: "golden architecture draft v3 scale rule; client preference", verified: false}
+- {key: dbp_regime, kind: statutory, text: "NSW regulated-design regime applies to the affected work", source: "Design
+    and Building Practitioners Act 2020 (NSW) and Regulation; NSW guidance: existing Class 3 and 9c alteration enters
+    the regime from 1 July 2028, with exemptions. Not verified against the instrument.", verified: false}
 
 field_defaults:
   pi: "$20 million"
 # A house falls back to the shared client default (skeleton insurance_limits):
 # the owner gave no house amounts on 13 October 2026.
 field_defaults_when:
-  - when: [{module: [house]}]
-    values: {pi: "$10 million"}
-    provenance: [{kind: client_decision, ref: "knowledge/rfp/skeleton.yaml#insurance_limits", why: "Owner 2026-10-13: the architect carries PI and PL; no house amount given, so the shared default applies instead of the commercial $20 million."}]
+- when: [module: [house]]
+  values: {pi: "$10 million"}
+  provenance: [{kind: client_decision, ref: "knowledge/rfp/skeleton.yaml#insurance_limits", why: "Owner 2026-10-13: the
+        architect carries PI and PL; no house amount given, so the shared default applies instead of the commercial $20
+        million."}]
 required_facts: [budget]
 
 scale:
-  text: "Service levels (BIM detail, renders, specification, typical interiors) are suggested complex for a Class 2-6 or 9 part, a budget over $20 million, or a heritage site. Technical scope does not follow this scale."
+  text: "Service levels (BIM detail, renders, specification, typical interiors) are suggested complex for a Class 2-6
+    or 9 part, a budget over $20 million, or a heritage site. Technical scope does not follow this scale."
   complex:
-    - {class: ["2", "3", "4", "5", "6", 9a, 9b, 9c]}
-    - {budget_over: ["20000000"]}
-    - {flag: [heritage]}
+  - {class: ["2", "3", "4", "5", "6", 9a, 9b, 9c]}
+  - {budget_over: ["20000000"]}
+  - {flag: [heritage]}
 
 role:
-  - key: lead
-    text: "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. {engagement}"
-    provenance: [{kind: evidence, ref: "architecture#147"}, {kind: evidence, ref: "architecture#148"}, {kind: evidence, ref: "architecture#158"}, {kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."}]
-  - key: novation
-    text: "After novation you are engaged by the head contractor. Price the stages before and after novation separately."
-    when: [{novation: ["yes"]}]
-    provenance: [{kind: evidence, ref: "architecture#131"}]
-  - key: novation_option
-    text: "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up."
-    when: [{novation: ["option"]}]
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", why: "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
-  - key: dnc_handover
-    text: "After the design and construct tender the contractor's own designers complete the design. Your appointment ends at the handover described for the D&C tender stage."
-    when: [{procurement: [design_construct], novation: ["no"]}]
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
+- key: lead
+  text: "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are
+    not responsible for the accuracy of their work. {engagement}"
+  provenance: [{kind: evidence, ref: "architecture#147"}, {kind: evidence, ref: "architecture#148"}, {kind: evidence,
+      ref: "architecture#158"}, {kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13:
+        the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."}]
+- key: novation
+  text: "After novation you are engaged by the head contractor. Price the stages before and after novation separately."
+  when: [novation: ["yes"]]
+  provenance: [{kind: evidence, ref: "architecture#131"}]
+- key: novation_option
+  text: "Under design and construct the client may elect to novate this appointment to the head contractor after the tender,
+    or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether
+    to take it up."
+  when: [novation: ["option"]]
+  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", 
+        why: "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
+- key: dnc_handover
+  text: "After the design and construct tender the contractor's own designers complete the design. Your appointment ends
+    at the handover described for the D&C tender stage."
+  when: [{procurement: [design_construct], novation: ["no"]}]
+  provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
 
-stage_intro: "Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5)."
+stage_intro: "Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later
+  stages (section 5)."
 # One table: each stage with its services beneath it (owner direction, 2 November 2026).
 scope_by_stage: true
 
 # Suggested appointment boundary; the user confirms it before issue. Stages
 # after the end that apply are offered as separately priced options.
 boundary:
-  - {when: [{procurement: [design_construct]}], start: brief_masterplan, end: dnc_tender}
-  - {when: [{work_type: [advisory]}, {pathway: [advice_only]}], start: brief_masterplan, end: concept}
+- {when: [procurement: [design_construct]], start: brief_concept, end: tender_documentation}
+- {when: [work_type: [advisory], pathway: [advice_only]], start: brief_concept, end: brief_concept}
   # A house's base fee runs to its one documentation set (owner decision 4).
-  - {when: [{module: [house], procurement: [traditional, managing_contractor]}], start: brief_masterplan, end: house_documents}
-  - {start: brief_masterplan, end: interiors}
+- {when: [{module: [house], procurement: [traditional, managing_contractor]}], start: brief_concept, end: 
+    tender_documentation}
+- {start: brief_concept, end: design_development}
 
 stages:
   # Owner ruling R13 (7 November 2026): the brief is typical on every
   # project, so it is always priced; a masterplan is only for a large project
   # (more than one building, or staged). The key stays brief_masterplan so
   # saved choices and answer keys keep their stage.
-  - key: brief_masterplan
-    name: Brief and masterplan
-    base_name: Brief
-    lines:
-      - {key: brief, text: "Confirmed, quantified brief (1 draft, 1 final)"}
-      - {key: masterplan_options, text: "up to {allowance:concept_options} masterplan options", when: [{flag: [staged]}, {flag: [multi_building]}]}
-      - {key: masterplan_report, text: "preferred masterplan report", when: [{flag: [staged]}, {flag: [multi_building]}]}
-      - {key: strategy_workshop, text: "approval strategy workshop"}
-    fee_basis: fixed
-    delivery_stage: concept_design
-    shown_when: Always; the masterplan lines on a multi-building, staged or campus site
-    provenance: [{kind: evidence, ref: "architecture#1-14"}, {kind: client_decision, ref: "docs/plans/2026-11-07-synthetic-findings-f31-f42.md#r13", why: "Owner ruling R13: the brief is priced on every project; a masterplan only on a large one."}]
-  - key: concept
-    name: Concept
-    items: [input_schedule]
-    lines:
-      - {key: site_inspection, text: "Site inspection"}
-      - {key: existing_information, text: "review of existing information and brief gaps"}
-      - {key: options, text: "up to {allowance:concept_options} options"}
-      - {key: preferred_concept, text: "preferred concept"}
-      - {key: area_schedule, text: "area schedule"}
-      - {key: budget_check, text: "check against budget"}
-    fee_basis: fixed
-    delivery_stage: concept_design
-    shown_when: Always
-    provenance: [{kind: evidence, ref: "architecture#5"}, {kind: evidence, ref: "architecture#16-23"}, {kind: evidence, ref: "architecture#28"}]
-  - key: schematic
-    name: Schematic design
-    lines:
-      - {key: preferred_scheme, text: "Preferred scheme resolved for planning and the cost plan"}
-      - {key: outline_materials, text: "outline materials and systems"}
-      - {key: pre_application, text: "pre-application meeting where the pathway has one"}
-    fee_basis: fixed
-    delivery_stage: concept_design
-    shown_when: Always
-    provenance: [{kind: evidence, ref: "architecture#24-26"}, {kind: evidence, ref: "architecture#29-31"}, {kind: evidence, ref: "architecture#39"}]
-  - key: planning_approval
-    name: Planning approval
-    lines:
-      - {key: planning_drawings, text: "Architectural drawings and input to the {planning_report}: one preliminary and one final issue"}
-      - {key: who_lodges, text: "who lodges is set in section 2"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [cdc, da, ssd, planning_permit, ref, modification]}]
-    shown_when: An application is lodged
-    provenance: [{kind: evidence, ref: "architecture#40-47"}]
-  - key: planning_response
-    name: Planning response
-    lines:
-      - {key: information_requests, text: "Authority information requests and design changes during assessment"}
-      - {key: time_cap, text: "actual time at R3 rates up to {allowance:planning_cap} hours"}
-    fee_basis: time_to_ceiling
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd, planning_permit, modification]}]
-    shown_when: DA, SSD, permit or modification
-    provenance: [{kind: evidence, ref: "architecture#48-53"}]
-  - key: design_development
-    name: Design development
-    lines:
-      - {key: coordinated_design, text: "Coordinated design to the approval and consent conditions"}
-      - {key: finishes_details, text: "finishes and typical details"}
-      - {key: bca_strategy, text: "BCA strategy with the BCA consultant"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    shown_when: Always
-    provenance: [{kind: evidence, ref: "architecture#57-66"}, {kind: evidence, ref: "architecture#70-71"}]
-  - key: interiors
-    name: Interiors
-    items: [base_interiors]
-    lines:
-      - {key: interior_design, text: "Interior layouts, finishes and joinery for the base building and common areas"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{work_type: [refurb]}, {class: ["3", "5", "6", 9a, 9b, 9c]}]
-    module: beyond_house
-    if_unknown: option
-    assumption: "Price as an option: interiors are needed for a fit-out or a Class 3, 5, 6 or 9 part."
-    shown_when: Fit-out, or a Class 3, 5, 6 or 9 part
-    provenance: [{kind: evidence, ref: "architecture#36"}, {kind: evidence, ref: "architecture#65"}, {kind: evidence, ref: "architecture#114"}]
-  - key: house_documents
-    name: Tender and construction documents
-    items: [house_interiors, house_selections]
-    lines:
-      - {key: documentation_set, text: "One documentation set for a lump-sum price and for construction: drawings, door and window schedules, joinery details, the finishes and fixtures schedule and the specification"}
-      - {key: issues, text: "One tender issue, then one construction issue with the agreed tender changes and any construction certificate set"}
-    design_responsibility: "You hold the whole architectural design."
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    module: house
-    when: [{procurement: [traditional, managing_contractor]}]
-    shown_when: A house under a traditional or managing contract
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner decision 4, 13 October 2026: a Class 1 house gets one documentation set for tender and construction."}, {kind: evidence, ref: "golden specification: Newham on York builder's project specification (end of design, pre-tender)"}]
-  - key: tender_traditional
-    name: Tender documents
-    lines:
-      - {key: tender_documents, text: "Documents complete enough to price as a lump sum: drawings, schedules and specification"}
-      - {key: tender_issue, text: "one tender issue"}
-    design_responsibility: "You hold the whole architectural design."
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{procurement: [traditional, managing_contractor]}]
-    module: beyond_house
-    shown_when: Traditional or managing contractor
-    provenance: [{kind: evidence, ref: "architecture#58-59"}, {kind: evidence, ref: "architecture#69"}, {kind: evidence, ref: "architecture#72-73"}]
-  - key: bidding
-    name: Bidding
-    lines:
-      - {key: tender_questions, text: "Tenderer questions and addenda"}
-      - {key: time_cap, text: "actual time at R3 rates up to {allowance:bidding_cap} hours"}
-    fee_basis: time_to_ceiling
-    when: [{procurement: [traditional, managing_contractor]}]
-    shown_when: Traditional or managing contractor
-    provenance: [{kind: evidence, ref: "architecture#81-82"}]
-  - key: dnc_tender
-    name: D&C tender documents
-    items: [dnc_performance_brief]
-    lines:
-      - {key: design_intent, text: "Design-intent drawings and performance brief"}
-      - {key: design_split, text: "schedule of the design you retain and the design the contractor completes"}
-      - {key: departures_review, text: "review of tenderers' departures"}
-      - {key: handover_register, text: "handover deliverables register"}
-    design_responsibility: "You hold the design to tender issue; the contractor holds it after award."
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{procurement: [design_construct]}]
-    shown_when: Design and construct
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
-  - key: regulated_design
-    name: Regulated design
-    lines:
-      - {key: regulated_designs, text: "Regulated designs including passive fire and waterproofing details"}
-      - {key: compliance_declarations, text: "design compliance declarations for one construction certificate"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{regulated_design: ["yes"]}]
-    suggest: [{state: [NSW], class: ["2", "3", 9c]}]
-    threshold: dbp_regime
-    shown_when: Regulated-design regime confirmed for this work
-    provenance: [{kind: evidence, ref: "architecture#93-102"}]
-  - key: for_construction
-    name: For-construction documents
-    lines:
-      - {key: negotiated_changes, text: "Negotiated changes incorporated"}
-      - {key: non_typical_details, text: "non-typical details"}
-      - {key: issues, text: "one for-construction issue and one construction certificate issue"}
-      - {key: design_certification, text: "design certification for the construction certificate"}
-    design_responsibility: "You hold the whole architectural design."
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{procurement: [traditional, managing_contractor, eci, alliance, ppp]}]
-    module: beyond_house
-    shown_when: Not design and construct
-    provenance: [{kind: evidence, ref: "architecture#84-88"}]
-  - key: construction_support
-    name: Design support during construction
-    lines:
-      - {key: site_inspections, text: "{allowance:ca_inspections} site inspections"}
-      - {key: rfis, text: "RFIs"}
-      - {key: shop_drawings, text: "shop drawing review"}
-      - {key: completion_inspections, text: "practical completion and defects inspections"}
-    fee_basis: fixed
-    delivery_stage: construction_stage_inspections
-    when: [{procurement: [traditional, managing_contractor, eci, alliance, ppp]}]
-    default: option
-    shown_when: Not design and construct; client opts in
-    provenance: [{kind: practice, ref: "data/reference/clerk/data/seed/architectural-services-guide.md (construction and completion)"}]
-  - key: contract_admin
-    name: Contract administration
-    lines:
-      - {key: contract_administration, text: "Superintendent or contract administrator under the construction contract: progress claims and variations assessed, practical completion and defects certification"}
-    fee_basis: fixed
-    delivery_stage: construction_stage_inspections
-    when: [{flag: [contract_admin]}]
-    if_unknown: option
-    assumption: "Price as an option: the client has not decided who administers the construction contract."
-    default: option
-    shown_when: Client asks you to administer the contract
-    provenance: [{kind: seed, ref: "peer-review-2026-10-09 architecture modules: contract administration actually commissioned"}]
-  - key: post_novation
-    name: Post-novation
-    lines:
-      - {key: contractor_documentation, text: "For-construction documentation for the contractor"}
-      - {key: rfis, text: "RFIs"}
-      - {key: contractor_changes, text: "design changes the contractor asks for"}
-    design_responsibility: "The contractor holds the design after novation."
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{novation: ["option", "yes"]}]
-    shown_when: Novation
-    provenance: [{kind: practice, ref: "architecture ledger #131-132 (not priced in the golden set); architectural-services-guide.md novation"}]
-
+- key: brief_concept
+  name: Brief and concept
+  lines:
+  - {key: brief, text: 'Confirmed, quantified brief (1 draft, 1 final)'}
+  - {key: masterplan_options, text: 'up to {allowance:concept_options} masterplan options', when: [flag: [staged], 
+          flag: [multi_building]]}
+  - {key: masterplan_report, text: preferred masterplan report, when: [flag: [staged], flag: [multi_building]]}
+  - {key: strategy_workshop, text: approval strategy workshop}
+  - {key: site_inspection, text: Site inspection}
+  - {key: existing_information, text: review of existing information and brief gaps}
+  - {key: options, text: 'up to {allowance:concept_options} options'}
+  - {key: preferred_concept, text: preferred concept}
+  - {key: area_schedule, text: area schedule}
+  - {key: budget_check, text: check against budget}
+  fee_basis: fixed
+  items: [input_schedule]
+  shown_when: Always
+  provenance:
+  - {kind: evidence, ref: "architecture#1-14"}
+  - {kind: client_decision, ref: "docs/plans/2026-11-07-synthetic-findings-f31-f42.md#r13", why: "Owner ruling R13: the
+      brief is priced on every project; a masterplan only on a large one."}
+  - {kind: evidence, ref: "architecture#5"}
+  - {kind: evidence, ref: "architecture#16-23"}
+  - {kind: evidence, ref: "architecture#28"}
+  delivery_stage: brief_concept
+- key: schematic_design
+  name: Schematic design
+  lines:
+  - {key: preferred_scheme, text: "Preferred scheme resolved for planning and the cost plan"}
+  - {key: outline_materials, text: "outline materials and systems"}
+  - {key: pre_application, text: "pre-application meeting where the pathway has one"}
+  fee_basis: fixed
+  delivery_stage: schematic_design
+  shown_when: Always
+  provenance: [{kind: evidence, ref: "architecture#24-26"}, {kind: evidence, ref: "architecture#29-31"}, {kind: 
+        evidence, ref: "architecture#39"}]
+- key: planning
+  name: Planning
+  lines:
+  - {key: planning_drawings, text: 'Architectural drawings and input to the {planning_report}: one preliminary and one
+      final issue', when: [pathway: [cdc, da, ssd, planning_permit, ref, modification]], if_unknown: ask}
+  - {key: who_lodges, text: who lodges is set in section 2, when: [pathway: [cdc, da, ssd, planning_permit, ref, 
+            modification]], if_unknown: ask}
+  - {key: information_requests, text: Authority information requests and design changes during assessment, when: [
+          pathway: [da, ssd, planning_permit, modification]], if_unknown: ask}
+  - {key: time_cap, text: 'actual time at R3 rates up to {allowance:planning_cap} hours', when: [pathway: [da, ssd, 
+            planning_permit, modification]], if_unknown: ask}
+  fee_basis: fixed
+  when: [pathway: [cdc, da, ssd, planning_permit, ref, modification], pathway: [da, ssd, planning_permit, 
+          modification]]
+  shown_when: An application is lodged; or DA, SSD, permit or modification
+  provenance:
+  - {kind: evidence, ref: "architecture#40-47"}
+  - {kind: evidence, ref: "architecture#48-53"}
+  delivery_stage: planning
+- key: design_development
+  name: Design development
+  lines:
+  - {key: coordinated_design, text: Coordinated design to the approval and consent conditions}
+  - {key: finishes_details, text: finishes and typical details}
+  - {key: bca_strategy, text: BCA strategy with the BCA consultant}
+  - {key: interior_design, text: 'Interior layouts, finishes and joinery for the base building and common areas', 
+      when: [{work_type: [refurb], module: [beyond_house]}, {class: ["3", "5", "6", 9a, 9b, 9c], module: [
+            beyond_house]}], if_unknown: include}
+  fee_basis: fixed
+  items: [base_interiors]
+  shown_when: Always
+  provenance:
+  - {kind: evidence, ref: "architecture#57-66"}
+  - {kind: evidence, ref: "architecture#70-71"}
+  - {kind: evidence, ref: "architecture#36"}
+  - {kind: evidence, ref: "architecture#65"}
+  - {kind: evidence, ref: "architecture#114"}
+  delivery_stage: design_development
+- key: tender_documentation
+  name: Tender documentation
+  lines:
+  - {key: house_documents_responsibility, text: You hold the whole architectural design., when: [{procurement: [
+            traditional, managing_contractor], module: [house]}], if_unknown: ask}
+  - {key: documentation_set, text: 'One documentation set for a lump-sum price and for construction: drawings, door and
+      window schedules, joinery details, the finishes and fixtures schedule and the specification', when: [{
+          procurement: [traditional, managing_contractor], module: [house]}], if_unknown: ask}
+  - {key: issues, text: 'One tender issue, then one construction issue with the agreed tender changes and any construction
+      certificate set', when: [{procurement: [traditional, managing_contractor], module: [house]}], if_unknown: ask}
+  - {key: tender_traditional_responsibility, text: You hold the whole architectural design., when: [{procurement: [
+            traditional, managing_contractor], module: [beyond_house]}], if_unknown: ask}
+  - {key: tender_documents, text: 'Documents complete enough to price as a lump sum: drawings, schedules and specification',
+    when: [{procurement: [traditional, managing_contractor], module: [beyond_house]}], if_unknown: ask}
+  - {key: tender_issue, text: one tender issue, when: [{procurement: [traditional, managing_contractor], module: [
+            beyond_house]}], if_unknown: ask}
+  - {key: tender_questions, text: Tenderer questions and addenda, when: [procurement: [traditional, 
+            managing_contractor]], if_unknown: ask}
+  - {key: time_cap, text: 'actual time at R3 rates up to {allowance:bidding_cap} hours', when: [procurement: [
+            traditional, managing_contractor]], if_unknown: ask}
+  - {key: dnc_tender_responsibility, text: You hold the design to tender issue; the contractor holds it after award.,
+    when: [procurement: [design_construct]], if_unknown: ask}
+  - {key: design_intent, text: Design-intent drawings and performance brief, when: [procurement: [design_construct]],
+    if_unknown: ask}
+  - {key: design_split, text: schedule of the design you retain and the design the contractor completes, when: [
+          procurement: [design_construct]], if_unknown: ask}
+  - {key: departures_review, text: review of tenderers' departures, when: [procurement: [design_construct]], 
+      if_unknown: ask}
+  - {key: handover_register, text: handover deliverables register, when: [procurement: [design_construct]], 
+      if_unknown: ask}
+  fee_basis: fixed
+  when: [{procurement: [traditional, managing_contractor], module: [house]}, {procurement: [traditional, 
+          managing_contractor], module: [beyond_house]}, procurement: [traditional, managing_contractor], 
+        procurement: [design_construct]]
+  items: [house_interiors, house_selections, dnc_performance_brief]
+  shown_when: A house under a traditional or managing contract; or Traditional or managing contractor; or Design and
+    construct
+  provenance:
+  - {kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner decision 4, 13 October 2026:
+      a Class 1 house gets one documentation set for tender and construction."}
+  - {kind: evidence, ref: "golden specification: Newham on York builder's project specification (end of design, pre-tender)"}
+  - {kind: evidence, ref: "architecture#58-59"}
+  - {kind: evidence, ref: "architecture#69"}
+  - {kind: evidence, ref: "architecture#72-73"}
+  - {kind: evidence, ref: "architecture#81-82"}
+  - {kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}
+  delivery_stage: tender_documentation
+- key: design_finalisation
+  name: Design finalisation
+  lines:
+  - {key: regulated_designs, text: Regulated designs including passive fire and waterproofing details, when: [
+          regulated_design: ["yes"]], suggest: [{state: [NSW], class: ["2", "3", 9c]}], threshold: dbp_regime}
+  - {key: compliance_declarations, text: design compliance declarations for one construction certificate, when: [
+          regulated_design: ["yes"]], suggest: [{state: [NSW], class: ["2", "3", 9c]}], threshold: dbp_regime}
+  - {key: for_construction_responsibility, text: You hold the whole architectural design., when: [{procurement: [
+            traditional, managing_contractor, eci, alliance, ppp], module: [beyond_house]}], if_unknown: ask}
+  - {key: negotiated_changes, text: Negotiated changes incorporated, when: [{procurement: [traditional, 
+            managing_contractor, eci, alliance, ppp], module: [beyond_house]}], if_unknown: ask}
+  - {key: non_typical_details, text: non-typical details, when: [{procurement: [traditional, managing_contractor, 
+            eci, alliance, ppp], module: [beyond_house]}], if_unknown: ask}
+  - {key: issues, text: one for-construction issue and one construction certificate issue, when: [{procurement: [
+            traditional, managing_contractor, eci, alliance, ppp], module: [beyond_house]}], if_unknown: ask}
+  - {key: design_certification, text: design certification for the construction certificate, when: [{procurement: [
+            traditional, managing_contractor, eci, alliance, ppp], module: [beyond_house]}], if_unknown: ask}
+  - {key: post_novation_responsibility, text: The contractor holds the design after novation., when: [novation: ["option",
+          "yes"]], if_unknown: ask}
+  - {key: contractor_documentation, text: For-construction documentation for the contractor, when: [novation: ["option",
+          "yes"]], if_unknown: ask}
+  - {key: rfis, text: RFIs, when: [novation: ["option", "yes"]], if_unknown: ask}
+  - {key: contractor_changes, text: design changes the contractor asks for, when: [novation: ["option", "yes"]], 
+      if_unknown: ask}
+  fee_basis: fixed
+  when: [regulated_design: ["yes"], {procurement: [traditional, managing_contractor, eci, alliance, ppp], module: [
+          beyond_house]}, novation: ["option", "yes"]]
+  shown_when: Regulated-design regime confirmed for this work; or Not design and construct; or Novation
+  provenance:
+  - {kind: evidence, ref: "architecture#93-102"}
+  - {kind: evidence, ref: "architecture#84-88"}
+  - {kind: practice, ref: "architecture ledger #131-132 (not priced in the golden set); architectural-services-guide.md
+      novation"}
+  delivery_stage: design_finalisation
+- key: delivery
+  name: Delivery
+  lines:
+  - {key: site_inspections, text: '{allowance:ca_inspections} site inspections', when: [procurement: [traditional, 
+            managing_contractor, eci, alliance, ppp]], if_unknown: ask}
+  - {key: rfis, text: RFIs, when: [procurement: [traditional, managing_contractor, eci, alliance, ppp]], if_unknown: 
+      ask}
+  - {key: shop_drawings, text: shop drawing review, when: [procurement: [traditional, managing_contractor, eci, 
+            alliance, ppp]], if_unknown: ask}
+  - {key: completion_inspections, text: practical completion and defects inspections, when: [procurement: [
+            traditional, managing_contractor, eci, alliance, ppp]], if_unknown: ask}
+  - {key: contract_administration, text: 'Superintendent or contract administrator under the construction contract: progress
+      claims and variations assessed, practical completion and defects certification', when: [flag: [contract_admin]],
+    if_unknown: include}
+  fee_basis: fixed
+  default: option
+  when: [procurement: [traditional, managing_contractor, eci, alliance, ppp], flag: [contract_admin]]
+  shown_when: Not design and construct; client opts in; or Client asks you to administer the contract
+  provenance:
+  - {kind: practice, ref: "data/reference/clerk/data/seed/architectural-services-guide.md (construction and completion)"}
+  - {kind: seed, ref: "peer-review-2026-10-09 architecture modules: contract administration actually commissioned"}
+  delivery_stage: delivery
 allowances:
-  - {key: design_meetings, label: Design meetings, text: "{n} per stage, online or in person", default: "4", owner: client, provenance: [{kind: evidence, ref: "architecture#27"}, {kind: evidence, ref: "architecture#37"}, {kind: evidence, ref: "architecture#64"}]}
-  - {key: concept_options, label: Concept options, text: "{n}", default: "2", owner: client, provenance: [{kind: evidence, ref: "architecture#10"}, {kind: evidence, ref: "architecture#20"}]}
-  - {key: client_presentations, label: Client presentations, text: "{n}", owner: client, provenance: [{kind: evidence, ref: "architecture#34"}]}
-  - {key: renders, label: Working 3D views, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, ref: "architecture#15"}, {kind: evidence, ref: "architecture#45"}]}
-  - {key: issues_per_stage, label: Issues per stage, text: "{n} draft and 1 final", default: "1", owner: client, provenance: [{kind: evidence, ref: "architecture#41"}, {kind: evidence, ref: "architecture#90"}]}
-  - {key: site_visits, label: "Site visits, design stages", text: "{n}", default: "2", owner: client, provenance: [{kind: evidence, ref: "architecture#5"}, {kind: evidence, ref: "architecture#60"}]}
-  - {key: workshops, label: Stakeholder workshops, text: "{n}", default: "1", owner: client, when: [{flag: [staged]}, {flag: [multi_building]}], provenance: [{kind: evidence, ref: "architecture#8"}]}
-  - {key: qs_reviews, label: QS cost plan reviews, text: "{n}, at schematic, design development and pre-tender", default: "3", owner: client, module: beyond_house, provenance: [{kind: evidence, ref: "architecture#66"}]}
-  - {key: bim_lod, label: BIM level of detail, text: "LOD {n}", default: "200", complex_default: "300", owner: client, module: beyond_house, provenance: [{kind: evidence, ref: "architecture#138-140"}]}
-  - {key: drawing_sheets, label: Drawing sheets at planning, text: "{n}, indicative; list them in R2", default: "12", owner: consultant, when: [{stage: [planning_approval]}], provenance: [{kind: evidence, ref: "architecture#45"}]}
-  - {key: planning_cap, label: Planning response ceiling, text: "{n} hours", owner: client, when: [{stage: [planning_response]}], provenance: [{kind: evidence, ref: "architecture#53"}]}
-  - {key: bidding_cap, label: Bidding ceiling, text: "{n} hours", default: "40", owner: client, when: [{stage: [bidding]}], provenance: [{kind: evidence, ref: "architecture#81"}]}
-  - {key: ca_inspections, label: Construction site inspections, text: "{n}", owner: client, when: [{stage: [construction_support]}], provenance: [{kind: practice, ref: "architectural-services-guide.md (construction and completion)"}]}
+- {key: design_meetings, label: Design meetings, text: "{n} per stage, online or in person", default: "4", owner: 
+    client, provenance: [{kind: evidence, ref: "architecture#27"}, {kind: evidence, ref: "architecture#37"}, {kind: 
+        evidence, ref: "architecture#64"}]}
+- {key: concept_options, label: Concept options, text: "{n}", default: "2", owner: client, provenance: [{kind: 
+        evidence, ref: "architecture#10"}, {kind: evidence, ref: "architecture#20"}]}
+- {key: client_presentations, label: Client presentations, text: "{n}", owner: client, provenance: [{kind: evidence, 
+        ref: "architecture#34"}]}
+- {key: renders, label: Working 3D views, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, 
+        ref: "architecture#15"}, {kind: evidence, ref: "architecture#45"}]}
+- {key: issues_per_stage, label: Issues per stage, text: "{n} draft and 1 final", default: "1", owner: client, 
+    provenance: [{kind: evidence, ref: "architecture#41"}, {kind: evidence, ref: "architecture#90"}]}
+- {key: site_visits, label: "Site visits, design stages", text: "{n}", default: "2", owner: client, provenance: [{
+        kind: evidence, ref: "architecture#5"}, {kind: evidence, ref: "architecture#60"}]}
+- {key: workshops, label: Stakeholder workshops, text: "{n}", default: "1", owner: client, when: [flag: [staged], 
+        flag: [multi_building]], provenance: [{kind: evidence, ref: "architecture#8"}]}
+- {key: qs_reviews, label: QS cost plan reviews, text: "{n}, at schematic, design development and pre-tender", 
+    default: "3", owner: client, module: beyond_house, provenance: [{kind: evidence, ref: "architecture#66"}]}
+- {key: bim_lod, label: BIM level of detail, text: "LOD {n}", default: "200", complex_default: "300", owner: client, 
+    module: beyond_house, provenance: [{kind: evidence, ref: "architecture#138-140"}]}
+- {key: drawing_sheets, label: Drawing sheets at planning, text: "{n}, indicative; list them in R2", default: "12", 
+    owner: consultant, when: [{stage: [planning], pathway: [cdc, da, ssd, planning_permit, ref, modification]}], 
+    provenance: [{kind: evidence, ref: "architecture#45"}]}
+- {key: planning_cap, label: Planning response ceiling, text: "{n} hours", owner: client, when: [{stage: [planning], 
+        pathway: [da, ssd, planning_permit, modification]}], provenance: [{kind: evidence, ref: "architecture#53"}]}
+- {key: bidding_cap, label: Bidding ceiling, text: "{n} hours", default: "40", owner: client, when: [{stage: [
+          tender_documentation], procurement: [traditional, managing_contractor]}], provenance: [{kind: evidence, 
+        ref: "architecture#81"}]}
+- {key: ca_inspections, label: Construction site inspections, text: "{n}", owner: client, when: [{stage: [delivery], 
+        procurement: [traditional, managing_contractor, eci, alliance, ppp]}], provenance: [{kind: practice, ref: "architectural-services-guide.md
+        (construction and completion)"}]}
 
 positions:
-  - {group: "Brief and design coordination", key: coordination, label: "Coordinating and integrating consultants' work", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#38"}, {kind: evidence, ref: "architecture#63"}]}
-  - {group: "Brief and design coordination", key: input_schedule, stage: [concept], label: "Brief gaps, required-input schedule, responsibility matrix and decisions register", kind: service_level, simple: I, complex: I, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md (inception, DD, coordination)"}]}
-  - {group: "Brief and design coordination", key: specialist_coordination, stage: [design_development], label: "Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface", kind: technical, value: I, provenance: [{kind: seed, ref: "architectural-services-guide.md conditional services and common failures"}]}
-  - {group: "Brief and design coordination", key: consultant_selection, stage: [brief_masterplan, concept], label: "Help selecting other consultants", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#4"}]}
-  - {group: "Design documentation and models", key: bim_model, stage: [design_development], module: beyond_house, label: "BIM model issued to the design team (level in section 4)", kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#138-140"}]}
-  - {group: "Design documentation and models", key: bim_coordination, stage: [design_development], module: beyond_house, label: "BIM coordination meetings, clash detection", kind: service_level, simple: X, complex: O, responsible: not_required, provenance: [{kind: evidence, ref: "architecture#136-137"}]}
-  - key: specification
-    stage: [house_documents, tender_traditional, dnc_tender]
-    group: Design documentation and models
-    label: "Architectural specification"
-    kind: service_level
-    simple: {value: I, when: [{module: [house]}], else: O}
-    complex: I
-    if_unknown: option
-    assumption: "Price as an option until the building class is known."
-    provenance: [{kind: evidence, ref: "architecture#75"}, {kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: the specification is the golden end product of a house's design phase, so a house includes it."}]
-  - key: house_interiors
-    stage: [house_documents]
-    group: Design documentation and models
-    label: "Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details"
-    kind: technical
-    value: I
-    module: house
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: kitchen, bathroom and joinery design is core architect work on a house; the golden specification details it."}]
-  - key: house_selections
-    stage: [house_documents]
-    group: Design documentation and models
-    label: "Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes"
-    kind: technical
-    value: I
-    module: house
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: the golden specification's inclusions schedule and colour schemes are the architect's on a house."}]
-  - {group: "Design documentation and models", key: door_schedule, stage: [house_documents, tender_traditional, dnc_tender], label: "Door schedule; hardware schedule by the supplier", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#76"}, {kind: evidence, ref: "architecture#93"}]}
-  - {group: "Design documentation and models", key: finishes_schedules, stage: [tender_traditional, dnc_tender, design_development], module: beyond_house, label: "External and base-building finishes schedules", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#72"}]}
-  - {group: "Design documentation and models", key: typical_interiors, stage: [interiors, design_development], module: beyond_house, label: "Interior layouts for typical rooms", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "architecture#65"}]}
-  - {group: "Design documentation and models", key: base_interiors, stage: [interiors], label: "Base-building and common-area interiors", kind: technical, value: I, when: [{stage: [interiors]}], provenance: [{kind: evidence, ref: "architecture#36"}]}
-  - key: tenant_fitout
-    stage: [interiors, design_development]
-    group: Design documentation and models
-    label: "Tenant fit-out design"
-    kind: technical
-    module: beyond_house
-    value: {value: I, when: [{work_type: [refurb]}], else: O}
-    provenance: [{kind: evidence, ref: "architecture#114"}, {kind: client_decision, ref: "phase-a-changes architecture C3", why: "Resolves the v3 conflict: section 3 offered tenant fit-out while section 5 excluded it. Fit-out work includes it; otherwise it is priced as an option."}]
-  - {group: "Design documentation and models", key: ffe, stage: [interiors, design_development], label: "Loose furniture and FF&E selection", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#114"}]}
-  - {group: "Design documentation and models", key: marketing_renders, stage: [schematic], label: "Photoreal renders, marketing CGI, models", kind: service_level, simple: X, complex: O, responsible: client, provenance: [{kind: evidence, ref: "architecture#110-113"}]}
-  - {group: "Procurement and approvals", key: value_management, stage: [design_development], label: "Value management redesign (at R3 rates)", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#68"}]}
-  - {group: "Procurement and approvals", key: tender_evaluation, stage: [bidding, tender_traditional, dnc_tender], label: "Tender evaluation input", kind: service_level, simple: X, complex: O, responsible: client, when: [{stage: [tender_traditional, dnc_tender]}], provenance: [{kind: evidence, ref: "architecture#83"}]}
-  - key: dnc_performance_brief
-    stage: [dnc_tender]
-    group: Procurement and approvals
-    label: "Performance brief; retained versus contractor design schedule"
-    kind: technical
-    value: I
-    when: [{stage: [dnc_tender]}]
-    provenance: [{kind: seed, ref: "architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
-  - key: certifier_liaison
-    group: Procurement and approvals
-    label: "Liaison with the certifier"
-    kind: technical
-    value: I
-    provenance: [{kind: evidence, ref: "architecture#89"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5", why: "Some golden proposals excluded or charged for certifier liaison; the client includes it so the architect owns certifier coordination."}]
-  - key: document_uploads
-    group: Procurement and approvals
-    label: "Uploading to the client's document system"
-    kind: technical
-    value: I
-    provenance: [{kind: evidence, ref: "architecture#133"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5", why: "PACE charged uploads as admin (#133); the client includes them in the fee for comparable prices."}]
-  - {group: "Procurement and approvals", key: modifications, stage: [planning_approval], label: "Modification applications after approval", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#54"}]}
-  - key: lodgement
-    stage: [planning_approval]
-    group: Procurement and approvals
-    label: "Lodging the planning application: a DA with the consent authority, or a CDC with the certifier, who assesses it"
-    kind: technical
-    value: {value: I, when: [{flag: [architect_lodges]}], else: X}
-    responsible: client
-    when: [{stage: [planning_approval]}]
-    module: house
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner decision 5, 13 October 2026: the architect or the owner lodges; the certifier never lodges a CDC. Unknown blocks issue."}]
-  - key: water_asset
-    stage: [planning_approval, design_development]
-    group: Procurement and approvals
-    label: "Water authority approval to build over or next to its asset: drawings and submission"
-    kind: technical
-    value: {value: O, when: [{flag: [authority_asset]}], else: "-"}
-    module: house
-    if_unknown: option
-    assumption: "Price as an option: needed only if the building is over or next to a water authority asset."
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: the water asset flag must say who seeks the authority approval; priced as an option because who prepares it varies."}]
-  - {group: "Specialist and additional services", key: court, stage: [planning_response, planning_approval], label: "Court appeals", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "architecture#55"}]}
-  - key: community
-    stage: [schematic]
-    group: Specialist and additional services
-    label: "Community consultation"
-    kind: technical
-    module: beyond_house
-    value: {value: O, when: [{flag: [community]}], else: X}
-    responsible: client
-    if_unknown: option
-    assumption: "Price as an option: needed only if community consultation is required."
-    provenance: [{kind: evidence, ref: "architecture#56"}]
-  - key: country
-    stage: [concept]
-    group: Specialist and additional services
-    label: "Connecting with Country input"
-    kind: technical
-    value: {value: I, when: [{flag: [country]}], else: "-"}
-    if_unknown: option
-    assumption: "Price as an option: needed only if Connecting with Country input is required."
-    provenance: [{kind: evidence, ref: "architecture#6"}]
-  - {group: "Procurement and approvals", key: extra_declarations, stage: [regulated_design], label: "Compliance declarations for extra certificates or variations", kind: technical, value: {value: O, when: [{stage: [regulated_design]}], else: "-"}, provenance: [{kind: evidence, ref: "architecture#103-104"}]}
-  - key: apartment_design
-    stage: [planning_approval]
-    group: Procurement and approvals
-    label: "Apartment design-quality submission and panel response, where planning advice confirms it"
-    kind: technical
-    value: {value: O, when: [{class: ["2"], state: [NSW]}], else: "-"}
-    provenance: [{kind: seed, ref: "architectural-services-guide.md pre-DA section"}]
-  - {group: "Specialist and additional services", key: facade_certification, stage: [for_construction, tender_traditional, dnc_tender], module: beyond_house, label: "Façade performance certification (NCC Part F3)", kind: technical, value: X, responsible: "façade engineer", provenance: [{kind: evidence, ref: "architecture#67"}]}
-  - {group: "Specialist and additional services", key: performance_solutions, stage: [design_development], module: beyond_house, label: "Performance solutions (fire, access, weatherproofing)", kind: technical, value: X, responsible: "fire and access engineers", provenance: [{kind: evidence, ref: "architecture#105"}, {kind: evidence, ref: "architecture#117-118"}]}
-  - key: sustainability_docs
-    stage: [design_development]
-    group: Specialist and additional services
-    label: "Green Star or NABERS documentation"
-    kind: technical
-    value: {value: I, when: [{flag: [sustainability_target]}], else: "-"}
-    if_unknown: option
-    assumption: "Price as an option: needed only if a Green Star or NABERS target is set."
-    provenance: [{kind: evidence, ref: "architecture#115"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5", why: "Proposals excluded sustainability documentation; the client includes it when it sets a target."}]
-  - {group: "Design documentation and models", key: signage, stage: [design_development], module: beyond_house, label: "Signage and wayfinding", kind: service_level, simple: X, complex: O, responsible: "signage designer", provenance: [{kind: evidence, ref: "architecture#119"}]}
-  - {group: "Specialist and additional services", key: outside_boundary, module: beyond_house, label: "Work outside the site boundary; external hardstands", kind: technical, value: X, responsible: "civil engineer", provenance: [{kind: evidence, ref: "architecture#120-121"}]}
-  - {group: "Specialist and additional services", key: as_built, stage: [construction_support, contract_admin, post_novation], label: "As-built or record drawings", kind: service_level, simple: X, complex: O, responsible: contractor, provenance: [{kind: evidence, ref: "architecture#92"}]}
-  - {group: "Specialist and additional services", key: others_fees, label: "Authority and other consultants' fees", kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "architecture#123-124"}]}
-  - key: existing_interfaces
-    stage: [concept]
-    group: Brief and design coordination
-    label: "Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces"
-    kind: technical
-    value: I
-    module: existing_building
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
-  - key: live_staging
-    group: Brief and design coordination
-    label: "Staged access, temporary services and occupation inputs agreed with the operator"
-    kind: technical
-    value: I
-    module: live_site
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
-  - key: mixed_use_map
-    stage: [schematic]
-    group: Brief and design coordination
-    label: "Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables"
-    kind: technical
-    value: I
-    module: mixed_use
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mixed-use-construction-guide.md"}]
+- {group: "Brief and design coordination", key: coordination, label: "Coordinating and integrating consultants' work",
+  kind: service_level, simple: I, complex: I, provenance: [{kind: evidence, ref: "architecture#38"}, {kind: evidence,
+      ref: "architecture#63"}]}
+- {group: "Brief and design coordination", key: input_schedule, stage: [brief_concept], label: "Brief gaps, required-input
+    schedule, responsibility matrix and decisions register", kind: service_level, simple: I, complex: I, provenance: [
+    {kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md (inception, DD, coordination)"}]}
+- {group: "Brief and design coordination", key: specialist_coordination, stage: [design_development], label: "Specialist
+    inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface", kind: 
+    technical, value: I, provenance: [{kind: seed, ref: "architectural-services-guide.md conditional services and common
+        failures"}]}
+- {group: "Brief and design coordination", key: consultant_selection, stage: [brief_concept], label: "Help selecting other
+    consultants", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#4"}]}
+- {group: "Design documentation and models", key: bim_model, stage: [design_development], module: beyond_house, 
+    label: "BIM model issued to the design team (level in section 4)", kind: service_level, simple: I, complex: I, 
+    provenance: [{kind: evidence, ref: "architecture#138-140"}]}
+- {group: "Design documentation and models", key: bim_coordination, stage: [design_development], module: 
+    beyond_house, label: "BIM coordination meetings, clash detection", kind: service_level, simple: X, complex: O, 
+    responsible: not_required, provenance: [{kind: evidence, ref: "architecture#136-137"}]}
+- key: specification
+  stage: [tender_documentation]
+  group: Design documentation and models
+  label: "Architectural specification"
+  kind: service_level
+  simple: {value: I, when: [module: [house]], else: O}
+  complex: I
+  if_unknown: option
+  assumption: "Price as an option until the building class is known."
+  provenance: [{kind: evidence, ref: "architecture#75"}, {kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md",
+      why: "Owner 2026-10-13: the specification is the golden end product of a house's design phase, so a house includes
+        it."}]
+- key: house_interiors
+  stage: [tender_documentation]
+  group: Design documentation and models
+  label: "Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details"
+  kind: technical
+  value: I
+  module: house
+  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: kitchen,
+        bathroom and joinery design is core architect work on a house; the golden specification details it."}]
+- key: house_selections
+  stage: [tender_documentation]
+  group: Design documentation and models
+  label: "Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes"
+  kind: technical
+  value: I
+  module: house
+  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: the golden
+        specification's inclusions schedule and colour schemes are the architect's on a house."}]
+- {group: "Design documentation and models", key: door_schedule, stage: [tender_documentation], label: "Door schedule;
+    hardware schedule by the supplier", kind: technical, value: I, provenance: [{kind: evidence, ref: "architecture#76"},
+    {kind: evidence, ref: "architecture#93"}]}
+- {group: "Design documentation and models", key: finishes_schedules, stage: [tender_documentation, 
+      design_development], module: beyond_house, label: "External and base-building finishes schedules", kind: 
+    technical, value: I, provenance: [{kind: evidence, ref: "architecture#72"}]}
+- {group: "Design documentation and models", key: typical_interiors, stage: [design_development], module: 
+    beyond_house, label: "Interior layouts for typical rooms", kind: service_level, simple: O, complex: I, 
+    provenance: [{kind: evidence, ref: "architecture#65"}]}
+- {group: "Design documentation and models", key: base_interiors, stage: [design_development], label: "Base-building and
+    common-area interiors", kind: technical, value: I, when: [{stage: [design_development], work_type: [refurb], 
+        module: [beyond_house]}, {stage: [design_development], class: ["3", "5", "6", 9a, 9b, 9c], module: [
+          beyond_house]}], provenance: [{kind: evidence, ref: "architecture#36"}]}
+- key: tenant_fitout
+  stage: [design_development]
+  group: Design documentation and models
+  label: "Tenant fit-out design"
+  kind: technical
+  module: beyond_house
+  value: {value: I, when: [work_type: [refurb]], else: O}
+  provenance: [{kind: evidence, ref: "architecture#114"}, {kind: client_decision, ref: "phase-a-changes architecture C3",
+      why: "Resolves the v3 conflict: section 3 offered tenant fit-out while section 5 excluded it. Fit-out work includes
+        it; otherwise it is priced as an option."}]
+- {group: "Design documentation and models", key: ffe, stage: [design_development], label: "Loose furniture and FF&E selection",
+  kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#114"}]}
+- {group: "Design documentation and models", key: marketing_renders, stage: [schematic_design], label: "Photoreal renders,
+    marketing CGI, models", kind: service_level, simple: X, complex: O, responsible: client, provenance: [{kind: 
+        evidence, ref: "architecture#110-113"}]}
+- {group: "Procurement and approvals", key: value_management, stage: [design_development], label: "Value management redesign
+    (at R3 rates)", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#68"}]}
+- {group: "Procurement and approvals", key: tender_evaluation, stage: [tender_documentation], label: "Tender evaluation
+    input", kind: service_level, simple: X, complex: O, responsible: client, when: [{stage: [tender_documentation], 
+        procurement: [traditional, managing_contractor], module: [beyond_house]}, {stage: [tender_documentation], 
+        procurement: [design_construct]}], provenance: [{kind: evidence, ref: "architecture#83"}]}
+- key: dnc_performance_brief
+  stage: [tender_documentation]
+  group: Procurement and approvals
+  label: "Performance brief; retained versus contractor design schedule"
+  kind: technical
+  value: I
+  when: [{stage: [tender_documentation], procurement: [design_construct]}]
+  provenance: [{kind: seed, ref: "architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
+- key: certifier_liaison
+  group: Procurement and approvals
+  label: "Liaison with the certifier"
+  kind: technical
+  value: I
+  provenance: [{kind: evidence, ref: "architecture#89"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5",
+      why: "Some golden proposals excluded or charged for certifier liaison; the client includes it so the architect owns
+        certifier coordination."}]
+- key: document_uploads
+  group: Procurement and approvals
+  label: "Uploading to the client's document system"
+  kind: technical
+  value: I
+  provenance: [{kind: evidence, ref: "architecture#133"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5",
+      why: "PACE charged uploads as admin (#133); the client includes them in the fee for comparable prices."}]
+- {group: "Procurement and approvals", key: modifications, stage: [planning], label: "Modification applications after
+    approval", kind: technical, value: O, provenance: [{kind: evidence, ref: "architecture#54"}]}
+- key: lodgement
+  stage: [planning]
+  group: Procurement and approvals
+  label: "Lodging the planning application: a DA with the consent authority, or a CDC with the certifier, who assesses
+    it"
+  kind: technical
+  value: {value: I, when: [flag: [architect_lodges]], else: X}
+  responsible: client
+  when: [{stage: [planning], pathway: [cdc, da, ssd, planning_permit, ref, modification]}]
+  module: house
+  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner decision 5, 13 October
+        2026: the architect or the owner lodges; the certifier never lodges a CDC. Unknown blocks issue."}]
+- key: water_asset
+  stage: [planning, design_development]
+  group: Procurement and approvals
+  label: "Water authority approval to build over or next to its asset: drawings and submission"
+  kind: technical
+  value: {value: O, when: [flag: [authority_asset]], else: "-"}
+  module: house
+  if_unknown: option
+  assumption: "Price as an option: needed only if the building is over or next to a water authority asset."
+  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: the water
+        asset flag must say who seeks the authority approval; priced as an option because who prepares it varies."}]
+- {group: "Specialist and additional services", key: court, stage: [planning], label: "Court appeals", kind: 
+    technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "architecture#55"}]}
+- key: community
+  stage: [schematic_design]
+  group: Specialist and additional services
+  label: "Community consultation"
+  kind: technical
+  module: beyond_house
+  value: {value: O, when: [flag: [community]], else: X}
+  responsible: client
+  if_unknown: option
+  assumption: "Price as an option: needed only if community consultation is required."
+  provenance: [{kind: evidence, ref: "architecture#56"}]
+- key: country
+  stage: [brief_concept]
+  group: Specialist and additional services
+  label: "Connecting with Country input"
+  kind: technical
+  value: {value: I, when: [flag: [country]], else: "-"}
+  if_unknown: option
+  assumption: "Price as an option: needed only if Connecting with Country input is required."
+  provenance: [{kind: evidence, ref: "architecture#6"}]
+- {group: "Procurement and approvals", key: extra_declarations, stage: [design_finalisation], label: "Compliance declarations
+    for extra certificates or variations", kind: technical, value: {value: O, when: [{stage: [design_finalisation], 
+          regulated_design: ["yes"]}], else: "-"}, provenance: [{kind: evidence, ref: "architecture#103-104"}]}
+- key: apartment_design
+  stage: [planning]
+  group: Procurement and approvals
+  label: "Apartment design-quality submission and panel response, where planning advice confirms it"
+  kind: technical
+  value: {value: O, when: [{class: ["2"], state: [NSW]}], else: "-"}
+  provenance: [{kind: seed, ref: "architectural-services-guide.md pre-DA section"}]
+- {group: "Specialist and additional services", key: facade_certification, stage: [design_finalisation, 
+      tender_documentation], module: beyond_house, label: "Façade performance certification (NCC Part F3)", kind: 
+    technical, value: X, responsible: "façade engineer", provenance: [{kind: evidence, ref: "architecture#67"}]}
+- {group: "Specialist and additional services", key: performance_solutions, stage: [design_development], module: 
+    beyond_house, label: "Performance solutions (fire, access, weatherproofing)", kind: technical, value: X, 
+    responsible: "fire and access engineers", provenance: [{kind: evidence, ref: "architecture#105"}, {kind: 
+        evidence, ref: "architecture#117-118"}]}
+- key: sustainability_docs
+  stage: [design_development]
+  group: Specialist and additional services
+  label: "Green Star or NABERS documentation"
+  kind: technical
+  value: {value: I, when: [flag: [sustainability_target]], else: "-"}
+  if_unknown: option
+  assumption: "Price as an option: needed only if a Green Star or NABERS target is set."
+  provenance: [{kind: evidence, ref: "architecture#115"}, {kind: client_decision, ref: "phase-a-changes architecture C1.5",
+      why: "Proposals excluded sustainability documentation; the client includes it when it sets a target."}]
+- {group: "Design documentation and models", key: signage, stage: [design_development], module: beyond_house, label: "Signage
+    and wayfinding", kind: service_level, simple: X, complex: O, responsible: "signage designer", provenance: [{kind: 
+        evidence, ref: "architecture#119"}]}
+- {group: "Specialist and additional services", key: outside_boundary, module: beyond_house, label: "Work outside the
+    site boundary; external hardstands", kind: technical, value: X, responsible: "civil engineer", provenance: [{
+        kind: evidence, ref: "architecture#120-121"}]}
+- {group: "Specialist and additional services", key: as_built, stage: [delivery, design_finalisation], label: "As-built
+    or record drawings", kind: service_level, simple: X, complex: O, responsible: contractor, provenance: [{kind: 
+        evidence, ref: "architecture#92"}]}
+- {group: "Specialist and additional services", key: others_fees, label: "Authority and other consultants' fees", 
+    kind: technical, value: X, responsible: client, provenance: [{kind: evidence, ref: "architecture#123-124"}]}
+- key: existing_interfaces
+  stage: [brief_concept]
+  group: Brief and design coordination
+  label: "Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces"
+  kind: technical
+  value: I
+  module: existing_building
+  provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
+- key: live_staging
+  group: Brief and design coordination
+  label: "Staged access, temporary services and occupation inputs agreed with the operator"
+  kind: technical
+  value: I
+  module: live_site
+  provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
+- key: mixed_use_map
+  stage: [schematic_design]
+  group: Brief and design coordination
+  label: "Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables"
+  kind: technical
+  value: I
+  module: mixed_use
+  provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mixed-use-construction-guide.md"}]
 
 returnables:
   r2: "Drawing list: the sheets you expect at planning, tender and construction, with titles."
-  r3: "Roles: Principal or Director · Associate or Senior architect · Project architect · Architect · Graduate or Technician · Interior designer · Administration."
+  r3: "Roles: Principal or Director · Associate or Senior architect · Project architect · Architect · Graduate or Technician
+    · Interior designer · Administration."
   r4: "Named director, project lead and project architect, with registration numbers."
   r5: "Choose projects of the same use and work type."
 returnable_notes:
-  - {key: r4, text: "NSW design practitioner registration class for the regulated designs.", when: [{stage: [regulated_design]}]}
-  - key: r8
-    replace: true
-    text: "PI {field:pi} and PL {field:pl} with insurer and expiry; workers compensation; how you check your documents before issue (no certified system is needed); conflicts of interest."
-    when: [{module: [house]}]
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: ISO 9001, 45001 and 14001 certification excludes most residential practices and adds nothing to a house fee."}]
+- {key: r4, text: "NSW design practitioner registration class for the regulated designs.", when: [{stage: [
+          design_finalisation], regulated_design: ["yes"]}]}
+- key: r8
+  replace: true
+  text: "PI {field:pi} and PL {field:pl} with insurer and expiry; workers compensation; how you check your documents before
+    issue (no certified system is needed); conflicts of interest."
+  when: [module: [house]]
+  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: ISO 9001,
+        45001 and 14001 certification excludes most residential practices and adds nothing to a house fee."}]
 
-durations: "From the SiteWise program when it holds the stage; otherwise estimates: brief and masterplan 2 months, concept 1, schematic 2, planning approval 1, design development 3, tender documents 2, bidding 1, for-construction 1.5."
+durations: "From the SiteWise program when it holds the stage; otherwise estimates: brief and masterplan 2 months, concept
+  1, schematic 2, planning approval 1, design development 3, tender documents 2, bidding 1, for-construction 1.5."

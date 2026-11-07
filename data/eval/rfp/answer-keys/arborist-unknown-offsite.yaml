@@ -32,13 +32,13 @@ fields:
   client: Example Client
   pi: Client-selected $5m
   pl: Client-selected $20m
-  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with 
     explicit limits.
 settings:
   arborist:
     boundary:range:
-      start: s1_inventory
-      end: s3_protection
+      start: brief_concept
+      end: planning
     allowance:coverage: '2'
     allowance:reports: '2'
     allowance:investigations: '2'
@@ -58,4 +58,4 @@ expect:
       offsite: I
       pruning: I
     blocking: ['fact:flag.arborist_tree_impacts', 'fact:flag.arborist_offsite_trees', 'fact:flag.arborist_pruning']
-    stages_include: [s2_impact, s3_protection]
+    stages_include: [brief_concept, planning]

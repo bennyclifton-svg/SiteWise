@@ -40,8 +40,8 @@ fields:
 settings:
   access:
     boundary:range:
-      start: s1_inception
-      end: s4_approval
+      start: brief_concept
+      end: design_development
     allowance:coverage: '2'
     allowance:reviews: '2'
     allowance:meetings: '2'
@@ -52,12 +52,12 @@ sources:
 - docs/rfp-golden/access/rfp.md Sections 1-7
 - 'docs/rfp-golden/access/ledger.md #1-43'
 scenario: access-house-known-no
-description: Residential label does not appoint housing/SDA, testing or performance solutions; explicit planning
-  and approval do apply.
+description: Residential label does not appoint housing/SDA, testing or performance solutions; explicit planning and
+  approval do apply.
 expect:
   access:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception, s2_concept, s3_planning, s4_approval]
+    stages_include: [brief_concept, planning, design_development]
     positions:
       review: I
       existing: absent
@@ -72,4 +72,4 @@ expect:
       peer: X
     blocking_only: true
     blocking: []
-    stages_absent: [s5_tender, s6_postcontract, s7_completion, s8_advisory]
+    stages_absent: [tender_documentation, design_finalisation, delivery, s8_advisory]

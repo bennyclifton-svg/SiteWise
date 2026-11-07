@@ -1,7 +1,7 @@
 # Seven project stages for every discipline, Program and the Cost Plan
 
-Date: 7 November 2026. Status: plan, nothing built. Lane A (cost figures,
-procurement packages, Program dates).
+Date: 7 November 2026. Status: built on branch `stages/common` (see section
+10). Lane A (cost figures, procurement packages, Program dates).
 
 ## 1. Owner decisions (7 November 2026)
 
@@ -15,7 +15,7 @@ procurement packages, Program dates).
    | `design_development` | Design development |
    | `tender_documentation` | Tender documentation |
    | `design_finalisation` | Design finalisation |
-   | `contract_administration` | Contract administration |
+   | `delivery` | Delivery (contract administration, construction, completion, defects) |
 
 2. A discipline keeps its own scope lines inside each stage and leaves out a
    stage it has no work in. "Across all stages" items stay as they are.
@@ -70,7 +70,7 @@ administration `post`.
 | The same: D&C and ECI (after the builder's tender) | construction_documentation | **Design finalisation** (duplicate fragments with `applies_when` on procurement route) |
 | Tender documentation, tender period, evaluation, contract award, novation | procurement | Tender documentation |
 | Construction certificate | approvals | Design finalisation |
-| Construction activities (165), practical completion, occupation certificate, handover, defects inspection, end of defects | construction, completion, defects | Contract administration |
+| Construction activities (165), practical completion, occupation certificate, handover, defects inspection, end of defects | construction, completion, defects | Delivery |
 
 No duration changes. Every activity keeps its library duration and label.
 
@@ -80,23 +80,23 @@ The order is per skeleton, as today:
 
 - Traditional, DA/CDC/SSD, new/refurb/extend: brief_concept, schematic_design,
   planning, design_development, tender_documentation, design_finalisation,
-  contract_administration.
+  delivery.
 - Refurb traditional CDC (documentation before the certificate): brief_concept,
   schematic_design, design_development, planning, tender_documentation,
-  design_finalisation, contract_administration.
+  design_finalisation, delivery.
 - D&C DA/SSD: as traditional.
 - D&C CDC (builder obtains the CDC): brief_concept, schematic_design,
   design_development, tender_documentation, design_finalisation, planning,
-  contract_administration.
+  delivery.
 - ECI DA: brief_concept, schematic_design, tender_documentation, planning,
-  design_development, design_finalisation, contract_administration.
+  design_development, design_finalisation, delivery.
 
 Stage-to-stage links stay finish-to-start in that order.
 
 ### 4.3 Effect on a generated program
 
 The total duration is unchanged. Construction, practical completion and the
-defects period now sit inside one stage, Contract administration; their
+defects period now sit inside one stage, Delivery; their
 activities and milestones still show. In a D&C program, construction
 documentation already followed the tender, so dates do not move. In a
 traditional program, nothing moves either: documentation still precedes the
@@ -106,7 +106,7 @@ tender.
 
 - New packages: `DefaultStages` gives the seven stages (Contract
   administration included).
-- Migration `046_common_stages.sql` re-points saved catalogue ids. Labels the
+- Migration `047_common_stages.sql` (046 is taken by the combined-engagements branch) re-points saved catalogue ids. Labels the
   user saw stay as saved:
 
   | Old id | New id |
@@ -115,7 +115,7 @@ tender.
   | approval_documentation, approvals | planning |
   | construction_documentation | design_development |
   | procurement | tender_documentation |
-  | construction, construction_stage_inspections, completion, defects | contract_administration |
+  | construction, construction_stage_inspections, completion, defects | delivery |
   | other | other |
 
 - Existing programs keep their rows. Program offers the seven stages on the
@@ -151,27 +151,26 @@ tender.
 ### 6.2 Mapping per discipline
 
 BC Brief and concept · SD Schematic design · PL Planning · DD Design
-development · TD Tender documentation · DF Design finalisation · CA Contract
-administration · OPT option outside the stages.
+development · TD Tender documentation · DF Design finalisation · DL Delivery · OPT option outside the stages.
 
 | Discipline | Old stage → new |
 |---|---|
-| Architecture | Brief and masterplan, Concept → BC; Schematic design → SD; Planning approval, Planning response → PL; Design development, Interiors → DD; Tender and construction documents (house), Tender documents, Bidding, D&C tender documents → TD; Regulated design, For-construction documents, Post-novation → DF; Design support during construction, Contract administration → CA |
-| Access | S1 Inception, S2 Concept advice → BC; S3 Planning report → PL; S4 Construction approval → DD; S5 Tender support → TD; S6 Post-contract review → DF; S7 Construction/completion → CA; S8 Advisory → OPT |
-| Arborist | S1 Inventory, S2 Concept/impact → BC; S3 Consent/protection → PL; S4 Tender/contractor design → TD; S5 Construction/completion → CA; S6a, S6b, S7a, S7b, S7c → OPT |
-| BCA / certification | A1 Inception/schematic advice → SD; A2 Planning advice, B1 Preliminary assessment, B2 CDC assessment → PL; A3 Detailed design/tender advice → DD; B2 Construction approval assessment → DF; A4 Construction advice, B3 PC construction services, B4 Occupation → CA |
-| Civil | Schematic design for planning → SD; Detailed design for tender, Design for the D&C tender → TD; Final design for construction, Final design after novation → DF; Construction phase, As-built → CA |
-| Cost planning | S1 Cost basis, S2 Feasibility/options → BC; S3 Authority estimate → PL; S4 Design cost planning → DD; S5 Procurement/tender → TD; S6 Post-contract, S7 Final account → CA; S8 Standalone advisory → OPT |
-| Electrical, hydraulic, mechanical | S1 Evidence, S2 Investigation → BC; S3 Concept → SD; S4 Authority/Planning → PL; S5 Design → DD; S6 Tender/Documentation → TD; S7 Post-contract/Later design → DF; S8 Support/Construction, S9 Witness/Commissioning, S10 Defects/Seasonal → CA; S11 Advisory → OPT |
-| Fire services | S1 Evidence, S2 Investigation → BC; S3 Concept → SD; S4 Developed design → DD; S5 Documentation → TD; S6 Post-contract → DF; S7 Construction, S8 Commissioning → CA; S9 Advisory → OPT |
-| Fire engineering | S1 Evidence/strategy → BC; S2 Early approval support → PL; S3 Performance design brief, S4 Analysis/FER → DD; S5 Tender/integration → TD; S6 Construction support, S7 Verification/occupation → CA; S8a, S8b, S9a, S9b → OPT |
-| Geotechnical | G1 Brief/plan, G2 Field/laboratory, G3 Interpretation/report → BC; G4 Concept/planning → PL; G5 Design/tender support → DD; G7 Contractor advice/transfer → DF; G6 Construction/completion → CA |
-| Land surveying | S1 Brief, S2 Detail, S3 Boundary, S4 Services → BC; S5 Approval/tender support → PL; S6 Set-out/monitoring, S7 Completion → CA |
-| Landscape | S1 Inception, S2 Concept → BC; S3 Approval/responses → PL; S4 Consent/developed design → DD; S5 Traditional documentation → TD; S6 D&C/post-contract → DF; S7 Construction, S8 Establishment → CA; S9 Advice → OPT |
-| Structural | Existing structure assessment → BC; Concept and schematic design → SD; Planning approval, Authority asset assessment → PL; Design development → DD; Tender documents, D&C tender documents → TD; Regulated design, Construction documents, Post-novation → DF; Construction phase → CA |
+| Architecture | Brief and masterplan, Concept → BC; Schematic design → SD; Planning approval, Planning response → PL; Design development, Interiors → DD; Tender and construction documents (house), Tender documents, Bidding, D&C tender documents → TD; Regulated design, For-construction documents, Post-novation → DF; Design support during construction, Contract administration → DL |
+| Access | S1 Inception, S2 Concept advice → BC; S3 Planning report → PL; S4 Construction approval → DD; S5 Tender support → TD; S6 Post-contract review → DF; S7 Construction/completion → DL; S8 Advisory → OPT |
+| Arborist | S1 Inventory, S2 Concept/impact → BC; S3 Consent/protection → PL; S4 Tender/contractor design → TD; S5 Construction/completion → DL; S6a, S6b, S7a, S7b, S7c → OPT |
+| BCA / certification | A1 Inception/schematic advice → SD; A2 Planning advice, B1 Preliminary assessment, B2 CDC assessment → PL; A3 Detailed design/tender advice → DD; B2 Construction approval assessment → DF; A4 Construction advice, B3 PC construction services, B4 Occupation → DL |
+| Civil | Schematic design for planning → SD; Detailed design for tender, Design for the D&C tender → TD; Final design for construction, Final design after novation → DF; Construction phase, As-built → DL |
+| Cost planning | S1 Cost basis, S2 Feasibility/options → BC; S3 Authority estimate → PL; S4 Design cost planning → DD; S5 Procurement/tender → TD; S6 Post-contract, S7 Final account → DL; S8 Standalone advisory → OPT |
+| Electrical, hydraulic, mechanical | S1 Evidence, S2 Investigation → BC; S3 Concept → SD; S4 Authority/Planning → PL; S5 Design → DD; S6 Tender/Documentation → TD; S7 Post-contract/Later design → DF; S8 Support/Construction, S9 Witness/Commissioning, S10 Defects/Seasonal → DL; S11 Advisory → OPT |
+| Fire services | S1 Evidence, S2 Investigation → BC; S3 Concept → SD; S4 Developed design → DD; S5 Documentation → TD; S6 Post-contract → DF; S7 Construction, S8 Commissioning → DL; S9 Advisory → OPT |
+| Fire engineering | S1 Evidence/strategy → BC; S2 Early approval support → PL; S3 Performance design brief, S4 Analysis/FER → DD; S5 Tender/integration → TD; S6 Construction support, S7 Verification/occupation → DL; S8a, S8b, S9a, S9b → OPT |
+| Geotechnical | G1 Brief/plan, G2 Field/laboratory, G3 Interpretation/report → BC; G4 Concept/planning → PL; G5 Design/tender support → DD; G7 Contractor advice/transfer → DF; G6 Construction/completion → DL |
+| Land surveying | S1 Brief, S2 Detail, S3 Boundary, S4 Services → BC; S5 Approval/tender support → PL; S6 Set-out/monitoring, S7 Completion → DL |
+| Landscape | S1 Inception, S2 Concept → BC; S3 Approval/responses → PL; S4 Consent/developed design → DD; S5 Traditional documentation → TD; S6 D&C/post-contract → DF; S7 Construction, S8 Establishment → DL; S9 Advice → OPT |
+| Structural | Existing structure assessment → BC; Concept and schematic design → SD; Planning approval, Authority asset assessment → PL; Design development → DD; Tender documents, D&C tender documents → TD; Regulated design, Construction documents, Post-novation → DF; Construction phase → DL |
 | Town planning | Preliminary advice → BC; Pre-lodgement, Planning report, Variation request, Lodgement, Assessment, Determination review → PL; Post-approval support → DD |
-| Traffic | Parking and access advice → BC; Surveys, Modelling, Report, Assessment response, Conditions review → PL; Developed design review, Green travel plan → DD; CTMP → DF; Car park certification → CA |
-| Waste | S1 Inception, S2 Operational concept → BC; S3 Operational plan, S3 C&D plan → PL; S4 Consent/design review → DD; S5 Tender support → TD; S6 Contractor review → DF; S7 Construction/completion, S8 Post-occupation → CA; S8 Advisory → OPT |
+| Traffic | Parking and access advice → BC; Surveys, Modelling, Report, Assessment response, Conditions review → PL; Developed design review, Green travel plan → DD; CTMP → DF; Car park certification → DL |
+| Waste | S1 Inception, S2 Operational concept → BC; S3 Operational plan, S3 C&D plan → PL; S4 Consent/design review → DD; S5 Tender support → TD; S6 Contractor review → DF; S7 Construction/completion, S8 Post-occupation → DL; S8 Advisory → OPT |
 
 ## 7. Questions for the owner
 
@@ -211,3 +210,47 @@ No new path. Budgets in `bench/budgets.json` stand: report_read and
 report_setting p50 ≤ 100 ms / p90 ≤ 250 ms, report_assemble 300 / 1,000 ms,
 program_generate 300 / 800 ms, packages_read and stage_sync_write 100 /
 250 ms. The settings migration runs once at start-up, not on a request.
+
+## 10. Later owner decisions and what was built (7 November 2026)
+
+- Stage 7 is **Delivery**, not Contract administration: broader, better
+  known, and it holds the builder's construction as well as contract
+  administration.
+- Design and construct keeps **Design development** before the tender (to
+  about 70-80%), then design finalisation under the contractor. Program
+  gives D&C, ECI and managing-contractor jobs a "Design development"
+  activity with no sourced duration yet; it takes the default length and
+  says so until the owner gives one. Traditional jobs keep the library's
+  construction documentation in Design development, so their dates do not
+  move.
+- Construction certificate sits in Design finalisation (D&C) and in Design
+  development on a traditional route, as before.
+- Interiors fold into Design development.
+- **Existing projects are test data** and need no migration. Migration 047
+  re-points saved Program and package stage ids only so test projects do not
+  error; draft RFP choices saved under old stage keys are dropped.
+- RFP editor: the "Whole stage" line is gone (the stage row keeps its own
+  In/Excluded ticks), the boxed chevron is a thin caret and the stage name
+  itself opens the stage, and rows are tighter.
+
+How merged RFP stages behave:
+
+- Each line keeps the condition of the stage it came from. While that
+  condition is unknown the line stays and, where the old stage asked, the
+  question is raised (`if_unknown: ask`); an old stage priced as an option
+  keeps its line quietly (`include`); a regulated-design line keeps its
+  suggestion (`suggest`, `threshold`). Questions are raised only for stages
+  in the appointment.
+- A rule that tested an old stage now tests the project stage and the old
+  stage's condition. Two flag tests in one clause use `flag_all`.
+- Boundaries cover every project stage their old stages fall in.
+- One fee per stage: architecture Planning response and Bidding, and the
+  traffic surveys, are now priced inside their stage's fixed fee.
+
+Selection changes that follow from merging, recorded in the answer keys:
+services whose old stage sat outside the appointment but now share a project
+stage with scope inside it move from excluded to included (land surveying
+plan-only and set-out-only, geotechnical plan-only, landscape inception,
+waste inception and advisory, arborist inventory, hydraulic witness-only).
+The civil as-built, which followed construction phase, is now in Delivery and
+outside a design-only appointment.

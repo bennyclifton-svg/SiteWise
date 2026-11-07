@@ -17,17 +17,17 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Basis/system register | Included |  |
 |  | Accessible survey, observed/tested/assumed gaps | Included |  |
 |  | Supply/capacity investigation brief and inputs/owners | Included |  |
-| S3 Concept |  | Included |  |
+| Schematic design |  | Included |  |
 |  | Demand/options/indicative duties | Included |  |
 |  | Plant/booster/valve space, routes/access/power/drainage/brigade | Included |  |
 |  | Listed planning notes/responses | Included |  |
 |  | Unresolved pipework | Included |  |
 |  | Fire strategy and performance solutions | Excluded |  |
-| S4 Developed design |  | Included |  |
+| Design development |  | Included |  |
 |  | Demand/hydraulics/supply cases/storage/pumps/zones/equipment | Included |  |
 |  | Existing/new, controls/power/loads/maintenance coordination | Included |  |
 |  | Listed authority tasks | Included |  |
@@ -39,15 +39,14 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 |  | Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations | Included |  |
 |  | Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy | Included |  |
 |  | Special hazards/high storage/process/batteries/special suppression | Excluded |  |
-| S5 Documentation |  | Included |  |
+| Tender documentation |  | Included |  |
 |  | Traditional drawings/calculations/schedules/specification | Included |  |
 |  | D&C intent/performance/test criteria and contractor-design handover | Included |  |
 |  | RFIs/addenda/comparison | Included |  |
 |  | Scoped declarations/lodgement/certification; verify jurisdiction/competence; no approval guarantee | Included |  |
-| S6 Post-contract | Not part of this appointment | Excluded | — |
-| S7 Construction | Not part of this appointment | Excluded | — |
-| S8 Commissioning | Not part of this appointment | Excluded | — |
-| S9 Advisory | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Advisory | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |

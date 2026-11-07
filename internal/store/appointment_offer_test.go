@@ -77,11 +77,13 @@ func TestAppointmentOfferLinesDefaultAboveTheLine(t *testing.T) {
 			t.Fatal("insurance cover listed as a fee")
 		}
 	}
-	// The stage names in the labels map the rows to the schedule.
-	if r := row(col, "quote:a1"); len(r.Keys) != 1 || r.Keys[0] != "stage:prelim_advice" || !r.MappingSuggested {
+	// The stage names in the labels map the rows to the schedule. Planning
+	// is one project stage (7 November 2026), so the first planning task
+	// claims it and the lodgement task stays for the user to map.
+	if r := row(col, "quote:a1"); len(r.Keys) != 1 || r.Keys[0] != "stage:planning" || !r.MappingSuggested {
 		t.Fatalf("label mapping %+v", r)
 	}
-	if r := row(col, "quote:a3"); len(r.Keys) != 1 || r.Keys[0] != "stage:lodgement" {
+	if r := row(col, "quote:a3"); len(r.Keys) != 0 {
 		t.Fatalf("label mapping %+v", r)
 	}
 	set := func(id string, included bool, keys []string) {
@@ -92,8 +94,8 @@ func TestAppointmentOfferLinesDefaultAboveTheLine(t *testing.T) {
 		}
 	}
 	// A mapping save keeps the row where it is.
-	set("quote:a2", true, []string{"stage:pre_lodgement"})
-	if col = read(); !row(col, "quote:a2").Included || row(col, "quote:a2").Keys[0] != "stage:pre_lodgement" {
+	set("quote:a2", true, []string{"stage:brief_concept"})
+	if col = read(); !row(col, "quote:a2").Included || row(col, "quote:a2").Keys[0] != "stage:brief_concept" {
 		t.Fatal("mapping save moved the row")
 	}
 	// An arrow moves it; a later mapping save keeps that place.

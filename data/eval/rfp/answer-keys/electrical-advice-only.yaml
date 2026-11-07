@@ -52,12 +52,8 @@ description: Condition advice ends at report; no automatic design or witnessing 
 snapshot: false
 expect:
   electrical-services:
-    stages_include:
-    - advisory
-    stages_absent:
-    - design
-    - tender
-    - handover
+    stages_include: [advisory]
+    stages_absent: [design_development, tender_documentation]
     positions:
       distribution: absent
       controls: absent

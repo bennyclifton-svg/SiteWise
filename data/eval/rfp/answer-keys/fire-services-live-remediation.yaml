@@ -39,13 +39,13 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified
-    R1-R9 schedules.
+  information: Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; 
+    quantified R1-R9 schedules.
 settings:
   fire-services:
     boundary:range:
-      start: inception
-      end: handover
+      start: brief_concept
+      end: delivery
     allowance:extent: '2'
     allowance:visits: '2'
     allowance:design: '2'
@@ -53,19 +53,18 @@ settings:
     allowance:tender: '2'
     allowance:construction: '2'
     allowance:completion: '2'
-    stage:construction: include
-    stage:handover: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/fire-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/fire-services/ledger.md #1-55'
 scenario: fire-services-live-remediation
-description: Occupied mixed-use retrofit separates investigation/upgrade, staged controls and explicitly purchased
+description: Occupied mixed-use retrofit separates investigation/upgrade, staged controls and explicitly purchased 
   witnessing.
 snapshot: false
 expect:
   fire-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [investigation, construction, handover, continuation]
+    stages_include: [brief_concept, design_finalisation, delivery]
     positions:
       existing: I
       upgrade: I

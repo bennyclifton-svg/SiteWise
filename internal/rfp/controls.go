@@ -302,7 +302,7 @@ func usedDrivers(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton) map[string
 					used["class"] = true
 					continue
 				}
-				if key == "flag" {
+				if key == "flag" || key == "flag_all" {
 					for _, v := range values {
 						used["flag."+v] = true
 					}
@@ -331,6 +331,12 @@ func usedDrivers(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton) map[string
 		visit(s.Suggest)
 		visit(s.IncludeWhen)
 		modules[s.Module] = true
+		// A merged stage's lines keep the conditions of the stages it
+		// replaced (seven project stages, 7 November 2026).
+		for _, l := range s.Lines {
+			visit(l.When)
+			visit(l.Suggest)
+		}
 	}
 	for _, e := range d.Elements {
 		visit(e.When)

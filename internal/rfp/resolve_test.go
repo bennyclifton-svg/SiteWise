@@ -172,13 +172,13 @@ func TestRetiredWeightsDoNotBlockIssue(t *testing.T) {
 
 func TestStageSettingOverridesBoundary(t *testing.T) {
 	d := discipline(t, "architecture")
-	r := Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=traditional", "pathway=da"), set("stage:construction_support", `"include"`, "stage:concept", `"done"`))
-	if s := r.Stage("construction_support"); s.State != Include || s.Source != "user" {
+	r := Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=traditional", "pathway=da"), set("stage:delivery", `"include"`, "stage:brief_concept", `"done"`))
+	if s := r.Stage("delivery"); s.State != Include || s.Source != "user" {
 		t.Fatalf("%+v", s)
 	}
 	// The architect is scope by stage: work done by others is simply
 	// excluded from this appointment (owner direction, 3 November 2026).
-	if r.Stage("concept").State != Exclude {
+	if r.Stage("brief_concept").State != Exclude {
 		t.Fatal("a stage completed by others is excluded")
 	}
 }
@@ -186,10 +186,10 @@ func TestStageSettingOverridesBoundary(t *testing.T) {
 func TestDefaultBoundaryReadyForReview(t *testing.T) {
 	d := discipline(t, "architecture")
 	r := Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=design_construct", "pathway=da", "novation=no"), nil)
-	if !r.Boundary.Confirmed || r.Boundary.End != "dnc_tender" || r.HasCheck("boundary") {
+	if !r.Boundary.Confirmed || r.Boundary.End != "tender_documentation" || r.HasCheck("boundary") {
 		t.Fatalf("D&C default ends at the tender: %+v", r.Boundary)
 	}
-	r = Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=traditional"), set("boundary:range", `{"start":"brief_masterplan","end":"for_construction"}`))
+	r = Resolve(d, skeleton(t), facts(t, "class=7b", "procurement=traditional"), set("boundary:range", `{"start":"brief_concept","end":"design_finalisation"}`))
 	if !r.Boundary.Confirmed || r.HasCheck("boundary") {
 		t.Fatal("a confirmed boundary clears the check")
 	}

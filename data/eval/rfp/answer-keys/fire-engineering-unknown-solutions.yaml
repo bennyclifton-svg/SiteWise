@@ -31,8 +31,8 @@ fields:
   client: Example Client
   pi: Project-selected $5m
   pl: Project-selected $20m
-  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage
-    scheduled.
+  information: Issued architecture, BCA departure register and fire records; solution IDs, methods and review 
+    coverage scheduled.
 settings:
   fire-engineering:
     allowance:solutions: '2'
@@ -43,13 +43,13 @@ settings:
     allowance:verification: '2'
     allowance:options: '2'
     boundary:range:
-      start: s1_strategy
-      end: s4_report
+      start: brief_concept
+      end: design_development
 sources:
 - docs/rfp-golden/fire-engineering/rfp.md Sections 1-7
 - 'docs/rfp-golden/fire-engineering/ledger.md #1-50'
 scenario: fire-engineering-unknown-solutions
-description: Industrial label alone does not settle solution need/count or hazard/specialist scope; blank evidence
+description: Industrial label alone does not settle solution need/count or hazard/specialist scope; blank evidence 
   raises decisions.
 expect:
   fire-engineering:
@@ -61,4 +61,4 @@ expect:
       specialist: X
       occupants: I
     blocking: ['fact:flag.fe_solutions', 'fact:flag.fire_special_hazards', 'fact:flag.fire_specialist_systems', 'fact:flag.fire_vulnerable_occupants']
-    stages_include: [s3_brief, s4_report]
+    stages_include: [design_development]

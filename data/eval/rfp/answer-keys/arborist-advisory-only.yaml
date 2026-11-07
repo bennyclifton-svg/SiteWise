@@ -35,12 +35,12 @@ fields:
   client: Example Client
   pi: Client-selected $5m
   pl: Client-selected $20m
-  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with 
     explicit limits.
 settings:
   arborist:
     boundary:range:
-      start: s1_inventory
+      start: brief_concept
       end: s7_advisory
     allowance:coverage: '2'
     allowance:reports: '2'
@@ -56,8 +56,8 @@ description: Commercial advice-only appointment ends at its report; no developme
 expect:
   arborist:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inventory, s7_advisory, s6_investigation, s6_risk]
-    stages_absent: [s2_impact, s3_protection, s4_tender, s5_construction, s7_monitoring, s7_peer]
+    stages_include: [brief_concept, s6_investigation, s6_risk, s7_advisory]
+    stages_absent: [planning, tender_documentation, delivery, s7_monitoring, s7_peer]
     positions:
       risk: I
       investigation: I

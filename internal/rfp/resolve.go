@@ -509,6 +509,25 @@ func (r *resolver) driver(key string, values []string) outcome {
 			}
 		}
 		return res
+	case "flag_all":
+		res := outcome{t: yes}
+		whys := []string{}
+		for _, v := range values {
+			f := r.fact("flag." + v)
+			switch {
+			case f.State == Known && f.Values[0] == "yes":
+				whys = append(whys, flagLabel(r.sk, v))
+			case f.State == Known:
+				return outcome{t: no}
+			default:
+				res.t = unk
+				res.unknown = append(res.unknown, "flag."+v)
+			}
+		}
+		if res.t == yes {
+			res.why = strings.Join(whys, ", ")
+		}
+		return res
 	case "stage_included":
 		for _, v := range values {
 			if r.stageState(v) == Include {
@@ -667,7 +686,7 @@ func (r *resolver) resolveBoundary() {
 	if r.d.ID == "bca-certification" && r.eval(knowledge.RFPWhen{{"flag": {"bca_advisory"}}}).t == yes && r.eval(knowledge.RFPWhen{{"flag": {"bca_certification"}}}).t == yes {
 		confirmed := true
 		for _, stage := range r.d.Stages {
-			if strings.HasPrefix(stage.Key, "b") {
+			if statutoryStage(stage) {
 				_, ok := r.settings["stage:"+stage.Key]
 				confirmed = confirmed && ok
 			}
@@ -677,6 +696,28 @@ func (r *resolver) resolveBoundary() {
 			r.check(Check{ID: "boundary", Label: "Confirm the statutory appointment stages", Text: "Select each Package B stage explicitly, or confirm the appointment range.", Control: "boundary:range", Blocking: true})
 		}
 	}
+}
+
+// statutoryStage says whether a BCA stage holds certification (Package B)
+// scope: the stage, or one of its lines, needs the certification flag.
+func statutoryStage(st knowledge.RFPStage) bool {
+	needs := func(w knowledge.RFPWhen) bool {
+		for _, clause := range w {
+			if contains(clause["flag"], "bca_certification") {
+				return true
+			}
+		}
+		return false
+	}
+	if needs(st.When) {
+		return true
+	}
+	for _, l := range st.Lines {
+		if needs(l.When) {
+			return true
+		}
+	}
+	return false
 }
 
 func (r *resolver) stageIndex(key string) int {
@@ -770,9 +811,7 @@ func (r *resolver) resolveLines(s *StageResult, st knowledge.RFPStage) {
 	s.Lines = []LineResult{}
 	conditional := false // a conditional line is included
 	for _, l := range st.Lines {
-		// A conditional line is left out unless its condition holds: a
-		// masterplan is not priced on a project not known to be large (R13).
-		if len(l.When) > 0 && r.eval(l.When).t != yes {
+		if !r.lineApplies(l, s) {
 			continue
 		}
 		line := LineResult{Key: l.Key, Text: l.Text, Value: "I", Source: "rule"}
@@ -802,6 +841,43 @@ func (r *resolver) resolveLines(s *StageResult, st knowledge.RFPStage) {
 		}
 	}
 	s.Text = strings.Join(included, "; ")
+}
+
+// lineApplies says whether a scope line shows. A conditional line is left
+// out unless its condition holds: a masterplan is not priced on a project
+// not known to be large (R13). A line carried in from a merged stage keeps
+// that stage's handling of an unknown: it stays (if_unknown include), it
+// stays and raises the decision (ask), or its suggestion raises the decision
+// and a false suggestion leaves it out.
+func (r *resolver) lineApplies(l knowledge.RFPLine, stage *StageResult) bool {
+	// Only a stage being bought raises a decision; a stage before or after
+	// the appointment needs none before this issue.
+	live := stage.State == Include || stage.State == Ask
+	if len(l.When) == 0 {
+		return true
+	}
+	o := r.eval(l.When)
+	switch {
+	case o.t == yes:
+		return true
+	case o.t == no:
+		return false
+	case len(l.Suggest) > 0:
+		if r.eval(l.Suggest).t == no {
+			return false
+		}
+		if live {
+			r.ask(o.unknown, stage.Name)
+		}
+		return true
+	case l.IfUnknown == "ask":
+		if live {
+			r.ask(o.unknown, stage.Name)
+		}
+		return true
+	default:
+		return l.IfUnknown == "include"
+	}
 }
 
 // unknownState applies a row's if_unknown. A suggest rule that is false

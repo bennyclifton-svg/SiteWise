@@ -33,13 +33,14 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy,
-    methods and named third-party responsibilities. Quantities are client fixture selections.
+  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed 
+    datum/control/accuracy, methods and named third-party responsibilities. Quantities are client fixture 
+    selections.
 settings:
   land-surveying:
     boundary:range:
-      start: s1_plan
-      end: s1_plan
+      start: brief_concept
+      end: brief_concept
     allowance:features: '2'
     allowance:control: '2'
     allowance:visits: '2'
@@ -61,7 +62,7 @@ expect:
       control: I
       records: I
       exposure: X
-      interior: X
+      interior: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
       monitoring: X
       setout: X
       asbuilt: X
@@ -70,8 +71,8 @@ expect:
       buried: absent
       sewer: absent
       access: absent
-    stages_include: [s1_plan]
+    stages_include: [brief_concept]
     blocking_only: true
     blocking: []
-    stages_absent: [s2_detail, s3_boundary, s4_services, s5_support, s6_construction, s7_completion]
+    stages_absent: [planning, delivery]
     role: [advice]

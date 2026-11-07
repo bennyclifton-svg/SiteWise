@@ -43,11 +43,10 @@ fields:
 settings:
   electrical-services:
     boundary:range:
-      start: investigation
-      end: handover
-    stage:construction: include
-    stage:handover: include
-    stage:continuation: include
+      start: brief_concept
+      end: delivery
+    stage:delivery: include
+    stage:design_finalisation: include
 sources:
 - docs/rfp-golden/electrical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/electrical-services/ledger.md #1-54'
@@ -56,12 +55,7 @@ description: Occupied mixed-use upgrade quantifies isolation and phased tests; l
 snapshot: false
 expect:
   electrical-services:
-    stages_include:
-    - investigation
-    - design
-    - continuation
-    - construction
-    - handover
+    stages_include: [brief_concept, design_development, design_finalisation, delivery]
     positions:
       existing: I
       staging: I

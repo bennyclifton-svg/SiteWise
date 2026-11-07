@@ -10,7 +10,7 @@ title_aliases:
 - fire services
 - fire protection design
 - wet fire design
-evidence_limit: Historic concept and combined-services offers establish bounded scope, not system adequacy, current
+evidence_limit: Historic concept and combined-services offers establish bounded scope, not system adequacy, current 
   instruments or a fire-engineering appointment.
 field_defaults:
   pi: ''
@@ -36,7 +36,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: fire-services#55
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: experience
   label: Experience
@@ -44,7 +44,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: fire-services#55
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: team
   label: Team
@@ -52,7 +52,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: fire-services#55
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: methodology
   label: Method/program
@@ -60,7 +60,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: fire-services#55
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: compliance
   label: Compliance
@@ -68,7 +68,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: fire-services#55
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 evaluation_note: Compare equal systems/maturity/calculations, existing scope, allocations, attendance/commissioning.
 project_rows:
@@ -79,7 +79,7 @@ project_rows:
     ref: fire-services#11,20,29
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   label: Procurement
   replace: true
@@ -94,7 +94,7 @@ project_rows:
   label: Design basis
 role:
 - key: designer
-  text: Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic
+  text: Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic 
     design or proof of existing adequacy.
   provenance:
   - kind: evidence
@@ -102,7 +102,7 @@ role:
   - kind: seed
     ref: fire-services#40-43
 - key: boundaries
-  text: Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing
+  text: Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing 
     neither executes tests nor certifies unseen work. Name network design/application owners.
   provenance:
   - kind: evidence
@@ -111,7 +111,7 @@ role:
     ref: fire-services#41,43-44
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 stage_intro: R2 sets each output purpose/maturity, native formats, recipient/reliance, revision, rounds and date.
 boundary:
@@ -122,19 +122,24 @@ boundary:
     - advice_only
   start: advisory
   end: advisory
-- start: inception
-  end: design
+- start: brief_concept
+  end: design_development
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 stages:
-- key: inception
-  name: S1 Evidence
+- key: brief_concept
+  name: Brief and concept
   lines:
-  - {key: basis_system_register, text: "Basis/system register"}
-  - {key: accessible_survey_observed, text: "accessible survey, observed/tested/assumed gaps"}
-  - {key: supply_capacity_investigation, text: "supply/capacity investigation brief and inputs/owners"}
+  - {key: basis_system_register, text: Basis/system register}
+  - {key: accessible_survey_observed, text: 'accessible survey, observed/tested/assumed gaps'}
+  - {key: supply_capacity_investigation, text: supply/capacity investigation brief and inputs/owners}
+  - {key: defined_surveys_tests, text: Defined surveys/tests/operator/reinstatement, when: [flag: [fs_investigation]],
+    if_unknown: ask}
+  - {key: retained_supply_plant, text: 'retained supply/plant/network suitability, uncertainty/options', when: [flag: [
+          fs_investigation]], if_unknown: ask}
+  - {key: upgrade_design_separate, text: upgrade design separate, when: [flag: [fs_investigation]], if_unknown: ask}
   fee_basis: fixed
-  shown_when: Selected stage within appointment
+  shown_when: Always
   provenance:
   - kind: evidence
     ref: fire-services#1-4,18,26
@@ -142,31 +147,15 @@ stages:
     ref: fire-services#40-43
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
-- key: investigation
-  name: S2 Investigation
-  lines:
-  - {key: defined_surveys_tests, text: "Defined surveys/tests/operator/reinstatement"}
-  - {key: retained_supply_plant, text: "retained supply/plant/network suitability, uncertainty/options"}
-  - {key: upgrade_design_separate, text: "upgrade design separate"}
-  fee_basis: fixed
-  shown_when: Selected stage within appointment
-  provenance:
   - kind: evidence
     ref: fire-services#2-4,9,17,26
   - kind: seed
     ref: fire-services#45-46
-  - kind: client_decision
-    ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
-      establish universal requirements.
-  when:
-  - flag:
-    - fs_investigation
-  if_unknown: ask
-- key: concept
-  name: S3 Concept
+  delivery_stage: brief_concept
+- key: schematic_design
+  name: Schematic design
   lines:
   - {key: demand_options_indicative, text: "Demand/options/indicative duties"}
   - {key: plant_booster_valve, text: "plant/booster/valve space, routes/access/power/drainage/brigade"}
@@ -181,10 +170,11 @@ stages:
     ref: fire-services#42-43
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
-- key: design
-  name: S4 Developed design
+  delivery_stage: schematic_design
+- key: design_development
+  name: Design development
   lines:
   - {key: demand_hydraulics_supply, text: "Demand/hydraulics/supply cases/storage/pumps/zones/equipment"}
   - {key: existing_new_controls, text: "existing/new, controls/power/loads/maintenance coordination"}
@@ -198,10 +188,11 @@ stages:
     ref: fire-services#43-44
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
-- key: tender
-  name: S5 Documentation
+  delivery_stage: design_development
+- key: tender_documentation
+  name: Tender documentation
   lines:
   - {key: traditional_drawings_calculations, text: "Traditional drawings/calculations/schedules/specification"}
   - {key: d_c_intent, text: "D&C intent/performance/test criteria and contractor-design handover"}
@@ -215,10 +206,11 @@ stages:
     ref: fire-services#42
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
-- key: continuation
-  name: S6 Post-contract
+  delivery_stage: tender_documentation
+- key: design_finalisation
+  name: Design finalisation
   lines:
   - {key: retained_design_substitutions, text: "Retained design/substitutions/updates"}
   - {key: agree_novation_client, text: "agree novation, client/liability, program/duties"}
@@ -231,16 +223,21 @@ stages:
     ref: fire-services#42
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   default: option
-- key: construction
-  name: S7 Construction
+  delivery_stage: design_finalisation
+- key: delivery
+  name: Delivery
   lines:
-  - {key: rfis_submittals_hold, text: "RFIs/submittals, hold-point inspection/findings, changes/test-plan records"}
-  - {key: inaccessible_work_defect, text: "inaccessible work/defect closure"}
+  - {key: rfis_submittals_hold, text: 'RFIs/submittals, hold-point inspection/findings, changes/test-plan records'}
+  - {key: inaccessible_work_defect, text: inaccessible work/defect closure}
+  - {key: scripts_results, text: Scripts/results}
+  - {key: water_integrated_failure, text: 'water/integrated failure/recovery test witness, expected/actual results/defects/retests'}
+  - {key: scoped_statements_as, text: scoped statements/as-builts/O&M/settings/training/residuals}
   fee_basis: fixed
-  shown_when: Selected stage within appointment
+  default: option
+  shown_when: Always
   provenance:
   - kind: evidence
     ref: fire-services#11,19
@@ -248,29 +245,13 @@ stages:
     ref: fire-services#42,49
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
-  default: option
-- key: handover
-  name: S8 Commissioning
-  lines:
-  - {key: scripts_results, text: "Scripts/results"}
-  - {key: water_integrated_failure, text: "water/integrated failure/recovery test witness, expected/actual results/defects/retests"}
-  - {key: scoped_statements_as, text: "scoped statements/as-builts/O&M/settings/training/residuals"}
-  fee_basis: fixed
-  shown_when: Selected stage within appointment
-  provenance:
-  - kind: evidence
-    ref: fire-services#11,19
   - kind: seed
     ref: fire-services#44,49
-  - kind: client_decision
-    ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
-      establish universal requirements.
-  default: option
+  delivery_stage: delivery
 - key: advisory
-  name: S9 Advisory
+  name: Advisory
   lines:
   - {key: defined_question_cutoff, text: "Defined question/cutoff/reliance, method/confidence/actions"}
   - {key: peer_review_retains, text: "peer review retains design duty"}
@@ -284,7 +265,7 @@ stages:
     ref: fire-services#46,48
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   default: option
   include_when:
@@ -292,10 +273,10 @@ stages:
     - advisory
   - pathway:
     - advice_only
-durations: R7 sets inputs/access/outages, milestones/authority lead times, hold-point notice, response targets and
+durations: R7 sets inputs/access/outages, milestones/authority lead times, hold-point notice, response targets and 
   service/defect endpoint.
-allowances_note: Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time ceiling
-  or unit rate; assumptions need owner/date/consequence/review point.
+allowances_note: Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time 
+  ceiling or unit rate; assumptions need owner/date/consequence/review point.
 allowances:
 - key: extent
   label: Extent
@@ -308,7 +289,7 @@ allowances:
     ref: fire-services#40,47
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: visits
   label: Visits/tests
@@ -322,7 +303,7 @@ allowances:
     ref: fire-services#45-46
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: design
   label: Design
@@ -335,7 +316,7 @@ allowances:
     ref: fire-services#43
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: coordination
   label: Coordination
@@ -348,7 +329,7 @@ allowances:
     ref: fire-services#44
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: tender
   label: Tender
@@ -361,7 +342,7 @@ allowances:
     ref: fire-services#42
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: construction
   label: Construction
@@ -374,7 +355,7 @@ allowances:
     ref: fire-services#49
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: completion
   label: Completion
@@ -388,11 +369,11 @@ allowances:
     ref: fire-services#44,49
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 positions:
 - key: wet
-  stage: [design]
+  stage: [design_development]
   group: Water supply and wet fire
   label: Listed sprinklers/hydrants/hose reels/pumps/tanks/boosters by area; concept versus detailed extent
   kind: technical
@@ -403,28 +384,18 @@ positions:
     ref: fire-services#40-43
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - concept
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [schematic_design], stage_included: [design_development], stage_included: [
+            tender_documentation], stage_included: [design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_wet
-    stage:
-    - concept
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_wet], stage: [schematic_design]}, {flag: [fs_wet], stage: [design_development]}, {flag: [fs_wet],
+      stage: [tender_documentation]}, {flag: [fs_wet], stage: [design_finalisation]}]
   if_unknown: ask
 - key: supply
-  stage: [design]
+  stage: [design_development]
   group: Water supply and wet fire
   label: Demand/storage calculations; pressure statement is not installed performance
   kind: technical
@@ -435,26 +406,18 @@ positions:
     ref: fire-services#43
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_supply
-    stage:
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_supply], stage: [design_development]}, {flag: [fs_supply], stage: [tender_documentation]}, {flag: [
+        fs_supply], stage: [design_finalisation]}]
   if_unknown: ask
 - key: authority
-  stage: [design]
+  stage: [design_development]
   group: Water supply and wet fire
   label: Listed enquiry/test/meter/backflow/connection/augmentation duties; operator/payer named
   kind: technical
@@ -465,28 +428,18 @@ positions:
     ref: fire-services#43
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - concept
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [schematic_design], stage_included: [design_development], stage_included: [
+            tender_documentation], stage_included: [design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_authority
-    stage:
-    - concept
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_authority], stage: [schematic_design]}, {flag: [fs_authority], stage: [design_development]}, {
+        flag: [fs_authority], stage: [tender_documentation]}, {flag: [fs_authority], stage: [design_finalisation]}]
   if_unknown: ask
 - key: dry
-  stage: [design]
+  stage: [design_development]
   group: Detection and systems coordination
   label: Allocated detection/alarms/smoke alarms/monitoring/warning; one designer each
   kind: technical
@@ -497,28 +450,18 @@ positions:
     ref: fire-services#41,44
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - concept
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [schematic_design], stage_included: [design_development], stage_included: [
+            tender_documentation], stage_included: [design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_dry
-    stage:
-    - concept
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_dry], stage: [schematic_design]}, {flag: [fs_dry], stage: [design_development]}, {flag: [fs_dry],
+      stage: [tender_documentation]}, {flag: [fs_dry], stage: [design_finalisation]}]
   if_unknown: ask
 - key: controls
-  stage: [design]
+  stage: [design_development]
   group: Detection and systems coordination
   label: Matrix coordination; name author/programmer/point-checker/test leader/witness
   kind: technical
@@ -529,30 +472,21 @@ positions:
     ref: fire-services#44
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - concept
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [schematic_design], stage_included: [design_development], stage_included: [
+            tender_documentation], stage_included: [design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_controls
-    stage:
-    - concept
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_controls], stage: [schematic_design]}, {flag: [fs_controls], stage: [design_development]}, {flag: [
+        fs_controls], stage: [tender_documentation]}, {flag: [fs_controls], stage: [design_finalisation]}]
   if_unknown: ask
 - key: plant
-  stage: [design]
+  stage: [design_development]
   group: Detection and systems coordination
-  label: Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations
+  label: Plant interface review; structural/MEP specialists design 
+    supports/enclosure/power/ventilation/drainage/penetrations
   kind: technical
   provenance:
   - kind: evidence
@@ -561,28 +495,19 @@ positions:
     ref: fire-services#43-44
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - concept
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [schematic_design], stage_included: [design_development], stage_included: [
+            tender_documentation], stage_included: [design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_plant_interfaces
-    stage:
-    - concept
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_plant_interfaces], stage: [schematic_design]}, {flag: [fs_plant_interfaces], stage: [
+          design_development]}, {flag: [fs_plant_interfaces], stage: [tender_documentation]}, {flag: [
+          fs_plant_interfaces], stage: [design_finalisation]}]
   if_unknown: ask
 - key: existing
-  stage: [investigation, inception]
+  stage: [brief_concept]
   group: Existing systems and special hazards
   label: Defined investigation; records are not condition proof; upgrade separate
   kind: technical
@@ -593,22 +518,16 @@ positions:
     ref: fire-services#45
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - investigation
+    when: [{stage_included: [brief_concept], flag: [fs_investigation]}]
     else: O
-  when:
-  - flag:
-    - fs_investigation
-    stage:
-    - investigation
+  when: [{flag: [fs_investigation], stage: [brief_concept]}]
   if_unknown: ask
 - key: upgrade
-  stage: [design]
+  stage: [design_development]
   group: Existing systems and special hazards
   label: Existing upgrade design subject to investigation/accepted strategy
   kind: technical
@@ -619,35 +538,28 @@ positions:
     ref: fire-services#45-46
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
-  when:
-  - flag:
-    - fs_upgrade
-    stage:
-    - design
-    - tender
-    - continuation
+  when: [{flag: [fs_upgrade], stage: [design_development]}, {flag: [fs_upgrade], stage: [tender_documentation]}, {
+        flag: [fs_upgrade], stage: [design_finalisation]}]
   if_unknown: ask
 - key: staging
-  stage: [design]
+  stage: [design_development]
   group: Existing systems and special hazards
-  label: Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy
+  label: Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer 
+    strategy
   kind: technical
   provenance:
   - kind: seed
     ref: fire-services#40-45,47
   - kind: client_decision
     ref: fire-services#51-52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value: O
 - key: remediation
@@ -660,11 +572,11 @@ positions:
     ref: fire-services#41,45-46,48
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value: O
 - key: hazards
-  stage: [design]
+  stage: [design_development]
   group: Existing systems and special hazards
   label: Special hazards/high storage/process/batteries/special suppression
   kind: technical
@@ -675,12 +587,12 @@ positions:
     ref: fire-services#40-44,49
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value: X
   responsible: hazard / suppression specialist
 - key: strategy
-  stage: [concept]
+  stage: [schematic_design]
   group: Detection and systems coordination
   label: Fire strategy and performance solutions
   kind: technical
@@ -689,12 +601,12 @@ positions:
     ref: fire-services#40-44
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value: X
   responsible: fire engineer
 - key: declarations
-  stage: [tender, handover]
+  stage: [tender_documentation, delivery]
   group: Declarations and later services
   label: Scoped declarations/lodgement/certification; verify jurisdiction/competence; no approval guarantee
   kind: technical
@@ -705,28 +617,19 @@ positions:
     ref: fire-services#41
   - kind: client_decision
     ref: fire-services#50-52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
-      - handover
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation], stage_included: [delivery]]
     else: O
-  when:
-  - flag:
-    - fs_declarations
-    stage:
-    - design
-    - tender
-    - continuation
-    - handover
+  when: [{flag: [fs_declarations], stage: [design_development]}, {flag: [fs_declarations], stage: [
+          tender_documentation]}, {flag: [fs_declarations], stage: [design_finalisation]}, {flag: [fs_declarations], 
+        stage: [delivery]}]
   if_unknown: ask
 - key: continuation
-  stage: [continuation]
+  stage: [design_finalisation]
   group: Declarations and later services
   label: Express continued design/novation
   kind: technical
@@ -737,16 +640,14 @@ positions:
     ref: fire-services#42
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - continuation
+    when: [stage_included: [design_finalisation]]
     else: O
 - key: construction
-  stage: [construction]
+  stage: [delivery]
   group: Declarations and later services
   label: Quantified construction support
   kind: technical
@@ -757,16 +658,14 @@ positions:
     ref: fire-services#42
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - construction
+    when: [stage_included: [delivery]]
     else: O
 - key: witness
-  stage: [handover]
+  stage: [delivery]
   group: Declarations and later services
   label: Selected test witnessing/handover evidence
   kind: technical
@@ -777,16 +676,14 @@ positions:
     ref: fire-services#44,49
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value:
     value: I
-    when:
-    - stage_included:
-      - handover
+    when: [stage_included: [delivery]]
     else: O
 - key: execution
-  stage: [handover]
+  stage: [delivery]
   group: Declarations and later services
   label: Test execution separately priced to named trades
   kind: technical
@@ -797,14 +694,14 @@ positions:
     ref: fire-services#41,49
   - kind: client_decision
     ref: fire-services#50
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   value: O
 scope_schedule:
 - key: allocation
-  text: 'R4 names designer/coordinator/installer/tester/witness/certifier/maintainer for each; unresolved allocation
-    stays open. Systems: Sprinklers; hydrants/hose reels; pumps/tanks/supply; extinguishers; detection/smoke alarms;
-    panel/transmission/monitoring; warning; emergency lighting/signage; smoke control; emergency power; cause-and-effect.'
+  text: 'R4 names designer/coordinator/installer/tester/witness/certifier/maintainer for each; unresolved allocation stays
+    open. Systems: Sprinklers; hydrants/hose reels; pumps/tanks/supply; extinguishers; detection/smoke alarms; panel/transmission/monitoring;
+    warning; emergency lighting/signage; smoke control; emergency power; cause-and-effect.'
   provenance:
   - kind: evidence
     ref: fire-services#8,17,25
@@ -812,29 +709,29 @@ scope_schedule:
     ref: fire-services#41,44
   - kind: client_decision
     ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 terms:
 - key: agreement
-  text: Attached {field:agreement}, scope/fees, addenda and written acceptance; settle precedence/conflicting inclusions
-    first. RFP does not authorise work.
+  text: Attached {field:agreement}, scope/fees, addenda and written acceptance; settle precedence/conflicting 
+    inclusions first. RFP does not authorise work.
   provenance:
   - kind: evidence
     ref: fire-services#6-7,14,24,30
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: authority
-  text: 'Written authority before scope/quantity/ceiling/rate/program changes: reason, affected system/approval,
-    fee/time consequence.'
+  text: 'Written authority before scope/quantity/ceiling/rate/program changes: reason, affected system/approval, fee/time
+    consequence.'
   provenance:
   - kind: evidence
     ref: fire-services#6,11,19,29
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: baseline
@@ -844,7 +741,7 @@ terms:
     ref: fire-services#10,18-20,29
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: errors
@@ -854,18 +751,18 @@ terms:
     ref: fire-services#6-7
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: payment
-  text: Payment {field:payment_days} days from correct milestone invoices; R6 declares prepayment/release conditions,
-    interest/recovery/suspension.
+  text: Payment {field:payment_days} days from correct milestone invoices; R6 declares prepayment/release 
+    conditions, interest/recovery/suspension.
   provenance:
   - kind: evidence
     ref: fire-services#6-7,23,30
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: rates
@@ -875,7 +772,7 @@ terms:
     ref: fire-services#13,21-24,28-30
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: validity
@@ -885,7 +782,7 @@ terms:
     ref: fire-services#6,14,21,30
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: questions
@@ -893,44 +790,43 @@ terms:
   provenance:
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: rights
-  text: Agree project distribution/operation/future-use rights, native files/reliance/retention/termination handover;
-    authorised/lawful disclosure permitted, marketing by consent.
+  text: Agree project distribution/operation/future-use rights, native files/reliance/retention/termination 
+    handover; authorised/lawful disclosure permitted, marketing by consent.
   provenance:
   - kind: evidence
     ref: fire-services#7,15,23-24,30
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: risk
-  text: Settle caps/indemnity, law/disputes, notice/cure/suspension/termination, assignment/novation/subcontracts;
+  text: Settle caps/indemnity, law/disputes, notice/cure/suspension/termination, assignment/novation/subcontracts; 
     insurance is not a cap. Declare conflicts/agree team changes.
   provenance:
   - kind: evidence
     ref: fire-services#7,14-15,22-24,30-31
   - kind: client_decision
     ref: fire-services#53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 returnable_notes:
 - key: r1
-  text: Quantity/basis/ceiling, ex GST/GST/total by stage/system; base/options/dependencies/milestones, validity/addenda;
-    price once. Acknowledge numbered addenda; confirm authorised signatory.
+  text: Quantity/basis/ceiling, ex GST/GST/total by stage/system; base/options/dependencies/milestones, 
+    validity/addenda; price once. Acknowledge numbered addenda; confirm authorised signatory.
   provenance:
   - kind: evidence
     ref: fire-services#5,10-15,19-24,28-30
   - kind: client_decision
     ref: fire-services#50-53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r2
-  text: 'Section 3 outputs and registers: purpose/maturity, native formats/calculations, recipients/reliance, input
-    revisions/rounds/dates.'
+  text: 'Section 3 outputs and registers: purpose/maturity, native formats/calculations, recipients/reliance, input revisions/rounds/dates.'
   provenance:
   - kind: evidence
     ref: fire-services#1-4,8-12,16-20,25-29
@@ -938,14 +834,14 @@ returnable_notes:
     ref: fire-services#40-49
   replace: true
 - key: r3
-  text: Lead/wet/dry designer, modeller/checker/inspector/specialist rates; extra visit/review/test/witness/retest/package
-    units, ceilings/travel/out-of-hours/cancellation.
+  text: Lead/wet/dry designer, modeller/checker/inspector/specialist rates; extra 
+    visit/review/test/witness/retest/package units, ceilings/travel/out-of-hours/cancellation.
   provenance:
   - kind: evidence
     ref: fire-services#5,13,19-24,28-30
   - kind: client_decision
     ref: fire-services#51
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r4
@@ -958,18 +854,17 @@ returnable_notes:
     ref: fire-services#41,44
   - kind: client_decision
     ref: fire-services#52,54
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r5
-  text: 'Two or three comparable system/use/live-site commissions: staff roles, outputs, interface/test lessons
-    and referees.'
+  text: 'Two or three comparable system/use/live-site commissions: staff roles, outputs, interface/test lessons and referees.'
   provenance:
   - kind: seed
     ref: fire-services#40-49
   - kind: client_decision
     ref: fire-services#54
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r6
@@ -980,29 +875,29 @@ returnable_notes:
     ref: fire-services#3,8,10-15,16-24,29-31
   - kind: client_decision
     ref: fire-services#50-53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r7
-  text: Inputs/providers/revisions/dates (architecture, hazards, BCA/strategy/approvals, records/supply/MEP); methods/checks/gates,
-    access/outages/operator permissions, hold-point/test plan, urgent findings and closure.
+  text: Inputs/providers/revisions/dates (architecture, hazards, BCA/strategy/approvals, records/supply/MEP); 
+    methods/checks/gates, access/outages/operator permissions, hold-point/test plan, urgent findings and closure.
   provenance:
   - kind: seed
     ref: fire-services#40-49
   - kind: client_decision
     ref: fire-services#50-52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r8
-  text: PI {field:pi}; PL {field:pl}; current workers cover/periods/certificates, activity/hazard exclusions; agreement/precedence,
-    liability/reliance/novation departures.
+  text: PI {field:pi}; PL {field:pl}; current workers cover/periods/certificates, activity/hazard exclusions; 
+    agreement/precedence, liability/reliance/novation departures.
   provenance:
   - kind: evidence
     ref: fire-services#7,14-15,22-24,30-31
   - kind: client_decision
     ref: fire-services#53-54
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true
 - key: r9
@@ -1015,6 +910,6 @@ returnable_notes:
     ref: fire-services#43,45-46
   - kind: client_decision
     ref: fire-services#51-53
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
+    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
   replace: true

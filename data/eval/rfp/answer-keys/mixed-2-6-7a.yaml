@@ -15,14 +15,14 @@ flags:
   staged: "no"
   multi_building: "no"
 parts:
-  - {id: apartments, label: Apartments, classes: ["2"]}
-  - {id: retail, label: Retail, classes: ["6"]}
-  - {id: carpark, label: Car park, classes: [7a]}
+- {id: apartments, label: Apartments, classes: ["2"]}
+- {id: retail, label: Retail, classes: ["6"]}
+- {id: carpark, label: Car park, classes: [7a]}
 address: "20 Example Rd, Example NSW"
 consultants:
-  - {title: Architect, status: to be appointed, engaged_by: client}
-  - {title: Structural, status: to be appointed, engaged_by: client}
-  - {title: Civil, status: to be appointed, engaged_by: client}
+- {title: Architect, status: to be appointed, engaged_by: client}
+- {title: Structural, status: to be appointed, engaged_by: client}
+- {title: Civil, status: to be appointed, engaged_by: client}
 fields:
   ref: RFP-TEST
   issued: "2026-10-12"
@@ -34,19 +34,19 @@ fields:
   lga: Example LGA
 settings:
   architecture:
-    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "boundary:range": {start: brief_concept, end: design_finalisation}
     "allowance:client_presentations": "3"
     "allowance:planning_cap": "40"
     "allowance:ca_inspections": "8"
   structural:
-    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "boundary:range": {start: brief_concept, end: delivery}
     "allowance:ca_inspections": "10"
   civil:
-    "boundary:range": {start: schematic, end: for_construction}
+    "boundary:range": {start: schematic_design, end: design_finalisation}
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [interiors, regulated_design]
+    stages_include: [design_development, design_finalisation]
     positions: {mixed_use_map: I, apartment_design: I}
     scale: complex
     blocking: ["fact:budget", "fact:regulated_design"]
@@ -55,7 +55,7 @@ expect:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     blocking: ['fact:regulated_design']
     blocking_only: true
-    stages_include: [regulated_design]
+    stages_include: [design_finalisation]
   civil:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
     positions:
@@ -63,5 +63,7 @@ expect:
     blocking: ['fact:regulated_design']
     blocking_only: true
 sources:
-  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
-  - "Peer review: part-specific clauses plus shared interfaces. The Class 2 part raises the regulated-design question; the unverified rule does not answer it."
+- "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction
+  budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
+- "Peer review: part-specific clauses plus shared interfaces. The Class 2 part raises the regulated-design question; the
+  unverified rule does not answer it."

@@ -42,8 +42,8 @@ fields:
 settings:
   mechanical-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
     allowance:extent: '2'
     allowance:investigation: '2'
     allowance:design: '2'
@@ -61,7 +61,7 @@ snapshot: true
 expect:
   mechanical-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [inception, concept, planning, design, tender]
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation]
     positions:
       hvac: I
       smoke: I
@@ -70,4 +70,4 @@ expect:
       witness: X
       execution: X
       specialist: X
-    stages_absent: [continuation, construction, handover, seasonal]
+    stages_absent: [design_finalisation, delivery]

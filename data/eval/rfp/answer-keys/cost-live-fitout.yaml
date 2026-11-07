@@ -34,13 +34,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
-    are fixture choices.
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected 
+    counts are fixture choices.
 settings:
   cost-planning:
     boundary:range:
-      start: s1_basis
-      end: s4_design
+      start: brief_concept
+      end: design_development
     allowance:plans: '2'
     allowance:authority: '2'
     allowance:review: '2'
@@ -53,12 +53,12 @@ sources:
 - 'docs/rfp-golden/cost-planning/ledger.md #1-39'
 snapshot: true
 scenario: cost-live-fitout
-description: Occupied fit-out separately selects owner equipment and whole-project budget; retained adequacy stays
+description: Occupied fit-out separately selects owner equipment and whole-project budget; retained adequacy stays 
   designer input.
 expect:
   cost-planning:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_basis, s4_design]
+    stages_include: [brief_concept, design_development]
     positions:
       existing_costs: I
       total_budget: I
@@ -67,4 +67,4 @@ expect:
       claims: X
     blocking_only: true
     blocking: []
-    stages_absent: [s5_tender, s6_construction, s7_completion]
+    stages_absent: [tender_documentation, delivery]

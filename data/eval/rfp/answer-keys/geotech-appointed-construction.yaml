@@ -33,13 +33,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory
+  information: Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory 
     suite, owners and reliance recipients); quantities are client test-fixture choices.
 settings:
   geotechnical:
     boundary:range:
-      start: g1_plan
-      end: g7_transfer
+      start: brief_concept
+      end: delivery
     allowance:mobilisation: '2'
     allowance:boreholes: '2'
     allowance:pits: '2'
@@ -48,18 +48,18 @@ settings:
     allowance:reports: '2'
     allowance:construction: '2'
     allowance:handback: '2'
-    stage:g6_construction: include
-    stage:g7_transfer: include
+    stage:delivery: include
+    stage:design_finalisation: include
 sources:
 - docs/rfp-golden/geotechnical/rfp.md Sections 1-7
 - 'docs/rfp-golden/geotechnical/ledger.md #1-54'
 scenario: geotech-appointed-construction
-description: Client explicitly buys construction and contractor support; G6/G7 positions become I only with stage
+description: Client explicitly buys construction and contractor support; G6/G7 positions become I only with stage 
   selection, not procurement or novation.
 expect:
   geotechnical:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [g1_plan, g2_field, g3_report, g4_planning, g6_construction, g7_transfer, g5_design]
+    stages_include: [brief_concept, planning, design_development, design_finalisation, delivery]
     positions:
       plan: I
       foundation: I

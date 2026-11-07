@@ -32,13 +32,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture 
     quantities are client choices.
 settings:
   landscape-architecture:
     boundary:range:
-      start: s1_inception
-      end: s6_dnc
+      start: brief_concept
+      end: design_finalisation
     allowance:extent: '2'
     allowance:evidence: '2'
     allowance:reviews: '2'
@@ -54,8 +54,8 @@ description: Occupied school D&C tender defines handover without automatic novat
 expect:
   landscape-architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s6_dnc]
-    stages_absent: [s5_tender, s7_construction, s8_establishment]
+    stages_include: [design_finalisation]
+    stages_absent: [tender_documentation, delivery]
     positions:
       staging: I
       construction: X

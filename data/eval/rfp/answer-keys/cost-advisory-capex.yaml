@@ -34,12 +34,12 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts
-    are fixture choices.
+  information: Current drawings/specifications, cost boundary and quantity basis, named input owners; selected 
+    counts are fixture choices.
 settings:
   cost-planning:
     boundary:range:
-      start: s1_basis
+      start: brief_concept
       end: s8_advice
     allowance:plans: '2'
     allowance:authority: '2'
@@ -56,8 +56,8 @@ description: Standalone capex advice has no design/tender/claims retainer or val
 expect:
   cost-planning:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_basis, s8_advice]
-    stages_absent: [s2_concept, s3_authority, s4_design, s5_tender, s6_construction, s7_completion]
+    stages_include: [brief_concept, s8_advice]
+    stages_absent: [planning, design_development, tender_documentation, delivery]
     positions:
       claims: I
       lender: I

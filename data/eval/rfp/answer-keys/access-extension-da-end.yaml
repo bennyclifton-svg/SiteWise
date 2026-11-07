@@ -40,8 +40,8 @@ fields:
 settings:
   access:
     boundary:range:
-      start: s1_inception
-      end: s3_planning
+      start: brief_concept
+      end: planning
     allowance:coverage: '2'
     allowance:reviews: '2'
     allowance:meetings: '2'
@@ -52,12 +52,12 @@ sources:
 - docs/rfp-golden/access/rfp.md Sections 1-7
 - 'docs/rfp-golden/access/ledger.md #1-43'
 scenario: access-extension-da-end
-description: Historic industrial context adds no assumed testing/audit; DA-end boundary makes approval and later
+description: Historic industrial context adds no assumed testing/audit; DA-end boundary makes approval and later 
   work options.
 expect:
   access:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception, s2_concept, s3_planning]
+    stages_include: [brief_concept, planning]
     positions:
       existing: I
       housing: absent
@@ -66,4 +66,4 @@ expect:
       testing: X
     blocking_only: true
     blocking: []
-    stages_absent: [s4_approval, s5_tender, s6_postcontract, s7_completion]
+    stages_absent: [design_development, tender_documentation, design_finalisation, delivery]

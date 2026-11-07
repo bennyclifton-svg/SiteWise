@@ -35,13 +35,13 @@ fields:
   client: Example Client
   pi: Client-selected $5m
   pl: Client-selected $20m
-  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with
+  information: Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with 
     explicit limits.
 settings:
   arborist:
     boundary:range:
-      start: s1_inventory
-      end: s3_protection
+      start: brief_concept
+      end: planning
     allowance:coverage: '2'
     allowance:reports: '2'
     allowance:investigations: '2'
@@ -51,13 +51,13 @@ sources:
 - docs/rfp-golden/arborist/rfp.md Sections 1-7
 - 'docs/rfp-golden/arborist/ledger.md #1-32'
 scenario: arborist-fitout-no-impact
-description: Retail fitout confirms no tree impacts; inventory must not buy development reports even with stale
+description: Retail fitout confirms no tree impacts; inventory must not buy development reports even with stale 
   selected-package choices.
 expect:
   arborist:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inventory]
-    stages_absent: [s2_impact, s3_protection, s4_tender, s5_construction]
+    stages_include: [brief_concept]
+    stages_absent: [planning, tender_documentation, delivery]
     positions:
       impacts: absent
       offsite: absent

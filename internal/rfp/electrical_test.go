@@ -8,7 +8,7 @@ import (
 func TestElectricalPricingDefaultsAndLegacyCounts(t *testing.T) {
 	d, sk := discipline(t, "electrical-services"), skeleton(t)
 	drivers := facts(t, "class=5", "work_type=new", "procurement=traditional", "pathway=da")
-	settings := set("boundary:range", `{"start":"inception","end":"tender"}`)
+	settings := set("boundary:range", `{"start":"brief_concept","end":"tender_documentation"}`)
 	r := Resolve(d, sk, drivers, settings)
 	values := map[string]string{}
 	for _, a := range r.Allowances {
@@ -58,8 +58,8 @@ func TestElectricalPricingDefaultsAndLegacyCounts(t *testing.T) {
 	if !blocked {
 		t.Fatalf("conflict does not block issue: %+v", r.Position("generation"))
 	}
-	settings["boundary:range"] = set("x", `{"start":"inception","end":"construction"}`)["x"]
-	settings["stage:construction"] = set("x", `"include"`)["x"]
+	settings["boundary:range"] = set("x", `{"start":"brief_concept","end":"delivery"}`)["x"]
+	settings["stage:delivery"] = set("x", `"include"`)["x"]
 	r = Resolve(d, sk, drivers, settings)
 	found = false
 	for _, c := range r.Checks {

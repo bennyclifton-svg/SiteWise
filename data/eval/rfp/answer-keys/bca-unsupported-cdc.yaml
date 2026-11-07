@@ -40,8 +40,8 @@ fields:
 settings:
   bca-certification:
     boundary:range:
-      start: b1_preliminary
-      end: b4_occupation
+      start: planning
+      end: delivery
     allowance:plan_sets: '2'
     allowance:reports: '2'
     allowance:meetings: '2'
@@ -57,19 +57,12 @@ sources:
 - 'docs/rfp-golden/bca-certification/ledger.md #1,24,35,38,47-57'
 - testing/synthetic/FINDINGS.md F9 and docs/plans/2026-11-04-synthetic-findings-fixes.md
 scenario: bca-unsupported-cdc
-description: "A CDC receives its own written stage: the CDC determination replaces the CC stage, and the PC, inspection and OC stages stay (synthetic finding F9, 4 November 2026; the CC stage is never relabelled). The file name is kept from when a CDC was unsupported."
+description: "A CDC receives its own written stage: the CDC determination replaces the CC stage, and the PC, inspection
+  and OC stages stay (synthetic finding F9, 4 November 2026; the CC stage is never relabelled). The file name is kept
+  from when a CDC was unsupported."
 expect:
   bca-certification:
-    stages_absent:
-    - a1_inception
-    - a2_planning
-    - a3_tender
-    - a4_construction
-    - b2_construction_approval
-    stages_include:
-    - b1_preliminary
-    - b2_cdc
-    - b3_construction
-    - b4_occupation
+    stages_absent: [schematic_design, design_development, design_finalisation]
+    stages_include: [planning, delivery]
     no_checks:
     - pathway_unsupported

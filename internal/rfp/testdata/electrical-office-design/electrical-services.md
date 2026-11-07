@@ -16,15 +16,15 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by st
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Brief/accessible assets/records | Included |  |
 |  | Condition/capacity gaps, utility risks and test plan | Included |  |
-| S3 Concept |  | Included |  |
+| Schematic design |  | Included |  |
 |  | Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs | Included |  |
-| S4 Authority |  | Included |  |
+| Planning |  | Included |  |
 |  | Infrastructure/lighting/energy plans | Included |  |
 |  | Application author/submitter/payer and response cap | Included |  |
-| S5 Design |  | Included |  |
+| Design development |  | Included |  |
 |  | Demand/fault/protection/earthing/lighting calculations | Included |  |
 |  | Boards/cables/routes, controls, safety and builders work | Included |  |
 |  | Detailed distribution/protection/earthing/containment; fault/voltage/discrimination | Included |  |
@@ -40,15 +40,13 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by st
 |  | Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests | Included |  |
 |  | Hazardous/process/HV/critical distribution studies | Excluded |  |
 |  | Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor | Included |  |
-| S6 Tender |  | Included |  |
+| Tender documentation |  | Included |  |
 |  | Traditional complete design/specifications | Included |  |
 |  | D&C intent/performance with delegated design matrix | Included |  |
 |  | Comparisons/RFIs/addenda | Included |  |
 |  | Selected declarations/lodgement; verify jurisdiction/competence | Included |  |
-| S7 Post-contract | Not part of this appointment | Excluded | — |
-| S8 Support | Not part of this appointment | Excluded | — |
-| S9 Witness/handover | Not part of this appointment | Excluded | — |
-| S10 Defects | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |

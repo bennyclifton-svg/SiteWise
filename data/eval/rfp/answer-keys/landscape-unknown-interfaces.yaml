@@ -26,13 +26,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture 
     quantities are client choices.
 settings:
   landscape-architecture:
     boundary:range:
-      start: s1_inception
-      end: s3_approval
+      start: brief_concept
+      end: planning
     allowance:extent: '2'
     allowance:evidence: '2'
     allowance:reviews: '2'

@@ -64,8 +64,8 @@ fields:
 settings:
   hydraulic-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
     allowance:extent: '2'
     allowance:investigation: '2'
     allowance:design: '2'

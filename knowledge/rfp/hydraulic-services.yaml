@@ -34,7 +34,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: hydraulic-services#54
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: experience
   label: Experience
@@ -42,7 +42,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: hydraulic-services#54
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: team
   label: Team
@@ -50,7 +50,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: hydraulic-services#54
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: methodology
   label: Method/program
@@ -58,7 +58,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: hydraulic-services#54
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: compliance
   label: Compliance
@@ -66,7 +66,7 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: hydraulic-services#54
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 evaluation_note: Compare equivalent systems, sources, interfaces, maturity and attendance.
 project_rows:
@@ -79,14 +79,14 @@ project_rows:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   label: Procurement
   replace: true
 role:
 - key: designer
-  text: Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings,
-    schedules and design-basis records. For shared connections name the design, evidence, installation, controls,
+  text: Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, 
+    schedules and design-basis records. For shared connections name the design, evidence, installation, controls, 
     testing and acceptance owners. Resolve gaps before reliance.
   provenance:
   - kind: evidence
@@ -99,7 +99,7 @@ role:
     ref: hydraulic-services#41-43,48-49
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -114,20 +114,25 @@ boundary:
     - advice_only
   start: advisory
   end: advisory
-- start: inception
-  end: design
+- start: brief_concept
+  end: design_development
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 stages:
-- key: inception
-  name: S1 Evidence
+- key: brief_concept
+  name: Brief and concept
   lines:
-  - {key: brief_system_map, text: "Brief/system map"}
-  - {key: accessible_asset_record, text: "accessible asset/record review"}
-  - {key: connections_levels_capacity, text: "connections/levels/capacity/easements"}
-  - {key: evidence_gaps, text: "evidence gaps"}
+  - {key: brief_system_map, text: Brief/system map}
+  - {key: accessible_asset_record, text: accessible asset/record review}
+  - {key: connections_levels_capacity, text: connections/levels/capacity/easements}
+  - {key: evidence_gaps, text: evidence gaps}
+  - {key: selected_tracing_cctv, text: Selected tracing/CCTV/flow/logging/sampling, when: [flag: [hyd_investigation]],
+    if_unknown: ask}
+  - {key: access_isolation_reinstatement, text: 'access/isolation/reinstatement, limits', when: [flag: [
+            hyd_investigation]], if_unknown: ask}
+  - {key: upgrades_separate, text: upgrades separate, when: [flag: [hyd_investigation]], if_unknown: ask}
   fee_basis: fixed
-  shown_when: Selected appointment stage
+  shown_when: Always
   provenance:
   - kind: evidence
     ref: hydraulic-services#1,17,21,28
@@ -135,31 +140,15 @@ stages:
     ref: hydraulic-services#40,44
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
-- key: investigation
-  name: S2 Investigation
-  lines:
-  - {key: selected_tracing_cctv, text: "Selected tracing/CCTV/flow/logging/sampling"}
-  - {key: access_isolation_reinstatement, text: "access/isolation/reinstatement, limits"}
-  - {key: upgrades_separate, text: "upgrades separate"}
-  fee_basis: fixed
-  shown_when: Selected appointment stage
-  provenance:
   - kind: evidence
     ref: hydraulic-services#8,17,28
   - kind: seed
     ref: hydraulic-services#44-45
-  - kind: client_decision
-    ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
-      or purchase later stages.
-  when:
-  - flag:
-    - hyd_investigation
-  if_unknown: ask
-- key: concept
-  name: S3 Concept
+  delivery_stage: brief_concept
+- key: schematic_design
+  name: Schematic design
   lines:
   - {key: brief_options_preliminary, text: "Brief/options/preliminary demands"}
   - {key: source_storage_treatment, text: "source/storage/treatment, spatial/access and cost inputs"}
@@ -172,10 +161,11 @@ stages:
     ref: hydraulic-services#41-43
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
+  delivery_stage: schematic_design
 - key: planning
-  name: S4 Authority
+  name: Planning
   lines:
   - {key: selected_servicing_plans, text: "Selected servicing plans/water-efficiency inputs"}
   - {key: applications_roles_tracker, text: "applications/roles/tracker and bounded responses"}
@@ -188,14 +178,15 @@ stages:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   when:
   - flag:
     - hyd_planning
   if_unknown: ask
-- key: design
-  name: S5 Design
+  delivery_stage: planning
+- key: design_development
+  name: Design development
   lines:
   - {key: selected_calculations_schedules, text: "Selected calculations/schedules"}
   - {key: levels_routes_plant, text: "levels/routes/plant/controls/penetrations/access/overflow/safety"}
@@ -208,10 +199,11 @@ stages:
     ref: hydraulic-services#41-43,48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
-- key: tender
-  name: S6 Tender
+  delivery_stage: design_development
+- key: tender_documentation
+  name: Tender documentation
   lines:
   - {key: traditional_complete_design, text: "Traditional complete design"}
   - {key: d_c_intent, text: "D&C intent/remaining design owner"}
@@ -225,10 +217,11 @@ stages:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
-- key: continuation
-  name: S7 Later design
+  delivery_stage: tender_documentation
+- key: design_finalisation
+  name: Design finalisation
   lines:
   - {key: complete_design_alternatives, text: "Complete design/alternatives/construction issue"}
   - {key: retained_duties_separate, text: "retained duties and separate novation terms"}
@@ -241,17 +234,25 @@ stages:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   default: option
-- key: construction
-  name: S8 Support
+  delivery_stage: design_finalisation
+- key: delivery
+  name: Delivery
   lines:
-  - {key: submittal_rfi_reviews, text: "Submittal/RFI reviews"}
-  - {key: before_backfill_lining, text: "before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points"}
-  - {key: records, text: "records"}
+  - {key: submittal_rfi_reviews, text: Submittal/RFI reviews}
+  - {key: before_backfill_lining, text: 'before-backfill/lining, penetration/fire-stop/waterproofing/plant hold points'}
+  - {key: records, text: records}
+  - {key: review_selected_tests, text: 'Review selected tests, flushing/disinfection, as-builts/O&M and training'}
+  - {key: witness_retests, text: witness retests}
+  - {key: trades_execute_tests, text: Trades execute tests}
+  - {key: no_unseen_work, text: no unseen-work certification.}
+  - {key: deferred_tests_visits, text: Deferred tests/visits/monitoring}
+  - {key: operating_prerequisites_period, text: 'operating prerequisites/period, closure/residual items'}
   fee_basis: fixed
-  shown_when: Selected appointment stage
+  default: option
+  shown_when: Always
   provenance:
   - kind: evidence
     ref: hydraulic-services#6-8,20
@@ -259,47 +260,17 @@ stages:
     ref: hydraulic-services#49
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
-  default: option
-- key: handover
-  name: S9 Witness
-  lines:
-  - {key: review_selected_tests, text: "Review selected tests, flushing/disinfection, as-builts/O&M and training"}
-  - {key: witness_retests, text: "witness retests"}
-  - {key: trades_execute_tests, text: "Trades execute tests"}
-  - {key: no_unseen_work, text: "no unseen-work certification."}
-  fee_basis: fixed
-  shown_when: Selected appointment stage
-  provenance:
   - kind: evidence
     ref: hydraulic-services#20,22
-  - kind: seed
-    ref: hydraulic-services#49
-  - kind: client_decision
-    ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
-      or purchase later stages.
-  default: option
-- key: defects
-  name: S10 Defects
-  lines:
-  - {key: deferred_tests_visits, text: "Deferred tests/visits/monitoring"}
-  - {key: operating_prerequisites_period, text: "operating prerequisites/period, closure/residual items"}
-  fee_basis: fixed
-  shown_when: Selected appointment stage
-  provenance:
   - kind: evidence
     ref: hydraulic-services#20
   - kind: seed
     ref: hydraulic-services#45,49
-  - kind: client_decision
-    ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
-      or purchase later stages.
-  default: option
+  delivery_stage: delivery
 - key: advisory
-  name: S11 Advice
+  name: Advice
   lines:
   - {key: decision_cutoff_reliance, text: "Decision/cutoff/reliance/confidence/actions"}
   - {key: diagnosis_remedy_verification, text: "diagnosis/remedy/verification separate"}
@@ -313,7 +284,7 @@ stages:
     ref: hydraulic-services#45,47
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   default: option
   when:
@@ -328,8 +299,8 @@ stages:
   - pathway:
     - advice_only
 durations: R7 sets input/authority/access/shutdown dates, hold-point notice/response and completion endpoint.
-allowances_note: 'Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption:
-  owner/date/consequence/review point.'
+allowances_note: 'Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption: owner/date/consequence/review
+  point.'
 allowances:
 - key: extent
   label: Extent
@@ -342,7 +313,7 @@ allowances:
     ref: hydraulic-services#40-43,46
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: investigation
   label: Investigation
@@ -355,7 +326,7 @@ allowances:
     ref: hydraulic-services#44-45
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: design
   label: Design
@@ -368,7 +339,7 @@ allowances:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: coordination
   label: Approvals
@@ -381,7 +352,7 @@ allowances:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: tender
   label: Tender
@@ -394,7 +365,7 @@ allowances:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: construction
   label: Support
@@ -407,7 +378,7 @@ allowances:
     ref: hydraulic-services#49
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: completion
   label: Completion
@@ -420,7 +391,7 @@ allowances:
     ref: hydraulic-services#49
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: access
   label: Staging
@@ -433,11 +404,11 @@ allowances:
     ref: hydraulic-services#44-46,49
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 positions:
 - key: concept
-  stage: [concept]
+  stage: [schematic_design]
   label: Concept options and spatial advice
   kind: technical
   provenance:
@@ -447,7 +418,7 @@ positions:
     ref: hydraulic-services#41-43
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -455,17 +426,13 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - concept
+    when: [stage_included: [schematic_design]]
     else: O
-  when:
-  - stage:
-    - concept
+  when: [stage: [schematic_design]]
   group: Design basis
   detail: Preliminary demands, plant space and cost inputs; detailed design follows the selected stages.
 - key: existing
-  stage: [investigation, inception]
+  stage: [brief_concept]
   label: Retained-system investigation
   kind: technical
   provenance:
@@ -475,7 +442,7 @@ positions:
     ref: hydraulic-services#40,44
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -483,19 +450,13 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - investigation
+    when: [{stage_included: [brief_concept], flag: [hyd_investigation]}]
     else: O
   if_unknown: ask
-  when:
-  - stage:
-    - investigation
-    flag:
-    - hyd_investigation
+  when: [{flag: [hyd_investigation], stage: [brief_concept]}]
   group: Design basis
-  detail: Record evidence and assumptions separately; identify access, isolation and reinstatement. Upgrades separately
-    agreed.
+  detail: Record evidence and assumptions separately; identify access, isolation and reinstatement. Upgrades 
+    separately agreed.
 - key: advice
   stage: [advisory]
   label: Diagnosis and advice
@@ -507,7 +468,7 @@ positions:
     ref: hydraulic-services#45,47
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -525,7 +486,7 @@ positions:
   group: Design basis
   detail: Remedy design and verification separately appointed.
 - key: domestic
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design potable and hot water services
   kind: technical
   provenance:
@@ -539,21 +500,15 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
+  when: [stage: [design_development], stage: [tender_documentation], stage: [design_finalisation]]
   group: Water supply and storage
-  detail: Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature control and metering.
+  detail: Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature 
+    control and metering.
 - key: pumps
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design and select domestic tanks and pumps
   kind: technical
   provenance:
@@ -563,7 +518,7 @@ positions:
     ref: hydraulic-services#41
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -571,25 +526,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: include
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_pumps
+  when: [{flag: [hyd_pumps], stage: [design_development]}, {flag: [hyd_pumps], stage: [tender_documentation]}, {flag: [
+        hyd_pumps], stage: [design_finalisation]}]
   group: Water supply and storage
-  detail: Size and select domestic storage tanks, pumps, boosters, controls and refill connections. Fire tanks and pumps are separate.
+  detail: Size and select domestic storage tanks, pumps, boosters, controls and refill connections. Fire tanks and 
+    pumps are separate.
   assumption: Allow for domestic storage and boosting design where demand and available supply require it.
 - key: rainwater
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design rainwater collection and reuse
   kind: technical
   provenance:
@@ -599,7 +547,7 @@ positions:
     ref: hydraulic-services#41
   - kind: client_decision
     ref: hydraulic-services#50-51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -607,25 +555,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: include
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_rainwater
+  when: [{flag: [hyd_rainwater], stage: [design_development]}, {flag: [hyd_rainwater], stage: [tender_documentation]},
+    {flag: [hyd_rainwater], stage: [design_finalisation]}]
   group: Water supply and storage
-  detail: Design collection, storage and reuse connections; agree quality, demand and irrigation supply point with the landscape designer.
+  detail: Design collection, storage and reuse connections; agree quality, demand and irrigation supply point with 
+    the landscape designer.
   assumption: Allow for rainwater collection and irrigation reuse design; confirm extent with the brief.
 - key: alternative_sources
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design connections for alternative water supplies
   kind: technical
   provenance:
@@ -635,7 +576,7 @@ positions:
     ref: hydraulic-services#41
   - kind: client_decision
     ref: hydraulic-services#50-51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -643,26 +584,19 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: option
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_alternative_sources
+  when: [{flag: [hyd_alternative_sources], stage: [design_development]}, {flag: [hyd_alternative_sources], stage: [
+          tender_documentation]}, {flag: [hyd_alternative_sources], stage: [design_finalisation]}]
   group: Water supply and storage
-  detail: Design connections to specified river, carted or other supplies; agree source quality, reliability and treatment boundaries.
+  detail: Design connections to specified river, carted or other supplies; agree source quality, reliability and 
+    treatment boundaries.
   assumption: Price only the alternative sources identified in the proposal; agree source and treatment owner before
     design.
 - key: sanitary
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design sanitary plumbing and sewer connections
   kind: technical
   provenance:
@@ -676,21 +610,15 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
+  when: [stage: [design_development], stage: [tender_documentation], stage: [design_finalisation]]
   group: Sewerage and trade waste
-  detail: Size sanitary pipework and vents, set grades and coordinate sewer connections. Treatment and trade waste are separate.
+  detail: Size sanitary pipework and vents, set grades and coordinate sewer connections. Treatment and trade waste 
+    are separate.
 - key: treatment
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design onsite sewage treatment
   kind: technical
   provenance:
@@ -700,7 +628,7 @@ positions:
     ref: hydraulic-services#41
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -708,18 +636,14 @@ positions:
       exists.
   value: X
   if_unknown: ask
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_treatment
+  when: [{flag: [hyd_treatment], stage: [design_development]}, {flag: [hyd_treatment], stage: [tender_documentation]},
+    {flag: [hyd_treatment], stage: [design_finalisation]}]
   responsible: treatment designer
   group: Sewerage and trade waste
-  detail: Design the treatment system to agreed inflows, effluent quality and capacity; coordinate the boundary with hydraulic reticulation.
+  detail: Design the treatment system to agreed inflows, effluent quality and capacity; coordinate the boundary with
+    hydraulic reticulation.
 - key: trade
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design trade-waste drainage and discharge controls
   kind: technical
   provenance:
@@ -729,7 +653,7 @@ positions:
     ref: hydraulic-services#40,42
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -737,25 +661,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: option
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_trade
+  when: [{flag: [hyd_trade], stage: [design_development]}, {flag: [hyd_trade], stage: [tender_documentation]}, {flag: [
+        hyd_trade], stage: [design_finalisation]}]
   group: Sewerage and trade waste
-  detail: Identify contaminants; design arrestors and pretreatment and prepare discharge-approval inputs. Confirm the receiving system requirements.
+  detail: Identify contaminants; design arrestors and pretreatment and prepare discharge-approval inputs. Confirm 
+    the receiving system requirements.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: process
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design specialist process-waste treatment
   kind: technical
   provenance:
@@ -765,7 +682,7 @@ positions:
     ref: hydraulic-services#42
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -773,18 +690,14 @@ positions:
       exists.
   value: X
   if_unknown: ask
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_process
+  when: [{flag: [hyd_process], stage: [design_development]}, {flag: [hyd_process], stage: [tender_documentation]}, {
+        flag: [hyd_process], stage: [design_finalisation]}]
   responsible: process specialist
   group: Sewerage and trade waste
-  detail: Design nominated industrial or process-waste treatment; agree performance targets and boundaries. Ordinary grease arrestors are separate.
+  detail: Design nominated industrial or process-waste treatment; agree performance targets and boundaries. Ordinary
+    grease arrestors are separate.
 - key: roof
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design roof and terrace drainage
   kind: technical
   provenance:
@@ -794,7 +707,7 @@ positions:
     ref: hydraulic-services#43
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -802,25 +715,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: include
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_roof
+  when: [{flag: [hyd_roof], stage: [design_development]}, {flag: [hyd_roof], stage: [tender_documentation]}, {flag: [
+        hyd_roof], stage: [design_finalisation]}]
   group: Stormwater drainage
-  detail: Size primary and overflow drainage; coordinate levels, capacity and the handover from downpipes to below-ground civil drainage.
+  detail: Size primary and overflow drainage; coordinate levels, capacity and the handover from downpipes to 
+    below-ground civil drainage.
   assumption: Allow for primary and overflow drainage design for affected roofs and terraces.
 - key: civil
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design site stormwater and detention
   kind: technical
   provenance:
@@ -830,7 +736,7 @@ positions:
     ref: hydraulic-services#43
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -838,18 +744,14 @@ positions:
       exists.
   value: X
   if_unknown: ask
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_external
+  when: [{flag: [hyd_external], stage: [design_development]}, {flag: [hyd_external], stage: [tender_documentation]}, {
+      flag: [hyd_external], stage: [design_finalisation]}]
   responsible: civil engineer
   group: Stormwater drainage
-  detail: Design site pits, detention and overland flow paths, including easements and discharge points. Agree the boundary with the civil engineer.
+  detail: Design site pits, detention and overland flow paths, including easements and discharge points. Agree the 
+    boundary with the civil engineer.
 - key: gas
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design gas and specialist-fluid services
   kind: technical
   provenance:
@@ -857,7 +759,7 @@ positions:
     ref: hydraulic-services#40,43,48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -865,25 +767,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: option
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_gas
+  when: [{flag: [hyd_gas], stage: [design_development]}, {flag: [hyd_gas], stage: [tender_documentation]}, {flag: [
+          hyd_gas], stage: [design_finalisation]}]
   group: Gas and specialist fluids
-  detail: Design pipework, connections and controls for specified demand; medical, laboratory and process systems require a competent specialist.
+  detail: Design pipework, connections and controls for specified demand; medical, laboratory and process systems 
+    require a competent specialist.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: fixtures
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Select plumbing fixtures
   kind: technical
   provenance:
@@ -893,23 +788,20 @@ positions:
     ref: hydraulic-services#41-43
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
     why: Owner-approved Hydraulic pilot structure and explicit pricing defaults; not evidence that an unknown system
       exists.
   value: X
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
+  when: [stage: [design_development], stage: [tender_documentation], stage: [design_finalisation]]
   responsible: architect
   group: Coordination and approvals
-  detail: Select fixtures and fittings; coordinate hydraulic demands and connections. Normally selected by the architect.
+  detail: Select fixtures and fittings; coordinate hydraulic demands and connections. Normally selected by the 
+    architect.
 - key: fire
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design fire-water systems and fire strategy
   kind: technical
   provenance:
@@ -919,23 +811,20 @@ positions:
     ref: hydraulic-services#41
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
     why: Owner-approved Hydraulic pilot structure and explicit pricing defaults; not evidence that an unknown system
       exists.
   value: X
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
+  when: [stage: [design_development], stage: [tender_documentation], stage: [design_finalisation]]
   responsible: fire services consultant
   group: Coordination and approvals
-  detail: Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections.
+  detail: Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate 
+    shared water connections.
 - key: interfaces
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Coordinate hydraulic design with other disciplines
   kind: technical
   provenance:
@@ -945,7 +834,7 @@ positions:
     ref: hydraulic-services#41-43,49
   - kind: client_decision
     ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -953,26 +842,19 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: include
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_interfaces
+  when: [{flag: [hyd_interfaces], stage: [design_development]}, {flag: [hyd_interfaces], stage: [
+          tender_documentation]}, {flag: [hyd_interfaces], stage: [design_finalisation]}]
   group: Coordination and approvals
-  detail: Coordinate penetrations, supports, fire stopping, waterproofing, power, controls and condensate connections; specialists retain their design.
-  assumption: Include coordination of hydraulic connections with the appointed designers; specialist design stays
+  detail: Coordinate penetrations, supports, fire stopping, waterproofing, power, controls and condensate 
+    connections; specialists retain their design.
+  assumption: Include coordination of hydraulic connections with the appointed designers; specialist design stays 
     with its owner.
 - key: utility
-  stage: [planning, design, tender, continuation]
+  stage: [planning, design_development, tender_documentation, design_finalisation]
   label: Coordinate utility connections and approvals
   kind: technical
   provenance:
@@ -982,7 +864,7 @@ positions:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -990,27 +872,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - planning
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [planning], stage_included: [design_development], stage_included: [tender_documentation], 
+        stage_included: [design_finalisation]]
     else: O
   if_unknown: option
-  when:
-  - stage:
-    - planning
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_utility
+  when: [{flag: [hyd_utility], stage: [planning]}, {flag: [hyd_utility], stage: [design_development]}, {flag: [
+          hyd_utility], stage: [tender_documentation]}, {flag: [hyd_utility], stage: [design_finalisation]}]
   group: Coordination and approvals
-  detail: Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water Services Coordinator services are separately appointed.
+  detail: Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water 
+    Services Coordinator services are separately appointed.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: staging
-  stage: [design, tender, continuation]
+  stage: [design_development, tender_documentation, design_finalisation]
   label: Design staged and temporary hydraulic services
   kind: technical
   provenance:
@@ -1020,7 +893,7 @@ positions:
     ref: hydraulic-services#46,49
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -1028,25 +901,18 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: option
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_staging
+  when: [{flag: [hyd_staging], stage: [design_development]}, {flag: [hyd_staging], stage: [tender_documentation]}, {
+        flag: [hyd_staging], stage: [design_finalisation]}]
   group: Coordination and approvals
-  detail: Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and acceptance arrangements.
+  detail: Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and 
+    acceptance arrangements.
   assumption: Price separately if required by the confirmed brief; identify extent and dependencies.
 - key: declarations
-  stage: [tender, continuation, design]
+  stage: [tender_documentation, design_finalisation, design_development]
   label: Prepare hydraulic design declarations
   kind: technical
   provenance:
@@ -1056,7 +922,7 @@ positions:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -1064,24 +930,17 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - design
-      - tender
-      - continuation
+    when: [stage_included: [design_development], stage_included: [tender_documentation], stage_included: [
+            design_finalisation]]
     else: O
   if_unknown: ask
-  when:
-  - stage:
-    - design
-    - tender
-    - continuation
-    flag:
-    - hyd_declarations
+  when: [{flag: [hyd_declarations], stage: [design_development]}, {flag: [hyd_declarations], stage: [
+          tender_documentation]}, {flag: [hyd_declarations], stage: [design_finalisation]}]
   group: Coordination and approvals
-  detail: Prepare and lodge applicable design declarations; confirm jurisdiction, competent author and lodgement responsibilities.
+  detail: Prepare and lodge applicable design declarations; confirm jurisdiction, competent author and lodgement 
+    responsibilities.
 - key: continuation
-  stage: [continuation]
+  stage: [design_finalisation]
   label: Later design and novation
   kind: technical
   provenance:
@@ -1091,7 +950,7 @@ positions:
     ref: hydraulic-services#48
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -1099,17 +958,13 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - continuation
+    when: [stage_included: [design_finalisation]]
     else: O
-  when:
-  - stage:
-    - continuation
+  when: [stage: [design_finalisation]]
   group: Later services
   detail: Separately appointed design completion and novation terms.
 - key: construction
-  stage: [construction]
+  stage: [delivery]
   label: Review construction and respond to site queries
   kind: technical
   provenance:
@@ -1119,7 +974,7 @@ positions:
     ref: hydraulic-services#49
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -1127,17 +982,14 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - construction
+    when: [stage_included: [delivery]]
     else: O
-  when:
-  - stage:
-    - construction
+  when: [stage: [delivery]]
   group: Later services
-  detail: Review submittals and requests for information; attend the visits and hold points stated in Allowances and record design responses.
+  detail: Review submittals and requests for information; attend the visits and hold points stated in Allowances and
+    record design responses.
 - key: witness
-  stage: [handover]
+  stage: [delivery]
   label: Testing review and handover
   kind: technical
   provenance:
@@ -1147,7 +999,7 @@ positions:
     ref: hydraulic-services#49
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -1155,17 +1007,13 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - handover
+    when: [stage_included: [delivery]]
     else: O
-  when:
-  - stage:
-    - handover
+  when: [stage: [delivery]]
   group: Later services
   detail: Contractors execute tests; consultant review and selected witnessing do not certify unseen work.
 - key: defects
-  stage: [defects]
+  stage: [delivery]
   label: Defects and operational verification
   kind: technical
   provenance:
@@ -1175,7 +1023,7 @@ positions:
     ref: hydraulic-services#45,49
   - kind: client_decision
     ref: hydraulic-services#50
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   - kind: client_decision
     ref: hydraulic-services#55,56
@@ -1183,26 +1031,22 @@ positions:
       exists.
   value:
     value: I
-    when:
-    - stage_included:
-      - defects
+    when: [stage_included: [delivery]]
     else: O
-  when:
-  - stage:
-    - defects
+  when: [stage: [delivery]]
   group: Later services
   detail: Defined visits, observation period and endpoint.
 scope_schedule: []
 terms:
 - key: agreement
-  text: Engage under {field:agreement}, scope/fees/addenda, written acceptance and settled precedence. RFP authorises
-    no work.
+  text: Engage under {field:agreement}, scope/fees/addenda, written acceptance and settled precedence. RFP 
+    authorises no work.
   provenance:
   - kind: evidence
     ref: hydraulic-services#11-13,25-26,31-32
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: authority
@@ -1212,7 +1056,7 @@ terms:
     ref: hydraulic-services#9-12,18-26,30-32
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: baseline
@@ -1222,7 +1066,7 @@ terms:
     ref: hydraulic-services#9-12,18-22
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: errors
@@ -1232,18 +1076,18 @@ terms:
     ref: hydraulic-services#12
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: payment
-  text: Pay {field:payment_days} days from correct milestone invoice; declare prepayment/release/interest/recovery/suspension
-    in R6.
+  text: Pay {field:payment_days} days from correct milestone invoice; declare 
+    prepayment/release/interest/recovery/suspension in R6.
   provenance:
   - kind: evidence
     ref: hydraulic-services#10-12,23-26,30-32
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: validity
@@ -1253,7 +1097,7 @@ terms:
     ref: hydraulic-services#10-12,23,30-31
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: questions
@@ -1261,7 +1105,7 @@ terms:
   provenance:
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: rates
@@ -1271,39 +1115,39 @@ terms:
     ref: hydraulic-services#10,23-24,30-31
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: rights
-  text: Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination
+  text: Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination 
     handover; authorised/lawful disclosure allowed, marketing by consent.
   provenance:
   - kind: evidence
     ref: hydraulic-services#12,22,25-26,32
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: risk
-  text: Settle caps/indemnities/law/disputes/notices/cure/termination/suspension/novation/subcontracts; insurance
+  text: Settle caps/indemnities/law/disputes/notices/cure/termination/suspension/novation/subcontracts; insurance 
     not a cap; agree conflicts/staff changes.
   provenance:
   - kind: evidence
     ref: hydraulic-services#11-13,24-26,31-32
   - kind: client_decision
     ref: hydraulic-services#52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 returnable_notes:
 - key: r1
-  text: Fee/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; numbered
-    addenda/validity and authorised signatory.
+  text: Fee/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; 
+    numbered addenda/validity and authorised signatory.
   provenance:
   - kind: evidence
     ref: hydraulic-services#10,23,30
   - kind: client_decision
     ref: hydraulic-services#50-52,54
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r2
@@ -1315,19 +1159,19 @@ returnable_notes:
     ref: hydraulic-services#40-49
   replace: true
 - key: r3
-  text: Lead/designer/specialist/checker/modeller/inspector/witness rates; investigation/visit/review/test/retest
+  text: Lead/designer/specialist/checker/modeller/inspector/witness rates; investigation/visit/review/test/retest 
     units/ceilings; travel/out-of-hours/cancellation/escalation.
   provenance:
   - kind: evidence
     ref: hydraulic-services#10,23-24,30-31
   - kind: client_decision
     ref: hydraulic-services#51-52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r4
-  text: Lead/checker/competence/registrations/conflicts/stage team/specialists, ISO/equivalent QA; Section 2 responsibility
-    allocations.
+  text: Lead/checker/competence/registrations/conflicts/stage team/specialists, ISO/equivalent QA; Section 2 
+    responsibility allocations.
   provenance:
   - kind: evidence
     ref: hydraulic-services#4,8,13,16,22,27,35
@@ -1335,7 +1179,7 @@ returnable_notes:
     ref: hydraulic-services#40-49
   - kind: client_decision
     ref: hydraulic-services#53
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r5
@@ -1345,7 +1189,7 @@ returnable_notes:
     ref: hydraulic-services#40-49
   - kind: client_decision
     ref: hydraulic-services#53
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r6
@@ -1356,7 +1200,7 @@ returnable_notes:
     ref: hydraulic-services#4,8-13,19-22,25-28,31-36
   - kind: client_decision
     ref: hydraulic-services#50-52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r7
@@ -1367,17 +1211,18 @@ returnable_notes:
     ref: hydraulic-services#40-49
   - kind: client_decision
     ref: hydraulic-services#50-51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r8
-  text: PI {field:pi}; PL {field:pl}; current workers cover/periods/certificates/activity exclusions; agreement/precedence/liability/reliance/IP/termination/novation.
+  text: PI {field:pi}; PL {field:pl}; current workers cover/periods/certificates/activity exclusions; 
+    agreement/precedence/liability/reliance/IP/termination/novation.
   provenance:
   - kind: evidence
     ref: hydraulic-services#11-13,24-26,31-32
   - kind: client_decision
     ref: hydraulic-services#52-53
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true
 - key: r9
@@ -1390,6 +1235,6 @@ returnable_notes:
     ref: hydraulic-services#44,48-49
   - kind: client_decision
     ref: hydraulic-services#51-52
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
+    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
   replace: true

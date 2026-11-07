@@ -42,8 +42,8 @@ fields:
 settings:
   electrical-services:
     boundary:range:
-      start: inception
-      end: concept
+      start: brief_concept
+      end: schematic_design
 sources:
 - docs/rfp-golden/electrical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/electrical-services/ledger.md #1-54'
@@ -53,7 +53,7 @@ snapshot: false
 expect:
   electrical-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [inception, investigation, concept]
+    stages_include: [brief_concept, schematic_design]
     positions:
       distribution: X
       controls: X
@@ -61,4 +61,4 @@ expect:
       existing: I
       continuation: X
       declarations: X
-    stages_absent: [design, tender, continuation]
+    stages_absent: [design_development, tender_documentation, design_finalisation]

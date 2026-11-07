@@ -15,7 +15,7 @@ flags:
   staged: "no"
   multi_building: "no"
 parts:
-  - {id: care, label: Residential care, classes: [9c]}
+- {id: care, label: Residential care, classes: [9c]}
 address: "3 Example Ave, Example NSW"
 fields:
   ref: RFP-TEST
@@ -28,28 +28,30 @@ fields:
   lga: Example LGA
 settings:
   architecture:
-    "boundary:range": {start: brief_masterplan, end: for_construction}
+    "boundary:range": {start: brief_concept, end: design_finalisation}
     "allowance:client_presentations": "2"
     "allowance:planning_cap": "20"
     "allowance:ca_inspections": "4"
   structural:
-    "boundary:range": {start: concept_schematic, end: construction_phase}
+    "boundary:range": {start: brief_concept, end: delivery}
     "allowance:ca_inspections": "4"
 expect:
   architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded,
     # and an excluded service names no party.
-    stages_include: [regulated_design]
+    stages_include: [design_finalisation]
     positions: {existing_interfaces: I}
     blocking: ["fact:budget", "fact:regulated_design"]
     blocking_only: true
   structural:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [existing_assessment, regulated_design]
+    stages_include: [brief_concept, design_finalisation]
     positions:
       strengthening: I
     blocking: ['fact:regulated_design']
     blocking_only: true
 sources:
-  - "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
-  - "Peer review: the regime for existing Class 3/9c repair is decided from verified applicability, not class alone (NSW guidance: alterations to existing Class 3 and 9c enter the regime from 1 July 2028, with exemptions)."
+- "Owner decisions 1 and 3 (13 October 2026, docs/plans/2026-10-13-house-rfp-brief.md): the architect RFP prints the construction
+  budget, so a missing budget blocks issue; who engages each consultant is a stated input (client here)."
+- "Peer review: the regime for existing Class 3/9c repair is decided from verified applicability, not class alone (NSW
+  guidance: alterations to existing Class 3 and 9c enter the regime from 1 July 2028, with exemptions)."

@@ -16,39 +16,37 @@ Base stages only, from written instruction/input-access milestone to the selecte
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| G1 Brief / plan |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Review design and prior tests for relevance | Included |  |
 |  | Agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe fieldwork, access and handback | Included |  |
 |  | Reconcile counts/levels | Included |  |
 |  | Deliver plan, inputs and issues register. | Included |  |
-|  | Investigation plan and issues register reconciled to allowances | Included |  |
-| G2 Field / laboratory |  | Included |  |
 |  | Scheduled locating/clearance, drilling/coring/pits, sampling and tests | Included |  |
 |  | Competent supervision | Included |  |
 |  | Record locations/datum/precision, logs/photos, groundwater and incomplete/refusal points | Included |  |
 |  | Traceable lab records and scheduled site handback. | Included |  |
+|  | Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater, aggressivity, pavement and classification parameters | Included |  |
+|  | Location plan and designer parameter schedule | Included |  |
+|  | Identify pending tests and further evidence. | Included |  |
+|  | Investigation plan and issues register reconciled to allowances | Included |  |
+|  | Foundation/bearing/settlement advice; structural engineer designs | Included |  |
+|  | Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance | Included |  |
 |  | Beyond-spot groundwater monitoring / hydrogeology / dewatering; define objective, duration and specialist | Included |  |
 |  | Buried tank/OSD/services/asset exposure; no integrity certification; civil capacity/structural adequacy | Included |  |
 |  | Locating/clearance before intrusive work; name isolation/potholing party | Included |  |
 |  | Occupied access, tenant liaison and permits | Excluded |  |
-|  | Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners | Included |  |
-| G3 Interpretation / report |  | Included |  |
-|  | Factual results, ground model, limitations and selected footing/settlement, earthworks, excavation, groundwater, aggressivity, pavement and classification parameters | Included |  |
-|  | Location plan and designer parameter schedule | Included |  |
-|  | Identify pending tests and further evidence. | Included |  |
-|  | Foundation/bearing/settlement advice; structural engineer designs | Included |  |
-|  | Earthworks/subgrade/pavement/retaining parameters; civil/structural designer designs, no cut/fill balance | Included |  |
 |  | Defect/distress diagnosis; expert evidence separate, structural engineer designs remedy | Included |  |
 |  | Contamination, waste classification, remediation/validation and independent audit | Excluded |  |
 |  | Acid sulfate soil assessment; define desktop/intrusive/management package from evidence | Included |  |
-| G4 Concept / planning |  | Included |  |
+|  | Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners | Included |  |
+| Planning |  | Included |  |
 |  | Compare selected ground/foundation options and risk | Included |  |
 |  | Nominated planning report and responses | Included |  |
 |  | Interim report has stated limits | Included |  |
 |  | Approval not guaranteed. | Included |  |
-| G5 Design / tender support | Not part of this appointment | Excluded | — |
-| G6 Construction / completion | Not part of this appointment | Excluded | — |
-| G7 Contractor advice / transfer | Not part of this appointment | Excluded | — |
+| Design development | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |

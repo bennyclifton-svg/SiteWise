@@ -32,12 +32,12 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture 
     quantities are client choices.
 settings:
   landscape-architecture:
     boundary:range:
-      start: s1_inception
+      start: brief_concept
       end: s9_advisory
     allowance:extent: '2'
     allowance:evidence: '2'
@@ -53,17 +53,8 @@ scenario: landscape-advisory-only
 description: Condition advice has evidence cutoff and cause-first rectification; no full design or construction.
 expect:
   landscape-architecture:
-    stages_include:
-    - s1_inception
-    - s9_advisory
-    stages_absent:
-    - s2_concept
-    - s3_approval
-    - s4_developed
-    - s5_tender
-    - s6_dnc
-    - s7_construction
-    - s8_establishment
+    stages_include: [brief_concept, s9_advisory]
+    stages_absent: [planning, design_development, tender_documentation, design_finalisation, delivery]
     positions:
       design: absent
       construction: absent

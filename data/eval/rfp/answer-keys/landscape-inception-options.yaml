@@ -31,13 +31,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture 
     quantities are client choices.
 settings:
   landscape-architecture:
     boundary:range:
-      start: s1_inception
-      end: s1_inception
+      start: brief_concept
+      end: brief_concept
     allowance:extent: '2'
     allowance:evidence: '2'
     allowance:reviews: '2'
@@ -49,20 +49,20 @@ sources:
 - docs/rfp-golden/landscape-architecture/rfp.md Sections 1-7
 - 'docs/rfp-golden/landscape-architecture/ledger.md #1-36'
 scenario: landscape-inception-options
-description: Inception boundary prices selected future podium/irrigation/public extent as O; unknown specialist
+description: Inception boundary prices selected future podium/irrigation/public extent as O; unknown specialist 
   extent asks, never I or X.
 expect:
   landscape-architecture:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception]
+    stages_include: [brief_concept]
     positions:
-      design: X
-      podium: X
-      irrigation_brief: X
+      design: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
+      podium: I  # Seven project stages (7 November 2026): merged with scope inside the appointment.
+      irrigation_brief: I # Seven project stages (7 November 2026): merged with scope inside the appointment.
       irrigation_detail: X
-      public: X
-      special: X
+      public: I # Seven project stages (7 November 2026): merged with scope inside the appointment.
+      special: I # Seven project stages (7 November 2026): merged with scope inside the appointment.
       construction: X
       establishment: X
     blocking: ['fact:flag.landscape_special']
-    stages_absent: [s2_concept, s3_approval, s4_developed, s5_tender, s7_construction, s8_establishment]
+    stages_absent: [planning, design_development, tender_documentation, delivery]

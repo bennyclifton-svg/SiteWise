@@ -36,13 +36,13 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture
+  information: Extent map, survey, architecture/civil revisions, soils/tree evidence and operator brief; fixture 
     quantities are client choices.
 settings:
   landscape-architecture:
     boundary:range:
-      start: s1_inception
-      end: s8_establishment
+      start: brief_concept
+      end: delivery
     allowance:extent: '2'
     allowance:evidence: '2'
     allowance:reviews: '2'
@@ -50,22 +50,17 @@ settings:
     allowance:works: '2'
     allowance:establishment: '2'
     allowance:extras: '2'
-    stage:s7_construction: include
-    stage:s8_establishment: include
+    stage:delivery: include
     stage:s9_advisory: exclude
 sources:
 - docs/rfp-golden/landscape-architecture/rfp.md Sections 1-7
 - 'docs/rfp-golden/landscape-architecture/ledger.md #1-36'
 scenario: landscape-mixed-podium
-description: Mixed-use podium/public landscape; separately appointed construction/establishment with distinct dates
+description: Mixed-use podium/public landscape; separately appointed construction/establishment with distinct dates 
   and irrigation design choice.
 expect:
   landscape-architecture:
-    stages_include:
-    - s4_developed
-    - s5_tender
-    - s7_construction
-    - s8_establishment
+    stages_include: [design_development, tender_documentation, delivery]
     positions:
       design: I
       podium: I

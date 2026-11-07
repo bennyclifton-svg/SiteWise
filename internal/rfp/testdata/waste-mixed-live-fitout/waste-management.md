@@ -19,36 +19,33 @@ Select base/options and named end; operational and C&D plans are separate purcha
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Inception / evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Brief, local controls/consents, operator arrangements and agreed visits | Included |  |
 |  | Input gaps, stream/stakeholder schedule and responsibility map | Included |  |
 |  | Existing work: photos, retained/removed extent and safe access | Included |  |
 |  | Remediation follows specialist diagnosis | Included |  |
-| S2 Operational concept |  | Included |  |
 |  | Actual-use/stream generation and auditable bins/storage: frequency, peaks/contingency, bulky/green waste, rooms/routes/chutes and collection points | Included |  |
 |  | Compare feasibility before space is fixed | Included |  |
 |  | Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power | Included |  |
 |  | Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated assumptions | Included |  |
-| S3 Operational plan |  | Included |  |
+| Planning |  | Included |  |
 |  | Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties | Included |  |
 |  | Scheduled drafts, council forms/consultation/responses to named milestone | Included |  |
 |  | Confirm operator acceptance owner/date | Included |  |
-|  | Operational WMP: actual streams, bins/storage and collection; dated rates/records only | Included |  |
-|  | Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator engagement separate | Included |  |
-|  | Vehicle swept paths/clearances; civil/structural confirm grades and loads | Excluded |  |
-| S3 C&D plan |  | Included |  |
 |  | Separate demolition/construction WMP: supplied quantities/estimating party by stream, segregation/storage, reuse/recycling/disposal pathways and tracking evidence | Included |  |
 |  | Confirm contractor processes/destinations later if unavailable | Included |  |
 |  | No hazardous audit | Included |  |
+|  | Operational WMP: actual streams, bins/storage and collection; dated rates/records only | Included |  |
 |  | C&D plan: separate quantities, reuse/disposal pathways and tracking | Included |  |
 |  | Hazardous/contaminated/clinical/liquid/process waste classification and clearance; adviser coordinates findings | Excluded |  |
+|  | Written confirmation of operational bins, frequency, vehicles and access; name confirmation owner/date, operator engagement separate | Included |  |
+|  | Vehicle swept paths/clearances; civil/structural confirm grades and loads | Excluded |  |
 |  | Occupied/staged/heritage/remediation interim plans/checks; contractor controls methods, operator maintains service | Included |  |
-| S4 Consent / design review | Not part of this appointment | Excluded | — |
-| S5 Tender support | Not part of this appointment | Excluded | — |
-| S6 Contractor review | Not part of this appointment | Excluded | — |
-| S7 Construction / completion | Not part of this appointment | Excluded | — |
-| S8 Advisory review | Not part of this appointment | Excluded | — |
-| S8 Post-occupation review | Not part of this appointment | Excluded | — |
+| Design development | Not part of this appointment | Excluded | — |
+| Tender documentation | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Advisory review | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |

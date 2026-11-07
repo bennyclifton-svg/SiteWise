@@ -9,7 +9,7 @@ discipline_ids:
 title_aliases:
 - arborist
 - arboricultural
-evidence_limit: Two historical report offers differ in tree count, access and terms; neither appoints construction
+evidence_limit: Two historical report offers differ in tree count, access and terms; neither appoints construction 
   or physical tree works.
 field_defaults:
   pi: ''
@@ -40,42 +40,42 @@ evaluation:
   provenance:
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: experience
   label: Relevant experience
   default: 20
   provenance:
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: team
   label: Team
   default: 20
   provenance:
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: methodology
   label: Method/program
   default: 10
   provenance:
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: compliance
   label: Compliance
   default: 10
   provenance:
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
-evaluation_note: Compare equal tree counts, access, reports/visits, investigations, risk assumptions, options
-  and resolved departures.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
+evaluation_note: Compare equal tree counts, access, reports/visits, investigations, risk assumptions, options and 
+  resolved departures.
 project_rows:
 - key: procurement
   text: '{procurement_route}; later stages and novation require separate appointment.'
@@ -84,12 +84,12 @@ project_rows:
     ref: arborist#22
   - kind: client_decision
     ref: arborist#30
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Procurement
   replace: true
 - key: tree_basis
-  text: Confirm survey/DWG revision, IDs/count/ownership, inaccessible trees, works/access/laydown footprints,
+  text: Confirm survey/DWG revision, IDs/count/ownership, inaccessible trees, works/access/laydown footprints, 
     services, current controls/editions and permission owner.
   provenance:
   - kind: evidence
@@ -98,12 +98,12 @@ project_rows:
     ref: arborist#21,23
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Tree basis
 role:
 - key: adviser
-  text: Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent
+  text: Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent 
     tree-work contractor executes pruning/removal/protection. Advice grants no permission, survival or future-safety
     guarantee; escalate urgent concerns.
   provenance:
@@ -113,12 +113,12 @@ role:
     ref: arborist#21,26,27
   - kind: client_decision
     ref: arborist#29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: records
-  text: Coordinate survey, landscape, civil, structure and utilities; retain their design duties. Revision-controlled
-    PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred basis, access
-    limits, recipients and reliance.
+  text: Coordinate survey, landscape, civil, structure and utilities; retain their design duties. 
+    Revision-controlled PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred
+    basis, access limits, recipients and reliance.
   provenance:
   - kind: evidence
     ref: arborist#7,9
@@ -126,28 +126,36 @@ role:
     ref: arborist#22,23,24,27
   - kind: client_decision
     ref: arborist#28,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 stage_intro: Written instruction/agreed inputs to named output/response end. Price once across stages and positions;
   options need written activation.
 boundary:
 - when:
   - work_type:
     - advisory
-  start: s1_inventory
+  start: brief_concept
   end: s7_advisory
-- start: s1_inventory
-  end: s3_protection
+- start: brief_concept
+  end: planning
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true
 stages:
-- key: s1_inventory
-  name: S1 Inventory / condition
+- key: brief_concept
+  name: Brief and concept
   lines:
-  - {key: inspect_scheduled_trees, text: "Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests"}
-  - {key: no_impact_report, text: "No impact report"}
+  - {key: inspect_scheduled_trees, text: 'Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement
+      basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests'}
+  - {key: no_impact_report, text: No impact report}
+  - {key: retention_footprint_access, text: Retention and footprint/access/services alternatives, when: [{flag: [
+            arborist_tree_impacts], flag_all: [arborist_impact_report]}], if_unknown: ask}
+  - {key: impact_report_design, text: 'impact report by design revision, per-tree/cumulative encroachment, pruning/removal
+      reasons and protection', when: [{flag: [arborist_tree_impacts], flag_all: [arborist_impact_report]}], 
+      if_unknown: ask}
+  - {key: application_responses_named, text: application responses to named milestone, when: [{flag: [
+            arborist_tree_impacts], flag_all: [arborist_impact_report]}], if_unknown: ask}
   fee_basis: fixed
-  shown_when: Selected service within appointment
+  shown_when: Always
   provenance:
   - kind: evidence
     ref: arborist#1,2,3,5,7
@@ -155,37 +163,22 @@ stages:
     ref: arborist#21,23
   - kind: client_decision
     ref: arborist#28
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
-- key: s2_impact
-  name: S2 Concept / impact
-  lines:
-  - {key: retention_footprint_access, text: "Retention and footprint/access/services alternatives"}
-  - {key: impact_report_design, text: "impact report by design revision, per-tree/cumulative encroachment, pruning/removal reasons and protection"}
-  - {key: application_responses_named, text: "application responses to named milestone"}
-  fee_basis: fixed
-  shown_when: Selected service within appointment
-  provenance:
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   - kind: evidence
     ref: arborist#1,2,3,7
   - kind: seed
     ref: arborist#22
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
-  when:
-  - flag:
-    - arborist_tree_impacts
-  if_unknown: ask
-  default: option
-  include_when:
-  - flag:
-    - arborist_impact_report
-- key: s3_protection
-  name: S3 Consent / protection
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
+  delivery_stage: brief_concept
+- key: planning
+  name: Planning
   lines:
-  - {key: conditions_review_coordinated, text: "Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions"}
+  - {key: conditions_review_coordinated, text: "Conditions review and coordinated plan/method: fencing, ground protection,
+      access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions"}
   fee_basis: fixed
   shown_when: Selected service within appointment
   provenance:
@@ -195,8 +188,8 @@ stages:
     ref: arborist#21,22,23,24
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   when:
   - flag:
     - arborist_tree_impacts
@@ -205,8 +198,9 @@ stages:
   include_when:
   - flag:
     - arborist_protection_plan
-- key: s4_tender
-  name: S4 Tender / contractor design
+  delivery_stage: planning
+- key: tender_documentation
+  name: Tender documentation
   lines:
   - {key: protection_specs_hold, text: "Protection specs, hold points/responsibilities and counted RFIs"}
   - {key: d_c_design, text: "D&C design intent versus contractor methods/detailed advice"}
@@ -218,18 +212,20 @@ stages:
     ref: arborist#22,23,24
   - kind: client_decision
     ref: arborist#29,30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   when:
   - flag:
     - arborist_tree_impacts
   if_unknown: ask
   default: option
-- key: s5_construction
-  name: S5 Construction / completion
+  delivery_stage: tender_documentation
+- key: delivery
+  name: Delivery
   lines:
   - {key: scheduled_protection_installation, text: "Scheduled protection-installation/excavation/pruning/root-zone visits"}
-  - {key: observations_departures_latent, text: "observations/departures, latent conditions and qualified completion statement/unresolved items"}
+  - {key: observations_departures_latent, text: "observations/departures, latent conditions and qualified completion statement/unresolved
+      items"}
   - {key: no_continuous_supervision, text: "No continuous supervision or unseen-work certification"}
   fee_basis: option
   shown_when: Selected service within appointment
@@ -238,17 +234,19 @@ stages:
     ref: arborist#22,23,26
   - kind: client_decision
     ref: arborist#28,29,30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   when:
   - flag:
     - arborist_tree_impacts
   if_unknown: ask
   default: option
+  delivery_stage: delivery
 - key: s6_investigation
-  name: S6a Specialist investigation
+  name: Specialist investigation
   lines:
-  - {key: question_trees_samples, text: "Question, trees/samples, aerial/internal/root/soil method, specialists/equipment, access/permits, locating/reinstatement"}
+  - {key: question_trees_samples, text: "Question, trees/samples, aerial/internal/root/soil method, specialists/equipment,
+      access/permits, locating/reinstatement"}
   - {key: written_authority_before, text: "written authority before intrusive work"}
   fee_basis: option
   shown_when: Selected service within appointment
@@ -259,13 +257,14 @@ stages:
     ref: arborist#26
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   default: option
 - key: s6_risk
-  name: S6b Formal risk assessment
+  name: Formal risk assessment
   lines:
-  - {key: formal_risk_question, text: "Formal risk question/method, trees/targets, access/testing limits, evidence cutoff/action priorities"}
+  - {key: formal_risk_question, text: "Formal risk question/method, trees/targets, access/testing limits, evidence cutoff/action
+      priorities"}
   - {key: visual_condition_inspection, text: "Visual condition inspection does not buy formal risk"}
   fee_basis: option
   shown_when: Selected service within appointment
@@ -276,11 +275,11 @@ stages:
     ref: arborist#27
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   default: option
 - key: s7_advisory
-  name: S7a Advisory / remediation
+  name: Advisory / remediation
   lines:
   - {key: feasibility_condition_remediation, text: "Feasibility/condition/remediation decision, cutoff/reliance, confidence/options/actions"}
   - {key: preserve_evidence_before, text: "preserve evidence before root attribution"}
@@ -292,16 +291,17 @@ stages:
     ref: arborist#25,26,27
   - kind: client_decision
     ref: arborist#30
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   default: option
   include_when:
   - work_type:
     - advisory
 - key: s7_monitoring
-  name: S7b Ongoing monitoring
+  name: Ongoing monitoring
   lines:
-  - {key: repeat_inspection_duration, text: "Repeat-inspection duration/visits/triggers, responsible party and report/closure criteria"}
+  - {key: repeat_inspection_duration, text: "Repeat-inspection duration/visits/triggers, responsible party and report/closure
+      criteria"}
   - {key: no_indefinite_obligation, text: "no indefinite obligation"}
   fee_basis: option
   shown_when: Selected service within appointment
@@ -310,13 +310,14 @@ stages:
     ref: arborist#22,23,27
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   default: option
 - key: s7_peer
-  name: S7c Independent peer review
+  name: Independent peer review
   lines:
-  - {key: independent_review_named, text: "Independent review of named report/question, cutoff/reliance, method/response round"}
+  - {key: independent_review_named, text: "Independent review of named report/question, cutoff/reliance, method/response
+      round"}
   - {key: advisory_does_not, text: "advisory does not appoint peer review"}
   fee_basis: option
   shown_when: Selected service within appointment
@@ -325,13 +326,13 @@ stages:
     ref: arborist#27
   - kind: client_decision
     ref: arborist#28,30
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   default: option
-durations: R7 sets input/access owners/dates, fieldwork, draft/review/final outputs, authority dependencies, hold-point
-  notice and final response date.
-allowances_note: Allocate counts by service/stage; each quantity needs its own unit/duration. Complete or authorise
-  priced assumptions with owner/date/consequence/review point. Fixed fee, time ceiling or unit rate/quantity;
+durations: R7 sets input/access owners/dates, fieldwork, draft/review/final outputs, authority dependencies, 
+  hold-point notice and final response date.
+allowances_note: Allocate counts by service/stage; each quantity needs its own unit/duration. Complete or authorise 
+  priced assumptions with owner/date/consequence/review point. Fixed fee, time ceiling or unit rate/quantity; 
   options/dependencies separate.
 allowances:
 - key: coverage
@@ -343,8 +344,8 @@ allowances:
     ref: arborist#23
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Tree coverage
   owner: client
 - key: reports
@@ -354,8 +355,8 @@ allowances:
     ref: arborist#1,7,8
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Reports / rounds
   owner: client
 - key: investigations
@@ -368,8 +369,8 @@ allowances:
     ref: arborist#26,27
   - kind: client_decision
     ref: arborist#28,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Investigation / risk
   owner: client
 - key: visits
@@ -379,8 +380,8 @@ allowances:
     ref: arborist#22,23
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Works / monitoring
   owner: client
 - key: period
@@ -390,13 +391,13 @@ allowances:
     ref: arborist#8,12,13,17
   - kind: client_decision
     ref: arborist#31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   label: Period / extras
   owner: client
 positions:
 - key: inventory
-  stage: [s1_inventory]
+  stage: [brief_concept]
   group: Tree evidence and impacts
   label: Onsite tree survey/condition assessment; method, date and uncertainty stated
   kind: technical
@@ -406,10 +407,10 @@ positions:
     ref: arborist#21,22,23
   - kind: client_decision
     ref: arborist#28,30
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: offsite
-  stage: [s1_inventory]
+  stage: [brief_concept]
   group: Tree evidence and impacts
   label: Neighbour/street trees; ownership, referrals and access limits; inaccessible trees retained with confidence
     limits
@@ -427,14 +428,14 @@ positions:
     ref: arborist#21,23
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   when:
   - flag:
     - arborist_offsite_trees
   if_unknown: ask
 - key: heritage
-  stage: [s2_impact, s1_inventory]
+  stage: [brief_concept]
   group: Tree evidence and impacts
   label: Significant/heritage tree controls and referrals; confirm current authority and permission owner
   kind: technical
@@ -454,17 +455,15 @@ positions:
     ref: arborist#29
     why: Confirm current controls without treating advice as permission.
 - key: impacts
-  stage: [s2_impact, s3_protection]
+  stage: [brief_concept, planning]
   group: Tree evidence and impacts
-  label: Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure
-    design, surveyor locations
+  label: Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; 
+    civil/structure design, surveyor locations
   kind: technical
   value:
     value: I
-    when:
-    - stage_included:
-      - s2_impact
-      - s3_protection
+    when: [{stage_included: [brief_concept], flag: [arborist_tree_impacts], flag_all: [arborist_impact_report]}, 
+          stage_included: [planning]]
     else: O
   provenance:
   - kind: evidence
@@ -473,16 +472,16 @@ positions:
     ref: arborist#21,22,23,24,25,26
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   if_unknown: ask
   when:
   - flag:
     - arborist_tree_impacts
 - key: pruning
-  stage: [s2_impact, s1_inventory]
+  stage: [brief_concept]
   group: Recommendations and protection
-  label: Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor
+  label: Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor 
     executes/disposes/reinstates
   kind: technical
   value:
@@ -496,27 +495,25 @@ positions:
     ref: arborist#2,4,7,13,18,19,20
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   if_unknown: ask
 - key: supervision
-  stage: [s5_construction, s7_monitoring]
+  stage: [delivery, s7_monitoring]
   group: Recommendations and protection
   label: Tree works/protection supervision at scheduled visits/hold points
   kind: technical
   value:
     value: I
-    when:
-    - stage_included:
-      - s5_construction
+    when: [stage_included: [delivery]]
     else: O
   provenance:
   - kind: evidence
     ref: arborist#2,4,7,13,18,19,20
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: landscape
   group: Specialist investigations and others
   label: Replacement planting / landscape design
@@ -529,8 +526,8 @@ positions:
     ref: arborist#21,24
   - kind: client_decision
     ref: arborist#29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   responsible: landscape architect
 - key: specialists
   group: Specialist investigations and others
@@ -544,14 +541,14 @@ positions:
     ref: arborist#21,24
   - kind: client_decision
     ref: arborist#29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   responsible: appointed ecology, bushfire and heritage specialists
 - key: existing
-  stage: [s1_inventory]
+  stage: [brief_concept]
   group: Tree evidence and impacts
-  label: Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3
-    plan separate; investigate before root attribution, structure/geotech diagnose
+  label: Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3 plan 
+    separate; investigate before root attribution, structure/geotech diagnose
   kind: technical
   value:
     value: I
@@ -570,8 +567,8 @@ positions:
     ref: arborist#25,26,27
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   if_unknown: ask
 - key: investigation
   stage: [s6_investigation]
@@ -591,8 +588,8 @@ positions:
     ref: arborist#26
   - kind: client_decision
     ref: arborist#28,29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: risk
   stage: [s6_risk]
   group: Specialist investigations and others
@@ -611,8 +608,8 @@ positions:
     ref: arborist#27
   - kind: client_decision
     ref: arborist#28
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 - key: monitoring
   stage: [s7_monitoring]
   group: Recommendations and protection
@@ -629,44 +626,44 @@ positions:
     ref: arborist#22,23,27
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 terms:
 - key: agreement
-  text: Attached {field:agreement}, agreed fees/scope, numbered addenda and written acceptance govern; settle
+  text: Attached {field:agreement}, agreed fees/scope, numbered addenda and written acceptance govern; settle 
     precedence. RFP does not authorise work; no automatic supplier terms, guarantees or asset security.
   provenance:
   - kind: evidence
     ref: arborist#10,11,14,18
   - kind: client_decision
     ref: arborist#30,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: authority
-  text: Before extra scope/ceiling overrun or rate/fee/program change, obtain representative written authority
-    with reason, scope, basis and time effect; agree delay/aborted-visit/remobilisation consequences.
+  text: Before extra scope/ceiling overrun or rate/fee/program change, obtain representative written authority with 
+    reason, scope, basis and time effect; agree delay/aborted-visit/remobilisation consequences.
   provenance:
   - kind: evidence
     ref: arborist#8,12,13,17
   - kind: client_decision
     ref: arborist#31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: baseline
-  text: Signed brief/revisions set baseline; agreed coordination, rounds, routine administration and normal development
-    included. Distinguish clarification from changed design/evidence.
+  text: Signed brief/revisions set baseline; agreed coordination, rounds, routine administration and normal 
+    development included. Distinguish clarification from changed design/evidence.
   provenance:
   - kind: evidence
     ref: arborist#8,12
   - kind: client_decision
     ref: arborist#31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: errors
-  text: Correct own errors without extra fee; reasonable professional skill/care within competence. Evidence limits
+  text: Correct own errors without extra fee; reasonable professional skill/care within competence. Evidence limits 
     do not negate agreed duties.
   provenance:
   - kind: evidence
@@ -675,55 +672,54 @@ terms:
     ref: arborist#27
   - kind: client_decision
     ref: arborist#31,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: payment
-  text: Payment {field:payment_days} days after correct invoice for agreed services; state milestones/GST. Declare
+  text: Payment {field:payment_days} days after correct invoice for agreed services; state milestones/GST. Declare 
     deposits, report-release restrictions, interest, recovery, security and suspension departures.
   provenance:
   - kind: evidence
     ref: arborist#6,10,12,14,17
   - kind: client_decision
     ref: arborist#31,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: rates
-  text: State rates/fixed period and all third-party/travel/access costs; agree changes before work. Historical
+  text: State rates/fixed period and all third-party/travel/access costs; agree changes before work. Historical 
     prices are not the budget.
   provenance:
   - kind: evidence
     ref: arborist#6,8,12
   - kind: client_decision
     ref: arborist#31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: validity
-  text: Proposal valid {field:validity_days} days from closing. Set project insurance and agreement choices before
+  text: Proposal valid {field:validity_days} days from closing. Set project insurance and agreement choices before 
     appointment.
   provenance:
   - kind: evidence
     ref: arborist#10
   - kind: client_decision
     ref: arborist#31,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: questions
-  text: Issue numbered addenda to all tenderers, acknowledged
-    in proposal.
+  text: Issue numbered addenda to all tenderers, acknowledged in proposal.
   provenance:
   - kind: client_decision
     ref: arborist#30,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: rights
-  text: Agree project/team/authority/operator use, third-party reliance, native files/retention/handover and confidentiality;
-    marketing needs consent. Resolve IP, caps/indemnities, law/disputes, assignment/novation and notice/cure/suspension/termination
-    in agreement.
+  text: Agree project/team/authority/operator use, third-party reliance, native files/retention/handover and 
+    confidentiality; marketing needs consent. Resolve IP, caps/indemnities, law/disputes, assignment/novation and 
+    notice/cure/suspension/termination in agreement.
   provenance:
   - kind: evidence
     ref: arborist#11,14,15,16,17,18
@@ -731,23 +727,24 @@ terms:
     ref: arborist#27
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
 returnable_notes:
 - key: r1
-  text: Price selected stages/services by quantity/basis, ex GST/GST/total; separate base/options/alternatives/dependencies,
-    price once. State milestones/validity, acknowledge addenda and authorised signatory.
+  text: Price selected stages/services by quantity/basis, ex GST/GST/total; separate 
+    base/options/alternatives/dependencies, price once. State milestones/validity, acknowledge addenda and 
+    authorised signatory.
   provenance:
   - kind: evidence
     ref: arborist#6,8,10,12
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r2
-  text: 'Reports, IDs/registers, plans/CAD, calculations, methods and inspection/completion records: purpose/extent,
-    revisions, formats, recipients/reliance, rounds and dates.'
+  text: 'Reports, IDs/registers, plans/CAD, calculations, methods and inspection/completion records: purpose/extent, revisions,
+    formats, recipients/reliance, rounds and dates.'
   provenance:
   - kind: evidence
     ref: arborist#1,2,3,4,7,9
@@ -755,12 +752,12 @@ returnable_notes:
     ref: arborist#22,23,27
   - kind: client_decision
     ref: arborist#28,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r3
-  text: Role/additional tree/visit/revision/investigation rates; meetings/responses/visits/durations/hold points/rounds
-    and monitoring limits; travel/callout/cancellation and approval before overruns.
+  text: Role/additional tree/visit/revision/investigation rates; meetings/responses/visits/durations/hold 
+    points/rounds and monitoring limits; travel/callout/cancellation and approval before overruns.
   provenance:
   - kind: evidence
     ref: arborist#3,8
@@ -768,11 +765,11 @@ returnable_notes:
     ref: arborist#23
   - kind: client_decision
     ref: arborist#30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r4
-  text: Lead/reviewer, stage resources, competence, investigators/subcontractors/conflicts and tree-contractor
+  text: Lead/reviewer, stage resources, competence, investigators/subcontractors/conflicts and tree-contractor 
     affiliations; permission/survey/landscape/civil/structure/utilities interfaces; substitutions and ISO/equivalent
     QA.
   provenance:
@@ -782,19 +779,19 @@ returnable_notes:
     ref: arborist#21,22,23,24,26
   - kind: client_decision
     ref: arborist#29,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r5
-  text: Two or three comparable tree/works constraints, ownership/access, investigations and construction interfaces;
-    named personnel roles, outputs, lessons and referees.
+  text: Two or three comparable tree/works constraints, ownership/access, investigations and construction 
+    interfaces; named personnel roles, outputs, lessons and referees.
   provenance:
   - kind: seed
     ref: arborist#21,22,23,24,25,26,27
   - kind: client_decision
     ref: arborist#28,29,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r6
   text: 'Sections 2–5 and agreement departures: reason, alternative, fee/time and decision or nil; unknown/conflicting
@@ -804,12 +801,13 @@ returnable_notes:
     ref: arborist#10,11,12,13,14,15,16,17,18
   - kind: client_decision
     ref: arborist#29,30,31,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r7
-  text: Input/access providers/dates, stage resources and field/draft/review/final milestones; authority dependencies/hold-point
-    notice. Survey reconciliation, calculation/risk/test methods/limits, urgent escalation and condition closure.
+  text: Input/access providers/dates, stage resources and field/draft/review/final milestones; authority 
+    dependencies/hold-point notice. Survey reconciliation, calculation/risk/test methods/limits, urgent escalation 
+    and condition closure.
   provenance:
   - kind: evidence
     ref: arborist#9,13,18
@@ -817,19 +815,20 @@ returnable_notes:
     ref: arborist#21,22,23,24,25,26,27
   - kind: client_decision
     ref: arborist#28,29,30,31
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r8
-  text: Current PI {field:pi}; PL {field:pl}; workers cover and required duration. Declare activity/height exclusions
-    and renewals; match offered consulting/investigation; agreement/precedence acceptance or numbered departures.
+  text: Current PI {field:pi}; PL {field:pl}; workers cover and required duration. Declare activity/height 
+    exclusions and renewals; match offered consulting/investigation; agreement/precedence acceptance or numbered 
+    departures.
   provenance:
   - kind: evidence
     ref: arborist#10,11,12,13,14,15,16,17,18,19,20
   - kind: client_decision
     ref: arborist#32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true
 - key: r9
   text: 'Travel/access/permits, survey/locating, testing/lab/equipment, traffic controls, tree contractors/reinstatement
@@ -841,6 +840,6 @@ returnable_notes:
     ref: arborist#23,25,26
   - kind: client_decision
     ref: arborist#29,30,31,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope
-      or current requirements.
+    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
+      current requirements.
   replace: true

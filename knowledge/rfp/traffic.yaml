@@ -12,11 +12,15 @@ heading: "REQUEST FOR PROPOSAL: TRAFFIC AND PARKING SERVICES"
 golden: docs/rfp-golden/traffic/rfp.md
 discipline_ids: [consultant.traffic]
 title_aliases: [traffic, transport, parking]
-evidence_limit: "All three golden proposals priced one DA traffic report for a warehouse. Later stages appear in the golden set only as exclusions; their scope comes from practice."
+evidence_limit: "All three golden proposals priced one DA traffic report for a warehouse. Later stages appear in the golden
+  set only as exclusions; their scope comes from practice."
 
 thresholds:
-  - {key: traffic_scale, kind: client_default, text: "Heavy vehicles, a state road or a TfNSW referral suggest complex service levels", source: "golden traffic draft v1 scale rule", verified: false}
-  - {key: tfnsw_referral, kind: statutory, text: "Traffic-generating development referred to TfNSW", source: "State Environmental Planning Policy (Transport and Infrastructure) 2021 schedule; not verified against the instrument", verified: false}
+  - {key: traffic_scale, kind: client_default, text: "Heavy vehicles, a state road or a TfNSW referral suggest complex
+      service levels", source: "golden traffic draft v1 scale rule", verified: false}
+  - {key: tfnsw_referral, kind: statutory, text: "Traffic-generating development referred to TfNSW", source: "State Environmental
+      Planning Policy (Transport and Infrastructure) 2021 schedule; not verified against the instrument", verified: 
+      false}
 
 field_defaults:
   pi: "$5 million"
@@ -24,19 +28,25 @@ field_defaults:
 unsupported_pathways: [planning_proposal]
 
 scale:
-  text: "Service levels are suggested complex when the use generates heavy vehicles, the site fronts or affects a state road, or the development is referred to TfNSW."
+  text: "Service levels are suggested complex when the use generates heavy vehicles, the site fronts or affects a state
+    road, or the development is referred to TfNSW."
   complex:
     - {flag: [heavy_vehicles]}
     - {flag: [state_road]}
     - {flag: [tfnsw_referral]}
 
 project_rows:
-  - {key: assessment_quantities, label: Design vehicle, text: "{field:design_vehicle}", required: true, provenance: [{kind: evidence, ref: "traffic#B p1"}, {kind: client_decision, ref: "skeleton changes log 2026-10-09", why: "BG&E used a different GFA from the other firms; the project table is the single source consultants price from."}]}
-  - {key: controls, label: Controls, text: "{field:lga} DCP parking rates · {pathway}", provenance: [{kind: evidence, ref: "traffic#V p1"}]}
+  - {key: assessment_quantities, label: Design vehicle, text: "{field:design_vehicle}", required: true, provenance: [
+       {kind: evidence, ref: "traffic#B p1"}, {kind: client_decision, ref: "skeleton changes log 2026-10-09", why: "BG&E
+            used a different GFA from the other firms; the project table is the single source consultants price from."}]}
+  - {key: controls, label: Controls, text: "{field:lga} DCP parking rates · {pathway}", provenance: [{kind: evidence,
+          ref: "traffic#V p1"}]}
 
 role:
   - key: engineer
-    text: "Traffic engineer for the applicant. You advise the design team on access, parking and circulation while the design develops, and prepare the traffic report the consent authority needs. Plans come from the architect in DWG and PDF."
+    text: "Traffic engineer for the applicant. You advise the design team on access, parking and circulation while the
+      design develops, and prepare the traffic report the consent authority needs. Plans come from the architect in DWG
+      and PDF."
     provenance: [{kind: evidence, ref: "traffic#8"}]
 
 stage_intro: "Price each stage that applies as a lump sum; surveys are priced per location."
@@ -44,181 +54,189 @@ stage_intro: "Price each stage that applies as a lump sum; surveys are priced pe
 scope_by_stage: true
 
 boundary:
-  - {when: [{pathway: [advice_only, exempt]}, {work_type: [advisory]}], start: design_advice, end: design_advice}
-  - {start: design_advice, end: travel_plan}
+  - {when: [pathway: [advice_only, exempt], work_type: [advisory]], start: brief_concept, end: brief_concept}
+  - {start: brief_concept, end: delivery}
 
 stages:
-  - key: design_advice
-    name: Parking and access advice
+  - key: brief_concept
+    name: Brief and concept
     items: [vehicle_schedule]
     lines:
       - {key: site_inspection, text: "Site inspection"}
       - {key: review_plans_controls, text: "review of plans and controls"}
       - {key: advice_access_heavy, text: "advice on access, heavy vehicle circulation, loading and parking layout"}
     fee_basis: fixed
-    delivery_stage: concept_design
+    delivery_stage: brief_concept
     shown_when: Always
     provenance: [{kind: evidence, ref: "traffic#1-7"}]
-  - key: surveys
-    name: Surveys
+  - key: planning
+    name: Planning
     lines:
-      - {key: turning_movement_counts, text: "Turning movement counts at {allowance:survey_locations} location(s) in peak periods representative of the use"}
-      - {key: parking_occupancy_driveway, text: "parking occupancy and driveway counts where the brief needs them"}
-    fee_basis: per_unit
-    delivery_stage: approval_documentation
-    when: [{flag: [intersection_modelling]}]
-    if_unknown: option
-    assumption: "Price per location as an option: counts are needed only if intersection modelling is required."
-    shown_when: Intersection modelling required
-    provenance: [{kind: evidence, ref: "traffic#9-11"}]
-  - key: modelling
-    name: Intersection modelling
-    lines:
-      - {key: sidra_models_location, text: "SIDRA models at {allowance:sidra_locations} location(s) for the existing and proposed scenarios"}
-      - {key: model_files_issued, text: "model files issued"}
+      - {key: turning_movement_counts, text: 'Turning movement counts at {allowance:survey_locations} location(s) in peak
+          periods representative of the use', when: [flag: [intersection_modelling]], if_unknown: include}
+      - {key: parking_occupancy_driveway, text: parking occupancy and driveway counts where the brief needs them, 
+          when: [flag: [intersection_modelling]], if_unknown: include}
+      - {key: sidra_models_location, text: 'SIDRA models at {allowance:sidra_locations} location(s) for the existing and
+          proposed scenarios', when: [flag: [intersection_modelling]], if_unknown: include}
+      - {key: model_files_issued, text: model files issued, when: [flag: [intersection_modelling]], if_unknown: 
+          include}
+      - {key: traffic_generation_distribution, text: Traffic generation and distribution, when: [pathway: [cdc, da, 
+                    ssd, planning_permit, ref, modification]], if_unknown: ask}
+      - {key: network_impact_using, text: network impact (using the modelling stage where it applies), when: [
+                pathway: [cdc, da, ssd, planning_permit, ref, modification]], if_unknown: ask}
+      - {key: parking_provision_against, text: parking provision against the DCP and demand, when: [pathway: [cdc, 
+                    da, ssd, planning_permit, ref, modification]], if_unknown: ask}
+      - {key: access_as_2890, text: access and AS 2890 compliance, when: [pathway: [cdc, da, ssd, planning_permit, 
+                    ref, modification]], if_unknown: ask}
+      - {key: swept_paths_design, text: swept paths for the design vehicle, when: [pathway: [cdc, da, ssd, 
+                    planning_permit, ref, modification]], if_unknown: ask}
+      - {key: pedestrian_cyclist_end, text: 'pedestrian, cyclist and end-of-trip review', when: [pathway: [cdc, da, 
+                    ssd, planning_permit, ref, modification]], if_unknown: ask}
+      - {key: safety_1_draft, text: 'safety. 1 draft, 1 final', when: [pathway: [cdc, da, ssd, planning_permit, ref, 
+                    modification]], if_unknown: ask}
+      - {key: response_s_council, text: 'Up to {allowance:authority_responses} response(s) to council or TfNSW requests',
+        when: [pathway: [da, ssd, planning_permit, modification]], if_unknown: ask}
+      - {key: meeting_s, text: '{allowance:authority_meetings} meeting(s)', when: [pathway: [da, ssd, 
+                    planning_permit, modification]], if_unknown: ask}
+      - {key: review_traffic_conditions, text: Review of the traffic conditions in the consent, when: [pathway: [da, 
+                    ssd, planning_permit, modification]], if_unknown: ask}
+      - {key: reply_letter_if, text: reply letter if needed, when: [pathway: [da, ssd, planning_permit, modification]],
+        if_unknown: ask}
     fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{flag: [intersection_modelling]}]
-    if_unknown: option
-    assumption: "Price as an option: modelling is needed only if the authority or the brief requires it."
-    shown_when: Intersection modelling required
-    provenance: [{kind: evidence, ref: "traffic#13"}]
-  - key: report
-    name: Traffic and parking report
+    when: [flag: [intersection_modelling], pathway: [cdc, da, ssd, planning_permit, ref, modification], pathway: [da,
+            ssd, planning_permit, modification]]
+    shown_when: Intersection modelling required; or An application is lodged; or DA, SSD, permit or modification; 
+      priced to the allowances; or A consent is expected
+    provenance:
+      - {kind: evidence, ref: "traffic#9-11"}
+      - {kind: evidence, ref: "traffic#13"}
+      - {kind: evidence, ref: "traffic#12-28"}
+      - {kind: evidence, ref: "traffic#32-33"}
+      - {kind: evidence, ref: "traffic#34"}
+    delivery_stage: planning
+  - key: design_development
+    name: Design development
     lines:
-      - {key: traffic_generation_distribution, text: "Traffic generation and distribution"}
-      - {key: network_impact_using, text: "network impact (using the modelling stage where it applies)"}
-      - {key: parking_provision_against, text: "parking provision against the DCP and demand"}
-      - {key: access_as_2890, text: "access and AS 2890 compliance"}
-      - {key: swept_paths_design, text: "swept paths for the design vehicle"}
-      - {key: pedestrian_cyclist_end, text: "pedestrian, cyclist and end-of-trip review"}
-      - {key: safety_1_draft, text: "safety. 1 draft, 1 final"}
+      - {key: ramps_parking_loading, text: 'Ramps, parking and loading checked against the consent conditions as the design
+          develops or the contractor changes it'}
+      - {key: signage_line_marking, text: signage and line-marking submissions to the local traffic committee}
+      - {key: travel_plan_meeting, text: Travel plan meeting the condition or DCP requirement, when: [flag: [
+                    gtp_required]], if_unknown: include}
     fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [cdc, da, ssd, planning_permit, ref, modification]}]
-    shown_when: An application is lodged
-    provenance: [{kind: evidence, ref: "traffic#12-28"}]
-  - key: assessment_response
-    name: Assessment response
+    shown_when: Always
+    provenance:
+      - {kind: practice, ref: "traffic-transport-guide.md DD and post-contract sections"}
+      - {kind: practice, ref: "peer-review-2026-10-09 traffic: green travel plan from a confirmed requirement"}
+    delivery_stage: design_development
+  - key: design_finalisation
+    name: Design finalisation
     lines:
-      - {key: response_s_council, text: "Up to {allowance:authority_responses} response(s) to council or TfNSW requests"}
-      - {key: meeting_s, text: "{allowance:authority_meetings} meeting(s)"}
+      - {key: construction_traffic_management, text: "Construction traffic management plan for council approval, or review
+          of the contractor's plan (say which in R2)"}
+      - {key: traffic_control_plans, text: "traffic control plans"}
     fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd, planning_permit, modification]}]
-    shown_when: DA, SSD, permit or modification; priced to the allowances
-    provenance: [{kind: evidence, ref: "traffic#32-33"}]
-  - key: conditions_review
-    name: Conditions review
-    lines:
-      - {key: review_traffic_conditions, text: "Review of the traffic conditions in the consent"}
-      - {key: reply_letter_if, text: "reply letter if needed"}
-    fee_basis: fixed
-    delivery_stage: approval_documentation
-    when: [{pathway: [da, ssd, planning_permit, modification]}]
-    shown_when: A consent is expected
-    provenance: [{kind: evidence, ref: "traffic#34"}]
-  - key: design_review
-    name: Review of the developed design
-    lines:
-      - {key: ramps_parking_loading, text: "Ramps, parking and loading checked against the consent conditions as the design develops or the contractor changes it"}
-      - {key: signage_line_marking, text: "signage and line-marking submissions to the local traffic committee"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
+    delivery_stage: design_finalisation
     default: option
-    shown_when: Client opts in
-    provenance: [{kind: practice, ref: "traffic-transport-guide.md DD and post-contract sections"}]
-  - key: car_park_certification
-    name: Car park certification
+    include_when: [scale: [complex]]
+    shown_when: Client opts in; included for complex sites
+    provenance: [{kind: practice, ref: "traffic#36 (excluded by all three firms); traffic-transport-guide.md tender section"}]
+  - key: delivery
+    name: Delivery
     lines:
-      - {key: design_certification_car, text: "Design certification of the car park, access and loading against AS 2890 for the construction certificate"}
+      - {key: design_certification_car, text: "Design certification of the car park, access and loading against AS 2890
+          for the construction certificate"}
       - {key: completed_car_park, text: "completed car park certification after construction"}
     fee_basis: fixed
-    delivery_stage: construction_documentation
+    delivery_stage: delivery
     default: option
     shown_when: Client opts in
     provenance: [{kind: practice, ref: "traffic#35 (excluded by all three firms); traffic-transport-guide.md completion"}]
-  - key: ctmp
-    name: Construction traffic management plan
-    lines:
-      - {key: construction_traffic_management, text: "Construction traffic management plan for council approval, or review of the contractor's plan (say which in R2)"}
-      - {key: traffic_control_plans, text: "traffic control plans"}
-    fee_basis: fixed
-    delivery_stage: construction_stage_inspections
-    default: option
-    include_when: [{scale: [complex]}]
-    shown_when: Client opts in; included for complex sites
-    provenance: [{kind: practice, ref: "traffic#36 (excluded by all three firms); traffic-transport-guide.md tender section"}]
-  - key: travel_plan
-    name: Green travel plan
-    lines:
-      - {key: travel_plan_meeting, text: "Travel plan meeting the condition or DCP requirement"}
-    fee_basis: fixed
-    delivery_stage: construction_documentation
-    when: [{flag: [gtp_required]}]
-    if_unknown: option
-    assumption: "Price as an option: needed only if a consent condition or the DCP requires a travel plan."
-    shown_when: A condition or the DCP requires it
-    provenance: [{kind: practice, ref: "peer-review-2026-10-09 traffic: green travel plan from a confirmed requirement"}]
-
 allowances:
-  - {key: survey_locations, label: Survey locations, text: "{n}", owner: client, when: [{stage: [surveys]}], provenance: [{kind: evidence, ref: "traffic#9"}]}
-  - {key: sidra_locations, label: Modelled intersections, text: "{n}", owner: client, when: [{stage: [modelling]}], provenance: [{kind: evidence, ref: "traffic#13"}]}
-  - {key: plan_revisions, label: Plan revisions assessed, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, ref: "traffic#29"}]}
-  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 final", default: "1", owner: client, provenance: [{kind: evidence, ref: "traffic#26"}]}
-  - {key: design_meetings, label: Design team meetings, text: "{n}, online", default: "3", owner: client, provenance: [{kind: evidence, ref: "traffic#7"}]}
-  - {key: site_inspections, label: Site inspections, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, ref: "traffic#3"}]}
-  - {key: authority_responses, label: Authority responses, text: "{n}", default: "1", owner: client, when: [{stage: [assessment_response]}], provenance: [{kind: evidence, ref: "traffic#32"}]}
-  - {key: authority_meetings, label: Authority meetings, text: "{n}", owner: client, when: [{stage: [assessment_response]}], provenance: [{kind: evidence, ref: "traffic#33"}]}
+  - {key: survey_locations, label: Survey locations, text: "{n}", owner: client, when: [{stage: [planning], flag: [
+                intersection_modelling]}], provenance: [{kind: evidence, ref: "traffic#9"}]}
+  - {key: sidra_locations, label: Modelled intersections, text: "{n}", owner: client, when: [{stage: [planning], 
+            flag: [intersection_modelling]}], provenance: [{kind: evidence, ref: "traffic#13"}]}
+  - {key: plan_revisions, label: Plan revisions assessed, text: "{n}", default: "1", owner: client, provenance: [{
+            kind: evidence, ref: "traffic#29"}]}
+  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 final", default: "1", owner: client, provenance: [
+       {kind: evidence, ref: "traffic#26"}]}
+  - {key: design_meetings, label: Design team meetings, text: "{n}, online", default: "3", owner: client, provenance: [
+       {kind: evidence, ref: "traffic#7"}]}
+  - {key: site_inspections, label: Site inspections, text: "{n}", default: "1", owner: client, provenance: [{kind: 
+            evidence, ref: "traffic#3"}]}
+  - {key: authority_responses, label: Authority responses, text: "{n}", default: "1", owner: client, when: [{stage: [
+            planning], pathway: [da, ssd, planning_permit, modification]}], provenance: [{kind: evidence, ref: "traffic#32"}]}
+  - {key: authority_meetings, label: Authority meetings, text: "{n}", owner: client, when: [{stage: [planning], 
+            pathway: [da, ssd, planning_permit, modification]}], provenance: [{kind: evidence, ref: "traffic#33"}]}
 
 positions:
   - key: vehicle_schedule
-    stage: [design_advice]
+    stage: [brief_concept]
     group: Transport access and parking
-    label: "Vehicle schedule (waste, emergency, service and operator vehicles); ramps, gradients, headroom, sight lines and pedestrian conflicts checked against the current architect and civil layouts"
+    label: "Vehicle schedule (waste, emergency, service and operator vehicles); ramps, gradients, headroom, sight lines
+      and pedestrian conflicts checked against the current architect and civil layouts"
     kind: technical
     value: I
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/traffic-transport-guide.md (evidence sweep, common failures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/industrial-construction-guide.md (operational brief)"}]
-  - {group: "Assessment and consultation", key: consultation, stage: [report], label: "Consultation with council traffic engineers and TfNSW while preparing the report", kind: technical, value: I, when: [{stage: [report]}], provenance: [{kind: evidence, ref: "traffic#27"}]}
-  - {group: "Transport access and parking", key: end_of_trip, stage: [report], label: "Bicycle parking and end-of-trip assessment", kind: technical, value: I, when: [{stage: [report]}], provenance: [{kind: evidence, ref: "traffic#22"}]}
-  - {group: "Transport access and parking", key: demand_reduction, stage: [report, design_advice], label: "Parking demand reduction measures", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "traffic#16"}]}
-  - {group: "Assessment and consultation", key: alternative_schemes, stage: [modelling, design_advice], label: "Alternative schemes tested", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "traffic#30"}]}
-  - {group: "Transport access and parking", key: swept_paths, stage: [report, design_advice], label: "Swept paths for every loading dock and design vehicle", kind: technical, value: I, provenance: [{kind: evidence, ref: "traffic#20"}]}
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/traffic-transport-guide.md (evidence sweep, common
+            failures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/industrial-construction-guide.md (operational
+            brief)"}]
+  - {group: "Assessment and consultation", key: consultation, stage: [planning], label: "Consultation with council traffic
+      engineers and TfNSW while preparing the report", kind: technical, value: I, when: [{stage: [planning], pathway: [
+            cdc, da, ssd, planning_permit, ref, modification]}], provenance: [{kind: evidence, ref: "traffic#27"}]}
+  - {group: "Transport access and parking", key: end_of_trip, stage: [planning], label: "Bicycle parking and end-of-trip
+      assessment", kind: technical, value: I, when: [{stage: [planning], pathway: [cdc, da, ssd, planning_permit, 
+                ref, modification]}], provenance: [{kind: evidence, ref: "traffic#22"}]}
+  - {group: "Transport access and parking", key: demand_reduction, stage: [planning, brief_concept], label: "Parking demand
+      reduction measures", kind: service_level, simple: O, complex: I, provenance: [{kind: evidence, ref: "traffic#16"}]}
+  - {group: "Assessment and consultation", key: alternative_schemes, stage: [planning, brief_concept], label: "Alternative
+      schemes tested", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "traffic#30"}]}
+  - {group: "Transport access and parking", key: swept_paths, stage: [planning, brief_concept], label: "Swept paths for
+      every loading dock and design vehicle", kind: technical, value: I, provenance: [{kind: evidence, ref: "traffic#20"}]}
   - key: microsimulation
-    stage: [modelling, report]
+    stage: [planning]
     group: Assessment and consultation
     label: "Microsimulation beyond SIDRA"
     kind: technical
-    value: {value: O, when: [{flag: [intersection_modelling]}], else: X}
+    value: {value: O, when: [flag: [intersection_modelling]], else: X}
     responsible: not_required
     if_unknown: option
     assumption: "Price as an option: needed only if the authority asks for network modelling beyond SIDRA."
     provenance: [{kind: practice, ref: "traffic golden draft v1 section 2"}]
   - key: road_safety_audit
-    stage: [design_review]
+    stage: [design_development]
     group: Independent and separate services
     label: "Road safety audit by an auditor independent of the design team; state its stage and scope in R2"
     kind: technical
-    value: {value: O, when: [{flag: [public_road]}], else: X}
+    value: {value: O, when: [flag: [public_road]], else: X}
     responsible: "independent road safety auditor"
     if_unknown: option
     assumption: "Price as an option: an audit is needed only for works in a public road."
     provenance: [{kind: practice, ref: "peer-review-2026-10-09 traffic: road safety audit independence"}]
-  - {group: "Independent and separate services", key: public_road_design, stage: [design_review], label: "Design of works in the public road (signals, intersections)", kind: technical, value: X, responsible: "civil engineer (separate engagement)", provenance: [{kind: practice, ref: "traffic golden draft v1 section 2"}]}
-  - {group: "Independent and separate services", key: court, stage: [conditions_review, assessment_response], label: "Expert witness, Land and Environment Court", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, ref: "traffic#37"}]}
-  - {group: "Independent and separate services", key: survey_costs, stage: [surveys], label: "Survey costs", kind: technical, value: I, when: [{stage: [surveys]}], provenance: [{kind: evidence, ref: "traffic#10"}, {kind: evidence, ref: "traffic#38"}]}
+  - {group: "Independent and separate services", key: public_road_design, stage: [design_development], label: "Design
+      of works in the public road (signals, intersections)", kind: technical, value: X, responsible: "civil engineer (separate
+      engagement)", provenance: [{kind: practice, ref: "traffic golden draft v1 section 2"}]}
+  - {group: "Independent and separate services", key: court, stage: [planning], label: "Expert witness, Land and Environment
+      Court", kind: technical, value: X, responsible: "client (separate engagement)", provenance: [{kind: evidence, 
+            ref: "traffic#37"}]}
+  - {group: "Independent and separate services", key: survey_costs, stage: [planning], label: "Survey costs", kind: 
+      technical, value: I, when: [{stage: [planning], flag: [intersection_modelling]}], provenance: [{kind: evidence,
+          ref: "traffic#10"}, {kind: evidence, ref: "traffic#38"}]}
 
 terms:
-  - {key: payment_hold, text: "No commencement payment; the final report is not held back pending payment.", provenance: [{kind: evidence, ref: "traffic#40-41"}]}
+  - {key: payment_hold, text: "No commencement payment; the final report is not held back pending payment.", 
+      provenance: [{kind: evidence, ref: "traffic#40-41"}]}
 
 returnables:
   r2: "Report, model files, swept path drawings and letters."
-  r3: "Roles: Director · Senior engineer · Traffic engineer · Graduate · CAD or graphics. Per-meeting rates if you use them."
+  r3: "Roles: Director · Senior engineer · Traffic engineer · Graduate · CAD or graphics. Per-meeting rates if you use
+    them."
   r4: "Credentials: CPEng or RPEQ, road safety auditor level, traffic control planner."
   r5: "Traffic reports for this use, in the same LGA or state road context."
   r8: "Conflict of interest statement."
   r9: "Included is preferred."
 returnable_notes:
-  - {key: r7, text: "Surveys need a period representative of the use.", when: [{stage: [surveys]}]}
+  - {key: r7, text: "Surveys need a period representative of the use.", when: [{stage: [planning], flag: [
+                intersection_modelling]}]}
 
-durations: "From the SiteWise program when it holds the stage; otherwise estimates: design advice runs alongside schematic design, surveys 2 weeks, report 3 weeks after surveys and final plans; assessment response from the program."
+durations: "From the SiteWise program when it holds the stage; otherwise estimates: design advice runs alongside schematic
+  design, surveys 2 weeks, report 3 weeks after surveys and final plans; assessment response from the program."

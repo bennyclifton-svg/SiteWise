@@ -21,7 +21,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Schematic design for planning approval |  | Included |  |
+| Schematic design |  | Included |  |
 |  | Review of information | Included |  |
 |  | Site visit | Included |  |
 |  | Survey and services gap analysis (BYDA, existing utilities plan) | Included |  |
@@ -52,7 +52,8 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Water management strategy (supply, reuse, effluent) | Included |  |
 |  | Civil safety in design report | Included |  |
 |  | Trunk drainage, external catchments, watercourse works | Included |  |
-| Detailed design for tender | You hold the civil design. | Included |  |
+| Tender documentation |  | Included |  |
+|  | You hold the civil design. | Included |  |
 |  | Design to the approved plans and consent conditions, complete enough to price as a lump sum | Included |  |
 |  | Specification | Included |  |
 |  | Design certificates | Included |  |
@@ -69,18 +70,10 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Authority asset approvals (specialist engineering assessment) | Excluded |  |
 |  | Road safety audit by an auditor independent of the design | Included |  |
 |  | Pre-tender estimate or bill of quantities | Excluded |  |
-| Final design for construction |  | Included |  |
+| Design finalisation | The contractor holds the design after novation. | Included |  |
 |  | Construction set | Included |  |
 |  | Construction certificate issue | Included |  |
-| Construction phase | Not part of this appointment | Excluded | — |
-| As-built and completion |  | Included |  |
-|  | Review of the surveyor's works-as-executed survey | Included |  |
-|  | As-built drawings | Included |  |
-|  | Detention system certification | Included |  |
-|  | Maintenance information | Included |  |
-|  | Support for title, covenant or public-asset handover where it applies | Included |  |
-|  | Final certificate | Included |  |
-|  | Operation and maintenance manual for stormwater devices | Included |  |
+| Delivery | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 |  | Locating services; designing service relocations | Excluded |  |
 |  | Modification applications | Excluded |  |

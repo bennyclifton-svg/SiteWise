@@ -24,11 +24,9 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Confirmed, quantified brief (1 draft, 1 final) | Included |  |
 |  | Approval strategy workshop | Included |  |
-|  | Help selecting other consultants | Included |  |
-| Concept |  | Included |  |
 |  | Site inspection | Included |  |
 |  | Review of existing information and brief gaps | Included |  |
 |  | Up to 2 options | Included |  |
@@ -36,12 +34,13 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Area schedule | Included |  |
 |  | Check against budget | Included |  |
 |  | Brief gaps, required-input schedule, responsibility matrix and decisions register | Included |  |
+|  | Help selecting other consultants | Included |  |
 | Schematic design |  | Included |  |
 |  | Preferred scheme resolved for planning and the cost plan | Included |  |
 |  | Outline materials and systems | Included |  |
 |  | Pre-application meeting where the pathway has one | Included |  |
 |  | Photoreal renders, marketing CGI, models | Excluded |  |
-| Planning approval |  | Included |  |
+| Planning |  | Included |  |
 |  | Architectural drawings and input to the complying development application: one preliminary and one final issue | Included |  |
 |  | Who lodges is set in section 2 | Included |  |
 |  | Modification applications after approval | Included |  |
@@ -55,17 +54,17 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | Included |  |
 |  | Loose furniture and FF&E selection | Included |  |
 |  | Value management redesign (at R3 rates) | Included |  |
-| Tender and construction documents | You hold the whole architectural design. | Included |  |
+| Tender documentation |  | Included |  |
+|  | You hold the whole architectural design. | Included |  |
 |  | One documentation set for a lump-sum price and for construction: drawings, door and window schedules, joinery details, the finishes and fixtures schedule and the specification | Included |  |
 |  | One tender issue, then one construction issue with the agreed tender changes and any construction certificate set | Included |  |
+|  | Tenderer questions and addenda | Included |  |
+|  | Actual time at R3 rates up to 40 hours | Included |  |
 |  | Architectural specification | Included |  |
 |  | Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details | Included |  |
 |  | Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes | Included |  |
 |  | Door schedule; hardware schedule by the supplier | Included |  |
-| Bidding | Fee ceiling: hours × R3 rate. | Included |  |
-|  | Tenderer questions and addenda | Included |  |
-|  | Actual time at R3 rates up to 40 hours | Included |  |
-| Design support during construction |  | Included |  |
+| Delivery |  | Included |  |
 |  | 6 site inspections | Included |  |
 |  | RFIs | Included |  |
 |  | Shop drawing review | Included |  |

@@ -16,16 +16,16 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. R1 Fee by st
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| S1 Evidence |  | Included |  |
+| Brief and concept |  | Included |  |
 |  | Brief/system-space register | Included |  |
 |  | Accessible review, observed/tested/assumed condition/capacity/life | Included |  |
 |  | Gaps/owners | Included |  |
-| S3 Concept |  | Included |  |
+| Schematic design |  | Included |  |
 |  | Options/preliminary loads/zones, plant/routes/replacement access, intakes/discharges/acoustics/cost inputs | Included |  |
-| S4 Planning |  | Included |  |
+| Planning |  | Included |  |
 |  | Listed spatial sketches or formal plans/reports | Included |  |
 |  | Screening/noise/energy inputs, submissions and bounded responses | Included |  |
-| S5 Design |  | Included |  |
+| Design development |  | Included |  |
 |  | Load/airflow/pressure/selection calculations, layouts/schedules, refrigerant/condensate, energy/controls/fire modes | Included |  |
 |  | Structure/envelope/power/access coordination | Included |  |
 |  | Selected detailed HVAC design: duties/air paths/outdoor air; loads/hours/reserve | Included |  |
@@ -38,16 +38,14 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. R1 Fee by st
 |  | Coordinate supports/plinths/openings/power/refrigerant leak/condensate; respective specialists design. Condensate: agree hydraulic/mechanical connection point/level, receiving capacity, falls/traps/tundish/discharge; name upstream/downstream design/install/test owners. Unresolved allocation stays open. R4 names strategy/cause-and-effect authors, mechanical designer, programmer, power/network provider, test performer/leader/witness. | Included |  |
 |  | Occupied/phased temporary ventilation/isolation/handback by use/phase | Included |  |
 |  | Laboratory/clean-room/medical gases/process refrigeration/hazardous areas | Excluded |  |
-| S6 Documentation |  | Included |  |
+| Tender documentation |  | Included |  |
 |  | Traditional design/calculations/specs | Included |  |
 |  | D&C performance/intent, retained/delegated design/test criteria | Included |  |
 |  | RFIs/addenda/comparison | Included |  |
 |  | Declarations/lodgement; verify jurisdiction/competence, no approval guarantee | Included |  |
-| S7 Post-contract | Not part of this appointment | Excluded | — |
-| S8 Construction | Not part of this appointment | Excluded | — |
-| S9 Commissioning | Not part of this appointment | Excluded | — |
-| S10 Seasonal | Not part of this appointment | Excluded | — |
-| S11 Advisory | Not part of this appointment | Excluded | — |
+| Design finalisation | Not part of this appointment | Excluded | — |
+| Delivery | Not part of this appointment | Excluded | — |
+| Advisory | Not part of this appointment | Excluded | — |
 | Across all stages | Services through the whole appointment |  | In stage fees |
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |

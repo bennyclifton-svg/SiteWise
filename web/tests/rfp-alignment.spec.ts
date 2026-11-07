@@ -40,7 +40,8 @@ for (const d of disciplines) test(`${d.id}: complete unified scope, inputs and s
  // Exclude one service, keep it after a reload, then include it again.
  const service=block.basis.services.find((v:any)=>!v.inactive&&v.value==="I"&&applies.some((s:any)=>s.key===v.stage&&s.state!=="exclude"));
  const out=table.getByRole('checkbox',{name:`${service.label}: excluded`,exact:true});
- await out.check();
+ // Wait for the save: the tick shows at once, before the draft is written.
+ await Promise.all([page.waitForResponse(r=>r.request().method()==="PUT"&&decodeURIComponent(r.url()).includes(`/settings/position:${service.key}`)),out.check()]);
  await expect(out).toBeChecked();
  const saved=await (await page.request.get(`/api/reports/${reportId}`)).json();
  expect(saved.draft.sections.flatMap((s:any)=>s.blocks).find((b:any)=>b.id==="rfp:stages").basis.services.find((v:any)=>v.key===service.key).value).toBe("X");

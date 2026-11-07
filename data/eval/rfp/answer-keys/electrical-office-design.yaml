@@ -42,19 +42,19 @@ fields:
 settings:
   electrical-services:
     boundary:range:
-      start: inception
-      end: tender
+      start: brief_concept
+      end: tender_documentation
 sources:
 - docs/rfp-golden/electrical-services/rfp.md Sections 1-7
 - 'docs/rfp-golden/electrical-services/ledger.md #1-54'
 scenario: electrical-office-design
-description: Office complete tender design; utility design remains separately appointed. Declarations selected in
+description: Office complete tender design; utility design remains separately appointed. Declarations selected in 
   design do not purchase continuation/novation.
 snapshot: true
 expect:
   electrical-services:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [inception, concept, planning, design, tender]
+    stages_include: [brief_concept, schematic_design, planning, design_development, tender_documentation]
     positions:
       distribution: I
       lighting: I
@@ -66,4 +66,4 @@ expect:
       handover: X
       declarations: I
       continuation: X
-    stages_absent: [continuation, construction, handover, defects]
+    stages_absent: [design_finalisation, delivery]

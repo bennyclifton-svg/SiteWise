@@ -40,7 +40,7 @@ fields:
 settings:
   access:
     boundary:range:
-      start: s1_inception
+      start: brief_concept
       end: s8_advisory
     allowance:coverage: '2'
     allowance:reviews: '2'
@@ -57,8 +57,8 @@ description: Operational/user audit includes the selected broader sensory/cognit
 expect:
   access:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception, s8_advisory]
-    stages_absent: [s2_concept, s3_planning, s4_approval, s5_tender, s6_postcontract, s7_completion]
+    stages_include: [brief_concept, s8_advisory]
+    stages_absent: [planning, design_development, tender_documentation, design_finalisation, delivery]
     positions:
       existing: I
       facilities: I

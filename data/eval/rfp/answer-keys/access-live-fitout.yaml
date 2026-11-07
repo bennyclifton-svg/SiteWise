@@ -40,8 +40,8 @@ fields:
 settings:
   access:
     boundary:range:
-      start: s1_inception
-      end: s4_approval
+      start: brief_concept
+      end: design_development
     allowance:coverage: '2'
     allowance:reviews: '2'
     allowance:meetings: '2'
@@ -52,13 +52,13 @@ sources:
 - docs/rfp-golden/access/rfp.md Sections 1-7
 - 'docs/rfp-golden/access/ledger.md #1-43'
 scenario: access-live-fitout
-description: Occupied retail fit-out requires retained/shared routes and sensory/facility criteria, without D&C
+description: Occupied retail fit-out requires retained/shared routes and sensory/facility criteria, without D&C 
   novation or later base services.
 expect:
   access:
     # Scope by stage (owner direction, 3 November 2026): only included or excluded.
-    stages_include: [s1_inception, s2_concept, s4_approval]
-    stages_absent: [s3_planning, s5_tender, s6_postcontract, s7_completion]
+    stages_include: [brief_concept, design_development]
+    stages_absent: [planning, tender_documentation, design_finalisation, delivery]
     positions:
       existing: I
       shared_routes: I

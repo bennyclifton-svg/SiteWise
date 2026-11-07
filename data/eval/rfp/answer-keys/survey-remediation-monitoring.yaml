@@ -33,13 +33,14 @@ fields:
   client: Example Client
   pi: $5 million (client selected)
   pl: $20 million (client selected)
-  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy,
-    methods and named third-party responsibilities. Quantities are client fixture selections.
+  information: Marked survey extent/features; title/DP/easements, current design revisions, agreed 
+    datum/control/accuracy, methods and named third-party responsibilities. Quantities are client fixture 
+    selections.
 settings:
   land-surveying:
     boundary:range:
-      start: s1_plan
-      end: s7_completion
+      start: brief_concept
+      end: delivery
     allowance:features: '2'
     allowance:control: '2'
     allowance:visits: '2'
@@ -48,8 +49,7 @@ settings:
     allowance:setout: '2'
     allowance:monitoring: '2'
     allowance:completion: '2'
-    stage:s6_construction: include
-    stage:s7_completion: include
+    stage:delivery: include
 sources:
 - docs/rfp-golden/land-surveying/rfp.md Sections 1-7
 - 'docs/rfp-golden/land-surveying/ledger.md #1-33'
@@ -73,7 +73,7 @@ expect:
       buried: I
       sewer: I
       access: I
-    stages_include: [s1_plan, s2_detail, s3_boundary, s4_services, s6_construction, s7_completion, s5_support]
+    stages_include: [brief_concept, planning, delivery]
     blocking_only: true
     blocking: []
     role: [advice]
