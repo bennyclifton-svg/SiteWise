@@ -126,6 +126,12 @@ func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg
 	} else if builder {
 		return ensureBuilderSchedule(ctx, tx, org, project, pkg)
 	}
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil {
+		return err
+	} else if group {
+		_, err := s.ensureGroupSchedule(ctx, tx, org, project, pkg)
+		return err
+	}
 	if synced, err := s.syncRFPSchedule(ctx, tx, org, project, pkg); err != nil || synced {
 		return err
 	}
@@ -285,6 +291,10 @@ func (s *Store) AddFirmSubmission(ctx context.Context, org, project, pkg, firmID
 	}
 	defer tx.Rollback(ctx)
 	if err := packageInProject(ctx, tx, org, project, pkg); err != nil {
+		return "", err
+	}
+	pkg, err = routeToGroup(ctx, tx, org, project, pkg)
+	if err != nil {
 		return "", err
 	}
 	f, err := readFirm(ctx, tx, org, firmID)
