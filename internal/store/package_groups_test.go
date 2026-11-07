@@ -241,6 +241,10 @@ func TestCombineRefusals(t *testing.T) {
 	if _, err := s.CombinePackages(ctx, orgA, projectA, userA, []string{structural.ID, civil.ID}, string(make([]byte, 201))); !errors.Is(err, store.ErrInvalidPackage) {
 		t.Fatalf("overlong title: %v", err)
 	}
+	// The schema refuses a member pointing at a row that is not a group.
+	if _, err := rawPool(t).Exec(ctx, `UPDATE packages SET group_id=$3 WHERE org_id=$1 AND id=$2`, orgA, hydraulic.ID, civil.ID); err == nil {
+		t.Fatal("a member joined a discipline row")
+	}
 	// A live award on a member refuses, inside the transaction.
 	award := awardRow(t, s, hydraulic.ID)
 	if err := combine(civil.ID, hydraulic.ID); !errors.Is(err, store.ErrPackageAwarded) {

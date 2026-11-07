@@ -13,10 +13,11 @@ ALTER TABLE packages ADD CONSTRAINT packages_member_shape CHECK (group_id IS NUL
 CREATE INDEX packages_group_idx ON packages (org_id, project_id, group_id) WHERE group_id IS NOT NULL;
 
 -- A member may only point at a group row; a CHECK cannot see the other row.
+-- A missing target is left to the foreign key, which names itself.
 CREATE FUNCTION package_group_target() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
- IF NEW.group_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM packages
-   WHERE org_id=NEW.org_id AND project_id=NEW.project_id AND id=NEW.group_id AND role='group') THEN
+ IF NEW.group_id IS NOT NULL AND EXISTS(SELECT 1 FROM packages
+   WHERE org_id=NEW.org_id AND project_id=NEW.project_id AND id=NEW.group_id AND role<>'group') THEN
   RAISE EXCEPTION 'package group must be a group row' USING ERRCODE='23514';
  END IF;
  RETURN NEW;
