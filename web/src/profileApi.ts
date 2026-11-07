@@ -46,6 +46,8 @@ export interface ProfileField extends Cell {
   relevant?: boolean;
   /** The Profile entry it is shown under: project, planning or a top-level system id. */
   home?: string;
+  /** An RFP flag that is one consultant's appointment choice, not a project fact. */
+  scope_decision?: boolean;
 }
 
 export interface SystemRow {

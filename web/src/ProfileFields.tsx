@@ -2,7 +2,7 @@
 // (mark, sources, conflict picks, reset). The Project card and every system
 // pane use the same row so a value reads the same wherever it sits.
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { IconCheck, IconConfirmed, IconNotChecked, IconYou } from "./icons";
 import type { Cell, Profile, ProfileField } from "./profileApi";
 
@@ -148,6 +148,7 @@ export function FieldRow({
   parts,
   compact,
   stacked,
+  paired,
 }: {
   field: ProfileField;
   onSet: Setter;
@@ -157,6 +158,8 @@ export function FieldRow({
   compact?: boolean;
   /** Label above the value, how it was decided at the label's end. */
   stacked?: boolean;
+  /** Label | value, as RFP page one: how it was decided sits under the label. */
+  paired?: boolean;
 }) {
   const [draft, setDraft] = useState(field.value);
   const dirty = useRef(false);
@@ -228,6 +231,23 @@ export function FieldRow({
     </span>
   );
   const pick = (v: string) => onSet(field.key, { part_id: field.part_id, value: v });
+
+  if (paired) {
+    return (
+      <div className="pf-row pf-pair" data-band={field.band || undefined}>
+        <div className="pf-pair-head">
+          <label htmlFor={derived ? undefined : id} className="pf-label">
+            {label}
+          </label>
+          {why}
+        </div>
+        <div className="pf-value">
+          {control}
+          <Conflict cell={field} onPick={pick} />
+        </div>
+      </div>
+    );
+  }
 
   if (stacked) {
     return (
@@ -306,3 +326,24 @@ export function ChoiceGroup({
     </div>
   );
 }
+
+/**
+ * Fields with no answer, folded into one line. A long tail of unknowns stays
+ * reachable without pushing the answered fields apart; a conflict is never
+ * folded (callers pass only blank, non-red fields).
+ */
+export function NotYetKnown({ fields, render, className }: { fields: ProfileField[]; render: (f: ProfileField) => ReactNode; className?: string }) {
+  const [open, setOpen] = useState(false);
+  if (fields.length === 0) return null;
+  return (
+    <>
+      {open && fields.map(render)}
+      <button type="button" className={`cell-link pf-unknown-toggle ${className ?? ""}`} aria-expanded={open} onClick={() => setOpen(!open)}>
+        {open ? "Hide those not yet known" : `${fields.length} not yet known`}
+      </button>
+    </>
+  );
+}
+
+/** Blank and not in conflict: what NotYetKnown folds away. */
+export const unanswered = (f: ProfileField) => f.value === "" && f.band !== "red" && !f.derived;

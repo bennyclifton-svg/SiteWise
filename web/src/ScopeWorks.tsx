@@ -14,7 +14,7 @@
 // allowed to untick it.
 
 import { useCallback, useEffect, useState } from "react";
-import { Conflict, FieldRow, Mark, ResetButton, Sources, type Setter } from "./ProfileFields";
+import { Conflict, FieldRow, Mark, NotYetKnown, ResetButton, Sources, unanswered, type Setter } from "./ProfileFields";
 import { WORK_ACTIONS, WorkItemDetail, patchWorkRow, workError } from "./WorkItem";
 import { workApi, type WorkRecord } from "./workApi";
 import type { Profile, ProfileField, ScopeChoice, SystemRow } from "./profileApi";
@@ -135,7 +135,8 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
     const { flags, inputs } = entryInputs(data, id);
     return rows.filter(needsCheck).length + [...flags, ...inputs].filter((f) => f.band === "red").length;
   };
-  const current = entries.find((e) => e.id === selected) ?? entries[0];
+  // Nothing open until a line is clicked; clicking the open line closes it.
+  const current = entries.find((e) => e.id === selected);
 
   return (
     <section className="pf-section sw" aria-labelledby="pf-scope">
@@ -191,13 +192,14 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
           {entries.map((e) => {
             const on = e.rows.filter(isIn).length;
             const checks = checksIn(e.id, e.rows);
-            const { flags } = entryInputs(data, e.id);
+            // Planning's cells are its conditions; appointment choices are not cells.
+            const flags = entryInputs(data, e.id).flags.filter((f) => !f.scope_decision);
             const cells = e.id === PLANNING
               ? flags.map((f) => ({ key: f.key, on: f.value !== "", check: f.band === "red" }))
               : e.id === OTHER
                 ? orphans.map((w) => ({ key: w.id, on: true, check: false }))
                 : e.rows.map((r) => ({ key: r.leaf, on: isIn(r), check: needsCheck(r) }));
-            const active = e.id === current.id;
+            const active = e.id === current?.id;
             return (
               <div key={e.id} className="sw-matrow" data-open={active || undefined}>
                 <button
@@ -207,7 +209,7 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
                   aria-expanded={active}
                   data-active={on > 0 ? "true" : undefined}
                   onClick={() => {
-                    onSelect(e.id);
+                    onSelect(active ? "" : e.id);
                     setOpen(null);
                   }}
                 >
@@ -220,7 +222,7 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
                     {e.id === PLANNING ? `${flags.filter((f) => f.value !== "").length} / ${flags.length}` : e.id === OTHER ? orphans.length : `${on} / ${e.rows.length}`}
                   </span>
                 </button>
-                {active && (
+                {active && current && (
             <div className="sw-pane" role="region" aria-label={current.label}>
               <div className="sw-pane-head">
                 {current.rows.length > 0 && (() => {
@@ -302,9 +304,14 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
 }
 
 function EntryInputs({ data, id, showAll, onSet, onJump }: { data: Profile; id: string; showAll: boolean; onSet: Setter; onJump: (id: string) => void }) {
-  const { flags, inputs } = entryInputs(data, id);
+  const { flags: all, inputs } = entryInputs(data, id);
+  const flags = all.filter((f) => !f.scope_decision);
+  // What each consultant is asked to do here. Answered ones show; the
+  // unknown tail folds into one line.
+  const choices = all.filter((f) => f.scope_decision);
   const shown = inputs.filter((f) => showAll || f.relevant !== false || f.band === "red");
   const hidden = inputs.length - shown.length;
+  const choice = (f: ProfileField) => <FieldRow key={f.key} field={f} onSet={onSet} onJump={onJump} compact />;
   return (
     <>
       {flags.length > 0 && (
@@ -312,6 +319,15 @@ function EntryInputs({ data, id, showAll, onSet, onJump }: { data: Profile; id: 
           <h4>{id === PLANNING ? "Approvals and stakeholders" : "Site risks and features"} <span className="muted">{flags.filter((f) => f.value !== "").length} of {flags.length} answered</span></h4>
           <div className="pf-grid sw-grid">
             {flags.map((f) => <FieldRow key={f.key} field={f} onSet={onSet} onJump={onJump} compact />)}
+          </div>
+        </div>
+      )}
+      {choices.length > 0 && (
+        <div className="sw-inputs" role="group" aria-label="Consultant appointment choices">
+          <h4>Consultant appointment choices <span className="muted">{choices.filter((f) => !unanswered(f)).length} of {choices.length} answered · also set in each RFP</span></h4>
+          <div className="pf-grid sw-grid">
+            {choices.filter((f) => !unanswered(f)).map(choice)}
+            <NotYetKnown fields={choices.filter(unanswered)} render={choice} />
           </div>
         </div>
       )}

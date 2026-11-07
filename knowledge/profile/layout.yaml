@@ -10,8 +10,9 @@
 # homes places a profile input under one entry: project (the Project card),
 # planning (Planning and approvals) or a top-level system id. A determinant
 # not listed here goes under the first system in its `systems:` list, and
-# with no systems it stays in the Project card. Every RFP detail flag
-# (proj.flag.<key>) is listed.
+# with no systems it stays in the Project card. An RFP detail flag
+# (proj.flag.<key>) not listed here stays in the Project card; the cost
+# planner's choices do, as cost is not one building system.
 version: 1
 status: draft
 build_order:
@@ -46,6 +47,14 @@ homes:
     - proj.flag.contract_admin
     - proj.flag.sustainability_target
   planning:
+    # Certifier appointment choices sit with the approvals they serve.
+    - proj.flag.bca_advisory
+    - proj.flag.bca_certification
+    - proj.flag.bca_existing_assessment
+    - proj.flag.bca_classification_map
+    - proj.flag.bca_staged_occupation
+    - proj.flag.bca_fire_referrals
+    - proj.flag.bca_residential_evidence
     - proj.flag.architect_lodges
     - proj.flag.staged
     - proj.flag.multi_building
@@ -67,10 +76,42 @@ homes:
     - proj.flag.osd_required
     - proj.flag.stormwater_quality
     - proj.flag.norbe
+    # Trees on and beside the site.
+    - proj.flag.arborist_offsite_trees
+    - proj.flag.arborist_offsite_access
+    - proj.flag.arborist_tree_impacts
+    - proj.flag.arborist_pruning
+    # Appointment choices for the site's consultants: what each one is asked
+    # to do, shown with the site rather than on the Project card.
+    - proj.flag.arborist_impact_report
+    - proj.flag.arborist_protection_plan
+    - proj.flag.survey_detail
+    - proj.flag.survey_boundary
+    - proj.flag.survey_services
+    - proj.flag.survey_adjoining
+    - proj.flag.survey_buried
+    - proj.flag.survey_sewer
+    - proj.flag.landscape_design
+    - proj.flag.landscape_podium
+    - proj.flag.landscape_irrigation_brief
+    - proj.flag.landscape_irrigation_detail
+    - proj.flag.landscape_public
+    - proj.flag.landscape_special
+    - proj.flag.landscape_staging
+    - proj.flag.waste_operational
+    - proj.flag.waste_cd
+    - proj.flag.waste_shared
   substructure:
     - proj.flag.groundwater
     - proj.flag.basement
     - proj.flag.excavation_adjoining
+    - proj.flag.geotech_intrusive
+    - proj.flag.geotech_foundation
+    - proj.flag.geotech_civil_parameters
+    - proj.flag.geotech_asset_exposure
+    - proj.flag.geotech_ass
+    - proj.flag.geotech_handback
+    - proj.flag.geotech_planning
   structure:
     - proj.flag.transfer_structures
     - proj.flag.super_flat_floor
@@ -82,9 +123,65 @@ homes:
     - det.facade_type
   hydraulic:
     - proj.flag.authority_asset
+    - proj.flag.hyd_process
+    - proj.flag.hyd_investigation
+    - proj.flag.hyd_planning
+    - proj.flag.hyd_sources
+    - proj.flag.hyd_rainwater
+    - proj.flag.hyd_alternative_sources
+    - proj.flag.hyd_pumps
+    - proj.flag.hyd_treatment
+    - proj.flag.hyd_roof
+    - proj.flag.hyd_external
+    - proj.flag.hyd_trade
+    - proj.flag.hyd_gas
+    - proj.flag.hyd_utility
+    - proj.flag.hyd_interfaces
+    - proj.flag.hyd_staging
+    - proj.flag.hyd_declarations
+  mechanical:
+    - proj.flag.mech_investigation
+    - proj.flag.mech_planning
+    - proj.flag.mech_local
+    - proj.flag.mech_kitchen
+    - proj.flag.mech_smoke
+    - proj.flag.mech_controls
+    - proj.flag.mech_interfaces
+    - proj.flag.mech_declarations
+  electrical:
+    - proj.flag.elec_investigation
+    - proj.flag.elec_planning
+    - proj.flag.elec_controls
+    - proj.flag.elec_generation
+    - proj.flag.elec_ict
+    - proj.flag.elec_dry_fire
+    - proj.flag.elec_staging
+    - proj.flag.elec_declarations
   fire-active:
     - det.sprinklered
+    - proj.flag.fs_wet
+    - proj.flag.fs_supply
+    - proj.flag.fs_authority
+    - proj.flag.fs_dry
+    - proj.flag.fs_controls
+    - proj.flag.fs_plant_interfaces
+    - proj.flag.fs_investigation
+    - proj.flag.fs_upgrade
+    - proj.flag.fs_declarations
   fire-passive:
     - det.type_of_construction
     - det.max_floor_area_m2
     - det.max_volume_m3
+    # Fire engineering: the occupants, hazards and departures it assesses,
+    # then what the engineer is asked to do.
+    - proj.flag.fire_vulnerable_occupants
+    - proj.flag.fire_special_hazards
+    - proj.flag.fire_specialist_systems
+    - proj.flag.fe_solutions
+    - proj.flag.fe_existing_reconciliation
+  access-egress:
+    - proj.flag.access_planning
+    - proj.flag.access_approval
+    - proj.flag.access_shared_routes
+    - proj.flag.access_housing
+    - proj.flag.access_facilities
