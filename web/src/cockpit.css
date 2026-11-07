@@ -26,7 +26,7 @@
   --shadow-xs: none;
   --shadow-sm: 0 16px 36px color-mix(in oklab, var(--sw-p-neutral-950) 18%, transparent);
   --sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
-  --cockpit-ribbon-height: 7.25rem;
+  --cockpit-ribbon-height: 6.3rem;
   --cockpit-shell-gutter: 0.875rem;
   --cockpit-radius: 1.25rem;
 }
@@ -123,8 +123,8 @@ body {
 .cockpit-shell {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(200px, 236px) minmax(0, 1fr) minmax(280px, 760px);
-  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-columns: minmax(170px, 200px) minmax(0, 1fr) minmax(280px, 760px);
+  grid-template-rows: auto minmax(0, 1fr);
   column-gap: var(--cockpit-shell-gutter);
   height: 100%;
   min-height: 0;
@@ -132,7 +132,7 @@ body {
 
 .cockpit-shell > .leftnav {
   grid-column: 1;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 2;
 }
 
 .cockpit-shell-header {
@@ -157,6 +157,38 @@ body {
   align-items: center;
   gap: 16px;
   margin-left: auto;
+  /* Sit near the foot of the ribbon, level with the address line. */
+  align-self: flex-end;
+  padding-bottom: 10px;
+}
+
+.documents-toggle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--sw-text-secondary);
+  cursor: pointer;
+}
+
+.documents-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.documents-toggle:hover {
+  background: var(--sw-hover-bg);
+  color: var(--sw-text-primary);
+}
+
+.documents-toggle:focus-visible {
+  outline: 2px solid var(--azure);
+  outline-offset: 2px;
 }
 
 .cockpit-title {
@@ -206,7 +238,7 @@ body {
 
 .project-main-panel {
   grid-column: 2;
-  grid-row: 3;
+  grid-row: 2;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -233,7 +265,7 @@ body {
 .project-side-panel {
   position: relative;
   grid-column: 3;
-  grid-row: 3;
+  grid-row: 2;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -1003,7 +1035,7 @@ body {
 
   .cockpit-shell {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto auto minmax(24rem, auto) auto minmax(20rem, 50vh);
+    grid-template-rows: auto auto minmax(24rem, auto) minmax(20rem, 50vh);
     height: auto;
     row-gap: 8px;
   }
@@ -1285,15 +1317,27 @@ body {
 /* Actions align to the panels they control, above their bordered surfaces. */
 .cockpit-page { display: flex; flex-direction: column; }
 .cockpit-shell { flex: 1; height: auto; }
-.workspace-controls { grid-column: 2; grid-row: 2; display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 44px; padding: 0 8px 8px; position: relative; z-index: 30; }
+.panel-actions { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 0 16px; position: relative; z-index: 5; }
+.panel-actions:not(:has(button, a)) { display: none; }
 .workspace-primary-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.repository-controls { grid-column: 3; grid-row: 2; display: flex; align-items: center; justify-content: flex-end; padding: 0 12px 8px; }
+.repository-controls { display: flex; flex: none; align-items: center; justify-content: flex-end; padding: 0 0 8px; }
 .page-action-rail { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+.page-action-beside { display: flex; align-items: center; gap: 8px; }
+.page-action-beside:empty { display: none; }
+.page-refresh { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; }
+.page-refresh svg { width: 20px; height: 20px; }
+.page-refresh:hover { background: var(--sw-hover-bg); }
+.page-refresh:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+.page-refresh:disabled { opacity: 0.45; cursor: default; }
 .page-actions { position: relative; }
 .page-download { display: grid; place-items: center; width: 36px; height: 32px; padding: 6px; color: var(--ink); background: transparent; border: 0; border-radius: 4px; cursor: pointer; }
 .page-download svg { width: 20px; height: 20px; }
 .page-download:hover, .page-download[aria-expanded="true"] { background: var(--sw-hover-bg); }
 .page-download:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+.page-close { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: var(--ink); cursor: pointer; }
+.page-close svg { width: 18px; height: 18px; }
+.page-close:hover { background: var(--sw-hover-bg); }
+.page-close:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
 .page-action-menu { position: absolute; right: 0; top: 100%; min-width: 200px; max-width: calc(100vw - 32px); padding: 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-sm); }
 .page-action-menu a, .page-action-menu button { display: block; width: 100%; padding: 9px 12px; color: var(--ink); background: none; border: 0; text-align: left; text-decoration: none; font: inherit; font-size: var(--fs-md); cursor: pointer; }
 .page-action-menu a:hover, .page-action-menu button:hover, .page-action-menu :focus-visible { background: var(--ground); }
@@ -1301,7 +1345,7 @@ body {
 
 @media print {
   .cockpit-page, .cockpit-shell, .project-main-panel, .cockpit-scroll { height: auto !important; min-height: 0 !important; overflow: visible !important; }
-  .leftnav, .project-side-panel, .ask-bar, .profile-feedback-slot, .profile-toolbar, .page-action-rail,
+  .leftnav, .project-side-panel, .ask-bar, .profile-feedback-slot, .profile-toolbar, .panel-actions, .page-action-rail,
   .cockpit-header-actions, .procurement-head button, .spec-actions, .spec-tools { display: none !important; }
   .cockpit-shell { display: block !important; }
   .procurement-scroll, .spec-table-wrap { overflow: visible !important; max-height: none !important; }
@@ -1310,13 +1354,11 @@ body {
 @media (max-width: 1100px) {
   .cockpit-shell > .leftnav { grid-row: 1; }
   .cockpit-shell-header { grid-row: 2; }
-  .workspace-controls { grid-column: 1; grid-row: 3; }
-  .project-main-panel { grid-row: 4; }
-  .repository-controls { grid-column: 1; grid-row: 5; }
-  .project-side-panel { grid-row: 6; }
-  .workspace-controls { flex-wrap: wrap; }
+  .project-main-panel { grid-row: 3; }
+  .project-side-panel { grid-row: 4; }
+  .panel-actions { flex-wrap: wrap; }
 }
-@media print { .workspace-controls, .repository-controls { display: none !important; } }
+@media print { .panel-actions, .repository-controls { display: none !important; } }
 
 .cockpit-scroll .profile > .pf-section:first-of-type { margin-top: 0; }
 /* Production usability: pane width, rather than viewport width, owns forms. */
@@ -1333,7 +1375,7 @@ body {
 .cockpit-scroll > *, .spec-table-wrap, .procurement-scroll { max-width: 100%; }
 .theme-button { width: 36px; height: 36px; box-shadow: none; }
 .theme-button svg { width: 20px; height: 20px; }
-.page-download { display: flex; align-items: center; gap: 6px; width: auto; min-height: 36px; padding: 0 10px; font: inherit; font-size: var(--fs-md); }
+.page-download { display: flex; align-items: center; gap: 6px; width: auto; min-height: 36px; padding: 0 10px; color: var(--ink); font: inherit; font-size: var(--fs-md); text-decoration: none; cursor: pointer; }
 .navigation-content { display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; }
 .cockpit-shell .switcher-list { position: relative; top: auto; width: 100%; max-height: none; margin-top: 6px; box-sizing: border-box; box-shadow: none; }
 .switcher-list .input { width: 100%; min-width: 0; box-sizing: border-box; }
@@ -1360,12 +1402,27 @@ body {
   .leftnav .leftnav-logo { height: 56px; }
   .leftnav .navigation-content { max-height: 65vh; }
   .cockpit-shell-header { height: auto; min-height: 80px; }
-  .cockpit-header-actions { gap: 8px; }
+  .cockpit-header-actions { gap: 8px; align-self: center; padding-bottom: 0; }
   .cockpit-address { overflow-wrap: anywhere; }
   .cockpit-scroll { max-width: 100%; }
 }
 @media print { .mobile-nav-toggle, .app-load-error { display: none !important; } }
 .project-list li { grid-template-columns: minmax(0, 1fr) auto; }
+/* Account menu, foot of the left nav. The popover opens upward inside the nav. */
+.account-menu { position: relative; margin: 8px 12px 0; padding-top: 8px; border-top: 1px solid var(--sw-border-default); }
+.account-trigger { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-md); text-align: left; cursor: pointer; }
+.account-trigger:hover, .account-trigger[aria-expanded="true"] { background: var(--sw-hover-bg); }
+.account-trigger:focus-visible, .account-item:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+.account-initials { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--sw-text-primary); color: var(--sw-surface); font-size: var(--fs-sm); font-weight: 600; letter-spacing: 0.02em; }
+.account-email { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--sw-text-secondary); }
+.account-popover { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); z-index: 30; display: grid; gap: 2px; padding: 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-sm); }
+.account-group { display: grid; gap: 2px; margin: 2px 0; padding: 4px 0; border-block: 1px solid var(--sw-border-default); }
+.account-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-md); text-align: left; text-decoration: none; cursor: pointer; }
+.account-item:hover:not(:disabled) { background: var(--sw-hover-bg); }
+.account-check, .account-icon { display: inline-grid; place-items: center; width: 16px; flex: none; }
+.account-icon svg { width: 16px; height: 16px; }
+.account-popover [role="alert"] { margin: 4px 10px; font-size: var(--fs-sm); }
+@media print { .account-menu { display: none !important; } }
 .sign-out-control { position: relative; flex: none; }
 .sign-out-control [role="alert"] { position: absolute; right: 0; top: 100%; width: 200px; padding: 8px; background: var(--paper); font-size: var(--fs-md); z-index: 50; }
 /* Keep offscreen live regions inside the panel's scrollable containing block. */

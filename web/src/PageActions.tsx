@@ -2,11 +2,26 @@ import { Children, cloneElement, createContext, isValidElement, useContext, useE
 import { createPortal } from "react-dom";
 import { IconDownload } from "./icons";
 
-export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null }>({ surface: "", target: null, primaryTarget: null });
+export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
 
 export function PagePrimaryAction({ surface, children }: { surface: string; children: ReactNode }) {
   const { surface: active, primaryTarget } = useContext(PageActionsContext);
   return active === surface && primaryTarget ? createPortal(children, primaryTarget) : null;
+}
+
+/** Sits in the top-right action row, immediately left of Download. */
+export function PageBesideDownload({ surface, children }: { surface: string; children: ReactNode }) {
+  const { surface: active, besideTarget } = useContext(PageActionsContext);
+  return active === surface && besideTarget ? createPortal(children, besideTarget) : null;
+}
+
+/** A file download in the same top-right place as the profile Download control. */
+export function PageDownload({ surface, href, label }: { surface: string; href: string; label: string }) {
+  const { surface: active, target } = useContext(PageActionsContext);
+  return active === surface && target ? createPortal(
+    <a className="page-download" href={href} aria-label={label} title={label}><IconDownload /><span>Download</span></a>,
+    target,
+  ) : null;
 }
 
 /** Each mounted workspace keeps its own actions; only the visible one reaches the shell. */

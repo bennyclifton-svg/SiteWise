@@ -1,29 +1,19 @@
-// The datum lockup: the surveyor's level datum, with "sitewise" standing on
-// its datum line, which runs on as one graphite pencil stroke. Drawn in the
-// current text colour so it reads on both themes.
+// The Datum shift lockup. The disc is cut by the level line and its lower half
+// slips one step along it: calm above ground, the complexity and risk below.
+// "sitewise" is Geist Medium outlined to a path (OFL; traced once with
+// fontTools, kerning included), so the app needs no extra font for eight letters.
+// Drawn in the current text colour so it reads on both themes.
 
-const RATIO = 132 / 30;
+const VIEW = { x: 8, y: 7, w: 238, h: 51 };
+const WORD = "M99.23 28.66 104.23 28.39C103.42 23.62 99.46 20.61 94.28 20.61C88.34 20.61 84.56 23.45 84.56 28.12C84.56 32.72 88.93 34.06 93.97 35.14C96.53 35.73 99.55 36 99.55 38.56C99.55 40.77 96.85 41.49 94.78 41.49C91.5 41.49 89.42 39.83 88.97 37.17L83.98 37.48C84.34 42.48 88.7 45.54 94.83 45.54C99.86 45.54 104.59 43.47 104.59 38.79C104.59 34.11 100.77 32.49 94.83 31.41C92.39 30.96 89.65 30.11 89.61 27.95C89.56 25.88 91.5 24.66 93.92 24.66C96.36 24.66 98.74 26.14 99.23 28.66ZM107.33 21.15V45H112.19V21.15ZM107.24 17.64H112.28V13.05H107.24ZM118 15.75V21.15H114.4V25.11H118V38.12C118 42.62 120.52 45 125.15 45H129.16V41.04H125.6C123.8 41.04 122.86 40.05 122.86 38.12V25.11H129.2V21.15H122.86V15.75ZM130.33 33.08C130.33 40.68 134.83 45.54 141.72 45.54C146.57 45.54 150.76 42.7 152.2 38.16L147.16 37.8C146.17 40.05 144.06 41.4 141.72 41.4C137.98 41.4 135.73 38.84 135.46 34.47H152.51V32.89C152.25 24.39 147.38 20.61 141.72 20.61C134.83 20.61 130.33 25.47 130.33 33.08ZM135.5 30.83C136.04 27 138.25 24.75 141.72 24.75C144.37 24.75 146.84 26.32 147.43 30.83ZM172.54 21.15H167.95L162.69 39.51L157.47 21.15H152.56L159.85 45H165.25L170.25 28.04L175.24 45H180.64L187.93 21.15H183.02L177.81 39.51ZM190.5 21.15V45H195.36V21.15ZM190.41 17.64H195.44V13.05H190.41ZM214.12 28.66 219.11 28.39C218.3 23.62 214.34 20.61 209.17 20.61C203.23 20.61 199.45 23.45 199.45 28.12C199.45 32.72 203.81 34.06 208.85 35.14C211.42 35.73 214.44 36 214.44 38.56C214.44 40.77 211.73 41.49 209.66 41.49C206.38 41.49 204.31 39.83 203.86 37.17L198.86 37.48C199.22 42.48 203.59 45.54 209.71 45.54C214.75 45.54 219.47 43.47 219.47 38.79C219.47 34.11 215.65 32.49 209.71 31.41C207.28 30.96 204.53 30.11 204.49 27.95C204.44 25.88 206.38 24.66 208.81 24.66C211.24 24.66 213.62 26.14 214.12 28.66ZM221.63 33.08C221.63 40.68 226.13 45.54 233.02 45.54C237.88 45.54 242.06 42.7 243.5 38.16L238.47 37.8C237.47 40.05 235.36 41.4 233.02 41.4C229.28 41.4 227.03 38.84 226.76 34.47H243.82V32.89C243.55 24.39 238.69 20.61 233.02 20.61C226.13 20.61 221.63 25.47 221.63 33.08ZM226.81 30.83C227.35 27 229.56 24.75 233.02 24.75C235.68 24.75 238.15 26.32 238.74 30.83Z";
 
 export function Wordmark({ height = 30 }: { height?: number }) {
   return (
-    <span className="wordmark" style={{ width: Math.round(height * RATIO), height }} aria-hidden="true">
-      <svg viewBox="0 0 132 30" width="100%" height="100%">
-        <defs>
-          <filter id="wm-graphite" x="-2%" y="-80%" width="104%" height="260%">
-            <feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="2" seed="4" result="n" />
-            <feDisplacementMap in="SourceGraphic" in2="n" scale=".7" result="d" />
-            <feColorMatrix in="n" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 2.4 -.45" result="g" />
-            <feComposite in="d" in2="g" operator="in" />
-          </filter>
-        </defs>
-        <circle cx="9.6" cy="19.5" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M9.6 19.5V11.5A8 8 0 0 0 1.6 19.5Z M9.6 19.5v8A8 8 0 0 0 17.6 19.5Z" fill="currentColor" />
-        <path d="M9.6 11.5v16" stroke="currentColor" strokeWidth="1.1" />
-        <path
-          d="M0.3 19.6 L12 19.4 L30 19.7 L50 19.4 L72 19.65 L92 19.45 L112 19.7 L126 19.4 L131.5 19.75"
-          fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" filter="url(#wm-graphite)"
-        />
-        <text x="23.5" y="16.6" fill="currentColor" fontFamily="Instrument Sans, ui-sans-serif, system-ui" fontWeight="600" fontSize="22" letterSpacing="-0.5">sitewise</text>
+    <span className="wordmark" style={{ width: Math.round((height * VIEW.w) / VIEW.h), height }} aria-hidden="true">
+      <svg viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`} width="100%" height="100%" fill="currentColor">
+        <path d="M8 31A24 24 0 0 1 56 31Z" />
+        <path d="M14 34A24 24 0 0 0 62 34Z" fillOpacity=".5" />
+        <path d={WORD} />
       </svg>
     </span>
   );

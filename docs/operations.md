@@ -362,8 +362,8 @@ mode only after the test run passes.
    `journalctl -u sitewise | grep "stripe webhook"` shows `applied`, and that
    a duplicate delivery shows `duplicate`.
 
-Locally, `stripe listen --forward-to localhost:8080/api/stripe/webhook`
-prints a `whsec_…` for the env file and forwards test events.
+Locally, `stripe listen --events checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to localhost:8080/api/stripe/webhook`
+(Stripe CLI 1.55 requires `--events`) prints a `whsec_…` for the env file and forwards test events.
 
 Operator tools: `sitewise set-plan -org <id> -plan free|starter|team` sets a
 plan without Stripe (a comped account); the next Stripe event for that org

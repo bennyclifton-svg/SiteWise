@@ -18,20 +18,44 @@ function wave(seed, w) {
 }
 function write(name, svg) { writeFileSync(resolve(out, name), svg.replace(/\n\s*/g, "")); }
 
-// Torn edge of the butter paper. Black is kept, so these are masks.
-// The sheet keeps everything above its edge; the fringe is the paler fibrous band below it.
+// Wear on the smoked perspex ribbon: a few long scores, cloth-buffing swirls and
+// dust. Each mark is a pale line (light scattering out of the groove) over a faint
+// dark twin half a pixel down, so it reads on both the light and dark sheet.
+// Marks near a side edge are drawn again one tile over, so the tile repeats cleanly.
 {
-  const W = 1600, H = 30, edge = 10;
-  const a = wave(5, W), r = rng(9), r2 = rng(17);
-  const sheet = [], fringe = [];
-  for (let x = 0; x <= W; x += 2) {
-    const y = edge + a(x) * 2.6;
-    sheet.push([x, y + (x === 0 || x === W ? 0 : (r() - .5) * .6)]);
-    fringe.push([x, y + 6.5 + a(x * 1.7) * 1.2 + (x === 0 || x === W ? 0 : (r2() - .5) * 2.6)]);
+  const W = 1600, H = 260, r = rng(41), rand = (lo, hi) => lo + r() * (hi - lo);
+  const defs = [], marks = [];
+  const twin = (d, w, pale, dark) => `<path d="${d}" stroke="#3c3228" stroke-opacity="${dark}" stroke-width="${w}" transform="translate(.6 .6)"/><path d="${d}" stroke="${pale}" stroke-width="${w}"/>`;
+  const wrap = (x, span, draw) => { draw(0); if (x - span < 0) draw(W); if (x + span > W) draw(-W); };
+  for (let i = 0; i < 58; i++) {
+    const x = rand(0, W), y = rand(0, H), ang = r() * Math.PI, len = rand(120, 420), a = rand(.05, .14);
+    const dx = Math.cos(ang) * len, dy = Math.sin(ang) * len, bend = (r() - .5) * len * .08, w = f(.3 + r() * .55);
+    const peak = (.25 + r() * .5).toFixed(2);
+    wrap(Math.min(x, x + dx), Math.abs(dx) + 1, s => {
+      const id = `g${defs.length}`, x0 = x + s, x1 = x0 + dx, y1 = y + dy;
+      defs.push(`<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${f(x0)}" y1="${f(y)}" x2="${f(x1)}" y2="${f(y1)}"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="${peak}" stop-color="#fff" stop-opacity="${a.toFixed(3)}"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`);
+      const d = `M${f(x0)} ${f(y)}Q${f(x0 + dx / 2 - Math.sin(ang) * bend)} ${f(y + dy / 2 + Math.cos(ang) * bend)} ${f(x1)} ${f(y1)}`;
+      marks.push(twin(d, w, `url(#${id})`, (a * .45).toFixed(3)));
+    });
   }
-  const line = pts => pts.map(p => `${f(p[0])} ${f(p[1])}`).join(" L");
-  write("tear-sheet.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><path d="M0 0 L${W} 0 L${line(sheet.slice().reverse())} Z"/></svg>`);
-  write("tear-fringe.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter><path filter="url(#f)" d="M${line(sheet.map(([x, y]) => [x, y - 1.5]))} L${line(fringe.slice().reverse())} Z"/></svg>`);
+  for (let i = 0; i < 20; i++) {
+    const cx = rand(0, W), cy = rand(-H * .5, H * 1.5), R = rand(60, 260);
+    for (let j = 0; j < 10; j++) {
+      const rad = R + rand(-28, 28), st = rand(0, 6.283), sw = rand(.08, .45), a = rand(.03, .09), w = f(rand(.3, .7));
+      const x0 = cx + Math.cos(st) * rad, y0 = cy + Math.sin(st) * rad;
+      wrap(cx, rad + 1, s => {
+        const d = `M${f(x0 + s)} ${f(y0)}A${f(rad)} ${f(rad)} 0 0 1 ${f(cx + s + Math.cos(st + sw) * rad)} ${f(cy + Math.sin(st + sw) * rad)}`;
+        marks.push(twin(d, w, `rgba(255,255,255,${a.toFixed(3)})`, (a * .5).toFixed(3)));
+      });
+    }
+  }
+  const dust = (n, fill, lo, hi) => {
+    let d = "";
+    for (let i = 0; i < n; i++) { const x = rand(1, W - 1), y = rand(0, H), q = f(rand(.25, .7)); d += `M${f(x)} ${f(y)}m-${q} 0a${q} ${q} 0 1 0 ${f(q * 2)} 0a${q} ${q} 0 1 0 -${f(q * 2)} 0`; }
+    marks.push(`<path d="${d}" fill="${fill}" fill-opacity="${rand(lo, hi).toFixed(2)}" stroke="none"/>`);
+  };
+  for (let k = 0; k < 2; k++) { dust(80, "#fff", .1, .3); dust(80, "#3c3228", .04, .1); }
+  write("perspex-wear.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" stroke-linecap="round"><defs>${defs.join("")}</defs>${marks.join("")}</svg>`);
 }
 
 // Highlighter: squared off, even height, with a slight wobble and uneven ink.
@@ -51,20 +75,42 @@ for (const [i, seed] of [[1, 31], [2, 47], [3, 63]]) {
   write(`brush-${i}.svg`, `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><filter id="g" x="-2%" y="-10%" width="104%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".02 .6" numOctaves="2" seed="${seed}" result="t"/><feColorMatrix in="t" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.1 .25" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in"/></filter><g filter="url(#g)"><path d="M${pts.map(p => `${f(p[0])} ${f(p[1])}`).join(" L")} Z" fill="#000" fill-opacity=".74"/>${streaks}</g></svg>`);
 }
 
-// The selected navigation item: one broad paint stroke with a dry tail.
+// The selected navigation item: one squared brush stroke. It starts fully
+// loaded, carries faint bristle hairlines along its length, and runs dry toward
+// the end, where the paint thins and breaks into separate bristle streaks.
 {
-  const W = 260, H = 48, r = rng(77), top = wave(81, W), bot = wave(83, W);
+  const W = 260, H = 48, top = 6.5, bot = 41.5, r = rng(77), tw = wave(81, W), bw = wave(83, W);
+  const dry = W * .6; // where the brush starts to run out
+  // Body: near-rectangular, a touch fuller at the start, edges only slightly uneven.
   const pts = [];
-  for (let x = 4; x <= W - 26; x += 5) pts.push([x, 7 + top(x) * 2.2 + (x < 20 ? (20 - x) * .25 : 0)]);
-  pts.push([W - 16, 12], [W - 6, 17], [W - 14, 24], [W - 3, 30], [W - 18, 36]);
-  for (let x = W - 26; x >= 4; x -= 5) pts.push([x, 41 + bot(x) * 2.2 - (x < 20 ? (20 - x) * .25 : 0)]);
-  pts.push([1, 30], [2.5, 18]);
-  let gaps = "";
-  for (let k = 0; k < 9; k++) {
-    const y = 10 + r() * 28, x0 = W * (.45 + r() * .4);
-    gaps += `<path d="M${f(x0)} ${f(y)} L${W} ${f(y + (r() - .5) * 2)}" stroke="#fff" stroke-opacity="${(.35 + r() * .5).toFixed(2)}" stroke-width="${f(.6 + r() * 1.4)}"/>`;
+  for (let x = 3; x <= dry; x += 5) pts.push([x, top + tw(x) * .7 - (x < 16 ? (16 - x) * .06 : 0)]);
+  for (let y = top + 2; y <= bot - 2; y += 3.5) pts.push([dry - 4 + r() * 18, y]); // ragged where the load gives out
+  for (let x = dry; x >= 3; x -= 5) pts.push([x, bot + bw(x) * .7 + (x < 16 ? (16 - x) * .06 : 0)]);
+  pts.push([1.6 + r() * .8, bot - 6], [1.2 + r() * .8, (top + bot) / 2], [1.8 + r() * .8, top + 6]);
+  // Bristles: one per hair across the width, each running out at its own point.
+  let bristles = "";
+  const n = 64;
+  for (let k = 0; k < n; k++) {
+    const y = top + .6 + (k + r() * .6) * (bot - top - 1.2) / n;
+    const end = W * (.62 + Math.pow(r(), .75) * .36), drift = (r() - .5) * 1.4;
+    bristles += `<path d="M${f(W * .3)} ${f(y)} Q${f((W * .3 + end) / 2)} ${f(y + drift * .3)} ${f(end)} ${f(y + drift)}" stroke-width="${(.45 + r() * .8).toFixed(2)}"/>`;
   }
-  write("brush-nav.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><mask id="m"><rect width="${W}" height="${H}" fill="#fff"/>${gaps}</mask><filter id="e" x="-2%" y="-10%" width="104%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".03 .5" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter><g mask="url(#m)" filter="url(#e)"><path d="M${pts.map(p => `${f(p[0])} ${f(p[1])}`).join(" L")} Z" fill="#000"/></g></svg>`);
+  // Hairlines: barely-visible streaks where a bristle carried less paint.
+  let hairs = "";
+  for (let k = 0; k < 18; k++) {
+    const y = top + 1.5 + r() * (bot - top - 3), x0 = r() * W * .35;
+    hairs += `<path d="M${f(x0)} ${f(y)} L${W} ${f(y + (r() - .5) * 1.2)}" stroke-opacity="${(.1 + r() * .22).toFixed(2)}" stroke-width="${(.3 + r() * .35).toFixed(2)}"/>`;
+  }
+  write("brush-nav.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="load" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${W}" y2="0"><stop offset="0" stop-opacity="1"/><stop offset=".5" stop-opacity=".96"/><stop offset=".7" stop-opacity=".72"/><stop offset=".88" stop-opacity=".32"/><stop offset="1" stop-opacity="0"/></linearGradient>
+      <mask id="m"><rect width="${W}" height="${H}" fill="#fff"/><g fill="none" stroke="#000" stroke-linecap="round">${hairs}</g></mask>
+      <filter id="e" x="-2%" y="-10%" width="104%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".04 .6" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="1.3"/></filter>
+    </defs>
+    <g mask="url(#m)" filter="url(#e)">
+      <path d="M${pts.map(p => `${f(p[0])} ${f(p[1])}`).join(" L")} Z" fill="url(#load)"/>
+      <g fill="none" stroke="url(#load)" stroke-linecap="round">${bristles}</g>
+    </g></svg>`);
 }
 
 // Pencil lines: a graphite rule, an ember underline, and a dotted blue underline.
@@ -79,8 +125,7 @@ pencil("pencil-graphite.svg", "#2f2924", 1.7, false, 3);
 pencil("pencil-ember.svg", "#a85e2c", 1.45, false, 11);
 pencil("pencil-azure.svg", "#2d5e9e", 1.6, true, 19);
 
-// Grain: butter-paper fibre and a barely-there sandstone for the navigation band.
-write("paper-fibre.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency=".012 .55" numOctaves="2" seed="3" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 -.42"/></filter><rect width="100%" height="100%" filter="url(#f)"/></svg>`);
+// Grain: a barely-there sandstone for the navigation band.
 write("stone.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360"><filter id="s"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="3" seed="8" stitchTiles="stitch" result="fine"/><feColorMatrix in="fine" values="0 0 0 0 .42  0 0 0 0 .38  0 0 0 0 .32  0 0 0 .55 -.24" result="a"/><feTurbulence type="fractalNoise" baseFrequency=".012 .03" numOctaves="3" seed="2" stitchTiles="stitch" result="bed"/><feColorMatrix in="bed" values="0 0 0 0 .55  0 0 0 0 .5  0 0 0 0 .42  0 0 0 .16 -.05" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="a"/></feMerge></filter><rect width="100%" height="100%" filter="url(#s)"/></svg>`);
 
 console.log("marks written to", out);
