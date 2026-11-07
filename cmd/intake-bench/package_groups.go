@@ -1,14 +1,20 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
+	"sitewise/internal/invoices/sample"
 	"sitewise/internal/procurement"
+	psample "sitewise/internal/proposals/sample"
 	"sitewise/internal/store"
 )
 
@@ -200,6 +206,94 @@ func (a *apiClient) groupRFP(ctx context.Context, n int) error {
 					version = m.DraftVersion
 				}
 			}
+		}
+	}
+	return nil
+}
+
+// combineForProposal times Combine for this proposal
+// (docs/plans/2026-11-07-combined-engagements-slice5.md): an unplaced
+// proposal on a split project with a Services Engineer row, the Procurement
+// read with its combine prompt (packages_read), the combine that places the
+// proposal on the new group, then uncombine, which leaves the proposal
+// unplaced again for the next sample (both packages_combine).
+func (a *apiClient) combineForProposal(ctx context.Context, n int) error {
+	project, err := a.createProject(ctx, "Combine for this proposal benchmark")
+	if err != nil {
+		return err
+	}
+	watch := &submissionWatch{read: map[string]chan struct{}{}}
+	stop, err := a.procurementStream(ctx, project, watch)
+	if err != nil {
+		return err
+	}
+	defer stop()
+	base := "/projects/" + project
+	ids := []string{}
+	for _, d := range []string{"consultant.mechanical", "consultant.electrical", procurement.ServicesFiling} {
+		raw, err := a.call(ctx, http.MethodPost, base+"/procurement/rows", []byte(`{"discipline_id":"`+d+`"}`), http.StatusCreated)
+		if err != nil {
+			return err
+		}
+		var p procurement.Package
+		if err := json.Unmarshal(raw, &p); err != nil {
+			return err
+		}
+		ids = append(ids, p.ID)
+	}
+	pdf := psample.PDF(psample.Proposal{Firm: "Bench Services Pty Ltd", ABN: sample.ABNFor(900), Email: "office@benchservices.test", Lines: []psample.Line{{Label: "Design", Cents: 500000}}})
+	resp, err := a.do(ctx, http.MethodPost, base+"/procurement/packages/"+ids[0]+"/submissions?name="+url.QueryEscape(benchFilePrefix+"fee proposal (Bench Services).pdf"), bytes.NewReader(pdf), int64(len(pdf)))
+	if err != nil {
+		return err
+	}
+	raw, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("proposal upload %d: %s", resp.StatusCode, raw)
+	}
+	var up struct {
+		SubmissionID string `json:"submission_id"`
+	}
+	if err := json.Unmarshal(raw, &up); err != nil {
+		return err
+	}
+	select {
+	case <-watch.wait(up.SubmissionID):
+	case <-time.After(30 * time.Second):
+		return errors.New("proposal not read within 30 s")
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+	// Detached by the PM: it now waits for a package.
+	if _, err := a.call(ctx, http.MethodPatch, base+"/submissions/"+up.SubmissionID, []byte(`{"package_id":""}`), http.StatusOK); err != nil {
+		return err
+	}
+	members := ids[:2]
+	for i := 0; i < n; i++ {
+		raw, err := a.timed(ctx, "packages_read", http.MethodGet, base+"/packages", nil, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		var o struct {
+			Prompts []procurement.CombinePrompt `json:"prompts"`
+		}
+		if err := json.Unmarshal(raw, &o); err != nil {
+			return err
+		}
+		if len(o.Prompts) != 1 {
+			return fmt.Errorf("combine prompt benchmark: %d prompts", len(o.Prompts))
+		}
+		body, _ := json.Marshal(map[string]any{"package_ids": members, "submission_id": up.SubmissionID})
+		raw, err = a.timed(ctx, "packages_combine", http.MethodPost, base+"/packages/combine", body, http.StatusCreated)
+		if err != nil {
+			return err
+		}
+		var group procurement.Package
+		if err := json.Unmarshal(raw, &group); err != nil {
+			return err
+		}
+		if _, err := a.timed(ctx, "packages_combine", http.MethodPost, base+"/packages/"+group.ID+"/uncombine", nil, http.StatusNoContent); err != nil {
+			return err
 		}
 	}
 	return nil

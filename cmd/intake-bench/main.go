@@ -430,6 +430,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.packageGroups(ctx, o.apiSamples); err != nil {
 		return 0, fmt.Errorf("bench combined engagements: %w", err)
 	}
+	if err := api.combineForProposal(ctx, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench combine for this proposal: %w", err)
+	}
 	if err := api.costs(ctx, st, o.apiSamples); err != nil {
 		return 0, err
 	}
