@@ -156,7 +156,9 @@ try {
     Write-Host "SiteWise is running. Opening $Login"
     Write-Host 'Bookmark that link: it signs you in. Press Ctrl+C here to stop.'
     if (-not $env:SITEWISE_NO_BROWSER) { Start-Process $Login }
-    $server.WaitForExit()
+    # Poll rather than a bare WaitForExit(): PowerShell cannot interrupt a
+    # blocking .NET call, so Ctrl+C would be ignored until the server exits.
+    while (-not $server.WaitForExit(500)) { }
 } finally {
     if (-not $server.HasExited) { Stop-Process -Id $server.Id -Force }
 }

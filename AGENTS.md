@@ -85,6 +85,12 @@ Before changing one of these surfaces, read its current note:
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`
 
+## Deploying
+
+To update or redeploy the live server at sitewise.au, follow
+`docs/deployment.md` (server facts and the redeploy steps). The full
+operations manual is `docs/operations.md`.
+
 ## Stack
 
 Go single binary (API, workers, embedded Vite + React SPA, SSE), PostgreSQL 17

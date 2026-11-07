@@ -298,7 +298,7 @@ previous release reads.
 
 | Gate | State on 2026-10-01 |
 |---|---|
-| Clean VPS built with section 1 | not started |
+| Clean VPS built with section 1 | steps 1–3 and OCR done 2026-11-07 on BinaryLane Singapore; see `docs/deployment.md` |
 | `tools/check.ps1` passes on the release commit | fails. On the Task 12 tree: knowledge, `go vet` and `go test ./...` pass. Replayed accuracy fails only for want of an accepted baseline. The replayed bench fails extraction (p50 133 / p90 614 ms), rules p90 (4 ms) and Jev p90 (1,200 ms). It passes `whole_intake` (419 / 1,237 ms) and every API path, including `health_speed` (0.5 / 1.1 ms). Web build and Playwright were not rerun |
 | Service sandbox verified under systemd on the VPS | not run (section 1 step 9) |
 | Live latency gate on the VPS: `intake-bench -live -target <vps>` (copy the private corpus over temporarily and delete it after) | not run. The dev-host replay breaks the extraction, rules and list budgets (commit 5ac5e4d) |
