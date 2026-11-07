@@ -25,6 +25,61 @@ type Config struct {
 	SMTPUser     string
 	SMTPPassword string
 	PublicOrigin string
+	Stripe       Stripe
+}
+
+// Stripe is the billing setup. Without a secret key billing is off: plan
+// limits still apply, and upgrading reports that billing is not set up.
+type Stripe struct {
+	SecretKey     string
+	WebhookSecret string
+	// TaxRateID is the 10% GST tax rate, exclusive. Optional.
+	TaxRateID string
+	// Prices maps "<plan>/<month|year>" to a Stripe price id.
+	Prices map[string]string
+}
+
+// Enabled reports whether checkout and webhooks are configured.
+func (s Stripe) Enabled() bool { return s.SecretKey != "" }
+
+var stripePriceKeys = map[string]string{
+	"starter/month": "SITEWISE_STRIPE_PRICE_STARTER_MONTHLY",
+	"starter/year":  "SITEWISE_STRIPE_PRICE_STARTER_ANNUAL",
+	"team/month":    "SITEWISE_STRIPE_PRICE_TEAM_MONTHLY",
+	"team/year":     "SITEWISE_STRIPE_PRICE_TEAM_ANNUAL",
+}
+
+// loadStripe reads billing settings. A key needs the webhook secret and all
+// four prices; production needs the key.
+func loadStripe(getenv func(string) string, production bool) (Stripe, error) {
+	s := Stripe{
+		SecretKey:     strings.TrimSpace(getenv("SITEWISE_STRIPE_SECRET_KEY")),
+		WebhookSecret: strings.TrimSpace(getenv("SITEWISE_STRIPE_WEBHOOK_SECRET")),
+		TaxRateID:     strings.TrimSpace(getenv("SITEWISE_STRIPE_TAX_RATE")),
+		Prices:        map[string]string{},
+	}
+	if s.SecretKey == "" && !production {
+		return Stripe{}, nil
+	}
+	var missing []string
+	if s.SecretKey == "" {
+		missing = append(missing, "SITEWISE_STRIPE_SECRET_KEY")
+	}
+	if s.WebhookSecret == "" {
+		missing = append(missing, "SITEWISE_STRIPE_WEBHOOK_SECRET")
+	}
+	for _, key := range []string{"starter/month", "starter/year", "team/month", "team/year"} {
+		v := strings.TrimSpace(getenv(stripePriceKeys[key]))
+		if v == "" {
+			missing = append(missing, stripePriceKeys[key])
+			continue
+		}
+		s.Prices[key] = v
+	}
+	if len(missing) > 0 {
+		return Stripe{}, fmt.Errorf("missing configuration: %s", strings.Join(missing, ", "))
+	}
+	return s, nil
 }
 
 // Load reads required configuration. getenv is injected so tests can supply
@@ -89,5 +144,10 @@ func Load(getenv func(string) string) (Config, error) {
 			return Config{}, fmt.Errorf("missing configuration: %s", strings.Join(missing, ", "))
 		}
 	}
+	stripe, err := loadStripe(getenv, env == "production")
+	if err != nil {
+		return Config{}, err
+	}
+	cfg.Stripe = stripe
 	return cfg, nil
 }
