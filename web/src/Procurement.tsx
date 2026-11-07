@@ -270,7 +270,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
-      <td>{row.pkg && !row.group ? (() => {
+      {/* A group holds its members' proposals, so its prices open here. */}
+      <td>{row.pkg && !row.member ? (() => {
         const n = data?.board.packages[row.pkg.id]?.length ?? 0;
         return <button type="button" className="table-action" aria-label={`${n > 1 ? "Compare" : n === 1 ? "Review" : "Prices for"} ${row.label}`} onClick={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })}>{n > 1 ? `Compare ${n}` : n === 1 ? "Review" : "Prices"}</button>;
       })() : "—"}</td>

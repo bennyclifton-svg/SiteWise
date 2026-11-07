@@ -13,10 +13,11 @@ import (
 // reading. The caller holds the project lock. A user's explicit blank is a
 // choice too; completed/withdrawn submissions and existing assignments stand.
 func matchUnassignedSubmissions(ctx context.Context, tx pgx.Tx, org, project, document string) error {
-	rows, err := tx.Query(ctx, `SELECT s.id::text, p.id::text
+	// A grouped member's proposals go to its group (combined engagements).
+	rows, err := tx.Query(ctx, `SELECT s.id::text, COALESCE(p.group_id, p.id)::text
 FROM submissions s
 JOIN decisions d ON d.org_id=s.org_id AND d.document_id=s.document_id AND d.field='discipline'
-JOIN packages p ON p.org_id=s.org_id AND p.project_id=s.project_id AND p.discipline_id=d.value
+JOIN packages p ON p.org_id=s.org_id AND p.project_id=s.project_id AND p.discipline_id=d.value AND p.role<>'group'
 WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid
  AND ($3='' OR s.document_id::text=$3)
  AND s.package_id IS NULL AND s.status IN ('received','needs_review')
