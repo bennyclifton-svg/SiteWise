@@ -68,6 +68,10 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   const toolbar = page.locator(".report-toolbar");
   const before = Number((await toolbar.innerText()).match(/Version (\d+)/)![1]);
   await expandStages(structural);
+  // An open stage's lines fill the table's four columns, no stray fee cell.
+  const widths = await structural.locator(".rfp-stage-scope tr").evaluateAll(rows =>
+    rows.map(r => [...r.children].reduce((n, c) => n + ((c as HTMLTableCellElement).colSpan || 1), 0)));
+  expect(new Set(widths), "every stage table row is as wide as its header").toEqual(new Set([4]));
   const boxes = structural.locator('tr.rfp-stage-line[data-line] input[type="checkbox"][aria-label$=": excluded"]:not(:checked):not(:disabled)');
   const name = (await boxes.first().getAttribute("aria-label"))!;
   const edit = Date.now();

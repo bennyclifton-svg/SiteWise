@@ -137,7 +137,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
       <ScopeChecks controls={controls} controlKey={s.control ?? `position:${s.key}`} label={s.label} busy={busy} onWrite={onWrite} />
       <ScopeInputs controls={controls} target={s.control ?? `position:${s.key}`} busy={busy} onWrite={onWrite} /></td>
     <InOut label={s.label} value={stageOut ? "X" : tick(s.key, s.value === "X" ? "X" : "I")} disabled={busy || stageOut} onChoose={v => choose(s.key, v, () => onWrite(s.control ?? `position:${s.key}`, v))} />
-    <td />
+    {priced && <td />}
   </tr>);
   return <>
     {controls.decisions.filter(c => c.control === "boundary:range").map(c => <p key={c.id} data-control="boundary:range" className="hydraulic-unresolved">{c.label}. {c.text}</p>)}
@@ -169,7 +169,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
                 <td /><td>{e.code} {e.name}</td>
                 <InOut label={`${e.code} ${e.name}`} value={out ? "X" : tick(`element:${e.key}`, e.state === "exclude" ? "X" : "I")} disabled={busy || out}
                   onChoose={v => choose(`element:${e.key}`, v, () => onWrite(`element:${e.key}`, v === "I" ? "include" : "exclude"))} />
-                <td />
+                {priced && <td />}
               </tr>)}
               {serviceRows(s.key, out)}</Fragment> : <tr key={l.key} className="rfp-stage-line" data-line={l.key}>
               <td />
@@ -180,9 +180,9 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
                 </span>}</>}</td>
               <InOut label={upperFirst(l.text)} value={out ? "X" : tick(`${s.key}.${l.key}`, l.value === "X" ? "X" : "I")} disabled={busy || out}
                 onChoose={v => choose(`${s.key}.${l.key}`, v, () => l.custom ? saveOwn(s, own(s).map(o => o.id === l.key ? { ...o, value: v } : o)) : onWrite(`line:${s.key}.${l.key}`, v))} />
-              <td />
+              {priced && <td />}
             </tr>)}
-            <tr className="rfp-stage-add"><td /><td colSpan={4}>
+            <tr className="rfp-stage-add"><td /><td colSpan={priced ? 4 : 3}>
               {draft?.stage === s.key && !lines.some(l => l.key === draft.id) ? editor(s)
                 : <button type="button" className="btn btn-small rfp-add-line" disabled={busy || !!draft || out} onClick={() => setDraft({ stage: s.key, id: newLineID(), text: "" })}>+ Add a line</button>}
             </td></tr>
@@ -194,7 +194,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
           <td><span className="rfp-stage-count">{itemCount(held("").map(p => p.value))}</span></td><td /><td />{priced && <td className="rfp-fee hydraulic-fee-blank">In stage fees</td>}</tr>
         {open.has("") && serviceRows("", false)}
       </tbody>
-      <tbody>{table.rows.slice(Number(block.basis?.stage_rows ?? 0)).map((row, i) => <tr key={`total-${i}`} className="rfp-stage-total"><th scope="row">{row[0]}</th><td>{row[1]}</td><td /><td /><td className="rfp-fee" /></tr>)}</tbody>
+      <tbody>{table.rows.slice(Number(block.basis?.stage_rows ?? 0)).map((row, i) => <tr key={`total-${i}`} className="rfp-stage-total"><th scope="row">{row[0]}</th><td>{row[1]}</td><td /><td />{priced && <td className="rfp-fee" />}</tr>)}</tbody>
     </table></div>
     {hidden > 0 && <button type="button" className="btn btn-small rfp-stage-more" aria-expanded={showAll} onClick={() => setShowAll(!showAll)}>{showAll ? "Hide stages that do not apply" : `Show ${hidden} ${hidden === 1 ? "stage" : "stages"} that do not apply to this project`}</button>}
     {/* Inputs whose row is not shown (a service the brief does not need) stay reachable here. */}
