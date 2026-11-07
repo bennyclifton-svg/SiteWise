@@ -49,7 +49,9 @@ fan-out for the fields rules leave open; invoice edits, splits, the ledger
 read and export do not call Jev. A proposal dropped on a procurement row is
 read with one fan-out after filing; the price table, cell corrections,
 award, undo, ratings and the comparison report do not call Jev. Award writes
-contract values only from the firm's priced cells; it never writes a budget.
+contract values only from the firm's priced cells. When the package's budget
+is blank or unknown, award adopts that contract sum as the budget (undo
+restores it); a budget the PM set is never changed.
 Program open, edit, drag, link, generate, review, stage sync, export and
 print do not call Jev; every date is computed in Go. Its three readings (a
 dropped program file, the R7 returnable after award, hold-point release
