@@ -95,6 +95,10 @@ type Package struct {
 	ID         string
 	Title      string
 	Discipline string
+	// Disciplines are the member disciplines of a combined engagement, and
+	// a combined filing that covers them: a proposal filed as any of them
+	// goes to the group (slice 3).
+	Disciplines []string
 }
 
 // Firm is a directory firm. The caller looks it up by ABN or name key.
@@ -126,6 +130,9 @@ type Context struct {
 	ConstructionBudget *int64
 	// Lookup finds a directory firm by any of these ABNs or name keys.
 	Lookup func(abns, nameKeys []string) *Firm
+	// Groups lays out each combined engagement among the candidates, so
+	// code can place a group bid's amounts by discipline (group.go).
+	Groups map[string]GroupLayout
 }
 
 // Asker is the one System One call a proposal read may make.
@@ -238,6 +245,9 @@ func kindDiscipline(pc Context) string {
 	}
 	for _, p := range pc.Packages {
 		if p.ID == pc.PackageID {
+			if p.Discipline == "" && len(p.Disciplines) > 0 {
+				return p.Disciplines[0]
+			}
 			return p.Discipline
 		}
 	}
@@ -253,7 +263,7 @@ func (d *Draft) settlePackage() {
 	}
 	var match []string
 	for _, p := range d.ctx.Packages {
-		if d.ctx.Discipline != "" && p.Discipline == d.ctx.Discipline {
+		if d.ctx.Discipline != "" && (p.Discipline == d.ctx.Discipline || containsString(p.Disciplines, d.ctx.Discipline)) {
 			match = append(match, p.ID)
 		}
 	}
@@ -1005,6 +1015,8 @@ func (d *Draft) Finish() Reading {
 	}
 	claimed := map[string]bool{}
 	feeRows := map[string]int{}
+	group, isGroup := d.ctx.Groups[r.PackageID]
+	chosen := map[string]Amount{}
 	var base int64
 	baseKnown := true
 	for _, it := range d.items {
@@ -1042,7 +1054,11 @@ func (d *Draft) Finish() Reading {
 			}
 			claimed[a.ID] = true
 			p.Page, p.Passage = a.Page, a.Context
-			if it.Price() && p.DecidedBy != ByUser {
+			if isGroup && it.Price() && p.DecidedBy != ByUser {
+				// One amount under several disciplines is a combined stage,
+				// decided by placeGroup, not a shared fee.
+				chosen[it.Key] = a
+			} else if it.Price() && p.DecidedBy != ByUser {
 				if index, shared := feeRows[a.ID]; shared {
 					first := &r.Prices[index]
 					first.Band = BandAmber
@@ -1072,6 +1088,14 @@ func (d *Draft) Finish() Reading {
 			}
 		}
 		r.Prices = append(r.Prices, p)
+	}
+	if isGroup {
+		var dropped map[string]bool
+		r.Prices, dropped = d.placeGroup(group, r.Prices, chosen)
+		for id := range dropped {
+			delete(claimed, id)
+		}
+		base, baseKnown = groupBase(d.items, group, r.Prices)
 	}
 	if r.GSTBasis == "inc" {
 		r.Flags = append(r.Flags, FlagGSTInc)

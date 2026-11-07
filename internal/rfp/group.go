@@ -405,7 +405,7 @@ func (e Engagement) memberFor(party string) int {
 	}
 	best, length, tie := -1, 0, false
 	for j, p := range e.Parts {
-		for _, w := range memberWords(p) {
+		for _, w := range MemberWords(p) {
 			if !strings.Contains(party, " "+w) {
 				continue
 			}
@@ -427,9 +427,10 @@ func (e Engagement) memberFor(party string) int {
 // discipline on their own ("fire" could be services or engineering).
 var genericWords = map[string]bool{"fire": true, "land": true, "bca": true, "town": true, "cost": true, "waste": true}
 
-// memberWords are the words a responsible party uses for a member: its
+// MemberWords are the words a responsible party uses for a member: its
 // discipline file's aliases, its id, and the id's first word when specific.
-func memberWords(p GroupPart) []string {
+// A fee proposal names a discipline in the same words (slice 3 placement).
+func MemberWords(p GroupPart) []string {
 	if !p.Templated {
 		if p.PackageTitle == "" {
 			return nil
@@ -444,6 +445,16 @@ func memberWords(p GroupPart) []string {
 		words = append(words, first)
 	}
 	return words
+}
+
+// MemberKey prefixes a member's fee rows on the response form and in the
+// group's price table: its RFP file's id, or its package name when it has
+// none. One key in both places lets a returned form read back by key.
+func MemberKey(p GroupPart) string {
+	if p.Templated {
+		return p.Discipline.ID
+	}
+	return slug(p.PackageTitle)
 }
 
 // FeeSection is one discipline's part of the engagement's fee schedule.
@@ -470,10 +481,7 @@ func GroupSchedule(e Engagement) []FeeSection {
 		} else {
 			items = GenericSchedule(nil)
 		}
-		f := FeeSection{PackageID: p.PackageID, Key: slug(p.PackageTitle), Title: p.Title(), Items: []ScheduleItem{}, Rates: []ScheduleItem{}}
-		if p.Templated {
-			f.Key = p.Discipline.ID
-		}
+		f := FeeSection{PackageID: p.PackageID, Key: MemberKey(p), Title: p.Title(), Items: []ScheduleItem{}, Rates: []ScheduleItem{}}
 		for _, it := range items {
 			switch {
 			case it.Price():
