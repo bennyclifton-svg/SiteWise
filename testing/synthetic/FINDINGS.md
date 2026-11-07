@@ -1162,6 +1162,22 @@ family).**
 - *Location:* the attach anchors of these three fragments, with F29
   (lane A, program library).
 
+**F54. Design and construct with a CDC had no program skeleton (fixed 7 November 2026, R20).**
+- *Expected (owner ruling R20):* the contractor is usually engaged first.
+  Its designer completes the documents, the CDC is obtained on them, then
+  construction starts.
+- *Actual:* D&C plus CDC fell back to `sk.generic`. Construction
+  documentation (days 75-95) came before procurement and novation (185-200),
+  and the approval came before the tender. ST04-cdc had 4 links violated.
+- *Fix:* `sk.new-dc-cdc` in `knowledge/program/skeletons.yaml`: investigation,
+  concept design, procurement, construction documentation, approval
+  documentation (the CDC package: reports and client sign-off), approvals,
+  construction. Test `TestNewDesignConstructCDCOrder`. Merged to local main
+  `c931aa3`.
+- *Confirmed live* (`runs/20261107-st04-cdc-r20/`): the skeleton matches,
+  no rows are in the wrong stage, and links violated fall from 4 to 2. The
+  two left are F53.
+
 ## Known gaps confirmed (already named in the shape)
 
 - Electrical, hydraulic and mechanical consultants are suggested for a
@@ -1298,19 +1314,4 @@ family).**
 - Profile: 44 or 45 values correct out of 60 per scenario.
 - Invoices: number, total and GST read correctly on every clean invoice.
 - The arborist package was proposed in the trees variant.
-**F54. Design and construct with a CDC had no program skeleton (fixed 7 November 2026, R20).**
-- *Expected (owner ruling R20):* the contractor is usually engaged first.
-  Its designer completes the documents, the CDC is obtained on them, then
-  construction starts.
-- *Actual:* D&C plus CDC fell back to `sk.generic`. Construction
-  documentation (days 75-95) came before procurement and novation (185-200),
-  and the approval came before the tender. ST04-cdc had 4 links violated.
-- *Fix:* `sk.new-dc-cdc` in `knowledge/program/skeletons.yaml`: investigation,
-  concept design, procurement, construction documentation, approval
-  documentation (the CDC package: reports and client sign-off), approvals,
-  construction. Test `TestNewDesignConstructCDCOrder`. Merged to local main
-  `c931aa3`.
-- *Confirmed live* (`runs/20261107-st04-cdc-r20/`): the skeleton matches,
-  no rows are in the wrong stage, and links violated fall from 4 to 2. The
-  two left are F53.
 
