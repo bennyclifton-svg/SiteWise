@@ -30,6 +30,9 @@ type rfpState struct {
 	Version    int           `json:"version"`
 	Status     string        `json:"status"`
 	Drivers    rfp.DriverSet `json:"drivers"`
+	// Group is set on a combined engagement's RFP, which is composed from
+	// its members' drafts instead (report_rfp_group.go).
+	Group *groupState `json:"group,omitempty"`
 }
 
 // RFPSuggestion proposes a discipline for a services package whose title
@@ -44,7 +47,8 @@ type RFPSuggestion struct {
 // a confirmed discipline id. A title alone never switches the template.
 func (s *Store) reportTemplateFor(kind string, pkg procurement.Package) (knowledge.ReportTemplate, error) {
 	if kind == "rfp" && s.workCatalog() != nil {
-		if _, ok := s.workCatalog().RFPForDiscipline(pkg.DisciplineID); ok {
+		// A combined engagement's RFP is its members' consultant RFPs.
+		if _, ok := s.workCatalog().RFPForDiscipline(pkg.DisciplineID); ok || pkg.IsGroup() {
 			if t, ok := s.workCatalog().CurrentReportTemplate(rfpTemplateID); ok {
 				return t, nil
 			}
@@ -55,7 +59,7 @@ func (s *Store) reportTemplateFor(kind string, pkg procurement.Package) (knowled
 
 func (s *Store) rfpSuggestion(pkg procurement.Package) *RFPSuggestion {
 	cat := s.workCatalog()
-	if cat == nil || pkg.Kind != "services" {
+	if cat == nil || pkg.Kind != "services" || pkg.IsGroup() {
 		return nil
 	}
 	if _, ok := cat.RFPForDiscipline(pkg.DisciplineID); ok {
@@ -137,50 +141,64 @@ func (s *Store) storedRFP(state reports.SourceState, settings rfp.Settings) (kno
 // draft from its frozen drivers. A nil value deletes the setting, which
 // restores the rule. Version is the draft version the user saw.
 func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string, value json.RawMessage, version int64) (ReportDraft, error) {
-	var d ReportDraft
+	d, _, err := s.SetReportSettingInGroup(ctx, org, id, actor, key, value, version)
+	return d, err
+}
+
+// SetReportSettingInGroup is SetReportSetting that also names the combined
+// engagement's report recomposed in the same transaction: the member's
+// group's, or the group's own when the setting is a shared one. "" when the
+// report is in no group.
+func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key string, value json.RawMessage, version int64) (d ReportDraft, group string, err error) {
 	if version < 1 || key == "" || len(key) > 120 {
-		return d, ErrInvalidReport
+		return d, "", ErrInvalidReport
 	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	defer tx.Rollback(ctx)
 	r, err := readReport(ctx, tx, org, id)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	if err := lockProject(ctx, tx, org, r.ProjectID); err != nil {
-		return d, err
+		return d, "", err
 	}
 	if err := packageActor(ctx, tx, org, actor); err != nil {
-		return d, err
+		return d, "", err
 	}
 	// Re-read under the lock: a refresh may have moved the current draft.
 	r, err = readReport(ctx, tx, org, id)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	if r.CurrentDraftVersionID == "" {
-		return d, ErrInvalidReport
+		return d, "", ErrInvalidReport
 	}
 	d, err = readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	if d.Status != "draft" || d.TemplateID != rfpTemplateID {
-		return d, ErrInvalidReport
+		return d, "", ErrInvalidReport
 	}
 	if d.Version != version {
-		return d, ErrVersionConflict
+		return d, "", ErrVersionConflict
 	}
 	settings, err := readReportSettings(ctx, tx, org, d.ID)
 	if err != nil {
-		return d, err
+		return d, "", err
+	}
+	if _, ok := groupDraft(d.SourceRevisions); ok {
+		if d, err = s.setGroupSetting(ctx, tx, org, r, d, actor, key, value, settings); err != nil {
+			return d, "", err
+		}
+		return d, r.ID, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
 	}
 	disc, sk, drivers, current, err := s.storedRFP(d.SourceRevisions, settings)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	// Older Hydraulic drafts had one water/sanitary choice. Once either
 	// service is edited, keep the other at the position the user saw.
@@ -190,7 +208,7 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 				raw, _ := json.Marshal(p.Value)
 				_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,'position:sanitary',$3::jsonb,'{}'::jsonb,$4::uuid)`, org, d.ID, raw, actor)
 				if err != nil {
-					return d, err
+					return d, "", err
 				}
 				settings["position:sanitary"] = rfp.Setting{Value: raw}
 			}
@@ -198,75 +216,85 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 	}
 	if value == nil {
 		if _, ok := settings[key]; !ok {
-			return d, ErrNotFound
+			return d, "", ErrNotFound
 		}
 		if _, err = tx.Exec(ctx, `DELETE FROM report_settings WHERE org_id=$1::uuid AND report_version_id=$2::uuid AND key=$3`, org, d.ID, key); err != nil {
-			return d, err
+			return d, "", err
 		}
 		delete(settings, key)
 	} else {
 		if key == "transmittal" {
-			var ids []string
-			if len(value) > 200000 || json.Unmarshal(value, &ids) != nil || ids == nil || len(ids) > 5000 {
-				return d, ErrInvalidSetting
-			}
-			docs, readErr := reportDocumentScheduleSelection(ctx, tx, org, r.ProjectID, ids)
-			if readErr != nil {
-				return d, readErr
-			}
-			// Reject missing, foreign and duplicate ids without revealing their existence.
-			if len(docs) != len(ids) {
-				return d, ErrInvalidSetting
-			}
-			value, err = json.Marshal(docs)
-			if err != nil {
-				return d, err
+			if value, err = transmittalSelection(ctx, tx, org, r.ProjectID, value); err != nil {
+				return d, "", err
 			}
 		}
 		if err := rfp.ValidateSetting(disc, sk, drivers, key, value); err != nil {
-			return d, err
+			return d, "", err
 		}
 		basis := json.RawMessage(`{}`)
 		_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,$3,$4::jsonb,$5::jsonb,$6::uuid) ON CONFLICT(org_id,report_version_id,key) DO UPDATE SET value=EXCLUDED.value,basis=EXCLUDED.basis,user_id=EXCLUDED.user_id,version=report_settings.version+1,updated_at=now()`, org, d.ID, key, []byte(value), []byte(basis), actor)
 		if err != nil {
-			return d, err
+			return d, "", err
 		}
 		settings[key] = rfp.Setting{Value: value, Basis: basis}
 	}
 	template, ok := s.workCatalog().CurrentReportTemplate(rfpTemplateID)
 	if !ok {
-		return d, ErrInvalidReport
+		return d, "", ErrInvalidReport
 	}
 	edits, err := readReportEdits(ctx, tx, org, d.ID)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	sections, err := rfp.Sections(rfp.Resolve(disc, sk, drivers, settings), template)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	if sections, err = reports.ApplyEdits(sections, edits); err != nil {
-		return d, err
+		return d, "", err
 	}
 	sections, refs, err := reports.Cite(sections)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	sectionsRaw, _ := json.Marshal(sections)
 	var raw []byte
 	err = tx.QueryRow(ctx, `UPDATE report_versions SET sections=$3::jsonb,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid AND status='draft' RETURNING to_jsonb(report_versions)`, org, d.ID, sectionsRaw).Scan(&raw)
 	if err != nil {
-		return d, err
+		return d, "", err
 	}
 	if err := json.Unmarshal(raw, &d); err != nil {
-		return d, err
+		return d, "", err
 	}
 	if err := saveReportReferences(ctx, tx, org, d.ID, refs); err != nil {
-		return d, err
+		return d, "", err
 	}
 	d.References = refs
 	d.MaterialAssumptions = reports.MaterialAssumptions(refs)
-	return d, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
+	// A member's choice changes its combined engagement's document too, in
+	// this transaction.
+	if group, err = s.recomposeGroupOf(ctx, tx, org, r); err != nil {
+		return d, "", err
+	}
+	return d, group, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
+}
+
+// transmittalSelection turns the document ids a user chose into the
+// schedule rows the RFP prints. Missing, foreign and duplicate ids are
+// refused without revealing whether they exist.
+func transmittalSelection(ctx context.Context, tx pgx.Tx, org, project string, value json.RawMessage) (json.RawMessage, error) {
+	var ids []string
+	if len(value) > 200000 || json.Unmarshal(value, &ids) != nil || ids == nil || len(ids) > 5000 {
+		return nil, ErrInvalidSetting
+	}
+	docs, err := reportDocumentScheduleSelection(ctx, tx, org, project, ids)
+	if err != nil {
+		return nil, err
+	}
+	if len(docs) != len(ids) {
+		return nil, ErrInvalidSetting
+	}
+	return json.Marshal(docs)
 }
 
 // SetReportFact writes a project fact edited in an RFP to its one home in
@@ -318,7 +346,13 @@ func (s *Store) reportFactHome(ctx context.Context, org, id, name string, value 
 	if d.Version != version {
 		return "", rfp.Home{}, ErrVersionConflict
 	}
-	_, sk, drivers, _, err := s.storedRFP(d.SourceRevisions, rfp.Settings{})
+	var sk knowledge.RFPSkeleton
+	var drivers rfp.DriverSet
+	if _, ok := groupDraft(d.SourceRevisions); ok {
+		sk, drivers, err = s.groupFactBasis(ctx, tx, org, r, d)
+	} else {
+		_, sk, drivers, _, err = s.storedRFP(d.SourceRevisions, rfp.Settings{})
+	}
 	if err != nil {
 		return "", rfp.Home{}, err
 	}
@@ -394,9 +428,12 @@ func (s *Store) rfpControls(ctx context.Context, tx pgx.Tx, org string, d Report
 
 // rfpIssueChecks refuses issue of a consultant RFP while blocking checks
 // remain. Other report kinds have none.
-func (s *Store) rfpIssueChecks(ctx context.Context, tx pgx.Tx, org string, d ReportDraft) ([]rfp.Check, error) {
+func (s *Store) rfpIssueChecks(ctx context.Context, tx pgx.Tx, org string, r Report, d ReportDraft) ([]rfp.Check, error) {
 	if d.TemplateID != rfpTemplateID {
 		return nil, nil
+	}
+	if _, ok := groupDraft(d.SourceRevisions); ok {
+		return s.groupBlocking(ctx, tx, org, r, d)
 	}
 	settings, err := readReportSettings(ctx, tx, org, d.ID)
 	if err != nil {

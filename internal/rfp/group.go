@@ -630,3 +630,41 @@ func GroupBlocking(e Engagement) []Check {
 	}
 	return out
 }
+
+// GroupControls turns the lead member's controls into the engagement's
+// shared ones: page one (less the parts a discipline covers, which are each
+// member's own), the terms and the proposal dates, with every member's
+// checks merged. Each member's own controls come from its own RFP.
+func GroupControls(lead Controls, e Engagement) Controls {
+	out := lead
+	out.Discipline, out.Title, out.Status = "", e.Title, e.status()
+	out.Decisions, out.Checks = GroupBlocking(e), GroupChecks(e)
+	out.Groups = []Group{}
+	for _, g := range lead.Groups {
+		switch g.ID {
+		case "project":
+			kept := []Control{}
+			for _, c := range g.Controls {
+				if c.Key != "parts:affected" {
+					kept = append(kept, c)
+				}
+			}
+			g.Controls = kept
+		case "terms", "issue":
+		default:
+			continue
+		}
+		out.Groups = append(out.Groups, g)
+	}
+	return out
+}
+
+// GroupSharedReturnables are the engagement's returnable schedules, merged
+// as the document prints them.
+func GroupSharedReturnables(e Engagement) []Row {
+	lead := e.lead()
+	if lead < 0 {
+		return nil
+	}
+	return e.sharedResolved(lead).Returnables
+}

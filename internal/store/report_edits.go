@@ -150,8 +150,17 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if err != nil {
 		return view, err
 	}
-	fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version})
-	view.PageFit = &fit
+	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version}
+	if _, group := groupDraft(d.SourceRevisions); group {
+		// A combined engagement's document is several RFPs long; rendering it
+		// on every read would break the read budget. The RFP editor shows no
+		// page count, and issue renders and gates the length.
+		limit, target := render.PageLimit(snap)
+		view.PageFit = &render.PageFit{Limit: limit, Target: target, Fits: true}
+	} else {
+		fit := render.Fit(snap)
+		view.PageFit = &fit
+	}
 	if len(view.Issues) > 0 {
 		compared, _, compareErr := reports.IssueContent(d.Sections, r.Kind, view.Issues[0].BudgetDisclosed)
 		if compareErr != nil {
@@ -166,7 +175,12 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if d.TemplateID == rfpTemplateID && d.Status == "draft" {
 		// A draft whose discipline file changed shape still opens; the stale
 		// notice asks for a refresh.
-		if view.RFP, err = s.rfpControls(ctx, tx, org, d); err != nil && !errors.Is(err, ErrInvalidReport) {
+		if _, group := groupDraft(d.SourceRevisions); group {
+			view.RFP, view.RFPGroup, err = s.groupControls(ctx, tx, org, r, d)
+		} else {
+			view.RFP, err = s.rfpControls(ctx, tx, org, d)
+		}
+		if err != nil && !errors.Is(err, ErrInvalidReport) {
 			return view, err
 		}
 	}

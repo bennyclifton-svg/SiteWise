@@ -10,6 +10,7 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/reports"
 	"sitewise/internal/rfp"
+	"sitewise/internal/xlsx"
 )
 
 // Schedule sources: the package's RFP, the discipline's RFP with no
@@ -213,6 +214,16 @@ type ResponseForm struct {
 	Header      rfp.FormHeader
 	Items       []rfp.ScheduleItem
 	Returnables []rfp.Row
+	// Fees is set for a combined engagement: a section per discipline.
+	Fees []rfp.FeeSection
+}
+
+// Sheets is the workbook the form downloads as.
+func (f ResponseForm) Sheets() []xlsx.Sheet {
+	if f.Fees != nil {
+		return rfp.GroupResponseForm(f.Header, f.Fees, f.Returnables)
+	}
+	return rfp.ResponseForm(f.Header, f.Items, f.Returnables)
 }
 
 // ReadResponseForm resolves a consultant RFP's draft into its form. A report
@@ -238,16 +249,25 @@ func (s *Store) ReadResponseForm(ctx context.Context, org, reportID string) (Res
 	if d.TemplateID != rfpTemplateID {
 		return f, ErrInvalidReport
 	}
+	var project string
+	if err := tx.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ProjectID).Scan(&project); err != nil {
+		return f, err
+	}
+	if _, group := groupDraft(d.SourceRevisions); group {
+		fees, returnables, ref, err := s.groupResponseForm(ctx, tx, org, r, d)
+		if err != nil {
+			return f, err
+		}
+		f.Header = rfp.FormHeader{Title: r.Title, Project: project, Ref: ref}
+		f.Fees, f.Returnables = fees, returnables
+		return f, tx.Commit(ctx)
+	}
 	settings, err := readReportSettings(ctx, tx, org, d.ID)
 	if err != nil {
 		return f, err
 	}
 	_, _, _, res, err := s.storedRFP(d.SourceRevisions, settings)
 	if err != nil {
-		return f, err
-	}
-	var project string
-	if err := tx.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ProjectID).Scan(&project); err != nil {
 		return f, err
 	}
 	f.Header = rfp.FormHeader{Title: r.Title, Project: project, Ref: res.Fields["ref"].Value}

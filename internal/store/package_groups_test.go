@@ -469,8 +469,8 @@ func TestGroupRulesForDisciplinesRFPsAwardsAndInvoices(t *testing.T) {
 			t.Fatal("member re-suggested")
 		}
 	}
-	// A member's own RFP is not issued while it is in a group, and the group
-	// has no RFP yet.
+	// A member's own RFP is not issued while it is in a group; the group's
+	// RFP is issued instead (slice 2).
 	blobs, err := files.Open(t.TempDir(), 20<<20)
 	if err != nil {
 		t.Fatal(err)
@@ -478,7 +478,7 @@ func TestGroupRulesForDisciplinesRFPsAwardsAndInvoices(t *testing.T) {
 	if _, err := s.IssueReport(ctx, orgA, report, userA, "test", store.IssueOptions{Version: 1, ReportingDate: "2026-11-07"}, blobs); !errors.Is(err, store.ErrReportPackageGrouped) {
 		t.Fatalf("member RFP issue: %v", err)
 	}
-	if _, _, _, err := s.ProcurementCreate(ctx, orgA, projectA, userA, group.ID, "", ""); !errors.Is(err, store.ErrInvalidReport) {
+	if _, r, created, err := s.ProcurementCreate(ctx, orgA, projectA, userA, group.ID, "", ""); err != nil || !created || r.PackageID != group.ID {
 		t.Fatalf("group RFP: %v", err)
 	}
 	// A member is not awarded on its own while grouped.

@@ -109,7 +109,7 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	}
 	// A consultant RFP is not issued while a decision, client quantity or
 	// required detail is open; the Before-issue list names each one.
-	if open, err := s.rfpIssueChecks(ctx, tx, org, d); err != nil {
+	if open, err := s.rfpIssueChecks(ctx, tx, org, r, d); err != nil {
 		return out, err
 	} else if len(open) > 0 {
 		return out, ErrRFPOpenChecks

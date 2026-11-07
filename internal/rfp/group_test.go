@@ -422,3 +422,24 @@ func TestGroupRFPsFitTheirPageLimit(t *testing.T) {
 		}
 	}
 }
+
+func TestGroupControlsShareOnlyTheEngagementsParts(t *testing.T) {
+	e := engagementFor(t, "arthur-st", "Structural and civil engineering", "structural", "civil")
+	p := e.Parts[0]
+	c := GroupControls(BuildControls(p.Resolved, p.Discipline, skeleton(t), p.Settings), e)
+	ids := []string{}
+	for _, g := range c.Groups {
+		ids = append(ids, g.ID)
+		for _, ctl := range g.Controls {
+			if ctl.Key == "parts:affected" || strings.HasPrefix(ctl.Key, "position:") || strings.HasPrefix(ctl.Key, "stage:") {
+				t.Fatalf("a discipline's control %s is not shared", ctl.Key)
+			}
+		}
+	}
+	if strings.Join(ids, ",") != "project,terms,issue" || c.Title != e.Title || c.Status != "draft" {
+		t.Fatalf("shared controls %v %q %q", ids, c.Title, c.Status)
+	}
+	if len(c.Decisions) != len(GroupBlocking(e)) || len(c.Checks) != len(GroupChecks(e)) {
+		t.Fatal("the shared controls carry every member's checks")
+	}
+}
