@@ -12,9 +12,9 @@ Conditions that do not apply: Several buildings or a campus; Parts with differen
 
 ### 2. Scope of services
 
-Access advice from written instruction/agreed inputs to named final output and response-round end. Architect/specialists retain design; BCA adviser coordinates code; independent statutory certifier decides approval. No approval or discrimination-immunity guarantee.
-Dated PDFs/mark-ups and editable issues, assumptions, solutions and evidence registers; locations, input revisions, owners/dates and closure proof. Coordinate architecture, landscape/civil, services/AV, lifts, fire, BCA and operator.
-Assessment basis: Confirm uses/classes by part, affected access chain and tenant/operator boundaries; current jurisdiction/editions, housing targets and mandatory versus voluntary objectives. Attach measured evidence, approvals, conditions and gaps.
+You advise on access for each appointed stage, from our written instruction to your final report and response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint.
+Issue each review as a dated PDF report with marked-up drawings and an editable register of issues, Performance Solutions and evidence, recording location, drawing revision, owner, due date and close-out. Coordinate with the architect, landscape, civil, services, lift, fire and BCA consultants.
+Assessment basis: The uses and classes in section 1, against the current NCC, its livable housing requirements where housing is included, and any council adaptable-housing target. We provide the survey, approvals and conditions; tell us what is missing.
 
 Select base, options and end boundary; advice-only ends at its report/response round. Later work needs written activation. R1 Fee by stage: Price each selected stage/service: basis, quantity, ex GST/GST/total; base/options/alternatives and standalone/package dependency separate. State milestones/validity; acknowledge addenda and authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
