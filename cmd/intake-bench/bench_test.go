@@ -293,6 +293,7 @@ func TestBenchEndToEnd(t *testing.T) {
 			{"name": "costs_contract_edit", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "costs_package_assign", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "costs_prepare", "p50_us": 250_000, "p90_us": 500_000},
+			{"name": "packages_combine", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "costs_prepare_noop", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "costs_delete", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "costs_freeze", "p50_us": 250_000, "p90_us": 500_000},
@@ -330,7 +331,7 @@ func TestBenchEndToEnd(t *testing.T) {
 	// Synthetic approval/hold-point fixtures are restored after automatic
 	// rebuilds, then read again; those additional reads remain real samples.
 	for path, count := range map[string]int{"proposals_read": 51, "proposals_accept": 3, "proposals_dismiss": 9, "proposals_undo": 6, "proposals_accept_delivery": 6, "proposals_undo_delivery": 12,
-		"works_split": 3, "works_retire": 9, "costs_read": 6, "costs_prepare": 3, "costs_contract_edit": 3, "costs_package_assign": 3, "costs_prepare_noop": 3, "costs_freeze": 3, "costs_accept_all": 3, "report_issue": 3, "report_export": 3} {
+		"works_split": 3, "works_retire": 9, "costs_read": 9, "costs_prepare": 6, "packages_combine": 6, "costs_contract_edit": 3, "costs_package_assign": 3, "costs_prepare_noop": 3, "costs_freeze": 3, "costs_accept_all": 3, "report_issue": 3, "report_export": 3} {
 		if res.Paths[path].N != count {
 			t.Fatalf("%s samples: got %d, want %d", path, res.Paths[path].N, count)
 		}

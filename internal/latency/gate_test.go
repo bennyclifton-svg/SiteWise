@@ -158,6 +158,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"delivery_write":            {100_000, 250_000},
 		"package_scope_write":       {100_000, 250_000},
 		"packages_write":            {100_000, 250_000},
+		"packages_combine":          {100_000, 250_000},
 		"works_write":               {100_000, 250_000},
 		"proposals_read":            {100_000, 250_000},
 		"proposals_accept":          {100_000, 250_000},

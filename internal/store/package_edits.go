@@ -51,6 +51,9 @@ func (s *Store) PatchPackage(ctx context.Context, org, project, id, actor string
 	if p.Version != patch.Version {
 		return p, ErrVersionConflict
 	}
+	if err := groupPatchAllowed(p, patch); err != nil {
+		return p, err
+	}
 	patch.Apply(&p)
 	if err := procurement.ValidatePackage(p); err != nil {
 		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)
@@ -236,4 +239,26 @@ func (s *Store) PatchPackageStage(ctx context.Context, org, project, id, stageID
 		return stage, err
 	}
 	return stage, nil
+}
+
+// groupPatchAllowed keeps a combined engagement's shape: a group is renamed,
+// never given a discipline or another kind, and neither a group nor a member
+// is removed while combined (uncombine or remove from the group first).
+func groupPatchAllowed(p procurement.Package, patch procurement.PackagePatch) error {
+	if !p.IsGroup() && p.GroupID == "" {
+		return nil
+	}
+	if patch.Retired != nil && *patch.Retired {
+		if p.IsGroup() {
+			return fmt.Errorf("%w: uncombine the group instead of removing it", ErrInvalidPackage)
+		}
+		return fmt.Errorf("%w: remove this consultant from its group first", ErrInvalidPackage)
+	}
+	if patch.Kind != nil && *patch.Kind != "services" {
+		return fmt.Errorf("%w: a combined consultant stays a consultant", ErrInvalidPackage)
+	}
+	if p.IsGroup() && (patch.DisciplineID != nil && *patch.DisciplineID != "" || patch.WorksScope != nil && *patch.WorksScope != "" || patch.EngagedBy != nil && *patch.EngagedBy != "") {
+		return fmt.Errorf("%w: a group has no discipline of its own", ErrInvalidPackage)
+	}
+	return nil
 }

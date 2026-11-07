@@ -141,6 +141,8 @@ func packageError(w http.ResponseWriter, err error) {
 		http.Error(w, "package changed", http.StatusConflict)
 	case errors.Is(err, store.ErrDuplicatePackage):
 		http.Error(w, "discipline already has a package", http.StatusConflict)
+	case errors.Is(err, store.ErrPackageGrouped), errors.Is(err, store.ErrPackageAwarded):
+		http.Error(w, err.Error(), http.StatusConflict)
 	case errors.As(err, &pgErr) && pgErr.Code == "23505":
 		http.Error(w, "duplicate package stage, responsibility or proposal", http.StatusConflict)
 	default:

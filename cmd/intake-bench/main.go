@@ -427,6 +427,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.procurement(ctx, o.apiSamples); err != nil {
 		return 0, err
 	}
+	if err := api.packageGroups(ctx, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench combined engagements: %w", err)
+	}
 	if err := api.costs(ctx, st, o.apiSamples); err != nil {
 		return 0, err
 	}
@@ -886,7 +889,8 @@ func (a *apiClient) accounts(ctx context.Context, st *store.Store) error {
 		}
 		c := &apiClient{origin: a.origin, http: &http.Client{Jar: jar, Timeout: 60 * time.Second}, samples: a.samples}
 		email := fmt.Sprintf("bench-account-%d-%d@bench.test", time.Now().UnixNano(), i)
-		body, _ := json.Marshal(map[string]string{"email": email, "password": "bench password"})
+		// Sign-up now requires accepting the terms (billing); sign-in ignores it.
+		body, _ := json.Marshal(map[string]any{"email": email, "password": "bench password", "accept_terms": true})
 		_, signUpErr := c.timed(ctx, "account_auth", http.MethodPost, "/signup", body, http.StatusNoContent)
 		var signInErr error
 		if signUpErr == nil {

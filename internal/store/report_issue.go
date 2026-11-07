@@ -64,6 +64,15 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if err != nil {
 		return out, err
 	}
+	if r.Kind != "pmp" {
+		var grouped bool
+		if err = tx.QueryRow(ctx, `SELECT group_id IS NOT NULL FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3`, org, r.ProjectID, r.PackageID).Scan(&grouped); err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return out, err
+		}
+		if grouped {
+			return out, ErrReportPackageGrouped
+		}
+	}
 	if r.CurrentDraftVersionID == "" {
 		return out, ErrVersionConflict
 	}

@@ -19,6 +19,7 @@ import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard 
 import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
+import { InlineCellEditor } from "./table/InlineCellEditor";
 import "./reports.css";
 
 type View = { at: "table" } | { at: "report"; id: string } | { at: "prices"; pkg: string; report?: string };
@@ -31,6 +32,10 @@ interface Row {
   pkg?: PackageRecord;
   proposalKey?: string;
   report?: SavedReport;
+  /** A combined engagement's row, or one of its members shown beneath it
+   * (docs/plans/2026-11-07-combined-engagements-slice1.md). */
+  group?: boolean;
+  member?: boolean;
 }
 
 interface Loaded { overview: PackageOverview; reports: SavedReport[]; board: Board }
@@ -46,6 +51,9 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
   const [dropRow, setDropRow] = useState("");
+  // Consultant rows ticked for Combine, and the combine being confirmed.
+  const [ticked, setTicked] = useState<string[]>([]);
+  const [combining, setCombining] = useState<{ members: PackageRecord[]; names: string[]; title: string; costLabels: string[] } | null>(null);
 
   // The three reads go out together, so the table waits for one round trip.
   useEffect(() => {
@@ -80,6 +88,11 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
     if (e instanceof ApiError && e.status === 401) { onSignedOut(); return; }
     if (e instanceof ApiError && e.status === 404 && conflict === "create") { setError("This suggestion changed. The table has been refreshed."); setReload(n => n + 1); return; }
     if (e instanceof ApiError && e.status === 409 && conflict === "row") { setError("That discipline already has a row."); setReload(n => n + 1); return; }
+    if (e instanceof ApiError && conflict === "group") {
+      if (e.status === 409) { setError(e.message.includes("award") ? "Undo the award before changing this combined engagement." : "One of these consultants is already combined. The table has been refreshed."); setReload(n => n + 1); return; }
+      if (e.status === 422) { setError(e.message || "Could not change this combined engagement."); setReload(n => n + 1); return; }
+      if (e.status === 404) { setError("A row changed. The table has been refreshed."); setReload(n => n + 1); return; }
+    }
     if (e instanceof ApiError && conflict === "remove") {
       if (e.status === 409) { setError("The package or cost plan changed. The table has been refreshed; review removal again."); setReload(n => n + 1); return; }
       if (e.status === 422) { setError("This package still has scope, costs or open delivery records. Resolve those assignments before removing it."); return; }
@@ -121,6 +134,44 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       }
       setRemoving({pkg, label, costPlan: ids.size ? plan : undefined, costLabels: plan.items.filter(i => ids.has(i.cost_item_id)).map(i => i.label)});
     } catch (e) { fail(e, "remove"); } finally { setBusyRow(""); }
+  }
+  // Combine shows what moves before it moves: the members, their draft fee
+  // lines that nest under the group's line, and the group's name.
+  async function reviewCombine(members: PackageRecord[], names: string[]) {
+    setBusyRow("combine"); setError("");
+    try {
+      const plan = await costApi.read(projectId);
+      const ids = new Set(members.map(m => m.id));
+      const costLabels = plan.items.filter(i => i.line_kind === "fee" && ids.has(i.package_id) && !i.parent_item_id).map(i => i.label);
+      setCombining({ members, names, title: joinNames(names), costLabels });
+    } catch (e) { fail(e, "group"); } finally { setBusyRow(""); }
+  }
+  async function combine() {
+    if (!combining) return;
+    setBusyRow("combine"); setError("");
+    try { await procurementApi.combine(projectId, combining.members.map(m => m.id), combining.title); setTicked([]); setReload(n => n + 1); }
+    catch (e) { setTicked([]); fail(e, "group"); } finally { setBusyRow(""); setCombining(null); }
+  }
+  async function uncombine(group: PackageRecord) {
+    setBusyRow(group.id); setError("");
+    try { await procurementApi.uncombine(projectId, group.id); setReload(n => n + 1); }
+    catch (e) { fail(e, "group"); } finally { setBusyRow(""); }
+  }
+  async function ungroup(member: PackageRecord) {
+    setBusyRow(member.id); setError("");
+    try { await procurementApi.ungroup(projectId, member.id); setReload(n => n + 1); }
+    catch (e) { fail(e, "group"); } finally { setBusyRow(""); }
+  }
+  async function rename(group: PackageRecord, title: string): Promise<boolean> {
+    const next = title.trim();
+    if (!next) return false;
+    if (next === group.title) return true;
+    try { await procurementApi.rename(projectId, group.id, group.version, next); setReload(n => n + 1); return true; }
+    catch (e) {
+      if (e instanceof ApiError && e.status === 401) onSignedOut();
+      if (e instanceof ApiError && e.status === 409) setReload(n => n + 1);
+      return false;
+    }
   }
   // A suggested row holds nothing, so it goes without a confirm; Add
   // discipline brings it back.
@@ -176,15 +227,24 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} />;
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
+  const reportOf = (pkg: PackageRecord) => data?.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp");
+  // A group row shows its own name (the PM may rename it); its members are
+  // listed beneath it rather than among the other rows.
   const rows: Row[] = data ? [
-    ...live.map(pkg => ({ key: pkg.id, label: label(pkg), kind: pkg.kind, pkg, report: data.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp") })),
+    ...live.filter(pkg => !pkg.group_id).map((pkg): Row => pkg.role === "group"
+      ? { key: pkg.id, label: pkg.title, kind: pkg.kind, pkg, group: true }
+      : { key: pkg.id, label: label(pkg), kind: pkg.kind, pkg, report: reportOf(pkg) }),
     ...data.overview.suggestions.map(s => ({ key: s.key, label: s.title, kind: s.kind || "services", proposalKey: s.key })),
     // A head-contract proposal that adds lines to an existing package is
     // handled in that package's scope, so only a new one shows as a row.
     ...(data.overview.proposed_works && !data.overview.proposed_works.package_id ? [{ key: data.overview.proposed_works.key, label: "Main Works", kind: "works", proposalKey: data.overview.proposed_works.key }] : []),
   ] : [];
   const byTitle = (a: Row, b: Row) => a.label.localeCompare(b.label);
-  const consultants = rows.filter(r => r.kind === "services").sort(byTitle);
+  const membersOf = (group: PackageRecord): Row[] => live.filter(p => p.group_id === group.id)
+    .map((pkg): Row => ({ key: pkg.id, label: label(pkg), kind: pkg.kind, pkg, report: reportOf(pkg), member: true })).sort(byTitle);
+  const consultants = rows.filter(r => r.kind === "services").sort(byTitle).flatMap(r => r.group && r.pkg ? [r, ...membersOf(r.pkg)] : [r]);
+  const combinable = (row: Row) => !!row.pkg && row.kind === "services" && !row.group && !row.member;
+  const tickedRows = consultants.filter(r => combinable(r) && ticked.includes(r.pkg!.id));
   const trades = rows.filter(r => r.kind !== "services").sort(byTitle);
   const used = new Set(live.map(p => p.discipline_id).filter(Boolean));
   const options = (prefix: string) => disciplines.filter(d => d.id.startsWith(prefix) && !used.has(d.id));
@@ -199,19 +259,24 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files") || e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE)) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE) ? "link" : "copy"; setDropRow(row.pkg!.id); } }) : undefined}
       onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
-      <th scope="row" className="discipline-cell">
-        {row.label}
+      {/* The tick box has its own name; the row header stays the discipline. */}
+      <th scope="row" className="discipline-cell" aria-label={combinable(row) ? row.label : undefined} style={row.member ? { paddingLeft: "2rem" } : undefined}>
+        {combinable(row) && <><input type="checkbox" aria-label={`Select ${row.label} to combine`} checked={ticked.includes(row.pkg!.id)} disabled={!!busyRow}
+          onChange={e => { const id = row.pkg!.id; const on = e.target.checked; setTicked(t => on ? [...t, id] : t.filter(x => x !== id)); }} />{" "}</>}
+        {row.group && row.pkg ? <GroupName group={row.pkg} onRename={title => rename(row.pkg!, title)} /> : row.label}
       </th>
       <FirmSlots busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
         onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })} />
-      <td>{row.kind === "supply" ? "—"
+      <td>{row.kind === "supply" || row.group ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
-      <td>{row.pkg ? (() => {
+      <td>{row.pkg && !row.group ? (() => {
         const n = data?.board.packages[row.pkg.id]?.length ?? 0;
         return <button type="button" className="table-action" aria-label={`${n > 1 ? "Compare" : n === 1 ? "Review" : "Prices for"} ${row.label}`} onClick={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })}>{n > 1 ? `Compare ${n}` : n === 1 ? "Review" : "Prices"}</button>;
       })() : "—"}</td>
-      <td className="row-bin-cell">{(row.pkg || row.proposalKey?.startsWith("default:services:")) &&
+      <td className="row-bin-cell">{row.group && row.pkg ? <button type="button" className="table-action" aria-label={`Uncombine ${row.label}`} disabled={busy} onClick={() => void uncombine(row.pkg!)}>Uncombine</button>
+        : row.member && row.pkg ? <button type="button" className="table-action" aria-label={`Remove ${row.label} from group`} disabled={busy} onClick={() => void ungroup(row.pkg!)}>Remove from group</button>
+        : (row.pkg || row.proposalKey?.startsWith("default:services:")) &&
         <button type="button" className="reg-del" aria-label={`Remove ${row.label}`} title={`Remove ${row.label}`} disabled={busy}
           onClick={() => void (row.pkg ? reviewRemoval(row.pkg, row.label) : dismiss(row))}><IconBin /></button>}</td>
     </tr>;
@@ -224,6 +289,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   return <section className="procurement" aria-label="Procurement">
     <header className="procurement-head">
       <h1>Procurement</h1>
+      {tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
       <button type="button" className="btn btn-small" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>Add discipline</button>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
@@ -257,8 +323,27 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
     {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}
       {pmp ? <button type="button" className="table-action" aria-label="View project management plan" onClick={() => setView({ at: "report", id: pmp.id })}>View</button>
         : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</p>}
+    {combining && <ConfirmDialog tone="plain" title={`Combine ${combining.members.length} consultants?`}
+      message={`${joinNames(combining.names)} become one engagement named “${combining.title}”: one row here and one fee line in the cost plan. ${combining.costLabels.length ? `These fee lines move under it and keep their budgets: ${combining.costLabels.join(", ")}.` : "No fee lines move yet."} Double-click the name to change it. Uncombine reverses this.`}
+      confirmLabel="Combine" busy={busyRow === "combine"} busyLabel="Combining…" onConfirm={() => void combine()} onCancel={() => setCombining(null)} />}
     {removing && <ConfirmDialog title={`Remove ${removing.label}?`} message={removing.costLabels.length ? `Also delete ${removing.costLabels.length} linked cost-plan line(s), including any subdivisions and their amounts: ${removing.costLabels.join(", ")}? Frozen baselines are kept. Any RFP or RFT will show the package as retired.` : "The row leaves the table. Any RFP or RFT made from it will show its package as retired."} confirmLabel={removing.costLabels.length ? "Remove and delete cost lines" : "Remove"} busy={busyRow === removing.pkg.id} busyLabel="Removing…" onConfirm={() => void remove()} onCancel={() => setRemoving(null)} />}
   </section>;
+}
+
+/** joinNames reads "A and B" or "A, B and C", the group's default name. */
+function joinNames(names: string[]): string {
+  return names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
+/** GroupName is a combined engagement's name: double-click (or Enter, F2)
+ * to change it, with the cost plan's inline edit. */
+function GroupName({ group, onRename }: { group: PackageRecord; onRename: (title: string) => Promise<boolean> }) {
+  const [editing, setEditing] = useState(false), [error, setError] = useState("");
+  if (editing) return <InlineCellEditor value={group.title} label={`Name of ${group.title}`} error={error} maxLength={200}
+    onCancel={() => { setEditing(false); setError(""); }}
+    onCommit={text => { void onRename(text).then(ok => { if (ok) { setEditing(false); setError(""); } else setError("Could not rename. Try again."); }); }} />;
+  return <span tabIndex={0} title="Double-click to rename" onDoubleClick={() => setEditing(true)}
+    onKeyDown={e => { if (e.key === "F2" || e.key === "Enter") { e.preventDefault(); setEditing(true); } }}>{group.title}</span>;
 }
 
 /** Discipline, three firm slots, RFP / RFT, Prices and the bin. */
