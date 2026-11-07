@@ -21,6 +21,8 @@ export interface StageSync {
   proposals_flagged: number;
   awarded: boolean;
   package_id: string;
+  /** A combined engagement's member: its stage lines are the group's. */
+  group_id?: string;
   stages: PickerStage[];
   kept: KeptStage[];
   report_id?: string;

@@ -19,6 +19,7 @@
 	{"name":"packages_combine","p50_us":100000,"p90_us":250000,"note":"combine or uncombine two consultant rows, fee lines re-parented in the same transaction (the packages_write budget)"},
 	{"name":"report_assemble_group","p50_us":300000,"p90_us":1000000,"note":"a five-consultant combined engagement's RFP build, member drafts assembled in the same transaction (the report_assemble budget)"},
 	{"name":"price_table_group","p50_us":150000,"p90_us":300000,"note":"a five-consultant combined engagement's price table with five firms (the price_table budget)"},
+	{"name":"stage_sync_write_group","p50_us":100000,"p90_us":250000,"note":"Update on a five-consultant combined engagement's stage lines after a stage rename in Program (the stage_sync_write budget)"},
 	{"name":"award_write_group","p50_us":200000,"p90_us":500000,"note":"award or undo on a five-consultant combined engagement: member and group lines in one transaction (the award_write budget)"},
     {
       "name": "identity_text_extraction",

@@ -397,9 +397,9 @@ func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Re
 		return d, err
 	}
 	// A new RFP draft records the stage plan it is built from (program plan
-	// 7.6); a refresh leaves its rows to Update or Keep. A group's stage
-	// lines are a later slice.
-	if creatingDraft && !pkg.IsGroup() {
+	// 7.6); a refresh leaves its rows to Update or Keep. A group's draft
+	// records the group's own stage lines (combined engagements slice 4).
+	if creatingDraft {
 		if err := recordRFPStages(ctx, tx, org, r, d.ID); err != nil {
 			return d, err
 		}
