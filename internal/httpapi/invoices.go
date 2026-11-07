@@ -161,6 +161,9 @@ func uploadInvoice(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
+	if !uploadAllowed(w, r, deps, session) {
+		return
+	}
 	name := strings.TrimSpace(r.URL.Query().Get("name"))
 	if name == "" || len(name) > 255 || strings.ContainsAny(name, "/\\") || strings.IndexFunc(name, func(r rune) bool { return r < 0x20 || r == 0x7f }) >= 0 {
 		http.Error(w, "a file name is required", http.StatusBadRequest)
@@ -199,6 +202,9 @@ func uploadInvoice(w http.ResponseWriter, r *http.Request, deps Deps) {
 		deps.Log.Printf("invoice create failed org=%s: %v", session.OrgID, err)
 		http.Error(w, "upload failed", http.StatusInternalServerError)
 		return
+	}
+	if created.Created {
+		countDocument(deps, session.OrgID)
 	}
 	if created.Status == invoices.StatusReading && deps.InvoiceReader != nil {
 		deps.InvoiceReader.Start(session.OrgID, created.ID, began, false)

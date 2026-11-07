@@ -24,8 +24,9 @@ type Account struct {
 }
 
 // CreateAccount makes a new org with one owner who signs in by password, and
-// opens their first session. The email must already be normalised.
-func (s *Store) CreateAccount(ctx context.Context, email string, hash []byte) (Session, error) {
+// opens their first session. The email must already be normalised. The owner
+// starts unverified and records the terms version they accepted.
+func (s *Store) CreateAccount(ctx context.Context, email string, hash []byte, terms string) (Session, error) {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return Session{}, err
@@ -35,7 +36,9 @@ func (s *Store) CreateAccount(ctx context.Context, email string, hash []byte) (S
 	if _, err := tx.Exec(ctx, `INSERT INTO orgs (id, name) VALUES ($1, $2)`, orgID, email); err != nil {
 		return Session{}, err
 	}
-	_, err = tx.Exec(ctx, `INSERT INTO users (org_id, id, email, password_hash) VALUES ($1, $2, $3, $4)`, orgID, userID, email, hash)
+	_, err = tx.Exec(ctx, `
+		INSERT INTO users (org_id, id, email, password_hash, email_verified, terms_accepted_at, terms_version)
+		VALUES ($1, $2, $3, $4, false, now(), $5)`, orgID, userID, email, hash, terms)
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 		return Session{}, ErrEmailTaken
@@ -144,4 +147,59 @@ func (s *Store) SetPassword(ctx context.Context, orgID, email string, hash []byt
 		return ErrNotFound
 	}
 	return nil
+}
+
+// ErrLinkUsed means an emailed link was already used or has expired.
+var ErrLinkUsed = errors.New("link used or expired")
+
+// Profile is the signed-in person as the account page shows them.
+type Profile struct {
+	Email    string `json:"email"`
+	Verified bool   `json:"email_verified"`
+	Role     string `json:"role"`
+}
+
+// Profile reads the signed-in user's email, verification and role.
+func (s *Store) Profile(ctx context.Context, orgID, userID string) (Profile, error) {
+	var p Profile
+	err := s.pool.QueryRow(ctx, `
+		SELECT u.email, u.email_verified, coalesce(m.role, '')
+		FROM users u LEFT JOIN memberships m ON m.org_id = u.org_id AND m.user_id = u.id
+		WHERE u.org_id = $1 AND u.id = $2`, orgID, userID).Scan(&p.Email, &p.Verified, &p.Role)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Profile{}, ErrNotFound
+	}
+	return p, err
+}
+
+// CreateEmailVerification stores a hashed single-use verification token.
+func (s *Store) CreateEmailVerification(ctx context.Context, orgID, userID string, tokenHash []byte, expires time.Time) error {
+	_, err := s.pool.Exec(ctx, `
+		INSERT INTO email_verifications (org_id, id, user_id, token_hash, expires_at)
+		VALUES ($1, $2, $3, $4, $5)`, orgID, newID(), userID, tokenHash, expires)
+	return err
+}
+
+// VerifyEmail uses a verification token once and marks its user verified.
+func (s *Store) VerifyEmail(ctx context.Context, tokenHash []byte, now time.Time) error {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	var orgID, userID string
+	err = tx.QueryRow(ctx, `
+		UPDATE email_verifications SET used_at = $2
+		WHERE token_hash = $1 AND used_at IS NULL AND expires_at > $2
+		RETURNING org_id::text, user_id::text`, tokenHash, now).Scan(&orgID, &userID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrLinkUsed
+	}
+	if err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `UPDATE users SET email_verified = true WHERE org_id = $1 AND id = $2`, orgID, userID); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }

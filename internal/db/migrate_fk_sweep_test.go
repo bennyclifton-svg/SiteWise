@@ -125,6 +125,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f := map[string]row{
 			"users":                   {"org_id": org, "id": u, "email": fmt.Sprintf("fk%d@example.test", n)},
 			"password_resets":         {"org_id": org, "id": id(3950 + n), "user_id": u, "token_hash": "\\x" + strings.Repeat(fmt.Sprintf("%02d", 40+n), 32), "expires_at": "2026-12-01T00:00:00Z"},
+			"email_verifications":     {"org_id": org, "id": id(3960 + n), "user_id": u, "token_hash": "\\x" + strings.Repeat(fmt.Sprintf("%02d", 60+n), 32), "expires_at": "2026-12-01T00:00:00Z"},
 			"sites":                   {"org_id": org, "id": s, "label": "Site"},
 			"projects":                {"org_id": org, "id": p, "site_id": s, "name": "Project"},
 			"files":                   {"org_id": org, "id": id(1800 + n), "project_id": p, "sha256": "\\x" + strings.Repeat("01", 32), "byte_size": 1, "media_type": "text/plain"},
@@ -324,6 +325,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			case "password_resets":
 				// The token hash is unique: the control needs its own.
 				base["token_hash"] = "\\x" + strings.Repeat("ee", 32)
+			case "email_verifications":
+				base["token_hash"] = "\\x" + strings.Repeat("ef", 32)
 			case "submissions":
 				// One submission per document: the control uses the spare document.
 				base["document_id"] = id(1951)

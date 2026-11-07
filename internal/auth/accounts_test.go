@@ -48,8 +48,8 @@ func uniqueEmail(t *testing.T, st *store.Store) string {
 	return email
 }
 
-func creds(email, password string) map[string]string {
-	return map[string]string{"email": email, "password": password}
+func creds(email, password string) map[string]any {
+	return map[string]any{"email": email, "password": password, "accept_terms": true}
 }
 
 func getWith(t *testing.T, h http.Handler, path string, cookie *http.Cookie) *httptest.ResponseRecorder {
@@ -143,9 +143,10 @@ func TestAccountInputIsChecked(t *testing.T) {
 	h := accountHandler(st, logs, nil)
 	cases := []struct {
 		name string
-		body map[string]string
+		body map[string]any
 		want int
 	}{
+		{"no terms", map[string]any{"email": uniqueEmail(t, st), "password": "long enough"}, http.StatusBadRequest},
 		{"no at", creds("not-an-email", "long enough"), http.StatusBadRequest},
 		{"header injection", creds("a@example.com\r\nBcc: x@example.com", "long enough"), http.StatusBadRequest},
 		{"short password", creds(uniqueEmail(t, st), "short"), http.StatusBadRequest},

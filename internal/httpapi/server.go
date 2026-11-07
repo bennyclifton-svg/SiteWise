@@ -58,6 +58,8 @@ type Options struct {
 	DevLogin bool
 	// ResetMail sends password reset links. Nil sends none.
 	ResetMail auth.ResetMailer
+	// Billing switches on paid plans and limits; nil is off (development).
+	Billing *Billing
 	// Knowledge and ProfileThresholds serve the project profile. Nil
 	// knowledge disables the profile routes (404).
 	Knowledge         *knowledge.Catalog
@@ -274,6 +276,7 @@ func New(opts Options) (*Server, error) {
 		ProfileReading:    opts.ProfileReading,
 		ProposalShowCount: opts.ProposalShowCount,
 		ResetMail:         opts.ResetMail,
+		Billing:           opts.Billing,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})
