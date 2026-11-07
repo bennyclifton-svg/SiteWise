@@ -4,6 +4,7 @@ import { Pending } from "./Activity";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, type Catalog, type Project as ProjectRow } from "./api";
+import { Account } from "./Account";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { SignOutButton } from "./SignOutButton";
 import { ThemeButton } from "./ThemeButton";
@@ -12,11 +13,21 @@ import { Project } from "./Project";
 import { ShellPreview } from "./ShellPreview";
 import { SignIn } from "./SignIn";
 
-type Route = { name: "home" } | { name: "project"; id: string };
+type Route = { name: "home" } | { name: "account" } | { name: "project"; id: string };
 
 function parseRoute(path: string): Route {
+  if (/^\/account\/?$/.test(path)) return { name: "account" };
   const m = path.match(/^\/projects\/([0-9a-fA-F-]{36})\/?$/);
   return m ? { name: "project", id: m[1] } : { name: "home" };
+}
+
+// An email confirmation link carries its token in the fragment. It is used
+// once, removed from the address bar, and works signed in or out.
+function takeVerifyToken(): string {
+  const m = location.hash.match(/verify=([0-9a-fA-F]+)/);
+  if (!m) return "";
+  history.replaceState(null, "", location.pathname + location.search);
+  return m[1];
 }
 
 type Auth = "checking" | "in" | "out";
@@ -29,6 +40,7 @@ export function App() {
   const [projectsError, setProjectsError] = useState("");
   const [catalogError, setCatalogError] = useState(false);
   const [projects, setProjects] = useState<ProjectRow[] | null>(null);
+  const [notice, setNotice] = useState("");
   const sessionGeneration = useRef(0);
 
   const navigate = useCallback((path: string) => {
@@ -41,6 +53,23 @@ export function App() {
     const onPop = () => setRoute(parseRoute(location.pathname));
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // The Account link sits inside shared header controls, so it asks the
+  // shell to navigate rather than holding the router itself.
+  useEffect(() => {
+    const onNavigate = (e: Event) => navigate(String((e as CustomEvent).detail));
+    window.addEventListener("sitewise:navigate", onNavigate);
+    return () => window.removeEventListener("sitewise:navigate", onNavigate);
+  }, [navigate]);
+
+  useEffect(() => {
+    const token = takeVerifyToken();
+    if (!token) return;
+    api.verifyEmail(token).then(
+      () => setNotice("Your email address is confirmed. You can upload documents now."),
+      (e: unknown) => setNotice(e instanceof ApiError && e.message ? e.message : "That confirmation link did not work. Send a new one from the Account page."),
+    );
   }, []);
 
   // An invite link carries its token in the fragment, which never reaches
@@ -65,8 +94,8 @@ export function App() {
     };
     const onHash = () => void consume();
     window.addEventListener("hashchange", onHash);
-    // A password reset link opens the sign-in panel in reset mode.
-    if (/reset=/.test(location.hash)) {
+    // A password reset or team invite link opens the sign-in panel.
+    if (/(reset|invite)=/.test(location.hash)) {
       setAuth("out");
     } else if (!consume()) {
       api.checkSession().then(
@@ -131,6 +160,11 @@ export function App() {
       <a className="sr-only skip-link" href="#main">
         Skip to content
       </a>
+      {notice && (
+        <div className="app-notice" role="status">
+          {notice} <button className="link-button" onClick={() => setNotice("")}>Dismiss</button>
+        </div>
+      )}
       {catalogError && <div className="app-load-error" role="alert">Could not load filing choices. <button className="btn" onClick={loadCatalog}>Retry choices</button></div>}
       {route.name === "project" ? (
         <Project
@@ -162,7 +196,7 @@ export function App() {
             <SignOutButton />
           </header>
           <div id="main">
-            <Projects
+            {route.name === "account" ? <Account onSignedOut={signedOut} /> : <Projects
               projects={projects}
               loadError={projectsError}
               onRetry={loadProjects}
@@ -173,7 +207,7 @@ export function App() {
               }}
               onDeleted={(id) => setProjects((cur) => cur?.filter((p) => p.id !== id) ?? cur)}
               onSignedOut={signedOut}
-            />
+            />}
           </div>
         </>
       )}

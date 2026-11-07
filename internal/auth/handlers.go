@@ -52,6 +52,29 @@ func (s *Sink) SendReset(_ context.Context, to, link string) error {
 	return nil
 }
 
+// AccountMailer delivers email confirmation and team invite links.
+// Implementations must not log the link outside local development.
+type AccountMailer interface {
+	SendVerify(ctx context.Context, to, link string) error
+	SendTeamInvite(ctx context.Context, to, inviter, link string) error
+}
+
+// SendVerify records the confirmation link.
+func (s *Sink) SendVerify(_ context.Context, to, link string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.Messages = append(s.Messages, Message{To: to, Body: link})
+	return nil
+}
+
+// SendTeamInvite records the invite link.
+func (s *Sink) SendTeamInvite(_ context.Context, to, _ string, link string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.Messages = append(s.Messages, Message{To: to, Body: link})
+	return nil
+}
+
 // SMTP delivers mail. Addr is host:port. With a User the client signs in
 // (PLAIN, which Go only sends over TLS or to localhost); without one it
 // expects a local relay.
@@ -75,6 +98,24 @@ func (s SMTP) SendReset(_ context.Context, to, link string) error {
 	return s.send(to, "Reset your SiteWise password", body)
 }
 
+// SendVerify sends the email confirmation link.
+func (s SMTP) SendVerify(_ context.Context, to, link string) error {
+	body := "Welcome to SiteWise.\r\n\r\n" +
+		"Open this link within 24 hours to confirm your email address:\r\n" + link + "\r\n\r\n" +
+		"You can look around before confirming; uploading documents needs a confirmed address.\r\n" +
+		"If you did not sign up, ignore this email.\r\n"
+	return s.send(to, "Confirm your SiteWise email", body)
+}
+
+// SendTeamInvite sends a team invite link. The inviter's email is shown so the
+// recipient can judge the invite before opening it.
+func (s SMTP) SendTeamInvite(_ context.Context, to, inviter, link string) error {
+	body := inviter + " has invited you to their SiteWise team.\r\n\r\n" +
+		"Open this link within 7 days to choose a password and join:\r\n" + link + "\r\n\r\n" +
+		"If you were not expecting this, ignore this email.\r\n"
+	return s.send(to, "You are invited to SiteWise", body)
+}
+
 func (s SMTP) send(to, subject, body string) error {
 	var a smtp.Auth
 	if s.User != "" {
@@ -96,6 +137,18 @@ type DevResetMail struct{ Log *log.Logger }
 // SendReset logs the link.
 func (d DevResetMail) SendReset(_ context.Context, to, link string) error {
 	d.Log.Printf("dev reset link for %s: %s", to, link)
+	return nil
+}
+
+// SendVerify logs the confirmation link.
+func (d DevResetMail) SendVerify(_ context.Context, to, link string) error {
+	d.Log.Printf("dev verify link for %s: %s", to, link)
+	return nil
+}
+
+// SendTeamInvite logs the invite link.
+func (d DevResetMail) SendTeamInvite(_ context.Context, to, _ string, link string) error {
+	d.Log.Printf("dev team invite link for %s: %s", to, link)
 	return nil
 }
 

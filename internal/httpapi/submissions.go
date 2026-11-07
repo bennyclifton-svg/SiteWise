@@ -459,6 +459,9 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 		procurementError(w, deps, err)
 		return
 	}
+	if !uploadAllowed(w, r, deps, session) {
+		return
+	}
 	name := strings.TrimSpace(r.URL.Query().Get("name"))
 	body := http.MaxBytesReader(w, r.Body, deps.MaxUploadBytes)
 	defer body.Close()
@@ -477,6 +480,9 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 		deps.Log.Printf("proposal upload failed org=%s: %v", session.OrgID, err)
 		http.Error(w, "upload failed", http.StatusInternalServerError)
 		return
+	}
+	if filing.Created {
+		countDocument(deps, session.OrgID)
 	}
 	var id string
 	if target == "" {

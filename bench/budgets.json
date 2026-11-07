@@ -73,6 +73,29 @@
       "p90_us": 1000000
     },
     {
+      "name": "billing_read",
+      "p50_us": 100000,
+      "p90_us": 250000,
+      "note": "account page: profile, plan and usage (design 2026-11-07-billing)"
+    },
+    {
+      "name": "billing_session",
+      "p50_us": 800000,
+      "p90_us": 1500000,
+      "note": "checkout or portal session: one Stripe call, not a hot path"
+    },
+    {
+      "name": "stripe_webhook",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "team",
+      "p50_us": 100000,
+      "p90_us": 250000,
+      "note": "team list, invite, revoke, remove"
+    },
+    {
       "name": "health_speed",
       "p50_us": 25000,
       "p90_us": 100000

@@ -217,6 +217,9 @@ func postProgramImport(w http.ResponseWriter, r *http.Request, d Deps) {
 		programError(w, r, d, s.OrgID, store.ProgramResult{}, err)
 		return
 	}
+	if !uploadAllowed(w, r, d, s) {
+		return
+	}
 	began := time.Now()
 	body := http.MaxBytesReader(w, r.Body, d.MaxUploadBytes)
 	defer body.Close()
@@ -240,6 +243,9 @@ func postProgramImport(w http.ResponseWriter, r *http.Request, d Deps) {
 		d.Log.Printf("program import upload failed org=%s: %v", s.OrgID, err)
 		http.Error(w, "upload failed", http.StatusInternalServerError)
 		return
+	}
+	if filing.Created {
+		countDocument(d, s.OrgID)
 	}
 	id, err := d.Store.OpenProgramImport(r.Context(), s.OrgID, project, filing.DocumentID)
 	if err != nil {

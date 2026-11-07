@@ -154,6 +154,12 @@ moves: no database, no Supabase backup, no old files.
 | `SITEWISE_PUBLIC_ORIGIN` | in production | `https://sitewise.au`; mutating requests must carry this Origin |
 | `SITEWISE_SMTP_ADDR` | in production | local relay, `127.0.0.1:25` |
 | `SITEWISE_MAIL_FROM` | in production | invite sender |
+| `SITEWISE_STRIPE_SECRET_KEY` | in production | Stripe secret key (`sk_live_…`, or a restricted key). Blank in development turns billing off: no checkout and no plan limits |
+| `SITEWISE_STRIPE_WEBHOOK_SECRET` | with a Stripe key | signing secret of the webhook endpoint (`whsec_…`) |
+| `SITEWISE_STRIPE_PRICE_STARTER_MONTHLY`, `…_STARTER_ANNUAL`, `…_TEAM_MONTHLY`, `…_TEAM_ANNUAL` | with a Stripe key | the four Stripe price ids (`price_…`) |
+| `SITEWISE_STRIPE_TAX_RATE` | optional | the GST tax rate id (`txr_…`), 10% exclusive. Without it no GST is added |
+
+Billing is explained in section 8.
 
 `serve` flags: `-addr` (loopback only), `-data` (intake vocabulary and
 cut-offs, shipped in `share/intake`), `-max-upload` (default 200 MiB, which
@@ -301,3 +307,71 @@ previous release reads.
 | Mail provider delivers a password reset end to end | not done |
 | Off-site backup running, `last-success` fresh | not started |
 | Restore rehearsal on an isolated VPS (section 5) | not run; local rehearsal passed |
+| Legal pages complete: every `[BRACKETED]` item in `web/public/legal/*.html` filled, and reviewed by an Australian lawyer | drafted 2026-11-07, not reviewed |
+| Stripe set up in test mode (section 8), one test checkout, renewal failure and cancellation run end to end | not done |
+| File backup retention matches the Privacy Policy (section 9 there promises deletion after a stated period; `backup.sh` keeps blobs forever) | not done |
+
+## 8. Billing (Stripe)
+
+Design: `docs/design/2026-11-07-billing.md`. Plans and limits live in
+`internal/billing/plans.go`. Payment pages are Stripe's own: SiteWise sends
+the user to Stripe Checkout or the Customer Portal and learns the result
+only from Stripe's signed webhook. No card data reaches this server.
+
+Do everything first in Stripe **test mode** with test keys; repeat in live
+mode only after the test run passes.
+
+1. **Account.** Create a Stripe account for the business, country Australia,
+   currency AUD. Activation asks for the ABN, bank account and a public
+   website showing pricing, terms, refund policy, privacy policy and contact
+   details: `https://sitewise.au/legal/pricing.html` and its neighbours.
+2. **Tax.** Dashboard → Tax rates → add *GST*, 10%, **exclusive**,
+   Australia. Copy its id to `SITEWISE_STRIPE_TAX_RATE`. (Register for GST
+   with the ATO before charging it.)
+3. **Products and prices.** Create two products, *SiteWise Starter* and
+   *SiteWise Team*, each with two recurring AUD prices, **tax behaviour
+   exclusive**: Starter 50.00 monthly and 500.00 yearly; Team 200.00 monthly
+   and 2,000.00 yearly. These must match `internal/billing/plans.go` and the
+   pricing page. Copy the four price ids to the env file.
+4. **Payment methods.** Settings → Payment methods: cards on, and *BECS Direct
+   Debit* (Australian bank accounts) on.
+5. **Customer Portal.** Settings → Billing → Customer portal: allow
+   updating payment methods, viewing invoices, cancelling **at the end of
+   the billing period**, and switching between the four prices (proration
+   on). Set the business name, terms link and privacy link.
+6. **Emails.** Settings → Billing → Subscriptions and emails: send receipts,
+   send emails for failed payments, send a reminder before yearly renewals
+   (the refund policy promises it), and Smart Retries for about 2 weeks then
+   **cancel the subscription**.
+7. **Webhook.** Developers → Webhooks → add endpoint
+   `https://sitewise.au/api/stripe/webhook` with events
+   `checkout.session.completed`, `customer.subscription.created`,
+   `customer.subscription.updated`, `customer.subscription.deleted`. Copy
+   its signing secret to `SITEWISE_STRIPE_WEBHOOK_SECRET`. The route needs no
+   Caddy change: it is under `/api/` and checks the signature itself.
+8. **Keys.** Put the secret key in `SITEWISE_STRIPE_SECRET_KEY` (a restricted
+   key with write access to Checkout Sessions and Customer Portal sessions is
+   enough), then `systemctl restart sitewise`. Production refuses to start
+   with any Stripe setting missing.
+9. **Test run** (test mode, card `4242 4242 4242 4242`): sign up, confirm the
+   email, upload past the Free limit (expect the limit message), upgrade to
+   Starter monthly, see the plan change on the Account page within seconds,
+   open Manage billing and switch to Team yearly, then use Stripe's test
+   clock or card `4000 0000 0000 0341` to fail a renewal and confirm the
+   account falls to Free with every document still readable. Check
+   `journalctl -u sitewise | grep "stripe webhook"` shows `applied`, and that
+   a duplicate delivery shows `duplicate`.
+
+Locally, `stripe listen --forward-to localhost:8080/api/stripe/webhook`
+prints a `whsec_…` for the env file and forwards test events.
+
+Operator tools: `sitewise set-plan -org <id> -plan free|starter|team` sets a
+plan without Stripe (a comped account); the next Stripe event for that org
+replaces it. Refunds are made in the Stripe dashboard (refund policy: yearly
+charges in full within 14 days). Usage counts per org and month are in
+`org_usage`; measure Jev cost per document from them before changing caps.
+
+What the server enforces when billing is on: uploads need a confirmed email;
+uploads stop at the plan's monthly documents or storage; new projects stop at
+the plan's project count; invites stop at its users. Nothing is deleted when
+a plan lapses.

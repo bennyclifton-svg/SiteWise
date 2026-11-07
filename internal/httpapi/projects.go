@@ -65,7 +65,12 @@ type Deps struct {
 	ReportBuild       string
 	// ResetMail sends password reset links. Nil sends none.
 	ResetMail auth.ResetMailer
-	limits    *authLimits
+	// AccountMail sends email confirmation and team invites. Nil uses
+	// ResetMail when it can, else sends none.
+	AccountMail auth.AccountMailer
+	// Billing switches on paid plans and limits; nil is off.
+	Billing *Billing
+	limits  *authLimits
 }
 
 // InvoiceReader starts reading an invoice that outlives the upload request.
@@ -96,6 +101,11 @@ func Handler(deps Deps) http.Handler {
 	}
 	if deps.MaxUploadBytes <= 0 {
 		deps.MaxUploadBytes = 200 << 20
+	}
+	if deps.AccountMail == nil {
+		if m, ok := deps.ResetMail.(auth.AccountMailer); ok {
+			deps.AccountMail = m
+		}
 	}
 	mux := http.NewServeMux()
 	routes := map[string]func(http.ResponseWriter, *http.Request, Deps){
@@ -259,6 +269,9 @@ func Handler(deps Deps) http.Handler {
 		"POST /reports/{r}/stage-sync":                       postReportStageSync,
 	}
 	for pattern, h := range accountRoutes {
+		routes[pattern] = h
+	}
+	for pattern, h := range billingRoutes {
 		routes[pattern] = h
 	}
 	for pattern, h := range routes {
@@ -463,6 +476,9 @@ func createProject(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	if body.Name == "" {
 		http.Error(w, "name required", http.StatusBadRequest)
+		return
+	}
+	if !projectAllowed(w, r, deps, session) {
 		return
 	}
 	id := newProjectID()

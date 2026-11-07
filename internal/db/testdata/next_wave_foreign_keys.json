@@ -45,6 +45,7 @@
   "packages_org_id_verified_by_fkey": "FOREIGN KEY (org_id, verified_by) REFERENCES users(org_id, id) DEFERRABLE INITIALLY DEFERRED",
   "passage_calls_org_id_passage_id_fkey": "FOREIGN KEY (org_id, passage_id, document_id) REFERENCES passages(org_id, id, document_id) ON DELETE CASCADE",
   "passage_sources_org_id_passage_id_fkey": "FOREIGN KEY (org_id, passage_id, document_id) REFERENCES passages(org_id, id, document_id) ON DELETE CASCADE",
+  "email_verifications_org_id_user_id_fkey": "FOREIGN KEY (org_id, user_id) REFERENCES users(org_id, id) ON DELETE CASCADE",
   "password_resets_org_id_user_id_fkey": "FOREIGN KEY (org_id, user_id) REFERENCES users(org_id, id) ON DELETE CASCADE",
   "profile_facts_document_project_fkey": "FOREIGN KEY (org_id, project_id, document_id) REFERENCES documents(org_id, project_id, id) ON DELETE CASCADE",
   "profile_planning_values_org_id_project_id_site_id_fkey": "FOREIGN KEY (org_id, project_id, site_id) REFERENCES projects(org_id, id, site_id) ON DELETE CASCADE",
