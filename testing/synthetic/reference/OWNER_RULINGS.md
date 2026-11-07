@@ -168,3 +168,12 @@ reason for a DA.
 An empty floor in an occupied tower is both partial occupation and a live
 environment, so the T03 keys accept either. T06 site access likewise
 accepts restricted hours or urban constrained.
+
+### R20. Design and construct with a CDC
+
+There is no single right order, but more often than not the contractor is
+engaged first. The contractor's practitioner completes the design, that
+design is used to obtain the CDC, and then construction starts. Getting the
+CDC on partial design before the tender, with the D&C contractor still
+designing under its contract, also happens but is not modelled. The app's
+`sk.new-dc-cdc` skeleton follows the usual order (F54).

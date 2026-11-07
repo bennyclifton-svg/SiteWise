@@ -1,0 +1,44 @@
+ST04-cdc-industrial-code: project e9015597-9085-450a-920f-e4848b9e372e
+    waiting: 4 documents filing, 4 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 2 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 1: 4 dropped, profile queued 3, 14.9 s
+    created the consultant.structural row to drop on, as a user would
+    waiting: 5 documents filing, proposals reading, 5 jobs queued
+    waiting: settling
+    waiting: 5 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 5 jobs queued
+    waiting: 6 documents in profile reading, 4 jobs queued
+    waiting: 3 documents in profile reading, 2 jobs queued
+    waiting: settling
+  wave 2: 5 dropped, profile queued 5, 14.8 s
+    waiting: 5 documents filing, 5 jobs queued
+    waiting: settling
+    waiting: 3 documents in profile reading, 3 jobs queued
+    waiting: 4 documents in profile reading, 3 jobs queued
+    waiting: 3 documents in profile reading, 1 jobs queued
+    waiting: settling
+  wave 3: 5 dropped, profile queued 3, 14.7 s
+    waiting: 2 invoices reading
+    waiting: settling
+    waiting: settling
+  wave 4: 2 dropped, profile queued 0, 6.4 s
+    program prepare -> 200
+    RFP for Access -> 201
+    RFP for Architect -> 201
+    RFP for BCA -> 201
+    RFP for Certifier -> 201
+    RFP for Civil -> 201
+    RFP for Electrical -> 201
+    RFP for Fire Services -> 201
+    RFP for Geotechnical -> 201
+    RFP for Hydraulic -> 201
+    RFP for Mechanical -> 201
+    RFP for Structural -> 201
+    RFP for Surveyor -> 201
+    RFP for Town Planner -> 201
+    RFP for Traffic -> 201
+done: testing\synthetic\runs\20261107-st04-cdc-r20

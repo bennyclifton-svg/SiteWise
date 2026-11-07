@@ -760,7 +760,7 @@ triggers:
     evidence: ["Complying development certificate under Part 5A Industrial and Business Buildings Code of the Codes SEPP (verified: false)", "the warehouse meets the code's setbacks, height and landscaping standards, so the certifier can determine it"]
     negation: ["A development application will be lodged with council", "The building exceeds the code's height standard, so a DA is required"]
     profile: [hdr.cond.planning]
-    skeleton: sk.generic
+    skeleton: sk.new-dc-cdc
     adds:
       program: ["Prepare and lodge the complying development certificate", "Certifier determination"]
       cost_plan: ["Contributions under the CDC"]
@@ -792,7 +792,7 @@ triggers:
         - {discipline: consultant.traffic, must_include: ["Assessment response", "Conditions review"]}
         - {discipline: consultant.bca, must_include: ["A2 DA BCA report"]}
         - {discipline: consultant.certifier, must_include: ["B2 construction certificate assessment (staged: early works, building)"]}
-    why: "D&C plus CDC falls back to sk.generic. Since F9 the certifier's B2 is the CDC (b2_cdc) in place of the CC; no planning response, traffic assessment response or conditions review, and no A2 DA BCA report. The base line 'Construction certificate and certifier fees' stays and stands for the CDC fee, as T03 and T06 alias it (the app keeps the cc-fees label on a CDC). The app still suggests the town planner through baselines[0]"
+    why: "D&C plus CDC: since F54 (R20) sk.new-dc-cdc, so the contractor is procured and novated first, its documents follow, then the CDC. Since F9 the certifier's B2 is the CDC (b2_cdc) in place of the CC; no planning response, traffic assessment response or conditions review, and no A2 DA BCA report. The base line 'Construction certificate and certifier fees' stays and stands for the CDC fee, as T03 and T06 alias it (the app keeps the cc-fees label on a CDC). The app still suggests the town planner through baselines[0]"
     built_in: {program: "partial", cost_plan: "partial", procurement: "no", rfps: "no"}
     source: "knowledge/program/fragments.yaml fr.cdc-application"
   - id: large-isolated-building-over-limit

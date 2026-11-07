@@ -97,8 +97,10 @@ all nine runs.
 
 ## Owner questions
 
-1. On a design-and-construct job with a CDC, is the CDC documentation done
-   before the contractor tender? If so, the "after novation" links become
-   variant removals for ST04-cdc.
+1. Answered (R20): on D&C with a CDC the contractor is usually engaged
+   first, and the CDC follows its design. That made the ST04-cdc order an
+   app defect (F54), now fixed with a new `sk.new-dc-cdc` skeleton. Re-run
+   in `runs/20261107-st04-cdc-r20/`: skeleton matched, 0 wrong-stage rows,
+   links violated 4 → 2 (the two left are F53).
 2. The five questions in `docs/design/2026-11-07-combined-services-package.md`
    (R17), before anything is built.
