@@ -4,7 +4,10 @@ export interface SavedReport { id: string; project_id: string; title: string; ki
 export interface ReportReference { citation_id: string; label: "E" | "U" | "C" | "A"; anchor_id: string; basis: { text: string; source: Record<string, unknown>; material_assumption: boolean; protected_edit: boolean } }
 export interface ReportBlock { basis?: Record<string, unknown>; table?: { columns: string[]; rows: string[][]; display?: string }; generated_text?: string; id: string; label: string; text: string; provisional: boolean; edited: boolean; conflict: boolean; source_missing: boolean; citation_ids: string[] }
 export interface ReportDraft { id: string; version: number; status: string; reporting_date: string; sections: { id: string; title: string; internal?: boolean; blocks: ReportBlock[] }[]; references: ReportReference[]; material_assumptions: ReportReference[] }
-export interface ReportView { rfp?: RfpControls; rfp_suggestion?: RfpSuggestion; report: SavedReport; draft: ReportDraft | null; stale: string[]; issues: { id: string; number: number; reporting_date: string; snapshot_sha256: string }[]; changes_since_issue: { target_id: string; kind: string; before?: string; after?: string }[]; page_fit?: PageFit }
+/** A combined engagement's members, each with its own RFP's controls (internal/store/report_rfp_group.go). */
+export interface RfpGroupMember { package_id: string; title: string; section: string; report_id?: string; draft_version?: number; controls?: RfpControls }
+export interface RfpGroupView { title: string; members: RfpGroupMember[]; left: string[] }
+export interface ReportView { rfp?: RfpControls; rfp_group?: RfpGroupView; rfp_suggestion?: RfpSuggestion; report: SavedReport; draft: ReportDraft | null; stale: string[]; issues: { id: string; number: number; reporting_date: string; snapshot_sha256: string }[]; changes_since_issue: { target_id: string; kind: string; before?: string; after?: string }[]; page_fit?: PageFit }
 export interface PageFit { pages: number; limit: number; target: number; fits: boolean; error?: string }
 export interface ReportPackage { id: string; title: string; kind: string; retired_at?: string; discipline_id?: string; version: number }
 // Consultant RFP editor controls (internal/rfp/controls.go).
@@ -33,8 +36,9 @@ export const reportApi = {
   refresh: (id: string, useLastCompleted = false) => request<ReportDraft>("POST", `/reports/${id}/draft`, { use_last_completed: useLastCompleted }),
   edit: (id: string, target: string, text: string, version: number) => request<ReportDraft>("PUT", `/reports/${id}/edits/${encodeURIComponent(target)}`, { text, version }),
 	reset: (id: string, target: string, version: number) => request<ReportDraft>("DELETE", `/reports/${id}/edits/${encodeURIComponent(target)}`, { version }),
-  setting: (id: string, key: string, value: unknown, version: number) => request<ReportView>("PUT", `/reports/${id}/settings/${encodeURIComponent(key)}`, { value, version }),
-  clearSetting: (id: string, key: string, version: number) => request<ReportView>("DELETE", `/reports/${id}/settings/${encodeURIComponent(key)}`, { version }),
+  /** view names a combined engagement's report: a member's setting then returns that report's view. */
+  setting: (id: string, key: string, value: unknown, version: number, view?: string) => request<ReportView>("PUT", `/reports/${id}/settings/${encodeURIComponent(key)}`, { value, version, view }),
+  clearSetting: (id: string, key: string, version: number, view?: string) => request<ReportView>("DELETE", `/reports/${id}/settings/${encodeURIComponent(key)}`, { version, view }),
   /** Saves a project fact to Profile and returns the refreshed view; null clears the user's word. */
   fact: (id: string, fact: string, value: string | null, version: number) => request<ReportView>("PUT", `/reports/${id}/facts/${encodeURIComponent(fact)}`, { value, version }),
   disciplines: () => request<{ items: RfpDiscipline[] }>("GET", "/rfp/disciplines"),

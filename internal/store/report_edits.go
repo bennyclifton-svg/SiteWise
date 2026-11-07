@@ -146,19 +146,18 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		return view, err
 	}
 	view.Draft = &d
-	issued, refs, err := reports.IssueContent(d.Sections, r.Kind, false)
-	if err != nil {
-		return view, err
-	}
-	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version}
 	if _, group := groupDraft(d.SourceRevisions); group {
 		// A combined engagement's document is several RFPs long; rendering it
 		// on every read would break the read budget. The RFP editor shows no
 		// page count, and issue renders and gates the length.
-		limit, target := render.PageLimit(snap)
+		limit, target := render.PageLimit(reports.IssueSnapshot{SourceRevisions: d.SourceRevisions})
 		view.PageFit = &render.PageFit{Limit: limit, Target: target, Fits: true}
 	} else {
-		fit := render.Fit(snap)
+		issued, refs, err := reports.IssueContent(d.Sections, r.Kind, false)
+		if err != nil {
+			return view, err
+		}
+		fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version})
 		view.PageFit = &fit
 	}
 	if len(view.Issues) > 0 {

@@ -513,8 +513,23 @@ func (e Engagement) fees() reports.Section {
 	rows = append(rows, []string{"Engagement total (the sums above)", ""})
 	text := "Fees exclude GST; state GST and the total in your proposal. Options are priced separately and are not in the sums. " + CombinedStageNote
 	return reports.Section{ID: groupFeesID, Title: "3. Fee schedule", Essential: true, Blocks: []reports.Block{
-		e.tableBlock("rfp:fees", "", text, doc([]string{"Discipline and stage", "Fee $"}, rows), map[string]any{"fee_schedule": schedule, "layout": "group_fees"}),
+		e.tableBlock("rfp:fees", "", text, doc([]string{"Discipline and stage", "Fee $"}, rows), map[string]any{"fee_schedule": feeKeys(schedule), "layout": "group_fees"}),
 	}}
+}
+
+// feeKeys is the fee schedule as the block's basis records it: each
+// discipline's item keys in order, without the descriptions the parts
+// already print.
+func feeKeys(schedule []FeeSection) []map[string]any {
+	out := []map[string]any{}
+	for _, f := range schedule {
+		keys := []string{}
+		for _, it := range f.Items {
+			keys = append(keys, it.Key)
+		}
+		out = append(out, map[string]any{"package_id": f.PackageID, "key": f.Key, "items": keys})
+	}
+	return out
 }
 
 // reviewBlock is one Before-issue item of the engagement.

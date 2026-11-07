@@ -283,7 +283,8 @@ func (b *builder) stageScopeTable() {
 
 // partStageTable is the stage table of one discipline in a combined
 // engagement: the same stages, lines and positions, with no fee column. The
-// engagement's fee schedule prices every discipline once (group.go).
+// engagement's fee schedule prices every discipline once (group.go), so the
+// schedule is not repeated in this block's basis.
 func (b *builder) partStageTable(rows [][]string) {
 	printed := make([][]string, len(rows))
 	for i, row := range rows {
@@ -291,7 +292,7 @@ func (b *builder) partStageTable(rows [][]string) {
 	}
 	text := strings.TrimSpace(b.r.StageIntro + " A line marked Included is part of its stage; a line marked Excluded is not part of this engagement. Price each included stage in the fee schedule. Propose any departure in R6.")
 	b.add("stages", "rfp:stages", "", text, doc([]string{"Stage", "Scope", "Position"}, printed),
-		map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "services": b.stageServices(), "stage_rows": len(rows), "schedule": Schedule(b.r), "layout": "stage_scope"})
+		map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "services": b.stageServices(), "stage_rows": len(rows), "layout": "stage_scope"})
 }
 
 // serviceText is a service as the table prints it: its label, detail and

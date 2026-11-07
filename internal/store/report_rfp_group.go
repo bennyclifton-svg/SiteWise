@@ -241,30 +241,91 @@ func (s *Store) groupEngagementTx(ctx context.Context, tx pgx.Tx, org string, r 
 	if err != nil {
 		return "", nil, nil, err
 	}
+	drafts, settings, err := memberDraftStates(ctx, tx, org, r.ProjectID, st)
+	if err != nil {
+		return "", nil, nil, err
+	}
+	sk, ok := s.workCatalog().RFPSkeleton()
+	if !ok {
+		return "", nil, nil, ErrInvalidReport
+	}
 	parts := []memberPart{}
 	for _, m := range st.Members {
 		if m.ReportID == "" {
 			parts = append(parts, memberPart{groupStateMember: m})
 			continue
 		}
-		mr, err := readReport(ctx, tx, org, m.ReportID)
-		if err != nil {
-			return "", nil, nil, err
-		}
-		if mr.ProjectID != r.ProjectID || mr.CurrentDraftVersionID == "" {
+		md, ok := drafts[m.ReportID]
+		if !ok {
 			return "", nil, nil, ErrInvalidReport
 		}
-		md, err := readReportDraft(ctx, tx, org, mr.CurrentDraftVersionID)
-		if err != nil {
-			return "", nil, nil, err
+		part := memberPart{groupStateMember: m, Report: Report{ID: m.ReportID, ProjectID: r.ProjectID, PackageID: m.PackageID, Kind: "rfp", CurrentDraftVersionID: md.ID}, Draft: md, Settings: settings[md.ID]}
+		if part.Settings == nil {
+			part.Settings = rfp.Settings{}
 		}
-		part, err := s.memberPartTx(ctx, tx, org, m, mr, md, shared)
-		if err != nil {
+		if part.Disc, part.Sk, part.Drivers, part.Resolved, err = s.storedRFP(md.SourceRevisions, rfp.MergeSettings(sk, part.Settings, shared)); err != nil {
 			return "", nil, nil, err
 		}
 		parts = append(parts, part)
 	}
 	return group.Title, parts, shared, nil
+}
+
+// memberDraftStates reads every member's current draft (its id, version and
+// frozen state, not its sections) and settings in two queries, so a setting
+// edit recomposes the group without reading each member's whole document.
+func memberDraftStates(ctx context.Context, tx pgx.Tx, org, project string, st groupState) (map[string]ReportDraft, map[string]rfp.Settings, error) {
+	ids := []string{}
+	for _, m := range st.Members {
+		if m.ReportID != "" {
+			ids = append(ids, m.ReportID)
+		}
+	}
+	drafts := map[string]ReportDraft{}
+	rows, err := tx.Query(ctx, `SELECT r.id::text,v.id::text,v.version,v.status,v.template_id,v.source_revisions FROM reports r JOIN report_versions v ON v.org_id=r.org_id AND v.id=r.current_draft_version_id
+WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.id=ANY($3::uuid[])`, org, project, ids)
+	if err != nil {
+		return nil, nil, err
+	}
+	versions := []string{}
+	for rows.Next() {
+		var report string
+		var d ReportDraft
+		var state []byte
+		if err := rows.Scan(&report, &d.ID, &d.Version, &d.Status, &d.TemplateID, &state); err != nil {
+			rows.Close()
+			return nil, nil, err
+		}
+		if err := json.Unmarshal(state, &d.SourceRevisions); err != nil {
+			rows.Close()
+			return nil, nil, err
+		}
+		d.ReportID, d.ProjectID = report, project
+		drafts[report] = d
+		versions = append(versions, d.ID)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return nil, nil, err
+	}
+	settings := map[string]rfp.Settings{}
+	rows, err = tx.Query(ctx, `SELECT report_version_id::text,key,value,basis FROM report_settings WHERE org_id=$1::uuid AND report_version_id=ANY($2::uuid[])`, org, versions)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var version, key string
+		var value, basis []byte
+		if err := rows.Scan(&version, &key, &value, &basis); err != nil {
+			return nil, nil, err
+		}
+		if settings[version] == nil {
+			settings[version] = rfp.Settings{}
+		}
+		settings[version][key] = rfp.Setting{Value: value, Basis: basis}
+	}
+	return drafts, settings, rows.Err()
 }
 
 // recomposeGroupTx re-renders a group's draft from its members' current
@@ -274,8 +335,17 @@ func (s *Store) recomposeGroupTx(ctx context.Context, tx pgx.Tx, org string, r R
 	if r.CurrentDraftVersionID == "" {
 		return d, ErrInvalidReport
 	}
-	d, err := readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
+	// Only the draft's frozen state is needed: its old sections are replaced.
+	var state []byte
+	err := tx.QueryRow(ctx, `SELECT id::text,report_id::text,project_id::text,number,status,reporting_date::text,template_id,template_version,version,source_revisions FROM report_versions WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.CurrentDraftVersionID).
+		Scan(&d.ID, &d.ReportID, &d.ProjectID, &d.Number, &d.Status, &d.ReportingDate, &d.TemplateID, &d.TemplateVersion, &d.Version, &state)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return d, ErrNotFound
+	}
 	if err != nil {
+		return d, err
+	}
+	if err := json.Unmarshal(state, &d.SourceRevisions); err != nil {
 		return d, err
 	}
 	if d.Status != "draft" {
@@ -305,13 +375,10 @@ func (s *Store) recomposeGroupTx(ctx context.Context, tx pgx.Tx, org string, r R
 		return d, err
 	}
 	raw, _ := json.Marshal(sections)
-	var row []byte
-	if err := tx.QueryRow(ctx, `UPDATE report_versions SET sections=$3::jsonb,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid AND status='draft' RETURNING to_jsonb(report_versions)`, org, d.ID, raw).Scan(&row); err != nil {
+	if err := tx.QueryRow(ctx, `UPDATE report_versions SET sections=$3::jsonb,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid AND status='draft' RETURNING version`, org, d.ID, raw).Scan(&d.Version); err != nil {
 		return d, err
 	}
-	if err := json.Unmarshal(row, &d); err != nil {
-		return d, err
-	}
+	d.Sections = sections
 	if err := saveReportReferences(ctx, tx, org, d.ID, refs); err != nil {
 		return d, err
 	}
