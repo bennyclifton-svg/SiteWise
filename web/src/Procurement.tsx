@@ -259,7 +259,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files") || e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE)) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE) ? "link" : "copy"; setDropRow(row.pkg!.id); } }) : undefined}
       onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
-      <th scope="row" className="discipline-cell" style={row.member ? { paddingLeft: "2rem" } : undefined}>
+      {/* The tick box has its own name; the row header stays the discipline. */}
+      <th scope="row" className="discipline-cell" aria-label={combinable(row) ? row.label : undefined} style={row.member ? { paddingLeft: "2rem" } : undefined}>
         {combinable(row) && <><input type="checkbox" aria-label={`Select ${row.label} to combine`} checked={ticked.includes(row.pkg!.id)} disabled={!!busyRow}
           onChange={e => { const id = row.pkg!.id; const on = e.target.checked; setTicked(t => on ? [...t, id] : t.filter(x => x !== id)); }} />{" "}</>}
         {row.group && row.pkg ? <GroupName group={row.pkg} onRename={title => rename(row.pkg!, title)} /> : row.label}
