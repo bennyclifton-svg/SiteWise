@@ -240,7 +240,7 @@ func procurementError(w http.ResponseWriter, deps Deps, err error) {
 		http.Error(w, "not found", http.StatusNotFound)
 	case errors.Is(err, store.ErrInvalidInput):
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
-	case errors.Is(err, store.ErrConflict), errors.Is(err, store.ErrVersionConflict):
+	case errors.Is(err, store.ErrConflict), errors.Is(err, store.ErrVersionConflict), errors.Is(err, store.ErrPackageGrouped):
 		http.Error(w, err.Error(), http.StatusConflict)
 	case errors.Is(err, store.ErrInvalidReport):
 		http.Error(w, "this report has no response form", http.StatusNotFound)

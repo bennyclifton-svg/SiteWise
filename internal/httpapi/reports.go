@@ -156,6 +156,8 @@ func reportError(w http.ResponseWriter, err error) {
 		writeJSON(w, http.StatusConflict, map[string]any{"error": "reading_incomplete", "message": "Reading is pending, failed or needs refresh. Wait for refresh or explicitly use the last completed state.", "choices": []string{"wait", "use_last_completed"}})
 	case errors.Is(err, store.ErrReportPackageRetired):
 		http.Error(w, "report package is retired", http.StatusConflict)
+	case errors.Is(err, store.ErrReportPackageGrouped):
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "report_package_grouped", "message": err.Error()})
 	case errors.Is(err, store.ErrVersionConflict):
 		http.Error(w, "draft changed; reload before editing", http.StatusConflict)
 	case errors.Is(err, store.ErrInvalidReport):
