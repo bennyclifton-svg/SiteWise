@@ -19,6 +19,10 @@ import (
 var ErrInvalidReport = errors.New("invalid or unavailable report")
 var ErrReportPackageRetired = errors.New("report package is retired")
 
+// ErrReportPackageGrouped refuses issuing a member's own RFP: while it is in
+// a combined engagement it is issued as part of the group's RFP.
+var ErrReportPackageGrouped = errors.New("this consultant is in a combined engagement; its RFP is issued with the group")
+
 type Report struct {
 	ID                    string `json:"id"`
 	ProjectID             string `json:"project_id"`
@@ -207,7 +211,8 @@ func (s *Store) ProcurementCreate(ctx context.Context, org, project, actor, pack
 		return p, r, false, ErrNotFound
 	}
 	kind := map[string]string{"services": "rfp", "works": "rft"}[p.Kind]
-	if kind == "" {
+	// A combined engagement's RFP is the next slice; until then it has none.
+	if kind == "" || p.IsGroup() {
 		return p, r, false, ErrInvalidReport
 	}
 	var raw []byte

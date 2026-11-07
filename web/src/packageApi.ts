@@ -4,7 +4,7 @@ export interface PackageStage { id: string; label: string; novation_phase: strin
 export type Novation = "no" | "option" | "yes";
 /** Who engages a consultant: the client directly, or the lead design consultant as a subconsultant. Absent: not decided. */
 export type EngagedBy = "client" | "lead_consultant";
-export interface PackageRecord { id: string; title: string; kind: string; works_scope?: string; lifecycle_status: string; novation: Novation; engaged_by?: EngagedBy; version: number; stages: PackageStage[]; discipline_id?: string; retired_at?: string }
+export interface PackageRecord { id: string; title: string; kind: string; works_scope?: string; lifecycle_status: string; novation: Novation; engaged_by?: EngagedBy; version: number; stages: PackageStage[]; discipline_id?: string; retired_at?: string; /** "group" for a combined engagement. */ role?: "single" | "group"; /** The combined engagement a member belongs to. */ group_id?: string }
 export interface ScopeRecord { id: string; item_kind: string; user_text?: string; clause_id?: string; clause_version?: number; work_item_id?: string; role?: string; stage_id?: string; inclusion: string; deliverable?: string; version: number; provisional: boolean }
 export interface ScopeWork { id: string; title: string; action: string; inclusion: string; is_group: boolean; review_status: string }
 export interface ScopeInput { item_kind: string; user_text: string; work_item_id?: string; role?: string; stage_id?: string; inclusion: string; deliverable: string; interface_ids: string[] }

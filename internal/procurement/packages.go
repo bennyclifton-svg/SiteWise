@@ -26,9 +26,13 @@ type Package struct {
 	Meaning           string          `json:"meaning"`
 	Provenance        json.RawMessage `json:"provenance"`
 	SourceProposalKey string          `json:"source_proposal_key,omitempty"`
-	RetiredAt         *time.Time      `json:"retired_at,omitempty"`
-	Version           int64           `json:"version"`
-	Stages            []Stage         `json:"stages"`
+	// Role is RoleGroup for a combined engagement (a consultant row with no
+	// discipline holding several members); a member names it in GroupID.
+	Role      string     `json:"role,omitempty"`
+	GroupID   string     `json:"group_id,omitempty"`
+	RetiredAt *time.Time `json:"retired_at,omitempty"`
+	Version   int64      `json:"version"`
+	Stages    []Stage    `json:"stages"`
 }
 
 type Stage struct {
@@ -58,6 +62,16 @@ type ProgramStage struct {
 	Label            string `json:"label"`
 	CatalogueStageID string `json:"catalogue_stage_id"`
 }
+
+// Package roles: a discipline row, or a group of them bought under one
+// appointment (docs/design/2026-11-07-combined-services-package.md).
+const (
+	RoleSingle = "single"
+	RoleGroup  = "group"
+)
+
+// IsGroup reports whether the package is a combined engagement.
+func (p Package) IsGroup() bool { return p.Role == RoleGroup }
 
 // Who engages a services package: the client directly, or the lead design
 // consultant as a subconsultant (owner decision, 13 October 2026).

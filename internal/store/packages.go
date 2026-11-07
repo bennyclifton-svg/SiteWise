@@ -133,7 +133,7 @@ func readPackageFacts(ctx context.Context, tx pgx.Tx, org, project string) ([]pr
 // readRetiredServiceTitles lists removed consultant packages as packages
 // carrying only kind and title, enough to keep them out of the suggestions.
 func readRetiredServiceTitles(ctx context.Context, q rowQuerier, org, project string) ([]procurement.Package, error) {
-	rows, err := q.Query(ctx, `SELECT DISTINCT title FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND kind='services' AND retired_at IS NOT NULL`, org, project)
+	rows, err := q.Query(ctx, `SELECT DISTINCT title FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND kind='services' AND role='single' AND retired_at IS NOT NULL`, org, project)
 	if err != nil {
 		return nil, err
 	}

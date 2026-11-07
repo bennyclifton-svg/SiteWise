@@ -87,6 +87,21 @@ type Package struct {
 	ABN        string `json:"abn"`
 	// Firms proposed for or were appointed to the package.
 	Firms []Firm `json:"firms,omitempty"`
+	// Grouped marks a member of a combined engagement: its group is the
+	// supplier, so the member is left out of supplier matching.
+	Grouped bool `json:"grouped,omitempty"`
+}
+
+// suppliers are the packages an invoice may come from: every package but a
+// combined engagement's members (docs/plans/2026-11-07-combined-engagements-slice1.md).
+func (c Context) suppliers() []Package {
+	out := make([]Package, 0, len(c.Packages))
+	for _, p := range c.Packages {
+		if !p.Grouped {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 // Firm is one firm on a package: its name key (letters and digits without
@@ -209,7 +224,7 @@ func (d *Draft) settleSupplier() {
 		return
 	}
 	var match []string
-	for _, p := range d.ctx.Packages {
+	for _, p := range d.ctx.suppliers() {
 		if p.ABN != "" && p.ABN == abn.Value {
 			match = append(match, p.ID)
 		}
@@ -363,7 +378,7 @@ func (d *Draft) settleSupplierByFirm() {
 			abns = append(abns, c.Value)
 		}
 	}
-	byABN := packagesWhere(d.ctx.Packages, func(p Package) bool { return firmABNIn(p, abns) })
+	byABN := packagesWhere(d.ctx.suppliers(), func(p Package) bool { return firmABNIn(p, abns) })
 	if len(byABN) > 0 {
 		if len(byABN) == 1 {
 			// Another ABN on the page may be a customer's printed unlabelled.
@@ -375,7 +390,7 @@ func (d *Draft) settleSupplierByFirm() {
 		}
 		return
 	}
-	byName := packagesWhere(d.ctx.Packages, func(p Package) bool { return firmNamedIn(p, d.ev.Heading) })
+	byName := packagesWhere(d.ctx.suppliers(), func(p Package) bool { return firmNamedIn(p, d.ev.Heading) })
 	if len(byName) == 1 {
 		d.by[FieldSupplier] = Decision{Field: FieldSupplier, Value: byName[0], Band: BandAmber, DecidedBy: DecidedByRule}
 	}
@@ -575,7 +590,7 @@ func (d *Draft) question(field string) (question, bool) {
 		// A printed $0.00 GST is a GST-free invoice, so zero is a choice.
 		opts = candidateOptions(d.ev.Amounts, func(c Candidate) bool { return !strings.HasPrefix(c.Value, "-") })
 	case FieldSupplier:
-		for _, p := range d.ctx.Packages {
+		for _, p := range d.ctx.suppliers() {
 			role := map[string]string{"services": "consultant", "works": "contractor", "supply": "supplier"}[p.Kind]
 			opts = append(opts, choice{ID: "p" + strconv.Itoa(len(opts)+1), Value: p.ID, Describe: map[string]string{"package": p.Title, "role": role}})
 		}
