@@ -41,8 +41,8 @@ test("a date that did not parse shows its raw text; a duration alone shows the d
 
 test("evidence whose stage was deleted is an orphan; evidence on a live row is not", () => {
   const groups = groupReadings([
-    reading({ id: "o", target_activity_id: null, catalogue_stage_id: "approval_documentation" }),
-    reading({ id: "l", catalogue_stage_id: "concept_design" }),
+    reading({ id: "o", target_activity_id: null, catalogue_stage_id: "planning" }),
+    reading({ id: "l", catalogue_stage_id: "brief_concept" }),
     reading({ id: "n", document_id: "d2", target_activity_id: null }),
   ]);
   expect(orphanEvidence(groups).map((g) => g.ids)).toEqual([["o"]]);

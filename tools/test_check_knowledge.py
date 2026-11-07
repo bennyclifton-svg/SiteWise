@@ -293,10 +293,10 @@ class CatalogueTests(unittest.TestCase):
              'inclusions': [], 'exclusions': [], 'status': 'draft', 'sources': []}]}})
         self.assertTrue(any('decimal string' in e for e in report.errors))
 
-    def test_stages_must_be_the_unforeseen_stage_targets(self):
+    def test_stages_must_be_the_seven_project_stages(self):
         report = self.run_catalogues({'works/stages.yaml': {'version': 1, 'status': 'draft', 'stages': [
-            {'id': 'design', 'label': 'Design', 'substages': [{'id': 'concept_design', 'label': 'Concept', 'novation': 'later'}]}]}})
-        self.assertTrue(any('top-level stages' in e for e in report.errors))
+            {'id': 'design', 'label': 'Design', 'novation': 'later'}]}})
+        self.assertTrue(any('stages must be exactly' in e for e in report.errors))
         self.assertTrue(any('novation' in e for e in report.errors))
 
     def test_clause_needs_outputs_and_a_version(self):
@@ -394,8 +394,8 @@ class RFPCheckTests(unittest.TestCase):
 
 # Test fixtures only: every number, label and clause is invented for the test.
 _PROGRAM_SOURCE = [{'seed': 'seed.md', 'anchor': '# Test'}]
-_GENERIC = ['investigation', 'concept_design', 'approval_documentation', 'construction_documentation',
-            'approvals', 'procurement', 'construction', 'completion', 'defects']
+_GENERIC = ['brief_concept', 'schematic_design', 'planning', 'design_development',
+            'tender_documentation', 'design_finalisation', 'delivery']
 
 
 def _program_fixture():
@@ -413,13 +413,13 @@ def _program_fixture():
                    cost_base_date='2020-01-01', index_basis='Test index', geography='Test', limitations=[]),
         ],
         'fragments': [
-            common(id='fr.a', label='A', stage='construction', systems=['structure'],
+            common(id='fr.a', label='A', stage='delivery', systems=['structure'],
                    applies_when={'work_action': {'system': 'structure', 'any_of': ['new', 'replace']}},
                    activities=[{'key': 'one', 'label': 'One', 'systems': ['structure'], 'duration': 'du.fixed'},
                                {'key': 'two', 'label': 'Two', 'systems': ['structure'], 'duration': None}],
                    links=[{'from': 'one', 'to': 'two', 'type': 'FS', 'lag': None}],
                    attach={'after': 'stage_start', 'before': 'fr.b'}),
-            common(id='fr.b', label='B', stage='construction', systems=['structure'],
+            common(id='fr.b', label='B', stage='delivery', systems=['structure'],
                    activities=[{'key': 'one', 'label': 'One', 'systems': ['structure'], 'duration': None}]),
         ],
         'skeletons': [
@@ -428,8 +428,8 @@ def _program_fixture():
             common(id='sk.new-da', label='New with consent',
                    applies_when={'all': [{'det': 'work_type', 'eq': 'new'},
                                          {'cond': 'planning', 'any_of': ['da', 'cdc']}]},
-                   stages=['design', 'approvals'],
-                   links=[{'from': 'design', 'to': 'approvals', 'type': 'FS', 'lag': 'du.stat'}]),
+                   stages=['schematic_design', 'planning'],
+                   links=[{'from': 'schematic_design', 'to': 'planning', 'type': 'FS', 'lag': 'du.stat'}]),
         ],
         'calendars': [
             common(id='cal.test-2027', state='NSW', year=2027, working_week=['mon', 'tue', 'wed', 'thu', 'fri'],

@@ -28,7 +28,7 @@ test("procurement first shares one stage plan with Program", async ({ page, base
   let program = await read.json();
   expect(program.program.created_by_surface).toBe("procurement");
   const stages = program.activities.filter((a: { kind: string }) => a.kind === "stage");
-  const concept = stages.find((s: { catalogue_stage_id: string }) => s.catalogue_stage_id === "concept_design");
+  const concept = stages.find((s: { catalogue_stage_id: string }) => s.catalogue_stage_id === "brief_concept");
   expect(concept.label).toBe("Concept design");
   const rows = page.getByRole("region", { name: "Program stages" });
   await expect(rows).toContainText("Concept design");

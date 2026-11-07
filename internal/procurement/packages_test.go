@@ -27,7 +27,7 @@ func TestPackageAndStageBoundaries(t *testing.T) {
 			t.Fatalf("accepted %+v", bad)
 		}
 	}
-	s := Stage{StageID: "concept_design", Label: "Concept", NovationPhase: "pre"}
+	s := Stage{StageID: "brief_concept", Label: "Concept", NovationPhase: "pre"}
 	if err := ValidateStage(s, p, cat); err != nil {
 		t.Fatal(err)
 	}

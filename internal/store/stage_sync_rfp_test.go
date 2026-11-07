@@ -52,8 +52,8 @@ func TestRFPStageUpdateTable(t *testing.T) {
 		t.Fatalf("new draft %+v %v", sync, err)
 	}
 	// The package's catalogue defaults, as the program names their stages:
-	// construction-stage inspections landed on Construction.
-	if got := rowLabels(sync.Rows); got != "Concept design,Approval documentation,Construction documentation,Construction" {
+	// all seven project stages.
+	if got := rowLabels(sync.Rows); got != "Brief and concept,Schematic design,Planning,Design development,Tender documentation,Design finalisation,Delivery" {
 		t.Fatalf("rows %s", got)
 	}
 	sections := func(id string) string {
@@ -65,7 +65,7 @@ func TestRFPStageUpdateTable(t *testing.T) {
 	}
 	before := sections(draft.ID)
 
-	concept := programStageID(t, st, "concept_design")
+	concept := programStageID(t, st, "brief_concept")
 	st = renameStage(t, s, concept, "Sketch design")
 	sync, err = s.ReadReportStageSync(ctx, orgA, r.ID)
 	if err != nil || !sync.Offer {
@@ -118,7 +118,7 @@ func TestRFPStageUpdateTable(t *testing.T) {
 		return raw
 	}
 	issuedBefore := issued()
-	approval := programStageID(t, st, "approval_documentation")
+	approval := programStageID(t, st, "planning")
 	st = renameStage(t, s, approval, "Planning approval")
 	sync, err = s.ReadReportStageSync(ctx, orgA, r.ID)
 	if err != nil || sync.Document != engine.DocIssuedRFP || !sync.Offer || sync.VersionID != draft.ID {
@@ -131,7 +131,7 @@ func TestRFPStageUpdateTable(t *testing.T) {
 	if err != nil || sync.Document != engine.DocDraftRFP || sync.VersionID == draft.ID || sync.Offer {
 		t.Fatalf("new draft revision %+v %v", sync, err)
 	}
-	if got := rowLabels(sync.Rows); got != "Concept,Planning approval,Construction documentation,Construction" {
+	if got := rowLabels(sync.Rows); got != "Concept,Schematic design,Planning approval,Design development,Tender documentation,Design finalisation,Delivery" {
 		t.Fatalf("new draft rows %s", got)
 	}
 	if issued() != issuedBefore {
@@ -224,8 +224,8 @@ func TestAwardedStagesAndFrozenBaseline(t *testing.T) {
 	}
 	frozenBefore, contractBefore := frozen(), contract()
 
-	concept := programStageID(t, st, "concept_design")
-	documentation := programStageID(t, st, "construction_documentation")
+	concept := programStageID(t, st, "brief_concept")
+	documentation := programStageID(t, st, "design_development")
 	renameStage(t, s, concept, "Sketch design")
 	deleteStage(t, s, documentation)
 	st, added := addStage(t, s, "Feasibility")

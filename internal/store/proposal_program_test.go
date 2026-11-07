@@ -44,8 +44,8 @@ func awardable(t *testing.T) (s *store.Store, pkg procurement.Package, submissio
 	ctx := context.Background()
 	s, b, _ := workStore(t)
 	pkg, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned",
-		Stages: []procurement.Stage{{StageID: "concept_design", Label: "Concept", NovationPhase: "none", Origin: "user"},
-			{StageID: "construction", Label: "Site visits", NovationPhase: "none", Origin: "user"}}})
+		Stages: []procurement.Stage{{StageID: "brief_concept", Label: "Concept", NovationPhase: "none", Origin: "user"},
+			{StageID: "delivery", Label: "Site visits", NovationPhase: "none", Origin: "user"}}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +136,7 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 	}
 	// Packages add no rows (owner direction 25 October 2026), so a
 	// reading targets the program stage by catalogue id.
-	if in.NotRead != "" || in.PerWeek != 5 || len(in.Stages) != 2 || stage["Concept"].TargetActivityID != "" || stage["Concept"].CatalogueStageID != "concept_design" {
+	if in.NotRead != "" || in.PerWeek != 5 || len(in.Stages) != 2 || stage["Concept"].TargetActivityID != "" || stage["Concept"].CatalogueStageID != "brief_concept" {
 		t.Fatalf("input %+v", in)
 	}
 	// A well-completed R7 sheet: settled by rule, zero Jev questions.
@@ -170,7 +170,7 @@ func TestProposalProgramReadingsShowOnlyOnceAwarded(t *testing.T) {
 			visitsReading = r
 		}
 	}
-	if concept.Source != "proposal_r7" || concept.Text != "From the awarded proposal: Concept 3 weeks" || concept.CatalogueStageID != "concept_design" ||
+	if concept.Source != "proposal_r7" || concept.Text != "From the awarded proposal: Concept 3 weeks" || concept.CatalogueStageID != "brief_concept" ||
 		concept.Field != programread.FieldDuration || concept.Value != "3" || !concept.Applies || concept.DecidedBy != "rule" {
 		t.Fatalf("concept %+v", concept)
 	}
@@ -241,7 +241,7 @@ func emptyArchitectStages(t *testing.T, s *store.Store) {
 	}
 	emptied := map[string]bool{}
 	for _, a := range prog.Activities {
-		if a.Kind == "stage" && (a.CatalogueStageID == "concept_design" || a.CatalogueStageID == "construction") {
+		if a.Kind == "stage" && (a.CatalogueStageID == "brief_concept" || a.CatalogueStageID == "delivery") {
 			emptied[a.ID] = true
 		}
 	}

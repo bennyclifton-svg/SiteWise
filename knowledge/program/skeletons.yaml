@@ -4,21 +4,20 @@ version: 1
 status: draft
 sources:
   - {design: docs/research/2026-10-21-program-library.md, anchor: "### Overview"}
-notes: Draft stage patterns for owner review. sk.generic is unchanged.
+notes: Draft stage patterns for owner review. Stages are the seven project stages (works/stages.yaml).
 skeletons:
   - id: sk.generic
     label: Generic stage sequence
-    stages: [investigation, concept_design, approval_documentation, construction_documentation,
-             approvals, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
+    # As traditional, the commonest route: documentation before the tender.
+    fragment_stages: {design_finalisation: design_development}
     links:
-      - {from: investigation, to: concept_design, type: FS, lag: null}
-      - {from: concept_design, to: approval_documentation, type: FS, lag: null}
-      - {from: approval_documentation, to: construction_documentation, type: FS, lag: null}
-      - {from: construction_documentation, to: approvals, type: FS, lag: null}
-      - {from: approvals, to: procurement, type: FS, lag: null}
-      - {from: procurement, to: construction, type: FS, lag: null}
-      - {from: construction, to: completion, type: FS, lag: null}
-      - {from: completion, to: defects, type: FS, lag: null}
+      - {from: brief_concept, to: schematic_design, type: FS, lag: null}
+      - {from: schematic_design, to: planning, type: FS, lag: null}
+      - {from: planning, to: design_development, type: FS, lag: null}
+      - {from: design_development, to: tender_documentation, type: FS, lag: null}
+      - {from: tender_documentation, to: design_finalisation, type: FS, lag: null}
+      - {from: design_finalisation, to: delivery, type: FS, lag: null}
     status: draft
     sources:
       - {design: docs/plans/2026-10-18-program.md, anchor: "### 4.1 `skeletons.yaml` — stage patterns"}
@@ -29,7 +28,12 @@ skeletons:
         - {det: work_type, eq: new}
         - {cond: procurement_route, eq: traditional}
         - {cond: planning, any_of: [da, planning_permit]}
-    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
+    # Traditional: the library's construction documentation (signed off for
+    # tender) and the construction certificate come before the tender, so
+    # they sit in design development; design finalisation keeps the
+    # for-construction issue.
+    fragment_stages: {design_finalisation: design_development}
     links: []
     status: draft
     sources:
@@ -41,7 +45,12 @@ skeletons:
         - {det: work_type, eq: new}
         - {cond: procurement_route, eq: traditional}
         - {cond: planning, any_of: [cdc, exempt]}
-    stages: [investigation, concept_design, approval_documentation, approvals, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
+    # Traditional: the library's construction documentation (signed off for
+    # tender) and the construction certificate come before the tender, so
+    # they sit in design development; design finalisation keeps the
+    # for-construction issue.
+    fragment_stages: {design_finalisation: design_development}
     links: []
     status: draft
     sources:
@@ -53,7 +62,7 @@ skeletons:
         - {det: work_type, eq: new}
         - {cond: procurement_route, eq: design_construct}
         - {cond: planning, any_of: [da, planning_permit]}
-    stages: [investigation, concept_design, approval_documentation, approvals, procurement, construction_documentation, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
     links: []
     status: draft
     sources:
@@ -65,7 +74,7 @@ skeletons:
         - {det: work_type, eq: new}
         - {cond: procurement_route, eq: design_construct}
         - {cond: planning, any_of: [cdc, exempt]}
-    stages: [investigation, concept_design, procurement, construction_documentation, approval_documentation, approvals, construction, completion, defects]
+    stages: [brief_concept, schematic_design, design_development, tender_documentation, design_finalisation, planning, delivery]
     links: []
     status: draft
     sources:
@@ -77,7 +86,7 @@ skeletons:
         - {det: work_type, eq: new}
         - {cond: procurement_route, any_of: [eci, managing_contractor]}
         - {cond: planning, any_of: [da, planning_permit]}
-    stages: [investigation, concept_design, procurement, approval_documentation, approvals, construction_documentation, construction, completion, defects]
+    stages: [brief_concept, schematic_design, tender_documentation, planning, design_development, design_finalisation, delivery]
     links: []
     status: draft
     sources:
@@ -89,7 +98,12 @@ skeletons:
         - {det: work_type, eq: refurb}
         - {cond: procurement_route, eq: traditional}
         - {cond: planning, any_of: [da, planning_permit]}
-    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
+    # Traditional: the library's construction documentation (signed off for
+    # tender) and the construction certificate come before the tender, so
+    # they sit in design development; design finalisation keeps the
+    # for-construction issue.
+    fragment_stages: {design_finalisation: design_development}
     links: []
     status: draft
     sources:
@@ -101,7 +115,12 @@ skeletons:
         - {det: work_type, eq: refurb}
         - {cond: procurement_route, eq: traditional}
         - {cond: planning, any_of: [cdc, exempt]}
-    stages: [investigation, concept_design, construction_documentation, approvals, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, design_development, planning, tender_documentation, design_finalisation, delivery]
+    # Traditional: the library's construction documentation (signed off for
+    # tender) and the construction certificate come before the tender, so
+    # they sit in design development; design finalisation keeps the
+    # for-construction issue.
+    fragment_stages: {design_finalisation: design_development}
     links: []
     status: draft
     sources:
@@ -113,7 +132,12 @@ skeletons:
         - {det: work_type, eq: extend}
         - {cond: procurement_route, eq: traditional}
         - {cond: planning, any_of: [da, cdc, exempt, planning_permit]}
-    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
+    # Traditional: the library's construction documentation (signed off for
+    # tender) and the construction certificate come before the tender, so
+    # they sit in design development; design finalisation keeps the
+    # for-construction issue.
+    fragment_stages: {design_finalisation: design_development}
     links: []
     status: draft
     sources:
@@ -125,7 +149,12 @@ skeletons:
         - {det: work_type, any_of: [new, extend]}
         - {cond: procurement_route, eq: traditional}
         - {cond: planning, eq: ssd}
-    stages: [investigation, concept_design, approval_documentation, approvals, construction_documentation, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
+    # Traditional: the library's construction documentation (signed off for
+    # tender) and the construction certificate come before the tender, so
+    # they sit in design development; design finalisation keeps the
+    # for-construction issue.
+    fragment_stages: {design_finalisation: design_development}
     links: []
     status: draft
     sources:
@@ -137,7 +166,7 @@ skeletons:
         - {det: work_type, any_of: [new, extend]}
         - {cond: procurement_route, any_of: [design_construct, eci, managing_contractor]}
         - {cond: planning, eq: ssd}
-    stages: [investigation, concept_design, approval_documentation, approvals, procurement, construction_documentation, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development, tender_documentation, design_finalisation, delivery]
     links: []
     status: draft
     sources:

@@ -74,7 +74,7 @@ sources: ` + fixtureSource + `
 fragments:
   - id: fr.a
     label: Fragment A
-    stage: construction
+    stage: delivery
     systems: [structure]
     applies_when: {work_action: {system: structure, any_of: [new, replace]}}
     activities:
@@ -87,7 +87,7 @@ fragments:
     sources: ` + fixtureSource + `
   - id: fr.b
     label: Fragment B
-    stage: construction
+    stage: delivery
     systems: [structure]
     activities:
       - {key: one, label: One, systems: [structure], duration: null}
@@ -101,17 +101,15 @@ sources: ` + fixtureSource + `
 skeletons:
   - id: sk.generic
     label: Generic
-    stages: [investigation, concept_design, approval_documentation, construction_documentation,
-             approvals, procurement, construction, completion, defects]
+    stages: [brief_concept, schematic_design, planning, design_development,
+             tender_documentation, design_finalisation, delivery]
     links:
-      - {from: investigation, to: concept_design, type: FS, lag: null}
-      - {from: concept_design, to: approval_documentation, type: FS, lag: null}
-      - {from: approval_documentation, to: construction_documentation, type: FS, lag: null}
-      - {from: construction_documentation, to: approvals, type: FS, lag: null}
-      - {from: approvals, to: procurement, type: FS, lag: null}
-      - {from: procurement, to: construction, type: FS, lag: null}
-      - {from: construction, to: completion, type: FS, lag: null}
-      - {from: completion, to: defects, type: FS, lag: null}
+      - {from: brief_concept, to: schematic_design, type: FS, lag: null}
+      - {from: schematic_design, to: planning, type: FS, lag: null}
+      - {from: planning, to: design_development, type: FS, lag: null}
+      - {from: design_development, to: tender_documentation, type: FS, lag: null}
+      - {from: tender_documentation, to: design_finalisation, type: FS, lag: null}
+      - {from: design_finalisation, to: delivery, type: FS, lag: null}
     status: draft
     sources: ` + fixtureSource + `
   - id: sk.new-da
@@ -120,16 +118,16 @@ skeletons:
       all:
         - {det: work_type, eq: new}
         - {cond: planning, any_of: [da, cdc]}
-    stages: [design, approvals, construction]
+    stages: [schematic_design, planning, delivery]
     links:
-      - {from: design, to: approvals, type: FS, lag: null}
-      - {from: approvals, to: construction, type: FS, lag: du.stat}
+      - {from: schematic_design, to: planning, type: FS, lag: null}
+      - {from: planning, to: delivery, type: FS, lag: du.stat}
     status: draft
     sources: ` + fixtureSource + `
   - id: sk.new
     label: New
     applies_when: {det: work_type, eq: new}
-    stages: [construction]
+    stages: [delivery]
     links: []
     status: draft
     sources: ` + fixtureSource + `
@@ -257,8 +255,8 @@ func TestProgramLoaderRejectsEachBadCase(t *testing.T) {
 		{"duplicate duration id", "durations.yaml", "id: du.stat", "id: du.fixed"},
 		{"bad duration id", "durations.yaml", "id: du.stat", "id: duration.stat"},
 		{"bad calendar id", "calendars.yaml", "id: cal.test-2027", "id: nsw-2027"},
-		{"unknown stage", "skeletons.yaml", "stages: [construction]", "stages: [building]"},
-		{"other stage in library", "fragments.yaml", "label: Fragment B\n    stage: construction", "label: Fragment B\n    stage: other"},
+		{"unknown stage", "skeletons.yaml", "stages: [delivery]", "stages: [building]"},
+		{"other stage in library", "fragments.yaml", "label: Fragment B\n    stage: delivery", "label: Fragment B\n    stage: other"},
 		{"unknown fragment system", "fragments.yaml", "systems: [structure.concrete]", "systems: [structure.invented]"},
 		{"unknown activity duration", "fragments.yaml", "duration: du.fixed}", "duration: du.missing}"},
 		{"unknown lag duration", "skeletons.yaml", "lag: du.stat", "lag: du.missing"},
@@ -291,9 +289,9 @@ func TestProgramLoaderRejectsEachBadCase(t *testing.T) {
 		{"statutory without instrument", "durations.yaml", "    instrument: Test instrument\n", ""},
 		// Rule 5: no cycles.
 		{"fragment link cycle", "fragments.yaml", "      - {from: one, to: two, type: FS, lag: du.fixed}", "      - {from: one, to: two, type: FS, lag: du.fixed}\n      - {from: two, to: one, type: SS, lag: null}"},
-		{"skeleton link cycle", "skeletons.yaml", "      - {from: design, to: approvals, type: FS, lag: null}", "      - {from: design, to: approvals, type: FS, lag: null}\n      - {from: construction, to: design, type: FS, lag: null}"},
+		{"skeleton link cycle", "skeletons.yaml", "      - {from: schematic_design, to: planning, type: FS, lag: null}", "      - {from: schematic_design, to: planning, type: FS, lag: null}\n      - {from: delivery, to: schematic_design, type: FS, lag: null}"},
 		{"attach cycle", "fragments.yaml", "attach: {after: stage_start}", "attach: {before: fr.a}"},
-		{"bad link type", "skeletons.yaml", "{from: design, to: approvals, type: FS", "{from: design, to: approvals, type: XX"},
+		{"bad link type", "skeletons.yaml", "{from: schematic_design, to: planning, type: FS", "{from: schematic_design, to: planning, type: XX"},
 		// Rule 6: calendar dates parse, fall in the year, from ≤ to, kind closed.
 		{"date outside year", "calendars.yaml", `date: "2027-03-03"`, `date: "2028-03-03"`},
 		{"unquoted date", "calendars.yaml", `date: "2027-03-03"`, `date: 2027-03-03`},
@@ -306,8 +304,8 @@ func TestProgramLoaderRejectsEachBadCase(t *testing.T) {
 		// two skeletons with identical predicates.
 		{"no generic", "skeletons.yaml", "id: sk.generic", "id: sk.fallback\n    applies_when: {det: work_type, eq: refurb}"},
 		{"generic with predicate", "skeletons.yaml", "    label: Generic\n", "    label: Generic\n    applies_when: {det: work_type, eq: refurb}\n"},
-		{"generic wrong order", "skeletons.yaml", "[investigation, concept_design,", "[concept_design, investigation,"},
-		{"generic with lag", "skeletons.yaml", "{from: completion, to: defects, type: FS, lag: null}", "{from: completion, to: defects, type: FS, lag: du.fixed}"},
+		{"generic wrong order", "skeletons.yaml", "[brief_concept, schematic_design,", "[schematic_design, brief_concept,"},
+		{"generic with lag", "skeletons.yaml", "{from: design_finalisation, to: delivery, type: FS, lag: null}", "{from: design_finalisation, to: delivery, type: FS, lag: du.fixed}"},
 		{"skeleton without predicate", "skeletons.yaml", "    applies_when: {det: work_type, eq: new}\n", ""},
 		{"identical predicates", "skeletons.yaml", "applies_when: {det: work_type, eq: new}", "applies_when:\n      all:\n        - {cond: planning, any_of: [cdc, da]}\n        - {det: work_type, eq: new}"},
 	}
@@ -496,7 +494,7 @@ func TestProjectFragmentScope(t *testing.T) {
   - id: fr.project
     label: Project activity
     scope: project
-    stage: approvals
+    stage: planning
     systems: [site]
     applies_when: {cond: planning, eq: da}
     activities:

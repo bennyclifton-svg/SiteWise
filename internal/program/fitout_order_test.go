@@ -169,14 +169,15 @@ func TestFitoutSprinklerPressureTestBeforeCeilings(t *testing.T) {
 	}
 }
 
-// F47: a new building has no investigation rows, so the skeleton's
-// Investigation stage is empty. It is an empty summary of zero length, not an
-// unknown leaf, and every activity after it is dated.
+// F47: a stage with nothing in it is an empty summary of zero length, not an
+// unknown leaf, and every activity after it is dated. On a traditional route
+// the library's documentation sits in design development, so design
+// finalisation is empty until someone adds the for-construction issue.
 func TestNewBuildingEveryActivityDated(t *testing.T) {
 	cat := testCatalog(t, nil, "")
 	in := GenInput{
 		WorkTypes:  []string{"new"},
-		Conditions: map[string]string{"planning": "da", "procurement_route": "design_construct"},
+		Conditions: map[string]string{"planning": "da", "procurement_route": "traditional"},
 		Values:     map[string]string{"ncc_class": "2", "rise_in_storeys": "4", "state": "NSW"},
 		WorkItems: []WorkItem{
 			{ID: "slab", System: "substructure.slab-on-ground", Action: "new", Title: "Ground slab"},
@@ -184,15 +185,15 @@ func TestNewBuildingEveryActivityDated(t *testing.T) {
 		},
 	}
 	p := mustGenerate(t, cat, in)
-	if p.SkeletonID != "sk.new-dc-da" {
+	if p.SkeletonID != "sk.new-traditional-da" {
 		t.Fatalf("skeleton %s", p.SkeletonID)
 	}
-	inv := "skeleton:sk.new-dc-da:investigation"
+	inv := "skeleton:sk.new-traditional-da:design_finalisation"
 	if _, ok := p.Row(inv); !ok {
-		t.Fatal("the Investigation stage was dropped")
+		t.Fatal("the Design finalisation stage was dropped")
 	}
 	if len(rowKeys(p, inv)) != 0 {
-		t.Fatalf("investigation rows on a new building: %v", rowKeys(p, inv))
+		t.Fatalf("design finalisation rows on a traditional route: %v", rowKeys(p, inv))
 	}
 	times := timesByID(t, p)
 	if times[inv].EF != times[inv].ES {

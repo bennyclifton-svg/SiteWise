@@ -58,13 +58,15 @@ const CheckLinkSkipped = "link_skipped"
 const (
 	planConstructionDuration = "construction_duration"
 	planTargetCompletion     = "target_completion"
-	stageConstruction        = "construction"
-	stageProcurement         = "procurement"
-	stageInvestigation       = "investigation"
-	actionRetain             = "retain"
-	actionInvestigate        = "investigate"
-	actionRemove             = "remove"
-	maxLabel                 = 200
+	// Delivery holds construction, completion and defects; the
+	// construction-duration planning value sizes it when nothing inside does.
+	stageConstruction = "delivery"
+	// Investigations (survey, geotechnical and so on) inform the brief.
+	stageInvestigation = "brief_concept"
+	actionRetain       = "retain"
+	actionInvestigate  = "investigate"
+	actionRemove       = "remove"
+	maxLabel           = 200
 
 	// Library rows generation names directly: the length of an
 	// investigation no fragment covers, and of any activity left without a
@@ -218,11 +220,9 @@ type StageMapping struct {
 
 // Stage placement rules (see resolveStage).
 const (
-	PlaceExact    = "exact"
-	PlaceParent   = "parent"
-	PlaceSubstage = "first_substage"
-	PlaceNearest  = "nearest_earlier"
-	PlaceFirst    = "first_stage"
+	PlaceExact   = "exact"
+	PlaceNearest = "nearest_earlier"
+	PlaceFirst   = "first_stage"
 )
 
 // Plan is a generated program.
@@ -298,6 +298,7 @@ func Generate(cat *knowledge.Catalog, in GenInput) (Plan, error) {
 		return Plan{}, fmt.Errorf("no program library: sk.generic is missing")
 	}
 	g.plan.SkeletonID, g.plan.SkeletonLabel = choice.Skeleton.ID, choice.Skeleton.Label
+	g.fragmentStages = choice.Skeleton.FragmentStages
 	g.plan.Reason = g.reason(choice.Skeleton)
 	g.plan.LibraryVersion = cat.LibraryVersion()
 	g.plan.StartSuggestion = in.Facts.ConsentDate
@@ -335,9 +336,11 @@ type gen struct {
 	stageOrder []string          // program stage keys in order
 	kids       map[string]int    // child count per stage key
 	catPos     map[string]int    // catalogue position of each stage id
-	catParent  map[string]string
-	pairs      map[[2]string]int // link index by (pred, succ)
-	guard      *loopGuard
+	// fragmentStages moves a fragment's library stage on this skeleton
+	// (Skeleton.FragmentStages).
+	fragmentStages map[string]string
+	pairs          map[[2]string]int // link index by (pred, succ)
+	guard          *loopGuard
 
 	fragInstances []fragInstance
 	holds         []holdRow
@@ -365,12 +368,11 @@ type holdRow struct {
 
 func newGen(cat *knowledge.Catalog, in GenInput) *gen {
 	g := &gen{cat: cat, in: in, byKey: map[string]int{}, stageByCat: map[string]string{}, kids: map[string]int{},
-		catPos: map[string]int{}, catParent: map[string]string{}, pairs: map[[2]string]int{},
+		catPos: map[string]int{}, pairs: map[[2]string]int{},
 		anchored: map[string]bool{}, hasPred: map[string]bool{}}
 	g.plan.Rows, g.plan.Links, g.plan.StageMap, g.plan.Notes = []Row{}, []PlanLink{}, []StageMapping{}, []Check{}
 	for i, s := range cat.DeliveryStages() {
 		g.catPos[s.ID] = i
-		g.catParent[s.ID] = s.ParentID
 	}
 	return g
 }
@@ -485,29 +487,14 @@ func (g *gen) stageRows(sk knowledge.Skeleton) {
 // resolveStage places a catalogue stage in the program. The rule, in order:
 //
 //  1. exact: the program has a stage with that catalogue id;
-//  2. parent: the catalogue stage is a sub-stage and its parent is a program
-//     stage (Construction-stage inspections → Construction);
-//  3. first_substage: it is a top-level stage the program splits into
-//     sub-stages; the first of them in program order (Design → Concept
-//     design);
-//  4. nearest_earlier: the last program stage that comes no later in the
+//  2. nearest_earlier: the last program stage that comes no later in the
 //     catalogue (sub-stages sit right after their parent), so work is never
 //     placed in a stage that the catalogue puts after it; `other` sits at
 //     the end of the catalogue and lands in the last program stage;
-//  5. first_stage: nothing comes earlier; the first program stage.
+//  3. first_stage: nothing comes earlier; the first program stage.
 func (g *gen) resolveStage(catID string) (string, string) {
 	if key, ok := g.stageByCat[catID]; ok {
 		return key, PlaceExact
-	}
-	if parent := g.catParent[catID]; parent != "" {
-		if key, ok := g.stageByCat[parent]; ok {
-			return key, PlaceParent
-		}
-	}
-	for _, key := range g.stageOrder {
-		if g.catParent[g.plan.Rows[g.byKey[key]].CatalogueStageID] == catID {
-			return key, PlaceSubstage
-		}
 	}
 	pos, known := g.catPos[catID]
 	if !known {
@@ -640,7 +627,11 @@ func (g *gen) fragmentRows() {
 // instantiate adds one copy of a fragment. item is nil for a project fragment,
 // which keeps the library label and the source-key slot "project".
 func (g *gen) instantiate(f knowledge.Fragment, item *WorkItem, slot, prefix string, conditional bool) {
-	stageKey, _ := g.resolveStage(f.Stage)
+	stage := f.Stage
+	if moved, ok := g.fragmentStages[stage]; ok {
+		stage = moved
+	}
+	stageKey, _ := g.resolveStage(stage)
 	inst := fragInstance{frag: f, keys: map[string]string{}, stageKey: stageKey}
 	workID := ""
 	if item != nil {

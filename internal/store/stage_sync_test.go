@@ -167,14 +167,13 @@ func TestDefaultStagesReadTheProgram(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	concept := programStageID(t, st, "concept_design")
+	concept := programStageID(t, st, "brief_concept")
 	st = renameStage(t, s, concept, "Sketch design")
 	pkg, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Architect", LifecycleStatus: "planned"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	// sk.generic has three of the catalogue's design sub-stages as program
-	// stages; construction-stage inspections is not a program stage there.
+	// sk.generic has every project stage, so the package takes all seven.
 	var got []string
 	for _, ps := range pkg.Stages {
 		got = append(got, ps.Label)
@@ -182,10 +181,10 @@ func TestDefaultStagesReadTheProgram(t *testing.T) {
 			t.Fatalf("stage %+v", ps)
 		}
 	}
-	if strings.Join(got, ",") != "Sketch design,Approval documentation,Construction documentation" {
+	if strings.Join(got, ",") != "Sketch design,Schematic design,Planning,Design development,Tender documentation,Design finalisation,Delivery" {
 		t.Fatalf("labels %v", got)
 	}
-	if pkg.Stages[0].ProgramStageID != concept || pkg.Stages[0].StageID != "concept_design" {
+	if pkg.Stages[0].ProgramStageID != concept || pkg.Stages[0].StageID != "brief_concept" {
 		t.Fatalf("first stage %+v", pkg.Stages[0])
 	}
 	// A works package still has no stages.
@@ -194,13 +193,19 @@ func TestDefaultStagesReadTheProgram(t *testing.T) {
 		t.Fatalf("works %+v %v", works.Stages, err)
 	}
 	// Ticking a program stage in the picker takes its catalogue stage and
-	// label from the program, whatever the caller sent.
-	construction := programStageID(t, st, "construction")
-	ticked, err := s.CreatePackageStage(ctx, orgA, projectA, pkg.ID, userA, procurement.Stage{StageID: "defects", Label: "Mine", NovationPhase: "none", ProgramStageID: construction})
-	if err != nil || ticked.StageID != "construction" || ticked.Label != "Construction" || ticked.ProgramStageID != construction {
+	// label from the program, whatever the caller sent. Untick Delivery
+	// first, so there is a program stage the package does not hold.
+	construction := programStageID(t, st, "delivery")
+	if held := stageByProgram(pkg, construction); held == nil {
+		t.Fatal("no Delivery stage")
+	} else if _, err := s.PatchPackageStage(ctx, orgA, projectA, pkg.ID, held.ID, userA, procurement.StagePatch{Version: held.Version, Retired: boolPtr(true)}); err != nil {
+		t.Fatal(err)
+	}
+	ticked, err := s.CreatePackageStage(ctx, orgA, projectA, pkg.ID, userA, procurement.Stage{StageID: "planning", Label: "Mine", NovationPhase: "none", ProgramStageID: construction})
+	if err != nil || ticked.StageID != "delivery" || ticked.Label != "Delivery" || ticked.ProgramStageID != construction {
 		t.Fatalf("tick %+v %v", ticked, err)
 	}
-	if _, err := s.CreatePackageStage(ctx, orgA, projectA, pkg.ID, userA, procurement.Stage{StageID: "construction", Label: "X", NovationPhase: "none", ProgramStageID: newStageUUID()}); !errors.Is(err, store.ErrNotFound) {
+	if _, err := s.CreatePackageStage(ctx, orgA, projectA, pkg.ID, userA, procurement.Stage{StageID: "delivery", Label: "X", NovationPhase: "none", ProgramStageID: newStageUUID()}); !errors.Is(err, store.ErrNotFound) {
 		t.Fatalf("unknown program stage %v", err)
 	}
 	// Unticking retires it through the existing path.
@@ -229,10 +234,10 @@ func TestPackageStageUpdateTable(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	concept := programStageID(t, st, "concept_design")
-	approval := programStageID(t, st, "approval_documentation")
-	documentation := programStageID(t, st, "construction_documentation")
-	// Money on Approval documentation: an invoice charged to its fee line.
+	concept := programStageID(t, st, "brief_concept")
+	approval := programStageID(t, st, "planning")
+	documentation := programStageID(t, st, "design_development")
+	// Money on Planning: an invoice charged to its fee line.
 	// The line itself is excluded, so only the invoice holds the stage.
 	if _, err := s.PrepareCostPlan(ctx, orgA, projectA, userA); err != nil {
 		t.Fatal(err)
@@ -276,8 +281,8 @@ func TestPackageStageUpdateTable(t *testing.T) {
 	}
 	baseline := proposalSnapshot(t, pool)
 
-	// Program changes: rename Concept, delete Documentation (nothing on it)
-	// and Approval documentation (invoiced), add a new stage.
+	// Program changes: rename Brief and concept, delete Design development
+	// (nothing on it) and Planning (invoiced), add a new stage.
 	renameStage(t, s, concept, "Sketch design")
 	deleteStage(t, s, documentation)
 	deleteStage(t, s, approval)
@@ -287,7 +292,7 @@ func TestPackageStageUpdateTable(t *testing.T) {
 	if err != nil || !sync.Offer || sync.Revision != st.Program.StageRevision {
 		t.Fatalf("offer %+v %v", sync, err)
 	}
-	if c := changeOf(sync, engine.StageRenamed, concept); c == nil || c.Action != engine.CopyLabel || c.OldLabel != "Concept design" || c.NewLabel != "Sketch design" {
+	if c := changeOf(sync, engine.StageRenamed, concept); c == nil || c.Action != engine.CopyLabel || c.OldLabel != "Brief and concept" || c.NewLabel != "Sketch design" {
 		t.Fatalf("rename %+v", sync.Changes)
 	}
 	if c := changeOf(sync, engine.StageRemoved, documentation); c == nil || c.Action != engine.Retire || c.Held {
@@ -369,7 +374,7 @@ func TestPackageStageUpdateTable(t *testing.T) {
 	if c := stageByProgram(readPkg(t, s, pkg.ID), concept); c.Label != "Sketch design" {
 		t.Fatal("keep changed a label")
 	}
-	renameStage(t, s, concept, "Concept design")
+	renameStage(t, s, concept, "Brief and concept")
 	if sync, _ = s.ReadPackageStageSync(ctx, orgA, projectA, pkg.ID); !sync.Offer {
 		t.Fatal("a newer change after Keep is not offered")
 	}

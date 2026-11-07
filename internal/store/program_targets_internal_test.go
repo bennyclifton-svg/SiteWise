@@ -14,11 +14,15 @@ func TestOwnerTargetsBesideTheProgram(t *testing.T) {
 	st := ProgramState{
 		Activities: []ProgramActivity{
 			{ID: "lodge", Kind: "activity", SourceKey: "fragment:fr.da-lodgement:project:lodge"},
-			{ID: "build", Kind: "stage", CatalogueStageID: "construction"},
+			{ID: "build", Kind: "stage", CatalogueStageID: "delivery"},
+			{ID: "pc", Kind: "activity", SourceKey: "fragment:fr.practical-completion:project:inspect"},
 		},
+		// Delivery runs on through the defects period; time on site ends at
+		// practical completion.
 		Computed: engine.Output{Activities: engine.RowTimes{
 			{ID: "lodge", Start: "2026-11-02", Finish: "2026-11-06"},
-			{ID: "build", Start: "2027-03-01", Finish: "2028-01-31"},
+			{ID: "build", Start: "2027-03-01", Finish: "2029-01-31"},
+			{ID: "pc", Start: "2028-01-24", Finish: "2028-01-31"},
 		}},
 	}
 	got := ownerTargets(st, map[string]string{

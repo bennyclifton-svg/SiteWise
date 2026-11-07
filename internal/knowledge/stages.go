@@ -5,10 +5,11 @@ import (
 	"strings"
 )
 
+// DeliveryStage is one of the project stages every RFP, package, Program and
+// the Cost Plan share (works/stages.yaml), or `other`.
 type DeliveryStage struct {
 	ID       string `json:"id"`
 	Label    string `json:"label"`
-	ParentID string `json:"parent_id,omitempty"`
 	Novation string `json:"novation"`
 	Status   string `json:"status"`
 }
@@ -27,18 +28,14 @@ func (c *Catalog) loadDeliveryStages(path string) error {
 	if ok, err := exists(path); !ok {
 		return err
 	}
-	type substage struct {
-		ID       string `yaml:"id"`
-		Label    string `yaml:"label"`
-		Novation string `yaml:"novation"`
-	}
 	var file struct {
 		Version int    `yaml:"version"`
 		Status  string `yaml:"status"`
 		Stages  []struct {
-			ID        string     `yaml:"id"`
-			Label     string     `yaml:"label"`
-			Substages []substage `yaml:"substages"`
+			ID       string `yaml:"id"`
+			Label    string `yaml:"label"`
+			Novation string `yaml:"novation"`
+			Status   string `yaml:"status"`
 		} `yaml:"stages"`
 	}
 	if err := c.unmarshal(path, &file); err != nil {
@@ -48,23 +45,20 @@ func (c *Catalog) loadDeliveryStages(path string) error {
 		return fmt.Errorf("%s: invalid stage catalogue", path)
 	}
 	seen := map[string]bool{}
-	add := func(id, label, parent, phase string) error {
-		if strings.TrimSpace(id) == "" || strings.TrimSpace(label) == "" || seen[id] || (phase != "none" && phase != "pre" && phase != "post") {
-			return fmt.Errorf("%s: invalid or duplicate stage %q", path, id)
-		}
-		seen[id] = true
-		c.stages = append(c.stages, DeliveryStage{ID: id, Label: label, ParentID: parent, Novation: phase, Status: file.Status})
-		return nil
-	}
-	for _, stage := range file.Stages {
-		if err := add(stage.ID, stage.Label, "", "none"); err != nil {
-			return err
-		}
-		for _, sub := range stage.Substages {
-			if err := add(sub.ID, sub.Label, stage.ID, sub.Novation); err != nil {
-				return err
+	for _, s := range file.Stages {
+		phase := s.Novation
+		if s.ID == OtherStageID {
+			// `other` is never a default, so it has no novation side.
+			if phase != "" {
+				return fmt.Errorf("%s: %s takes no novation side", path, OtherStageID)
 			}
+			phase = "none"
 		}
+		if strings.TrimSpace(s.ID) == "" || strings.TrimSpace(s.Label) == "" || seen[s.ID] || (phase != "none" && phase != "pre" && phase != "post") {
+			return fmt.Errorf("%s: invalid or duplicate stage %q", path, s.ID)
+		}
+		seen[s.ID] = true
+		c.stages = append(c.stages, DeliveryStage{ID: s.ID, Label: s.Label, Novation: phase, Status: file.Status})
 	}
 	return nil
 }

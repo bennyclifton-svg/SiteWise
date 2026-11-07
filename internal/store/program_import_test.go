@@ -46,7 +46,7 @@ func readImport(t *testing.T, s *store.Store) (string, store.ProgramImportCommit
 	if err != nil {
 		t.Fatal(err)
 	}
-	if in.PerWeek != 5 || len(in.Targets) != 8 || in.Targets[0].Tier != programread.TierStage || in.Targets[0].CatalogueStageID != "design" {
+	if in.PerWeek != 5 || len(in.Targets) != 8 || in.Targets[0].Tier != programread.TierStage || in.Targets[0].CatalogueStageID != "schematic_design" {
 		t.Fatalf("input %+v", in)
 	}
 	out, err := programread.Read(ctx, greyAsker{}, programread.Thresholds{QuestionVersion: programread.QuestionVersion}, importHarvest(), in.Targets)

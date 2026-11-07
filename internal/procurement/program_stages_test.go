@@ -8,19 +8,20 @@ import (
 )
 
 // With a program, a services package's default stages are the program
-// stages whose catalogue stage is a sub-stage DefaultStages would copy, in
-// program order, with the program's labels (program plan 7.6).
+// stages whose catalogue stage DefaultStages would copy (every project
+// stage, never `other`), in program order, with the program's labels
+// (program plan 7.6).
 func TestProgramDefaultStagesReadThePlan(t *testing.T) {
 	cat, err := knowledge.Load("../../knowledge")
 	if err != nil {
 		t.Fatal(err)
 	}
 	plan := []ProgramStage{
-		{ID: "s1", Label: "Investigation", CatalogueStageID: "investigation"},
-		{ID: "s2", Label: "Documentation for approval", CatalogueStageID: "approval_documentation"},
-		{ID: "s3", Label: "Sketch design", CatalogueStageID: "concept_design"},
+		{ID: "s1", Label: "Brief", CatalogueStageID: "brief_concept"},
+		{ID: "s2", Label: "Documentation for approval", CatalogueStageID: "planning"},
+		{ID: "s3", Label: "Sketch design", CatalogueStageID: "schematic_design"},
 		{ID: "s4", Label: "My stage", CatalogueStageID: "other"},
-		{ID: "s5", Label: "Site inspections", CatalogueStageID: "construction_stage_inspections"},
+		{ID: "s5", Label: "Site inspections", CatalogueStageID: "delivery"},
 	}
 	p := Package{Kind: "services", Title: "Architect", Novation: NovationOption}
 	got := ProgramDefaultStages(p, cat, plan, 7)
@@ -31,10 +32,10 @@ func TestProgramDefaultStagesReadThePlan(t *testing.T) {
 			t.Fatalf("stage %+v", s)
 		}
 	}
-	if strings.Join(labels, ",") != "Documentation for approval,Sketch design,Site inspections" {
+	if strings.Join(labels, ",") != "Brief,Documentation for approval,Sketch design,Site inspections" {
 		t.Fatalf("labels %v", labels)
 	}
-	if got[0].ProgramStageID != "s2" || got[0].StageID != "approval_documentation" || got[0].NovationPhase != "pre" || got[2].NovationPhase != "post" {
+	if got[1].ProgramStageID != "s2" || got[1].StageID != "planning" || got[1].NovationPhase != "pre" || got[3].NovationPhase != "post" {
 		t.Fatalf("stages %+v", got)
 	}
 	// Not novated: no side; works packages get none.
