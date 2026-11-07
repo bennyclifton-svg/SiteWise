@@ -87,34 +87,26 @@ project_rows:
     why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
   label: Survey brief
 role:
-- key: survey
-  text: Provide selected survey evidence; detail observations, legal boundary/title, utility detection and set-out
-    are distinct purchases. Confirm task/jurisdiction competence. Fence lines or title searches are not boundary
-    proof; legal adviser owns rights advice.
-  provenance:
-  - kind: evidence
-    ref: land-surveying#2,3
-  - kind: seed
-    ref: land-surveying#23,24
-- key: interfaces
-  text: Designers own design; locator detects, surveyor captures, plumber provides sewer evidence. Name client-direct/subcontract
-    work. Tank geometry is not hydraulic capacity, integrity or watertightness certification.
-  provenance:
-  - kind: evidence
-    ref: land-surveying#5,6,7,8,9,10
-  - kind: client_decision
-    ref: land-surveying#32
-    why: Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted.
-- key: advice
-  text: For advice/defects state question, evidence cutoff and uncertainty; engineers own diagnosis, repair and
-    monitoring triggers. No certification of concealed/unobserved work.
-  provenance:
-  - kind: seed
-    ref: land-surveying#26,28,29
-  when:
-  - work_type:
-    - advisory
-    - remediation
+  - key: survey
+    text: "You are the surveyor. Your job is to give the design team an accurate, reliable record of the site, its boundaries, levels and features, so the design and approvals rest on facts."
+    provenance: [{"kind": "evidence", "ref": "land-surveying#2,3"}, {"kind": "seed", "ref": "land-surveying#23,24"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Provide the survey work selected for the extent and purpose shown. Detail survey, legal boundary and title, utility detection and set-out are separate purchases.
+      - Confirm you are competent and registered for each task in this jurisdiction.
+      - Say what was observed and how accurately.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: limits
+    text: "Fence lines and title searches do not prove a boundary; the client's legal adviser advises on rights."
+    provenance: [{"kind": "evidence", "ref": "land-surveying#2,3"}, {"kind": "seed", "ref": "land-surveying#23,24"}]
+  - key: interfaces
+    text: "Designers own the design. The utility locator detects services, you capture them, and the plumber provides sewer evidence. Name any work done directly for the client or by a subcontractor. Measuring a tank's geometry does not certify its hydraulic capacity, integrity or watertightness."
+    provenance: [{"kind": "evidence", "ref": "land-surveying#5,6,7,8,9,10"}, {"kind": "client_decision", "ref": "land-surveying#32", "why": "Apply the proposed client scope and pricing boundary; historical supplier terms are not adopted."}]
+  - key: advice
+    text: "For advice or defect monitoring, state the question, the date the evidence stops and the uncertainty. Engineers own diagnosis, repair and monitoring triggers. You do not certify concealed or unobserved work."
+    when: [{"work_type": ["advisory", "remediation"]}]
+    provenance: [{"kind": "seed", "ref": "land-surveying#26,28,29"}]
 stage_intro: From written instruction/inputs/access to named final issue/handover, with agreed query period; later
   options need instruction.
 boundary:

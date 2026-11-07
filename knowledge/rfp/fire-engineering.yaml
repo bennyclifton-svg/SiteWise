@@ -90,25 +90,38 @@ project_rows:
     why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
   label: Fire basis
 role:
-- key: engineer
-  text: Own strategy/analysis. BCA adviser coordinates departures; system/passive/structure/facade designers detail;
-    contractors install/test; authorities decide. Scoped FEIR is not occupation approval.
-  provenance:
-  - kind: evidence
-    ref: fire-engineering#7,8,17,19,29
-  - kind: seed
-    ref: fire-engineering#38
-  - kind: client_decision
-    ref: fire-engineering#47,48
-    why: Selected services and quantities need explicit appointment; historic offers do not appoint them.
-- key: limits
-  text: Report unsupported solutions/alternatives; no approval guarantee. Operator accepts staffing/maintenance/storage/use
-    limits. Revision-controlled plans/registers trace solutions to designer/verification.
-  provenance:
-  - kind: evidence
-    ref: fire-engineering#5,17,27,28,30
-  - kind: seed
-    ref: fire-engineering#37,39,40
+  - key: engineer
+    text: "You are the fire safety engineer. Your job is to set a fire safety strategy that keeps occupants and fire fighters safe, and to prove the Performance Solutions the design needs, so the building complies without unnecessary cost."
+    provenance: [{"kind": "evidence", "ref": "fire-engineering#7,8,17,19,29"}, {"kind": "seed", "ref": "fire-engineering#38"}, {"kind": "client_decision", "ref": "fire-engineering#47,48", "why": "Selected services and quantities need explicit appointment; historic offers do not appoint them."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Agree the fire safety objectives and the departures to address with the BCA consultant, early.
+      - Own the strategy and the analysis, and document each Performance Solution in the fire engineering report.
+      - Give the fire systems, passive fire, structural and façade designers the requirements they must detail.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_residential
+    text: "For the residential parts, this includes occupants who may be asleep when a fire starts."
+    when: [{"class": ["2", "3"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_care
+    text: "For the health or care building, this includes patients and residents who need help to evacuate, and the staff procedures the strategy relies on."
+    when: [{"class": ["9a", "9c"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, this includes the fire load of the stored goods and the size of undivided spaces."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, this includes reconciling the existing fire safety measures and any earlier fire engineering."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: boundary
+    text: "The BCA consultant coordinates the departures; the designers detail; contractors install and test; authorities decide. A fire engineering report for the scoped solutions is not occupation approval."
+    provenance: [{"kind": "evidence", "ref": "fire-engineering#7,8,17,19,29"}, {"kind": "seed", "ref": "fire-engineering#38"}, {"kind": "client_decision", "ref": "fire-engineering#47,48", "why": "Selected services and quantities need explicit appointment; historic offers do not appoint them."}]
+  - key: limits
+    text: "Tell us when a solution is not supported or an alternative is better; you do not guarantee approval. The operator accepts the staffing, maintenance, storage and use limits the solutions rely on. Keep revision-controlled plans and registers that trace each solution to its designer and its verification."
+    provenance: [{"kind": "evidence", "ref": "fire-engineering#5,17,27,28,30"}, {"kind": "seed", "ref": "fire-engineering#37,39,40"}]
 stage_intro: Start on instruction/agreed inputs; end at named output/response. Price once.
 boundary:
 - when:

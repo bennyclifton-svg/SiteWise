@@ -8,10 +8,16 @@ Example Client intends to build Residential camp and commercial kitchen (Class 3
 | Building: Residential camp and commercial kitchen: Class 3, 9b | Planning pathway: Development application (DA) | Procurement route: Design and construct; later design/novation separately appointed. |
 
 Conditions that apply: Parts with different NCC classes.
+Conditions that do not apply: Work to an existing building.
 
 ### 2. Scope of services
 
-Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, schedules and design-basis records. For shared connections name the design, evidence, installation, controls, testing and acceptance owners. Resolve gaps before reliance.
+You are the hydraulic services engineer. Your job is to give the building safe, reliable water, drainage and gas services that meet the authorities' requirements, suit how the building is used, and can be maintained.
+To do this you:
+- Confirm the authorities' connection requirements and the capacity of existing services early.
+- Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, schedules and design-basis records.
+- For each shared connection, name who owns its design, evidence, installation, controls, testing and acceptance.
+- Resolve gaps before anyone relies on the design.
 
 R2 sets maturity, native formats, revisions, review rounds, recipients/reliance and dates. R1 Fee by stage: Fee/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; numbered addenda/validity and authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 

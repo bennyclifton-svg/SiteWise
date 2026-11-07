@@ -93,26 +93,36 @@ project_rows:
     ref: fire-services#40,45,47
   label: Design basis
 role:
-- key: designer
-  text: Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic
-    design or proof of existing adequacy.
-  provenance:
-  - kind: evidence
-    ref: fire-services#1-4,8-10,16-18,25-26
-  - kind: seed
-    ref: fire-services#40-43
-- key: boundaries
-  text: Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing
-    neither executes tests nor certifies unseen work. Name network design/application owners.
-  provenance:
-  - kind: evidence
-    ref: fire-services#11-12,17-20,25-29
-  - kind: seed
-    ref: fire-services#41,43-44
-  - kind: client_decision
-    ref: fire-services#52
-    why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or
-      establish universal requirements.
+  - key: designer
+    text: "You are the fire services engineer. Your job is to design the fire systems allocated to you so they protect occupants and property, deliver the fire strategy, meet the authority's requirements, and can be tested and maintained."
+    provenance: [{"kind": "evidence", "ref": "fire-services#1-4,8-10,16-18,25-26"}, {"kind": "seed", "ref": "fire-services#40-43"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Confirm the water supply and the authority's requirements early.
+      - Design the selected systems to the level of detail each appointed stage buys.
+      - Coordinate space, tanks, pumps and penetrations with the architect, structural and other services engineers.
+      A concept tank and pump capacity is not full hydraulic design or proof that the existing supply is adequate.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_apartments
+    text: "For the apartments, this includes systems that protect residents who may be asleep when a fire starts."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, this includes systems matched to the stored goods and their fire load."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_care
+    text: "For the health or care building, this includes systems that protect patients and residents who cannot evacuate without help."
+    when: [{"class": ["9a", "9c"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, this includes what the existing systems can do and what must be upgraded."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: boundaries
+    text: "The fire engineer owns the fire strategy and Performance Solutions; authorities decide. Trades install, test and certify. Your reviews and witnessing neither carry out tests nor certify work you did not see. Name who owns network design and authority applications."
+    provenance: [{"kind": "evidence", "ref": "fire-services#11-12,17-20,25-29"}, {"kind": "seed", "ref": "fire-services#41,43-44"}, {"kind": "client_decision", "ref": "fire-services#52", "why": "Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or establish universal requirements."}]
 stage_intro: R2 sets each output purpose/maturity, native formats, recipient/reliance, revision, rounds and date.
 boundary:
 - when:

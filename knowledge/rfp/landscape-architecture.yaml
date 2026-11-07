@@ -99,30 +99,38 @@ project_rows:
       quantities or current terms.
   label: Landscape basis
 role:
-- key: appointment
-  text: Selected landscape design/advice from instruction, inputs and access to named output/response milestone. Specialists
-    own technical design; authorities approve. No approval, plant-survival or unseen-work guarantee.
-  provenance:
-  - kind: evidence
-    ref: landscape-architecture#5-10
-  - kind: seed
-    ref: landscape-architecture#26-29,33
-  - kind: client_decision
-    ref: landscape-architecture#34,36
-    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
-      quantities or current terms.
-- key: records
-  text: Controlled PDFs/plans, schedules/calculations and registers; agree native formats, recipients/reliance, input
-    revisions, rounds/dates. Verify instrument/edition before using ratios, canopy, soil-depth or load figures.
-  provenance:
-  - kind: evidence
-    ref: landscape-architecture#5,6,9
-  - kind: seed
-    ref: landscape-architecture#27-29,33
-  - kind: client_decision
-    ref: landscape-architecture#35
-    why: Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope,
-      quantities or current terms.
+  - key: appointment
+    text: "You are the landscape architect. Your job is to design outdoor spaces that work for the people who use them, suit the site and its climate, meet the planning controls, and can be built and maintained within budget."
+    provenance: [{"kind": "evidence", "ref": "landscape-architecture#5-10"}, {"kind": "seed", "ref": "landscape-architecture#26-29,33"}, {"kind": "client_decision", "ref": "landscape-architecture#34,36", "why": "Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope, quantities or current terms."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Set the landscape strategy early with the architect and civil engineer: levels, deep soil, drainage and tree retention.
+      - Design and document the selected landscape works to the level each appointed stage buys.
+      - Specify planting and materials the client can maintain.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_house
+    text: "For this house, this means a garden that suits how the owners live and what they can maintain."
+    when: [{"module": ["house"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments
+    text: "For the apartments, this includes communal open space, deep soil, and planting on structure that residents use every day."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, this includes the street frontage and outdoor spaces for staff and customers."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_assembly
+    text: "For the assembly or education building, this includes robust outdoor spaces for large groups."
+    when: [{"class": ["9b"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: boundary
+    text: "Your appointment runs from our instruction, inputs and site access to the output and response milestone we name. Specialists own technical design; authorities approve. You do not guarantee approval, plant survival or work you did not see."
+    provenance: [{"kind": "evidence", "ref": "landscape-architecture#5-10"}, {"kind": "seed", "ref": "landscape-architecture#26-29,33"}, {"kind": "client_decision", "ref": "landscape-architecture#34,36", "why": "Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope, quantities or current terms."}]
+  - key: records
+    text: "Issue controlled PDFs, plans, schedules, calculations and registers, and agree native formats, recipients, reliance, input revisions, review rounds and dates. Check the instrument and edition before using any ratio, canopy, soil-depth or load figure."
+    provenance: [{"kind": "evidence", "ref": "landscape-architecture#5,6,9"}, {"kind": "seed", "ref": "landscape-architecture#27-29,33"}, {"kind": "client_decision", "ref": "landscape-architecture#35", "why": "Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope, quantities or current terms."}]
 stage_intro: Select base/options and end; later stages require instruction. Fit-out without landscape impact buys no
   design; advice ends at its report/response round.
 boundary:

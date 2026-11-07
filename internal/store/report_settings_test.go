@@ -77,6 +77,22 @@ func blockText(d store.ReportDraft, id string) string {
 	return ""
 }
 
+// blockTable joins a block's table rows as "a|b|c" lines.
+func blockTable(d store.ReportDraft, id string) string {
+	for _, section := range d.Sections {
+		for _, b := range section.Blocks {
+			if b.ID == id && b.Table != nil {
+				rows := []string{}
+				for _, row := range b.Table.Rows {
+					rows = append(rows, strings.Join(row, "|"))
+				}
+				return strings.Join(rows, "\n")
+			}
+		}
+	}
+	return ""
+}
+
 func setSetting(t *testing.T, s *store.Store, r store.Report, d store.ReportDraft, key, value string) store.ReportDraft {
 	t.Helper()
 	next, err := s.SetReportSetting(context.Background(), orgA, r.ID, userA, key, json.RawMessage(value), d.Version)
@@ -111,8 +127,8 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if len(visible) < 2 || visible[0] != "1. Project" || visible[len(visible)-1] != "Proposal dates" {
 		t.Fatalf("first visible section %v", visible)
 	}
-	if !strings.Contains(blockText(d, "rfp:role"), "Civil (to be appointed)") {
-		t.Fatalf("other consultants carry their real status: %q", blockText(d, "rfp:role"))
+	if team := blockTable(d, "rfp:role:team"); !strings.Contains(team, "Civil|Client|To be appointed") {
+		t.Fatalf("other consultants carry their real status: %q", team)
 	}
 	view, err := s.ReadReport(ctx, orgA, r.ID, "test-build")
 	if err != nil || view.RFP == nil || view.PageFit == nil || view.PageFit.Limit != 4 {

@@ -11,8 +11,15 @@ Conditions that apply: Work to an existing building; Site stays occupied or oper
 
 ### 2. Scope of services
 
-Selected waste advice from written instruction/agreed inputs to named final output and response round. Contractor implements; operator contracts collections; specialists classify controlled waste; traffic tests access. No approval, facility acceptance, diversion or savings guarantee.
-Revision-controlled PDFs/plans/calculations and editable registers: input revisions, units/source/date, assumptions, owners/dates, recipients/reliance and closure evidence. Separate observed, reported and estimated conditions.
+You are the waste consultant. Your job is to make sure the building's waste can be stored, sorted and collected safely and efficiently, during construction and in use, and that it meets council's requirements.
+To do this you:
+- Set waste volumes, bin numbers and storage areas early, so the architect can plan for them.
+- Confirm how collection vehicles reach and service the bins.
+- Prepare the waste management plans this appointment selects.
+For the apartments, this includes chutes or bin rooms on each floor, and a collection point the collection trucks can reach.
+For the office or retail space, this includes separate tenant waste streams, including food waste.
+Your advice runs from our written instruction and agreed inputs to the output and response round we name. The contractor implements the plan; the operator contracts collections; specialists classify controlled waste; the traffic engineer tests vehicle access. You do not guarantee approval, facility acceptance, diversion or savings.
+Issue revision-controlled PDFs, plans, calculations and editable registers that record input revisions, units, sources and dates, assumptions, owners and due dates, recipients and reliance, and close-out evidence. Keep observed, reported and estimated conditions separate.
 Waste basis: Confirm actual uses/occupancy/activity by part, streams, dated quantities/rates, local controls/conditions and mandatory versus voluntary targets; existing contracts, collection vehicles/frequency, rights and gaps. Building labels and absent records prove neither zero waste nor adequate collection.
 
 Select base/options and named end; operational and C&D plans are separate purchases. Later work needs written activation. R1 Fee by stage: Price selected stages/services once: quantities, fixed/ceiling/unit basis, base/options, package dependencies, ex GST/GST/total, milestones and addenda. Confirm authorised signatory and addenda numbers. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

@@ -35,16 +35,52 @@ project_rows:
 
 role:
   - key: engineer
-    text: "Structural engineer, engaged by the client and coordinated by the architect. You design and document the permanent structure. Where a specialist contractor designs an element (piles, post-tensioned slabs, specialist floors), you write its performance documentation and review the contractor's design; the contractor designs and certifies it."
-    provenance: [{kind: evidence, ref: "structural#62"}, {kind: evidence, ref: "structural#41-43"}]
+    text: "You are the structural engineer, engaged by the client and coordinated by the architect. You make the building stand up safely and economically: a structure that carries its loads, suits the architecture and the ground, and can be built and maintained."
+    provenance: [{"kind": "evidence", "ref": "structural#62"}, {"kind": "evidence", "ref": "structural#41-43"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Choose the structural system early with the architect and cost planner, and show what each option means for cost, floor-to-floor height and buildability.
+      - Design and document the permanent structure with calculations, drawings and specification.
+      - Coordinate loads, penetrations and set-downs with the geotechnical, civil, services and façade designers before construction.
+      - Where a specialist contractor designs an element (piles, post-tensioned slabs, specialist floors), write its performance documentation and review the contractor's design; the contractor designs and certifies it.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_house
+    text: "For this house, fit for purpose means a simple, economical structure matched to the ground and the owners' budget."
+    when: [{"module": ["house"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments
+    text: "For the apartments, fit for purpose means column grids and slab depths that suit the apartment layouts, and floors that limit vibration and sound between homes."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments_nsw
+    text: "In NSW you also provide design compliance declarations for the structure as a regulated designer."
+    when: [{"class": ["2"], "state": ["NSW"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}, {"kind": "practice", "ref": "Design and Building Practitioners Act 2020 (NSW); named from practice, not verified against the instrument"}]
+  - key: fit_commercial
+    text: "For the office or retail space, fit for purpose means long, flexible spans and floor loads that let the space be re-let and refitted."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, fit for purpose means clear spans, and slabs that carry the operation's racking, forklift and plant loads."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_institutional
+    text: "For the health, education or care building, fit for purpose means spans, loads and floor vibration that suit the equipment and how the rooms are used."
+    when: [{"class": ["9a", "9b", "9c"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, fit for purpose also means establishing what the existing structure can carry before relying on it."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
   - key: novation
     text: "After novation you are engaged by the head contractor. Price the stages before and after novation separately."
-    when: [{novation: ["yes"]}]
-    provenance: [{kind: practice, ref: "architecture golden draft novation wording"}]
+    when: [{"novation": ["yes"]}]
+    provenance: [{"kind": "practice", "ref": "architecture golden draft novation wording"}]
   - key: novation_option
     text: "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up."
-    when: [{novation: ["option"]}]
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", why: "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
+    when: [{"novation": ["option"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", "why": "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
 
 stage_intro: "Price each stage that applies as a lump sum. Each stage ends at client sign-off."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).

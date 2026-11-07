@@ -84,27 +84,41 @@ project_rows:
   label: Procurement
   replace: true
 role:
-- key: designer
-  text: Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings,
-    schedules and design-basis records. For shared connections name the design, evidence, installation, controls,
-    testing and acceptance owners. Resolve gaps before reliance.
-  provenance:
-  - kind: evidence
-    ref: hydraulic-services#2-9,14-22,27-29
-  - kind: seed
-    ref: hydraulic-services#40-49
-  - kind: evidence
-    ref: hydraulic-services#4,8,14-17,27-29
-  - kind: seed
-    ref: hydraulic-services#41-43,48-49
-  - kind: client_decision
-    ref: hydraulic-services#51
-    why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope
-      or purchase later stages.
-  - kind: client_decision
-    ref: hydraulic-services#55,56
-    why: Owner-approved Hydraulic pilot structure and explicit pricing defaults; not evidence that an unknown system
-      exists.
+  - key: designer
+    text: "You are the hydraulic services engineer. Your job is to give the building safe, reliable water, drainage and gas services that meet the authorities' requirements, suit how the building is used, and can be maintained."
+    provenance: [{"kind": "evidence", "ref": "hydraulic-services#2-9,14-22,27-29"}, {"kind": "seed", "ref": "hydraulic-services#40-49"}, {"kind": "evidence", "ref": "hydraulic-services#4,8,14-17,27-29"}, {"kind": "seed", "ref": "hydraulic-services#41-43,48-49"}, {"kind": "client_decision", "ref": "hydraulic-services#51", "why": "Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope or purchase later stages."}, {"kind": "client_decision", "ref": "hydraulic-services#55,56", "why": "Owner-approved Hydraulic pilot structure and explicit pricing defaults; not evidence that an unknown system exists."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Confirm the authorities' connection requirements and the capacity of existing services early.
+      - Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, schedules and design-basis records.
+      - For each shared connection, name who owns its design, evidence, installation, controls, testing and acceptance.
+      - Resolve gaps before anyone relies on the design.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_house
+    text: "For this house, this means water, hot water and drainage that suit the owners' daily use."
+    when: [{"module": ["house"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments
+    text: "For the apartments, this includes water metering for each apartment, the hot water strategy, and quiet pipework past bedrooms."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, this includes tenancy metering and connections left ready for food and other tenant fit-outs."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, this includes the operation's process water and trade waste."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_health
+    text: "For the health building, this includes water quality and temperature control for clinical areas."
+    when: [{"class": ["9a"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, this includes tracing the existing services before relying on them."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
 stage_intro: R2 sets maturity, native formats, revisions, review rounds, recipients/reliance and dates.
 boundary:
 - when:

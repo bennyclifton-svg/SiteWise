@@ -104,7 +104,10 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, transmittal }:
   const budget = block("rfp:budget");
   const sourceColumns = (block("rfp:project:grid")?.basis?.grid ?? []) as GridColumnData[];
   const columns = ["Site and planning", "The building", "Delivery"].flatMap(title => sourceColumns.filter(c => c.title === title));
-  const conditions = project.filter(c => c.key.startsWith("fact:flag."));
+  // Project conditions have one answer for every consultant, so they are set
+  // in Project Profile. Only a condition that blocks issue stays here, so the
+  // RFP can still be finished in place. The printed RFP lists them all.
+  const conditions = project.filter(c => c.key.startsWith("fact:flag.") && blocked.has(c.key));
   const parts = byKey.get("parts:affected");
   return <div className="rfp-page-one">
     <div className="pf-card rfp-grid">
@@ -113,7 +116,7 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, transmittal }:
     {parts && <ControlRow control={parts} busy={busyKey === parts.key} blocked={blocked.has(parts.key)} showSource={false} onWrite={onWrite} />}
     {conditions.length > 0 && <div className="rfp-conditions" role="group" aria-label="Project conditions">
       <h4>Project conditions</h4>
-      <p className="rfp-conditions-help">Changes save to Project Profile and apply to every RFP.</p>
+      <p className="rfp-conditions-help">Needed before issue. Changes save to Project Profile, where the other conditions are set, and apply to every RFP.</p>
       <div className="rfp-conditions-grid">{conditions.map(c => <ControlRow key={c.key} control={c} busy={busyKey === c.key} blocked={blocked.has(c.key)} showSource={false} onWrite={onWrite} />)}</div>
     </div>}
     {/* Drafts saved before the transmittal had its own section keep it here until refreshed. */}

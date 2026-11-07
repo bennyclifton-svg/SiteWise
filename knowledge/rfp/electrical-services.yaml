@@ -81,22 +81,43 @@ project_rows:
   label: Procurement
   replace: true
 role:
-- key: designer
-  text: Design selected systems to purchased maturity; retain measured/utility/calculated basis, utility/deliverable/decision
-    registers. Never assume spare capacity.
-  provenance:
-  - kind: evidence
-    ref: electrical-services#2-3,5-9,14-22,27-29
-  - kind: seed
-    ref: electrical-services#40-49
-- key: boundary
-  text: Power is not process design. Utility/ASP3, ICT operator and contractors retain duties; review/witnessing
-    is not installation testing/certification.
-  provenance:
-  - kind: evidence
-    ref: electrical-services#8,16,20-22,33,35
-  - kind: seed
-    ref: electrical-services#41-43,49
+  - key: designer
+    text: "You are the electrical services engineer. Your job is to give the building safe, reliable power, lighting and communications that suit how it is used, fit the supply available, and can be built and maintained."
+    provenance: [{"kind": "evidence", "ref": "electrical-services#2-3,5-9,14-22,27-29"}, {"kind": "seed", "ref": "electrical-services#40-49"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Confirm the supply early: the load, the capacity available and what the network operator needs. Never assume spare capacity.
+      - Design the selected systems to the level of detail each appointed stage buys.
+      - Keep the measured, utility and calculated basis of the design, and registers of utility matters, deliverables and decisions.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_house
+    text: "For this house, this means power, lighting and data that suit how the owners will live, within the supply available."
+    when: [{"module": ["house"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments
+    text: "For the apartments, this includes metering for each apartment, common-area power and lighting, and any electric vehicle charging the brief asks for."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, this includes tenancy metering and capacity set aside for tenants' fit-outs."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, this includes supply for the operation's plant and lighting for high-bay spaces."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_health
+    text: "For the health building, this includes essential and backup power for clinical areas."
+    when: [{"class": ["9a"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, this includes confirming what the existing installation and supply can support."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: boundary
+    text: "Power to process equipment is not process design. The network operator, its accredited service provider (Level 3), the ICT operator and the contractors keep their own duties. Your reviews and witnessing are not installation testing or certification."
+    provenance: [{"kind": "evidence", "ref": "electrical-services#8,16,20-22,33,35"}, {"kind": "seed", "ref": "electrical-services#41-43,49"}]
 stage_intro: R2 defines maturity/native formats/revisions/rounds/reliance/dates.
 boundary:
 - when:

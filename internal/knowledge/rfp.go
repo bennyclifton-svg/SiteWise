@@ -212,7 +212,11 @@ type RFPDiscipline struct {
 	UnsupportedPathways []string       `yaml:"unsupported_pathways" json:"unsupported_pathways,omitempty"`
 	ProjectRows         []RFPRow       `yaml:"project_rows" json:"project_rows"`
 	Role                []RFPRow       `yaml:"role" json:"role"`
-	StageIntro          string         `yaml:"stage_intro" json:"stage_intro"`
+	// DesignTeam prints the other consultants as a table under the role:
+	// who engages each and whether it is appointed (owner direction,
+	// 7 November 2026). Set for a discipline that leads or reviews the team.
+	DesignTeam bool   `yaml:"design_team" json:"design_team,omitempty"`
+	StageIntro string `yaml:"stage_intro" json:"stage_intro"`
 	// ScopeByStage prints one table: each stage with its lines and services
 	// beneath it (owner direction, 2-3 November 2026). Every stage then needs
 	// lines.

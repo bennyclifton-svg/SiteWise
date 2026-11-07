@@ -14,7 +14,13 @@ Conditions not yet known: Contaminated or potentially contaminated land; Acid su
 
 ### 2. Scope of services
 
-Civil engineer for work outside building footprints: earthworks, roads and pavements, levels, stormwater and water quality. The hydraulic engineer designs roof drainage, downpipes and pumped systems; utility designers do water, sewer, power and communications; you combine their layouts with yours. The traffic engineer sets parking numbers, design vehicles and intersection layout; you design to them.
+You are the civil engineer for the site outside the building footprints. You make the site work: levels, earthworks, roads and pavements, and stormwater that drains safely, meets council's requirements and leaves neighbours no worse off.
+To do this you:
+- Set the site levels with the architect and landscape architect so the building, access and drainage work together.
+- Design and document earthworks, roads and pavements, stormwater and water quality.
+- Combine your layouts with the hydraulic engineer's roof drainage, downpipes and pumped systems, and the utility designers' water, sewer, power and communications.
+- Design to the traffic engineer's parking numbers, design vehicles and intersection layout.
+On this flood-affected site, fit for purpose also means floor and access levels that meet the flood controls without worsening flooding elsewhere.
 After novation you are engaged by the head contractor. Price the stages before and after novation separately.
 Design vehicle: 14.5 m rigid bus
 

@@ -8,7 +8,7 @@ Conflicting housing and approval scope stay unresolved even on a known residenti
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Hearing signage lifts and facility criteria review selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | Access building-approval review selected; Housing or SDA assessment selected |
+| access | Building class; Hearing signage lifts and facility criteria review selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | Access building-approval review selected; Housing or SDA assessment selected |
 
 ## access-extension-da-end
 
@@ -16,7 +16,7 @@ Historic industrial context adds no assumed testing/audit; DA-end boundary makes
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
+| access | Building class; Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
 
 ## access-house-known-no
 
@@ -24,7 +24,7 @@ Residential label does not appoint housing/SDA, testing or performance solutions
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
+| access | Building class; Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
 
 ## access-live-fitout
 
@@ -32,7 +32,7 @@ Occupied retail fit-out requires retained/shared routes and sensory/facility cri
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
+| access | Building class; Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
 
 ## access-operational-advice
 
@@ -40,7 +40,7 @@ Operational/user audit includes the selected broader sensory/cognitive brief; no
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
+| access | Building class; Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
 
 ## access-remediation-late
 
@@ -48,7 +48,7 @@ Late mixed-use remediation appointment includes explicit construction/completion
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
+| access | Building class; Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | — |
 
 ## access-unknown-extent
 
@@ -56,7 +56,7 @@ Unknown report/housing/facility decisions raise questions rather than silently e
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| access | Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected |
+| access | Building class; Shared tenancy access review selected; Work to an existing building; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Work type | — | Access building-approval review selected; Hearing signage lifts and facility criteria review selected; Housing or SDA assessment selected; Access planning report selected |
 
 ## advisory-investigation
 
@@ -139,8 +139,8 @@ New residential development lacks offsite extent, tree-impact and pruning eviden
 | architecture | Building class; Building over or next to a water authority asset; Work to an existing building; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Architect lodges the planning application; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Green Star or NABERS target set |
 | civil | Building class; Work to an existing building; Existing on-site detention to keep or modify; Novation; Procurement route; Regulated design applies; Site area; State; Work type | — | Acid sulfate soils mapped; Basement or deep excavation; Contaminated or potentially contaminated land; Excavation next to adjoining structures or boundaries; Flood-affected site; Groundwater above the base of excavation; Drinking water catchment (neutral or beneficial effect); On-site detention required by council; Works in a public road or intersection; Council requires stormwater quality modelling |
 | structural | Building class; Building over or next to a water authority asset; Work to an existing building; Existing on-site detention to keep or modify; Novation; Planning pathway; Procurement route; Regulated design applies; State; Work type | — | Construction budget; Neighbouring or street trees affected; Works affect trees roots or canopy; Basement or deep excavation; Excavation next to adjoining structures or boundaries; Heritage item or conservation area; Next to a rail corridor; Super-flat floor needed for the use; Transfer structures |
-| town-planning | Planning pathway; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
-| traffic | Use generates heavy vehicle movements; Intersection counts and modelling required; Planning pathway; Work type | — | Green travel plan required by a condition or the DCP; Works in a public road or intersection; Site fronts or affects a state road; Traffic-generating development referred to TfNSW |
+| town-planning | Building class; Planning pathway; State; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
+| traffic | Building class; Use generates heavy vehicle movements; Intersection counts and modelling required; Planning pathway; Work type | — | Green travel plan required by a condition or the DCP; Works in a public road or intersection; Site fronts or affects a state road; Traffic-generating development referred to TfNSW |
 
 ## bca-advisory-only
 
@@ -148,7 +148,7 @@ Advice-only has no certification or planning-submission appointment; tender boun
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway; State; Work type | — | Work to an existing building |
 
 ## bca-approval-boundary
 
@@ -156,7 +156,7 @@ Certification appointment ends at construction approval; later principal-certifi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-combined-boundary-unconfirmed
 
@@ -164,7 +164,7 @@ Requesting both packages still requires appointment confirmation; suggested A te
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-combined-mixed-use
 
@@ -172,7 +172,7 @@ Separate A/B packages, mixed-use occupied fit-out and D&C transfer request; all 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-conflicting-decisions
 
@@ -180,7 +180,7 @@ Conflicting statutory appointment and existing-extent records block issue even w
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Classification map required; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | Certification requested; Existing BCA extent agreed |
+| bca-certification | Building class; BCA advisory requested; Classification map required; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | Certification requested; Existing BCA extent agreed |
 
 ## bca-extend
 
@@ -188,7 +188,7 @@ Agreed affected existing extent for extend with occupied staging; does not appoi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-refurb
 
@@ -196,7 +196,7 @@ Agreed affected existing extent for refurb with occupied staging; does not appoi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-remediation
 
@@ -204,7 +204,7 @@ Agreed affected existing extent for remediation with occupied staging; does not 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-statutory-only
 
@@ -212,7 +212,7 @@ New office CC/principal-certifier package has no advisory appointment; certifica
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## bca-unknown-decisions
 
@@ -220,7 +220,7 @@ Unknown package and extent decisions stay ask states, not exclusions or optional
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; Planning pathway | — | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment |
+| bca-certification | Building class; Work to an existing building; Planning pathway; State; Work type | — | BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment |
 
 ## bca-unsupported-cdc
 
@@ -228,7 +228,7 @@ A CDC receives its own written stage: the CDC determination replaces the CC stag
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Planning pathway | — | — |
+| bca-certification | Building class; BCA advisory requested; Certification requested; Classification map required; Existing BCA extent agreed; Fire referrals/witnessing required; Residential evidence review required; Occupied/staged BCA assessment; Work to an existing building; Planning pathway; State; Work type | — | — |
 
 ## cost-advisory-capex
 
@@ -236,7 +236,7 @@ Standalone capex advice has no design/tender/claims retainer or valuation author
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | — |
+| cost-planning | Building class; Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | Work to an existing building |
 
 ## cost-authority-only
 
@@ -244,7 +244,7 @@ Industrial extension buys current authority report only; DA/D&C do not imply des
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | — |
+| cost-planning | Building class; Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | — |
 
 ## cost-conflicting-extent
 
@@ -252,7 +252,7 @@ Conflicting authority scope and remediation extent stay unresolved; source ident
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | Authority estimate selected; Specialist remediation cost extent agreed |
+| cost-planning | Building class; Shared cost allocation selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Total project budget extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | Authority estimate selected; Specialist remediation cost extent agreed |
 
 ## cost-hospital-postcontract
 
@@ -260,7 +260,7 @@ Explicit institutional post-contract appointment promotes claim advice but leave
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | — |
+| cost-planning | Building class; Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | — |
 
 ## cost-live-fitout
 
@@ -268,7 +268,7 @@ Occupied fit-out separately selects owner equipment and whole-project budget; re
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | — |
+| cost-planning | Building class; Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | — |
 
 ## cost-mixed-remediation
 
@@ -276,7 +276,7 @@ Mixed-use remediation prices specialist-defined extent and allocation, with a co
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | — |
+| cost-planning | Building class; Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | — |
 
 ## cost-residential-plan
 
@@ -284,7 +284,7 @@ Residential cost plans include explicitly selected contract allowances, not auth
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Site stays occupied or operating during the works; Work type | — | — |
+| cost-planning | Building class; Shared cost allocation selected; Authority estimate selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Operator equipment cost inputs selected; Specialist remediation cost extent agreed; Total project budget extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | — |
 
 ## cost-unknown-purpose
 
@@ -292,7 +292,7 @@ Missing authority purpose and budget/operator extent stay blocking questions, ne
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| cost-planning | Shared cost allocation selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Specialist remediation cost extent agreed; Site stays occupied or operating during the works; Work type | — | Authority estimate selected; Operator equipment cost inputs selected; Total project budget extent agreed |
+| cost-planning | Building class; Shared cost allocation selected; Concept estimate selected; Contract allowance schedule selected; Design cost reviews selected; Specialist remediation cost extent agreed; Work to an existing building; Site stays occupied or operating during the works; Work type | — | Authority estimate selected; Operator equipment cost inputs selected; Total project budget extent agreed |
 
 ## electrical-advice-only
 
@@ -300,7 +300,7 @@ Condition advice ends at report; no automatic design or witnessing appointment.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | — |
+| electrical-services | Building class; Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | — |
 
 ## electrical-commissioning-only
 
@@ -308,7 +308,7 @@ Health facility witnessing is not electrical design or contractor test execution
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | — |
+| electrical-services | Building class; Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | — |
 
 ## electrical-conflicting-fire
 
@@ -316,7 +316,7 @@ Contradictory electrical/fire responsibility remains unresolved; known no genera
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Declarations selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | Controls interface selected; Dry-fire design selected |
+| electrical-services | Building class; Declarations selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | Controls interface selected; Dry-fire design selected |
 
 ## electrical-extension-concept
 
@@ -324,7 +324,7 @@ Warehouse concept plus existing investigation does not buy full design or novati
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | — |
+| electrical-services | Building class; Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | — |
 
 ## electrical-live-mixed-upgrade
 
@@ -332,7 +332,7 @@ Occupied mixed-use upgrade quantifies isolation and phased tests; later design e
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | — |
+| electrical-services | Building class; Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | — |
 
 ## electrical-office-design
 
@@ -340,7 +340,7 @@ Office complete tender design; utility design remains separately appointed. Decl
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | — |
+| electrical-services | Building class; Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | — |
 
 ## electrical-residential-basic
 
@@ -348,7 +348,7 @@ Residential known negatives omit unused systems without inferred industrial defa
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Planning pathway; Work type | — | — |
+| electrical-services | Building class; Controls interface selected; Declarations selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Investigation selected; Authority inputs selected; Phase/tenancy design selected; Work to an existing building; Planning pathway; Work type | — | — |
 
 ## electrical-unknown-tenant
 
@@ -356,7 +356,7 @@ Unsettled tenant systems remain decisions, never exclusions.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| electrical-services | Declarations selected; Investigation selected; Authority inputs selected; Planning pathway; Work type | — | Controls interface selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Phase/tenancy design selected |
+| electrical-services | Building class; Declarations selected; Investigation selected; Authority inputs selected; Work to an existing building; Planning pathway; Work type | — | Controls interface selected; Dry-fire design selected; Generation/storage/EV selected; Passive ICT/security/AV selected; Phase/tenancy design selected |
 
 ## existing-3-9c-repair
 
@@ -381,7 +381,7 @@ Advisory aged-care review ends at report/response; no full FER, construction ver
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
 
 ## fire-engineering-appointed-remediation
 
@@ -389,7 +389,7 @@ Residential remediation explicitly appoints specialist, staging, investigation a
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
 
 ## fire-engineering-conflicting-existing
 
@@ -397,7 +397,7 @@ Extension has conflicting reconciliation extent and hazard evidence; do not excl
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Performance solution scope selected; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | Existing FER reconciliation extent selected; Project-specific fire hazard scenario documented |
+| fire-engineering | Building class; Work to an existing building; Performance solution scope selected; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | Existing FER reconciliation extent selected; Project-specific fire hazard scenario documented |
 
 ## fire-engineering-fitout-no-solutions
 
@@ -405,7 +405,7 @@ Small shop fitout explicitly requires no performance solution or special assessm
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
 
 ## fire-engineering-office-solutions
 
@@ -413,7 +413,7 @@ Commercial new-build buys defined brief/report; construction, test witnessing an
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
 
 ## fire-engineering-specialist-options
 
@@ -421,7 +421,7 @@ Industrial project documents specialist and battery hazard questions but purchas
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
 
 ## fire-engineering-strategy-only
 
@@ -429,7 +429,7 @@ Occupied mixed residential refurbishment buys strategy only; later brief/FER and
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented; Parts with different NCC classes; Planning pathway; Work type | — | — |
 
 ## fire-engineering-unknown-solutions
 
@@ -437,7 +437,7 @@ Industrial label alone does not settle solution need/count or hazard/specialist 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-engineering | Existing FER reconciliation extent selected; Parts with different NCC classes; Planning pathway; Work type | — | Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented |
+| fire-engineering | Building class; Work to an existing building; Existing FER reconciliation extent selected; Parts with different NCC classes; Planning pathway; Work type | — | Performance solution scope selected; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Vulnerable or assisted occupants documented |
 
 ## fire-services-capacity-advice
 
@@ -445,7 +445,7 @@ Capacity advice ends at report and does not buy design, construction or performa
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
 
 ## fire-services-conflicting-extent
 
@@ -453,7 +453,7 @@ Conflicting sprinkler/calculation inclusions and dry-fire ownership are not gues
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Existing investigation selected; Plant interface review selected; Upgrade design selected; Planning pathway; Work type | — | Dry design allocated; Demand/storage selected; Wet design selected |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Existing investigation selected; Plant interface review selected; Upgrade design selected; Planning pathway; Work type | — | Dry design allocated; Demand/storage selected; Wet design selected |
 
 ## fire-services-live-remediation
 
@@ -461,7 +461,7 @@ Occupied mixed-use retrofit separates investigation/upgrade, staged controls and
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
 
 ## fire-services-office-design
 
@@ -469,7 +469,7 @@ New office explicitly allocates wet and dry design; construction and test execut
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
 
 ## fire-services-pump-concept
 
@@ -477,7 +477,7 @@ Extension pump/tank concept cannot buy full hydraulic/upgrade design or later D&
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
 
 ## fire-services-residential-wet-only
 
@@ -485,7 +485,7 @@ Residential wet package does not silently purchase dry fire or authority works.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
 
 ## fire-services-unknown-allocation
 
@@ -493,7 +493,7 @@ Unknown dry, control and authority allocations remain issue decisions.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Declarations selected; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | Authority/test tasks allocated; Controls coordination allocated; Dry design allocated |
+| fire-services | Building class; Work to an existing building; Declarations selected; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | Authority/test tasks allocated; Controls coordination allocated; Dry design allocated |
 
 ## fire-services-witness-only
 
@@ -501,7 +501,7 @@ Witness-only appointment cannot promote full wet/dry design and does not execute
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| fire-services | Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
+| fire-services | Building class; Work to an existing building; Authority/test tasks allocated; Controls coordination allocated; Declarations selected; Dry design allocated; Existing investigation selected; Plant interface review selected; Demand/storage selected; Upgrade design selected; Wet design selected; Planning pathway; Work type | — | — |
 
 ## geotech-advice-only
 
@@ -509,7 +509,7 @@ School evidence-only commission: decision/reliance limits, no fieldwork, no plan
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | — |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | Basement or deep excavation |
 
 ## geotech-appointed-construction
 
@@ -517,7 +517,7 @@ Client explicitly buys construction and contractor support; G6/G7 positions beco
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | — |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | Basement or deep excavation |
 
 ## geotech-conflicting-scope
 
@@ -525,7 +525,7 @@ Conflicting investigation, exposure and handback choices require decisions; conf
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | Work type | — | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected |
+| geotechnical | Building class; Work type | — | Basement or deep excavation; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected |
 
 ## geotech-distress-investigation
 
@@ -533,7 +533,7 @@ Targeted apartment distress investigation preserves evidence; expert witness rem
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | — |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | Basement or deep excavation |
 
 ## geotech-extension-dnc
 
@@ -541,7 +541,7 @@ Occupied warehouse extension with OSD exposure: D&C and project novation choice 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | — |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | Basement or deep excavation |
 
 ## geotech-fitout-no-ground-impact
 
@@ -549,7 +549,7 @@ Office fit-out with no load/ground disturbance: evidence review/report, no intru
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | — |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | Basement or deep excavation |
 
 ## geotech-new-residential
 
@@ -557,7 +557,7 @@ Client-selected investigation for new housing; all quantities are explicit and g
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | — |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected; Work type | — | Basement or deep excavation |
 
 ## geotech-plan-only-boundary
 
@@ -565,7 +565,7 @@ Plan-only start/end leaves later fieldwork/report as options; clearance responsi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Ground planning support selected; Work type | — | Intrusive investigation selected |
+| geotechnical | Building class; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Ground planning support selected; Work type | — | Basement or deep excavation; Intrusive investigation selected |
 
 ## geotech-unknown-scope
 
@@ -573,7 +573,7 @@ Missing appointment selections remain blocking questions, never exclusions or au
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| geotechnical | Work type | — | ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected |
+| geotechnical | Building class; Work type | — | Basement or deep excavation; ASS assessment package selected; Asset exposure selected; Civil ground parameters selected; Foundation advice selected; Investigation handback selected; Intrusive investigation selected; Ground planning support selected |
 
 ## house-cdc-new
 
@@ -597,7 +597,7 @@ Capacity advice does not buy detailed design, upgrade, construction or witnessin
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
+| hydraulic-services | Building class; Work to an existing building; River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-camp-design
 
@@ -605,7 +605,7 @@ Camp accommodation/kitchen with separately evidenced carted, rain and river sour
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
+| hydraulic-services | Building class; Work to an existing building; River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-conflicting-source
 
@@ -613,7 +613,7 @@ Conflicting source/treatment, trade and declarations cannot be guessed or absorb
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Phase/tenancy design selected; Utility and Water Services Coordinator; Planning pathway; Work type | — | River/carted/other water sources; Declarations selected; Rainwater collection and reuse; Trade waste; Treatment connection |
+| hydraulic-services | Building class; Work to an existing building; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Roof drainage; Phase/tenancy design selected; Utility and Water Services Coordinator; Planning pathway; Work type | — | River/carted/other water sources; Declarations selected; Rainwater collection and reuse; Trade waste; Treatment connection |
 
 ## hydraulic-house-concept
 
@@ -621,7 +621,7 @@ Residential concept appoints preliminary options; later detailed system design r
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
+| hydraulic-services | Building class; Work to an existing building; River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-live-investigation
 
@@ -629,7 +629,7 @@ Occupied apartment investigation distinguishes observed/tested/assumed condition
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
+| hydraulic-services | Building class; Work to an existing building; River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-office-fitout
 
@@ -637,7 +637,7 @@ Internal office kitchenette design buys no whole-site drainage, trade waste, tre
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
+| hydraulic-services | Building class; Work to an existing building; River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## hydraulic-unknown-tenant
 
@@ -645,7 +645,7 @@ Unknown tenant and specialist systems use explicit pricing options; standard rai
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | Declarations selected; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Phase/tenancy design selected; Planning pathway; Work type | — | River/carted/other water sources; External drainage; Gas/fluids; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Trade waste; Treatment connection; Utility and Water Services Coordinator |
+| hydraulic-services | Building class; Work to an existing building; Declarations selected; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Phase/tenancy design selected; Planning pathway; Work type | — | River/carted/other water sources; External drainage; Gas/fluids; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Trade waste; Treatment connection; Utility and Water Services Coordinator |
 
 ## hydraulic-witness-only
 
@@ -653,7 +653,7 @@ Hospital selected witnessing is not design or contractor execution.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| hydraulic-services | River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
+| hydraulic-services | Building class; Work to an existing building; River/carted/other water sources; Declarations selected; External drainage; Gas/fluids; Building interfaces selected; Investigation selected; Authority inputs selected; Process-treatment interface selected; Domestic pumps/storage; Rainwater collection and reuse; Roof drainage; Phase/tenancy design selected; Trade waste; Treatment connection; Utility and Water Services Coordinator; Planning pathway; Work type | — | — |
 
 ## landscape-advisory-only
 
@@ -661,7 +661,7 @@ Condition advice has evidence cutoff and cause-first rectification; no full desi
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
 
 ## landscape-conflicting-design
 
@@ -669,7 +669,7 @@ Conflicting landscape extent never implies design or specialist exclusion.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | Landscape design extent selected |
+| landscape-architecture | Building class; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | Landscape design extent selected |
 
 ## landscape-establishment-only
 
@@ -677,7 +677,7 @@ Remediation establishment review does not purchase construction completion or pr
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
 
 ## landscape-fitout-no-exterior
 
@@ -685,7 +685,7 @@ Known no exterior scope buys no landscape design.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
 
 ## landscape-house-approval
 
@@ -693,7 +693,7 @@ House garden DA ends at response milestone; later construction and establishment
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
 
 ## landscape-inception-options
 
@@ -701,7 +701,7 @@ Inception boundary prices selected future podium/irrigation/public extent as O; 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | Special external-use coordination selected |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | Special external-use coordination selected |
 
 ## landscape-mixed-podium
 
@@ -709,7 +709,7 @@ Mixed-use podium/public landscape; separately appointed construction/establishme
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
 
 ## landscape-school-dnc
 
@@ -717,7 +717,7 @@ Occupied school D&C tender defines handover without automatic novation, works or
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
+| landscape-architecture | Building class; Landscape design extent selected; Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected; Procurement route; Work type | — | — |
 
 ## landscape-unknown-interfaces
 
@@ -725,7 +725,7 @@ Unknown podium/irrigation/public/special/staging extent remains decision rather 
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| landscape-architecture | Landscape design extent selected; Procurement route; Work type | — | Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected |
+| landscape-architecture | Building class; Landscape design extent selected; Procurement route; Work type | — | Irrigation notation or performance brief selected; Detailed irrigation design selected; Podium roof planter interface extent selected; Public-domain package selected; Special external-use coordination selected; Existing occupied mixed-use or staged acceptance extent selected |
 
 ## live-hospital
 
@@ -749,7 +749,7 @@ Condition advice does not buy design, testing or upgrades.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
+| mechanical-services | Building class; Work to an existing building; BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
 
 ## mechanical-conflicting-fire
 
@@ -757,7 +757,7 @@ Conflicting smoke/control appointment requires decision.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Planning pathway; Work type | — | BMS design selected; Smoke design selected |
+| mechanical-services | Building class; Work to an existing building; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Planning pathway; Work type | — | BMS design selected; Smoke design selected |
 
 ## mechanical-extension-concept
 
@@ -765,7 +765,7 @@ D&C concept is not full HVAC/controls design or continuation.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
+| mechanical-services | Building class; Work to an existing building; BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
 
 ## mechanical-live-remediation
 
@@ -773,7 +773,7 @@ Occupied mixed-use investigation, support and witnessing purchased separately.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
+| mechanical-services | Building class; Work to an existing building; BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
 
 ## mechanical-office-design
 
@@ -781,7 +781,7 @@ New office selected design ends at tender; later work priced separately.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
+| mechanical-services | Building class; Work to an existing building; BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
 
 ## mechanical-residential-ventilation
 
@@ -789,7 +789,7 @@ Explicitly unselected systems are absent, not named-party exclusions.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
+| mechanical-services | Building class; Work to an existing building; BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
 
 ## mechanical-unknown-tenant
 
@@ -797,7 +797,7 @@ Unknown exhaust and fire/control allocation cannot silently exclude work.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | Declarations selected; Plant interfaces selected; Investigation selected; Planning inputs selected; Planning pathway; Work type | — | BMS design selected; Kitchen exhaust selected; Local exhaust selected; Smoke design selected |
+| mechanical-services | Building class; Work to an existing building; Declarations selected; Plant interfaces selected; Investigation selected; Planning inputs selected; Planning pathway; Work type | — | BMS design selected; Kitchen exhaust selected; Local exhaust selected; Smoke design selected |
 
 ## mechanical-witness-only
 
@@ -805,7 +805,7 @@ Witness-only does not promote design or execute contractor tests.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| mechanical-services | BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
+| mechanical-services | Building class; Work to an existing building; BMS design selected; Declarations selected; Plant interfaces selected; Investigation selected; Kitchen exhaust selected; Local exhaust selected; Planning inputs selected; Smoke design selected; Planning pathway; Work type | — | — |
 
 ## mixed-2-6-7a
 
@@ -823,7 +823,7 @@ Due-diligence planning advice before a purchase; no application.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| town-planning | Planning pathway; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
+| town-planning | Building class; Planning pathway; State; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
 
 ## planning-only
 
@@ -840,7 +840,7 @@ Public works assessed under an REF: no reviewed town planning bundle exists yet.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| town-planning | Planning pathway; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
+| town-planning | Building class; Planning pathway; State; Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel |
 
 ## small-class1-extension
 
@@ -930,7 +930,7 @@ Early project with no pathway, no procurement route, no class on the building pa
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
 | architecture | Work to an existing building; Work type | — | Construction budget; Building class; Architect lodges the planning application; Building over or next to a water authority asset; Community consultation required; Client wants the consultant to administer the construction contract; Connecting with Country input required; Heritage item or conservation area; Site stays occupied or operating during the works; Parts with different NCC classes; Several buildings or a campus; Delivered in stages; Green Star or NABERS target set; Novation; Planning pathway; Procurement route; Regulated design applies; State |
-| town-planning | Work type | — | A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel; Planning pathway |
+| town-planning | Work type | — | Building class; A development standard is varied (clause 4.6); Heritage item or conservation area; Notification likely to draw objections; Application goes to a planning panel; Planning pathway; State |
 
 ## warehouse-dnc-no-novation
 
@@ -948,7 +948,7 @@ Evidence-limited peer review ends at its report; no automatic operational/C&D WM
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-cd-only
 
@@ -956,7 +956,7 @@ Demolition/remediation package buys C&D only; no operating bins, rooms or collec
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-concept-boundary
 
@@ -964,7 +964,7 @@ Concept-only appointment buys capacity/collection/shared coordination but full o
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-conflicting-packages
 
@@ -972,7 +972,7 @@ Conflicting operational scope stays a decision despite known new warehouse use.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | Operational waste plan selected |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | Operational waste plan selected |
 
 ## waste-extension-completion
 
@@ -980,7 +980,7 @@ Hospital extension explicitly appoints construction checking; later completion o
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-inception-boundary
 
@@ -988,7 +988,7 @@ Early evidence appointment leaves selected operational plan as priced option, no
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-mixed-live-fitout
 
@@ -996,7 +996,7 @@ Occupied mixed-use fit-out buys separately scoped plans and shared tenancy/opera
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-residential-operational
 
@@ -1004,7 +1004,7 @@ Residential operational-only appointment excludes C&D plan and leaves later supp
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
+| waste-management | Building class; Parts with different NCC classes; Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected; Work type | — | — |
 
 ## waste-unknown-packages
 
@@ -1012,7 +1012,7 @@ Building class cannot infer which waste plans are commissioned.
 
 | Discipline | From the profile or package | Set for this RFP | Unknown |
 |---|---|---|---|
-| waste-management | Parts with different NCC classes; Work type | — | Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected |
+| waste-management | Building class; Parts with different NCC classes; Work type | — | Construction and demolition waste plan selected; Operational waste plan selected; Shared waste facilities or operator coordination selected |
 
 ## yarramundi
 

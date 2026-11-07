@@ -41,16 +41,35 @@ project_rows:
     provenance: [{kind: seed, ref: "bca-certification#47-51"}, {kind: evidence, ref: "bca-certification#6-7,16,21"}]
 role:
   - key: advisory
-    text: "A: design-team BCA adviser; identify risks and evidence gaps, coordinate specialists and report. No statutory appointment or specialist design."
-    when: [{flag: [bca_advisory]}]
-    provenance: [{kind: evidence, ref: "bca-certification#1-4,22"}]
+    text: "As BCA consultant to the design team, your job is to give the design a clear, early path to NCC compliance: identify the compliance risks and evidence gaps, set the code strategy, coordinate the specialists and report at each stage. You hold no statutory appointment under this package and do no specialist design."
+    when: [{"flag": ["bca_advisory"]}]
+    provenance: [{"kind": "evidence", "ref": "bca-certification#1-4,22"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
   - key: statutory
-    text: "B: independent regulatory assessor for expressly appointed functions. Fees buy assessment and duties; issue of a certificate depends on satisfactory assessment."
-    when: [{flag: [bca_certification]}]
-    provenance: [{kind: evidence, ref: "bca-certification#6,13-24,38"}]
+    text: "As the independent certifier for the functions we expressly appoint you to, your job is to assess the work and decide compliance impartially. Your fee pays for the assessment and your statutory duties; a certificate issues only if the assessment is satisfactory."
+    when: [{"flag": ["bca_certification"]}]
+    provenance: [{"kind": "evidence", "ref": "bca-certification#6,13-24,38"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Assess the design against the NCC at each appointed stage and say what evidence is missing.
+      - Give clear, timely answers so compliance issues are settled before they cause late redesign.
+      - Keep a register of compliance matters, Performance Solutions and evidence through to occupation.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_apartments_nsw
+    text: "For the apartments, this includes the NSW design and building practitioner requirements that apply to Class 2 work."
+    when: [{"class": ["2"], "state": ["NSW"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}, {"kind": "practice", "ref": "Design and Building Practitioners Act 2020 (NSW); named from practice, not verified against the instrument"}]
+  - key: fit_care
+    text: "For the health or care building, this includes the fire safety and egress needs of people who need help to evacuate."
+    when: [{"class": ["9a", "9c"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, this includes how far the existing building must be upgraded."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
   - key: independence
-    text: "Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work."
-    provenance: [{kind: evidence, ref: "bca-certification#24,38"}, {kind: client_decision, ref: "bca-certification#53", why: "Independently priced and appointed packages; neither role implies the other."}]
+    text: "Tell us about any involvement or conflict that affects your independence; separate appointments where needed. The certifier role is not novated under an ordinary design and construct contract, and moving the advisory role to a contractor needs an independence review. Your inspections do not replace the builder's supervision or specialist work."
+    provenance: [{"kind": "evidence", "ref": "bca-certification#24,38"}, {"kind": "client_decision", "ref": "bca-certification#53", "why": "Independently priced and appointed packages; neither role implies the other."}]
 stage_intro: "Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A. Under a CDC, B2 is the CDC determination in place of the CC; other routes need separately confirmed scope."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true

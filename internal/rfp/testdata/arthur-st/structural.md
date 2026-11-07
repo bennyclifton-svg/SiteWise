@@ -14,7 +14,15 @@ Conditions not yet known: Neighbouring or street trees affected; Works affect tr
 
 ### 2. Scope of services
 
-Structural engineer, engaged by the client and coordinated by the architect. You design and document the permanent structure. Where a specialist contractor designs an element (piles, post-tensioned slabs, specialist floors), you write its performance documentation and review the contractor's design; the contractor designs and certifies it.
+You are the structural engineer, engaged by the client and coordinated by the architect. You make the building stand up safely and economically: a structure that carries its loads, suits the architecture and the ground, and can be built and maintained.
+To do this you:
+- Choose the structural system early with the architect and cost planner, and show what each option means for cost, floor-to-floor height and buildability.
+- Design and document the permanent structure with calculations, drawings and specification.
+- Coordinate loads, penetrations and set-downs with the geotechnical, civil, services and façade designers before construction.
+- Where a specialist contractor designs an element (piles, post-tensioned slabs, specialist floors), write its performance documentation and review the contractor's design; the contractor designs and certifies it.
+For the office or retail space, fit for purpose means long, flexible spans and floor loads that let the space be re-let and refitted.
+For the warehouse or factory, fit for purpose means clear spans, and slabs that carry the operation's racking, forklift and plant loads.
+Because this is work to an existing building, fit for purpose also means establishing what the existing structure can carry before relying on it.
 
 Price each stage that applies as a lump sum. Each stage ends at client sign-off. R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Existing-structure and authority-asset stages are their own lines. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 

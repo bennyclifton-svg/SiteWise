@@ -12,8 +12,13 @@ Conditions that do not apply: Heritage item or conservation area.
 
 ### 2. Scope of services
 
-Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent tree-work contractor executes pruning/removal/protection. Advice grants no permission, survival or future-safety guarantee; escalate urgent concerns.
-Coordinate survey, landscape, civil, structure and utilities; retain their design duties. Revision-controlled PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred basis, access limits, recipients and reliance.
+You are the arborist. Your job is to tell the client which trees matter, how the works will affect them, and how to protect the ones being kept, so design and approval decisions rest on sound tree evidence.
+To do this you:
+- Assess the scheduled trees: their health, value and root zones.
+- Advise the design team on encroachments, and on how to protect or remove trees.
+- Report in the form the consent authority needs.
+Advise within your competence. The client or planning lead obtains permissions; a competent tree-work contractor carries out pruning, removal and protection. Your advice grants no permission and does not guarantee survival or future safety; tell us at once about any urgent concern.
+Coordinate with the surveyor, landscape architect, civil and structural engineers and utility designers; they keep their design responsibility. Issue revision-controlled PDF and CAD plans, calculations and editable registers that say whether each fact was observed, measured, reported or inferred, any access limits, who receives the advice and who may rely on it.
 Tree basis: Confirm survey/DWG revision, IDs/count/ownership, inaccessible trees, works/access/laydown footprints, services, current controls/editions and permission owner.
 
 Written instruction/agreed inputs to named output/response end. Price once across stages and positions; options need written activation. R1 Fee by stage: Price selected stages/services by quantity/basis, ex GST/GST/total; separate base/options/alternatives/dependencies, price once. State milestones/validity, acknowledge addenda and authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

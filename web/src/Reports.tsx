@@ -1,3 +1,5 @@
+import { IconResponseForm, IconUpdate } from "./icons";
+import { PageBesideDownload, PagePrimaryAction } from "./PageActions";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
 // One report, full width, opened from a Procurement row. Sources open beside
@@ -16,11 +18,6 @@ import { RfpScopeTable, scopeTable } from "./RfpScopeTable";
 
 function localDate() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "Assumption" };
-// Why a draft is stale, shown beside Refresh as one compact line;
-// Refresh keeps protected wording.
-const staleText = (reason: string) => staleNames[reason] ?? "Saved sources or report rules changed";
-const staleNames: Record<string,string> = { not_assembled: "Draft not yet assembled", reading_pending: "Document reading is pending", reading_failed: "Document reading stopped", saved_profile: "Project profile needs updating", package_retired: "This package is retired", packages: "Package or scope changed", works: "Work items changed", delivery: "Delivery records changed", profile_inputs: "Project inputs changed" };
-
 export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { transmittal?: TransmittalSelection; reportId: string; tick: number; onBack: () => void; onSignedOut: () => void }) {
   const [issueDate, setIssueDate] = useState(localDate);
   // null until the user ticks or clears it: a consultant RFP prints the
@@ -193,11 +190,12 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
   </form>;
   return <section className="reports report-view" aria-label="Report" aria-busy={busy}>
     <div className="report-reader" ref={reader}>
-      <button type="button" className="btn btn-small report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack}>← Procurement</button>
+      <PagePrimaryAction surface="procurement"><button type="button" className="btn btn-small report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack}>← Procurement</button></PagePrimaryAction>
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
-        <header className="report-toolbar"><div><h2>{view.rfp ? <>{view.report.title.replace(/^RFP\s*[—–-]\s*/, "RFP ")} {draft && <span className="rfp-version">Version {draft.version}</span>}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div><div className="report-refresh">{!!view.stale.length && draft && <span className="report-stale" role="status" title="Refresh keeps protected wording and flags changed sources.">{view.stale.map((reason, i) => <span key={reason}>{i > 0 && " · "}<span>{staleText(reason)}</span></span>)}</span>}{view.rfp && draft && <a className="btn" href={submissionApi.responseFormURL(view.report.id)} download title="An Excel form with a row for every fee item and a table for each returnable schedule. Proposals returned on it are read row by row.">Response form</a>}<button type="button" className="btn" disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()}>{busy ? <Pending delayed>Saving…</Pending> : draft ? "Refresh draft" : "Assemble draft"}</button></div></header>
+        <header className="report-toolbar"><div><h2>{view.rfp ? <>{view.report.title.replace(/^RFP\s*[—–-]\s*/, "RFP ")} {draft && <span className="rfp-version">Version {draft.version}</span>}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div></header>
+        <PageBesideDownload surface="procurement">{view.rfp && draft && <a className="page-refresh" href={submissionApi.responseFormURL(view.report.id)} download aria-label="Response form" title="An Excel form with a row for every fee item and a table for each returnable schedule. Proposals returned on it are read row by row."><IconResponseForm /></a>}<button type="button" className="page-refresh" aria-label={draft ? "Refresh draft" : "Assemble draft"} title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Refresh draft" : "Assemble draft"} aria-busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()}><IconUpdate /></button></PageBesideDownload>
         {view.rfp_suggestion && <div className="report-notice" role="status"><strong>This package looks like {view.rfp_suggestion.title.toLowerCase()}</strong><p>Use the {view.rfp_suggestion.title.toLowerCase()} RFP, built from the reviewed golden set, instead of the generic one? This records the package's discipline; the package title alone never changes the scope.</p><div className="report-actions"><button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => void confirmDiscipline()}>Use the {view.rfp_suggestion.title.toLowerCase()} RFP</button></div></div>}
         {view.rfp && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}
         {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports</h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${reportId}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
@@ -211,7 +209,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
           {draft.sections.filter(section => !section.internal && section.id !== "issue_dates").map(section => view.rfp && section.id === "project"
             ? <section className="report-section" key={section.id}>
               <h3 id={`rs-${section.id}`}>{section.title}</h3>
-              <SectionMarkers controls={view.rfp} section="project" busyKey={busyKey} onWrite={writeSetting} onJump={jump} />
+              {/* No banner on page one: a value that blocks issue is marked in place (owner, 2026-11-06). */}
               <ProjectPage transmittal={transmittal} blocks={section.blocks ?? []} controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} />
             </section>
             : view.rfp && section.id === "transmittal"

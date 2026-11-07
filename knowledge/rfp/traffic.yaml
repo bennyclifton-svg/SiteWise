@@ -36,8 +36,32 @@ project_rows:
 
 role:
   - key: engineer
-    text: "Traffic engineer for the applicant. You advise the design team on access, parking and circulation while the design develops, and prepare the traffic report the consent authority needs. Plans come from the architect in DWG and PDF."
-    provenance: [{kind: evidence, ref: "traffic#8"}]
+    text: "You are the traffic engineer for the applicant. Your job is to make sure people and vehicles can reach, park at and leave the site safely and efficiently, and that the consent authority accepts the traffic effects."
+    provenance: [{"kind": "evidence", "ref": "traffic#8"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Advise the design team on access, parking numbers, design vehicles and circulation while the design develops.
+      - Test the design: swept paths, sight lines and queuing.
+      - Prepare the traffic report the consent authority needs.
+      Plans come from the architect in DWG and PDF.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_apartments
+    text: "For the apartments, fit for purpose means resident and visitor parking, deliveries, removalists and waste collection that work without queuing onto the street."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, fit for purpose means customer and staff parking, servicing and loading that work at peak times."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, fit for purpose means heavy-vehicle access, turning and loading that keep trucks off the street."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_assembly
+    text: "For the assembly or education building, fit for purpose means safe peak arrivals and departures, including pick-up and drop-off."
+    when: [{"class": ["9b"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
 
 stage_intro: "Price each stage that applies as a lump sum; surveys are priced per location."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).

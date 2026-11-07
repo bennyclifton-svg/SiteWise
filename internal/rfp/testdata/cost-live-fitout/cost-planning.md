@@ -11,8 +11,15 @@ Conditions that apply: Work to an existing building; Site stays occupied or oper
 
 ### 2. Scope of services
 
-Independent cost advice from written instruction/complete inputs to named final output and query-period end. Estimate uncertainty is explicit; no guaranteed tender, final cost, approval or funding.
-Designers/specialists define design, compliance, retained-system adequacy and remediation; operator supplies equipment/owner costs; PM owns budget/change approval. QS prices gaps, administrator directs/certifies, advisers own tax/legal/valuation. Disclose client/contractor/lender conflicts.
+You are the independent cost planner. Your job is to give the client a reliable picture of what the project will cost at every stage, so design decisions are made with the money in view and the budget holds.
+To do this you:
+- Price the design at each appointed stage and report against the budget.
+- Show the cost of design options before the client chooses.
+- Name the risks, allowances and gaps in the information, and say what would close them.
+For the office or retail space, this separates base-building cost from tenant fit-out cost.
+Because this is work to an existing building, this includes allowances for what will only be found once the building is opened up.
+Your advice runs from our written instruction and complete inputs to the final output we name and the end of the query period. Show estimate uncertainty plainly; you do not guarantee a tender price, final cost, approval or funding.
+Designers and specialists define the design, compliance, whether retained systems are adequate, and remediation. The operator supplies equipment and owner costs. The project manager approves the budget and changes. You price the gaps; the contract administrator directs and certifies; other advisers own tax, legal and valuation advice. Tell us about any conflict with the client, contractor or lender.
 Cost basis: Confirm purpose/users; construction versus total-project boundary; currency/tax adviser, budget/date/approval, quality, measurement method, price date/location and escalation endpoints. Attach current revisions, contracts/quotes and conflicting identities/dates.
 
 Confirm base stages, inputs and final query-period end; later services require written instruction. R1 Fee by stage: Price stages/options once: base/options/alternatives totals, fixed/time-ceiling/unit basis, quantities/GST/payments and dependent/standalone authority fees. Separate already-authorised work/ad hoc allowances. Confirm validity, numbered addenda and signatory authority. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
