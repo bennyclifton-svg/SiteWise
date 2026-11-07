@@ -17,7 +17,7 @@ func (s *Store) costSuggestInput(ctx context.Context, tx pgx.Tx, org, project st
 		fields = in.Catalog.CostStarterFields()
 	}
 	b := &pgx.Batch{}
-	b.Queue(`SELECT id::text,title,kind,COALESCE(discipline_id,''),COALESCE(works_scope,''),retired_at IS NOT NULL FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY title,id`, org, project)
+	b.Queue(`SELECT id::text,title,kind,COALESCE(discipline_id,''),COALESCE(works_scope,''),retired_at IS NOT NULL,role,COALESCE(group_id::text,'') FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY title,id`, org, project)
 	b.Queue(`SELECT id::text,system_id,title,part_id::text FROM work_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND inclusion='included' AND retired_at IS NULL AND NOT is_group ORDER BY system_id,id`, org, project)
 	b.Queue(`SELECT source_key FROM cost_suggestion_dismissals WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY source_key`, org, project)
 	b.Queue(`SELECT key,CASE WHEN count(DISTINCT value)=1 AND bool_and(value_state='set') THEN min(value) ELSE '' END FROM profile_rows WHERE org_id=$1::uuid AND project_id=$2::uuid AND key=ANY($3::text[]) GROUP BY key`, org, project, fields)
@@ -29,7 +29,7 @@ func (s *Store) costSuggestInput(ctx context.Context, tx pgx.Tx, org, project st
 	}
 	for rows.Next() {
 		var p costs.SuggestPackage
-		if e = rows.Scan(&p.ID, &p.Title, &p.Kind, &p.DisciplineID, &p.WorksScope, &p.Retired); e != nil {
+		if e = rows.Scan(&p.ID, &p.Title, &p.Kind, &p.DisciplineID, &p.WorksScope, &p.Retired, &p.Role, &p.GroupID); e != nil {
 			rows.Close()
 			return in, e
 		}

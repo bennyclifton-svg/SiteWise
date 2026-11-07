@@ -412,6 +412,15 @@ func (s *Store) Award(ctx context.Context, org, project, pkg, actor string, in A
 	if live {
 		return AwardView{}, ErrConflict
 	}
+	// A member's line sits under its group's line; an award of its own
+	// would add a second contract beside the group (combined engagements).
+	var grouped bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3 AND group_id IS NOT NULL)`, org, project, pkg).Scan(&grouped); err != nil {
+		return AwardView{}, err
+	}
+	if grouped {
+		return AwardView{}, ErrPackageGrouped
+	}
 	v, sub, firm, _, err := awardPlan(ctx, tx, org, project, pkg, in)
 	if err != nil {
 		return v, err

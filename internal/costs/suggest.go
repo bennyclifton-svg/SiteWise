@@ -10,6 +10,9 @@ import (
 type SuggestPackage struct {
 	ID, Title, Kind, DisciplineID, WorksScope string
 	Retired                                   bool
+	// Role is "group" for a combined engagement; GroupID names a member's
+	// group. A member's fee line sits under its group's line.
+	Role, GroupID string
 }
 type ScopeWork struct {
 	ID       string `json:"id"`
@@ -194,16 +197,33 @@ func Suggest(in SuggestInput) []Suggestion {
 		return Suggestion{Key: key, Content: Content{Label: label, LineKind: kind, Code: code, Posting: true, Origin: "assumption", Meaning: "allowance"}, ScopeWorkItems: []ScopeWork{}}
 	}
 	fee := 0
-	for _, p := range packages {
-		if p.Retired || p.Kind != "services" {
-			continue
-		}
+	addFee := func(p SuggestPackage, parentKey string, posting bool) {
 		fee++
 		s := base("fee:"+p.ID, p.Title, "fee", fmt.Sprintf("F%02d", fee))
 		s.PackageID = p.ID
+		s.ParentKey = parentKey
+		s.Posting = posting
 		s.ResolvedCategory = p.Title
 		s.Rationale = "Suggested from the " + p.Title + " package; no amount assumed."
 		add(s)
+	}
+	// A combined engagement's line is a parent holding its members' lines,
+	// so the members follow it and its own line posts nothing
+	// (docs/plans/2026-11-07-combined-engagements-slice1.md).
+	for _, p := range packages {
+		if p.Retired || p.Kind != "services" || p.GroupID != "" {
+			continue
+		}
+		if p.Role != "group" {
+			addFee(p, "", true)
+			continue
+		}
+		addFee(p, "", false)
+		for _, m := range packages {
+			if m.GroupID == p.ID && !m.Retired && m.Kind == "services" {
+				addFee(m, "fee:"+p.ID, true)
+			}
+		}
 	}
 	for _, el := range cat.CostElements() {
 		scope := ScopeFor(cat, el.System, in.Works)

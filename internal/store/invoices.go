@@ -281,7 +281,7 @@ func (s *Store) invoiceContext(ctx context.Context, orgID, projectID string) (in
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 	rows, err := tx.Query(ctx, `
-SELECT id::text, title, kind, COALESCE(discipline_id,''), COALESCE(works_scope,''), COALESCE(supplier_abn,''), retired_at IS NOT NULL
+SELECT id::text, title, kind, COALESCE(discipline_id,''), COALESCE(works_scope,''), COALESCE(supplier_abn,''), retired_at IS NOT NULL, role, COALESCE(group_id::text,'')
 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND lifecycle_status <> 'cancelled'
 ORDER BY title, id`, orgID, projectID)
 	if err != nil {
@@ -292,13 +292,15 @@ ORDER BY title, id`, orgID, projectID)
 		var p invoices.Package
 		var scope string
 		var retired bool
-		if err := rows.Scan(&p.ID, &p.Title, &p.Kind, &p.Discipline, &scope, &p.ABN, &retired); err != nil {
+		var role, group string
+		if err := rows.Scan(&p.ID, &p.Title, &p.Kind, &p.Discipline, &scope, &p.ABN, &retired, &role, &group); err != nil {
 			rows.Close()
 			return pc, plan, err
 		}
 		plan.packageTitles[p.ID] = p.Title
 		plan.packageABN[p.ID] = p.ABN
-		suggest = append(suggest, costs.SuggestPackage{ID: p.ID, Title: p.Title, Kind: p.Kind, DisciplineID: p.Discipline, WorksScope: scope, Retired: retired})
+		p.Grouped = group != ""
+		suggest = append(suggest, costs.SuggestPackage{ID: p.ID, Title: p.Title, Kind: p.Kind, DisciplineID: p.Discipline, WorksScope: scope, Retired: retired, Role: role, GroupID: group})
 		if !retired {
 			pc.Packages = append(pc.Packages, p)
 		}
