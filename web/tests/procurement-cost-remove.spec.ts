@@ -11,7 +11,7 @@ test("removing a procurement discipline offers its draft cost lines", async ({pa
   await page.getByRole('button', {name:'Add row', exact:true}).click();
   await expect(page.getByRole('button', {name:'Remove Structural', exact:true})).toBeVisible();
   await page.getByRole('button', {name:'Costs', exact:true}).click();
-  await expect(page.getByRole('button', {name:'Delete Structural', exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Actions for Structural',exact:true})).toBeVisible();
   await page.getByRole('button', {name:'Procurement', exact:true}).click();
   const review = async () => {
     await page.getByRole('button', {name:'Remove Structural', exact:true}).click();
@@ -31,7 +31,7 @@ test("removing a procurement discipline offers its draft cost lines", async ({pa
   testInfo.annotations.push({type:'timing',description:`confirmed removal UI: ${Date.now()-start}ms`});
   await page.getByRole('button', {name:'Project navigation', exact:true}).click();
   await page.getByRole('button', {name:'Costs', exact:true}).click();
-  await expect(page.getByRole('button', {name:'Delete Structural', exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Actions for Structural',exact:true})).toHaveCount(0);
   const project = new URL(page.url()).pathname.split('/').pop();
   const response = await page.request.post(`/api/projects/${project}/cost-plan/prepare`, {headers:{Origin:baseURL!},data:{}});
   expect(response.ok()).toBeTruthy();

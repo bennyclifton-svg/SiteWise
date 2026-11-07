@@ -754,7 +754,6 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <PageActions surface="profile"><button type="button" onClick={() => window.print()}>Print project profile</button></PageActions>
       <PageActions surface="procurement"><button type="button" onClick={() => window.print()}>Print procurement</button></PageActions>
       <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
       <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram}>

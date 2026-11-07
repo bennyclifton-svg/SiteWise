@@ -1,0 +1,247 @@
+/* Cost Plan and Invoices tables (owner direction, 7 Nov 2026): one quiet grammar
+   for both. Every row is the same height, the header included, and nothing
+   changes a row's height when it is selected or edited. One faint rule weight
+   throughout, no bold in the body, figures in the text colour, and a neutral
+   selection instead of bronze. Loaded after the surface sheets so it holds. */
+:root {
+  --ct-row-h: 32px;
+  --ct-line: var(--sw-border-subtle);
+  --ct-selected: color-mix(in oklab, var(--sw-text-primary) 7%, var(--paper));
+}
+
+/* ---------- shared: rows, rules and the header band ---------- */
+
+.cockpit-scroll :is(.cost-grid, .inv-table) :is(th, td) {
+  box-sizing: border-box;
+  height: var(--ct-row-h);
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 18px;
+  vertical-align: middle;
+  border-top: 0;
+  border-bottom: 1px solid var(--ct-line);
+  font-weight: 400;
+}
+.cockpit-scroll :is(.cost-grid, .inv-table) thead th {
+  height: var(--ct-row-h);
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 12px;
+  vertical-align: middle;
+  border-top: 1px solid var(--ct-line);
+  border-bottom: 1px solid var(--ct-line);
+}
+.cockpit-scroll :is(.cost-grid-scroll, .inv-table-scroll) { border: 0; border-radius: 0; background: transparent; }
+
+/* Sortable heads: the arrow follows the label in both tables. */
+.inv-table thead button { padding: 0; border: 0; background: none; cursor: pointer; }
+.inv-table th[aria-sort="ascending"] button::after { content: " \25B2"; font-size: 8px; }
+.inv-table th[aria-sort="descending"] button::after { content: " \25BC"; font-size: 8px; }
+
+/* ---------- Cost Plan ---------- */
+
+/* Section headings and the add-line row keep the common height. */
+.cockpit-scroll .cost-grid .cost-group th { padding-top: 0; padding-bottom: 0; font-weight: 600; }
+.cockpit-scroll .cost-grid .cost-add td { padding-top: 0; padding-bottom: 0; }
+.cockpit-scroll .cost-grid .cost-row { height: var(--ct-row-h); }
+
+/* One rule weight: subtotals, the total and the frozen identity edge too. */
+.cockpit-scroll .cost-grid :is(.cost-subtotal, .cost-total) :is(th, td) {
+  border-top: 1px solid var(--ct-line);
+  border-bottom: 1px solid var(--ct-line);
+  font-weight: 400;
+}
+.cockpit-scroll .cost-grid :is(.cost-sticky[data-col="item"], .cost-sticky[data-col="subtotal"]) { border-right: 1px solid var(--ct-line); }
+
+/* No bold in the body: a line with sub-items reads by its chevron. */
+.cockpit-scroll .cost-grid .cost-parent td { font-weight: 400; }
+
+/* Fewer colours: figures and categories in the text colour; the ledger columns
+   lose their dark band. Hatching still marks columns not tracked yet. */
+.cockpit-scroll .cost-grid td.cost-num,
+.cockpit-scroll .cost-grid td.cost-num .cost-cell,
+.cockpit-scroll .cost-grid td .cost-open { color: var(--sw-text-primary); }
+.cockpit-scroll .cost-grid td .cost-open:hover { text-decoration: underline; }
+.cockpit-scroll .cost-grid .cost-placeholder { color: var(--sw-text-tertiary); }
+.cockpit-scroll .cost-grid .cost-ledger { background-color: var(--paper) !important; }
+.cockpit-scroll .cost-grid .cost-sticky.cost-ledger { background-color: var(--trace-sheet) !important; }
+.cockpit-scroll .cost-grid .cost-add .cost-open { color: var(--sw-link); }
+.cockpit-scroll .cost-grid .cost-over { color: var(--alert); }
+
+/* Row numbers recede. */
+.cockpit-scroll .cost-grid td[data-col="code"] { color: var(--sw-text-tertiary); }
+
+/* Item text starts at one edge on every row; a group line's chevron sits in a
+   slot to its left that every row keeps. */
+.cost-grid :is(td, th)[data-col="item"] { padding-left: 30px; }
+.cost-grid :is(td, th)[data-col="item"] > .cost-disclosure-toggle {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0;
+}
+.cost-grid .cost-disclosure-toggle:focus:not(:focus-visible) { outline: none; }
+.cost-grid .cost-disclosure-toggle:hover { background: transparent; color: var(--sw-text-primary); }
+
+/* Selection: a neutral lift, no bronze, no box, no height change. */
+.cockpit-scroll .cost-grid .cost-row[aria-selected="true"] td { background: var(--ct-selected); }
+.cockpit-scroll .cost-grid .cost-row:focus { outline: none; }
+.cockpit-scroll .cost-grid .cost-row:focus-visible { outline: 1px solid var(--sw-text-tertiary); outline-offset: -1px; }
+
+/* Choosing a category: the list drops open in place; no border, same height. */
+.cockpit-scroll .cost-grid select.cost-category-select {
+  display: block;
+  width: 100%;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  color: var(--sw-text-primary);
+  font: inherit;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+/* The bin moved into the row menu; the menu's delete reads as one. */
+.cost-row-menu .cost-menu-delete { color: var(--alert); }
+.cost-row-menu .cost-menu-delete:hover:not(:disabled) { background: var(--alert-soft); }
+
+/* ---------- Invoices ---------- */
+
+.inv-toolbar { min-height: 36px; }
+.inv-filtered { margin: 0 auto 0 0; color: var(--sw-text-secondary); font-size: var(--fs-sm); }
+.inv-upload { width: 36px; padding: 0; justify-content: center; }
+.inv-upload svg { width: 18px; height: 18px; }
+
+/* The whole table is the drop zone; dragging files over it outlines it. */
+.invoices { min-height: max(320px, calc(100vh - 300px)); }
+.invoices[data-over] .inv-table-scroll,
+.invoices[data-over] .inv-empty { outline: 1.5px dashed var(--sw-text-tertiary); outline-offset: 2px; }
+
+.cockpit-scroll .inv-table :is(th, td) { padding-left: 12px; padding-right: 12px; }
+.cockpit-scroll .inv-table :is(th, td):first-child { padding-left: 15px; }
+.cockpit-scroll .inv-table tbody tr[aria-selected="true"] td { background: var(--ct-selected); }
+.cockpit-scroll .inv-table .num { color: var(--sw-text-primary); }
+
+/* Discipline is mapped once: it reads as text, and a click drops the list open. */
+.cockpit-scroll .inv-table select.inv-discipline {
+  width: auto;
+  min-width: 0;
+  max-width: 240px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  appearance: none;
+  background: transparent;
+  color: var(--sw-text-primary);
+  font: inherit;
+  line-height: 18px;
+  cursor: pointer;
+}
+.cockpit-scroll .inv-table select.inv-discipline:hover { text-decoration: underline; }
+.cockpit-scroll .inv-table select.inv-discipline:focus-visible { box-shadow: inset 0 -1px 0 var(--sw-text-tertiary); }
+
+@media print {
+  .inv-toolbar { display: none !important; }
+}
+
+/* ---------- Procurement (owner direction, 7 Nov 2026) ---------- */
+/* The same header, row height, rules and type as the Cost Plan. A firm is one
+   line, name then price; the awarded firm is green with a tick. Actions are
+   plain words, not pills. Consultants are selected by clicking rows. */
+
+.cockpit-scroll .procurement-table { font-size: var(--fs-md); }
+.cockpit-scroll .procurement-table :is(th, td) {
+  box-sizing: border-box;
+  height: var(--ct-row-h);
+  padding: 0 10px;
+  line-height: 18px;
+  vertical-align: middle;
+  border-top: 0;
+  border-bottom: 1px solid var(--ct-line);
+  white-space: nowrap;
+}
+.cockpit-scroll .procurement-table thead th {
+  line-height: 12px;
+  border-top: 1px solid var(--ct-line);
+  border-bottom: 1px solid var(--ct-line);
+}
+.cockpit-scroll .procurement-table :is(thead th, tbody th):first-child { padding-left: 15px; }
+.cockpit-scroll .procurement-table .group-row th { padding: 0 0 0 15px; border-bottom: 1px solid var(--ct-line); font-size: var(--fs-md); font-weight: 600; }
+.cockpit-scroll .procurement-table tbody th.discipline-cell { overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-md); font-weight: 400; }
+.cockpit-scroll .procurement-table .row-suggested th.discipline-cell::after { content: " · Suggested"; display: inline; font-size: var(--fs-sm); }
+
+/* Narrower firm columns leave room for Uncombine and Remove from group. */
+.procurement-table thead th:nth-child(1) { width: 20%; }
+.procurement-table thead th:nth-child(2),
+.procurement-table thead th:nth-child(3),
+.procurement-table thead th:nth-child(4) { width: 16%; }
+.procurement-table thead th:nth-child(5) { width: 9%; }
+.procurement-table thead th:nth-child(6) { width: 11%; }
+.procurement-table thead th:nth-child(7) { width: 12%; text-align: right; }
+/* Nothing spills into the next column: long words are cut short. */
+.cockpit-scroll .procurement-table tbody td { overflow: hidden; text-overflow: ellipsis; }
+.cockpit-scroll .procurement-table td.row-bin-cell { text-align: right; }
+
+/* Selecting rows: the same neutral lift as the Cost Plan. */
+.procurement-table tr[data-combinable] { cursor: default; user-select: none; }
+.cockpit-scroll .procurement-table tr[aria-selected="true"] :is(th, td) { background: var(--ct-selected); }
+.procurement-table th.discipline-cell:focus { outline: none; }
+.procurement-table th.discipline-cell:focus-visible { box-shadow: inset 2px 0 0 var(--sw-text-tertiary); }
+.procurement-actions { display: flex; align-items: center; gap: 8px; }
+
+/* A firm on one line: name (cut short if it must be), then its price. */
+.cockpit-scroll .procurement-table .firm-card .firm-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 26px;
+  margin: 0 0 0 -6px;
+  padding: 0 28px 0 6px;
+  border-radius: 4px;
+  font-size: var(--fs-md);
+}
+.cockpit-scroll .procurement-table .firm-chip-name { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; line-height: 18px; font-weight: 400; }
+.cockpit-scroll .procurement-table .firm-chip-figure { flex: none; color: var(--sw-text-secondary); font-size: var(--fs-md); }
+.cockpit-scroll .procurement-table .firm-chip-status { flex: none; font-size: var(--fs-sm); }
+.cockpit-scroll .procurement-table .firm-chip.lowest .firm-chip-figure { font-weight: 400; color: var(--sw-text-primary); }
+.cockpit-scroll .procurement-table .firm-chip[data-status="awarded"] { background: color-mix(in oklab, var(--sw-success-text) 12%, transparent); color: var(--sw-success-text); }
+.cockpit-scroll .procurement-table .firm-chip[data-status="awarded"] .firm-chip-name { padding: 0; background: none; font-weight: 400; }
+.cockpit-scroll .procurement-table .firm-chip[data-status="awarded"] .firm-chip-figure { color: var(--sw-success-text); }
+.firm-awarded { display: inline-flex; flex: none; color: var(--sw-success-text); }
+.cockpit-scroll .procurement-table .firm-detach { top: 50%; right: 0; width: 24px; height: 24px; margin-top: -12px; }
+.cockpit-scroll .procurement-table .firm-slot .table-action { margin: 0 0 0 6px; }
+
+/* Drop a proposal: a target big enough to see and hit. */
+.cockpit-scroll .procurement-table .proposal-drop-icon { width: 30px; height: 26px; margin-left: -6px; border-radius: 4px; color: var(--sw-text-tertiary); opacity: 1; }
+.cockpit-scroll .procurement-table .proposal-drop-icon svg { width: 20px; height: 20px; }
+.cockpit-scroll .procurement-table tr:hover .proposal-drop-icon { color: var(--sw-text-primary); }
+
+/* View, Create, Prices, Review, Uncombine: words, not pills. */
+.cockpit-scroll .procurement-table .table-action {
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--sw-text-primary);
+  font-size: var(--fs-md);
+  font-weight: 400;
+  text-decoration: none;
+}
+.cockpit-scroll .procurement-table .table-action:hover:not(:disabled) { border: 0; background: none; color: var(--sw-text-primary); text-decoration: underline; text-underline-offset: 3px; }
+.cockpit-scroll .procurement-table .draft-row td { height: auto; padding-top: 6px; padding-bottom: 6px; }

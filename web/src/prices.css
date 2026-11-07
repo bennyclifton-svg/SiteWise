@@ -229,10 +229,31 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
 
 /* Reserve compact comparison slots without stretching the scope column. */
 .consultant-comparison .comparison-scope-col { width: clamp(240px, 28vw, 380px); }
-.consultant-comparison .comparison-placeholder-col { width: 112px; }
+/* Consultant columns share the remaining width equally, filled or empty. */
+.consultant-comparison .comparison-placeholder-col { width: auto; }
 .consultant-comparison .comparison-placeholder { border-left: 1px dashed var(--line-strong); background: var(--canvas); }
 .comparison-add { display: grid; gap: 6px; padding: 0; border: 0; background: none; color: var(--ink-muted); font: inherit; text-align: left; cursor: pointer; }
 .comparison-add span:last-child { font-size: var(--fs-xs); font-weight: 400; }
 .comparison-add:hover:not(:disabled) span:last-child { color: var(--ink); text-decoration: underline; }
 .comparison-add:disabled { cursor: default; }
-.consultant-comparison .prices-total .btn { white-space: normal; height: auto; min-height: 36px; }
+/* The total row keeps the same height as a fee row: label, figure and a small
+   Award button on one line (owner direction, 7 Nov 2026). */
+.consultant-comparison .prices-total th > span { display: inline; margin: 0; }
+.consultant-comparison .comparison-total { display: flex; align-items: center; gap: 10px; min-height: 24px; }
+.consultant-comparison .comparison-total strong { font-variant-numeric: tabular-nums; }
+.consultant-comparison .comparison-total .prices-note { display: inline; margin: 0; }
+.consultant-comparison .prices-total .comparison-award { display: inline-flex; align-items: center; height: 24px; min-height: 0; margin: 0; padding: 0 10px; font-size: var(--fs-xs); white-space: nowrap; }
+
+/* The firm name heads its column like any other header; it opens the proposal. */
+.consultant-comparison .comparison-firm { padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left; cursor: pointer; }
+.consultant-comparison .comparison-firm:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* "+ New" and the ⋮ menu replace the row of toolbar buttons. */
+.prices-menu { position: relative; }
+.prices-menu-list { z-index: 20; margin-top: 4px; }
+.prices-menu-list :is(a, button) { white-space: nowrap; }
+.prices-menu-list button:disabled { color: var(--ink-muted); cursor: not-allowed; }
+.prices-more-btn { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--sw-text-secondary); cursor: pointer; }
+.prices-more-btn svg { width: 18px; height: 18px; }
+.prices-more-btn:hover, .prices-more-btn[aria-expanded="true"] { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+/* Download moves into the price table's ⋮ menu, so the shell's row is not needed here. */
+.project-main-panel:has(.prices) .panel-actions { display: none; }

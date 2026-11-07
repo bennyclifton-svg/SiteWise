@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, type DragEvent } from "react";
 import { ApiError } from "./api";
 import { costApi, type CostPlan, type CostItem, type CostSettings, type CostValue, type CostTotals } from "./costApi";
 import { packageApi, type PackageRecord } from "./packageApi";
-import { CostGrid, editContent } from "./CostGrid";
+import { CentsContext, CostGrid, editContent } from "./CostGrid";
+import { onCostSettingsRequest, takeCostSettingsRequest } from "./costSettingsRequest";
 import { InvoicesTab, VariationsTab } from "./Invoices";
 import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
 import { PageActions } from "./PageActions";
@@ -64,6 +65,13 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   const loadSequence = useRef(0);
   const pendingLoad = useRef<Promise<void> | null>(null);
   const [quantities, setQuantities] = useState(() => {try {return localStorage.getItem("sitewise.costs.quantities") === "true";} catch {return false;}});
+  // Whole dollars by default; cents only when asked for.
+  const [decimals, setDecimals] = useState(() => {try {return localStorage.getItem("sitewise.costs.decimals") === "true";} catch {return false;}});
+  const [wantSettings, setWantSettings] = useState(false);
+  useEffect(() => {
+    if (takeCostSettingsRequest()) setWantSettings(true);
+    return onCostSettingsRequest(() => { takeCostSettingsRequest(); setWantSettings(true); });
+  }, []);
   const [plan, setPlan] = useState<CostPlan | null>(null), [totals, setTotals] = useState<CostTotals | null>(null);
   const [packages, setPackages] = useState<PackageRecord[]>([]);
   const [selected, setSelected] = useState(""), [reload, setReload] = useState(0), [busy, setBusy] = useState(false), [error, setError] = useState("");
@@ -97,6 +105,16 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   const item = plan?.items.find(i => i.cost_item_id === selected), editing = !!settings || !!split;
   const frozen = !!plan && plan.status !== "draft" && plan.status !== "unavailable";
   const open = !!item || editing;
+  function openSettings(p: CostPlan) { setSelected(""); setSplit(null); setSettings({ base: p, input: { currency: p.currency || "AUD", tax_basis: p.tax_basis || "ex_tax", tax_rate: p.tax_rate ?? null, price_date: p.price_date ?? null, coverage: p.coverage || "", funding_target: p.funding_target ?? null, funding_target_provenance: p.funding_target_provenance || {} } }); }
+  // Cost settings live in the account menu. A frozen baseline being viewed
+  // returns to the current draft first, since only a draft takes settings.
+  useEffect(() => {
+    if (!wantSettings || !plan || busy) return;
+    if (tab !== "plan") { setTab("plan"); return; }
+    if (frozen) { if (history) setHistory(""); else setWantSettings(false); return; }
+    setWantSettings(false); openSettings(plan);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wantSettings, plan, busy, tab, frozen, history]);
   async function save(action: () => Promise<CostPlan>, close = true) {
     if (saving.current) return false;
     saving.current = true; ++loadSequence.current; setBusy(true); setError("");
@@ -143,34 +161,36 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   }
   const status = plan?.status === "unavailable" ? "not started" : plan?.status;
   return <section className="costs" aria-label="Costs" aria-busy={busy} {...(tab === "invoices" ? {} : dropFiles)}>
-    <div className="costs-head"><h1>Cost Plan</h1><span role="status">{busy && <Pending delayed>Saving…</Pending>}</span>{plan && <span className="costs-chip">Cost Plan r{plan.revision || 1} · {status}</span>}
-      <CostDownloads projectId={projectId} tab={tab} filter={filter} />
-      <div className="costs-toolbar" hidden={tab !== "plan"}>
+    <div className="costs-head"><h1 className="sr-only">Cost Plan</h1>
+      <div className="costs-tabs" role="tablist" aria-label="Cost plan views">
+        {([["plan", "Cost Plan"], ["invoices", "Invoices"], ["variations", "Variations"]] as [CostTab, string][]).map(([id, label]) =>
+          <button key={id} type="button" role="tab" id={`cost-tab-${id}`} aria-controls={`cost-panel-${id}`} aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
+            onKeyDown={e => { const order: CostTab[] = ["plan", "invoices", "variations"]; const i = order.indexOf(tab); if (e.key === "ArrowRight") setTab(order[(i + 1) % 3]); if (e.key === "ArrowLeft") setTab(order[(i + 2) % 3]); }}
+            onClick={() => setTab(id)}>{label}{id === "invoices" && ledger ? <span className="costs-tab-count">{ledger.invoices.length}</span> : null}</button>)}
+      </div>
+      <span role="status">{busy && <Pending delayed>Saving…</Pending>}</span>
+      <CostDownloads projectId={projectId} tab={tab} filter={filter} /></div>
+    <div className="costs-toolbar" hidden={tab !== "plan"}>
       <label><input type="checkbox" checked={quantities} onChange={e => {setQuantities(e.target.checked);try{localStorage.setItem("sitewise.costs.quantities",String(e.target.checked));}catch{/* Storage is optional. */}}} /> Quantities</label>
-      <button className="btn" disabled={!plan || busy || editing || frozen} onClick={() => { const p = plan!; setSelected(""); setSettings({ base: p, input: { currency: p.currency || "AUD", tax_basis: p.tax_basis || "ex_tax", tax_rate: p.tax_rate ?? null, price_date: p.price_date ?? null, coverage: p.coverage || "", funding_target: p.funding_target ?? null, funding_target_provenance: p.funding_target_provenance || {} } }); }}>Cost settings</button>
-        {plan?.id && <button className="btn" disabled={busy || editing || frozen} onClick={() => setBaseline(true)}>Freeze baseline</button>}
-        {plan?.baseline_version_id && <button className="btn" disabled={busy || editing} onClick={() => { close(); setHistory(history ? "" : plan?.baseline_version_id!); }}>{history ? "Return to current draft" : "View frozen baseline"}</button>}</div></div>
+      <label><input type="checkbox" checked={decimals} onChange={e => {setDecimals(e.target.checked);try{localStorage.setItem("sitewise.costs.decimals",String(e.target.checked));}catch{/* Storage is optional. */}}} /> Decimals</label>
+      {plan?.id && <button className="btn" disabled={busy || editing || frozen} onClick={() => setBaseline(true)}>Freeze baseline</button>}
+      {plan?.baseline_version_id && <button className="btn" disabled={busy || editing} onClick={() => { close(); setHistory(history ? "" : plan?.baseline_version_id!); }}>{history ? "Return to current draft" : "View frozen baseline"}</button>}
+      {history && <span className="costs-viewing">Viewing r{plan?.revision || 1} · {status}</span>}</div>
     {baseline && plan && <div className="report-notice"><p>Freeze this revision and continue in a new editable draft?</p><button className="btn" disabled={busy} onClick={() => { void save(async () => { const p = await costApi.baseline(projectId, plan); setBaseline(false); return p; }); }}>Confirm baseline</button><button className="btn" onClick={() => setBaseline(false)}>Cancel baseline</button></div>}
     {error && <div className="banner" role="alert"><p>{error}</p><button className="btn" disabled={busy} onClick={() => { setError(""); setReload(n => n + 1); }}>Reload cost plan</button></div>}
     <p className="print-only">{ledger?.project ?? ""} · {tab === "invoices" ? "Invoices" : tab === "variations" ? "Variations" : "Cost plan"} · printed {new Date().toLocaleString("en-AU", { timeZone: "Australia/Sydney", dateStyle: "long", timeStyle: "short" })} · filters: {tab === "invoices" && (filter.supplier || filter.month || filter.line || filter.status) ? [filter.supplier && `supplier ${ledger?.packages.find(p => p.id === filter.supplier)?.title ?? ""}`, filter.month && `month ${filter.month}`, filter.line && `line ${filter.line === "unallocated" ? "Unallocated" : ledger?.lines.find(l => l.id === filter.line)?.label ?? ""}`, filter.status && `status ${filter.status.replace("_", " ")}`].filter(Boolean).join("; ") : "none"}</p>
-    <div className="costs-tabs" role="tablist" aria-label="Cost plan views">
-      {([["plan", "Cost plan"], ["invoices", "Invoices"], ["variations", "Variations"]] as [CostTab, string][]).map(([id, label]) =>
-        <button key={id} type="button" role="tab" id={`cost-tab-${id}`} aria-controls={`cost-panel-${id}`} aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
-          onKeyDown={e => { const order: CostTab[] = ["plan", "invoices", "variations"]; const i = order.indexOf(tab); if (e.key === "ArrowRight") setTab(order[(i + 1) % 3]); if (e.key === "ArrowLeft") setTab(order[(i + 2) % 3]); }}
-          onClick={() => setTab(id)}>{label}{id === "invoices" && ledger ? <span className="costs-tab-count">{ledger.invoices.length}</span> : null}</button>)}
-    </div>
     {ledgerError && <div className="banner" role="alert"><p>Could not load the invoice ledger. The cost plan is unaffected.</p><button className="btn" onClick={() => setLedgerReload(n => n + 1)}>Reload invoices</button></div>}
     <div role="tabpanel" id="cost-panel-invoices" aria-labelledby="cost-tab-invoices" hidden={tab !== "invoices"}>
       {tab === "invoices" && <InvoicesTab onCostLine={showCostLine} costLineIds={plan?.items.map(i => i.cost_item_id)} projectId={projectId} ledger={ledger} filter={filter} onFilter={setFilter} selected={invoice} onSelect={setInvoice} onLedger={setLedger} onSignedOut={onSignedOut} reload={() => setLedgerReload(n => n + 1)} incoming={incoming} onIncoming={() => setIncoming(null)} />}
     </div>
     <div role="tabpanel" id="cost-panel-variations" aria-labelledby="cost-tab-variations" hidden={tab !== "variations"}><VariationsTab /></div>
     <div role="tabpanel" id="cost-panel-plan" aria-labelledby="cost-tab-plan" hidden={tab !== "plan"}>
-    {!plan ? !error && <p role="status"><Pending delayed>Loading cost plan…</Pending></p> : <CostGrid key={projectId} projectId={projectId} reveal={reveal} plan={plan} totals={totals} packages={packages} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
+    {!plan ? !error && <p role="status"><Pending delayed>Loading cost plan…</Pending></p> : <CentsContext value={decimals}><CostGrid key={projectId} projectId={projectId} reveal={reveal} plan={plan} totals={totals} packages={packages} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
         onSubdivide={item => { choose(item.cost_item_id); setSplit({ base: plan, item, names: ["", ""], amounts: ["", ""], metric: "budget", residual: "explicit" }); }}
         onDetailedValue={(item, name, value) => save(() => costApi.value(projectId, plan, item.cost_item_id, name, value), false)}
         onReorder={ids => save(() => costApi.reorder(projectId, plan, ids), false)}
         onDelete={remove} ledger={history ? null : ledger} onInvoices={showInvoices}
-        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} onBudget={history ? undefined : saveBudget} />}
+        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} onBudget={history ? undefined : saveBudget} /></CentsContext>}
     </div>
     {open && tab === "plan" && <aside className="cost-drawer" aria-label="Cost line">
       <button type="button" className="btn btn-small cost-drawer-close" onClick={close}>Close</button>

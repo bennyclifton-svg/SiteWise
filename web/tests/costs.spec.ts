@@ -3,11 +3,17 @@ import { expect, test } from "@playwright/test";
 // variations, approved variations, forecast final cost, budget variance,
 // claimed to date, this month, remaining.
 const FORECAST = 7, VARIANCE = 8, REMAINING = 11;
+// These checks read exact cents, so they turn the Cost Plan's Decimals switch
+// on (it defaults off) unless a test has already set it.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => { try { if (localStorage.getItem("sitewise.costs.decimals") === null) localStorage.setItem("sitewise.costs.decimals", "true"); } catch { /* Storage is optional. */ } });
+});
+
 test("cost grid keeps unknowns, edits budget in place and keeps the ledger mechanics", async ({ page }, testInfo) => {
   const {token}=await(await page.request.post('/__e2e/invite?org=a')).json(); await page.goto(`/#token=${token}`);
   await page.getByLabel('New project').fill('Cost controls');await page.getByRole('button',{name:'Create project',exact:true}).click();
   await page.getByRole('button',{name:'Costs',exact:true}).click();
-  await expect(page.getByRole("button",{name:"Delete Escalation",exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Actions for Escalation",exact:true})).toBeVisible();
   await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();await page.getByLabel('New Contingency item',{exact:true}).fill('Unallocated allowance');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
   const grid=page.getByRole('table');
   for (const h of ['Forecast Variations','Approved Variations','This Month']) await expect(grid.getByRole('columnheader',{name:h})).toHaveAttribute('aria-disabled','true');
@@ -56,7 +62,7 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await expect(head.getByRole('button',{name:'Approved Contract for Head contract',exact:true})).toHaveText('450.00');
   const sub=grid.getByRole('row',{name:/Contingency subtotal/});await expect(sub).toContainText('1,500.00');await expect(sub.getByRole('cell').nth(6)).toHaveText('—');
 
-  await page.getByRole('button',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await expect(page.getByText('Cost Plan r2 · draft',{exact:true})).toBeVisible();await page.getByRole('button',{name:'View frozen baseline',exact:true}).click();await expect(page.getByText('Cost Plan r1 · baseline',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(head.getByRole('button',{name:'Budget for Head contract'})).toBeDisabled();await expect(head.getByRole('button',{name:'Approved Contract for Head contract'})).toBeDisabled();
+  await page.getByRole('button',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await expect(page.getByRole('button',{name:'View frozen baseline',exact:true})).toBeVisible();await page.getByRole('button',{name:'View frozen baseline',exact:true}).click();await expect(page.getByText('Viewing r1 · baseline',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(head.getByRole('button',{name:'Budget for Head contract'})).toBeDisabled();await expect(head.getByRole('button',{name:'Approved Contract for Head contract'})).toBeDisabled();
   await page.setViewportSize({width:1360,height:1000});await page.screenshot({path:testInfo.outputPath('next-wave-costs-desktop.png'),fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:testInfo.outputPath('next-wave-costs-mobile.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });
 

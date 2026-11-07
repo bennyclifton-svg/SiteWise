@@ -40,12 +40,19 @@ test("panel actions align with the workspace and documents stay visible across t
   const download = page.getByRole("button", { name: "Download", exact: true });
   const docs = page.getByRole("complementary", { name: "Document register" });
   await expect(update).toBeVisible();
-  const main = (await page.locator('.project-main-panel').boundingBox())!;
+  // Profile (owner, 7 Nov 2026): Update sits in the Project heading with a
+  // three-dot menu holding Download and Add part; no top-right Download.
+  const more = page.getByRole("button", { name: "Profile actions", exact: true });
+  const heading = (await page.getByRole("heading", { name: "Project", exact: true }).boundingBox())!;
   const up = (await update.boundingBox())!;
-  const down = (await download.boundingBox())!;
-  expect(Math.abs(up.x - main.x - 8)).toBeLessThan(2);
-  expect(Math.abs(down.x + down.width - (main.x + main.width - 8))).toBeLessThan(2);
-  expect(Math.abs(up.y - down.y)).toBeLessThan(4);
+  const dots = (await more.boundingBox())!;
+  expect(Math.abs(up.y + up.height / 2 - (heading.y + heading.height / 2))).toBeLessThan(6);
+  expect(dots.x).toBeGreaterThan(up.x + up.width);
+  await expect(download).toHaveCount(0);
+  await more.click();
+  await expect(page.getByRole("menuitem", { name: "Download project profile" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Add part" })).toBeVisible();
+  await page.keyboard.press("Escape");
   const hide = page.getByRole('button', { name: 'Hide documents', exact: true });
   const hideBox = (await hide.boundingBox())!;
   const docsBox = (await docs.boundingBox())!;
@@ -56,7 +63,7 @@ test("panel actions align with the workspace and documents stay visible across t
   for (const name of ['Costs', 'Procurement', 'Specifications', 'Profile']) {
     await page.getByRole('button', { name, exact: true }).click();
     await expect(docs).toBeVisible();
-    await expect(download).toBeVisible();
+    if (name !== 'Profile') await expect(download).toBeVisible();
     if (name === 'Costs') await page.screenshot({ path: '../tmp/panel-actions-costs.png', fullPage: true });
   }
   await hide.click();
@@ -70,7 +77,7 @@ test("panel actions align with the workspace and documents stay visible across t
   await page.getByRole('button', { name: 'Profile', exact: true }).click();
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(update).toBeVisible();
-  await expect(download).toBeVisible();
+  await expect(more).toBeVisible();
   await page.screenshot({ path: '../tmp/panel-actions-mobile.png', fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });

@@ -108,7 +108,8 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
 
   // The one-page report: price, non-price with the PM's ratings, and a
   // recommendation drafted from the figures that the PM edits and signs off.
-  await page.getByRole("button", { name: "Report", exact: true }).click();
+  await page.getByRole("button", { name: "More actions", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Report", exact: true }).click();
   await expect(page.getByRole("heading", { name: /Town Planner: comparison of 3 proposals/ })).toBeVisible();
   await expect(page.getByLabel("Recommendation")).toHaveValue(/Gamma Planning Pty Ltd.*selected appointment total/i);
   await expect(page.getByText("Authority fees are excluded.").first()).toBeVisible();

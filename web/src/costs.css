@@ -4,7 +4,8 @@
 .costs-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 14px; }
 .costs-head h1 { font-size: 22px; }
 .costs-chip { padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--paper); color: var(--ink-muted); font-size: var(--fs-sm); }
-.costs-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.costs-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; margin: 0 0 10px; }
+.costs-viewing { color: var(--ink-muted); font-size: var(--fs-sm); }
 .costs .report-notice, .costs .banner { margin-bottom: 14px; }
 .costs-empty { padding: 24px; border: 1px dashed var(--line-strong); color: var(--ink-muted); }
 
@@ -142,3 +143,34 @@
 }
 /* Quantity, unit and rate are always fields, so they hold the column open. */
 .cost-grid td > input.cost-input:not([inputmode]) { min-width: 4.5rem; }
+
+/* Compact grid (owner direction, 7 Nov 2026): every column is only as wide as
+   its figures, rows match the documents register, and the sideways scrollbar
+   stays on screen instead of under the last row. */
+.cost-grid thead th { min-width: 0; }
+.cost-grid thead th.cost-num { min-width: 56px; }
+@media (min-width: 901px) {
+  .cost-sticky[data-col="category"] { width: 116px; min-width: 116px; max-width: 116px; }
+  .cost-sticky[data-col="item"] { left: 158px; min-width: 170px; max-width: 220px; }
+}
+.cost-unknown { display: block; color: var(--ink-muted); font-size: var(--fs-xs); font-weight: 400; line-height: 1.2; }
+.cost-row { height: 33px; }
+.cost-row td { padding-top: 2px; padding-bottom: 2px; line-height: 20px; }
+.cost-row .cost-delete, .cost-row .cost-more { width: 24px; height: 24px; vertical-align: middle; }
+.cost-row td { vertical-align: middle; }
+.cost-row .cost-disclosure-toggle { width: 26px; height: 26px; }
+.cost-grid .cost-actions { min-width: 0; white-space: nowrap; }
+.cockpit-scroll .cost-grid-scroll { max-height: max(320px, calc(100vh - 380px)); }
+@media (pointer: coarse) { .cost-row .cost-delete, .cost-row .cost-more { width: 36px; height: 36px; } }
+
+/* The view names are the page title: Cost Plan, Invoices, Variations on one line. */
+.costs-head .costs-tabs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 28px; margin: 0; border-bottom: 0; }
+.costs-head .costs-tab { padding: 0 0 6px; color: var(--sw-text-tertiary, var(--ink-muted)); font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
+.costs-head .costs-tab[aria-selected="true"] { color: var(--sw-text-primary, var(--ink)); }
+.costs-head .costs-tab:hover { color: var(--sw-text-primary, var(--ink)); }
+.costs-head .costs-tab-count { vertical-align: middle; font-size: var(--fs-xs); font-weight: 500; letter-spacing: 0; }
+@media (max-width: 600px) { .costs-head .costs-tab { font-size: 20px; } .costs-head .costs-tabs { gap: 4px 18px; } }
+/* The Item head's chevron opens or closes every group. */
+.cost-grid thead .cost-master-toggle { width: 26px; height: 26px; margin-right: 2px; vertical-align: middle; border-radius: var(--radius-sm); }
+.cost-grid thead .cost-master-toggle:hover { background: var(--ground); }
+@media print { .cost-master-toggle { display: none; } .costs-head h1.sr-only { position: static; width: auto; height: auto; margin: 0 0 8px; overflow: visible; clip: auto; white-space: normal; } }

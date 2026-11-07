@@ -1,5 +1,11 @@
 import {expect,test} from "@playwright/test";
 
+// These checks read exact cents, so they turn the Cost Plan's Decimals switch
+// on (it defaults off) unless a test has already set it.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => { try { if (localStorage.getItem("sitewise.costs.decimals") === null) localStorage.setItem("sitewise.costs.decimals", "true"); } catch { /* Storage is optional. */ } });
+});
+
 test("cost defaults, four sections, deletion and inline quantities",async({page,baseURL},testInfo)=>{
  const {token}=await(await page.request.post('/__e2e/invite?org=a')).json();await page.goto(`/#token=${token}`);
  await page.getByLabel('New project').fill('Cost autofill');await page.getByRole('button',{name:'Create project',exact:true}).click();
@@ -13,7 +19,7 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
   const r=await page.request.post(base+'/works',{headers:{Origin:baseURL!},data:{part_id:profile.parts[0].id,system_id,action:'new',title:system_id}});expect(r.ok(),await r.text()).toBeTruthy();
  }
  await page.getByRole('button',{name:'Costs',exact:true}).click();
- await expect(page.getByRole('button',{name:'Delete Escalation',exact:true})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Actions for Escalation',exact:true})).toBeVisible();
  await expect(page.locator('.cost-group th')).toHaveText(['Fees and charges','Consultants','Construction','Contingency']);
  await expect(page.getByRole('button',{name:/^(Keep|Dismiss|Add all suggested)/})).toHaveCount(0);
  const architect=page.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText('Architect',{exact:true})});
@@ -21,12 +27,12 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
  await expect(architect.getByRole('button',{name:'Budget for Architect',exact:true})).toHaveText('50,000.00');await expect(architect.locator('.cost-tag')).toHaveCount(0);
  let deleteFails=true;
  await page.route('**/cost-plan/items/*',route=>route.request().method()==='DELETE' && deleteFails ? route.fulfill({status:500,body:'failure'}) : route.continue());
- await page.getByRole('button',{name:'Delete Escalation',exact:true}).click();
+ await page.getByRole('button',{name:'Actions for Escalation',exact:true}).click();await page.getByRole('button',{name:'Delete Escalation',exact:true}).click();
  await expect(page.getByRole('alert')).toContainText('Could not save');
  await expect(page.locator('[data-col="item"]').getByText('Escalation',{exact:true})).toBeVisible();
  deleteFails=false;
- await page.getByRole('button',{name:'Delete Escalation',exact:true}).click();await expect(page.locator('[data-col="item"]').getByText('Escalation',{exact:true})).toHaveCount(0);
- await page.reload();await page.getByRole('button',{name:'Costs',exact:true}).click();await expect(page.getByRole('button',{name:'Delete Architect',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Actions for Escalation',exact:true}).click();await page.getByRole('button',{name:'Delete Escalation',exact:true}).click();await expect(page.locator('[data-col="item"]').getByText('Escalation',{exact:true})).toHaveCount(0);
+ await page.reload();await page.getByRole('button',{name:'Costs',exact:true}).click();await expect(page.getByRole('button',{name:'Actions for Architect',exact:true})).toBeVisible();
  await expect(page.locator('[data-col="item"]').getByText('Escalation',{exact:true})).toHaveCount(0);
  const saved=await(await page.request.get(base+'/cost-plan')).json();expect(saved.suggestions).toHaveLength(0);expect(saved.items.length).toBeGreaterThan(12);
  await page.getByRole('button',{name:'+ Add line to Construction',exact:true}).click();await page.getByLabel('New Construction physical scope').selectOption('envelope');await page.getByLabel('New Construction item').fill('Facade access allowance');await page.getByLabel('New Construction item').press('Enter');
@@ -47,9 +53,9 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
  expect(afterLine.system_id).toBe(beforeLine.system_id);expect(afterLine.package_id).toBe(main.id);
  const access=page.locator('.cost-parent').filter({has:page.locator('[data-col="item"]').getByText('Access and egress',{exact:true})});
  page.once('dialog',async dialog=>{expect(dialog.message()).toMatch(/child lines/);await dialog.dismiss();});
- await access.getByRole('button',{name:'Delete Access and egress',exact:true}).click();await expect(access).toBeVisible();
+ await access.getByRole('button',{name:'Actions for Access and egress',exact:true}).click();await access.getByRole('button',{name:'Delete Access and egress',exact:true}).click();await expect(access).toBeVisible();
  page.once('dialog',async dialog=>{await dialog.accept();});
- await access.getByRole('button',{name:'Delete Access and egress',exact:true}).click();await expect(access).toHaveCount(0);
+ await access.getByRole('button',{name:'Actions for Access and egress',exact:true}).click();await access.getByRole('button',{name:'Delete Access and egress',exact:true}).click();await expect(access).toHaveCount(0);
  const deleted=await(await page.request.get(base+'/cost-plan')).json();
  expect(deleted.items.some((i:any)=>i.source_key?.startsWith('works:access-egress'))).toBeFalsy();
  const refreshed=await(await page.request.post(base+'/cost-plan/prepare',{headers:{Origin:baseURL!},data:{}})).json();

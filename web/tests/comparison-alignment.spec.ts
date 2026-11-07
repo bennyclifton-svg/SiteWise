@@ -37,7 +37,8 @@ test("comparison grouping persists, undoes and separates unit rates", async ({pa
  expect(table.columns[0].cells[rows[1].key].state).toBe("included");
  await page.getByRole("button",{name:"Undo last alignment",exact:true}).click();
  await expect(page.getByRole("button",{name:"Undo last alignment",exact:true})).toHaveCount(0);
- await page.getByRole("button",{name:"+ Add row",exact:true}).click();
+ await page.getByRole("button",{name:"New",exact:true}).click();
+ await page.getByRole("menuitem",{name:"Row",exact:true}).click();
  await page.getByLabel("Service description").fill("Additional inspection");
  await page.getByLabel("Placement").selectOption("rate");
  await page.getByLabel("Rate unit").selectOption("inspection");

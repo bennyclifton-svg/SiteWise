@@ -52,13 +52,14 @@ async function expectNoInvoiceFooter(plan: Locator) {
 
 async function dropInvoices(page: Page, numbers: number[]) {
   const files = await Promise.all(numbers.map(async n => ({ n, b64: (await (await page.request.get(`/__e2e/invoice.pdf?n=${n}`)).body()).toString("base64") })));
-  await page.getByText("Drop invoices here").evaluate((el, files) => {
+  // The whole Invoices tab is the drop zone.
+  await page.locator("section.invoices").evaluate((el, files) => {
     const dt = new DataTransfer();
     for (const f of files) {
       const bytes = Uint8Array.from(atob(f.b64), c => c.charCodeAt(0));
       dt.items.add(new File([bytes], `INV-${String(f.n).padStart(5, "0")}.pdf`, { type: "application/pdf" }));
     }
-    const zone = el.closest("section")!;
+    const zone = el;
     for (const type of ["dragenter", "dragover", "drop"]) zone.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: dt }));
   }, files);
 }
@@ -76,7 +77,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
     expect(r.status()).toBe(201);
   }
   await page.getByRole("button", { name: "Costs", exact: true }).click();
-  await expect(page.getByRole("tab", { name: /Cost plan/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: /Cost plan/i })).toHaveAttribute("aria-selected", "true");
   const plan = page.locator("#cost-panel-plan");
   // The tab count arrives with the ledger. The invoice footer is not part of the plan.
   await expect(page.getByRole("tab", { name: /Invoices/ })).toContainText("0");
@@ -139,7 +140,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await expect(table.getByRole("row")).toHaveCount(11);
 
   // Cost plan: invoices that landed on a line stay in that line's invoiced column.
-  await page.getByRole("tab", { name: /Cost plan/ }).click();
+  await page.getByRole("tab", { name: /Cost plan/i }).click();
   await expectNoInvoiceFooter(plan);
   const before = await ledgerSummary(page, project);
   expect(before.unallocated.invoiced).toBe("0.00");
@@ -157,7 +158,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await expect(panel.getByText("Cleared by you").first()).toBeVisible();
   await panel.getByRole("button", { name: "Close", exact: true }).click();
   await expect(table.getByRole("row", { name: /INV-00004/ })).toContainText("Unallocated");
-  await page.getByRole("tab", { name: /Cost plan/ }).click();
+  await page.getByRole("tab", { name: /Cost plan/i }).click();
   await expect(plan.getByRole("row", { name: /Construction budget/ })).toBeVisible();
   await expectNoInvoiceFooter(plan);
   const after = await ledgerSummary(page, project);
@@ -183,15 +184,16 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
 
   // The Invoices tab still lists the invoice with no activity line.
   await page.getByRole("tab", { name: /Invoices/ }).click();
-  await page.getByLabel("Activity line filter").selectOption("unallocated");
   await expect(page.getByRole("tab", { name: /Invoices/ })).toHaveAttribute("aria-selected", "true");
-  await expect(table.getByRole("row")).toHaveCount(2);
-  await expect(table.getByRole("button", { name: "INV-00004", exact: true })).toBeVisible();
+  await expect(table.getByRole("row").filter({ has: page.getByRole("button", { name: "INV-00004", exact: true }) })).toContainText("Unallocated");
+  // A header click ranks the ledger: Activity line ascending puts the unallocated row first.
+  await table.getByRole("button", { name: "Activity line", exact: true }).click();
+  await expect(table.getByRole("columnheader", { name: /^Activity line/ })).toHaveAttribute("aria-sort", "ascending");
+  await expect(table.getByRole("row").nth(1)).toContainText("Unallocated");
 
   await page.getByRole("tab", { name: /Variations/ }).click();
   await expect(page.getByText("Variations are coming")).toBeVisible();
   await page.getByRole("tab", { name: /Invoices/ }).click();
-  await page.getByLabel("Activity line filter").selectOption("");
   await page.screenshot({ path: testInfo.outputPath("invoices-desktop.png"), fullPage: true });
   await page.emulateMedia({ media: "print" });
   await page.screenshot({ path: testInfo.outputPath("invoices-print.png"), fullPage: true });

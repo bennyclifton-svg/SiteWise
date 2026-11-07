@@ -152,8 +152,7 @@
   }
 
   /* Sticky bars inside the working view stop below the paper. */
-  .cockpit-scroll :is(.bar, .sw-rail),
-  .cockpit-scroll .inv-table thead th { top: calc(var(--trace-top, 160px) + 8px); }
+  .cockpit-scroll :is(.bar, .sw-rail) { top: calc(var(--trace-top, 160px) + 8px); }
 }
 
 @media (max-width: 1100px) {
@@ -162,7 +161,7 @@
 
 /* ---------- Header ---------- */
 
-.cockpit-title { font-size: clamp(1.9rem, 2.4vw, 3.1rem); letter-spacing: -.03em; }
+.cockpit-title { font-size: clamp(1.6rem, 1.9vw, 2.4rem); letter-spacing: -.03em; }
 .cockpit-address { color: var(--sw-text-secondary); font-size: 1rem; }
 
 .theme-button {
@@ -276,17 +275,15 @@
   content: "";
   position: absolute;
   z-index: -1;
-  left: -5px;
-  right: -5px;
-  top: 12%;
-  bottom: 2%;
-  background: var(--trace-brush-check);
-  -webkit-mask: url("./assets/marks/brush-1.svg") center / 100% 100% no-repeat;
-  mask: url("./assets/marks/brush-1.svg") center / 100% 100% no-repeat;
-  transform: rotate(-.5deg);
+  left: -3px;
+  right: -3px;
+  top: 6%;
+  bottom: 0;
+  /* A value to check reads as a flat rose fill, not a highlighter stroke
+     (owner direction, 7 Nov 2026). */
+  border-radius: 2px;
+  background: var(--alert-soft);
 }
-.mark-check[data-stroke="2"]::before { -webkit-mask-image: url("./assets/marks/brush-2.svg"); mask-image: url("./assets/marks/brush-2.svg"); transform: rotate(.4deg); }
-.mark-check[data-stroke="3"]::before { -webkit-mask-image: url("./assets/marks/brush-3.svg"); mask-image: url("./assets/marks/brush-3.svg"); transform: rotate(-.2deg); }
 
 @media (prefers-contrast: more), print {
   .mark-check::before { display: none; }
@@ -295,3 +292,14 @@
   .pencil-rule::before { background: currentColor; height: 1.5px; top: 0; }
   .trace-paper-sheet { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet); }
 }
+
+/* ---------- Nav icons: brass or blue per view (owner direction, 7 Nov 2026);
+   green and rose are kept for status. Tones are defined in table-heads.css. ---------- */
+.nav-icon[data-tone="brass"] { color: var(--tone-brass); }
+.nav-icon[data-tone="blue"] { color: var(--tone-blue); }
+.nav-icon[data-tone="report"] { color: var(--trace-ink-4); }
+.nav-item[aria-current="page"] .nav-icon[data-tone="brass"] { color: var(--tone-brass); }
+.nav-item[aria-current="page"] .nav-icon[data-tone="blue"] { color: var(--tone-blue); }
+.nav-icon-wash { fill: currentColor; opacity: .18; stroke: none; }
+.nav-item[aria-current="page"] .nav-icon-wash { opacity: .3; }
+@media (forced-colors: active) { .nav-icon-wash { display: none; } }

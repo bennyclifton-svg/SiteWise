@@ -1,5 +1,5 @@
 // Foot of the left nav: the signed-in person's initials, opening one menu for
-// Account, the colour theme and Log out. Initials come from the account's
+// Account, Cost settings, the colour theme and Log out. Initials come from the account's
 // email; navigation and theme never call the server.
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
@@ -7,6 +7,7 @@ import { api } from "./api";
 import { IconLogOut } from "./icons";
 import { endSession } from "./SignOutButton";
 import { readStoredTheme, setTheme, subscribeTheme, type ColorTheme } from "./theme";
+import { MoonIcon, SunIcon } from "./ThemeButton";
 
 /** "jane.smith@x.com" -> "JS"; "orlan@x.com" -> "OR". */
 export function initialsOf(email: string): string {
@@ -16,9 +17,10 @@ export function initialsOf(email: string): string {
   return letters.toUpperCase();
 }
 
-const THEMES: { id: ColorTheme; label: string }[] = [{ id: "light", label: "Light" }, { id: "dark", label: "Dark" }];
+const THEMES: { id: ColorTheme; label: string; icon: typeof SunIcon }[] = [{ id: "light", label: "Light", icon: SunIcon }, { id: "dark", label: "Dark", icon: MoonIcon }];
 
-export function AccountMenu() {
+/** onCostSettings is present only inside a project, where a cost plan exists. */
+export function AccountMenu({ onCostSettings }: { onCostSettings?: () => void }) {
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -76,10 +78,9 @@ export function AccountMenu() {
         setOpen(false);
         window.dispatchEvent(new CustomEvent("sitewise:navigate", { detail: "/account" }));
       }}>Account</a>
-      <div className="account-group" role="group" aria-label="Theme">
-        {THEMES.map(item => <button key={item.id} type="button" role="menuitemradio" aria-checked={theme === item.id} className="account-item" onClick={() => setTheme(item.id)}>
-          <span className="account-check" aria-hidden="true">{theme === item.id ? "✓" : ""}</span>{item.label}
-        </button>)}
+      {onCostSettings && <button type="button" role="menuitem" className="account-item" onClick={() => { setOpen(false); onCostSettings(); }}>Cost settings</button>}
+      <div className="account-group account-theme" role="group" aria-label="Theme">
+        {THEMES.map(item => <button key={item.id} type="button" role="menuitemradio" aria-checked={theme === item.id} aria-label={item.label} title={item.label} className="account-theme-option" onClick={() => setTheme(item.id)}><item.icon /></button>)}
       </div>
       <button type="button" role="menuitem" className="account-item" disabled={busy} onClick={() => void signOut()}><span className="account-icon" aria-hidden="true"><IconLogOut /></span>{busy ? "Logging out…" : "Log out"}</button>
       {error && <p role="alert" className="error-text">{error}</p>}

@@ -1062,6 +1062,9 @@ button.cell[data-state="check"]:hover {
   font-size: var(--fs-md);
 }
 
+/* The heading is screen-reader only, so the live dot holds the right edge. */
+.reg-live { margin-left: auto; }
+
 .reg-live[data-state="reconnecting"],
 .reg-live[data-state="offline"] {
   color: var(--warn);

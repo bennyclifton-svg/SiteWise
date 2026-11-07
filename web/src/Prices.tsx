@@ -4,7 +4,8 @@ import { BuilderQuotedTotals, BuilderWorkSections } from "./BuilderComparison";
 // The price table: schedule items down the side, firms across. With one firm
 // it is the review screen; with several it is the comparison. Every total
 // arrives computed by the server; a cell a user corrects is final.
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { IconMore } from "./icons";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
 import { ComparisonRowEditor } from "./ComparisonAlignment";
@@ -133,11 +134,19 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <button type="button" className="btn btn-small" onClick={onBack}>← Procurement</button>
       <h1>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></h1>
       <div className="prices-actions"><span role="status">{busy && !uploading && <Pending delayed>Saving…</Pending>}</span>
-        {cols.length > 0 && <button className="btn btn-small" disabled={locked || !!moving} onClick={() => setRowEditor("new")}>+ Add row</button>}
-        <button type="button" className="btn btn-small" onClick={() => setAdding(a => !a)} aria-expanded={adding}>+ Add firm</button>
-        {reportId && <a className="btn btn-small" href={submissionApi.responseFormURL(reportId)} download>Response form</a>}
-        {cols.length > 0 && <a className="btn btn-small" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
-        {cols.length > 0 && <button type="button" className="btn btn-small" onClick={() => setShowReport(true)}>Report</button>}
+        {/* One "+ New" pill and one ⋮ menu keep the head clean (owner direction, 7 Nov 2026). */}
+        {cols.length > 0
+          ? <ActionMenu label="New" trigger={<span>+ New</span>} triggerClass="btn btn-small">
+              <button type="button" role="menuitem" disabled={locked || !!moving} onClick={() => setRowEditor("new")}>Row</button>
+              <button type="button" role="menuitem" onClick={() => setAdding(true)}>Firm</button>
+            </ActionMenu>
+          : <button type="button" className="btn btn-small" onClick={() => setAdding(a => !a)} aria-expanded={adding}>+ New firm</button>}
+        <ActionMenu label="More actions" trigger={<IconMore />} triggerClass="prices-more-btn">
+          {reportId && <a role="menuitem" href={submissionApi.responseFormURL(reportId)} download>Response form</a>}
+          {cols.length > 0 && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
+          <button type="button" role="menuitem" onClick={() => window.print()}>Download (print)</button>
+          {cols.length > 0 && <button type="button" role="menuitem" onClick={() => setShowReport(true)}>Report</button>}
+        </ActionMenu>
       </div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => setError("")}>Dismiss</button></div>}
@@ -373,5 +382,24 @@ function AwardBanner({ table, busy, onUndo, onOpenCostPlan }: { table: PriceTabl
       {a.locked ? <span className="prices-note">Undo is locked: an invoice is allocated to these lines.</span>
         : <button type="button" className="btn btn-small" disabled={busy} onClick={onUndo}>Undo award</button>}
     </div>
+  </div>;
+}
+
+/** A button that opens a short menu of actions below it; Escape or a click
+ * elsewhere closes it, and choosing an item closes it. */
+function ActionMenu({ label, trigger, triggerClass, children }: { label: string; trigger: ReactNode; triggerClass: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    root.current?.querySelector<HTMLElement>('[role="menu"] :is(a, button):not(:disabled)')?.focus();
+    const close = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [open]);
+  return <div className="prices-menu" ref={root} onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); } }}>
+    <button type="button" className={triggerClass} aria-label={label} title={label} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(o => !o)}>{trigger}</button>
+    {open && <div className="page-action-menu prices-menu-list" role="menu" aria-label={label}
+      onClick={e => { if ((e.target as HTMLElement).closest("a, button")) window.setTimeout(() => setOpen(false), 0); }}>{children}</div>}
   </div>;
 }

@@ -18,6 +18,9 @@ import "./trace.css";
 import "./trace-profile.css";
 import "./trace-procurement.css";
 import "./trace-pages.css";
+// Table heading bands sit over every surface stylesheet.
+import "./table-heads.css";
+import "./cost-tables.css";
 // Last, so its sizes hold over every surface stylesheet App imports.
 import "./sizing.css";
 

@@ -61,16 +61,16 @@ export function ConsultantComparison({ table, projectId, busy, onOpen, onAward, 
     <div className="prices-scroll"><table className="prices-table">
       <caption className="prices-sr-only">Appointment scope and fees</caption>
       <colgroup><col className="comparison-scope-col" />{table.columns.map(c => <col key={c.submission.id} />)}{slots.map(slot => <col key={slot} className="comparison-placeholder-col" />)}</colgroup>
-      <thead><tr><th scope="col">Scope</th>{table.columns.map(c => <th scope="col" key={c.submission.id}><button className="table-action" onClick={() => onOpen(c.submission.id)}>{c.firm?.name || c.submission.filename}</button></th>)}{slots.map(slot => <th key={slot} scope="col" className="comparison-placeholder"><button className="comparison-add" disabled={busy || !!table.award} onClick={onAdd} aria-label={`Add consultant ${slot}`}><span>Consultant {slot}</span><span>+ Add consultant</span></button></th>)}</tr></thead>
+      <thead><tr><th scope="col">Scope</th>{table.columns.map(c => <th scope="col" key={c.submission.id}><button type="button" className="comparison-firm" title="Open the proposal" onClick={() => onOpen(c.submission.id)}>{c.firm?.name || c.submission.filename}</button></th>)}{slots.map(slot => <th key={slot} scope="col" className="comparison-placeholder"><button className="comparison-add" disabled={busy || !!table.award} onClick={onAdd} aria-label={`Add consultant ${slot}`}><span>Consultant {slot}</span><span>+ Add consultant</span></button></th>)}</tr></thead>
       <tbody>
         <tr className="prices-group"><th scope="rowgroup" colSpan={columnCount}>Included in appointment</th></tr>
         {schedule(true)}
-        <tr className="prices-total"><th scope="row">Total<span>excluding GST</span></th>{table.columns.map(c => <td key={c.submission.id}>
+        <tr className="prices-total"><th scope="row">Total <span>excluding GST</span></th>{table.columns.map(c => <td key={c.submission.id}><span className="comparison-total">
           <strong>{c.appointment_total != null ? money(c.appointment_total) : "Not confirmed"}</strong>
-          {c.appointment_total != null && c.appointment_basis && <small className="prices-note">{c.appointment_basis === "reconciled" ? "Matches the quoted total" : "No total printed; sum of the listed fees"}</small>}
-          {!table.award && <button className="btn btn-primary btn-small" disabled={locked || c.appointment_total == null || !c.appointment_rows?.some(r => r.included && r.state === "priced" && r.amount != null)} onClick={() => onAward(c.submission.id)}>Award to {c.firm?.name || "this consultant"}</button>}
-        </td>)}{emptyCells()}</tr>
-        <tr className="prices-group"><th scope="rowgroup" colSpan={columnCount}>Not included in appointment</th></tr>
+          {/* A reconciled total needs no note; only the unprinted case is worth a word. */}
+          {c.appointment_total != null && c.appointment_basis && c.appointment_basis !== "reconciled" && <small className="prices-note" title="No total printed; sum of the listed fees">Sum of listed fees</small>}
+          {!table.award && <button className="btn btn-primary btn-small comparison-award" aria-label={`Award to ${c.firm?.name || "this consultant"}`} disabled={locked || c.appointment_total == null || !c.appointment_rows?.some(r => r.included && r.state === "priced" && r.amount != null)} onClick={() => onAward(c.submission.id)}>Award</button>}
+        </span></td>)}{emptyCells()}</tr>
         {schedule(false)}
       </tbody>
     </table></div>

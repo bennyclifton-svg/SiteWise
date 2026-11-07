@@ -50,6 +50,20 @@ export function Chip({ field }: { field: InvoiceField | undefined }) {
   return <span className="inv-chip" data-state={state} title={state === "unchecked" ? "Jev didn't answer in time. Rule values stand; this is re-checked in the background." : undefined}>{body}</span>;
 }
 
+// Header clicks rank the ledger (owner direction, 7 Nov 2026): one key at a
+// time, ascending then descending then the ledger's own newest-first order.
+type SortKey = "date" | "number" | "discipline" | "line" | "month" | "ex_gst" | "status";
+const COLUMNS: [SortKey, string][] = [["date", "Invoice date"], ["number", "Invoice no."], ["discipline", "Discipline"], ["line", "Activity line"], ["month", "Month"], ["ex_gst", "Ex GST (AUD)"], ["status", "Status"]];
+// Money stays a decimal string; compare by sign, then digits, never as a float.
+function compareMoney(a: string | null | undefined, b: string | null | undefined) {
+  if (a == null || b == null) return a == null ? (b == null ? 0 : 1) : -1;
+  const neg = (m: string) => m.startsWith("-"), abs = (m: string) => m.replace("-", "");
+  if (neg(a) !== neg(b)) return neg(a) ? -1 : 1;
+  const [aw, af = ""] = abs(a).split("."), [bw, bf = ""] = abs(b).split(".");
+  const c = aw.length - bw.length || aw.localeCompare(bw) || af.padEnd(2, "0").localeCompare(bf.padEnd(2, "0"));
+  return neg(a) ? -c : c;
+}
+
 interface Upload { key: string; name: string; progress: number; state: "queued" | "uploading" | "reading" | "already" | "failed"; id?: string; error?: string }
 const PARALLEL = 6;
 
@@ -60,6 +74,7 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
   incoming?: File[] | null; onIncoming?: () => void;
 }) {
   const [uploads, setUploads] = useState<Upload[]>([]);
+  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
   const [over, setOver] = useState(false);
   const [message, setMessage] = useState("");
   const [savingDiscipline, setSavingDiscipline] = useState("");
@@ -135,15 +150,33 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
   const rows = useMemo(() => invoices.flatMap(inv => (inv.rows?.length ? inv.rows : [{ share: 0, shares: 1, line_id: "", line: "Unallocated", ex_gst: inv.ex_gst, gst: inv.gst, total: inv.total, band: "blank" as const, decided_by: "rule" }]).map(r => ({ inv, row: r })))
     .filter(({ inv, row }) => (!filter.supplier || inv.supplier_id === filter.supplier) && (!filter.month || inv.period.startsWith(filter.month)) &&
       (!filter.line || (filter.line === "unallocated" ? !row.line_id : (row.line_id === filter.line || !!ledger?.groups?.[filter.line]?.line_ids.includes(row.line_id)))) && (!filter.status || inv.status === filter.status)), [invoices, filter, ledger?.groups]);
-  const months = useMemo(() => [...new Set(invoices.map(i => i.period.slice(0, 7)))].sort().reverse(), [invoices]);
+  // The table names the discipline in its own column, so the line shows its stage alone.
+  const lineLabel = (id: string, fallback: string) => ledger?.lines.find(l => l.id === id)?.label ?? fallback;
+  const discipline = (inv: Invoice) => ledger?.packages.find(p => p.id === inv.supplier_id)?.title ?? inv.supplier ?? "";
+  const sorted = useMemo(() => {
+    if (!sort) return rows;
+    const text = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+    const by: Record<SortKey, (a: typeof rows[number], b: typeof rows[number]) => number> = {
+      date: (a, b) => text(a.inv.date, b.inv.date),
+      number: (a, b) => text(a.inv.number || a.inv.filename, b.inv.number || b.inv.filename),
+      discipline: (a, b) => text(discipline(a.inv), discipline(b.inv)),
+      line: (a, b) => text(a.row.line_id ? lineLabel(a.row.line_id, a.row.line) : "", b.row.line_id ? lineLabel(b.row.line_id, b.row.line) : ""),
+      month: (a, b) => text(a.inv.period, b.inv.period),
+      ex_gst: (a, b) => compareMoney(a.row.ex_gst, b.row.ex_gst),
+      status: (a, b) => text(STATUS_WORD[a.inv.status] ?? a.inv.status, STATUS_WORD[b.inv.status] ?? b.inv.status),
+    };
+    return [...rows].sort((a, b) => sort.dir * by[sort.key](a, b));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, sort, ledger]);
   const filtered = !!(filter.supplier || filter.month || filter.line || filter.status);
+  const filterName = filter.line === "unallocated" ? "no activity line" : filter.line ? (ledger?.groups?.[filter.line]?.label ?? ledger?.lines.find(l => l.id === filter.line)?.label ?? "one line") : "a filter";
   const reading = invoices.filter(i => i.status === "reading").length;
 
   return <section className="invoices" aria-label="Invoices" {...drag} data-over={over || undefined}>
-    <div className="inv-drop file-drop" data-over={over || undefined}>
-      <span className="drop-mark" aria-hidden="true"><IconUpload /></span>
-      <div><p className="drop-title">Drop invoices here</p><p className="inv-drop-hint">PDF tax invoices from any consultant or contractor. Drop several at once; each is read on its own and lands in the ledger.</p></div>
-      <button type="button" className="btn" onClick={() => input.current?.click()}>Choose invoices</button>
+    {/* The whole tab is the drop zone; the button opens the file picker. */}
+    <div className="costs-toolbar inv-toolbar">
+      {filtered && <p className="inv-filtered">Showing invoices on {filterName} · <button type="button" className="inv-open" onClick={() => onFilter({ supplier: "", month: "", line: "", status: "" })}>Show all</button></p>}
+      <button type="button" className="btn inv-upload" aria-label="Upload invoices" title="Upload invoices, or drop them on the table" onClick={() => input.current?.click()}><IconUpload /></button>
       <input ref={input} type="file" multiple accept=".pdf,.docx,.xlsx,.md,.markdown,application/pdf" hidden data-testid="invoice-input" onChange={e => { if (e.target.files) add(e.target.files); e.target.value = ""; }} />
     </div>
     <p className="sr-only" role="status" aria-live="polite">{message}{reading ? ` ${reading} still reading.` : ""}</p>
@@ -152,29 +185,23 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
       <span>{u.state === "queued" ? <Pending queued>Queued for upload</Pending> : u.state === "uploading" ? <Pending>{u.progress < 1 ? `Uploading ${Math.round(u.progress * 100)}%` : "Finishing upload…"}</Pending> : u.state === "reading" ? <Pending>Reading invoice…</Pending> : u.state === "already" ? "Already filed" : u.error}</span>
       {(u.state === "already" || u.state === "failed") && <button type="button" className="btn btn-small" onClick={() => setUploads(x => x.filter(y => y.key !== u.key))}>Dismiss</button>}
     </li>)}</ul>}
-    <div className="inv-filters" role="group" aria-label="Filter invoices">
-      <label>Discipline<select aria-label="Discipline filter" value={filter.supplier} onChange={e => onFilter({ ...filter, supplier: e.target.value })}><option value="">All disciplines</option>{ledger?.packages.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}</select></label>
-      <label>Month<select aria-label="Month filter" value={filter.month} onChange={e => onFilter({ ...filter, month: e.target.value })}><option value="">All months</option>{months.map(m => <option key={m} value={m}>{month(m)}</option>)}</select></label>
-      <label>Activity line<select aria-label="Activity line filter" value={filter.line} onChange={e => onFilter({ ...filter, line: e.target.value })}><option value="">All lines</option><option value="unallocated">Unallocated</option>{Object.values(ledger?.groups ?? {}).map(g => <option key={g.id} value={g.id}>{g.label} (all activities)</option>)}{ledger?.lines.filter(l => !ledger.groups?.[l.id]).map(l => <option key={l.id} value={l.id}>{activityLabel(l)}{l.archived ? " (removed)" : ""}</option>)}</select></label>
-      <label>Status<select aria-label="Status filter" value={filter.status} onChange={e => onFilter({ ...filter, status: e.target.value })}><option value="">All statuses</option>{Object.entries(STATUS_WORD).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></label>
-      {filtered && <button type="button" className="btn btn-small" onClick={() => onFilter({ supplier: "", month: "", line: "", status: "" })}>Clear filters</button>}
-    </div>
     {disciplineError && <p role="alert" className="inv-error">{disciplineError}</p>}
     <span className="sr-only" role="status">{savingDiscipline && "Saving discipline…"}</span>
-    {!ledger ? <p role="status"><Pending delayed>Loading invoices…</Pending></p> : invoices.length === 0 ? <div className="inv-empty"><p><strong>No invoices yet.</strong> Drop the month's invoices above. Each one is read, mapped to a cost plan line, and counted in the Cost plan tab's invoiced to date.</p></div> :
+    {!ledger ? <p role="status"><Pending delayed>Loading invoices…</Pending></p> : invoices.length === 0 ? <div className="inv-empty"><p><strong>No invoices yet.</strong> Drop the month's invoices here, or use the upload button. Each one is read, mapped to a cost plan line, and counted in the Cost plan tab's invoiced to date.</p></div> :
       <div className="inv-table-scroll"><table className="inv-table">
         <caption className="sr-only">Invoice ledger, newest first, one row per activity line</caption>
-        <thead><tr><th scope="col">Invoice date</th><th scope="col">Invoice no.</th><th scope="col">Discipline</th><th scope="col">Activity line</th><th scope="col">Month</th><th scope="col" className="num">Ex GST (AUD)</th><th scope="col">Status</th></tr></thead>
-        <tbody>{rows.length === 0 ? <tr><td colSpan={7}>No invoices match these filters.</td></tr> : rows.map(({ inv, row }) => {
+        <thead><tr>{COLUMNS.map(([key, label]) => <th key={key} scope="col" className={key === "ex_gst" ? "num" : undefined} aria-sort={sort?.key === key ? (sort.dir === 1 ? "ascending" : "descending") : undefined}>
+          <button type="button" onClick={() => setSort(sort?.key === key ? (sort.dir === 1 ? { key, dir: -1 } : null) : { key, dir: 1 })}>{label}</button></th>)}</tr></thead>
+        <tbody>{sorted.length === 0 ? <tr><td colSpan={7}>No invoices on {filterName}.</td></tr> : sorted.map(({ inv, row }) => {
           return <tr key={`${inv.id}:${row.share}`} aria-selected={selected === inv.id} data-status={inv.status}>
             <td>{day(inv.date)}</td>
             <td><button type="button" className="inv-open" onClick={() => onSelect(inv.id)}>{inv.number || inv.filename}</button>{row.shares > 1 && <span className="inv-share"> · {row.share + 1}/{row.shares}</span>}</td>
-            <td><select className="inv-discipline" aria-label={`Discipline for ${inv.number || inv.filename}${row.shares > 1 ? ` share ${row.share + 1}` : ""}`} value={inv.supplier_id} disabled={!!savingDiscipline} onChange={e => void saveDiscipline(inv, e.target.value)}>
+            <td><select className="field-plain inv-discipline" aria-label={`Discipline for ${inv.number || inv.filename}${row.shares > 1 ? ` share ${row.share + 1}` : ""}`} value={inv.supplier_id} disabled={!!savingDiscipline} onChange={e => void saveDiscipline(inv, e.target.value)}>
               <option value="">Not set</option>
               {inv.supplier_id && !ledger.packages.some(p => p.id === inv.supplier_id) && <option value={inv.supplier_id}>{inv.supplier || "Unavailable discipline"}</option>}
               {ledger.packages.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
             </select></td>
-            <td>{row.line_id && onCostLine && costLineIds?.includes(row.line_id) ? <button type="button" className="inv-open" title="Show activity in cost plan" onClick={() => onCostLine(row.line_id)}>{activityLabel(ledger.lines.find(l => l.id === row.line_id) ?? { label: row.line, category: "" })}</button> : row.line_id ? row.line : "Unallocated"}</td>
+            <td>{row.line_id && onCostLine && costLineIds?.includes(row.line_id) ? <button type="button" className="inv-open" title="Show activity in cost plan" onClick={() => onCostLine(row.line_id)}>{lineLabel(row.line_id, row.line)}</button> : row.line_id ? lineLabel(row.line_id, row.line) : "Unallocated"}</td>
             <td>{month(inv.period)}</td>
             <td className="num">{fmt(row.ex_gst)}</td>
             <td><span className="inv-status" data-status={inv.status} title={inv.flags.map(x => x.reason).join("; ")}>{inv.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[inv.status] ?? inv.status}</span>{!inv.counted && inv.status !== "reading" && <span className="inv-out"> · not in totals</span>}</td>

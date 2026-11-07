@@ -1310,8 +1310,9 @@ body {
   letter-spacing: inherit;
   text-overflow: ellipsis;
 }
-.project-name-editor:hover { border-bottom-color: var(--sw-border-default); }
-.project-name-editor:focus { border-bottom-color: var(--sw-text-secondary); }
+/* The name edits in place with no underline (owner direction, 7 Nov 2026);
+   the text cursor and caret say it is editable. */
+.project-name-editor:hover, .project-name-editor:focus { border-bottom-color: transparent; }
 .project-name-error { margin: 4px 0; color: var(--sw-text-primary); font-size: var(--fs-sm); }
 
 /* Actions align to the panels they control, above their bordered surfaces. */
@@ -1419,6 +1420,12 @@ body {
 .account-group { display: grid; gap: 2px; margin: 2px 0; padding: 4px 0; border-block: 1px solid var(--sw-border-default); }
 .account-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-md); text-align: left; text-decoration: none; cursor: pointer; }
 .account-item:hover:not(:disabled) { background: var(--sw-hover-bg); }
+.account-theme { display: flex; gap: 4px; padding: 4px 6px; }
+.account-theme-option { display: grid; place-items: center; width: 36px; height: 32px; padding: 0; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--sw-text-secondary); cursor: pointer; }
+.account-theme-option svg { width: 18px; height: 18px; }
+.account-theme-option:hover { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.account-theme-option[aria-checked="true"] { border-color: var(--line-strong); background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.account-theme-option:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
 .account-check, .account-icon { display: inline-grid; place-items: center; width: 16px; flex: none; }
 .account-icon svg { width: 16px; height: 16px; }
 .account-popover [role="alert"] { margin: 4px 10px; font-size: var(--fs-sm); }
@@ -1432,3 +1439,9 @@ body {
   .cost-grid .cost-sticky[data-col] { position: relative; left: auto; }
   .cost-grid thead .cost-sticky[data-col] { position: sticky; left: auto; }
 }
+
+/* A native list takes its colours from the select. Selects drawn transparent
+   (profile cells, matrix rows) left Chrome painting white options in light
+   text in dark mode, so options carry the theme's colours themselves. */
+select option,
+select optgroup { background-color: var(--paper); color: var(--ink); }

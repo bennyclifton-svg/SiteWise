@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+// These checks read exact cents, so they turn the Cost Plan's Decimals switch
+// on (it defaults off) unless a test has already set it.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => { try { if (localStorage.getItem("sitewise.costs.decimals") === null) localStorage.setItem("sitewise.costs.decimals", "true"); } catch { /* Storage is optional. */ } });
+});
+
 test("cost selection, shared drag handles, inline names and row actions", async ({page}, info) => {
   const {token}=await(await page.request.post('/__e2e/invite?org=a')).json(); await page.goto(`/#token=${token}`);
   await page.getByLabel('New project').fill('Cost selection'); await page.getByRole('button',{name:'Create project',exact:true}).click();

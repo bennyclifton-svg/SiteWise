@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 import type { CostPlan } from "../src/costApi";
 
+// These checks read exact cents, so they turn the Cost Plan's Decimals switch
+// on (it defaults off) unless a test has already set it.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => { try { if (localStorage.getItem("sitewise.costs.decimals") === null) localStorage.setItem("sitewise.costs.decimals", "true"); } catch { /* Storage is optional. */ } });
+});
+
 test("cost groups switch detail locally and invoice links reveal their activity", async ({ page }, testInfo) => {
   const { token } = await (await page.request.post('/__e2e/invite?org=a')).json();
   await page.goto(`/#token=${token}`);
@@ -57,7 +63,7 @@ test("cost groups switch detail locally and invoice links reveal their activity"
   for (let n = 0; n < 20; n++) {
     const ms = await page.evaluate(async () => {
       const start = performance.now();
-      const button = [...document.querySelectorAll<HTMLButtonElement>('.cost-disclosure button')].find(b => b.textContent === 'Collapse all')!;
+      const button = document.querySelector<HTMLButtonElement>('.cost-master-toggle[aria-label="Collapse all"]')!;
       button.click();
       await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
       return performance.now() - start;
@@ -77,13 +83,20 @@ test("cost groups switch detail locally and invoice links reveal their activity"
   await page.reload();
   await expect(childRow).toHaveCount(0);
   await expect(groupRow.locator('td').nth(4)).toHaveText('96,500.00');
+  // Decimals off shows whole dollars and survives a reload; on brings cents back.
+  await page.getByRole('checkbox', { name: 'Decimals', exact: true }).uncheck();
+  await expect(groupRow.locator('td').nth(4)).toHaveText('96,500');
+  await page.reload();
+  await expect(groupRow.locator('td').nth(4)).toHaveText('96,500');
+  await page.getByRole('checkbox', { name: 'Decimals', exact: true }).check();
+  await expect(groupRow.locator('td').nth(4)).toHaveText('96,500.00');
   await page.setViewportSize({ width: 1600, height: 1000 });
   await page.screenshot({ path: testInfo.outputPath('collapsed-desktop.png'), fullPage: true });
   await groupRow.getByTitle('Show the 1 invoice on Architect: Atelier North Pty Ltd', { exact: true }).click();
   await expect(page.locator('.inv-table')).toContainText('CONCEPT-1');
   const csv = await page.request.get(`/api/projects/${project}/invoices/export?format=csv&sheet=invoices&line=${group}`);
   expect(await csv.text()).toContain('CONCEPT-1');
-  await page.getByRole('button', { name: 'Architect → Concept', exact: true }).click();
+  await page.getByRole('button', { name: 'Concept', exact: true }).click();
   await expect(childRow).toBeVisible();
   await expect(childRow).toHaveAttribute('aria-selected', 'true');
   await expect(childRow).toBeFocused();

@@ -31,7 +31,8 @@ Fixed professional fee: **$3,000 excluding GST**, staged as follows:
   await expect(comparison.locator("thead")).not.toContainText(".pdf");
   await expect(comparison.getByText("Use a different amount", { exact: true })).toHaveCount(0);
   await expect(comparison.locator(".appointment-row").first()).toBeVisible();
-  await page.getByRole("button", { name: "+ Add row", exact: true }).click();
+  await page.getByRole("button", { name: "New", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Row", exact: true }).click();
   await page.getByLabel("Service description").fill("Agreed contingency");
   await page.getByRole("button", { name: "Save row", exact: true }).click();
   await expect(total).toContainText("Not confirmed");

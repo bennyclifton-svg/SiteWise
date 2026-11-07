@@ -322,9 +322,8 @@ export function Register({
   return (
     <div className="register file-drop" data-over={fileOver ? "true" : undefined}>
       <div className="reg-head">
-        <h2>
-          Documents <span className="muted">{rows.filter((r) => r.doc).length}</span>
-        </h2>
+        {/* Named for screen readers only: the panel already reads as the register (owner, 7 Nov 2026). */}
+        <h2 className="sr-only">Documents</h2>
         <span className="reg-live" data-state={live} role="status">
           <span className={live === "live" ? "sr-only" : undefined}>
             {live === "live" ? "Live" : live === "reconnecting" ? "Reconnecting…" : "Offline, retrying"}

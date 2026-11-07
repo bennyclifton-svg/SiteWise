@@ -35,7 +35,9 @@
 .inv-filters label { display: grid; gap: 2px; }
 .inv-filters select { min-width: 150px; max-width: 240px; padding: 4px 6px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); font: inherit; font-size: var(--fs-md); }
 
-.inv-table-scroll { max-width: 100%; max-height: calc(100vh - 330px); overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+/* The ledger scrolls in its own box, so its header sticks to the box's top,
+   never to the page; the box never shrinks below a readable depth. */
+.inv-table-scroll { max-width: 100%; max-height: max(360px, calc(100vh - 330px)); overflow: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
 .inv-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--fs-md); }
 .inv-table th, .inv-table td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; background: var(--paper); white-space: nowrap; }
 .inv-table thead th { position: sticky; top: 0; z-index: 1; background: var(--canvas); color: var(--ink-muted); font-weight: 500; font-size: var(--fs-sm); white-space: nowrap; }
