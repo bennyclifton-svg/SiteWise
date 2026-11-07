@@ -85,6 +85,10 @@ func SuggestedPackages(cat *knowledge.Catalog, in SuggestionInputs) []PackageSug
 		if len(b.Systems) > 0 && !scoped {
 			continue
 		}
+		ncc, nccHit := nccMatch(b.NCCClasses, in.Facts["ncc_class"])
+		if len(b.NCCClasses) > 0 && !nccHit {
+			continue
+		}
 		for _, w := range in.WorkTypes {
 			if !slices.Contains(b.WorkTypes, w) {
 				continue
@@ -102,6 +106,9 @@ func SuggestedPackages(cat *knowledge.Catalog, in SuggestionInputs) []PackageSug
 					}
 					if scoped {
 						match(s, "scope", system)
+					}
+					if nccHit {
+						match(s, "ncc_class", ncc)
 					}
 				}
 			}
@@ -162,6 +169,17 @@ func scopeMatch(systems, scope []string) (string, bool) {
 			if in == s || strings.HasPrefix(in, s+".") {
 				return in, true
 			}
+		}
+	}
+	return "", false
+}
+
+// nccMatch returns the first NCC class in the profile's comma-separated
+// det.ncc_class reading that a baseline names.
+func nccMatch(classes []string, read string) (string, bool) {
+	for _, c := range strings.Split(read, ",") {
+		if c = strings.TrimSpace(c); c != "" && slices.Contains(classes, c) {
+			return c, true
 		}
 	}
 	return "", false

@@ -199,3 +199,36 @@ func TestComplexFacadeSuggestsFacadeEngineer(t *testing.T) {
 		t.Fatalf("complex facade: %v", titles(got))
 	}
 }
+
+// A Class 2 or 3 building (apartments, hotels) needs a BCA consultant,
+// traffic and acoustic advice, while a Class 1a house in the same
+// residential category does not. The NCC class reads from det.ncc_class.
+func TestClassTwoAndThreeAddBCATrafficAcoustic(t *testing.T) {
+	cat := loadCatalog(t)
+	extra := []string{"Acoustic", "BCA", "Traffic"}
+	for _, ncc := range []string{"2", "3", "2,6"} {
+		for _, work := range []string{"new", "extend"} {
+			got := SuggestedPackages(cat, SuggestionInputs{Classes: []string{"residential"}, WorkTypes: []string{work}, Facts: map[string]string{"ncc_class": ncc}})
+			for _, want := range extra {
+				i := slices.Index(titles(got), want)
+				if i < 0 {
+					t.Fatalf("class %s %s: %s missing: %v", ncc, work, want, titles(got))
+				}
+				if got[i].MatchedFields["ncc_class"] == "" {
+					t.Fatalf("class %s: %s lost its reason: %+v", ncc, want, got[i])
+				}
+			}
+		}
+	}
+	for _, in := range []SuggestionInputs{
+		{Classes: []string{"residential"}, WorkTypes: []string{"new"}, Facts: map[string]string{"ncc_class": "1a"}},
+		{Classes: []string{"residential"}, WorkTypes: []string{"new"}},
+		{Classes: []string{"residential"}, WorkTypes: []string{"refurb"}, Facts: map[string]string{"ncc_class": "2"}},
+	} {
+		for _, title := range titles(SuggestedPackages(cat, in)) {
+			if slices.Contains(extra, title) {
+				t.Fatalf("%+v suggested %s", in, title)
+			}
+		}
+	}
+}
