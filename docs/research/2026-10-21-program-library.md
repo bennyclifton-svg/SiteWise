@@ -58,7 +58,7 @@ The overlap replaces the automatic finish-to-start link between those two neighb
 
 New design-and-construct work on a complying-development or exempt path.
 The contractor is usually engaged first: the client team takes the design to concept, the builder is procured, the builder's designer completes the construction documents, the certifier's approval is obtained on them, and then construction starts (owner ruling R20, 7 November 2026).
-There is no development-application documentation stage.
+The approval documentation stage (consultant reports, client sign-off for lodgement) follows the builder's completed documents and comes just before the approval.
 Getting the approval on partial design before the tender, with the builder still designing under the contract, also happens but is not modelled.
 
 
