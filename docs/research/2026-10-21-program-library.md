@@ -11,6 +11,7 @@ Nine skeletons sit after the unchanged `sk.generic`. A project takes the matchin
 | `sk.new-traditional-da` | new, traditional, DA or planning permit |
 | `sk.new-traditional-cdc` | new, traditional, CDC or exempt |
 | `sk.new-dc-da` | new, design and construct, DA or planning permit |
+| `sk.new-dc-cdc` | new, design and construct, CDC or exempt |
 | `sk.new-eci-da` | new, early contractor involvement or managing contractor, DA or planning permit |
 | `sk.refurb-traditional-da` | refurbishment, traditional, DA or planning permit |
 | `sk.refurb-traditional-cdc` | refurbishment, traditional, CDC or exempt |
@@ -18,7 +19,7 @@ Nine skeletons sit after the unchanged `sk.generic`. A project takes the matchin
 | `sk.ssd-traditional` | new or extension, traditional, State significant development |
 | `sk.ssd-dc` | new or extension, design and construct or early contractor or managing contractor, State significant development |
 
-A Victorian planning permit is treated like a development application: consent before construction documentation and tender. Complying development and exempt work skip that consent stage. Design and construct procures the builder after consent and lets construction overlap the builder's documentation. Early contractor involvement and a managing contractor bring the builder on during design. State significant development keeps the long assessment in front of tender. Alliance, PPP, remediation and advisory work still fall through to `sk.generic`.
+A Victorian planning permit is treated like a development application: consent before construction documentation and tender. Complying development and exempt work skip that consent stage. Design and construct procures the builder after consent and lets construction overlap the builder's documentation; on a CDC the builder is procured first and the approval follows the builder's documents. Early contractor involvement and a managing contractor bring the builder on during design. State significant development keeps the long assessment in front of tender. Alliance, PPP, remediation and advisory work still fall through to `sk.generic`.
 
 Fragments follow work items. Class variants are separate rows so a house, an apartment building, a warehouse, a school and a commercial fit-out do not share one sequence. New work and extensions use `work_type` `new` or `extend`. Refurbishment and fit-out use `work_type` `refurb`. Demolition and strip-out use `work_action` `remove` only. Within the construction stage the file is grouped by class, because anything left unlinked is chained in that order. Long-lead orders that must start with the stage (lifts, major switchboards, authority connections) are anchored at `stage_start` and listed last, so they do not push the early trades out.
 
@@ -51,6 +52,14 @@ New design-and-construct work with a development consent or planning permit.
 The client team takes the design through consent, the builder is then procured, and the builder completes construction documentation.
 Construction is start-to-start with that documentation, lagged by du.dc-site-overlap, so early site work can start while the builder's documents are finished.
 The overlap replaces the automatic finish-to-start link between those two neighbouring stages.
+
+
+### sk.new-dc-cdc
+
+New design-and-construct work on a complying-development or exempt path.
+The contractor is usually engaged first: the client team takes the design to concept, the builder is procured, the builder's designer completes the construction documents, the certifier's approval is obtained on them, and then construction starts (owner ruling R20, 7 November 2026).
+There is no development-application documentation stage.
+Getting the approval on partial design before the tender, with the builder still designing under the contract, also happens but is not modelled.
 
 
 ### sk.new-eci-da
