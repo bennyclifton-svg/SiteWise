@@ -17,6 +17,7 @@
 	{"name":"award_write","p50_us":200000,"p90_us":500000,"note":"award or undo: cost lines, sources and statuses in one transaction (proposed)"},
 	{"name":"procurement_report","p50_us":150000,"p90_us":300000,"note":"one-page comparison report read (proposed)"},
 	{"name":"packages_combine","p50_us":100000,"p90_us":250000,"note":"combine or uncombine two consultant rows, fee lines re-parented in the same transaction (the packages_write budget)"},
+	{"name":"report_assemble_group","p50_us":300000,"p90_us":1000000,"note":"a five-consultant combined engagement's RFP build, member drafts assembled in the same transaction (the report_assemble budget)"},
     {
       "name": "identity_text_extraction",
       "p50_us": 80000,

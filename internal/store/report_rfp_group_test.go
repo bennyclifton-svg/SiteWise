@@ -154,7 +154,7 @@ func TestGroupRFPAssemblesEveryMemberInOrder(t *testing.T) {
 	if g.draft.TemplateID != "tpl.rfp-consultant" || g.draft.SourceRevisions.RFPParts != 2 {
 		t.Fatalf("group draft %s with %d parts", g.draft.TemplateID, g.draft.SourceRevisions.RFPParts)
 	}
-	if text := draftBlock(g.draft, "rfp:group:engagement").Text; !strings.Contains(text, "engagement, "+g.group.Title+",") ||!strings.Contains(text, "Civil engineering services and Structural engineering services") {
+	if text := draftBlock(g.draft, "rfp:group:engagement").Text; !strings.Contains(text, "engagement, "+g.group.Title+",") || !strings.Contains(text, "Civil engineering services and Structural engineering services") {
 		t.Fatalf("page one names the engagement and its disciplines: %q", text)
 	}
 	// Each member has its own report and draft, and its part prints the

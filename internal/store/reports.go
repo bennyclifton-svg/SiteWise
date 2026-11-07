@@ -52,18 +52,18 @@ type ReportDraft struct {
 type ReportView struct {
 	// RFP holds the consultant RFP editor controls; RFPSuggestion proposes a
 	// discipline for a services package that has none confirmed.
-	RFP           *rfp.Controls        `json:"rfp,omitempty"`
-	RFPSuggestion *RFPSuggestion       `json:"rfp_suggestion,omitempty"`
+	RFP           *rfp.Controls  `json:"rfp,omitempty"`
+	RFPSuggestion *RFPSuggestion `json:"rfp_suggestion,omitempty"`
 	// RFPGroup is a combined engagement's members, each with its own
 	// controls; RFP then holds the engagement's shared controls.
-	RFPGroup *RFPGroupView `json:"rfp_group,omitempty"`
-	Issues        []ReportIssueSummary `json:"issues"`
-	Changes       []reports.Change     `json:"changes_since_issue"`
-	Report        Report               `json:"report"`
-	Draft         *ReportDraft         `json:"draft"`
-	Edits         []reports.Edit       `json:"edits"`
-	Stale         []string             `json:"stale"`
-	PageFit       *render.PageFit      `json:"page_fit,omitempty"`
+	RFPGroup *RFPGroupView        `json:"rfp_group,omitempty"`
+	Issues   []ReportIssueSummary `json:"issues"`
+	Changes  []reports.Change     `json:"changes_since_issue"`
+	Report   Report               `json:"report"`
+	Draft    *ReportDraft         `json:"draft"`
+	Edits    []reports.Edit       `json:"edits"`
+	Stale    []string             `json:"stale"`
+	PageFit  *render.PageFit      `json:"page_fit,omitempty"`
 }
 
 func readReport(ctx context.Context, tx pgx.Tx, org, id string) (Report, error) {
