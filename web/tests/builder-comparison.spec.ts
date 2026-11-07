@@ -16,6 +16,7 @@ test("builder source totals stay separate from allowances and confirmed comparis
   await page.request.post(`${base}/firms`, { headers, data: { firm: { name: "Example Builder" } } });
   const pdf = await (await page.request.get(`/__e2e/proposal.pdf?firm=Example%20Builder&abn=1&lines=${encodeURIComponent("Construction~10000000")}&extra=${encodeURIComponent("Kitchen allowance~2000000")}`)).body();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
+  await page.getByRole("tab", { name: /^Trades/ }).click();
   await page.getByRole("row", { name: /^Main Works/ }).getByRole("button", { name: /(?:Compare|Review) Main Works/ }).click();
   await page.getByLabel("Options for Example Builder").click();
   await page.getByLabel("Upload proposal for Example Builder").setInputFiles({ name: "Builder.pdf", mimeType: "application/pdf", buffer: pdf });

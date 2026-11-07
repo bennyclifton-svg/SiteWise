@@ -111,7 +111,7 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 	if err != nil {
 		return snap, state, err
 	}
-	if template.ID == rfpTemplateID {
+	if isRFPTemplate(template.ID) {
 		snap.ConstructionBudget, snap.BudgetBasis, err = reportWorksBudget(ctx, tx, org, project)
 		if err != nil {
 			return snap, state, err

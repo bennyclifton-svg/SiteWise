@@ -3,7 +3,7 @@ import type { ReportBlock, RfpControls } from "./reportApi";
 import { ControlRow, type Write } from "./RfpEditor";
 
 type Service = { key: string; control?: string; label: string; value: string; group?: string; stage?: string; detail?: string; assumption?: string; party?: string; source: string; inactive?: boolean; notes?: {label:string;text:string}[] };
-type Stage = { key: string; name: string; summary?: string; state: string; source?: string; text: string; assumption?: string; design_responsibility?: string; fee_basis?: string };
+type Stage = { key: string; name: string; summary?: string; state: string; source?: string; by?: string; text: string; assumption?: string; design_responsibility?: string; fee_basis?: string };
 type Props = { block: ReportBlock; controls: RfpControls; busy: boolean; onWrite: Write };
 
 // The letters match the printed key above the issued table.
@@ -99,6 +99,8 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
   // A discipline's part of a combined engagement prices nothing itself: its
   // fees are asked once, in the engagement's fee schedule.
   const priced = table.columns.length > 3;
+  // A trade RFT prices rows of the building, not consultant stages.
+  const works = controls.kind === "works";
   const stageControls = controls.groups.find(g => g.id === "stages")?.controls ?? [];
   const applies = (s: ScopeStage) => !(s.state === "exclude" && s.source === "rule");
   const shown = stages.filter(s => showAll || applies(s));
@@ -143,7 +145,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     {controls.decisions.filter(c => c.control === "boundary:range").map(c => <p key={c.id} data-control="boundary:range" className="hydraulic-unresolved">{c.label}. {c.text}</p>)}
     {block.edited && <p className="report-wording">{block.text}</p>}
     <div className="report-table-scroll"><table className="report-table rfp-stage-scope">
-      <thead><tr><th scope="col">Stage</th><th scope="col">Scope</th><th scope="col" className="rfp-inout">In</th><th scope="col" className="rfp-inout">Excluded</th>{priced && <th scope="col" className="rfp-fee">Fee $</th>}</tr></thead>
+      <thead><tr><th scope="col">{works ? "Item" : "Stage"}</th><th scope="col">Scope</th><th scope="col" className="rfp-inout">In</th><th scope="col" className="rfp-inout">Excluded</th>{priced && <th scope="col" className="rfp-fee">{works ? "Price $" : "Fee $"}</th>}</tr></thead>
       {shown.map(s => {
         const control = stageControls.find(c => c.key === `stage:${s.key}`);
         const out = tick(`stage:${s.key}`, s.state === "exclude" ? "X" : "I") === "X";
@@ -156,7 +158,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
           <tr className="rfp-stage-row" data-control={`stage:${s.key}`}>
             {head(s.key, s.name, isOpen)}
             <td className="rfp-stage-summary" onClick={e => { if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains("rfp-stage-count")) toggle(s.key); }}>
-              <span className="rfp-stage-count">{out ? "Excluded" : itemCount(values)}</span>
+              <span className="rfp-stage-count">{out ? (s.source === "package" && s.by && s.state === "exclude" ? `By separate contract: ${s.by}` : "Excluded") : itemCount(values)}</span>
               {isOpen && note && <p className="hydraulic-detail">{note}</p>}
               <ScopeChecks controls={controls} controlKey={`stage:${s.key}`} label={s.name} busy={busy} onWrite={onWrite} />
               {isOpen && <ScopeInputs controls={controls} target={`stage:${s.key}`} busy={busy} onWrite={onWrite} />}</td>
@@ -190,13 +192,13 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
         </tbody>;
       })}
       <tbody id="rfp-stage-all">
-        <tr className="rfp-stage-row">{head("", "Across all stages", open.has(""))}
-          <td><span className="rfp-stage-count">{itemCount(held("").map(p => p.value))}</span></td><td /><td />{priced && <td className="rfp-fee hydraulic-fee-blank">In stage fees</td>}</tr>
+        <tr className="rfp-stage-row">{head("", works ? "Across the works" : "Across all stages", open.has(""))}
+          <td><span className="rfp-stage-count">{itemCount(held("").map(p => p.value))}</span></td><td /><td />{priced && <td className="rfp-fee hydraulic-fee-blank">{works ? "In row prices" : "In stage fees"}</td>}</tr>
         {open.has("") && serviceRows("", false)}
       </tbody>
       <tbody>{table.rows.slice(Number(block.basis?.stage_rows ?? 0)).map((row, i) => <tr key={`total-${i}`} className="rfp-stage-total"><th scope="row">{row[0]}</th><td>{row[1]}</td><td /><td />{priced && <td className="rfp-fee" />}</tr>)}</tbody>
     </table></div>
-    {hidden > 0 && <button type="button" className="btn btn-small rfp-stage-more" aria-expanded={showAll} onClick={() => setShowAll(!showAll)}>{showAll ? "Hide stages that do not apply" : `Show ${hidden} ${hidden === 1 ? "stage" : "stages"} that do not apply to this project`}</button>}
+    {hidden > 0 && <button type="button" className="btn btn-small rfp-stage-more" aria-expanded={showAll} onClick={() => setShowAll(!showAll)}>{showAll ? `Hide ${works ? "rows" : "stages"} that do not apply` : `Show ${hidden} ${works ? (hidden === 1 ? "row" : "rows") : (hidden === 1 ? "stage" : "stages")} that do not apply to this project`}</button>}
     {/* Inputs whose row is not shown (a service the brief does not need) stay reachable here. */}
     <ScopeInputs controls={controls} target="scope_basis" available={[...services.filter(s => !s.inactive).map(s => s.control ?? `position:${s.key}`), ...stages.filter(applies).map(s => `stage:${s.key}`)]} busy={busy} onWrite={onWrite} />
   </>;
@@ -264,5 +266,5 @@ function ScopeChecks({ controls, controlKey, label, busy, onWrite }: { controls:
 function ScopeInputs({ controls, target, available, busy, onWrite }: { controls: RfpControls; target: string; available?: string[]; busy: boolean; onWrite: Write }) {
   const inputs = (controls.groups.find(g => g.id === "appointment")?.controls ?? []).filter(c => c.target === target || (target === "scope_basis" && !available?.includes(c.target ?? "scope_basis")));
   if (!inputs.length) return null;
-  return <details className="rfp-scope-inputs"><summary>{target === "scope_basis" ? "Appointment and service-level inputs" : "Scope basis"}</summary><p className="hydraulic-detail">These inputs describe the project. The scope selection above sets what this consultant is asked to price.</p>{inputs.map(c => <ControlRow key={c.key} control={c} busy={busy} showSource={false} blocked={controls.decisions.some(d => d.control === c.key)} onWrite={onWrite} />)}</details>;
+  return <details className="rfp-scope-inputs"><summary>{target === "scope_basis" ? (controls.kind === "works" ? "Tender inputs" : "Appointment and service-level inputs") : "Scope basis"}</summary><p className="hydraulic-detail">These inputs describe the project. The scope selection above sets what this {controls.kind === "works" ? "tenderer" : "consultant"} is asked to price.</p>{inputs.map(c => <ControlRow key={c.key} control={c} busy={busy} showSource={false} blocked={controls.decisions.some(d => d.control === c.key)} onWrite={onWrite} />)}</details>;
 }

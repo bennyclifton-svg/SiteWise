@@ -74,9 +74,13 @@ The workbench, in navigation order:
   use. Changes made elsewhere arrive as a review to adopt or keep. Program
   files, R7 returnables and hold-point evidence are read in the background
   as proposals. Exports to Excel and CSV and prints A3 landscape.
-- **Procurement.** One table of consultant and trade packages. Choosing a
-  discipline saves the package. Create writes an RFP for a consultant and an
-  RFT for a trade. The table proposes the disciplines the profile and scope
+- **Procurement.** One table of consultant and trade packages, under two
+  tabs: Consultants and Trades. Choosing a discipline saves the package.
+  Create writes an RFP for a consultant and an RFT for a trade or a supply,
+  both in the one format: page one is the project, section 2 the scope
+  (stages for a consultant, the parts of the building for a trade), then
+  transmittal, terms and returnables. Main Works holds whatever is not let
+  as a separate trade. The table proposes the disciplines the profile and scope
   imply. Removing a package can remove its draft cost lines in the same
   confirmation. Each RFP carries a returnable schedule (stages, options,
   rates, criteria) and a response form workbook. A proposal dropped on a

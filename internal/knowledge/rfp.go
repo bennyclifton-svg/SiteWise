@@ -29,6 +29,8 @@ var RFPDrivers = map[string]bool{
 	"procurement": true, "novation": true, "state": true, "flag": true, "flag_all": true,
 	"regulated_design": true, "scale": true, "stage": true, "stage_included": true, "element": true,
 	"budget_over": true, "site_area_over": true, "gfa_over": true, "parking_over": true,
+	// system tests the building systems in Profile scope (trade RFT rows).
+	"system": true,
 }
 
 // rawFactDrivers are the facts a statutory threshold is about. A row tied to
@@ -122,6 +124,10 @@ type RFPStage struct {
 	Default     string  `yaml:"default" json:"default,omitempty"`
 	IncludeWhen RFPWhen `yaml:"include_when" json:"include_when,omitempty"`
 	Follows     string  `yaml:"follows" json:"follows,omitempty"`
+	// Separate names a trade discipline that may be let as its own contract;
+	// while another live package holds it, this row is excluded (a head
+	// contract holds whatever is not let separately).
+	Separate string `yaml:"separate" json:"separate,omitempty"`
 	// ByElement stages are priced per element in the R1 grid.
 	ByElement  bool            `yaml:"by_element" json:"by_element,omitempty"`
 	Threshold  string          `yaml:"threshold" json:"threshold,omitempty"`
@@ -207,6 +213,9 @@ type RFPDiscipline struct {
 	ID      string `yaml:"id" json:"id"`
 	Version int    `yaml:"version" json:"version"`
 	Status  string `yaml:"status" json:"status"`
+	// Kind is services (a consultant RFP, the default) or works (a trade
+	// RFT, resolved against the tender skeleton).
+	Kind string `yaml:"kind" json:"kind,omitempty"`
 	// ReviewedBy and ReviewedOn record the owner's review; reviewed needs both.
 	ReviewedBy    string   `yaml:"reviewed_by" json:"reviewed_by,omitempty"`
 	ReviewedOn    string   `yaml:"reviewed_on" json:"reviewed_on,omitempty"`
@@ -352,9 +361,14 @@ type RFPModule struct {
 }
 
 type RFPSkeleton struct {
-	Version     int             `yaml:"version" json:"version"`
-	Status      string          `yaml:"status" json:"status"`
-	Golden      string          `yaml:"golden" json:"golden"`
+	Version int    `yaml:"version" json:"version"`
+	Status  string `yaml:"status" json:"status"`
+	Golden  string `yaml:"golden" json:"golden"`
+	// Kind is works on the tender skeleton (skeleton-works.yaml), which
+	// inherits every list it leaves out from the consultant skeleton.
+	Kind string `yaml:"kind" json:"kind,omitempty"`
+	// OmitFields drops consultant-only fields from the tender skeleton.
+	OmitFields  []string        `yaml:"omit_fields" json:"omit_fields,omitempty"`
 	Flags       []RFPOption     `yaml:"flags" json:"flags"`
 	Pathways    []RFPOption     `yaml:"pathways" json:"pathways"`
 	Procurement []RFPOption     `yaml:"procurement" json:"procurement"`
@@ -374,8 +388,19 @@ type RFPSkeleton struct {
 
 type rfpData struct {
 	skeleton    *RFPSkeleton
+	works       *RFPSkeleton
 	disciplines map[string]RFPDiscipline
 }
+
+// Fallback discipline files: a package whose discipline has no file of its
+// own still gets an RFP or RFT in the one format (docs/plans/2026-11-08-trade-rft.md).
+const (
+	GeneralConsultantRFP = "consultant-general"
+	GeneralTradeRFP      = "trade-general"
+)
+
+// Works reports whether the discipline is a trade RFT.
+func (d RFPDiscipline) Works() bool { return d.Kind == "works" }
 
 // RFPSkeleton returns the shared RFP parts, or false when none are loaded.
 func (c *Catalog) RFPSkeleton() (RFPSkeleton, bool) {
@@ -383,6 +408,18 @@ func (c *Catalog) RFPSkeleton() (RFPSkeleton, bool) {
 		return RFPSkeleton{}, false
 	}
 	return *c.rfp.skeleton, true
+}
+
+// RFPSkeletonFor returns the skeleton a discipline resolves against: the
+// tender skeleton for a trade RFT, the consultant skeleton otherwise.
+func (c *Catalog) RFPSkeletonFor(d RFPDiscipline) (RFPSkeleton, bool) {
+	if d.Works() {
+		if c.rfp.works == nil {
+			return RFPSkeleton{}, false
+		}
+		return *c.rfp.works, true
+	}
+	return c.RFPSkeleton()
 }
 
 func (c *Catalog) RFP(id string) (RFPDiscipline, bool) {
@@ -411,7 +448,17 @@ func (c *Catalog) RFPForDiscipline(disciplineID string) (RFPDiscipline, bool) {
 			return d, true
 		}
 	}
-	return RFPDiscipline{}, false
+	// A discipline with no file of its own uses the general file of its
+	// kind, never the old generic report layout.
+	fallback := ""
+	switch {
+	case strings.HasPrefix(disciplineID, "consultant."):
+		fallback = GeneralConsultantRFP
+	case strings.HasPrefix(disciplineID, "trade."), strings.HasPrefix(disciplineID, "supplier."):
+		fallback = GeneralTradeRFP
+	}
+	d, ok := c.rfp.disciplines[fallback]
+	return d, ok
 }
 
 // RFPSuggest proposes a discipline from a package title. It is a hint for
@@ -425,6 +472,10 @@ func (c *Catalog) RFPSuggest(title string) (RFPDiscipline, bool) {
 	best, score, ambiguous := RFPDiscipline{}, 0, false
 	for _, id := range c.RFPDisciplines() {
 		d := c.rfp.disciplines[id]
+		if d.Works() {
+			// A title suggests a consultant RFP only; trades are chosen by discipline.
+			continue
+		}
 		for _, alias := range d.TitleAliases {
 			phrase := normalize(alias)
 			if phrase == "" || !strings.Contains(text, " "+phrase+" ") {
@@ -485,16 +536,39 @@ func (c *Catalog) loadRFP(dir string) error {
 		}
 	}
 	c.rfp.skeleton = &skeleton
+	worksPath := filepath.Join(dir, "skeleton-works.yaml")
+	if ok, _ := exists(worksPath); ok {
+		body, err := read("skeleton-works.yaml")
+		if err != nil {
+			return err
+		}
+		works, err := parseWorksSkeleton(body, skeleton)
+		if err != nil {
+			return fmt.Errorf("%s: %w", worksPath, err)
+		}
+		c.rfp.works = &works
+	}
 	for _, entry := range entries {
 		name := entry.Name()
-		if entry.IsDir() || !strings.HasSuffix(name, ".yaml") || name == "skeleton.yaml" || name == "modules.yaml" {
+		if entry.IsDir() || !strings.HasSuffix(name, ".yaml") || name == "skeleton.yaml" || name == "skeleton-works.yaml" || name == "modules.yaml" {
 			continue
 		}
 		body, err := read(name)
 		if err != nil {
 			return err
 		}
-		d, err := ParseRFPDiscipline(body, skeleton)
+		var head struct {
+			Kind string `yaml:"kind"`
+		}
+		_ = yaml.Unmarshal(body, &head)
+		sk := skeleton
+		if head.Kind == "works" {
+			if c.rfp.works == nil {
+				return fmt.Errorf("%s: a works discipline needs skeleton-works.yaml", filepath.Join(dir, name))
+			}
+			sk = *c.rfp.works
+		}
+		d, err := ParseRFPDiscipline(body, sk)
 		if err != nil {
 			return fmt.Errorf("%s: %w", filepath.Join(dir, name), err)
 		}
@@ -525,31 +599,105 @@ func parseRFPSkeleton(body []byte) (RFPSkeleton, error) {
 	if err := strictYAML(body, &s); err != nil {
 		return s, err
 	}
+	if s.Kind != "" || len(s.OmitFields) > 0 {
+		return s, fmt.Errorf("the consultant skeleton takes no kind or omit_fields")
+	}
+	return s, validateRFPSkeleton(s)
+}
+
+// parseWorksSkeleton reads the tender skeleton over the consultant one:
+// each list it gives replaces the consultant list, fields and thresholds
+// merge by key, and omit_fields drops consultant-only fields. The result is
+// validated like any skeleton.
+func parseWorksSkeleton(body []byte, base RFPSkeleton) (RFPSkeleton, error) {
+	var o RFPSkeleton
+	if err := strictYAML(body, &o); err != nil {
+		return o, err
+	}
+	if o.Kind != "works" {
+		return o, fmt.Errorf("skeleton-works.yaml needs kind: works")
+	}
+	if len(o.Modules) > 0 {
+		return o, fmt.Errorf("modules are shared; list them in modules.yaml")
+	}
+	s := base
+	s.Version, s.Status, s.Golden, s.Kind, s.OmitFields = o.Version, o.Status, o.Golden, o.Kind, o.OmitFields
+	for _, list := range []struct {
+		own    []RFPOption
+		target *[]RFPOption
+	}{{o.Flags, &s.Flags}, {o.Pathways, &s.Pathways}, {o.Procurement, &s.Procurement}, {o.WorkTypes, &s.WorkTypes}} {
+		if len(list.own) > 0 {
+			*list.target = list.own
+		}
+	}
+	if len(o.Evaluation) > 0 {
+		s.Evaluation = o.Evaluation
+	}
+	if len(o.ProjectRows) > 0 {
+		s.ProjectRows = o.ProjectRows
+	}
+	if len(o.Terms) > 0 {
+		s.Terms = o.Terms
+	}
+	if len(o.Returnables) > 0 {
+		s.Returnables = o.Returnables
+	}
+	for _, text := range []struct{ own, target *string }{{&o.Legend, &s.Legend}, {&o.Departures, &s.Departures}, {&o.Allowances, &s.Allowances}, {&o.Evaluate, &s.Evaluate}} {
+		if *text.own != "" {
+			*text.target = *text.own
+		}
+	}
+	s.Fields = mergeByKey(base.Fields, o.Fields, func(f RFPField) string { return f.Key })
+	for _, key := range o.OmitFields {
+		if !slices.ContainsFunc(s.Fields, func(f RFPField) bool { return f.Key == key }) {
+			return s, fmt.Errorf("omit_fields names unknown field %q", key)
+		}
+		s.Fields = slices.DeleteFunc(s.Fields, func(f RFPField) bool { return f.Key == key })
+	}
+	s.Thresholds = mergeByKey(base.Thresholds, o.Thresholds, func(t RFPThreshold) string { return t.Key })
+	return s, validateRFPSkeleton(s)
+}
+
+// mergeByKey keeps the base order, replaces a base entry the overlay names
+// and appends the overlay's new entries.
+func mergeByKey[T any](base, overlay []T, key func(T) string) []T {
+	out := append([]T(nil), base...)
+	for _, item := range overlay {
+		if i := slices.IndexFunc(out, func(b T) bool { return key(b) == key(item) }); i >= 0 {
+			out[i] = item
+		} else {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+func validateRFPSkeleton(s RFPSkeleton) error {
 	if s.Version != 1 || !slices.Contains([]string{"draft", "reviewed"}, s.Status) {
-		return s, fmt.Errorf("skeleton needs version 1 and status draft or reviewed")
+		return fmt.Errorf("skeleton needs version 1 and status draft or reviewed")
 	}
 	for name, list := range map[string][]RFPOption{"flags": s.Flags, "pathways": s.Pathways, "procurement": s.Procurement, "work_types": s.WorkTypes} {
 		if len(list) == 0 {
-			return s, fmt.Errorf("skeleton %s is empty", name)
+			return fmt.Errorf("skeleton %s is empty", name)
 		}
 		if err := uniqueKeys(name, len(list), func(i int) string { return list[i].Key }); err != nil {
-			return s, err
+			return err
 		}
 		for _, option := range list {
 			if err := checkProvenance(name+" "+option.Key, option.Provenance); err != nil {
-				return s, err
+				return err
 			}
 		}
 	}
 	if err := uniqueKeys("fields", len(s.Fields), func(i int) string { return s.Fields[i].Key }); err != nil {
-		return s, err
+		return err
 	}
 	for _, f := range s.Fields {
 		if !slices.Contains([]string{"text", "date", "money", "number"}, f.Kind) || !slices.Contains([]string{"issue", "terms", "project", "appointment"}, f.Group) || f.Label == "" {
-			return s, fmt.Errorf("field %q needs a label, kind and group", f.Key)
+			return fmt.Errorf("field %q needs a label, kind and group", f.Key)
 		}
 		if f.Profile != "" && (f.Group != "project" || (f.Profile != "site.address" && f.Profile != "site.lot" && !strings.HasPrefix(f.Profile, DetailPrefix))) {
-			return s, fmt.Errorf("field %q: profile home %q must be proj.<detail>, site.address or site.lot on a project field", f.Key, f.Profile)
+			return fmt.Errorf("field %q: profile home %q must be proj.<detail>, site.address or site.lot on a project field", f.Key, f.Profile)
 		}
 	}
 	total := 0
@@ -557,25 +705,25 @@ func parseRFPSkeleton(body []byte) (RFPSkeleton, error) {
 		total += w.Default
 	}
 	if len(s.Evaluation) == 0 || total != 100 {
-		return s, fmt.Errorf("evaluation defaults total %d%%, must be 100%%", total)
+		return fmt.Errorf("evaluation defaults total %d%%, must be 100%%", total)
 	}
 	if err := checkThresholds(s.Thresholds); err != nil {
-		return s, err
+		return err
 	}
 	if err := uniqueKeys("returnables", len(s.Returnables), func(i int) string { return s.Returnables[i].Key }); err != nil {
-		return s, err
+		return err
 	}
 	for _, r := range s.Returnables {
 		if !regexp.MustCompile(`^r[1-9]$`).MatchString(r.Key) || r.Title == "" {
-			return s, fmt.Errorf("returnable %q needs a key r1-r9 and a title", r.Key)
+			return fmt.Errorf("returnable %q needs a key r1-r9 and a title", r.Key)
 		}
 	}
 	for _, rows := range [][]RFPRow{s.ProjectRows, s.Terms} {
 		if err := checkRows(rows, s); err != nil {
-			return s, err
+			return err
 		}
 	}
-	return s, checkModules(s)
+	return checkModules(s)
 }
 
 func checkModules(s RFPSkeleton) error {
@@ -613,6 +761,17 @@ func ParseRFPDiscipline(body []byte, s RFPSkeleton) (RFPDiscipline, error) {
 	}
 	if d.Status == "reviewed" && (strings.TrimSpace(d.ReviewedBy) == "" || strings.TrimSpace(d.ReviewedOn) == "") {
 		return d, fmt.Errorf("discipline %s is reviewed without reviewed_by and reviewed_on; only the owner marks it reviewed", d.ID)
+	}
+	if d.Kind != "" && d.Kind != "services" && d.Kind != "works" {
+		return d, fmt.Errorf("discipline %s: kind %q must be services or works", d.ID, d.Kind)
+	}
+	if d.Works() != (s.Kind == "works") {
+		return d, fmt.Errorf("discipline %s: a works discipline needs the tender skeleton and a consultant one the consultant skeleton", d.ID)
+	}
+	for _, st := range d.Stages {
+		if st.Separate != "" && (!d.Works() || !strings.HasPrefix(st.Separate, "trade.")) {
+			return d, fmt.Errorf("discipline %s stage %s: separate names a trade.* discipline on a works RFT", d.ID, st.Key)
+		}
 	}
 	if len(d.DisciplineIDs) == 0 || len(d.Stages) == 0 {
 		return d, fmt.Errorf("discipline %s needs discipline_ids and stages", d.ID)

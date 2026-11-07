@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	"sitewise/internal/knowledge"
 	"sitewise/internal/store"
 )
 
@@ -152,6 +153,11 @@ func getRFPDisciplines(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if deps.Knowledge != nil {
 		for _, id := range deps.Knowledge.RFPDisciplines() {
 			d, _ := deps.Knowledge.RFP(id)
+			// The list names the consultant RFPs a title can suggest; the
+			// general fallbacks and trade RFTs are chosen by discipline.
+			if d.Works() || d.ID == knowledge.GeneralConsultantRFP {
+				continue
+			}
 			out = append(out, item{ID: d.ID, Title: d.Title, Status: d.Status, DisciplineIDs: d.DisciplineIDs, TitleAliases: d.TitleAliases})
 		}
 	}

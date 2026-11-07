@@ -32,12 +32,12 @@ func (s *Store) syncRFPSchedule(ctx context.Context, tx pgx.Tx, org, project, pk
 	var raw []byte
 	err = tx.QueryRow(ctx, `SELECT v.id::text, v.template_id, v.source_revisions FROM reports r
 JOIN report_versions v ON v.org_id = r.org_id AND v.id = r.current_draft_version_id
-WHERE r.org_id = $1::uuid AND r.package_id = $2::uuid AND r.kind = 'rfp'
+WHERE r.org_id = $1::uuid AND r.package_id = $2::uuid AND r.kind IN ('rfp', 'rft')
 ORDER BY r.updated_at DESC LIMIT 1`, org, pkg).Scan(&versionID, &template, &raw)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return false, nil
 	}
-	if err != nil || template != rfpTemplateID {
+	if err != nil || !isRFPTemplate(template) {
 		return false, err
 	}
 	var state reports.SourceState
@@ -145,6 +145,17 @@ func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg
 	if cat != nil {
 		sk, skOK = cat.RFPSkeleton()
 	}
+	var pkgKind string
+	if err := tx.QueryRow(ctx, `SELECT kind FROM packages WHERE org_id = $1::uuid AND id = $2::uuid`, org, pkg).Scan(&pkgKind); err != nil {
+		return err
+	}
+	templateID, reportKind := rfpTemplateID, "rfp"
+	if pkgKind == "works" {
+		templateID, reportKind = rftTemplateID, "rft"
+		if cat != nil {
+			sk, skOK = cat.RFPSkeletonFor(knowledge.RFPDiscipline{Kind: "works"})
+		}
+	}
 	var returnables []rfp.Row
 	if skOK {
 		for _, r := range sk.Returnables {
@@ -153,16 +164,16 @@ func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg
 	}
 	items := rfp.GenericSchedule(returnables)
 	source := ScheduleGeneric
-	template, terr := s.reportTemplate("rfp")
+	template, terr := s.reportTemplate(reportKind)
 	if cat != nil && skOK && terr == nil {
-		if t, ok := cat.CurrentReportTemplate(rfpTemplateID); ok {
+		if t, ok := cat.CurrentReportTemplate(templateID); ok {
 			template = t
 		}
 		snap, _, err := s.reportSnapshot(ctx, tx, org, project, pkg, "", template)
 		if err != nil {
 			return err
 		}
-		if d, ok := cat.RFPForDiscipline(snap.Package.DisciplineID); ok {
+		if d, ok := cat.RFPForDiscipline(rfpDisciplineID(snap.Package)); ok && d.Works() == (pkgKind == "works") {
 			items = rfp.Schedule(rfp.Resolve(d, sk, rfp.Drivers(snap, sk), rfp.Settings{}))
 			source = ScheduleFromDefault
 		}
@@ -245,14 +256,14 @@ func (s *Store) ReadResponseForm(ctx context.Context, org, reportID string) (Res
 	if err != nil {
 		return f, err
 	}
-	if r.Kind != "rfp" || r.CurrentDraftVersionID == "" {
+	if (r.Kind != "rfp" && r.Kind != "rft") || r.CurrentDraftVersionID == "" {
 		return f, ErrInvalidReport
 	}
 	d, err := readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
 	if err != nil {
 		return f, err
 	}
-	if d.TemplateID != rfpTemplateID {
+	if !isRFPTemplate(d.TemplateID) {
 		return f, ErrInvalidReport
 	}
 	var project string
@@ -276,7 +287,7 @@ func (s *Store) ReadResponseForm(ctx context.Context, org, reportID string) (Res
 	if err != nil {
 		return f, err
 	}
-	f.Header = rfp.FormHeader{Title: r.Title, Project: project, Ref: res.Fields["ref"].Value}
+	f.Header = rfp.FormHeader{Title: r.Title, Project: project, Ref: res.Fields["ref"].Value, Works: res.Kind == "works"}
 	f.Items = rfp.Schedule(res)
 	f.Returnables = res.Returnables
 	return f, tx.Commit(ctx)

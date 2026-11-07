@@ -17,6 +17,29 @@ import (
 // (knowledge/rfp). Packages with no confirmed discipline keep tpl.rfp-capex.
 const rfpTemplateID = "tpl.rfp-consultant"
 
+// rftTemplateID is a trade RFT built from a works discipline file in the
+// same format (docs/plans/2026-11-08-trade-rft.md).
+const rftTemplateID = "tpl.rft-trade"
+
+// isRFPTemplate reports whether a draft is built by the RFP engine: a
+// consultant RFP or a trade RFT.
+func isRFPTemplate(id string) bool { return id == rfpTemplateID || id == rftTemplateID }
+
+// rfpDisciplineID is the discipline a package's RFP or RFT is built from. A
+// head contract saved before disciplines is Main Works; any other trade
+// without one uses the general trade file.
+func rfpDisciplineID(p procurement.Package) string {
+	switch {
+	case p.DisciplineID != "":
+		return p.DisciplineID
+	case p.Kind == "works" && p.WorksScope == "head_contract":
+		return "trade.main_works"
+	case p.Kind == "works":
+		return "trade.general"
+	}
+	return ""
+}
+
 var ErrInvalidSetting = rfp.ErrInvalidSetting
 
 // ErrRFPOpenChecks refuses issue while a decision, client quantity or
@@ -46,10 +69,16 @@ type RFPSuggestion struct {
 // reportTemplateFor chooses the consultant RFP for a services package with
 // a confirmed discipline id. A title alone never switches the template.
 func (s *Store) reportTemplateFor(kind string, pkg procurement.Package) (knowledge.ReportTemplate, error) {
-	if kind == "rfp" && s.workCatalog() != nil {
+	cat := s.workCatalog()
+	if cat != nil && (kind == "rfp" || kind == "rft") {
+		id := rfpTemplateID
+		if kind == "rft" {
+			id = rftTemplateID
+		}
+		d, ok := cat.RFPForDiscipline(rfpDisciplineID(pkg))
 		// A combined engagement's RFP is its members' consultant RFPs.
-		if _, ok := s.workCatalog().RFPForDiscipline(pkg.DisciplineID); ok || pkg.IsGroup() {
-			if t, ok := s.workCatalog().CurrentReportTemplate(rfpTemplateID); ok {
+		if ok && d.Works() == (kind == "rft") || kind == "rfp" && pkg.IsGroup() {
+			if t, ok := cat.CurrentReportTemplate(id); ok {
 				return t, nil
 			}
 		}
@@ -99,13 +128,13 @@ func (s *Store) assembleRFP(snap reports.Snapshot, template knowledge.ReportTemp
 	if reports.ReadingIncomplete(snap) && !useLastCompleted {
 		return nil, reports.ErrReadingIncomplete
 	}
-	if !reports.ValidReportPackage("rfp", snap.Package) {
+	cat := s.workCatalog()
+	d, ok := cat.RFPForDiscipline(rfpDisciplineID(snap.Package))
+	if !ok || !reports.ValidReportPackage(map[bool]string{false: "rfp", true: "rft"}[d.Works()], snap.Package) {
 		return nil, ErrInvalidReport
 	}
-	cat := s.workCatalog()
-	d, ok := cat.RFPForDiscipline(snap.Package.DisciplineID)
-	sk, skOK := cat.RFPSkeleton()
-	if !ok || !skOK {
+	sk, skOK := cat.RFPSkeletonFor(d)
+	if !skOK {
 		return nil, ErrInvalidReport
 	}
 	drivers := rfp.Drivers(snap, sk)
@@ -130,7 +159,7 @@ func (s *Store) storedRFP(state reports.SourceState, settings rfp.Settings) (kno
 		return knowledge.RFPDiscipline{}, knowledge.RFPSkeleton{}, rfp.DriverSet{}, rfp.Resolved{}, ErrInvalidReport
 	}
 	d, ok := cat.RFP(st.Discipline)
-	sk, skOK := cat.RFPSkeleton()
+	sk, skOK := cat.RFPSkeletonFor(d)
 	if !ok || !skOK {
 		return d, sk, st.Drivers, rfp.Resolved{}, ErrInvalidReport
 	}
@@ -181,7 +210,7 @@ func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key
 	if err != nil {
 		return d, "", err
 	}
-	if d.Status != "draft" || d.TemplateID != rfpTemplateID {
+	if d.Status != "draft" || !isRFPTemplate(d.TemplateID) {
 		return d, "", ErrInvalidReport
 	}
 	if d.Version != version {
@@ -239,7 +268,7 @@ func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key
 		}
 		settings[key] = rfp.Setting{Value: value, Basis: basis}
 	}
-	template, ok := s.workCatalog().CurrentReportTemplate(rfpTemplateID)
+	template, ok := s.workCatalog().CurrentReportTemplate(d.TemplateID)
 	if !ok {
 		return d, "", ErrInvalidReport
 	}
@@ -337,7 +366,7 @@ func (s *Store) reportFactHome(ctx context.Context, org, id, name string, value 
 	if err != nil {
 		return "", rfp.Home{}, err
 	}
-	if d.Status != "draft" || d.TemplateID != rfpTemplateID {
+	if d.Status != "draft" || !isRFPTemplate(d.TemplateID) {
 		return "", rfp.Home{}, ErrInvalidReport
 	}
 	if d.Version != version {
@@ -426,7 +455,7 @@ func (s *Store) rfpControls(ctx context.Context, tx pgx.Tx, org string, d Report
 // rfpIssueChecks refuses issue of a consultant RFP while blocking checks
 // remain. Other report kinds have none.
 func (s *Store) rfpIssueChecks(ctx context.Context, tx pgx.Tx, org string, r Report, d ReportDraft) ([]rfp.Check, error) {
-	if d.TemplateID != rfpTemplateID {
+	if !isRFPTemplate(d.TemplateID) {
 		return nil, nil
 	}
 	if _, ok := groupDraft(d.SourceRevisions); ok {

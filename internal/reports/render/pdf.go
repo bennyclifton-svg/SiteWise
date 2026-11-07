@@ -34,13 +34,19 @@ func PageLimit(s reports.IssueSnapshot) (int, float64) {
 	if s.SourceRevisions.TemplateID == "tpl.specifications" {
 		return 100, 20
 	}
-	if s.SourceRevisions.TemplateID == "tpl.rfp-consultant" {
+	if rfpEngine(s.SourceRevisions.TemplateID) {
 		if n := s.SourceRevisions.RFPParts; n > 1 {
 			return 4 * n, 3 * float64(n)
 		}
 		return 4, 3
 	}
 	return 2, 1.5
+}
+
+// rfpEngine is a consultant RFP or a trade RFT: the one format, with the
+// same page allowance and print style (docs/plans/2026-11-08-trade-rft.md).
+func rfpEngine(templateID string) bool {
+	return templateID == "tpl.rfp-consultant" || templateID == "tpl.rft-trade"
 }
 
 var ErrContent = errors.New("report content cannot be exported")
@@ -156,7 +162,7 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 	// A consultant RFP prints only what the consultant prices from. Its
 	// citations stay in the issue record; every block is calculated from the
 	// stored rules, so printing them would only repeat that.
-	quiet := s.SourceRevisions.TemplateID == "tpl.rfp-consultant"
+	quiet := rfpEngine(s.SourceRevisions.TemplateID)
 	// RFP schedules are set a little tighter; the type size is unchanged.
 	leading := 1.3
 	if quiet {

@@ -171,7 +171,7 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if err != nil {
 		return view, err
 	}
-	if d.TemplateID == rfpTemplateID && d.Status == "draft" {
+	if isRFPTemplate(d.TemplateID) && d.Status == "draft" {
 		// A draft whose discipline file changed shape still opens; the stale
 		// notice asks for a refresh.
 		if _, group := groupDraft(d.SourceRevisions); group {

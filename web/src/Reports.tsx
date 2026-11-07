@@ -32,6 +32,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
   useEffect(() => { setIssuing(false); setIssueVersion(0); setIssueDate(localDate()); setDiscloseBudget(null); setAcceptStale(false); setStaleReason(""); }, [reportId]);
   const [view, setView] = useState<ReportView | null>(null);
   const selectionReport = useRef("");
+  const formatRefreshed = useRef("");
   useEffect(() => {
     if (!view?.draft || !transmittal || selectionReport.current === reportId) return;
     const block = view.draft.sections.flatMap(s => s.blocks ?? []).find(b => b.id === "rfp:project:information");
@@ -79,6 +80,14 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
     reportApi.read(reportId).then(async next => {
       if (!stopped && !next.draft && next.issues.length === 0 && !next.stale.includes("package_retired")) {
         await reportApi.ensure(reportId);
+        return reportApi.read(reportId);
+      }
+      // A draft made before its package moved to the RFP format (a trade
+      // RFT, or a consultant with no discipline file) refreshes once into
+      // it, keeping the user's wording (owner, 8 November 2026).
+      if (!stopped && !next.rfp && next.draft && next.issues.length === 0 && (next.report.kind === "rfp" || next.report.kind === "rft") && next.stale.includes("template") && !next.stale.includes("package_retired") && formatRefreshed.current !== reportId) {
+        formatRefreshed.current = reportId;
+        await reportApi.refresh(reportId, true);
         return reportApi.read(reportId);
       }
       // Older drafts predate the structured transmittal. Refresh once to
@@ -198,7 +207,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
               return <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : <RfpScopePosition block={block} />}{<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>}</>;
             })()}
             {block.table && !(controls && scopeTable(block) && editor?.target !== block.id) && <div className="report-table-scroll"><table className="report-table">{block.table.display !== "document" && <caption>Saved source comparison{block.edited ? " — independent of edited wording" : ""}</caption>}<thead><tr>{block.table.columns.map((column,i) => <th key={i} scope="col">{column}</th>)}</tr></thead><tbody>{block.table.rows.map((row,i) => <tr key={i}>{row.map((cell,j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>}
-            <BlockReferences block={block} references={draft.references} hideCalculations={view?.report.kind === "rfp"} />
+            <BlockReferences block={block} references={draft.references} hideCalculations={!!view?.rfp} />
             {block.edited && !block.source_missing && block.generated_text === undefined && <p>Refresh this draft before restoring its saved source wording.</p>}{block.edited && (block.source_missing || block.generated_text !== undefined) && <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => setResetTarget({ id: block.id, missing: block.source_missing, version: draft.version })}>{block.source_missing ? "Remove orphaned wording" : "Restore saved source wording"}</button>}
           </article>;
   // The issue form: in a toggled notice for most reports, always open in an
@@ -218,7 +227,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
-        <header className="report-toolbar" data-version={draft?.version}><div><h2>{view.rfp ? <>{view.report.title.replace(/^RFP\s*[—–-]\s*/, "RFP ")}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div>
+        <header className="report-toolbar" data-version={draft?.version}><div><h2>{view.rfp ? <>{view.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ")}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div>
           {/* Actions sit on the title's line, flush with the page's right edge (owner, 7 Nov 2026). */}
           <div className="report-toolbar-actions">
           <UpdateButton title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Rebuild this draft from the project" : "Assemble the draft"} busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()} />
@@ -230,7 +239,8 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
         </header>
         {view.rfp_suggestion && <div className="report-notice" role="status"><strong>This package looks like {view.rfp_suggestion.title.toLowerCase()}</strong><p>Use the {view.rfp_suggestion.title.toLowerCase()} RFP, built from the reviewed golden set, instead of the generic one? This records the package's discipline; the package title alone never changes the scope.</p><div className="report-actions"><button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => void confirmDiscipline()}>Use the {view.rfp_suggestion.title.toLowerCase()} RFP</button></div></div>}
         {group && group.left.length > 0 && <div className="report-notice" role="status"><strong>{group.left.join(", ")} {group.left.length === 1 ? "has" : "have"} left this engagement.</strong><p>{group.left.length === 1 ? "Its part is" : "Their parts are"} dropped when you refresh the draft.</p></div>}
-        {view.rfp && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}
+        {/* Program stage sync is for consultant stages; a trade RFT prices parts of the building. */}
+        {view.rfp && view.rfp.kind !== "works" && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}
         {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports</h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${reportId}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
         {!!view.changes_since_issue?.length && <details className="report-notice"><summary>Changes since last issue ({view.changes_since_issue.length})</summary><ul>{view.changes_since_issue.map(change => <li key={change.target_id}><strong>{change.kind}</strong>: {change.after || change.before}</li>)}</ul></details>}
         {draft && <div>

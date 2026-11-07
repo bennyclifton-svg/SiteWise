@@ -1,0 +1,97 @@
+# Joinery and kitchens RFT (docs/plans/2026-11-08-trade-rft.md). Generated from one spec so every trade
+# has the same shape; edit it as knowledge. Draft until the owner reviews it.
+id: trade-joinery-kitchens
+version: 1
+status: draft
+kind: works
+title: Joinery and kitchens
+heading: "REQUEST FOR TENDER: JOINERY AND KITCHENS"
+discipline_ids: [trade.joinery_kitchens]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the joinery contractor. Your job is to measure, make and install the joinery the documents show, to the specified finishes, on program and without damage to the finished work around it."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Shop drawings for the design team's review"}
+      - {key: design, text: "Design of the package where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: measure
+    name: "Site measure and shop drawings"
+    lines:
+      - {key: measure, text: "Site measure before manufacture"}
+      - {key: shop_drawings, text: "Shop drawings and finish samples for approval"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]
+  - key: kitchen
+    name: "Kitchen"
+    lines:
+      - {key: cabinets, text: "Cabinets, benchtops and splashbacks"}
+      - {key: hardware, text: "Hardware and fittings"}
+      - {key: appliances, text: "Installation of appliances the documents list"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]
+  - key: other
+    name: "Other joinery"
+    lines:
+      - {key: vanities, text: "Vanities and laundry joinery"}
+      - {key: wardrobes, text: "Built-in wardrobes and storage"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Testing and commissioning"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: services, label: "Plumbing and electrical connections to the joinery, by the plumbing and electrical trades", kind: technical, value: X, responsible: "the plumbing and electrical trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: appliance_supply, label: "Supply of appliances, unless the documents give it to you, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

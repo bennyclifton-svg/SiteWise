@@ -19,7 +19,8 @@ export interface RfpControl { key: string; label: string; kind: RfpControlKind; 
 export type RfpHome = "detail" | "header" | "site" | "determinant" | "cost_plan" | "link" | "derived";
 export interface RfpGroup { id: string; title: string; /** The report section these controls edit. */ section: string; controls: RfpControl[] }
 export interface RfpControls {
-  discipline: string; title: string; status: string;
+  /** "works" on a trade RFT; a consultant RFP leaves it out. */
+  discipline: string; kind?: string; title: string; status: string;
   scale: { value: string; source: string; why: string; set: boolean };
   boundary: { start: string; end: string; source: string; confirmed: boolean; set: boolean; stages: RfpChoice[] };
   decisions: RfpCheck[]; checks: RfpCheck[]; groups: RfpGroup[];

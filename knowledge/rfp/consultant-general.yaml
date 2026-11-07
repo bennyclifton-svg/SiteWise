@@ -1,0 +1,114 @@
+# General consultant RFP (docs/plans/2026-11-08-trade-rft.md): used by every
+# consultant discipline that has no file of its own (acoustic, heritage,
+# BASIX, ESD, hazmat and others), so no RFP falls back to the old generic
+# report layout. The stage table is the seven project stages with general
+# lines the project manager edits; approval-stage work is included and later
+# stages are priced as options. Draft until the owner reviews it.
+id: consultant-general
+version: 1
+status: draft
+title: Consultant services
+heading: "REQUEST FOR PROPOSAL: CONSULTANT SERVICES"
+discipline_ids: [consultant.general]
+evidence_limit: "General consultant practice; no discipline-specific proposal has been encoded."
+
+scale:
+  text: "One service level; the project manager edits the lines for the discipline."
+  complex: []
+
+role:
+  - key: appointment
+    text: "Appointment: {package}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: every consultant RFP uses the one format, including disciplines with no file of their own."}]
+  - key: purpose
+    text: "Your job is to give the project the advice, reports and certificates your discipline provides, at the time the design, approval and construction need them, so the project proceeds without avoidable delay."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-rfp-role-purpose.md", why: "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Review the brief, the site and the information provided, and advise early on the requirements, constraints and risks your discipline sees.
+      - Provide the reports the planning application and the authorities need from your discipline.
+      - Give the design team the inputs it needs, and review its documents for your discipline.
+      - Respond to authority and contractor questions, and provide the certificates or statements your discipline signs.
+      The architect leads design; the client engages the other consultants.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-07-rfp-role-purpose.md", why: "Owner 2026-11-07: duties are the same on every project."}]
+
+stage_intro: "Work beyond an allowance needs a written instruction."
+scope_by_stage: true
+
+boundary:
+  - {start: brief_concept, end: planning}
+
+stages:
+  - key: brief_concept
+    name: Brief and concept
+    lines:
+      - {key: review, text: "Review of the brief, site and information provided"}
+      - {key: advice, text: "Advice on the requirements, constraints and risks for this discipline"}
+      - {key: investigations, text: "Investigations needed and their scope"}
+    fee_basis: fixed
+    delivery_stage: brief_concept
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}]
+  - key: schematic_design
+    name: Schematic design
+    lines:
+      - {key: input, text: "Input to the concept design"}
+      - {key: options, text: "Comments on the design options"}
+    fee_basis: fixed
+    delivery_stage: schematic_design
+    shown_when: Always
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-common-project-stages.md", why: "Owner 2026-11-07: every RFP uses the seven project stages."}]
+  - key: planning
+    name: Planning
+    lines:
+      - {key: report, text: "Report for the planning application"}
+      - {key: requests, text: "Responses to authority requests for information"}
+    fee_basis: fixed
+    delivery_stage: planning
+    shown_when: Always
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-common-project-stages.md", why: "Owner 2026-11-07: every RFP uses the seven project stages."}]
+  - key: design_development
+    name: Design development
+    lines:
+      - {key: input, text: "Design input for the developed design"}
+      - {key: review, text: "Review of the developed design for this discipline"}
+    fee_basis: fixed
+    delivery_stage: design_development
+    shown_when: Always
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-common-project-stages.md", why: "Owner 2026-11-07: every RFP uses the seven project stages."}]
+  - key: tender_documentation
+    name: Tender documentation
+    lines:
+      - {key: specification, text: "Specification input for this discipline"}
+      - {key: review, text: "Review of the tender documents"}
+    fee_basis: fixed
+    delivery_stage: tender_documentation
+    shown_when: Always
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-common-project-stages.md", why: "Owner 2026-11-07: every RFP uses the seven project stages."}]
+  - key: design_finalisation
+    name: Design finalisation
+    lines:
+      - {key: documentation, text: "Review of construction documentation and shop drawings"}
+      - {key: compliance, text: "Compliance statements for the construction certificate"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-common-project-stages.md", why: "Owner 2026-11-07: every RFP uses the seven project stages."}]
+  - key: delivery
+    name: Delivery
+    lines:
+      - {key: inspections, text: "Site inspections to the allowance"}
+      - {key: questions, text: "Responses to contractor questions"}
+      - {key: certificates, text: "Certificates or completion statements for this discipline"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-07-common-project-stages.md", why: "Owner 2026-11-07: every RFP uses the seven project stages."}]
+
+allowances:
+  - {key: design_meetings, label: Design meetings, text: "{n} of up to 2 hours", default: "2", owner: client, provenance: [{kind: practice, ref: "Meeting allowance set by the project manager per RFP; the default is a starting point"}]}
+  - {key: site_inspections, label: Site inspections, text: "{n}", default: "1", owner: client, provenance: [{kind: practice, ref: "Inspection allowance set by the project manager per RFP; the default is a starting point"}]}
+  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 client review, 1 final", default: "1", owner: client, provenance: [{kind: practice, ref: "Review rounds set by the project manager per RFP; the default is a starting point"}]}
+
+durations: "From the SiteWise program when it holds the stage; otherwise the consultant states weeks in R7."

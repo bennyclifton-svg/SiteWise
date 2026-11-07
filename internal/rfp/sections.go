@@ -3,6 +3,7 @@ package rfp
 import (
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 
 	"sitewise/internal/knowledge"
@@ -233,6 +234,17 @@ func (b *builder) role() {
 		}
 		route = append(route, row.Text)
 	}
+	// A head contract names the trades the client lets separately, so the
+	// tenderer prices attendance on them.
+	separate := []string{}
+	for _, s := range b.r.Stages {
+		if s.State == Exclude && s.Source == "package" && s.By != "" && !slices.Contains(separate, s.By) {
+			separate = append(separate, s.By)
+		}
+	}
+	if len(separate) > 0 {
+		route = append(route, "The client lets these separately: "+strings.Join(separate, ", ")+". Coordinate with them and give them access as the contract provides.")
+	}
 	// The owner removed the Design team table (7 Nov 2026): the consultant
 	// team lives on the project profile, not in each RFP.
 	basis := map[string]any{"rows": b.r.Role, "appointment": b.r.Appointment}
@@ -273,11 +285,11 @@ func (b *builder) returnables() {
 		}
 		rows = append(rows, []string{r.Label, r.Text})
 	}
-	b.add("returnables", "rfp:returnables", "", ResponseFormNote, doc([]string{"Schedule", "What to return"}, rows), map[string]any{"rows": b.r.Returnables})
+	b.add("returnables", "rfp:returnables", "", b.words().formNote, doc([]string{"Schedule", "What to return"}, rows), map[string]any{"rows": b.r.Returnables})
 }
 
 // ResponseFormNote tells the firm how to reply.
-const ResponseFormNote = "Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal."
+const ResponseFormNote = "Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 2; return it with your proposal."
 
 // shortLabel keeps a fee row readable: the item up to its first clause.
 func shortLabel(label string) string {

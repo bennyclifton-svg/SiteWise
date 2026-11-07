@@ -1,0 +1,116 @@
+# Civil works RFT (docs/plans/2026-11-08-trade-rft.md). Generated from one spec so every trade
+# has the same shape; edit it as knowledge. Draft until the owner reviews it.
+id: trade-civil-works
+version: 1
+status: draft
+kind: works
+title: Civil works
+heading: "REQUEST FOR TENDER: CIVIL WORKS"
+discipline_ids: [trade.civil_works]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the civil works contractor. Your job is to build the site works the civil documents show: earthworks, retaining, drainage, services connections and pavements, to the contract, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Shop drawings for the design team's review"}
+      - {key: design, text: "Design of the package where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: earthworks
+    name: "Earthworks"
+    lines:
+      - {key: clearing, text: "Site clearing, stripping and stockpiling"}
+      - {key: bulk, text: "Bulk earthworks to the design levels"}
+      - {key: sediment, text: "Erosion and sediment control"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}]
+  - key: retaining
+    name: "Retaining walls"
+    lines:
+      - {key: walls, text: "Retaining walls the documents show"}
+      - {key: drainage, text: "Drainage behind the walls"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}]
+  - key: stormwater
+    name: "Stormwater drainage"
+    lines:
+      - {key: pipes, text: "Pits, pipes and connections to the legal point of discharge"}
+      - {key: detention, text: "Detention and water quality devices the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}]
+  - key: services
+    name: "Services connections"
+    lines:
+      - {key: sewer, text: "Sewer connection"}
+      - {key: water, text: "Water connection"}
+      - {key: conduits, text: "Conduits and trenches for electrical and communications lead-ins"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}]
+  - key: pavements
+    name: "Pavements"
+    lines:
+      - {key: driveways, text: "Driveways, car park and paths"}
+      - {key: kerbs, text: "Kerbs, edges and line marking the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Testing and commissioning"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: builder, label: "Building footings, slab and the building itself, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: authority_fees, label: "Authority connection fees and contributions, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

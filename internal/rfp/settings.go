@@ -20,6 +20,7 @@ var factLabels = map[string]string{
 	"pathway": "Planning pathway", "procurement": "Procurement route", "novation": "Novation",
 	"state": "State", "regulated_design": "Regulated design applies", "budget": "Construction budget",
 	"site_area": "Site area", "gfa": "Gross floor area", "storeys": "Storeys", "parking": "Car spaces",
+	"system": "Building systems in Profile scope",
 }
 
 func factLabel(sk knowledge.RFPSkeleton, key string) string {

@@ -10,7 +10,8 @@ func TestDisciplinePackage(t *testing.T) {
 		{"consultant.structural", "Structural", "services", "", true},
 		{"trade.main_works", "Main Works", "works", "head_contract", true},
 		{"trade.electrical", "Electrical Services", "works", "trade", true},
-		{"supplier.facade", "Facade supply", "", "", false},
+		// A supply is a trade row with an RFT (owner, 8 November 2026).
+		{"supplier.facade", "Facade supply", "works", "trade", true},
 		{"other.thing", "Other", "", "", false},
 	}
 	for _, c := range cases {

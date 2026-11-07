@@ -187,7 +187,7 @@ export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { con
 
 export function RfpReleaseDates({ controls, busyKey, onWrite }: { controls: RfpControls; busyKey: string; onWrite: Write }) {
   const dates = controls.groups.find(g => g.id === "issue")?.controls ?? [];
-  return <div className="rfp-release-dates" role="group" aria-label="Proposal dates">
+  return <div className="rfp-release-dates" role="group" aria-label={controls.kind === "works" ? "Tender dates" : "Proposal dates"}>
     {dates.map(c => <ControlRow key={c.key} control={c} busy={!!busyKey} onWrite={onWrite} />)}
   </div>;
 }

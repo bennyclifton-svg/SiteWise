@@ -56,6 +56,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   // Consultant rows selected for Combine (click, Ctrl-click, Shift-click, as in
   // Program and the document register), and the combine being confirmed.
   const [selection, setSelection] = useState(emptySelection);
+  // Consultants and Trades are two tabs over the one table (owner, 8
+  // November 2026). The open tab is a per-viewer convenience.
+  const [tab, setTabState] = useState<ProcurementTab>(() => { try { return localStorage.getItem(TAB_KEY) === "trades" ? "trades" : "consultants"; } catch { return "consultants"; } });
+  const setTab = (next: ProcurementTab) => { setTabState(next); setDraft(null); setSelection(emptySelection); try { localStorage.setItem(TAB_KEY, next); } catch { /* Storage is optional. */ } };
   const [combining, setCombining] = useState<{ members: PackageRecord[]; names: string[]; title: string; costLabels: string[]; submissionId?: string } | null>(null);
   // Members unticked on a combine prompt (slice 5): a prompt starts ticked.
   const [unticked, setUnticked] = useState<Record<string, string[]>>({});
@@ -271,6 +275,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   const trades = rows.filter(r => r.kind !== "services").sort(byTitle);
   const used = new Set(live.map(p => p.discipline_id).filter(Boolean));
   const options = (prefix: string) => disciplines.filter(d => d.id.startsWith(prefix) && !used.has(d.id));
+  const shown = tab === "consultants" ? consultants : trades;
+  const doc = tab === "consultants" ? "RFP" : "RFT";
 
   function rowView(row: Row) {
     const busy = busyRow === row.key;
@@ -305,22 +311,26 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
           onClick={() => void (row.pkg ? reviewRemoval(row.pkg, row.label) : dismiss(row))}><IconBin /></button>}</td>
     </tr>;
   }
-  const group = (title: string, list: Row[]) => list.length > 0 && <tbody>
-    <tr className="group-row"><th colSpan={COLUMNS} scope="rowgroup">{title}</th></tr>
-    {list.map(rowView)}
-  </tbody>;
 
   return <section className="procurement" aria-label="Procurement">
     <header className="procurement-head">
-      <h1>Procurement</h1>
+      <h1 className="sr-only">Procurement</h1>
+      <div className="costs-tabs" role="tablist" aria-label="Procurement views">
+        {TABS.map(([id, name]) => {
+          const n = id === "consultants" ? consultants.filter(r => !r.member).length : trades.length;
+          return <button key={id} type="button" role="tab" id={`procurement-tab-${id}`} aria-controls="procurement-panel" aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
+            onKeyDown={e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); setTab(id === "consultants" ? "trades" : "consultants"); } }}
+            onClick={() => setTab(id)}>{name}{data && n > 0 ? <span className="costs-tab-count">{n}</span> : null}</button>;
+        })}
+      </div>
       <div className="procurement-actions">
-      {tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
+      {tab === "consultants" && tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
       <button type="button" className="btn btn-small" aria-label="New discipline" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>New</button>
       <MoreMenu label="Procurement actions" items={[{ label: "Print procurement", icon: <IconPrint />, onSelect: () => window.print() }]} />
       </div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
-    {data && (data.overview.prompts ?? []).map(prompt => {
+    {data && tab === "consultants" && (data.overview.prompts ?? []).map(prompt => {
       // Members still live and combinable; the server ticked them all.
       const members = prompt.package_ids.map(id => live.find(p => p.id === id)).filter((p): p is PackageRecord => !!p && !p.group_id && p.role !== "group");
       const chosen = members.filter(p => !(unticked[prompt.key] ?? []).includes(p.id));
@@ -352,23 +362,24 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
           </fieldset>)}
       </div>)}
     </div>}
-    {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll">
+    {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll" role="tabpanel" id="procurement-panel" aria-labelledby={`procurement-tab-${tab}`}>
       <table className="procurement-table">
-        <thead><tr><th scope="col">Discipline</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">RFP / RFT</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
-        {group("Consultants", consultants)}
-        {group("Trades", trades)}
+        <thead><tr><th scope="col">{tab === "consultants" ? "Consultant" : "Trade"}</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">{doc}</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
+        {shown.length > 0 && <tbody>{shown.map(rowView)}</tbody>}
         {draft !== null && <tbody><tr className="draft-row"><td colSpan={COLUMNS}>
           <form className="draft-form" onSubmit={e => { e.preventDefault(); void addRow(); }}>
             <select aria-label="Discipline" value={draft} disabled={busyRow === "draft"} onChange={e => setDraft(e.target.value)} autoFocus>
-              <option value="">Choose a discipline</option>
-              <optgroup label="Consultants">{options("consultant.").map(d => <option key={d.id} value={d.id}>{d.label}</option>)}</optgroup>
-              <optgroup label="Trades">{options("trade.").map(d => <option key={d.id} value={d.id}>{d.label}</option>)}</optgroup>
+              <option value="">{tab === "consultants" ? "Choose a consultant" : "Choose a trade"}</option>
+              {tab === "consultants" ? options("consultant.").map(d => <option key={d.id} value={d.id}>{d.label}</option>)
+                : <>{options("trade.").map(d => <option key={d.id} value={d.id}>{d.label}</option>)}
+                  {/* A supply is tendered as a trade, with an RFT (owner, 8 November 2026). */}
+                  {options("supplier.").length > 0 && <optgroup label="Supply">{options("supplier.").map(d => <option key={d.id} value={d.id}>{d.label}</option>)}</optgroup>}</>}
             </select>
             <button className="btn btn-small" disabled={!draft || busyRow === "draft"}>{busyRow === "draft" ? "Adding…" : "Add row"}</button>
             <button type="button" className="table-action" disabled={busyRow === "draft"} onClick={() => setDraft(null)}>Cancel</button>
           </form>
         </td></tr></tbody>}
-        {!rows.length && draft === null && <tbody><tr><td colSpan={COLUMNS} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
+        {!shown.length && draft === null && <tbody><tr><td colSpan={COLUMNS} className="procurement-empty">{tab === "consultants" ? "No consultants yet. Add one to start an RFP." : "No trades yet. Add Main Works for the head contract, or a trade let separately, to start an RFT."}</td></tr></tbody>}
       </table>
     </div>}
     {combining && <ConfirmDialog tone="plain" title={`Combine ${combining.members.length} consultants?`}
@@ -396,6 +407,10 @@ function GroupName({ group, onRename }: { group: PackageRecord; onRename: (title
 
 /** Discipline, three firm slots, RFP / RFT, Prices and the bin. */
 const COLUMNS = 7;
+
+type ProcurementTab = "consultants" | "trades";
+const TABS: [ProcurementTab, string][] = [["consultants", "Consultants"], ["trades", "Trades"]];
+const TAB_KEY = "sitewise.procurement.tab";
 
 /** FirmSlots fills Firm 1-3 with the package's firms in the board's order,
  * so every row reads as the place firms are compared (owner decision 5,

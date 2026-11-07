@@ -95,7 +95,7 @@ Separate quantity/duration by item, system and stage (not one pooled count). Fix
 
 ### Returnable schedules: reply using this structure only
 
-Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 3; return it with your proposal.
+Reply in this order. The response form (Excel, issued with this RFP) has a table for each schedule and every fee row of section 2; return it with your proposal.
 
 | Schedule | What to return |
 |---|---|

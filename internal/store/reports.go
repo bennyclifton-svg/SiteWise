@@ -432,7 +432,7 @@ func (s *Store) reportSectionsTx(ctx context.Context, tx pgx.Tx, org string, r R
 	if err != nil {
 		return nil, state, err
 	}
-	if template.ID != rfpTemplateID {
+	if !isRFPTemplate(template.ID) {
 		sections, err := reports.Assemble(snap, template, s.workCatalog(), edits, useLastCompleted)
 		return sections, state, err
 	}

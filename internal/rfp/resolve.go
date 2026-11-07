@@ -58,6 +58,8 @@ type StageResult struct {
 	Assumption     string   `json:"assumption,omitempty"`
 	Locked         bool     `json:"locked"`
 	Unknown        []string `json:"unknown,omitempty"`
+	// By names the separate contract that holds an excluded trade row.
+	By string `json:"by,omitempty"`
 	// Lines are the stage's scope lines, the user's own last.
 	Lines []LineResult `json:"lines,omitempty"`
 }
@@ -145,8 +147,10 @@ type Boundary struct {
 }
 
 type Resolved struct {
-	Transmittal   []reports.BriefValue  `json:"transmittal"`
-	Discipline    string                `json:"discipline"`
+	Transmittal []reports.BriefValue `json:"transmittal"`
+	Discipline  string               `json:"discipline"`
+	// Kind is works on a trade RFT; the layout words follow it.
+	Kind          string                `json:"kind,omitempty"`
 	Version       int                   `json:"version"`
 	Status        string                `json:"status"`
 	Title         string                `json:"title"`
@@ -289,7 +293,7 @@ type resolver struct {
 // It is a pure function: the same inputs always give the same RFP.
 func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, settings Settings) Resolved {
 	r := &resolver{d: d, sk: sk, drivers: drivers, settings: settings, asks: map[string][]string{}, assumptions: map[string][]string{}, used: map[string]bool{}, skipped: map[string][]string{}}
-	r.out = Resolved{Discipline: d.ID, Version: d.Version, Status: d.Status, Title: d.Title, Heading: d.Heading, Modules: map[string]string{}, Fields: map[string]FieldValue{}, Checks: []Check{}, Orphans: []string{}, Durations: d.Durations, Legend: sk.Legend, AllowNote: sk.Allowances, Departures: sk.Departures, EvalNote: sk.Evaluate, StageIntro: d.StageIntro, ElementNote: d.ElementIntro, ScopeByStage: d.ScopeByStage}
+	r.out = Resolved{Discipline: d.ID, Kind: d.Kind, Version: d.Version, Status: d.Status, Title: d.Title, Heading: d.Heading, Modules: map[string]string{}, Fields: map[string]FieldValue{}, Checks: []Check{}, Orphans: []string{}, Durations: d.Durations, Legend: sk.Legend, AllowNote: sk.Allowances, Departures: sk.Departures, EvalNote: sk.Evaluate, StageIntro: d.StageIntro, ElementNote: d.ElementIntro, ScopeByStage: d.ScopeByStage}
 	if d.AllowancesNote != "" {
 		r.out.AllowNote = d.AllowancesNote
 	}
@@ -795,6 +799,11 @@ func (r *resolver) resolveStages() {
 			}
 		}
 		res.Locked = st.Follows != ""
+		// A trade let as its own contract leaves a head contract; the
+		// user can still bring the row back.
+		if title, ok := r.drivers.Separate[st.Separate]; ok && st.Separate != "" && res.State != Exclude {
+			res.State, res.Source, res.Why, res.By, res.Assumption = Exclude, "package", "Let separately: "+title, title, ""
+		}
 		if raw, ok := r.setting("stage:" + st.Key); ok {
 			if v := settingString(raw); contains([]string{Include, Option, Exclude, Done, Ask}, v) {
 				res.State, res.Source, res.Assumption = v, "user", ""
@@ -1420,7 +1429,7 @@ func (r *resolver) resolveRows() {
 		for _, p := range r.out.Parts {
 			names = append(names, p.Label)
 		}
-		r.out.Appointment = append(r.out.Appointment, Row{Key: "covers", Text: "This appointment covers: " + strings.Join(names, ", ") + "."})
+		r.out.Appointment = append(r.out.Appointment, Row{Key: "covers", Text: map[bool]string{false: "This appointment covers: ", true: "This tender covers: "}[r.d.Works()] + strings.Join(names, ", ") + "."})
 	}
 	for _, row := range own {
 		if row.Required || r.complete(row.Text) {
@@ -1664,6 +1673,9 @@ func (r *resolver) slot(name string) (string, bool) {
 		return "", false
 	case "engagement":
 		return r.engagement(), true
+	case "package":
+		v := r.drivers.Text["package"]
+		return v, v != ""
 	case "consultants":
 		names := []string{}
 		for _, c := range r.drivers.Consultants {
@@ -1918,6 +1930,9 @@ func controlFor(fact string) string {
 	switch fact {
 	case "class":
 		return "parts:affected"
+	case "system":
+		// Building systems are set in Profile scope, not on the RFT.
+		return ""
 	}
 	if strings.HasPrefix(fact, "stage:") {
 		return fact

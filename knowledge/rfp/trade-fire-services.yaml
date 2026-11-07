@@ -1,0 +1,95 @@
+# Fire services RFT (docs/plans/2026-11-08-trade-rft.md). Generated from one spec so every trade
+# has the same shape; edit it as knowledge. Draft until the owner reviews it.
+id: trade-fire-services
+version: 1
+status: draft
+kind: works
+title: Fire services
+heading: "REQUEST FOR TENDER: FIRE SERVICES"
+discipline_ids: [trade.fire_services]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the fire services contractor. Your job is to install the fire detection and suppression systems the fire services documents show, test them, and hand them over certified for occupation."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Shop drawings for the design team's review"}
+      - {key: design, text: "Design of the package where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: detection
+    name: "Detection and alarm"
+    lines:
+      - {key: detection, text: "Detection, alarm and warning systems"}
+      - {key: panel, text: "Fire indicator panel and monitoring connection"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}]
+  - key: suppression
+    name: "Suppression"
+    lines:
+      - {key: sprinklers, text: "Sprinklers the documents show"}
+      - {key: hydrants, text: "Hydrants and hose reels the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}]
+  - key: portable
+    name: "Portable equipment"
+    lines:
+      - {key: extinguishers, text: "Portable extinguishers and fire blankets"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Testing and commissioning"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: builder, label: "Builder's work: penetrations, fire-rated enclosures and sealing, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: water_authority, label: "Water authority approvals and fees, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

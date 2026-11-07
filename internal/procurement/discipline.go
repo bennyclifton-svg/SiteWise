@@ -13,7 +13,8 @@ type Discipline struct {
 
 // DisciplinePackage is the package a Procurement row makes for a discipline.
 // Consultants are services (RFP); trades are works (RFT), and Main Works is
-// the head contract. Suppliers have no RFP/RFT, so they are refused.
+// the head contract. A supply is a trade with an RFT too (owner, 8 November
+// 2026): one document per kind, however small the package.
 func DisciplinePackage(id, label string) (Package, bool) {
 	p := Package{DisciplineID: id, Title: label, LifecycleStatus: "planned"}
 	switch {
@@ -21,7 +22,7 @@ func DisciplinePackage(id, label string) (Package, bool) {
 		p.Kind = "services"
 	case id == "trade.main_works":
 		p.Kind, p.WorksScope = "works", "head_contract"
-	case strings.HasPrefix(id, "trade."):
+	case strings.HasPrefix(id, "trade."), strings.HasPrefix(id, "supplier."):
 		p.Kind, p.WorksScope = "works", "trade"
 	default:
 		return Package{}, false

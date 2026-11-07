@@ -33,7 +33,9 @@ type GroupPart struct {
 // Title is the part's heading: the discipline file's title, or the
 // package's own name when there is no file.
 func (p GroupPart) Title() string {
-	if p.Templated && p.Resolved.Title != "" {
+	// The general file's title ("Consultant services") names no discipline;
+	// the package title does.
+	if p.Templated && p.Resolved.Title != "" && p.Resolved.Discipline != knowledge.GeneralConsultantRFP {
 		return p.Resolved.Title
 	}
 	return p.PackageTitle

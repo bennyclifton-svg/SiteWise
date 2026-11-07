@@ -74,6 +74,9 @@ type DriverSet struct {
 	Text             map[string]string    `json:"text"`
 	DocumentSchedule []reports.BriefValue `json:"document_schedule"`
 	Documents        int                  `json:"documents"`
+	// Separate maps each trade discipline another live package holds to
+	// that package's title, so a head contract leaves it out.
+	Separate map[string]string `json:"separate,omitempty"`
 }
 
 func (d DriverSet) Fact(key string) Fact {
@@ -171,6 +174,11 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 	d.DocumentSchedule = s.Documents
 	d.Documents = len(s.Documents)
 	d.Text["register"] = registerSummary(s.Documents)
+	d.Text["package"] = strings.TrimSpace(s.Package.Title)
+	d.Separate = separatePackages(s)
+	if f, ok := systemsInScope(s); ok {
+		d.Facts["system"] = f
+	}
 	readFlags(d.Facts, value)
 	// A flag stored as a project detail is the user's word; it replaces
 	// any reading of the same flag rather than disagreeing with it.
@@ -473,4 +481,49 @@ func formatNumber(v string) string {
 		return b.String()
 	}
 	return fmt.Sprintf("%.1f", n)
+}
+
+// systemsInScope is the building systems the project's Profile scope holds:
+// the top-level system of every included work item. With no work items
+// recorded the fact stays unknown, so a trade row prints on its stated
+// assumption rather than silently dropping out.
+func systemsInScope(s reports.Snapshot) (Fact, bool) {
+	recorded := false
+	systems := []string{}
+	for _, w := range s.Works {
+		if w.RetiredAt != nil {
+			continue
+		}
+		recorded = true
+		if w.Inclusion != "included" || w.SystemID == "" {
+			continue
+		}
+		root, _, _ := strings.Cut(w.SystemID, ".")
+		if !slices.Contains(systems, root) {
+			systems = append(systems, root)
+		}
+	}
+	if !recorded {
+		return Fact{}, false
+	}
+	sort.Strings(systems)
+	return Fact{Values: systems, State: Known, Source: "profile", Detail: "works"}, true
+}
+
+// separatePackages names the trades let as their own contracts: every other
+// live package with a trade discipline, by the first such package's title.
+func separatePackages(s reports.Snapshot) map[string]string {
+	out := map[string]string{}
+	for _, p := range s.Packages {
+		if p.ID == s.Package.ID || p.RetiredAt != nil || !strings.HasPrefix(p.DisciplineID, "trade.") {
+			continue
+		}
+		if _, ok := out[p.DisciplineID]; !ok {
+			out[p.DisciplineID] = p.Title
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }

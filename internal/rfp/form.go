@@ -24,6 +24,8 @@ type FormHeader struct {
 	Title   string // e.g. "Town planning RFP"
 	Project string
 	Ref     string
+	// Works is a trade RFT: the same sheets and keys, in tender words.
+	Works bool
 }
 
 // ResponseForm is the returnable schedule as a workbook a firm fills in: the
@@ -44,9 +46,13 @@ func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.
 		fees.Rows = append(fees.Rows, []xlsx.Cell{formText(item.Key), formText(item.Label), {}, {}})
 	}
 	last := len(fees.Rows)
-	fees.Rows = append(fees.Rows, []xlsx.Cell{formBold("base_total"), formBold("Base fee total"), sum("C", first, last), {}})
+	total := "Base fee total"
+	if h.Works {
+		total = "Tender price total"
+	}
+	fees.Rows = append(fees.Rows, []xlsx.Cell{formBold("base_total"), formBold(total), sum("C", first, last), {}})
 	appendOptions(&fees, options)
-	return formSheets(fees, items, returnables)
+	return formSheets(fees, items, returnables, h.Works)
 }
 
 func formText(s string) xlsx.Cell { return xlsx.Cell{Text: s} }
@@ -59,15 +65,19 @@ func feeSheetHeader(h FormHeader) xlsx.Sheet {
 	// does not use (owner direction, 2 November 2026). R7 holds durations.
 	fees := xlsx.Sheet{Name: "R1 Fees", Widths: []float64{22, 60, 18, 40}}
 	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(h.Title + " — response form")}, []xlsx.Cell{text(h.Project)})
+	doc, amount, note := "RFP", "Fee $ excl. GST", "Fees exclude GST."
+	if h.Works {
+		doc, amount, note = "RFT", "Price $ excl. GST", "Prices exclude GST."
+	}
 	if h.Ref != "" {
-		fees.Rows = append(fees.Rows, []xlsx.Cell{text("RFP reference " + h.Ref)})
+		fees.Rows = append(fees.Rows, []xlsx.Cell{text(doc + " reference " + h.Ref)})
 	}
 	fees.Rows = append(fees.Rows, nil)
 	for _, f := range FormFirmFields {
 		fees.Rows = append(fees.Rows, []xlsx.Cell{bold(f), {}})
 	}
-	fees.Rows = append(fees.Rows, nil, []xlsx.Cell{text("Fees exclude GST. Enter \"Not priced\" or \"Included in <ref>\" instead of an amount where that applies.")}, nil)
-	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(FormRef), bold("Item"), bold("Fee $ excl. GST"), bold("Notes")})
+	fees.Rows = append(fees.Rows, nil, []xlsx.Cell{text(note + " Enter \"Not priced\" or \"Included in <ref>\" instead of an amount where that applies.")}, nil)
+	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(FormRef), bold("Item"), bold(amount), bold("Notes")})
 	fees.TitleRow = len(fees.Rows)
 	return fees
 }
@@ -120,12 +130,12 @@ func GroupResponseForm(h FormHeader, fees []FeeSection, returnables []Row) []xls
 	}
 	sheet.Rows = append(sheet.Rows, []xlsx.Cell{formBold("engagement_total"), formBold("Engagement total"), total, {}})
 	appendOptions(&sheet, options)
-	return formSheets(sheet, all, returnables)
+	return formSheets(sheet, all, returnables, false)
 }
 
 // formSheets follows the fee sheet with the rate sheet and one table for
 // each non-price schedule.
-func formSheets(fees xlsx.Sheet, items []ScheduleItem, returnables []Row) []xlsx.Sheet {
+func formSheets(fees xlsx.Sheet, items []ScheduleItem, returnables []Row, works bool) []xlsx.Sheet {
 	bold, text := formBold, formText
 	rates := xlsx.Sheet{Name: "R3 Rates", Widths: []float64{28, 40, 30, 18}, TitleRow: 1}
 	rates.Rows = append(rates.Rows, []xlsx.Cell{bold(FormRef), bold("Role"), bold("Name"), bold("Rate $/h excl. GST")})
@@ -167,12 +177,26 @@ func formSheets(fees xlsx.Sheet, items []ScheduleItem, returnables []Row) []xlsx
 			stages = append(stages, []xlsx.Cell{text(item.Label), {}, {}, {}})
 		}
 	}
+	insurance := [][]xlsx.Cell{}
+	if works {
+		// A trade RFT asks for the tender schedules (skeleton-works.yaml).
+		table("r2", "R2 Provisional sums", []string{"Item", "Provisional sum or prime cost item", "Amount $ excl. GST", "Margin on adjustment %"}, append([][]xlsx.Cell{{text("Nil, or list each item")}}, blank(8, 4)...))
+		table("r4", "R4 Team", []string{"Role", "Name", "Time on this project"}, blank(6, 3))
+		table("r5", "R5 Experience", []string{"Project", "Client", "Value $", "Year", "Your role", "Referee and phone"}, blank(3, 6))
+		table("r6", "R6 Departures", []string{"Clause or item", "Proposed change", "Effect on price", "Effect on time"}, append([][]xlsx.Cell{{text("Nil, or list each departure")}}, blank(6, 4)...))
+		table("r7", "R7 Program", R7Columns, stages)
+		for _, row := range []string{"Contractor licence", "Public liability", "Contract works insurance", "Workers compensation", "Safety system", "Quality system"} {
+			insurance = append(insurance, []xlsx.Cell{text(row), {}, {}, {}})
+		}
+		table("r8", "R8 Insurance", []string{"Item", "Insurer, licence or detail", "Amount $", "Expiry"}, insurance)
+		table("r9", "R9 Subcontractors", []string{"Trade", "Subcontractor or supplier", "Licence"}, blank(8, 3))
+		return sheets
+	}
 	table("r2", "R2 Deliverables", []string{"Deliverable", "Format", "Stage", "Review rounds", "Recipient", "Editable files and reliance"}, blank(10, 6))
 	table("r4", "R4 Team", []string{"Role", "Name", "% time by stage", "Subconsultant firm"}, blank(8, 4))
 	table("r5", "R5 Experience", []string{"Project", "Client", "Value $", "Year", "Your role", "Referee and phone"}, blank(3, 6))
 	table("r6", "R6 Departures", []string{"Clause or item", "Proposed change", "Effect on fee", "Effect on time"}, append([][]xlsx.Cell{{text("Nil, or list each departure")}}, blank(6, 4)...))
 	table("r7", "R7 Program", R7Columns, stages)
-	insurance := [][]xlsx.Cell{}
 	for _, row := range []string{"Professional indemnity", "Public liability", "Workers compensation", "Quality system", "Safety system", "Environmental system", "Conflicts of interest"} {
 		insurance = append(insurance, []xlsx.Cell{text(row), {}, {}, {}})
 	}

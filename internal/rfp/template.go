@@ -2,6 +2,7 @@ package rfp
 
 import (
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -27,8 +28,8 @@ func (b *builder) consultantLayout() {
 	for _, block := range project.Blocks {
 		switch block.ID {
 		case "rfp:header":
-			block.Text = "Release date: " + b.field("issued") + " · Proposals close: " + b.field("closes")
-			b.section["issue_dates"] = &reports.Section{ID: "issue_dates", Title: "Proposal dates", Blocks: []reports.Block{block}, Essential: true}
+			block.Text = "Release date: " + b.field("issued") + " · " + b.words().closes + ": " + b.field("closes")
+			b.section["issue_dates"] = &reports.Section{ID: "issue_dates", Title: b.words().dates, Blocks: []reports.Block{block}, Essential: true}
 		case "rfp:project:information":
 			block.Label = ""
 			b.section["transmittal"] = &reports.Section{ID: "transmittal", Blocks: []reports.Block{block}, Essential: true}
@@ -39,12 +40,21 @@ func (b *builder) consultantLayout() {
 	project.Blocks = keptProject
 	// The stage table and the service positions are parts of section 2, so
 	// every RFP numbers 1 Project to 5 Terms whichever scope layout it uses.
-	b.section["role"].Title = "2. Scope of services"
-	b.section["stages"].Title = "Scope by stage and fee proposal"
-	b.section["positions"].Title = "Service positions"
+	// A document with no allowances (most trade RFTs) leaves that section
+	// out and numbers Terms 4.
+	w := b.words()
+	b.section["role"].Title = "2. " + w.scope
+	b.section["stages"].Title = w.stages
+	b.section["positions"].Title = w.positions
 	b.section["transmittal"].Title = "3. Transmittal"
-	b.section["allowances"].Title = "4. Allowances"
-	b.section["terms"].Title = "5. Terms"
+	terms := 5
+	if len(b.r.Allowances) == 0 {
+		delete(b.section, "allowances")
+		terms = 4
+	} else {
+		b.section["allowances"].Title = "4. Allowances"
+	}
+	b.section["terms"].Title = strconv.Itoa(terms) + ". Terms"
 	ids := []string{"project", "role", "stages", "positions", "transmittal", "allowances", "terms", "returnables", "issue_dates"}
 	if b.r.ScopeByStage {
 		// One table straight under the scope wording: each stage with its
@@ -213,6 +223,7 @@ func (b *builder) stageInstructions() []string {
 // and one fee per included stage. A stage a rule leaves out is not printed;
 // one the user leaves out prints as excluded, without its lines.
 func (b *builder) stageScopeTable() {
+	w := b.words()
 	position := func(v string) string {
 		if v == "X" {
 			return "Excluded"
@@ -234,8 +245,12 @@ func (b *builder) stageScopeTable() {
 		if s.State == Exclude && s.Source == "rule" {
 			continue
 		}
+		if s.State == Exclude && s.By != "" && s.Source == "package" {
+			rows = append(rows, []string{s.Name, "By separate contract: " + s.By, "Excluded", "—"})
+			continue
+		}
 		if s.State == Exclude {
-			rows = append(rows, []string{s.Name, "Not part of this appointment", "Excluded", "—"})
+			rows = append(rows, []string{s.Name, w.notPart, "Excluded", "—"})
 			continue
 		}
 		note := strings.TrimSpace(s.Responsibility + " " + s.Assumption)
@@ -262,22 +277,21 @@ func (b *builder) stageScopeTable() {
 		}
 		rows = append(rows, services(s.Key)...)
 	}
-	rows = append(rows, []string{"Across all stages", "Services through the whole appointment", "", "In stage fees"})
+	rows = append(rows, []string{w.across, w.acrossText, "", w.acrossPrice})
 	rows = append(rows, services("")...)
 	stageRows := len(rows)
-	rows = append(rows, []string{"Reimbursables", "Included in the fee, or each item with its rate (R9)", "", ""})
-	rows = append(rows, []string{"Total fee", "Included stages and reimbursables", "", ""})
+	rows = append(rows, w.extraRow, w.totalRow)
 	if b.opt.part {
 		b.partStageTable(rows[:stageRows])
 		return
 	}
-	instructions := append([]string{b.r.StageIntro}, "Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.")
+	instructions := append([]string{b.r.StageIntro}, w.priceNote)
 	for _, ret := range b.r.Returnables {
 		if ret.Key == "r1" {
 			instructions = append(instructions[:1], append([]string{ret.Label + ": " + ret.Text}, instructions[1:]...)...)
 		}
 	}
-	b.add("stages", "rfp:stages", "", strings.TrimSpace(strings.Join(instructions, " ")), doc([]string{"Stage", "Scope", "Position", "Fee $"}, rows),
+	b.add("stages", "rfp:stages", "", strings.TrimSpace(strings.Join(instructions, " ")), doc(w.columns, rows),
 		map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "services": b.stageServices(), "stage_rows": stageRows, "schedule": Schedule(b.r), "layout": "stage_scope"})
 }
 
@@ -385,4 +399,38 @@ func scopeNoteTarget(discipline, key string) string {
 		return "controls"
 	}
 	return ""
+}
+
+// layoutWords are the words that differ between a consultant RFP and a
+// trade RFT. The layout, controls and block IDs are the same.
+type layoutWords struct {
+	scope, stages, positions, closes, dates, notPart string
+	across, acrossText, acrossPrice, priceNote       string
+	columns, extraRow, totalRow                      []string
+	formNote                                         string
+}
+
+func (b *builder) words() layoutWords {
+	if b.r.Kind == "works" {
+		return layoutWords{
+			scope: "Scope of works", stages: "Scope and tender price", positions: "Responsibilities",
+			closes: "Tenders close", dates: "Tender dates", notPart: "Not part of this tender",
+			across: "Across the works", acrossText: "Responsibilities through the whole contract", acrossPrice: "In row prices",
+			priceNote: "Price each included row. A line marked Included is part of its row's price; a line marked Excluded is not part of this tender. Prices exclude GST; state GST and total in your tender. Propose any departure in R6.",
+			columns:   []string{"Item", "Scope", "Position", "Price $"},
+			extraRow:  []string{"Provisional sums and prime cost items", "Each with its amount (R2)", "", ""},
+			totalRow:  []string{"Tender price", "Included rows, provisional sums and prime cost items", "", ""},
+			formNote:  "Reply in this order. The response form (Excel, issued with this RFT) has a table for each schedule and every price row of section 2; return it with your tender.",
+		}
+	}
+	return layoutWords{
+		scope: "Scope of services", stages: "Scope by stage and fee proposal", positions: "Service positions",
+		closes: "Proposals close", dates: "Proposal dates", notPart: "Not part of this appointment",
+		across: "Across all stages", acrossText: "Services through the whole appointment", acrossPrice: "In stage fees",
+		priceNote: "Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.",
+		columns:   []string{"Stage", "Scope", "Position", "Fee $"},
+		extraRow:  []string{"Reimbursables", "Included in the fee, or each item with its rate (R9)", "", ""},
+		totalRow:  []string{"Total fee", "Included stages and reimbursables", "", ""},
+		formNote:  ResponseFormNote,
+	}
 }

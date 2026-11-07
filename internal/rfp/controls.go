@@ -9,14 +9,16 @@ import (
 // Controls is the editor's view of a resolved RFP: the decisions that block
 // issue first, then grouped controls, each with its value and source.
 type Controls struct {
-	Discipline string    `json:"discipline"`
-	Title      string    `json:"title"`
-	Status     string    `json:"status"`
-	Scale      Scale     `json:"scale"`
-	Boundary   BoundaryC `json:"boundary"`
-	Decisions  []Check   `json:"decisions"`
-	Checks     []Check   `json:"checks"`
-	Groups     []Group   `json:"groups"`
+	Discipline string `json:"discipline"`
+	// Kind is works on a trade RFT, so the editor says tender and price.
+	Kind      string    `json:"kind,omitempty"`
+	Title     string    `json:"title"`
+	Status    string    `json:"status"`
+	Scale     Scale     `json:"scale"`
+	Boundary  BoundaryC `json:"boundary"`
+	Decisions []Check   `json:"decisions"`
+	Checks    []Check   `json:"checks"`
+	Groups    []Group   `json:"groups"`
 }
 
 type Scale struct {
@@ -71,7 +73,7 @@ type Control struct {
 // stored settings, and never the project.
 func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, settings Settings) Controls {
 	isSet := func(key string) bool { _, ok := settings[key]; return ok }
-	c := Controls{Discipline: r.Discipline, Title: r.Title, Status: r.Status, Decisions: r.Blocking(), Checks: r.Checks}
+	c := Controls{Discipline: r.Discipline, Kind: r.Kind, Title: r.Title, Status: r.Status, Decisions: r.Blocking(), Checks: r.Checks}
 	c.Scale = Scale{Value: r.Scale, Source: r.ScaleSource, Why: r.ScaleWhy, Set: isSet("scale")}
 	c.Boundary = BoundaryC{Boundary: r.Boundary, Set: isSet("boundary:range")}
 	for _, s := range d.Stages {
@@ -149,7 +151,7 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	for _, p := range r.Parts {
 		selected = append(selected, p.ID)
 	}
-	appointment.Controls = append(appointment.Controls, Control{Key: "parts:affected", Label: "Parts this appointment covers", Kind: "parts", Value: selected, Options: parts, Source: map[bool]string{true: "user", false: "profile"}[isSet("parts:affected")], Set: isSet("parts:affected")})
+	appointment.Controls = append(appointment.Controls, Control{Key: "parts:affected", Label: map[bool]string{false: "Parts this appointment covers", true: "Parts this tender covers"}[r.Kind == "works"], Kind: "parts", Value: selected, Options: parts, Source: map[bool]string{true: "user", false: "profile"}[isSet("parts:affected")], Set: isSet("parts:affected")})
 	for _, key := range []string{"site_area", "gfa", "budget"} {
 		if used[key] || key != "budget" {
 			fact(key, factLabels[key], "number", nil, "")
@@ -176,6 +178,9 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 
 	stages := Group{ID: "stages", Title: "Stages", Section: "stages"}
 	stateOptions := []Choice{{Include, "In the base fee"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFP"}, {Done, "Done by others"}, {Ask, "Unknown"}}
+	if r.Kind == "works" {
+		stateOptions = []Choice{{Include, "In the tender price"}, {Option, "Priced as an option"}, {Exclude, "Not in this RFT"}, {Done, "Done by others"}, {Ask, "Unknown"}}
+	}
 	for _, s := range r.Stages {
 		stages.Controls = append(stages.Controls, Control{Key: "stage:" + s.Key, Label: s.Name, Kind: "stage", Value: s.State, Options: stateOptions, Source: s.Source, Why: s.Why, Locked: s.Locked, Set: isSet("stage:" + s.Key), Help: s.ShownWhen})
 	}
@@ -253,6 +258,21 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 	c.Groups = append(c.Groups, terms)
 	c.Groups = append(c.Groups, issue)
 	assignScopeInputs(&c, d, sk)
+	for i := range c.Groups {
+		// An empty group is an empty list on the wire, never null: a trade
+		// RFT has no allowances.
+		if c.Groups[i].Controls == nil {
+			c.Groups[i].Controls = []Control{}
+		}
+		if r.Kind == "works" {
+			switch c.Groups[i].ID {
+			case "positions":
+				c.Groups[i].Title = "Responsibilities"
+			case "issue":
+				c.Groups[i].Title = "Tender dates"
+			}
+		}
+	}
 	return c
 }
 

@@ -1,0 +1,281 @@
+# Main Works (head contract) RFT (docs/plans/2026-11-08-trade-rft.md). The
+# price rows are the building, in the cost plan's element order
+# (knowledge/costs/elements.yaml). A row shows when Profile scope holds its
+# system; until scope is recorded it is included on a printed assumption.
+# A row naming `separate` is excluded while another live package holds that
+# trade: Main Works holds whatever is not let separately. Draft.
+id: main-works
+version: 1
+status: draft
+kind: works
+title: Main works
+heading: "REQUEST FOR TENDER: MAIN WORKS"
+discipline_ids: [trade.main_works]
+title_aliases: [main works, head contract, head contractor, builder]
+evidence_limit: "Seed guidance and the cost plan's element list; no historical tender has been encoded."
+
+scale:
+  text: "One head contract; the rows follow the project's building systems."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the head contractor. Your job is to build the works the documents show, to the contract, safely, on program and to the standard specified, and to hand over a complete, certified building."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-builder.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Take possession of the site and run it safely, including every trade and visitor on it.
+      - Build the works in this section and coordinate every subcontractor and supplier you engage.
+      - Give any separate contractor the client engages access, set-out and site services as the contract provides, and coordinate your work with theirs.
+      - Arrange the inspections, tests and certificates the certifier needs for each stage and for occupation.
+      - Hand over the building complete, clean, with manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-builder.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: fit_existing
+    text: "Where the works join or alter an existing building, this includes protecting what is kept and keeping it weather-tight, secure and safe to use as the contract requires."
+    when: [{work_type: [refurb, extend, remediation]}, {flag: [existing_building]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
+  - key: fit_live
+    text: "The site stays occupied or operating during the works: plan access, noise, dust and services shutdowns with the client before each one."
+    when: [{flag: [live_operations]}]
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/institution-construction-guide.md"}]
+
+stage_intro: "The rows follow the building; a row marked Excluded is let separately or is not part of this tender."
+scope_by_stage: true
+
+# Every row is part of the one tender; there is no appointment range.
+boundary:
+  - {start: design, end: vertical_transport}
+
+stages:
+  - key: design
+    name: Design completion
+    lines:
+      - {key: complete_design, text: "Complete the design from the tender documents to construction issue"}
+      - {key: novated, text: "Engage and direct the novated consultants"}
+      - {key: shop_drawings, text: "Shop drawings and the construction certificate documentation"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    when: [procurement: [design_construct]]
+    shown_when: Design and construct
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-d-and-c.md"}]
+  - key: preliminaries
+    name: Preliminaries and site establishment
+    lines:
+      - {key: establishment, text: "Site establishment, amenities, fencing and signage"}
+      - {key: supervision, text: "Site supervision and contract management"}
+      - {key: set_out, text: "Set-out from the survey control"}
+      - {key: temporary, text: "Temporary services, access, scaffolding and edge protection"}
+      - {key: protection, text: "Protection of the works, neighbouring property and retained trees"}
+      - {key: waste, text: "Cleaning and waste removal throughout"}
+      - {key: handover, text: "Final clean, commissioning records, manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-builder.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+  - key: demolition
+    name: Demolition and strip-out
+    lines:
+      - {key: disconnect, text: "Make safe and disconnect services before demolition"}
+      - {key: demolish, text: "Demolition and strip-out the documents show"}
+      - {key: disposal, text: "Removal and lawful disposal of demolished material"}
+      - {key: hazardous, text: "Removal of hazardous materials in the register, by a licensed removalist"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    module: existing_building
+    shown_when: Existing building, extension or refurbishment
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md#live-occupancy-and-staging"}]
+  - key: site
+    name: Site works
+    lines:
+      - {key: clearing, text: "Site clearing and bulk earthworks"}
+      - {key: retaining, text: "Retaining walls"}
+      - {key: drainage, text: "Stormwater drainage and detention the documents show"}
+      - {key: connections, text: "Connections to the authority services"}
+      - {key: paving, text: "Driveways, paths and paving"}
+      - {key: external, text: "Fencing and landscaping the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [site]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.civil_works
+    shown_when: Site works in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 01 site works; its trade is civil works when let separately."}]
+  - key: substructure
+    name: Substructure
+    lines:
+      - {key: excavation, text: "Excavation for footings and services"}
+      - {key: footings, text: "Footings, piers or piles and the ground slab"}
+      - {key: below_ground, text: "Waterproofing and drainage below ground"}
+      - {key: termite, text: "Termite management"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [substructure]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    shown_when: Substructure in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 02 substructure, held by Main Works."}]
+  - key: structure
+    name: Structure
+    lines:
+      - {key: frame, text: "Structural frame, walls and floors"}
+      - {key: suspended, text: "Suspended slabs, stairs and landings"}
+      - {key: inspections, text: "Structural inspections the engineer and certifier require"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [structure]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    shown_when: Structure in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 03 structure, held by Main Works."}]
+  - key: structural_steel
+    name: Structural steel
+    lines:
+      - {key: fabricate, text: "Fabrication, finishes and erection of structural steel"}
+      - {key: shop_drawings, text: "Steel shop drawings for the engineer's review"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [structure]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.structural_steel
+    shown_when: Structure in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 03 override: structural steel may be let separately."}]
+  - key: envelope
+    name: Envelope
+    lines:
+      - {key: roof, text: "Roof structure, roofing, gutters and downpipes"}
+      - {key: walls, text: "External walls and cladding"}
+      - {key: openings, text: "Windows, external doors and glazing"}
+      - {key: weatherproofing, text: "Insulation, sarking, flashings and weatherproofing"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [envelope]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    shown_when: Envelope in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 04 envelope, held by Main Works."}]
+  - key: interiors
+    name: Interiors
+    lines:
+      - {key: partitions, text: "Internal walls, linings and ceilings"}
+      - {key: doors, text: "Internal doors and hardware"}
+      - {key: wet_areas, text: "Wet area waterproofing and tiling"}
+      - {key: finishes, text: "Floor and wall finishes and painting"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [interiors]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    shown_when: Interiors in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 05 interiors, held by Main Works."}]
+  - key: joinery
+    name: Joinery
+    lines:
+      - {key: kitchen, text: "Kitchen joinery, benchtops and appliances installation"}
+      - {key: vanities, text: "Vanities, laundry and storage joinery"}
+      - {key: wardrobes, text: "Built-in wardrobes and shelving"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [interiors]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.joinery_kitchens
+    shown_when: Interiors in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 05 override: joinery and kitchens may be let separately."}]
+  - key: fire_passive
+    name: Passive fire protection
+    lines:
+      - {key: rated, text: "Fire-rated walls, floors and ceilings"}
+      - {key: penetrations, text: "Sealing of service penetrations"}
+      - {key: fire_doors, text: "Fire doors and their hardware"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [fire-passive]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    shown_when: Passive fire protection in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 06 passive fire, held by Main Works."}]
+  - key: fire_active
+    name: Fire services
+    lines:
+      - {key: detection, text: "Detection, alarms and smoke alarms"}
+      - {key: suppression, text: "Sprinklers, hydrants and hose reels the documents show"}
+      - {key: portable, text: "Portable extinguishers and blankets"}
+      - {key: certification, text: "Testing and the installer's certificates"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [fire-active]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.fire_services
+    shown_when: Fire services in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 07 fire services; its trade is fire services when let separately."}]
+  - key: mechanical
+    name: Mechanical services
+    lines:
+      - {key: hvac, text: "Heating, cooling and ventilation"}
+      - {key: exhaust, text: "Exhaust systems"}
+      - {key: commissioning, text: "Commissioning and balancing"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [mechanical]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.mechanical
+    shown_when: Mechanical services in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 08 mechanical; its trade is mechanical when let separately."}]
+  - key: hydraulic
+    name: Hydraulic services
+    lines:
+      - {key: sanitary, text: "Sanitary plumbing and drainage"}
+      - {key: water, text: "Cold and hot water supply"}
+      - {key: gas, text: "Gas, where the documents show it"}
+      - {key: fixtures, text: "Fitting of sanitary fixtures and tapware"}
+      - {key: roof_drainage, text: "Roof water drainage to the stormwater system"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [hydraulic]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.hydraulic_plumbing
+    shown_when: Hydraulic services in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 09 hydraulic; its trade is hydraulic and plumbing when let separately."}]
+  - key: electrical
+    name: Electrical services
+    lines:
+      - {key: supply, text: "Consumer mains, switchboards and metering"}
+      - {key: power_lighting, text: "Power, lighting and controls"}
+      - {key: comms, text: "Communications, data and security cabling the documents show"}
+      - {key: testing, text: "Testing and the electrical safety certificate"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [electrical, comms-security]]
+    if_unknown: include
+    assumption: "Included until Profile scope records the building systems."
+    separate: trade.electrical
+    shown_when: Electrical services in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost elements 10 and 11; their trade is electrical when let separately."}]
+  - key: vertical_transport
+    name: Lifts
+    lines:
+      - {key: lift, text: "Lift supply, installation and commissioning"}
+      - {key: lift_shaft, text: "Lift pit, shaft and builder's work for the lift"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    when: [system: [vertical-transport]]
+    if_unknown: option
+    assumption: "Priced as an option until Profile scope records whether there is a lift."
+    shown_when: Lifts in scope
+    provenance: [{kind: client_decision, ref: "knowledge/costs/elements.yaml", why: "Cost element 12 vertical transport, held by Main Works."}]
+
+positions:
+  - {key: authority_fees, label: "Authority application fees and contributions, by the client", kind: technical, value: X, responsible: client, provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Risk allocation and baseline reports)"}]}
+  - {key: loose_items, label: "Furniture and loose equipment, by the client", kind: technical, value: X, responsible: client, provenance: [{kind: practice, ref: "Loose furniture and equipment are the client's unless the documents show them"}]}
+
+returnables:
+  r2: "Name any provisional sum you think the documents need but do not include."
+  r9: "Name the trades you will let and those you will do yourselves."
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

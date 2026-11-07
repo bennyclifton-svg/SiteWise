@@ -14,16 +14,21 @@ test("procurement creates proposed and chosen disciplines, removes rows", async 
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await expect(page.getByText("Procurement route not answered.", { exact: true })).toHaveCount(0);
   await expect(page.getByText(/Rooftop chiller \(nobody designs it\)/)).toHaveCount(0);
+  // Main Works is a trade: it sits on the Trades tab (owner, 8 Nov 2026).
+  await page.getByRole("tab", { name: /^Trades/ }).click();
   await page.getByRole("button", { name: "Create RFT for Main Works", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "RFT — Head contract", exact: true })).toBeVisible();
+  // The RFT opens in the RFP format: same title line, Scope of works.
+  await expect(page.getByRole("heading", { name: "RFT Head contract", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "2. Scope of works", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
   await expect(page.getByRole("button", { name: "View RFT for Main Works", exact: true })).toBeVisible();
   await expect(page.getByText("Every accepted work item is covered.", { exact: true })).toHaveCount(0);
+  await page.getByRole("tab", { name: /^Consultants/ }).click();
   await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await page.getByLabel("Discipline", { exact: true }).selectOption("consultant.structural");
   await page.getByRole("button", { name: "Add row", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Structural", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "RFP — Structural", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "RFP Structural", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
   await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await expect(page.getByLabel("Discipline", { exact: true }).locator('option[value="consultant.structural"]')).toHaveCount(0);

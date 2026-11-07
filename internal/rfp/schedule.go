@@ -113,7 +113,13 @@ func Schedule(r Resolved) []ScheduleItem {
 	if r.ScopeByStage {
 		options("")
 	}
-	add(ReimbursablesKey, ItemReimbursable, "Reimbursables", "Included in the fee, or each item with its rate (R9)", true)
+	// The key stays the same on a trade RFT; its row is the provisional
+	// sums and prime cost items the tender asks for in R2.
+	if r.Kind == "works" {
+		add(ReimbursablesKey, ItemReimbursable, "Provisional sums and prime cost items", "Each with its amount (R2)", true)
+	} else {
+		add(ReimbursablesKey, ItemReimbursable, "Reimbursables", "Included in the fee, or each item with its rate (R9)", true)
+	}
 	for _, p := range r.Positions {
 		if r.ScopeByStage || p.Value != "O" || (r.Discipline == "hydraulic-services" && hydraulicStageService(p.Key)) {
 			continue

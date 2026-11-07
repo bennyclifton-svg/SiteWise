@@ -24,7 +24,13 @@ func TestProcurementRowsAndCreate(t *testing.T) {
 		t.Fatalf("%+v", p)
 	}
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"consultant.structural"}`), http.StatusConflict, nil)
-	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"supplier.windows_glazing"}`), http.StatusUnprocessableEntity, nil)
+	// A supply is a trade row with an RFT (owner, 8 November 2026); an id
+	// the discipline list does not hold is still refused.
+	var supply procurement.Package
+	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"supplier.windows_glazing"}`), http.StatusCreated, &supply)
+	if supply.Kind != "works" || supply.WorksScope != "trade" {
+		t.Fatalf("%+v", supply)
+	}
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"supplier.facade"}`), http.StatusUnprocessableEntity, nil)
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"consultant.nope"}`), http.StatusUnprocessableEntity, nil)
 	m.call(t, http.MethodPost, rows, []byte(`{}`), http.StatusBadRequest, nil)

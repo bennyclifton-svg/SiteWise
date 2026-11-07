@@ -291,19 +291,15 @@ func TestGroupRFPChecksAndResponseForm(t *testing.T) {
 			}
 		}
 	}
-	if len(labelled) != 3 {
-		t.Fatalf("every member's checks are labelled: %v", labelled)
+	// The general consultant RFP raises no checks beyond the shared ones.
+	if len(labelled) != 2 || labelled["Acoustic consultant: "] {
+		t.Fatalf("every member's own checks are labelled: %v", labelled)
 	}
+	// A consultant with no discipline file of its own takes the general
+	// consultant RFP (owner, 8 November 2026), named by its package.
 	acoustic := g.member(t, v, g.members[2].ID)
-	if acoustic.ReportID != "" || acoustic.Controls != nil || !strings.Contains(draftBlock(*v.Draft, rfp.PartSectionID(g.members[2].ID)+":rfp:role").Text, "Scope to be described") {
-		t.Fatal("a discipline with no RFP rules says its scope is to be described")
-	}
-	blocked := false
-	for _, c := range v.RFP.Decisions {
-		blocked = blocked || c.ID == g.members[2].ID+":scope_described"
-	}
-	if !blocked {
-		t.Fatal("a blocking check asks for its scope")
+	if acoustic.Controls == nil || !strings.Contains(draftBlock(*v.Draft, rfp.PartSectionID(g.members[2].ID)+":rfp:role").Text, "Appointment: Acoustic consultant.") {
+		t.Fatalf("acoustic uses the general consultant RFP: %+v", acoustic)
 	}
 	form, err := s.ReadResponseForm(ctx, orgA, g.report.ID)
 	if err != nil || len(form.Fees) != 3 || len(form.Sheets()) < 2 {

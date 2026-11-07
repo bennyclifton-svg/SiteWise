@@ -1,0 +1,109 @@
+# Shared trade RFT parts (docs/plans/2026-11-08-trade-rft.md). A trade RFT
+# is a consultant RFP in the same format with tender terms: every list this
+# file leaves out (flags, pathways, procurement routes, work types, project
+# rows, evaluation) is the consultant skeleton's, so page one is the same on
+# every RFP and RFT. Fields merge by key; omit_fields drops consultant-only
+# fields. Draft until the owner reviews it.
+version: 1
+status: draft
+kind: works
+
+omit_fields: [pi, payment_days, rates_hold_until, design_vehicle, design_loads]
+
+fields:
+  - {key: ref, label: RFT reference, kind: text, required: true, group: issue}
+  - {key: closes, label: Tenders close, kind: date, required: true, group: issue}
+  - key: agreement
+    label: Contract
+    kind: text
+    required: true
+    group: terms
+    help: "Name the contract and its special conditions, for example AS 4000-1997 with the client's special conditions. A missing contract is an open question, never acceptance of the tenderer's terms."
+  - {key: start_by, label: Site possession from, kind: date, required: false, group: issue}
+  - {key: completion, label: Practical completion by, kind: date, required: false, group: terms}
+  - {key: validity_days, label: Tender validity (days), kind: number, required: true, group: terms, default: "90"}
+  - {key: pl, label: Public liability cover, kind: text, required: true, group: terms, default: "$20 million"}
+  - {key: contract_works, label: Contract works insurance, kind: text, required: false, group: terms, help: "Who insures the works and for what value, as the contract provides."}
+  - {key: defects_period, label: Defects liability period, kind: text, required: false, group: terms}
+  - {key: liquidated_damages, label: Liquidated damages, kind: text, required: false, group: terms, help: "Amount per day, or \"nil\". Left blank, nothing prints."}
+  - {key: security, label: Security or retention, kind: text, required: false, group: terms}
+
+thresholds:
+  - {key: tender_validity, kind: client_default, text: "Tenders valid for 90 days", source: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Form of Tender: validity usually 60-90 days); client preference", verified: false}
+  - {key: works_insurance, kind: client_default, text: "Public liability $20 million unless the RFT sets another amount", source: "Same client default as the consultant skeleton; client preference, not a statutory minimum", verified: false}
+
+terms:
+  - key: agreement
+    text: "The contract is {field:agreement}; your own terms do not apply. List any departure from the contract in R6."
+    required: true
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Structuring a Request for Tender package)"}]
+  - key: documents
+    text: "Price the works the transmitted documents show and section 2 describes. Where documents disagree, price the higher standard and name the conflict in R6."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Structuring a Request for Tender package, common pitfalls)"}]
+  - key: site
+    text: "Inspect the site before you tender. Site access, existing conditions and latent conditions are dealt with as the contract provides."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Risk allocation and baseline reports)"}]
+  - key: possession
+    text: "Site possession from {field:start_by}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs follow the RFP format; dates print only when the project manager sets them."}]
+  - key: completion
+    text: "Practical completion by {field:completion}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs follow the RFP format; dates print only when the project manager sets them."}]
+  - key: authority
+    text: "Only a written direction from the client's representative authorises a variation; work without one is not paid."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/contract-administration-guide.md"}]
+  - key: payment
+    text: "Progress claims and payment follow the contract and the security of payment legislation of the state the site is in."
+    provenance: [{kind: practice, ref: "Security of payment legislation applies in every Australian state; periods come from the contract and the Act, not this RFT"}]
+  - key: defects
+    text: "Defects liability period: {field:defects_period}."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/defects-and-dlp-guide.md"}]
+  - key: damages
+    text: "Liquidated damages: {field:liquidated_damages}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Printed only when the project manager sets it; no amount is assumed."}]
+  - key: security
+    text: "Security or retention: {field:security}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Printed only when the project manager sets it; no amount is assumed."}]
+  - key: validity
+    text: "Your tender stays valid for {field:validity_days} days."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Essential returnable schedules: Form of Tender)"}]
+  - key: questions_to
+    text: "Send questions in writing to {field:contact} by {field:questions_by}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: firms need a contact and a date for questions; printed only when both are set."}]
+  - key: questions
+    text: "Answers to scope questions go to every tenderer as numbered addenda."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Tender period administration and probity)"}]
+
+returnables:
+  - key: r1
+    title: R1 Tender price
+    text: "Excl. GST, in the table below: a lump sum for each included item and the total. Price an item once. Acknowledge each addendum by number and confirm the signatory can bind your company."
+  - key: r2
+    title: R2 Provisional sums and prime cost items
+    text: "Each provisional sum and prime cost item you have allowed, with its amount and your margin on adjustment; or \"nil\"."
+  - key: r3
+    title: R3 Schedule of rates
+    text: "Excl. GST: hourly rates for these roles, plant rates and your margin, used to value variations. Roles: Site supervisor · Tradesperson · Apprentice · Labourer."
+  - key: r4
+    title: R4 Team and supervision
+    text: "Named site supervisor and contract manager, and the time each spends on this project."
+  - key: r5
+    title: R5 Experience
+    text: "Two or three comparable projects in the last five years, each with a referee."
+  - key: r6
+    title: R6 Departures and qualifications
+    text: "Each departure from section 2, the documents or the contract: clause or item, proposed change, effect on price and time; or \"nil\". A general exclusion not listed here is non-compliant."
+  - key: r7
+    title: R7 Program
+    text: "Weeks from site possession to practical completion, the lead time of each long-lead item, and the dates you need information or decisions."
+  - key: r8
+    title: R8 Licence, insurance and compliance
+    text: "Contractor licence number; public liability {field:pl}; contract works insurance where the contract makes it yours; workers compensation; safety management and safe work method statements; quality system."
+  - key: r9
+    title: R9 Subcontractors and suppliers
+    text: "The subcontractors and suppliers you intend to use, by trade."
+
+legend: "Included = part of the price for its row · Excluded = not part of this tender (by others where named)."
+allowances: "Price exactly these. Work beyond an allowance needs a written direction (section 5) and is then valued at your R3 rates."
+departures: "Tell us in R6 if you disagree with any line. Do not add your own general exclusions; any you add are treated as non-compliant."
+evaluation_note: "Lowest price does not automatically win."

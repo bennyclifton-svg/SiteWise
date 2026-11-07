@@ -51,6 +51,22 @@ templates:
       - {id: positions, title: "2. Scope of services", essential: true, clauses: []}
       - {id: terms, title: "5. Terms", essential: true, clauses: []}
       - {id: returnables, title: "Returnable schedules: reply using this structure only", essential: true, clauses: []}
+  # A trade RFT in the consultant RFP format (docs/plans/2026-11-08-trade-rft.md):
+  # the same sections, built from a works discipline file in knowledge/rfp.
+  - id: tpl.rft-trade
+    version: 1
+    kind: rft
+    status: draft
+    sources:
+      - {design: docs/plans/2026-11-08-trade-rft.md, anchor: "## Design"}
+    sections:
+      - {id: project, title: "1. Project", essential: true, clauses: []}
+      - {id: role, title: "Scope obligations", essential: true, clauses: []}
+      - {id: stages, title: "Scope and tender price", essential: true, clauses: []}
+      - {id: allowances, title: "4. Allowances", essential: true, clauses: []}
+      - {id: positions, title: "2. Scope of works", essential: true, clauses: []}
+      - {id: terms, title: "5. Terms", essential: true, clauses: []}
+      - {id: returnables, title: "Returnable schedules: reply using this structure only", essential: true, clauses: []}
   - id: tpl.rft
     version: 1
     kind: rft
