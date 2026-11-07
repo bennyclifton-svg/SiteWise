@@ -26,7 +26,7 @@ empty_work_types:
 - advisory
 presets:
 - id: typical_fit_out
-  label: Typical fit-out
+  label: Commercial fit-out
   systems:
   - interiors.walls-linings
   - interiors.ceilings
@@ -48,6 +48,50 @@ presets:
   - hydraulic.hot-water
   - hydraulic.sanitary
   - comms-security.access-control
+# Drafted 7 Nov 2026 at the owner's request; owner review pending. Each list is
+# the systems the job usually touches, never evidence: the PM unticks the rest.
+- id: bathroom_kitchen_renovation
+  label: Bathroom or kitchen renovation
+  systems:
+  - site.demolition
+  - interiors.walls-linings
+  - interiors.ceilings
+  - interiors.wet-area-waterproofing
+  - interiors.tiling
+  - interiors.floor-finishes
+  - interiors.joinery
+  - interiors.internal-doors
+  - interiors.internal-glazing
+  - interiors.painting
+  - interiors.ffe
+  - mechanical.local-exhaust
+  - hydraulic.cold-water
+  - hydraulic.hot-water
+  - hydraulic.sanitary
+  - electrical.cabling-wiring
+  - electrical.lighting
+- id: facade_cladding_remediation
+  label: Facade or cladding remediation
+  systems:
+  - site.demolition
+  - structure.temporary-works
+  - envelope.external-walls
+  - envelope.windows-doors
+  - envelope.flashings-seals
+  - envelope.pliable-membranes
+  - envelope.thermal-insulation
+  - fire-passive.external-walls
+  - fire-passive.penetrations
+- id: waterproofing_remediation
+  label: Waterproofing remediation
+  systems:
+  - envelope.external-waterproofing
+  - envelope.flashings-seals
+  - interiors.wet-area-waterproofing
+  - interiors.tiling
+  - substructure.damp-waterproofing
+  - hydraulic.roof-drainage
+  - access-egress.barriers
 classes:
 - class: house
   work_type: new

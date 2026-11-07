@@ -142,20 +142,6 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
     <section className="pf-section sw" aria-labelledby="pf-scope">
       <div className="pf-head sw-head">
         <h2 id="pf-scope">Scope and works</h2>
-        <span className="muted">
-          {inScope} system{inScope === 1 ? "" : "s"} in scope
-        </span>
-        {data.presets.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className="btn btn-small"
-            disabled={busy}
-            onClick={() => run(Object.fromEntries(p.systems.map((s) => [s, "in" as const])))}
-          >
-            {p.label}
-          </button>
-        ))}
         {yours.length > 0 && (
           <button
             type="button"
@@ -167,11 +153,29 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
             Reset to defaults
           </button>
         )}
-        <label className="pf-toggle sw-all">
-          <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> Show inputs this scope does not need
-        </label>
       </div>
-      {inScope === 0 && <p className="pf-scope-hint">Tick the systems the works touch, or apply a preset. Compliance inputs follow the scope.</p>}
+      {/* Presets start an empty scope; once anything is in scope a preset
+          would only add systems nobody chose, so they step aside. */}
+      {inScope === 0 && (
+        <div className="pf-scope-start">
+          <p className="pf-scope-hint">Tick the systems the works touch, or start from a preset. Compliance inputs follow the scope.</p>
+          {data.presets.length > 0 && (
+            <div className="pf-scope-presets" role="group" aria-label="Scope presets">
+              {data.presets.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className="btn btn-small"
+                  disabled={busy}
+                  onClick={() => run(Object.fromEntries(p.systems.map((s) => [s, "in" as const])))}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       {workNote && (
         <div className="banner" role="alert">
           <p>{workNote}</p>
@@ -182,11 +186,15 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
       )}
 
       <div className="sw-body sw-matrix">
-        <div className="sw-key" aria-hidden="true">
-          <span><i className="sw-cell" data-on="true" />In scope</span>
-          <span><i className="sw-cell" />Not in scope</span>
-          <span><i className="sw-cell" data-check="true" />To check</span>
-          <span className="sw-key-note">One cell per system, in building order</span>
+        <div className="sw-keyrow">
+          <div className="sw-key" aria-hidden="true">
+            <span><i className="sw-cell" data-on="true" />In scope</span>
+            <span><i className="sw-cell" />Not in scope</span>
+            <span><i className="sw-cell" data-check="true" />To check</span>
+          </div>
+          <label className="pf-toggle sw-all" title="Also show inputs this scope does not need">
+            <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> Show all
+          </label>
         </div>
         <div className="sw-rail" role="group" aria-label="Scope entries">
           {entries.map((e) => {

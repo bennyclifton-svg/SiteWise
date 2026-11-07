@@ -132,6 +132,28 @@ export function Conflict({ cell, onPick }: { cell: Cell; onPick: (v: string) => 
   );
 }
 
+/**
+ * The same picks folded behind a small "+n" beside the sources, so a card row
+ * keeps one height (owner direction, 7 Nov 2026).
+ */
+export function ConflictPop({ cell, onPick }: { cell: Cell; onPick: (v: string) => void }) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  if ((cell.band !== "red" && cell.band !== "amber") || cell.alternatives.length === 0) return null;
+  const n = cell.alternatives.length;
+  return (
+    <details className="pf-alts-pop" ref={ref}>
+      <summary title={`${n} other reading${n === 1 ? "" : "s"}`} aria-label={`${n} other reading${n === 1 ? "" : "s"}`}>+{n}</summary>
+      <span className="pf-alts">
+        {cell.alternatives.map((a) => (
+          <button type="button" className="btn btn-small" key={a.value} onClick={() => { if (ref.current) ref.current.open = false; onPick(a.value); }}>
+            Use {a.value} ({a.sources.length})
+          </button>
+        ))}
+      </span>
+    </details>
+  );
+}
+
 /** Hands a value back to the documents; an icon so the row stays one line. */
 export function ResetButton({ onClick }: { onClick: () => void }) {
   return (
@@ -236,14 +258,16 @@ export function FieldRow({
     return (
       <div className="pf-row pf-pair" data-band={field.band || undefined}>
         <div className="pf-pair-head">
-          <label htmlFor={derived ? undefined : id} className="pf-label">
+          <label htmlFor={derived ? undefined : id} className="pf-label" title={label}>
             {label}
           </label>
-          {why}
+          <span className="pf-pair-why">
+            {why}
+            <ConflictPop cell={field} onPick={pick} />
+          </span>
         </div>
         <div className="pf-value">
           {control}
-          <Conflict cell={field} onPick={pick} />
         </div>
       </div>
     );

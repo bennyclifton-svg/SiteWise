@@ -22,7 +22,7 @@
 
 /* ---------- Summary and sources ---------- */
 
-.pf-lede { margin: 6px 0 60px; }
+.pf-lede { margin: 2px 0 28px; }
 
 .pf-summary {
   max-width: 40em;
@@ -205,7 +205,10 @@
 .sw-matrix { display: block; }
 .sw-key { display: flex; gap: 20px; margin: 0 0 12px; color: var(--sw-text-tertiary); font-size: 12.5px; }
 .sw-key span { display: inline-flex; align-items: center; gap: 8px; }
-.sw-key .sw-key-note { margin-left: auto; }
+/* Key and the Show all toggle sit together at the right of the table. */
+.sw-keyrow { display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin: 0 0 12px; }
+.sw-keyrow .sw-key { margin: 0; font-size: 13px; }
+.profile .sw-keyrow .sw-all { margin-left: 0; }
 
 .sw-matrix .sw-rail {
   position: static;
@@ -290,7 +293,7 @@
 /* ---------- Refinements ---------- */
 
 .cockpit-scroll { container-type: inline-size; }
-.pf-summary { font-size: clamp(20px, 2.35cqi, 28px); }
+.pf-summary { max-width: none; font-size: clamp(16px, 1.6cqi, 20px); line-height: 1.55; }
 
 .pf-titleblock .pf-tb-head { text-transform: none; letter-spacing: .01em; }
 .pf-titleblock .pf-tb-col:first-child .pf-row.pf-stack,
@@ -382,5 +385,149 @@
 }
 .pf-titleblock.pf-paired .pf-row[data-band="red"] select.pf-control { background-image: url("./assets/marks/brush-check.svg"); background-size: calc(100% - 4px) 82%; background-position: 1px 70%; }
 
+/* Value cells edit as Cost Plan cells do (owner direction, 7 Nov 2026): hover
+   colours the whole value cell, editing draws a square 1px line round its full
+   height and width, and the field inside shows no box of its own. The cell
+   reaches the row's edges through negative margins, so the text stays put. */
+.pf-titleblock.pf-paired .pf-value:has(.pf-control) {
+  align-self: stretch;
+  margin: -6px -12px -6px -6px;
+  padding: 6px 12px 6px 6px;
+}
+.pf-titleblock.pf-paired .pf-value:has(.pf-control):hover { background: var(--sw-hover-bg); }
+.pf-titleblock.pf-paired .pf-value:has(.pf-control:focus) { background: var(--paper); box-shadow: inset 0 0 0 1px var(--azure); }
+.pf-titleblock.pf-paired .pf-value .pf-control,
+.pf-titleblock.pf-paired .pf-value .pf-control:hover,
+.pf-titleblock.pf-paired .pf-value .pf-control:focus,
+.pf-titleblock.pf-paired .pf-value .pf-control:focus-visible {
+  margin-left: 0;
+  padding-left: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
 .pf-card-toggle { display: inline-flex; align-items: baseline; gap: 4px; margin: 10px 0 0; font-size: 13px; }
 .pf-unknown-toggle { justify-self: start; margin: 4px 0; font-size: 12.5px; }
+
+/* A value the documents disagree on: the whole cell takes a rose fill in place
+   of the highlighter stroke (owner direction, 7 Nov 2026). Hover and editing
+   keep the Cost Plan treatment above. */
+.pf-titleblock.pf-paired .pf-row[data-band="red"] .pf-inline .input,
+.pf-titleblock.pf-paired .pf-row[data-band="red"] select.pf-control { background-image: none; }
+.pf-titleblock.pf-paired .pf-row[data-band="red"] select.pf-control:hover,
+.pf-titleblock.pf-paired .pf-row[data-band="red"] select.pf-control:focus-visible {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none' stroke='%239A9188' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6l4 4 4-4'/></svg>");
+  background-size: 10px 10px;
+  background-position: right 6px center;
+}
+.pf-titleblock.pf-paired .pf-row[data-band="red"] .pf-value:has(.pf-control):not(:hover):not(:focus-within) { background: var(--alert-soft); }
+.pf-titleblock .pf-mark[data-band="red"] { color: var(--alert); }
+
+/* An empty scope offers presets beside the hint. */
+.pf-scope-start { margin: 0 0 16px; }
+.pf-scope-start .pf-scope-hint { margin-bottom: 8px; }
+.pf-scope-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- Profile layout, owner direction 7 Nov 2026 ---------- */
+
+/* Section titles take the table heading's blue. */
+.profile .pf-head { align-items: center; }
+.profile .pf-head h2 { color: color-mix(in oklab, var(--head-tone) 78%, var(--sw-text-primary)); }
+.cockpit-scroll .pf-head-actions { flex-wrap: nowrap; }
+
+/* Three dots beside Update project profile: Download and Add part. */
+.pf-more { position: relative; }
+.pf-more-btn { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--sw-text-secondary); cursor: pointer; }
+.pf-more-btn svg { width: 18px; height: 18px; }
+.pf-more-btn:hover, .pf-more-btn[aria-expanded="true"] { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.pf-more-menu { z-index: 20; margin-top: 4px; }
+.pf-more-menu button { white-space: nowrap; }
+.pf-add-part { display: flex; align-items: center; gap: 6px; }
+.pf-add-part .input { width: 160px; }
+
+/* Title block heads read exactly as the register's column heads: same band,
+   type and padding, shaded edge to edge with no rule above. */
+.cockpit-scroll .pf-card.pf-titleblock { margin-top: 0; }
+.pf-titleblock .pf-tb-head {
+  height: auto;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sw-border-strong);
+  font-family: inherit;
+  line-height: 1.5;
+}
+.pf-titleblock .pf-tb-col:first-child .pf-tb-head,
+.pf-titleblock.pf-paired .pf-tb-col:first-child .pf-row { padding-left: 12px; }
+
+/* Every card row is one height: label on one line, how it was decided under
+   it, value on one line. Long labels end in an ellipsis (full text on hover);
+   other readings fold behind "+n". */
+.pf-titleblock.pf-paired .pf-row {
+  grid-template-columns: minmax(64px, 42%) minmax(0, 1fr);
+  height: 48px;
+  min-height: 0;
+  align-items: start;
+}
+.pf-titleblock.pf-paired .pf-label {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: unset;
+}
+.pf-titleblock.pf-paired .pf-pair-head { gap: 3px; }
+.pf-pair-why { display: flex; align-items: center; gap: 6px; min-height: 14px; min-width: 0; }
+.pf-titleblock.pf-paired .pf-value { overflow: visible; white-space: nowrap; }
+.pf-titleblock.pf-paired .pf-value:has(.pf-control) { margin-bottom: -7px; }
+.pf-titleblock.pf-paired .pf-col-more .pf-row { height: 48px; }
+
+.pf-alts-pop { position: relative; }
+.pf-alts-pop summary {
+  list-style: none;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--trace-azure, var(--azure)) 14%, transparent);
+  color: var(--sw-text-secondary);
+  font: 500 10.5px/14px "IBM Plex Mono", ui-monospace, monospace;
+  cursor: pointer;
+}
+.pf-alts-pop summary::-webkit-details-marker { display: none; }
+.pf-alts-pop[open] > .pf-alts {
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 180px;
+  margin: 4px 0 0;
+  padding: 6px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 6px;
+  background: var(--sw-surface-elevated);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Parts sit as a row of The building. */
+.pf-titleblock .pf-parts-row .pf-parts { display: flex; flex-wrap: nowrap; gap: 6px; padding-top: 2px; overflow: hidden; }
+.pf-titleblock .pf-parts-row .pf-part { flex: 0 1 auto; min-width: 0; overflow: hidden; padding: 1px 8px; font-size: 12px; line-height: 18px; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Consultant team: one firm per row, after scope and works. */
+.pf-team-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13.5px; }
+.pf-team-table thead th:nth-child(1) { width: 14%; }
+.pf-team-table thead th:nth-child(2) { width: 30%; }
+.pf-team-table thead th:nth-child(3) { width: 16%; }
+.pf-team-table thead th:nth-child(4) { width: 25%; }
+.pf-team-table thead th:nth-child(5) { width: 15%; }
+.pf-team-table th, .pf-team-table td { height: 40px; padding: 0 12px; border-bottom: 1px solid var(--trace-rule); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pf-team-table thead th { height: auto; padding: 8px 12px; border-bottom: 1px solid var(--sw-border-strong); line-height: 1.5; }
+.pf-team-table tbody th { color: var(--sw-text-tertiary); font-weight: 400; }
+.pf-team-table td { color: var(--sw-text-primary); }
+
+@media print {
+  .pf-head-actions { display: none !important; }
+}

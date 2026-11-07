@@ -1,5 +1,5 @@
 import { Pending } from "./Activity";
-import { PagePrimaryAction } from "./PageActions";
+import { IconMore } from "./icons";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
@@ -128,6 +128,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   const [requesting, setRequesting] = useState(false);
   const [requestNote, setRequestNote] = useState("");
   const [entry, setEntry] = useState("");
+  const [addingPart, setAddingPart] = useState(false);
 
   const fail = useCallback(
     (e: unknown) => {
@@ -345,11 +346,6 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
 
       {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 
-      <PagePrimaryAction surface="profile">
-        <button type="button" className="btn" onClick={update} disabled={requesting}>
-          {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
-        </button>
-      </PagePrimaryAction>
       <section className="pf-lede" aria-label="Summary">
         <ProjectSummary fields={cardFields} />
       </section>
@@ -358,24 +354,14 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         <div className="pf-head">
           <h2 id="pf-project">Project</h2>
           <div className="pf-head-actions">
-            <PartsBar data={data} projectId={projectId} onChanged={() => profileApi.get(projectId).then(setData, fail)} onError={fail} />
+            {addingPart && <AddPart projectId={projectId} onDone={() => { setAddingPart(false); profileApi.get(projectId).then(setData, fail); }} onCancel={() => setAddingPart(false)} onError={fail} />}
+            <button type="button" className="btn" onClick={update} disabled={requesting}>
+              {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
+            </button>
+            <MoreMenu onAddPart={() => setAddingPart(true)} />
           </div>
         </div>
         <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} />
-        {(data.appointed ?? []).length > 0 && (
-          <dl className="pf-appointed" data-testid="profile-appointed">
-            {(data.appointed ?? []).map((a) => (
-              <div key={`${a.package_id}-${a.firm}`}>
-                <dt>{a.package}</dt>
-                <dd>
-                  {a.firm}
-                  {a.contact && <> ({a.contact})</>}
-                  {[a.email, a.phone].filter(Boolean).length > 0 && <span className="pf-appointed-contact"> · {[a.email, a.phone].filter(Boolean).join(" · ")}</span>}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        )}
       </section>
 
       <ScopeWorks
@@ -391,21 +377,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         onSignedOut={onSignedOut}
       />
 
-      <section className="pf-foot">
-        <SourcesNote
-          filed={data.read_documents + data.skipped_documents}
-          read={data.read_documents}
-          skipped={data.skipped_documents}
-          skippedKind={data.skipped_kind ? KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ") : ""}
-          unresolved={unresolved}
-          checks={checks}
-          thresholds={!data.thresholds.applied ? "Not yet applied" : data.thresholds.provisional ? "Provisional" : "Approved"}
-          updated={builtAt ? builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
-          onShowNotRead={onShowNotRead}
-          onSources={() => setSourcesOpen(true)}
-          onCheck={goToCheck}
-        />
-      </section>
+      <ConsultantTeam appointed={data.appointed ?? []} />
     </div>
   );
 }
@@ -488,16 +460,24 @@ function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: Pr
   // A conflict always shows, so "to check" can reach it with the card closed.
   const always = (f: ProfileField) => KEY_FIELDS.has(f.key) || f.band === "red";
   const rest = all.filter((f) => !always(f));
+  // Parts sit in The building, after the class they divide.
+  const withParts = (fields: ProfileField[], col: number) => {
+    if (COLUMNS[col].title !== "The building") return fields.map(row);
+    const at = fields.findIndex((f) => f.key === "hdr.building_class");
+    const out: ReactNode[] = fields.map(row);
+    out.splice(at < 0 ? out.length : at + 1, 0, <PartsRow key="parts" parts={parts} />);
+    return out;
+  };
   return (
     <>
-      <div className="pf-card pf-tiers pf-titleblock pf-paired pencil-rule">
+      <div className="pf-card pf-tiers pf-titleblock pf-paired">
         {COLUMNS.map((c, i) => {
           const fields = inColumn(all.filter(always), i);
           const extra = inColumn(rest, i);
           return (
             <div key={c.title} className="pf-tb-col" role="group" aria-label={c.title}>
               <h3 className="pf-tb-head">{c.title}</h3>
-              {fields.length > 0 ? fields.map(row) : <p className="muted pf-tb-empty">Nothing read yet.</p>}
+              {fields.length > 0 ? withParts(fields, i) : <p className="muted pf-tb-empty">Nothing read yet.</p>}
               {open && extra.filter((f) => !unanswered(f)).map(row)}
               {open && <NotYetKnown fields={extra.filter(unanswered)} render={row} className="pf-col-more" />}
             </div>
@@ -507,7 +487,7 @@ function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: Pr
       {rest.length > 0 && (
         <button type="button" className="cell-link pf-card-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
           <span aria-hidden="true">{open ? "▾" : "▸"}</span>{" "}
-          {open ? "Show key details only" : `Show all project details (${rest.filter((f) => !unanswered(f)).length} more answered, ${rest.filter(unanswered).length} not yet known)`}
+          {open ? "View less" : "View more"}
         </button>
       )}
     </>
@@ -562,26 +542,6 @@ function ProjectSummary({ fields }: { fields: ProfileField[] }) {
   );
 }
 
-function SourcesNote({ filed, read, skipped, skippedKind, unresolved, checks, thresholds, updated, onShowNotRead, onSources, onCheck }: {
-  filed: number; read: number; skipped: number; skippedKind: string; unresolved: number; checks: number; thresholds: string; updated: string;
-  onShowNotRead: () => void; onSources: () => void; onCheck: () => void;
-}) {
-  return (
-    <aside className="pf-notes" aria-label="Sources">
-      <h2>Sources</h2>
-      <dl>
-        <div><dt>Documents filed</dt><dd>{filed}</dd></div>
-        <div><dt>Read for this profile</dt><dd>{read}</dd></div>
-        {skipped > 0 && <div><dt>Not used{skippedKind ? `, mostly ${skippedKind}` : ""}</dt><dd>{skipped} <button type="button" className="cell-link" onClick={onShowNotRead}>Show</button></dd></div>}
-        <div><dt>Passages to review</dt><dd>{unresolved} <button type="button" className="cell-link" onClick={onSources}>Review</button></dd></div>
-        {checks > 0 && <div><dt><span className="mark-check">Marked</span> to check</dt><dd>{checks} <button type="button" className="cell-link" onClick={onCheck}>Go</button></dd></div>}
-        <div><dt>Thresholds</dt><dd className={thresholds === "Approved" ? "" : "pf-notes-soft"}>{thresholds}</dd></div>
-        {updated && <div><dt>Updated</dt><dd>{updated}</dd></div>}
-      </dl>
-    </aside>
-  );
-}
-
 // Address and lot live on the site record, which outlasts the project. What
 // the user typed there wins; until then the documents' reading is shown, with
 // its sources, and typing over it or resetting only touches the site record.
@@ -614,18 +574,34 @@ function useSiteFields(projectId: string, tick: number, readings: ProfileField[]
 
 const KINDS = ["building", "part", "storey", "compartment", "tenancy", "outbuilding"];
 
-function PartsBar({
-  data,
-  projectId,
-  onChanged,
-  onError,
-}: {
-  data: ProfileData;
-  projectId: string;
-  onChanged: () => void;
-  onError: (e: unknown) => void;
-}) {
-  const [adding, setAdding] = useState(false);
+/** The page's other actions, behind three dots beside Update project profile. */
+function MoreMenu({ onAddPart }: { onAddPart: () => void }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    root.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
+    const close = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [open]);
+  const pick = (action: () => void) => () => { setOpen(false); action(); };
+  return (
+    <div className="pf-more" ref={root} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
+      <button type="button" className="pf-more-btn" aria-label="Profile actions" title="Profile actions" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <IconMore />
+      </button>
+      {open && (
+        <div className="page-action-menu pf-more-menu" role="menu" aria-label="Profile actions">
+          <button type="button" role="menuitem" onClick={pick(() => window.print())}>Download project profile</button>
+          <button type="button" role="menuitem" onClick={pick(onAddPart)}>Add part</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AddPart({ projectId, onDone, onCancel, onError }: { projectId: string; onDone: () => void; onCancel: () => void; onError: (e: unknown) => void }) {
   const [label, setLabel] = useState("");
   const [kind, setKind] = useState("building");
   async function add(e: FormEvent) {
@@ -633,41 +609,63 @@ function PartsBar({
     if (!label.trim()) return;
     try {
       await profileApi.addPart(projectId, label.trim(), kind);
-      setLabel("");
-      setAdding(false);
-      onChanged();
+      onDone();
     } catch (err) {
       onError(err);
     }
   }
   return (
-    <div className="pf-parts" aria-label="Parts">
-      <span className="muted">Parts</span>
-      {data.parts.map((p) => (
-        <span className="pf-part" key={p.id} data-kind={p.kind}>
-          {p.label}
-        </span>
-      ))}
-      {adding ? (
-        <form onSubmit={add} className="pf-inline">
-          <input className="input" aria-label="Part label" value={label} onChange={(e) => setLabel(e.target.value)} autoFocus />
-          <select className="select" aria-label="Part kind" value={kind} onChange={(e) => setKind(e.target.value)}>
-            {KINDS.map((k) => (
-              <option key={k}>{k}</option>
-            ))}
-          </select>
-          <button type="submit" className="btn btn-small">
-            Add
-          </button>
-          <button type="button" className="cell-link" onClick={() => setAdding(false)}>
-            Cancel
-          </button>
-        </form>
-      ) : (
-        <button type="button" className="cell-link" onClick={() => setAdding(true)}>
-          + Part
-        </button>
-      )}
+    <form onSubmit={add} className="pf-inline pf-add-part">
+      <input className="input" aria-label="Part label" placeholder="Part name" value={label} onChange={(e) => setLabel(e.target.value)} autoFocus />
+      <select className="select" aria-label="Part kind" value={kind} onChange={(e) => setKind(e.target.value)}>
+        {KINDS.map((k) => (
+          <option key={k}>{k}</option>
+        ))}
+      </select>
+      <button type="submit" className="btn btn-small">Add</button>
+      <button type="button" className="cell-link" onClick={onCancel}>Cancel</button>
+    </form>
+  );
+}
+
+/** The project's parts, as a row of The building column. */
+function PartsRow({ parts }: { parts: ProfileData["parts"] }) {
+  return (
+    <div className="pf-row pf-pair pf-parts-row">
+      <div className="pf-pair-head"><span className="pf-label">Parts</span></div>
+      <div className="pf-value pf-parts" aria-label="Parts">
+        {parts.map((p) => (
+          <span className="pf-part" key={p.id} data-kind={p.kind}>{p.label}</span>
+        ))}
+      </div>
     </div>
+  );
+}
+
+/** Consultants appointed through Procurement, one per row. */
+function ConsultantTeam({ appointed }: { appointed: NonNullable<ProfileData["appointed"]> }) {
+  if (appointed.length === 0) return null;
+  return (
+    <section className="pf-section pf-team" aria-labelledby="pf-team">
+      <div className="pf-head">
+        <h2 id="pf-team">Consultant team</h2>
+      </div>
+      <table className="pf-team-table" data-testid="profile-appointed">
+        <thead>
+          <tr><th scope="col">Role</th><th scope="col">Consultant</th><th scope="col">Contact</th><th scope="col">Email</th><th scope="col">Phone</th></tr>
+        </thead>
+        <tbody>
+          {appointed.map((a) => (
+            <tr key={`${a.package_id}-${a.firm}`}>
+              <th scope="row">{a.package}</th>
+              <td title={a.firm}>{a.firm}</td>
+              <td>{a.contact || "—"}</td>
+              <td title={a.email || undefined}>{a.email ? <a className="cell-link" href={`mailto:${a.email}`}>{a.email}</a> : "—"}</td>
+              <td>{a.phone ? <a className="cell-link" href={`tel:${a.phone.replace(/\s/g, "")}`}>{a.phone}</a> : "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
   );
 }

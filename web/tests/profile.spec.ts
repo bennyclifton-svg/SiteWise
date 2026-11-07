@@ -278,13 +278,17 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(scope).toContainText(/\d+ not needed for this scope/);
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeHidden();
-  await page.getByLabel("Show inputs this scope does not need").check();
+  await page.getByLabel("Show all").check();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
-  await page.getByLabel("Show inputs this scope does not need").uncheck();
+  await page.getByLabel("Show all").uncheck();
 
-  // A preset adds a set at once; Reset hands every choice back.
-  await scope.getByRole("button", { name: "Typical fit-out" }).click();
-  await expect(scope).not.toContainText("1 system");
+  // Presets only start an empty scope; Reset hands every choice back.
+  await expect(scope.getByRole("button", { name: "Commercial fit-out" })).toHaveCount(0);
+  await scope.getByRole("button", { name: "Reset to defaults" }).click();
+  await expect(scope).toContainText("0 systems");
+  await scope.getByRole("button", { name: "Commercial fit-out" }).click();
+  await expect(scope).not.toContainText("0 systems");
+  await expect(scope.getByRole("group", { name: "Scope presets" })).toHaveCount(0);
   await scope.getByRole("button", { name: "Reset to defaults" }).click();
   await expect(scope).toContainText("0 systems");
 });
