@@ -667,7 +667,7 @@ func (d *Draft) ask() {
 		field := PricePrefix + it.Key
 		switch {
 		case it.Price() && len(fees) > 0:
-			opts := append(amountOptions(fees),
+			opts := append(amountOptions(d.memberFees(it.Key, fees)),
 				choice{ID: choiceNotPrice, Value: choiceNotPrice, Describe: map[string]string{"what": "The proposal gives no fee for this item."}},
 				choice{ID: choiceIncluded, Value: choiceIncluded, Describe: map[string]string{"what": "The proposal says this item is included in another fee."}})
 			add(question{Field: field, Family: "price", Instructions: priceQuestion(it), Options: opts, AmberAtMost: lump || d.ev.OCR || d.ev.Incomplete})

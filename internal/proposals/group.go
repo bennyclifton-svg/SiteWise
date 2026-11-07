@@ -125,14 +125,14 @@ func GroupSchedule(layout GroupLayout, schedules [][]rfp.ScheduleItem) []rfp.Sch
 				}
 				stages[s].count++
 			}
-			add(rfp.ScheduleItem{Key: m.Key + ":" + it.Key, Kind: it.Kind, Label: m.Title + " — " + it.Label, Detail: it.Detail, Base: it.Base, Unit: it.Unit})
+			add(rfp.ScheduleItem{Key: m.Key + ":" + it.Key, Kind: it.Kind, Label: m.Title + ": " + it.Label, Detail: it.Detail, Base: it.Base, Unit: it.Unit})
 		}
 	}
 	for _, s := range order {
 		// Each member prices an element of a stage separately; one element
 		// per member still makes one shared stage.
 		if st := stages[s]; st.count >= 2 && sharedByMembers(layout, schedules, s) {
-			add(rfp.ScheduleItem{Key: CombinedMember + ":" + s, Kind: rfp.ItemStage, Label: "Combined — " + st.label, Detail: "One amount the bid gives for this stage across disciplines; not split.", Base: true})
+			add(rfp.ScheduleItem{Key: CombinedMember + ":" + s, Kind: rfp.ItemStage, Label: "Combined: " + st.label, Detail: "One amount the bid gives for this stage across disciplines; not split.", Base: true})
 		}
 	}
 	for _, it := range criteria {
@@ -169,8 +169,8 @@ func stageLabel(it rfp.ScheduleItem) string {
 }
 
 // GroupTotals is a group column's totals: a combined cell no one priced is
-// not a gap, and a member's stage covered by a priced combined cell is not
-// unread. Everything else is Totals, so a figure is never counted twice.
+// not a gap, and a member's stage left blank or not priced beside a priced
+// combined cell is covered by it, not missing. Everything else is Totals, so a figure is never counted twice.
 func GroupTotals(items []rfp.ScheduleItem, cells map[string]Cell, others []Cell, stated *int64) Column {
 	priced := func(key string) bool {
 		c, ok := cells[key]
@@ -182,7 +182,7 @@ func GroupTotals(items []rfp.ScheduleItem, cells map[string]Cell, others []Cell,
 		switch {
 		case combined && !priced(it.Key):
 			continue
-		case member != "" && !combined && cells[it.Key].State == "" && priced(CombinedKey(item)):
+		case member != "" && !combined && covered(cells[it.Key].State) && priced(CombinedKey(item)):
 			continue
 		}
 		counted = append(counted, it)
@@ -356,4 +356,30 @@ func groupBase(items []rfp.ScheduleItem, layout GroupLayout, prices []Price) (in
 	}
 	col := GroupTotals(all, cells, nil, nil)
 	return col.KnownBase, col.BaseTotal != nil
+}
+
+// covered is a member cell a priced combined cell stands in for: nothing of
+// its own was read or priced.
+func covered(state string) bool {
+	return state == "" || state == StateNotPriced
+}
+
+// memberFees narrows a group member's price question to the amounts code
+// could keep there: lines naming that discipline, or naming none (a
+// combined stage). A line naming only other disciplines is never placed
+// under this one, so it is not offered. This keeps a group's one fan-out
+// near the size of its members' separate reads.
+func (d *Draft) memberFees(key string, fees []Amount) []Amount {
+	layout, ok := d.ctx.Groups[d.by[FieldPackage].Value]
+	member, _, combined := SplitItemKey(key)
+	if !ok || member == "" || combined {
+		return fees
+	}
+	out := make([]Amount, 0, len(fees))
+	for _, a := range fees {
+		if names := d.namedMembers(layout, a); len(names) == 0 || containsString(names, member) {
+			out = append(out, a)
+		}
+	}
+	return out
 }

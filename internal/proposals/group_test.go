@@ -52,7 +52,7 @@ func TestGroupScheduleIsEachMemberThenCombinedStages(t *testing.T) {
 			t.Fatalf("keys %v, want %v", keys, want)
 		}
 	}
-	if items[0].Label != "Structural engineering — Concept design" || items[7].Label != "Combined — Concept design" || !items[7].Base {
+	if items[0].Label != "Structural engineering: Concept design" || items[7].Label != "Combined: Concept design" || !items[7].Base {
 		t.Fatalf("labels %+v %+v", items[0], items[7])
 	}
 	for i, it := range items {
@@ -112,8 +112,8 @@ func TestGroupPlacementNamesDisciplinesCombinesStagesAndNeverSplits(t *testing.T
 		"price:civil:stage:concept":            id("$3,000"),
 		"price:structural:stage:documentation": id("$8,000"),
 		"price:civil:stage:documentation":      id("$8,000"),
-		// A line naming civil, matched to structural's stage, is not moved
-		// to civil by guesswork: it waits for the PM.
+		// A line naming civil is not offered under structural; an answer
+		// placing it there anyway is not moved to civil by guesswork.
 		"price:structural:stage:construction": id("$1,000"),
 		"price:civil:stage:construction":      choiceNotPrice,
 		// Two different unnamed amounts for one stage: neither is placed.
@@ -232,5 +232,30 @@ func TestPackageRuleRoutesAMemberDisciplineToItsGroup(t *testing.T) {
 	pc = Context{PackageID: "g", Packages: pc.Packages}
 	if got := kindDiscipline(pc); got != "consultant.structural" {
 		t.Fatalf("kind discipline %q", got)
+	}
+}
+
+func TestGroupPriceQuestionsOfferOnlyPlaceableAmounts(t *testing.T) {
+	tx := text(page(1,
+		[]string{"Karrak Consulting Engineers Pty Ltd"},
+		[]string{"FEE PROPOSAL"},
+		[]string{"Structural concept design", "$5,000"},
+		[]string{"Civil concept design", "$3,000"},
+		[]string{"Documentation", "$8,000"},
+	))
+	ev := Harvest("fee.pdf", tx)
+	d := NewDraft(ev, groupContext(twoMembers()), nil)
+	q, ok := d.questions["price:structural:stage:concept"]
+	if !ok {
+		t.Fatal("no price question")
+	}
+	offered := map[string]bool{}
+	for _, o := range q.Options {
+		if a, ok := d.Amount(o.ID); ok {
+			offered[a.Display] = true
+		}
+	}
+	if !offered["$5,000"] || !offered["$8,000"] || offered["$3,000"] {
+		t.Fatalf("offered %v", offered)
 	}
 }
