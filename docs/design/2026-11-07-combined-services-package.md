@@ -1,8 +1,9 @@
 # Combined engagements: several disciplines under one appointment (R17)
 
-Status: direction only. No code. Lane A (procurement packages, RFPs, cost
-figures). Owner ruling R17 and the owner's follow-up of 7 November 2026.
-This replaces the first draft of this note, which covered services only.
+Status: direction agreed by the owner on 7 November 2026 (decisions at the
+end); not built. Lane A (procurement packages, RFPs, cost figures). Owner
+ruling R17 and the owner's follow-up of 7 November 2026. This replaces the
+first draft of this note, which covered services only.
 
 ## What the owner asked for
 
@@ -107,7 +108,13 @@ This fails the owner's granularity requirement.
   - the members;
   - the draft fee lines that will merge (see Cost plan);
   - the group's name. The default joins the disciplines ("Structural and
-    civil engineering"), and the PM can edit it.
+    civil engineering").
+- **Renaming.** Double-click the group's name on Procurement to change it,
+  with the same inline edit the cost plan uses for line labels. The package
+  name can already be changed through the server (`procurement` patches
+  carry `title`); today the table shows the standard discipline name
+  instead. Member rows keep their standard discipline names, because those
+  names drive matching and RFP templates.
 - The group row shows the members underneath, one status, the bidders and
   the award.
 - **Uncombine** reverses it. **Remove from group** takes one member out.
@@ -120,10 +127,12 @@ This fails the owner's granularity requirement.
   allocated, and that stays.
 - Default suggestions stay separate, as today (decision D1). Combining is
   one click.
-- **Subconsultants.** "Access as the architect's subconsultant" is a group
-  of architecture and access. The bidder is told they may deliver any member
-  discipline in-house or by a subconsultant they name. So Combine replaces
-  the separate "engaged by" setting (see Migration).
+- **Subconsultants.** "Access as the architect's subconsultant" is simply a
+  group of architecture and access, the same as combining electrical and
+  hydraulic. The client signs with the architect, who manages the access
+  consultant. What the client needs is an agreed scope and a sum for each
+  discipline, which the group gives. Combine therefore replaces the separate
+  "engaged by" setting (see Migration).
 
 ### RFP: one document, every discipline in full
 
@@ -142,9 +151,11 @@ The group has one RFP report. Its document is built in this order:
    shown once, under the discipline that does it, marked as within this
    engagement. No item is dropped.
 4. **One fee schedule.** A section per discipline with that discipline's
-   stages, and a total for the engagement. A bidder who cannot split a stage
-   by discipline may price it as one combined amount, and the form allows
-   that.
+   stages, a sum for each discipline, and a total for the engagement. The
+   RFP asks for a sum per discipline, because that is what the client needs.
+   A bidder who still gives only one amount for a stage (covering several
+   disciplines) is not rejected: the stage is recorded as combined, and the
+   affected disciplines' sums show as not stated rather than guessed.
 5. **Checks.** The RFP's warnings and blocks are every member's checks
    combined. Issuing is one action and one transmittal for the whole
    document.
@@ -163,20 +174,22 @@ RFP issued before combining stays in history and is not reissued.
 
 ### Award and cost plan
 
-- Award is made on the group. It writes stage lines under the group's one
-  fee line:
-  - per discipline and stage where the bid prices them that way;
-  - per stage where the bid gives one amount;
+- The group gets one fee line that is a **parent** in the cost plan. Each
+  member's existing fee line moves under it as a child, keeping its own
+  budget. This is the same nesting the cost plan already uses when an award
+  puts stage lines under a fee line. Expand it to see one line per
+  discipline, or collapse it to see one contract sum. The roll-up is the
+  existing group roll-up (`internal/costs/rollups.go`), so the total is
+  computed in Go and nothing is counted twice.
+- Award is made on the group and writes under the matching child:
+  - each discipline's priced stages under that discipline's line;
+  - a stage priced as one combined amount goes under the group line itself;
   - never a made-up split.
-- The members' draft fee lines are removed through the existing removal
-  confirmation. Their budgets are added together into the group's fee line,
-  which records which lines the total came from. This is arithmetic on the
-  PM's own figures, done in Go.
 - Frozen baselines and issued history are untouched. Construction lines
   (for example "Mechanical services") are not fee lines and are not
   touched.
-- Uncombine gives each member a blank draft fee line again. The group's
-  budget is not split back.
+- Uncombine moves each member's line back to the top level with its budget,
+  and the empty group line is removed. Refused while the group is awarded.
 
 ### Invoices
 
@@ -204,7 +217,7 @@ filing. The following make no Jev call:
 
 | Path | p50 | p90 |
 |---|---|---|
-| Combine, uncombine, remove from group (`packages_write`; merged fee lines as `costs_delete`) | 100 ms | 250 ms |
+| Combine, uncombine, remove from group, rename (`packages_write`, with the fee lines re-parented in the same transaction) | 100 ms | 250 ms |
 | Procurement read with groups (`packages_read`) | 100 ms | 250 ms |
 | Group RFP build (`report_assemble`) | 300 ms | 1,000 ms |
 | RFP read and setting edit (`report_read`, `report_setting`) | 100 ms | 250 ms |
@@ -245,8 +258,8 @@ New benchmarks:
   RFP, unchanged.
 - **Removing the group.** Members are released as separate rows. The group's
   fee line goes through the existing confirmation.
-- **Removing a member** that has linked cost lines: the existing
-  confirmation applies.
+- **Removing a member** takes its fee line out from under the group to the
+  top level. Deleting the package uses the existing confirmation.
 - **A combined proposal on a split project.** No new row. The proposal shows
   on Procurement as unplaced, with "Combine for this proposal" (the PM ticks
   the members; the app does not guess) or "Place on one discipline".
@@ -256,8 +269,8 @@ New benchmarks:
 
 ## Build order (each slice tested and benchmarked on its own)
 
-1. Data, Combine, Uncombine and Remove from group on Procurement. Fee lines
-   merge with summed budgets. Invoices match the group.
+1. Data, Combine, Uncombine, Remove from group and renaming on Procurement.
+   Member fee lines nest under the group's line. Invoices match the group.
 2. The group RFP document: shared parts, discipline parts, within-engagement
    items, the fee schedule and checks. Issue as one.
 3. Proposal routing to the group, the price table by discipline and stage,
@@ -277,13 +290,17 @@ settled, and the RFP holding all four disciplines.
 - Combining trade or works packages.
 - A Jev question about which disciplines a proposal covers.
 
-## Owner questions
+## Owner decisions (7 November 2026)
 
-1. Is a summed budget on the combined fee line right, with each member's
-   figure listed as its source? (Recommended.)
-2. Should bidders be allowed to price a stage as one combined amount when
-   they cannot split it by discipline? (Recommended: yes.)
-3. May Combine replace the "engaged by the lead consultant" setting, so a
-   subconsultant is always a member of the lead's group?
-4. Default group names join the disciplines ("Architecture, interiors and
-   access"). Is that wording right?
+1. **Roll-up.** Combined disciplines roll up into one figure, the way an
+   architect's fee sub-items can be shown as several lines or collapsed into
+   one contract sum. Each discipline keeps its own line beneath the group.
+2. **Stage priced as one amount.** Accepted as recommended: the RFP asks for
+   a sum per discipline, and a bid that gives only one amount for a stage is
+   recorded as combined rather than rejected or split by guesswork.
+3. **Subconsultants.** No separate treatment. Architecture with access is a
+   group like electrical with hydraulic. The client needs an agreed scope and
+   a sum for each discipline, not visibility of the subconsultant agreement.
+4. **Names.** The default joins the discipline names, and the PM can
+   double-click the group's name to change it. Member rows keep standard
+   discipline names.
