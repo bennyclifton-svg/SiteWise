@@ -5,7 +5,9 @@ import "testing"
 // F54 (owner ruling R20): on design and construct with a CDC the contractor
 // is usually engaged first. The contractor's designer completes the
 // documents, the CDC is obtained on them, and then construction starts. The
-// generic fallback put documentation and approval before the tender.
+// generic fallback put documentation and approval before the tender. The
+// CDC package (reports, client sign-off) is assembled from the contractor's
+// completed design, so approval documentation follows it.
 func TestNewDesignConstructCDCOrder(t *testing.T) {
 	cat := testCatalog(t, nil, "")
 	in := GenInput{
@@ -29,14 +31,11 @@ func TestNewDesignConstructCDCOrder(t *testing.T) {
 		}
 		return times[key]
 	}
-	order := []string{"procurement", "construction_documentation", "approvals", "construction"}
+	order := []string{"procurement", "construction_documentation", "approval_documentation", "approvals", "construction"}
 	for i := 1; i < len(order); i++ {
 		before, after := stage(order[i-1]), stage(order[i])
 		if after.ES < before.EF {
 			t.Errorf("%s starts day %d, before %s finishes day %d", order[i], after.ES, order[i-1], before.EF)
 		}
-	}
-	if _, ok := p.Row("skeleton:" + sk + ":approval_documentation"); ok {
-		t.Error("a CDC job has no development application documentation stage")
 	}
 }

@@ -65,7 +65,7 @@ skeletons:
         - {det: work_type, eq: new}
         - {cond: procurement_route, eq: design_construct}
         - {cond: planning, any_of: [cdc, exempt]}
-    stages: [investigation, concept_design, procurement, construction_documentation, approvals, construction, completion, defects]
+    stages: [investigation, concept_design, procurement, construction_documentation, approval_documentation, approvals, construction, completion, defects]
     links: []
     status: draft
     sources:
