@@ -19,13 +19,29 @@ type builder struct {
 	draft   bool
 	section map[string]*reports.Section
 	order   []string
+	opt     partOptions
+}
+
+// partOptions render a discipline as one part of a combined engagement's
+// RFP (group.go). The zero value is the discipline's own RFP, unchanged.
+type partOptions struct {
+	// part prices nothing in the stage table: the engagement's one fee
+	// schedule asks for every discipline's fees.
+	part bool
+	// moved lists services another discipline in the engagement does; they
+	// print once, under that discipline.
+	moved map[string]bool
 }
 
 // Sections renders a resolved RFP into the template's sections, followed by
 // the internal Before-issue section. Every block of a draft discipline is
 // provisional, which keeps it from being issued (report_issue.go).
 func Sections(r Resolved, template knowledge.ReportTemplate) ([]reports.Section, error) {
-	b := &builder{r: r, draft: r.Status != "reviewed", section: map[string]*reports.Section{}}
+	return sections(r, template, partOptions{})
+}
+
+func sections(r Resolved, template knowledge.ReportTemplate, opt partOptions) ([]reports.Section, error) {
+	b := &builder{r: r, draft: r.Status != "reviewed", section: map[string]*reports.Section{}, opt: opt}
 	b.base = map[string]any{"method": "rfp_discipline", "discipline": r.Discipline, "version": r.Version, "status": r.Status}
 	for _, s := range template.Sections {
 		sec := reports.Section{ID: s.ID, Title: s.Title, Essential: s.Essential, Blocks: []reports.Block{}}
