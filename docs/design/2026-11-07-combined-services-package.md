@@ -1,194 +1,289 @@
-# Combined services package (R17)
+# Combined engagements: several disciplines under one appointment (R17)
 
-Status: direction only. No code. Lane A (procurement packages and cost
-figures). Owner ruling R17, `testing/synthetic/reference/OWNER_RULINGS.md`.
+Status: direction only. No code. Lane A (procurement packages, RFPs, cost
+figures). Owner ruling R17 and the owner's follow-up of 7 November 2026.
+This replaces the first draft of this note, which covered services only.
+
+## What the owner asked for
+
+Any group of consultant disciplines can be bought under one agreement, one
+fee proposal and one invoice stream. Examples the owner gave:
+
+- structural and civil, in one fee proposal from one RFP;
+- architecture and interiors;
+- architecture with access as the architect's subconsultant;
+- services engineering: mechanical, electrical, hydraulic and fire, sometimes
+  with acoustic;
+- an ESD firm that also offers fire engineering, facade and acoustic.
+
+On Procurement the PM ticks several packages and presses **Combine**. The
+RFP that comes out is the separate discipline RFPs gathered into one
+document. It keeps the same detail for each discipline's scope and
+deliverables as if each were issued alone.
 
 ## User outcome
 
-On each project the PM chooses how services engineering is bought: one
-combined services engineer under one agreement, or separate mechanical,
-electrical, hydraulic and fire engineers. Whichever they choose, the
-project shows that many appointments: one row, one RFP, one award, one fee
-line, and one supplier for invoices.
+One combined engagement is one appointment everywhere: one Procurement row,
+one RFP document, one set of bids, one award, one fee line, one supplier for
+invoices. Inside it, each discipline keeps its own scope, stages,
+deliverables and settings.
 
 ## Why it matters
 
-- **Answer trust.** T03 shows five services fee lines for four services
-  (`FINDINGS.md`, run `20261107-t03-t04-t06`). A cost plan that counts a
-  service twice cannot be trusted as a total.
-- **Time to decision.** Today the PM must find and remove the four spare
-  rows and their fee lines by hand. The Meridale invoice sat unmapped.
+- **Answer trust.** Today a combined proposal adds a new row beside the
+  separate ones, so the cost plan counts the same service twice. In T03 a
+  four-discipline services job carried five fee lines.
+- **Time to decision.** The PM can issue one RFP and compare like with like,
+  instead of removing spare rows and fee lines by hand.
 
 ## What happens today
 
-1. Default suggestions split services into four disciplines
-   (`knowledge/works/package_defaults.yaml`, owner decision D1 in
-   `docs/plans/2026-10-11-procurement-default-disciplines.md`). "Services
-   Engineer" is still offered under Add discipline.
-2. A filed proposal gets a Procurement row for its filed discipline if none
-   exists (`internal/store/proposal_package.go`, `EnsureProposalPackage`).
-   Meridale's proposal filed as `consultant.services`, so a fifth row,
-   "Services Engineer", appeared beside the four accepted defaults.
-3. Each package gets one draft fee line, `fee:<package>`
-   (`internal/costs/suggest.go:202`). Five packages, five lines (F05, F06,
-   F07, F09, F11 in the T03 snapshot).
-4. A proposal is linked to a package by its filed discipline; Jev chooses
-   only when no rule settles it (`internal/store/submissions.go:199-240`).
-5. Award writes into one package's fee line (`internal/store/awards.go`,
-   `packageFeeLine`, `Award`).
-6. An invoice settles its supplier by ABN or firm name, and only when
-   **exactly one** package matches (`internal/invoices/read.go`,
-   `settleSupplier`, `settleSupplierByFirm`).
-7. One discipline is allowed once per project (`disciplineTaken`,
-   `internal/store/package_proposed.go:202`).
-8. There is no RFP template for `consultant.services`. RFPs are built per
-   discipline template (`internal/rfp`).
+1. Each package is one discipline. A discipline may appear once per project
+   (`disciplineTaken`, `internal/store/package_proposed.go`).
+2. A filed proposal gets a row for its filed discipline if none exists
+   (`EnsureProposalPackage`, `internal/store/proposal_package.go`). That is
+   how "Services Engineer" appeared as a fifth row.
+3. Each package gets one draft fee line (`internal/costs/suggest.go`).
+   Award writes stage lines under that one line (`internal/store/awards.go`).
+4. An invoice finds its supplier only when exactly one package matches the
+   firm (`settleSupplier`, `internal/invoices/read.go`).
+5. An RFP is one report per package (`reports.package_id`,
+   `internal/db/migrations/020_reports.sql`). It is built from one discipline
+   template plus the shared skeleton (`rfp.Resolve`,
+   `knowledge/rfp/*.yaml`). Its choices are stored per report
+   (`report_settings`: stages, scope lines, positions, custom lines).
+6. A subconsultant is a package marked "engaged by the lead consultant"
+   (`packages.engaged_by`, migration `021r`). The lead's RFP gets one
+   sentence naming it (`engagement`, `internal/rfp/resolve.go`). The
+   subconsultant's scope is not in the lead's RFP. Its own row and fee line
+   stay, so its fee can be counted twice.
 
 ## Options
 
-### A. A combined services row that lists the disciplines it covers
+### A. A group row whose members stay as discipline rows (recommended)
 
-One package, discipline "Services Engineer", with a "covers" list (for
-example mechanical, electrical, hydraulic, fire). Covered disciplines are
-not separate rows. The PM chooses it with one action on Procurement:
-**Combine services** (pick the disciplines) or **Split services**.
+Combine creates one new **group** row. The chosen packages become its
+members and show indented beneath it. Each member keeps its discipline, its
+RFP choices and its scope. The group holds what belongs to the appointment:
+the bidders, the award, the fee line, the firm and the invoices.
 
-- Better: one row, one fee line, one award, one ABN so invoices match. The
-  program gets one line per stage. It fits every rule that already assumes
-  one appointment is one package.
-- Worse: a combined RFP must be built from the covered disciplines'
-  templates. A fee is per stage, not per discipline, so the cost plan cannot
-  say what the electrical design cost. Comparing a combined firm against
-  separate firms needs a sum of the separate prices.
+- Better:
+  - nothing is lost when combining or uncombining, because every member
+    keeps its own settings;
+  - the RFP can show each discipline in full;
+  - it covers every example above, including subconsultants;
+  - one appointment is one package for award, cost and invoices, so the
+    rules that already assume that keep working.
+- Worse:
+  - a new link from package to group, and the screens must show nesting;
+  - the RFP assembles several discipline templates (more work in one
+    build, still in memory).
 
-### B. Keep four discipline rows, grouped under one appointment
+### B. One row that lists the disciplines it covers
 
-The four rows stay. A new "appointment" record ties them to one firm.
+The first draft's idea: the separate rows are replaced by one row with a
+"covers" list.
 
-- Better: each discipline keeps its own RFP and scope.
-- Worse: award must split one lump-sum fee into four lines. The proposal
-  rarely gives that split (Meridale prices by stage only), so the app would
-  invent numbers. That breaks "unknown stays unknown". Invoices would match
-  four packages by ABN, so the supplier rule never settles. It needs a new
-  table and changes award, undo, the ledger and the price table.
+- Better: simpler data.
+- Worse:
+  - the members' RFP choices have nowhere to live, so a combined RFP cannot
+    keep per-discipline detail;
+  - uncombining starts each discipline from scratch.
 
-### C. A display toggle only
+This fails the owner's granularity requirement.
 
-A project setting folds the four rows into one line on screen. The data
-stays four packages.
+### C. Keep separate rows and split one fee across them
 
-- Better: smallest build.
-- Worse: it hides the problem. Four fee lines still sit underneath, and
-  award and invoices still see four suppliers.
+- Worse: award would have to invent each discipline's share when the bid
+  gives a lump sum. That breaks "unknown stays unknown". The firm's ABN would
+  match several packages, so invoices never find their supplier.
 
-### Recommendation
+## How option A works on each surface
 
-**Option A.** The row itself is the per-project choice; there is no
-separate setting to drift out of step. It is the only option where one
-agreement really is one package everywhere, with no invented split.
+### Procurement
 
-## How each surface behaves under A
+- Each consultant row gets a tick box. With two or more ticked, **Combine**
+  appears. One confirmation lists:
+  - the members;
+  - the draft fee lines that will merge (see Cost plan);
+  - the group's name. The default joins the disciplines ("Structural and
+    civil engineering"), and the PM can edit it.
+- The group row shows the members underneath, one status, the bidders and
+  the award.
+- **Uncombine** reverses it. **Remove from group** takes one member out.
+- Rules:
+  - consultant (services) packages only;
+  - a discipline belongs to one group at most;
+  - a project may have several groups.
+- Combine is refused while any member, or the group, has a live award. The
+  PM undoes the award first. Undo is already refused once an invoice is
+  allocated, and that stays.
+- Default suggestions stay separate, as today (decision D1). Combining is
+  one click.
+- **Subconsultants.** "Access as the architect's subconsultant" is a group
+  of architecture and access. The bidder is told they may deliver any member
+  discipline in-house or by a subconsultant they name. So Combine replaces
+  the separate "engaged by" setting (see Migration).
 
-- **Procurement row.** The row reads "Services engineering (combined)" and
-  names what it covers: "Mechanical, Electrical, Hydraulic, Fire". **Combine
-  services** picks two or more disciplines. It removes their unawarded rows
-  and adds the combined row, in one confirmation. **Split services** does
-  the reverse. Default suggestions stay split (D1). A combined row stops the
-  covered disciplines being suggested again.
-- **RFP.** One combined RFP. It has a section per covered discipline, from
-  that discipline's existing template, and the shared conditions once. The
-  fee table is one fee per stage (as in `2026-11-03-rfp-scope-by-stage`).
-  RFP create does not call Jev.
-- **Fee proposal and award.** A proposal filed as Services Engineer, or as
-  any covered discipline, links to the combined row by a code rule. It gets
-  its one existing fan-out, no more. Award writes the firm's stage items
-  under the one fee line, as today. No per-discipline split is written.
-- **Cost plan.** One fee line, "Services engineering (combined)". The
-  covered disciplines' draft fee lines go through the existing removal
-  confirmation (`docs/plans/2026-10-11-procurement-cost-removal.md`). It
-  names each line and its budget. Frozen baselines and issued history stay.
-  Services works lines (Mechanical services and so on) are construction
-  costs and are not touched.
-- **Invoices.** The firm's ABN is on one package, so the existing rule
-  settles the supplier green. Nothing new in the ledger.
-- **Program.** One package, so one set of stage lines through the existing
-  stage sync (`internal/store/stage_sync.go`). Dates computed in Go as
-  today.
+### RFP: one document, every discipline in full
+
+The group has one RFP report. Its document is built in this order:
+
+1. **Shared parts, once.** Page one, the project description, program, the
+   client's terms, insurance, submission requirements and evaluation. These
+   come from the shared skeleton, as now.
+2. **One part per discipline.** Each member's own part is resolved from its
+   own template and its own stored choices: stages in or out, scope lines,
+   added lines, positions, deliverables and its conditions. The PM edits a
+   discipline's part exactly as they would edit that discipline's RFP alone.
+3. **Within-engagement items.** Some items one template hands to another
+   discipline, such as electrical's "fire detection design (allocated to
+   fire services)". When both disciplines are in the group, the item is
+   shown once, under the discipline that does it, marked as within this
+   engagement. No item is dropped.
+4. **One fee schedule.** A section per discipline with that discipline's
+   stages, and a total for the engagement. A bidder who cannot split a stage
+   by discipline may price it as one combined amount, and the form allows
+   that.
+5. **Checks.** The RFP's warnings and blocks are every member's checks
+   combined. Issuing is one action and one transmittal for the whole
+   document.
+
+While a discipline is in a group, its own RFP cannot be issued alone. An
+RFP issued before combining stays in history and is not reissued.
+
+### Fee proposals and the price table
+
+- A proposal dropped on the group row, or filed as any member's discipline,
+  goes to the group by a code rule. A combined filing such as "Services
+  Engineer" also goes there. It gets its one existing Jev fan-out, no more.
+- The price table's columns follow the fee schedule: discipline by stage,
+  plus combined cells where the bid gives one amount. Every bidder on the
+  group is compared on the same columns.
+
+### Award and cost plan
+
+- Award is made on the group. It writes stage lines under the group's one
+  fee line:
+  - per discipline and stage where the bid prices them that way;
+  - per stage where the bid gives one amount;
+  - never a made-up split.
+- The members' draft fee lines are removed through the existing removal
+  confirmation. Their budgets are added together into the group's fee line,
+  which records which lines the total came from. This is arithmetic on the
+  PM's own figures, done in Go.
+- Frozen baselines and issued history are untouched. Construction lines
+  (for example "Mechanical services") are not fee lines and are not
+  touched.
+- Uncombine gives each member a blank draft fee line again. The group's
+  budget is not split back.
+
+### Invoices
+
+While grouped, members are left out of supplier matching. The firm matches
+only the group, so the existing rule settles the supplier. Allocation to
+stage lines works as today.
+
+### Program
+
+The group gets one set of stage lines through the existing stage sync: the
+members' stages in program order, one line per stage. Dates are computed in
+Go, as now.
 
 ## What calls Jev
 
 Nothing new. A dropped proposal still gets its one existing fan-out after
-filing. Combine, split, the RFP, award, cost lines, invoice matching edits
-and the program do not call Jev.
+filing. The following make no Jev call:
+
+- combine, uncombine and remove from group;
+- the RFP and the price table;
+- award, cost lines and invoice matching edits;
+- the program.
 
 ## Speed budgets (`bench/budgets.json`)
 
 | Path | p50 | p90 |
 |---|---|---|
-| Combine or split (`packages_write`, with linked line removal as `costs_delete`) | 100 ms | 250 ms |
-| Procurement read (`packages_read`) | 100 ms | 250 ms |
-| Cost plan read (`costs_read`) | 100 ms | 250 ms |
-| Proposal read (`proposal_read`, includes filing) | 3,000 ms | 6,000 ms |
-| Award or undo (`award_write`) | 200 ms | 500 ms |
+| Combine, uncombine, remove from group (`packages_write`; merged fee lines as `costs_delete`) | 100 ms | 250 ms |
+| Procurement read with groups (`packages_read`) | 100 ms | 250 ms |
+| Group RFP build (`report_assemble`) | 300 ms | 1,000 ms |
+| RFP read and setting edit (`report_read`, `report_setting`) | 100 ms | 250 ms |
 | Price table (`price_table`) | 150 ms | 300 ms |
+| Award or undo (`award_write`) | 200 ms | 500 ms |
 | One invoice (`invoice_intake`) | 1,000 ms | 2,000 ms |
 | Stage sync (`stage_sync_write`) | 100 ms | 250 ms |
 
-Combine and split need a benchmark, run beside the existing
-`packages_write` one.
+New benchmarks:
+- combine and uncombine;
+- a five-member group RFP build, run beside the existing `report_assemble`
+  benchmark.
 
 ## Data and migration
 
-- One new nullable list on `packages`: the disciplines a combined row
-  covers. Every read and write stays scoped by `org_id` and project, as
-  every packages query is now.
-- "Services Engineer" may then appear twice in a project only if their
-  covers do not overlap. The `disciplineTaken` check learns the covers list.
-  A covered discipline counts as taken.
-- Existing projects: a live "Services Engineer" row has no covers list. The
-  row shows "Covers: not stated" and asks the PM to tick them. Nothing is
-  removed automatically (keeps D9).
+- `packages` gains a nullable `group_id`. It points to another package in
+  the same org and project, and is enforced by a foreign key on (org,
+  project, id) like every package reference now.
+- A group row is a services package with no discipline and a role of
+  "group". Its RFP report uses the existing `reports.package_id`.
+- Each member keeps its own report and settings as the store of its choices.
+  The group's RFP reads them. No settings are copied, so uncombining is
+  lossless.
+- `disciplineTaken` counts members as their own discipline. A group has no
+  discipline of its own.
+- **Existing projects.**
+  - Nothing changes until the PM combines.
+  - A live "Services Engineer" row is left as it is, with a prompt to
+    combine it with the separate services rows.
+  - A package marked "engaged by the lead consultant" gets the same prompt:
+    combine it with the lead. Nothing is combined automatically.
+  - Once combining exists, the "engaged by" setting is retired.
 
 ## Edge cases
 
-- **Switching after award.** A discipline with a live award cannot be
-  combined or split. The PM undoes the award first. Undo is already refused
-  once an invoice is allocated (`ErrAwardLocked`). That stays.
-- **Combined proposal on a split project.** Today a fifth row appears.
-  Instead: no new row. The proposal sits on Procurement as unplaced, with
-  two choices: "Combine these services" or "Place on one discipline".
-  The PM ticks which disciplines it covers; the app does not guess.
-- **Partial combinations.** Mechanical and electrical combined, hydraulic
-  and fire separate, is allowed. Two combined rows are allowed if they do
-  not overlap.
-- **Removing a combined row with linked cost lines.** It uses the existing
-  confirmation. It does not recreate the separate rows; the PM can split
-  first if they want them.
-- **Issued RFPs.** An RFP already issued for a discipline stays in history.
-  Combining does not reissue it.
-- **Budgets on removed discipline lines.** Not moved automatically (see
-  owner question 3).
-- **Wrong org or project.** Combine and split refuse it like any package
-  write.
+- **Awarded member.** Combine is refused; undo the award first.
+- **Draft RFPs on members.** They become the members' parts in the group's
+  RFP, unchanged.
+- **Removing the group.** Members are released as separate rows. The group's
+  fee line goes through the existing confirmation.
+- **Removing a member** that has linked cost lines: the existing
+  confirmation applies.
+- **A combined proposal on a split project.** No new row. The proposal shows
+  on Procurement as unplaced, with "Combine for this proposal" (the PM ticks
+  the members; the app does not guess) or "Place on one discipline".
+- **Two groups.** Allowed, as long as no discipline is in both.
+- **Works and supply packages** (trades, head contract) cannot be combined.
+- **Wrong org or project.** Refused, like any package write.
+
+## Build order (each slice tested and benchmarked on its own)
+
+1. Data, Combine, Uncombine and Remove from group on Procurement. Fee lines
+   merge with summed budgets. Invoices match the group.
+2. The group RFP document: shared parts, discipline parts, within-engagement
+   items, the fee schedule and checks. Issue as one.
+3. Proposal routing to the group, the price table by discipline and stage,
+   award writing discipline or stage lines.
+4. Program stage lines for a group.
+5. Prompts for existing "Services Engineer" and "engaged by lead" rows, then
+   retire the "engaged by" setting.
+
+Measured by re-running the T03 scenarios, with the combined services
+proposal placed on a services group: one fee line, the invoice supplier
+settled, and the RFP holding all four disciplines.
 
 ## Out of scope
 
-- Splitting a combined fee into disciplines.
-- Changing default suggestions (D1 stays).
-- Trade packages (combined services contractors).
-- A new Jev question for which disciplines a proposal covers.
-- Fire engineering (performance solutions). It stays its own discipline.
+- Splitting a lump-sum fee into disciplines.
+- Changing default suggestions.
+- Combining trade or works packages.
+- A Jev question about which disciplines a proposal covers.
 
 ## Owner questions
 
-1. Default suggestions stay four separate disciplines, and combining is
-   one click. Or should some project types (fit-outs) suggest combined?
-2. Combined RFP fee table: one fee per stage, or per stage and per
-   discipline? The second helps compare against separate firms, but asks
-   more of the bidder.
-3. When combining, a removed discipline fee line may carry a budget. Should
-   the combined line take the sum, or start blank?
-4. Should a combined proposal on a split project offer to combine, or simply
-   place on one discipline and flag it?
-5. Is two non-overlapping combined rows (say mechanical and electrical with
-   one firm, hydraulic and fire with another) a real case worth allowing?
+1. Is a summed budget on the combined fee line right, with each member's
+   figure listed as its source? (Recommended.)
+2. Should bidders be allowed to price a stage as one combined amount when
+   they cannot split it by discipline? (Recommended: yes.)
+3. May Combine replace the "engaged by the lead consultant" setting, so a
+   subconsultant is always a member of the lead's group?
+4. Default group names join the disciplines ("Architecture, interiors and
+   access"). Is that wording right?
