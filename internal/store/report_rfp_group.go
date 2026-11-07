@@ -328,6 +328,23 @@ WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.id=ANY($3::uuid[])`, org
 	return drafts, settings, rows.Err()
 }
 
+// readDraftState reads a draft without its sections or references: what a
+// setting write needs to check and re-resolve it, at a fraction of the cost
+// of a combined engagement's whole document.
+func readDraftState(ctx context.Context, tx pgx.Tx, org, id string) (ReportDraft, error) {
+	var d ReportDraft
+	var state []byte
+	err := tx.QueryRow(ctx, `SELECT id::text,report_id::text,project_id::text,number,status,reporting_date::text,template_id,template_version,version,source_revisions FROM report_versions WHERE org_id=$1::uuid AND id=$2::uuid`, org, id).
+		Scan(&d.ID, &d.ReportID, &d.ProjectID, &d.Number, &d.Status, &d.ReportingDate, &d.TemplateID, &d.TemplateVersion, &d.Version, &state)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return d, ErrNotFound
+	}
+	if err != nil {
+		return d, err
+	}
+	return d, json.Unmarshal(state, &d.SourceRevisions)
+}
+
 // recomposeGroupTx re-renders a group's draft from its members' current
 // settings. It changes no member and reads no project records.
 func (s *Store) recomposeGroupTx(ctx context.Context, tx pgx.Tx, org string, r Report) (ReportDraft, error) {
@@ -336,16 +353,8 @@ func (s *Store) recomposeGroupTx(ctx context.Context, tx pgx.Tx, org string, r R
 		return d, ErrInvalidReport
 	}
 	// Only the draft's frozen state is needed: its old sections are replaced.
-	var state []byte
-	err := tx.QueryRow(ctx, `SELECT id::text,report_id::text,project_id::text,number,status,reporting_date::text,template_id,template_version,version,source_revisions FROM report_versions WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.CurrentDraftVersionID).
-		Scan(&d.ID, &d.ReportID, &d.ProjectID, &d.Number, &d.Status, &d.ReportingDate, &d.TemplateID, &d.TemplateVersion, &d.Version, &state)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return d, ErrNotFound
-	}
+	d, err := readDraftState(ctx, tx, org, r.CurrentDraftVersionID)
 	if err != nil {
-		return d, err
-	}
-	if err := json.Unmarshal(state, &d.SourceRevisions); err != nil {
 		return d, err
 	}
 	if d.Status != "draft" {
@@ -403,7 +412,7 @@ func (s *Store) recomposeGroupOf(ctx context.Context, tx pgx.Tx, org string, mem
 	if err != nil || !ok || gr.CurrentDraftVersionID == "" {
 		return "", err
 	}
-	d, err := readReportDraft(ctx, tx, org, gr.CurrentDraftVersionID)
+	d, err := readDraftState(ctx, tx, org, gr.CurrentDraftVersionID)
 	if err != nil {
 		return "", err
 	}

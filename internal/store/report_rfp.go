@@ -176,7 +176,8 @@ func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key
 	if r.CurrentDraftVersionID == "" {
 		return d, "", ErrInvalidReport
 	}
-	d, err = readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
+	// The sections are rebuilt below; only the frozen state is read.
+	d, err = readDraftState(ctx, tx, org, r.CurrentDraftVersionID)
 	if err != nil {
 		return d, "", err
 	}
@@ -258,14 +259,10 @@ func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key
 		return d, "", err
 	}
 	sectionsRaw, _ := json.Marshal(sections)
-	var raw []byte
-	err = tx.QueryRow(ctx, `UPDATE report_versions SET sections=$3::jsonb,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid AND status='draft' RETURNING to_jsonb(report_versions)`, org, d.ID, sectionsRaw).Scan(&raw)
-	if err != nil {
+	if err = tx.QueryRow(ctx, `UPDATE report_versions SET sections=$3::jsonb,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid AND status='draft' RETURNING version`, org, d.ID, sectionsRaw).Scan(&d.Version); err != nil {
 		return d, "", err
 	}
-	if err := json.Unmarshal(raw, &d); err != nil {
-		return d, "", err
-	}
+	d.Sections = sections
 	if err := saveReportReferences(ctx, tx, org, d.ID, refs); err != nil {
 		return d, "", err
 	}
