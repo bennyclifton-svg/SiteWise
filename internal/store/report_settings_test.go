@@ -77,6 +77,22 @@ func blockText(d store.ReportDraft, id string) string {
 	return ""
 }
 
+// blockTable joins a block's table rows as "a|b|c" lines.
+func blockTable(d store.ReportDraft, id string) string {
+	for _, section := range d.Sections {
+		for _, b := range section.Blocks {
+			if b.ID == id && b.Table != nil {
+				rows := []string{}
+				for _, row := range b.Table.Rows {
+					rows = append(rows, strings.Join(row, "|"))
+				}
+				return strings.Join(rows, "\n")
+			}
+		}
+	}
+	return ""
+}
+
 func setSetting(t *testing.T, s *store.Store, r store.Report, d store.ReportDraft, key, value string) store.ReportDraft {
 	t.Helper()
 	next, err := s.SetReportSetting(context.Background(), orgA, r.ID, userA, key, json.RawMessage(value), d.Version)
@@ -111,8 +127,8 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if len(visible) < 2 || visible[0] != "1. Project" || visible[len(visible)-1] != "Proposal dates" {
 		t.Fatalf("first visible section %v", visible)
 	}
-	if !strings.Contains(blockText(d, "rfp:role"), "Civil (to be appointed)") {
-		t.Fatalf("other consultants carry their real status: %q", blockText(d, "rfp:role"))
+	if team := blockTable(d, "rfp:role:team"); !strings.Contains(team, "Civil|Client|To be appointed") {
+		t.Fatalf("other consultants carry their real status: %q", team)
 	}
 	view, err := s.ReadReport(ctx, orgA, r.ID, "test-build")
 	if err != nil || view.RFP == nil || view.PageFit == nil || view.PageFit.Limit != 4 {
@@ -266,10 +282,18 @@ func TestConsultantRFPIssueGates(t *testing.T) {
 	}
 }
 
-// reviewedCatalog copies knowledge/ and marks the architecture rules
-// reviewed, as the owner would, without touching the real files.
-func reviewedCatalog(t *testing.T) *knowledge.Catalog {
+// reviewedCatalog copies knowledge/ and marks the named discipline rules
+// (architecture when none are named) reviewed, as the owner would, without
+// touching the real files.
+func reviewedCatalog(t *testing.T, disciplines ...string) *knowledge.Catalog {
 	t.Helper()
+	if len(disciplines) == 0 {
+		disciplines = []string{"architecture"}
+	}
+	reviewed := map[string]bool{}
+	for _, d := range disciplines {
+		reviewed["rfp/"+d+".yaml"] = true
+	}
 	dst := t.TempDir()
 	src := filepath.Join("..", "..", "knowledge")
 	err := filepath.WalkDir(src, func(path string, e fs.DirEntry, err error) error {
@@ -285,7 +309,7 @@ func reviewedCatalog(t *testing.T) *knowledge.Catalog {
 		if err != nil {
 			return err
 		}
-		if filepath.ToSlash(rel) == "rfp/architecture.yaml" {
+		if reviewed[filepath.ToSlash(rel)] {
 			body = []byte(strings.Replace(strings.ReplaceAll(string(body), "\r\n", "\n"), "\nstatus: draft\n", "\nstatus: reviewed\nreviewed_by: test owner\nreviewed_on: \"2026-10-10\"\n", 1))
 		}
 		return os.WriteFile(target, body, 0o644)
@@ -375,4 +399,11 @@ func scopeValue(d store.ReportDraft, key string) string {
 		}
 	}
 	return ""
+}
+
+// profileBuildFor is the test profile build over a given catalog.
+func profileBuildFor(cat *knowledge.Catalog) store.ProfileBuild {
+	return store.ProfileBuild{Catalog: cat, KnowledgeVersion: cat.Version(), QuestionVersion: profile.QuestionVersion, Compute: func(s store.ProfileSnapshot) []profile.Row {
+		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: profile.Thresholds{Amber: map[string]float64{"presence": .6, "header": .6, "action": .8}}}, cat)
+	}}
 }

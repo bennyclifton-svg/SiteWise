@@ -12,9 +12,15 @@ Conditions that apply: Work to an existing building; Site stays occupied or oper
 
 ### 2. Scope of services
 
-A: design-team BCA adviser; identify risks and evidence gaps, coordinate specialists and report. No statutory appointment or specialist design.
-B: independent regulatory assessor for expressly appointed functions. Fees buy assessment and duties; issue of a certificate depends on satisfactory assessment.
-Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work.
+As BCA consultant to the design team, your job is to give the design a clear, early path to NCC compliance: identify the compliance risks and evidence gaps, set the code strategy, coordinate the specialists and report at each stage. You hold no statutory appointment under this package and do no specialist design.
+As the independent certifier for the functions we expressly appoint you to, your job is to assess the work and decide compliance impartially. Your fee pays for the assessment and your statutory duties; a certificate issues only if the assessment is satisfactory.
+To do this you:
+- Assess the design against the NCC at each appointed stage and say what evidence is missing.
+- Give clear, timely answers so compliance issues are settled before they cause late redesign.
+- Keep a register of compliance matters, Performance Solutions and evidence through to occupation.
+For the apartments, this includes the NSW design and building practitioner requirements that apply to Class 2 work.
+Because this is work to an existing building, this includes how far the existing building must be upgraded.
+Tell us about any involvement or conflict that affects your independence; separate appointments where needed. The certifier role is not novated under an ordinary design and construct contract, and moving the advisory role to a contractor needs an independence review. Your inspections do not replace the builder's supervision or specialist work.
 Assessment basis: Confirm uses/classifications by part, new/retained/affected areas, consent and drawing revisions, governing NCC edition, prior approvals and missing/conflicting evidence in the information register.
 
 Confirm separate A/B boundaries in R1. Base stages only; later stages are options requiring written/statutory appointment. Advice-only uses A. Under a CDC, B2 is the CDC determination in place of the CC; other routes need separately confirmed scope. R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Separate A/B boundaries, stages/options, payment milestones, authority fees, unit rates, GST, stage dependencies, baseline and cancellation reconciliation. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

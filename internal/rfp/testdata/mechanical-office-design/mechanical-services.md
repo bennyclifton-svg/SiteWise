@@ -7,10 +7,18 @@ Example Client intends to build Office (Class 5) at 1 Example Street, Example NS
 | Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
 | Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; continuation/novation requires separate appointment. |
 
+Conditions that do not apply: Work to an existing building.
+
 ### 2. Scope of services
 
-Design selected systems to purchased maturity; retain load/airflow/pressure/selection calculations. AC is not outdoor air; resolve missing loads/evidence.
-Fire engineer owns strategy/solutions; mechanical implements selected plant/fire modes. Trades install/program/test; review/witnessing is not execution, continuous supervision or unseen-work certification.
+You are the mechanical services engineer. Your job is to keep the occupants comfortable and healthy, with the right temperatures, fresh air and ventilation, using plant that fits the building, meets the energy targets and can be maintained.
+To do this you:
+- Set the design loads and plant strategy early, and give the architect and structural engineer the space, weight and penetrations the plant needs.
+- Design the selected systems to the level of detail each appointed stage buys, with load, airflow, pressure and selection calculations.
+- Show how the outdoor-air requirement is met: air conditioning is not fresh air.
+- Say what loads or evidence are missing and resolve them before relying on them.
+For the office or retail space, this includes zoning that tenants can adapt and the energy rating the brief targets.
+The fire engineer owns the fire strategy and Performance Solutions; you design the selected plant and its fire modes to suit them. Trades install, program and test. Your reviews and witnessing are not their work, continuous supervision, or certification of work you did not see.
 
 R2 defines output maturity/formats/reliance/revisions/rounds/dates. R1 Fee by stage: Fees/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/dependencies/milestones. Acknowledge numbered addenda/validity and authorised signatory; price each service once. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 

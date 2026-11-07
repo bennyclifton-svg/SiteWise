@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Catalog, Doc } from "./api";
+import { IconClose } from "./icons";
+import { PageActionsContext, PageDownload } from "./PageActions";
 import { FIELDS, FieldCell, HeadState, notFiledReason, type RowModel } from "./DocumentRow";
 import { OCRStatus } from "./OCRStatus";
 import { VisualIdentityReview } from "./VisualIdentityReview";
@@ -22,14 +25,14 @@ export function DocumentWorkspace({ row, catalog, priorLabel, onCorrect, onRetry
   return <section className="document-workspace" id="document-workspace" aria-label="Document viewer" data-filename={row.filename}>
     <header className="document-workspace-head">
       <h2>{doc?.fields.find(f => f.field === "title")?.value || row.filename}</h2>
-      <button type="button" className="btn btn-small" onClick={onClose}>Close document</button>
     </header>
+    {doc && <PageDownload surface="document" href={`/api/documents/${doc.id}/file`} label="Download original" />}
+    <DocumentClose onClose={onClose} />
     <div className="document-workspace-tools">
       <div role="group" aria-label="Document view">
         <button className="btn btn-small" aria-pressed={!details} onClick={() => setDetails(false)}>Document</button>
         <button className="btn btn-small" aria-pressed={details} onClick={() => setDetails(true)}>Filing details</button>
       </div>
-      {doc && <a className="cell-link" href={`/api/documents/${doc.id}/file`}>Download original</a>}
     </div>
     {details ? <div className="document-filing">
       <div className="reg-detail-head"><span className="reg-file">{row.filename}</span><HeadState row={row} onRetry={onRetry} onDismiss={onDismiss} /></div>
@@ -80,6 +83,15 @@ export function DocumentWorkspace({ row, catalog, priorLabel, onCorrect, onRetry
       {doc?.status === "filed" && doc.filename.toLowerCase().endsWith(".pdf") && <VisualIdentityReview doc={doc} onCorrect={onCorrect} />}
     </div> : doc ? <DocumentPreview key={doc.id} doc={doc} /> : <p role="status">The document will be available when its upload completes.</p>}
   </section>;
+}
+
+function DocumentClose({ onClose }: { onClose: () => void }) {
+  const { surface, target } = useContext(PageActionsContext);
+  if (surface !== "document" || !target) return null;
+  return createPortal(
+    <button type="button" className="page-close" aria-label="Close document" title="Close document" onClick={onClose}><IconClose /></button>,
+    target,
+  );
 }
 
 function DocumentPreview({ doc }: { doc: Doc }) {

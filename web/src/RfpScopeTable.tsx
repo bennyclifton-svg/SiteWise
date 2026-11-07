@@ -96,6 +96,9 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
   const services = (block.basis?.services ?? []) as Service[];
   const elements = (block.basis?.elements ?? []) as Element[];
   const table = block.table!;
+  // A discipline's part of a combined engagement prices nothing itself: its
+  // fees are asked once, in the engagement's fee schedule.
+  const priced = table.columns.length > 3;
   const stageControls = controls.groups.find(g => g.id === "stages")?.controls ?? [];
   const applies = (s: ScopeStage) => !(s.state === "exclude" && s.source === "rule");
   const shown = stages.filter(s => showAll || applies(s));
@@ -140,7 +143,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     {controls.decisions.filter(c => c.control === "boundary:range").map(c => <p key={c.id} data-control="boundary:range" className="hydraulic-unresolved">{c.label}. {c.text}</p>)}
     {block.edited && <p className="report-wording">{block.text}</p>}
     <div className="report-table-scroll"><table className="report-table rfp-stage-scope">
-      <thead><tr><th scope="col">Stage</th><th scope="col">Scope</th><th scope="col" className="rfp-inout">In</th><th scope="col" className="rfp-inout">Excluded</th><th scope="col" className="rfp-fee">Fee $</th></tr></thead>
+      <thead><tr><th scope="col">Stage</th><th scope="col">Scope</th><th scope="col" className="rfp-inout">In</th><th scope="col" className="rfp-inout">Excluded</th>{priced && <th scope="col" className="rfp-fee">Fee $</th>}</tr></thead>
       {shown.map(s => {
         const control = stageControls.find(c => c.key === `stage:${s.key}`);
         const out = tick(`stage:${s.key}`, s.state === "exclude" ? "X" : "I") === "X";
@@ -158,7 +161,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
               <ScopeChecks controls={controls} controlKey={`stage:${s.key}`} label={s.name} busy={busy} onWrite={onWrite} />
               {isOpen && <ScopeInputs controls={controls} target={`stage:${s.key}`} busy={busy} onWrite={onWrite} />}</td>
             <InOut label={s.name} value={out ? "X" : "I"} disabled={busy || !!control?.locked} onChoose={v => choose(`stage:${s.key}`, v, () => onWrite(`stage:${s.key}`, v === "I" ? "include" : "exclude"))} />
-            <td className="rfp-fee hydraulic-fee-blank">{out ? "—" : ""}</td>
+            {priced && <td className="rfp-fee hydraulic-fee-blank">{out ? "—" : ""}</td>}
           </tr>
           {isOpen && <>
             {[...lines.filter(l => !l.custom), null, ...lines.filter(l => l.custom)].map(l => l === null ? <Fragment key="services">
@@ -188,7 +191,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
       })}
       <tbody id="rfp-stage-all">
         <tr className="rfp-stage-row">{head("", "Across all stages", open.has(""))}
-          <td><span className="rfp-stage-count">{itemCount(held("").map(p => p.value))}</span></td><td /><td /><td className="rfp-fee hydraulic-fee-blank">In stage fees</td></tr>
+          <td><span className="rfp-stage-count">{itemCount(held("").map(p => p.value))}</span></td><td /><td />{priced && <td className="rfp-fee hydraulic-fee-blank">In stage fees</td>}</tr>
         {open.has("") && serviceRows("", false)}
       </tbody>
       <tbody>{table.rows.slice(Number(block.basis?.stage_rows ?? 0)).map((row, i) => <tr key={`total-${i}`} className="rfp-stage-total"><th scope="row">{row[0]}</th><td>{row[1]}</td><td /><td /><td className="rfp-fee" /></tr>)}</tbody>

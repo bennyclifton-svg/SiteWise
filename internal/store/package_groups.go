@@ -101,6 +101,10 @@ func (s *Store) CombinePackages(ctx context.Context, org, project, actor string,
 	if _, err := tx.Exec(ctx, `UPDATE submissions SET group_member_id=package_id,package_id=$3::uuid,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=ANY($4::uuid[]) AND status<>'awarded'`, org, project, group.ID, ids); err != nil {
 		return group, err
 	}
+	// One set of stage lines for the engagement: its members' union.
+	if err := s.syncGroupStages(ctx, tx, org, project, group.ID); err != nil {
+		return group, err
+	}
 	plan, err := nestMemberFeeLines(ctx, tx, org, project, actor, group, ids)
 	if err != nil {
 		return group, err
@@ -207,6 +211,13 @@ func (s *Store) releaseMembers(ctx context.Context, tx pgx.Tx, org, project, act
 	}
 	if _, err := tx.Exec(ctx, `UPDATE packages SET group_id=NULL,version=version+1 WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=ANY($3::uuid[])`, org, project, members); err != nil {
 		return "", err
+	}
+	if !whole {
+		// The group's lines follow the members who stay; the leaver's own
+		// lines were never touched and are live again.
+		if err := s.syncGroupStages(ctx, tx, org, project, groupID); err != nil {
+			return "", err
+		}
 	}
 	if whole {
 		// Retired, not deleted: packages are never deleted, so history that

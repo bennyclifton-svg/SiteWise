@@ -43,29 +43,78 @@ scale:
   - {flag: [heritage]}
 
 role:
-- key: lead
-  text: "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are
-    not responsible for the accuracy of their work. {engagement}"
-  provenance: [{kind: evidence, ref: "architecture#147"}, {kind: evidence, ref: "architecture#148"}, {kind: evidence,
-      ref: "architecture#158"}, {kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13:
-        the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."}]
-- key: novation
-  text: "After novation you are engaged by the head contractor. Price the stages before and after novation separately."
-  when: [novation: ["yes"]]
-  provenance: [{kind: evidence, ref: "architecture#131"}]
-- key: novation_option
-  text: "Under design and construct the client may elect to novate this appointment to the head contractor after the tender,
-    or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether
-    to take it up."
-  when: [novation: ["option"]]
-  provenance: [{kind: client_decision, ref: "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", 
-        why: "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
-- key: dnc_handover
-  text: "After the design and construct tender the contractor's own designers complete the design. Your appointment ends
-    at the handover described for the D&C tender stage."
-  when: [{procurement: [design_construct], novation: ["no"]}]
-  provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
+  - key: lead
+    text: "You are the lead designer. You turn the client's brief, the site and the project's constraints into one coordinated design that meets the brief, fits the budget, gains approval, complies, and can be built and maintained."
+    provenance: [{"kind": "evidence", "ref": "architecture#147"}, {"kind": "evidence", "ref": "architecture#148"}, {"kind": "evidence", "ref": "architecture#158"}, {"kind": "client_decision", "ref": "docs/plans/2026-10-13-house-rfp-brief.md", "why": "Owner 2026-10-13: the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Resolve the brief spatially: test it against the site, the planning controls and the budget, and tell the client early where they conflict.
+      - Lead and integrate the design team: set the design program, bring in each consultant's input, resolve clashes and issue one coherent set of documents. Each consultant remains responsible for its own work.
+      - Use your judgement: recommend options rather than only presenting them, and state what each decision means for cost, approval, risk and buildability.
+      - Keep the design intent through to the end of your appointment.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_house
+    text: "For this house, fit for purpose means a home that suits how the owners will live in it, on their site and within their budget."
+    when: [{"module": ["house"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments
+    text: "For the apartments, fit for purpose means the apartment mix and yield, and residential amenity: solar access, cross-ventilation, apartment sizes and storage."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments_nsw
+    text: "In NSW that amenity is measured against the Apartment Design Guide. You provide the design verification statement as a registered architect, and design compliance declarations as a regulated designer."
+    when: [{"class": ["2"], "state": ["NSW"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}, {"kind": "practice", "ref": "Apartment Design Guide; Environmental Planning and Assessment Regulation (design verification statement); Design and Building Practitioners Act 2020 (NSW); named from practice, not verified against the instrument"}]
+  - key: fit_accommodation
+    text: "For the residential accommodation, fit for purpose means the room mix and yield, guest or resident amenity, acoustic separation between rooms, and a back of house that runs well."
+    when: [{"class": ["3"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, fit for purpose means efficient, flexible floor plates, clear tenancy boundaries, and base-building services that tenants can fit out."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_industrial
+    text: "For the warehouse or factory, fit for purpose means a layout that suits the operation: clear heights, loading, vehicle movements and room to expand."
+    when: [{"class": ["7b", "8"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_health
+    text: "For the health building, fit for purpose means clinical and patient flows, infection control and the operator's functional brief."
+    when: [{"class": ["9a"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_assembly
+    text: "For the assembly or education building, fit for purpose means how large groups gather and move, sightlines and acoustics, and safe crowd egress."
+    when: [{"class": ["9b"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_care
+    text: "For the residential care building, fit for purpose means resident dignity and safety, clear staff supervision, and care that works day and night."
+    when: [{"class": ["9c"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, fit for purpose also means working with what is there: its structure, services, approvals and occupants."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_heritage
+    text: "On a heritage item or in a conservation area, the design must also respect the heritage significance the heritage advice identifies."
+    when: [{"flag": ["heritage"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: subconsultants
+    text: "{engagement}"
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-10-13-house-rfp-brief.md", "why": "Owner 2026-10-13: the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."}]
+  - key: novation
+    text: "After novation you are engaged by the head contractor. Price the stages before and after novation separately."
+    when: [{"novation": ["yes"]}]
+    provenance: [{"kind": "evidence", "ref": "architecture#131"}]
+  - key: novation_option
+    text: "Under design and construct the client may elect to novate this appointment to the head contractor after the tender, or not. Price design finalisation and the delivery-phase services as a separate option; the client decides later whether to take it up."
+    when: [{"novation": ["option"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-10-11-procurement-default-disciplines.md#decisions", "why": "Owner 2026-10-11: D&C does not mean novated; novation is elected later."}]
+  - key: dnc_handover
+    text: "After the design and construct tender the contractor's own designers complete the design. Your appointment ends at the handover described for the D&C tender stage."
+    when: [{"procurement": ["design_construct"], "novation": ["no"]}]
+    provenance: [{"kind": "seed", "ref": "data/reference/clerk/data/seed/architectural-services-guide.md#appointment-boundary-and-procurement-route"}]
 
+design_team: true
 stage_intro: "Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later
   stages (section 5)."
 # One table: each stage with its services beneath it (owner direction, 2 November 2026).

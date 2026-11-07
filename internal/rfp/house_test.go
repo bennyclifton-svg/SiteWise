@@ -114,8 +114,15 @@ func TestHouseRFPReadsTheBrief(t *testing.T) {
 		role += row.Text
 	}
 	// An undecided package is the client's (owner decision 4, 2026-10-21).
-	if !strings.Contains(role, "subconsultants") || !strings.Contains(role, "Structural") || !strings.Contains(role, "directly: Geotechnical") {
-		t.Fatalf("role names the subconsultant and the client's consultants: %q", role)
+	if !strings.Contains(role, "subconsultants") || !strings.Contains(role, "Structural") {
+		t.Fatalf("role names the subconsultant: %q", role)
+	}
+	team := map[string]string{}
+	for _, m := range r.Team {
+		team[m.Title] = m.EngagedBy
+	}
+	if team["Geotechnical"] != "Client" || team["Structural"] != "You, as your subconsultant" {
+		t.Fatalf("design team says who engages each consultant: %+v", r.Team)
 	}
 	if r.HasCheck("engagement") || r.HasCheck("fact:budget") {
 		t.Fatalf("an undecided package does not block; a stated budget satisfies the budget: %s", describeChecks(r))

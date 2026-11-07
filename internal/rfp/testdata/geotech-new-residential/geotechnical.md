@@ -7,9 +7,17 @@ Example Client intends to build Housing (Class 1a) at 1 Example St, Example NSW.
 | Work type: New build | Site address: 1 Example St, Example NSW | Client: Example Client |
 | Building: Housing: Class 1a | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; no automatic later appointment or novation. |
 
+Conditions not yet known: Basement or deep excavation.
+
 ### 2. Scope of services
 
-Investigate and interpret ground for the stated decision; identify preliminary/final reports and monitoring endpoint. Civil/structural designers own design; contractor owns methods, temporary works and supervision. Environmental assessment is a separate appointment.
+You are the geotechnical engineer. Your job is to tell the design team what the ground is and how it will behave, so foundations, excavation and earthworks are designed safely and economically, and ground risk is known before the client commits.
+To do this you:
+- Investigate and interpret the ground for the decision this appointment serves.
+- Say which reports are preliminary and which are final, and when any monitoring ends.
+- Give the structural and civil engineers the design parameters they need, with the uncertainty stated.
+For this house, this means a site classification and footing advice the builder can price.
+The civil and structural designers own the design; the contractor owns construction methods, temporary works and supervision. Environmental assessment is a separate appointment.
 Ground brief: Confirm footprints, loads, levels/cut-fill, excavation, prior logs, services, risks, access and reliance recipients; reconcile conflicting plans.
 
 Base stages only, from written instruction/input-access milestone to the selected deliverable. Later options require written instruction; agree interim reports and monitoring endpoint. R1 Fee by stage: Price stages/options separately: fixed, time-ceiling or unit basis; quantities, rates, GST, dependencies and markups. Cored alternatives include auger: total and increment, no double count. Acknowledge addenda. Confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

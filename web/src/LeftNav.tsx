@@ -3,6 +3,7 @@
 // ("Profile", "Costs"); the visible labels match the Clerk shell.
 
 import { useEffect, useRef, useState } from "react";
+import { AccountMenu } from "./AccountMenu";
 import { DevStatus } from "./DevStatus";
 import { Wordmark } from "./Wordmark";
 
@@ -18,11 +19,12 @@ interface Props {
 
 const VIEWS: { id: WorkbenchView | "plan"; label: string; name?: string; icon: string; idle?: boolean }[] = [
   { id: "profile", label: "Project Profile", name: "Profile", icon: "M4 8h16M4 16h16M8 8v8M16 8v8" },
-  { id: "plan", label: "Project Plan", icon: "M7 3h8l4 4v14H7zM15 3v5h5", idle: true },
   { id: "costs", label: "Cost Plan", name: "Costs", icon: "M12 3v18M7 8h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h8" },
   { id: "program", label: "Program", icon: "M4 6h16M4 12h10M4 18h13" },
   { id: "procurement", label: "Procurement", icon: "M8 4h8v3H8zM6 7h12v13H6z" },
   { id: "specifications", label: "Specifications", icon: "M7 3h8l4 4v14H7zM9 13h6M9 17h6" },
+  // The old Project Plan placeholder: still not built, so it stays disabled and marked Planned.
+  { id: "plan", label: "Report", icon: "M7 3h8l4 4v14H7zM15 3v5h5M10 17v-3M13 17v-5", idle: true },
 ];
 
 export function LeftNav({ projects, currentId, navigate, view, onView }: Props) {
@@ -60,7 +62,7 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
           go("/");
         }}
       >
-        <Wordmark height={30} />
+        <Wordmark height={32} />
       </a>
       <div className="switcher" ref={box} onKeyDown={(e) => {
         if (e.key === "Escape" && open) {
@@ -126,6 +128,7 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
       </div>
       <div className="nav-spacer" />
       <DevStatus />
+      <AccountMenu />
       </div>
     </nav>
   );

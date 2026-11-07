@@ -11,8 +11,15 @@ Conditions that apply: Work to an existing building.
 
 ### 2. Scope of services
 
-Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic design or proof of existing adequacy.
-Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing neither executes tests nor certifies unseen work. Name network design/application owners.
+You are the fire services engineer. Your job is to design the fire systems allocated to you so they protect occupants and property, deliver the fire strategy, meet the authority's requirements, and can be tested and maintained.
+To do this you:
+- Confirm the water supply and the authority's requirements early.
+- Design the selected systems to the level of detail each appointed stage buys.
+- Coordinate space, tanks, pumps and penetrations with the architect, structural and other services engineers.
+A concept tank and pump capacity is not full hydraulic design or proof that the existing supply is adequate.
+For the warehouse or factory, this includes systems matched to the stored goods and their fire load.
+Because this is work to an existing building, this includes what the existing systems can do and what must be upgraded.
+The fire engineer owns the fire strategy and Performance Solutions; authorities decide. Trades install, test and certify. Your reviews and witnessing neither carry out tests nor certify work you did not see. Name who owns network design and authority applications.
 Design basis: R7: parts/use/hazards, strategy/approvals, insurer/operator criteria, records/revisions, supply dates/conditions, plant/pipework and access gaps.
 
 R2 sets each output purpose/maturity, native formats, recipient/reliance, revision, rounds and date. R1 Fee by stage: Quantity/basis/ceiling, ex GST/GST/total by stage/system; base/options/dependencies/milestones, validity/addenda; price once. Acknowledge numbered addenda; confirm authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

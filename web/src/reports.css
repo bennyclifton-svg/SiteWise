@@ -25,17 +25,17 @@
 .report-list button { width: 100%; padding: 12px 8px; text-align: left; border: 0; background: transparent; cursor: pointer; overflow-wrap: anywhere; }
 .report-list button:hover, .report-list [aria-current="true"] { background: var(--ground); }
 .report-list [aria-current="true"] { font-weight: 600; }
-.report-reader { min-width: 0; max-width: 1000px; padding: 28px 36px 64px; }
+.report-reader { min-width: 0; max-width: 1000px; padding: 4px 36px 64px; }
 .report-empty { margin-top: 40px; color: var(--ink-muted); }
-.report-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.report-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
 .report-toolbar h2 { font-size: 22px; overflow-wrap: anywhere; }
 .report-toolbar > .btn { flex-shrink: 0; }
-.report-refresh { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; max-width: 100%; }
-.report-stale { min-width: 0; padding: 2px 8px; border: 1px solid var(--warn); border-radius: var(--radius-sm); font-size: var(--fs-sm); line-height: 18px; overflow-wrap: anywhere; color: var(--ink-body); background: var(--warn-soft); cursor: help; }
 .report-notice { margin: 20px 0; padding: 16px; background: var(--warn-soft); color: var(--ink-body); }
 .report-notice h3 { margin: 0 0 10px; font-size: 16px; }
 .report-notice ul { padding-left: 20px; margin: 8px 0; }
 .report-section { margin-top: 32px; }
+/* The first section sits close under the report title. */
+.rfp-draft > .report-section:first-child { margin-top: 12px; }
 .report-section > h3 { margin: 0; padding-bottom: 10px; border-bottom: 1px solid var(--line-strong); font-size: 19px; }
 .report-block { padding: 18px 0; border-bottom: 1px solid var(--line); }
 .report-block-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
@@ -241,6 +241,7 @@
 .reports.report-view { display: block; }
 .report-view .report-reader { max-width: 1100px; }
 .report-back { margin-bottom: 16px; }
+.workspace-primary-actions .report-back { margin-bottom: 0; }
 .scope-back { padding: 24px 36px 0; }
 .scope-back .report-back { margin-bottom: 0; }
 .report-view .scope-back + .report-reader { padding-top: 16px; }
@@ -262,7 +263,8 @@
 .rfp-cell:hover:not(:disabled) { text-decoration: underline dotted; text-underline-offset: 3px; }
 .rfp-cell:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; border-radius: 2px; }
 .rfp-cell-text { overflow-wrap: anywhere; color: var(--ink); }
-[data-blocked] { box-shadow: inset 3px 0 0 var(--alert); background: var(--alert-soft); }
+/* A value that blocks issue: a thin red edge, no fill, so it reads as a cue rather than an alarm. */
+[data-blocked] { box-shadow: inset 2px 0 0 var(--alert); padding-left: 8px; }
 .rfp-conditions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 0 16px; }
 .rfp-conditions .rfp-row { gap: 2px; padding: 4px; }
 .rfp-conditions .rfp-label { font-weight: 400; }
@@ -282,7 +284,7 @@
 /* The printed RFP is the issued PDF; a browser print of the screen still
    reads as a document. */
 @media print {
-  .rfp-source, .rfp-markers, .rfp-issue, .report-refresh, .report-back, .report-block .btn, .report-section-head .btn, .rfp-edit { display: none !important; }
+  .rfp-source, .rfp-markers, .rfp-issue, .report-back, .report-block .btn, .report-section-head .btn, .rfp-edit { display: none !important; }
   [data-blocked] { box-shadow: none; background: none; }
   .rfp-cell { text-decoration: none; }
 }
@@ -344,9 +346,11 @@
 .rfp-grid .pf-value { font-size: var(--fs-sm); line-height: 1.35; }
 .rfp-grid .rfp-why { display: none; }
 .rfp-conditions-help, .rfp-transmittal-help { margin: 4px 0 8px; color: var(--ink-muted); font-size: var(--fs-sm); }
-.rfp-transmittal-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.rfp-transmittal-heading { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
 .rfp-transmittal-heading h4 { margin: 0; font-size: var(--fs-md); }
-.rfp-transmittal-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.rfp-transmittal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-left: auto; }
+.rfp-transmittal-actions .btn { display: inline-flex; align-items: center; gap: 6px; }
+.rfp-transmittal-actions svg { width: 14px; height: 14px; flex: none; }
 .rfp-transmittal-table th, .rfp-transmittal-table td { padding: 5px 7px; font-size: var(--fs-sm); overflow-wrap: anywhere; }
 .rfp-transmittal-table th:nth-child(2) { width: 45%; }
 .hydraulic-service-table th:first-child { width: auto; }

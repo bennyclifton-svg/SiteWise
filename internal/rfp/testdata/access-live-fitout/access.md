@@ -12,7 +12,13 @@ Conditions that do not apply: Several buildings or a campus; Parts with differen
 
 ### 2. Scope of services
 
-You advise on access for each appointed stage, from our written instruction to your final report and response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint.
+You are the access consultant. Your job is to make sure people with disability can reach, enter and use the building and its facilities, and that the design meets the access requirements that apply.
+To do this you:
+- Review the design at each appointed stage against the access requirements and the brief's inclusive-design goals.
+- Say what must change, and propose Performance Solutions where a compliant outcome needs one.
+- Keep compliance separate from good practice, so the client can choose what goes beyond the minimum.
+For the office or retail space, this includes accessible entries, paths of travel and sanitary facilities for staff and the public, and how tenancies connect to them.
+You advise for each appointed stage, from our written instruction to your final report and response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint.
 Issue each review as a dated PDF report with marked-up drawings and an editable register of issues, Performance Solutions and evidence, recording location, drawing revision, owner, due date and close-out. Coordinate with the architect, landscape, civil, services, lift, fire and BCA consultants.
 Assessment basis: The uses and classes in section 1, against the current NCC, its livable housing requirements where housing is included, and any council adaptable-housing target. We provide the survey, approvals and conditions; tell us what is missing.
 

@@ -14,7 +14,22 @@ Conditions not yet known: Heritage item or conservation area; Connecting with Co
 
 ### 2. Scope of services
 
-Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. The client engages the other consultants directly: Civil (to be appointed).
+You are the lead designer. You turn the client's brief, the site and the project's constraints into one coordinated design that meets the brief, fits the budget, gains approval, complies, and can be built and maintained.
+To do this you:
+- Resolve the brief spatially: test it against the site, the planning controls and the budget, and tell the client early where they conflict.
+- Lead and integrate the design team: set the design program, bring in each consultant's input, resolve clashes and issue one coherent set of documents. Each consultant remains responsible for its own work.
+- Use your judgement: recommend options rather than only presenting them, and state what each decision means for cost, approval, risk and buildability.
+- Keep the design intent through to the end of your appointment.
+For the residential accommodation, fit for purpose means the room mix and yield, guest or resident amenity, acoustic separation between rooms, and a back of house that runs well.
+For the assembly or education building, fit for purpose means how large groups gather and move, sightlines and acoustics, and safe crowd egress.
+Because this is work to an existing building, fit for purpose also means working with what is there: its structure, services, approvals and occupants.
+
+**Design team**:
+
+| Consultant | Engaged by | Status |
+|---|---|---|
+| Civil | Client | To be appointed |
+
 After novation you are engaged by the head contractor. Price the stages before and after novation separately.
 
 Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

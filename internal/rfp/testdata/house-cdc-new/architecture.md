@@ -18,7 +18,22 @@ Conditions that do not apply: Heritage item or conservation area; Connecting wit
 
 ### 2. Scope of services
 
-Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. The client engages the other consultants directly: Surveyor (to be appointed), Geotechnical (to be appointed). You engage these consultants as your subconsultants and include their fees in your price; name them in R4: Structural.
+You are the lead designer. You turn the client's brief, the site and the project's constraints into one coordinated design that meets the brief, fits the budget, gains approval, complies, and can be built and maintained.
+To do this you:
+- Resolve the brief spatially: test it against the site, the planning controls and the budget, and tell the client early where they conflict.
+- Lead and integrate the design team: set the design program, bring in each consultant's input, resolve clashes and issue one coherent set of documents. Each consultant remains responsible for its own work.
+- Use your judgement: recommend options rather than only presenting them, and state what each decision means for cost, approval, risk and buildability.
+- Keep the design intent through to the end of your appointment.
+For this house, fit for purpose means a home that suits how the owners will live in it, on their site and within their budget.
+You engage these consultants as your subconsultants and include their fees in your price; name them in R4: Structural.
+
+**Design team**:
+
+| Consultant | Engaged by | Status |
+|---|---|---|
+| Structural | You, as your subconsultant | To be appointed |
+| Surveyor | Client | To be appointed |
+| Geotechnical | Client | To be appointed |
 
 Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 

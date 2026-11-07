@@ -737,7 +737,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   return (
     <CockpitFrame
       nav={nav}
-      actionSurface={viewingRow ? "" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
+      actionSurface={viewingRow ? "document" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
       onRename={async name => { await request("PATCH", `/projects/${projectId}`, { name }); dispatch({ type: "renamed", name }); onRenamed(projectId, name); }}
       title={state.projectName}
       subtitle={address || "Site address TBC"}

@@ -14,7 +14,22 @@ Conditions not yet known: Heritage item or conservation area; A development stan
 
 ### 2. Scope of services
 
-Planning consultant for the applicant. You prepare the planning report, collate and lodge the application, and manage it through assessment. The architect leads design; the client engages the specialist consultants (Architect (to be appointed), Structural (to be appointed), Civil (to be appointed), Traffic (to be appointed)). You review their plans and reports for planning compliance before lodgement, and help scope the specialist reports the authority requires.
+You are the planning consultant for the applicant. Your job is to get the project the approval it needs, on a sound basis and without avoidable delay: a design the authority can support, and an application it can assess quickly.
+To do this you:
+- Advise early on the controls, the pathway and the planning risks, so the design responds to them before lodgement.
+- Prepare the planning report, then collate and lodge the application.
+- Help scope the specialist reports the authority requires, and review the consultants' plans and reports for planning compliance before lodgement.
+- Manage the application through assessment, including requests for information and the conditions.
+The architect leads design; the client engages the specialist consultants listed in the design team below.
+
+**Design team**:
+
+| Consultant | Engaged by | Status |
+|---|---|---|
+| Architect | Client | To be appointed |
+| Structural | Client | To be appointed |
+| Civil | Client | To be appointed |
+| Traffic | Client | To be appointed |
 
 Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction. R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 

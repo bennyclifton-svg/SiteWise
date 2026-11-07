@@ -36,6 +36,10 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 	var body struct {
 		Value   json.RawMessage `json:"value"`
 		Version int64           `json:"version"`
+		// View names the combined engagement's report the editor shows. A
+		// member's setting then returns that report, recomposed in the same
+		// transaction, so the editor needs one round trip.
+		View string `json:"view"`
 	}
 	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -48,7 +52,7 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "a value is required; delete the setting to restore the rule"})
 		return
 	}
-	draft, err := deps.Store.SetReportSetting(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, key, value, body.Version)
+	draft, group, err := deps.Store.SetReportSettingInGroup(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, key, value, body.Version)
 	if err != nil {
 		if errors.Is(err, store.ErrInvalidSetting) {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "that value is not allowed for this setting"})
@@ -59,6 +63,16 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 	}
 	if deps.Broker != nil {
 		deps.Broker.Wake(session.OrgID)
+	}
+	// Only the group the store recomposed may be returned instead.
+	if body.View != "" && body.View == group && group != r.PathValue("r") {
+		view, err := deps.Store.ReadReport(r.Context(), session.OrgID, group, deps.ReportBuild)
+		if err != nil {
+			reportError(w, err)
+			return
+		}
+		writeJSON(w, http.StatusOK, view)
+		return
 	}
 	view, err := deps.Store.ReadReport(r.Context(), session.OrgID, r.PathValue("r"), deps.ReportBuild)
 	if err != nil {

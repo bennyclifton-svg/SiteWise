@@ -439,6 +439,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.reports(ctx, o.apiSamples); err != nil {
 		return 0, err
 	}
+	if err := api.groupRFP(ctx, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench combined engagement RFP: %w", err)
+	}
 	if err := api.specifications(ctx, o.apiSamples); err != nil {
 		return 0, err
 	}
@@ -447,6 +450,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	}
 	if err := api.procurementAward(ctx, o.apiSamples); err != nil {
 		return 0, fmt.Errorf("bench procurement award: %w", err)
+	}
+	if err := api.groupAward(ctx, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench combined engagement award: %w", err)
 	}
 	if err := api.program(ctx, st, building, dsn, o.apiSamples); err != nil {
 		return 0, fmt.Errorf("bench program: %w", err)

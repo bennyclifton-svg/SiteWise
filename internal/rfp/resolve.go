@@ -170,6 +170,7 @@ type Resolved struct {
 	Conditions    []Condition           `json:"conditions"`
 	Appointment   []Row                 `json:"appointment"`
 	Role          []Row                 `json:"role"`
+	Team          []TeamMember          `json:"team,omitempty"`
 	StageIntro    string                `json:"stage_intro"`
 	ScopeByStage  bool                  `json:"scope_by_stage,omitempty"`
 	ElementNote   string                `json:"element_intro,omitempty"`
@@ -185,6 +186,13 @@ type Resolved struct {
 	AllowNote     string                `json:"allowance_note"`
 	Departures    string                `json:"departures"`
 	EvalNote      string                `json:"evaluation_note"`
+}
+
+// TeamMember is one other consultant in the design team table.
+type TeamMember struct {
+	Title     string `json:"title"`
+	EngagedBy string `json:"engaged_by"`
+	Status    string `json:"status"`
 }
 
 // GridColumn is one column of the project grid on page one; its cells are
@@ -1424,6 +1432,7 @@ func (r *resolver) resolveRows() {
 			r.out.Role = append(r.out.Role, fill("role:", row))
 		}
 	}
+	r.out.Team = r.team()
 	for _, row := range r.d.ScopeSchedule {
 		if keep(row) {
 			r.out.ScopeSchedule = append(r.out.ScopeSchedule, fill("scope_schedule:", row))
@@ -1748,31 +1757,50 @@ func (r *resolver) checkRequiredFacts() {
 	}
 }
 
-// engagement says who engages each other consultant: the client directly,
-// or this consultant as a subconsultant whose fee is in this price. A
-// package with no answer is engaged by the client: Procurement no longer
+// engagement names the consultants this firm engages as subconsultants,
+// whose fees are in its price; the design team table lists everyone else.
+// A package with no answer is engaged by the client: Procurement no longer
 // asks (owner decision 4, docs/plans/2026-10-21-source-to-cost-plan-design.md).
+// Empty when there are none, so the role prints no line for it.
 func (r *resolver) engagement() string {
-	client, subs := []string{}, []string{}
+	subs := []string{}
 	for _, c := range r.drivers.Consultants {
 		if c.EngagedBy == EngagedByLead {
 			subs = append(subs, c.Title)
-		} else {
-			client = append(client, c.Title+" ("+c.Status+")")
 		}
 	}
-	lines := []string{}
-	if len(client) > 0 || len(subs) == 0 {
-		names := strings.Join(client, ", ")
-		if names == "" {
-			names = "none recorded yet"
+	if len(subs) == 0 {
+		return ""
+	}
+	return "You engage these consultants as your subconsultants and include their fees in your price; name them in R4: " + strings.Join(subs, ", ") + "."
+}
+
+// team lists the other consultants for a discipline that prints the design
+// team table.
+func (r *resolver) team() []TeamMember {
+	if !r.d.DesignTeam {
+		return nil
+	}
+	// The discipline whose role names its subconsultants is the lead.
+	sub := "Lead consultant, as subconsultant"
+	for _, row := range r.d.Role {
+		if strings.Contains(row.Text, "{engagement}") {
+			sub = "You, as your subconsultant"
 		}
-		lines = append(lines, "The client engages the other consultants directly: "+names+".")
 	}
-	if len(subs) > 0 {
-		lines = append(lines, "You engage these consultants as your subconsultants and include their fees in your price; name them in R4: "+strings.Join(subs, ", ")+".")
+	out := []TeamMember{}
+	for _, c := range r.drivers.Consultants {
+		by := "Client"
+		if c.EngagedBy == EngagedByLead {
+			by = sub
+		}
+		status := c.Status
+		if status != "" {
+			status = strings.ToUpper(status[:1]) + status[1:]
+		}
+		out = append(out, TeamMember{Title: c.Title, EngagedBy: by, Status: status})
 	}
-	return strings.Join(lines, " ")
+	return out
 }
 
 // finishChecks turns each unknown fact into one decision listing the rows

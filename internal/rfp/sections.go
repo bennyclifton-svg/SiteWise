@@ -19,13 +19,29 @@ type builder struct {
 	draft   bool
 	section map[string]*reports.Section
 	order   []string
+	opt     partOptions
+}
+
+// partOptions render a discipline as one part of a combined engagement's
+// RFP (group.go). The zero value is the discipline's own RFP, unchanged.
+type partOptions struct {
+	// part prices nothing in the stage table: the engagement's one fee
+	// schedule asks for every discipline's fees.
+	part bool
+	// moved lists services another discipline in the engagement does; they
+	// print once, under that discipline.
+	moved map[string]bool
 }
 
 // Sections renders a resolved RFP into the template's sections, followed by
 // the internal Before-issue section. Every block of a draft discipline is
 // provisional, which keeps it from being issued (report_issue.go).
 func Sections(r Resolved, template knowledge.ReportTemplate) ([]reports.Section, error) {
-	b := &builder{r: r, draft: r.Status != "reviewed", section: map[string]*reports.Section{}}
+	return sections(r, template, partOptions{})
+}
+
+func sections(r Resolved, template knowledge.ReportTemplate, opt partOptions) ([]reports.Section, error) {
+	b := &builder{r: r, draft: r.Status != "reviewed", section: map[string]*reports.Section{}, opt: opt}
 	b.base = map[string]any{"method": "rfp_discipline", "discipline": r.Discipline, "version": r.Version, "status": r.Status}
 	for _, s := range template.Sections {
 		sec := reports.Section{ID: s.ID, Title: s.Title, Essential: s.Essential, Blocks: []reports.Block{}}
@@ -191,21 +207,46 @@ func (b *builder) budgetBasis() string {
 	return "excl. GST"
 }
 
+// routeRoles are the role rows about the procurement route (novation, D&C
+// handover). With a design team table they follow it, beside the stage
+// pricing, so the role opens with what the consultant is there to achieve.
+var routeRoles = map[string]bool{"novation": true, "novation_option": true, "dnc_handover": true}
+
 func (b *builder) role() {
-	lines := []string{}
+	lines, route := []string{}, []string{}
 	for _, row := range b.r.Role {
-		lines = append(lines, row.Text)
+		switch {
+		case row.Text == "":
+			// An empty slot, such as no subconsultants, prints nothing.
+		case routeRoles[row.Key]:
+			route = append(route, row.Text)
+		default:
+			lines = append(lines, row.Text)
+		}
 	}
 	// The discipline's own project rows describe this appointment; they
-	// follow the role in the same block.
+	// follow the role.
 	for _, row := range b.r.Appointment {
 		if row.Label != "" {
-			lines = append(lines, row.Label+": "+row.Text)
+			route = append(route, row.Label+": "+row.Text)
 			continue
 		}
-		lines = append(lines, row.Text)
+		route = append(route, row.Text)
 	}
-	b.add("role", "rfp:role", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Role, "appointment": b.r.Appointment})
+	basis := map[string]any{"rows": b.r.Role, "appointment": b.r.Appointment}
+	if len(b.r.Team) == 0 {
+		b.add("role", "rfp:role", "", strings.Join(append(lines, route...), "\n"), nil, basis)
+		return
+	}
+	b.add("role", "rfp:role", "", strings.Join(lines, "\n"), nil, basis)
+	rows := [][]string{}
+	for _, m := range b.r.Team {
+		rows = append(rows, []string{m.Title, m.EngagedBy, m.Status})
+	}
+	b.add("role", "rfp:role:team", "Design team", "", doc([]string{"Consultant", "Engaged by", "Status"}, rows), map[string]any{"team": b.r.Team})
+	if len(route) > 0 {
+		b.add("role", "rfp:role:appointment", "", strings.Join(route, "\n"), nil, basis)
+	}
 }
 
 func (b *builder) stages() { b.consultantStages() }

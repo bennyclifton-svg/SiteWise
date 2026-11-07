@@ -67,6 +67,9 @@ type fieldJSON struct {
 	// Home is the Profile entry the field is shown under: project, planning
 	// or a top-level system id (knowledge/profile/layout.yaml).
 	Home string `json:"home,omitempty"`
+	// ScopeDecision marks an RFP flag that is one consultant's appointment
+	// choice rather than a fact about the project.
+	ScopeDecision bool `json:"scope_decision,omitempty"`
 	cellJSON
 }
 
@@ -366,6 +369,7 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 		for _, f := range rfp.DetailFlags(sk) {
 			fj := field(knowledge.DetailPrefix+"flag."+f.Key, f.Label, "choice", yesNo)
 			fj.Home = cat.Home(fj.Key)
+			fj.ScopeDecision = f.ScopeDecision
 			out.Details = append(out.Details, fj)
 		}
 	}

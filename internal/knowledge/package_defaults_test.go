@@ -56,6 +56,8 @@ func TestPackageDefaultsRejectsUnknownNamesAndSystems(t *testing.T) {
 		"class":      {"  except_building_classes:\n  - infrastructure\n", "  except_building_classes:\n  - spaceport\n"},
 		// A baseline's scope condition must name real systems too (F50).
 		"baseline system": {"  systems:\n  - interiors\n", "  systems:\n  - interiors-magic\n"},
+		// An NCC class condition must name a real ncc_class option.
+		"ncc class": {"- ncc_classes:\n  - '2'\n", "- ncc_classes:\n  - '2z'\n"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			root := copyKnowledge(t)

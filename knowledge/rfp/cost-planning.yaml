@@ -103,35 +103,38 @@ project_rows:
       unknown scope remains unresolved.
   label: Cost basis
 role:
-- key: cost
-  text: Independent cost advice from written instruction/complete inputs to named final output and query-period end.
-    Estimate uncertainty is explicit; no guaranteed tender, final cost, approval or funding.
-  provenance:
-  - kind: evidence
-    ref: cost-planning#4,16
-  - kind: seed
-    ref: cost-planning#27,34
-  - kind: client_decision
-    ref: cost-planning#36
-    why: Client confirms actual extent, appointment start/end and priced assumptions across building/work types; 
-      unknown scope remains unresolved.
-- key: interfaces
-  text: Designers/specialists define design, compliance, retained-system adequacy and remediation; operator supplies
-    equipment/owner costs; PM owns budget/change approval. QS prices gaps, administrator directs/certifies, advisers
-    own tax/legal/valuation. Disclose client/contractor/lender conflicts.
-  provenance:
-  - kind: evidence
-    ref: cost-planning#20,23
-  - kind: seed
-    ref: cost-planning#25,26,29,31,32
-  - kind: client_decision
-    ref: cost-planning#35
-    why: Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability 
-      lists do not commission these services.
-  - kind: client_decision
-    ref: cost-planning#39
-    why: Client selects agreement, competent independent resources, insurance and evaluation; historic supplier 
-      limits and certificates are not current requirements.
+  - key: cost
+    text: "You are the independent cost planner. Your job is to give the client a reliable picture of what the project will cost at every stage, so design decisions are made with the money in view and the budget holds."
+    provenance: [{"kind": "evidence", "ref": "cost-planning#4,16"}, {"kind": "seed", "ref": "cost-planning#27,34"}, {"kind": "client_decision", "ref": "cost-planning#36", "why": "Client confirms actual extent, appointment start/end and priced assumptions across building/work types; unknown scope remains unresolved."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Price the design at each appointed stage and report against the budget.
+      - Show the cost of design options before the client chooses.
+      - Name the risks, allowances and gaps in the information, and say what would close them.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_house
+    text: "For this house, this means a clear build cost against the owners' budget, with allowances for the choices still to be made."
+    when: [{"module": ["house"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_apartments
+    text: "For the apartments, this includes cost per apartment and per square metre of saleable area, so the design can be tested against the feasibility."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, this separates base-building cost from tenant fit-out cost."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_existing
+    text: "Because this is work to an existing building, this includes allowances for what will only be found once the building is opened up."
+    when: [{"module": ["existing_building"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: limits
+    text: "Your advice runs from our written instruction and complete inputs to the final output we name and the end of the query period. Show estimate uncertainty plainly; you do not guarantee a tender price, final cost, approval or funding."
+    provenance: [{"kind": "evidence", "ref": "cost-planning#4,16"}, {"kind": "seed", "ref": "cost-planning#27,34"}, {"kind": "client_decision", "ref": "cost-planning#36", "why": "Client confirms actual extent, appointment start/end and priced assumptions across building/work types; unknown scope remains unresolved."}]
+  - key: interfaces
+    text: "Designers and specialists define the design, compliance, whether retained systems are adequate, and remediation. The operator supplies equipment and owner costs. The project manager approves the budget and changes. You price the gaps; the contract administrator directs and certifies; other advisers own tax, legal and valuation advice. Tell us about any conflict with the client, contractor or lender."
+    provenance: [{"kind": "evidence", "ref": "cost-planning#20,23"}, {"kind": "seed", "ref": "cost-planning#25,26,29,31,32"}, {"kind": "client_decision", "ref": "cost-planning#35", "why": "Select current authority-purpose reporting and separate specialist reliance; historical CIV and capability lists do not commission these services."}, {"kind": "client_decision", "ref": "cost-planning#39", "why": "Client selects agreement, competent independent resources, insurance and evaluation; historic supplier limits and certificates are not current requirements."}]
 stage_intro: Confirm base stages, inputs and final query-period end; later services require written instruction.
 boundary:
 - when:

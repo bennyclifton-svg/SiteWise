@@ -7,12 +7,17 @@ Example Client intends to build Office (Class 5) at 1 Example Street, Example NS
 | Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
 | Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; later stages and novation require explicit agreement. |
 
-Conditions that do not apply: Vulnerable or assisted occupants documented; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Parts with different NCC classes.
+Conditions that do not apply: Vulnerable or assisted occupants documented; Project-specific fire hazard scenario documented; Specialist fire-assessment issue or departure documented; Work to an existing building; Parts with different NCC classes.
 
 ### 2. Scope of services
 
-Own strategy/analysis. BCA adviser coordinates departures; system/passive/structure/facade designers detail; contractors install/test; authorities decide. Scoped FEIR is not occupation approval.
-Report unsupported solutions/alternatives; no approval guarantee. Operator accepts staffing/maintenance/storage/use limits. Revision-controlled plans/registers trace solutions to designer/verification.
+You are the fire safety engineer. Your job is to set a fire safety strategy that keeps occupants and fire fighters safe, and to prove the Performance Solutions the design needs, so the building complies without unnecessary cost.
+To do this you:
+- Agree the fire safety objectives and the departures to address with the BCA consultant, early.
+- Own the strategy and the analysis, and document each Performance Solution in the fire engineering report.
+- Give the fire systems, passive fire, structural and façade designers the requirements they must detail.
+The BCA consultant coordinates the departures; the designers detail; contractors install and test; authorities decide. A fire engineering report for the scoped solutions is not occupation approval.
+Tell us when a solution is not supported or an alternative is better; you do not guarantee approval. The operator accepts the staffing, maintenance, storage and use limits the solutions rely on. Keep revision-controlled plans and registers that trace each solution to its designer and its verification.
 Fire basis: Confirm parts/classes/compartments/height, occupants/hazards/systems, accepted solutions, current instruments/verification owner, authority route, insurer targets and revisions.
 
 Start on instruction/agreed inputs; end at named output/response. Price once. R1 Fee by stage: Quantity/basis, ex GST/GST/total by stage/question; base/options/dependencies, milestones/validity; price once. Acknowledge numbered addenda; confirm authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

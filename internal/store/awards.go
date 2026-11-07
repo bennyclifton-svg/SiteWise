@@ -51,6 +51,9 @@ type AwardLineView struct {
 	QuoteIDs   []string `json:"quote_ids"`
 	Cents      int64    `json:"-"`
 	Invoiced   bool     `json:"invoiced"`
+	// Under names the fee line a combined engagement's line sits beneath:
+	// its discipline, or the engagement for a combined stage.
+	Under string `json:"under,omitempty"`
 }
 
 // AwardView is a package's live award, or a preview of one.
@@ -335,6 +338,12 @@ func (s *Store) PreviewAward(ctx context.Context, org, project, pkg string, in A
 		return AwardView{}, err
 	}
 	defer tx.Rollback(ctx)
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil || group {
+		if err != nil {
+			return AwardView{}, err
+		}
+		return s.previewGroupAward(ctx, tx, org, project, pkg, in)
+	}
 	v, _, _, _, err := awardPlan(ctx, tx, org, project, pkg, in)
 	if err != nil {
 		return v, err
@@ -367,6 +376,15 @@ func packageFeeLine(ctx context.Context, tx pgx.Tx, org, project, pkg string) (*
 		return nil, nil
 	}
 	return &found[0], nil
+}
+
+// adoptedBudget marks a budget the award copied from the contract sum, so
+// undo can tell it from one the PM typed.
+const adoptedBudget = "Adopted from the approved contract sum:"
+
+// blankBudget is a budget nobody has stated: absent or unknown.
+func blankBudget(v costs.Value) bool {
+	return v.ValueState == "" || v.ValueState == "unknown"
 }
 
 func budgetCents(it costs.Item) *int64 {
@@ -421,6 +439,12 @@ func (s *Store) Award(ctx context.Context, org, project, pkg, actor string, in A
 	if grouped {
 		return AwardView{}, ErrPackageGrouped
 	}
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil || group {
+		if err != nil {
+			return AwardView{}, err
+		}
+		return s.awardGroup(ctx, tx, p, org, project, pkg, actor, in)
+	}
 	v, sub, firm, _, err := awardPlan(ctx, tx, org, project, pkg, in)
 	if err != nil {
 		return v, err
@@ -459,10 +483,13 @@ WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, o
 		}
 	}
 	v.ParentItemID = parentID
-	// A group with no budget holds an unknown one: the contract shows, the
-	// budget stays blank and no variance is computed.
-	if parent == nil || parent.Values["budget"].ValueState == "" {
-		if err := writeCostValue(ctx, tx, org, project, p.ID, parentID, actor, "budget", costs.Value{ValueState: "unknown", Origin: "user", Meaning: "allowance"}); err != nil {
+	// A group with no budget adopts the approved contract sum (owner
+	// direction, 7 Nov 2026). The sum is the firm's priced lines, so no
+	// figure is invented; a budget the PM set is never touched.
+	if parent == nil || blankBudget(parent.Values["budget"]) {
+		amount := costs.Money(invoices.FormatCents(v.Total))
+		adopted := costs.Value{ValueState: "known", Amount: &amount, Origin: "user", Meaning: "stated", Rationale: clipText(adoptedBudget+" awarded to "+firm.Name, 1000)}
+		if err := writeCostValue(ctx, tx, org, project, p.ID, parentID, actor, "budget", adopted); err != nil {
 			return v, err
 		}
 	}
@@ -563,6 +590,12 @@ func (s *Store) UndoAward(ctx context.Context, org, project, pkg, actor string) 
 		return err
 	}
 	defer tx.Rollback(ctx)
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil || group {
+		if err != nil {
+			return err
+		}
+		return s.undoGroupAward(ctx, tx, p, org, project, pkg, actor)
+	}
 	var awardID, sub, parentID string
 	var created bool
 	var raw []byte
@@ -615,13 +648,21 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 AND undone
 WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, org, p.ID, parentID, before.Label, before.Content.Quantity, before.Content.Rate, before.Content.Unit, before.Content.RateBasis); err != nil {
 			return err
 		}
-		if _, had := before.Values["budget"]; !had {
+		// A budget the award adopted goes back to what it was; one the PM
+		// has since typed over stays.
+		var rationale string
+		if err := tx.QueryRow(ctx, `SELECT COALESCE((SELECT rationale FROM cost_values WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid AND metric='budget'),'')`, org, p.ID, parentID).Scan(&rationale); err != nil {
+			return err
+		}
+		_, had := before.Values["budget"]
+		restoreBudget := strings.HasPrefix(rationale, adoptedBudget)
+		if !had || restoreBudget {
 			if _, err := tx.Exec(ctx, `DELETE FROM cost_values WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid AND metric='budget'`, org, p.ID, parentID); err != nil {
 				return err
 			}
 		}
 		for m, val := range before.Values {
-			if m == "budget" {
+			if m == "budget" && !restoreBudget {
 				continue
 			}
 			if _, err := tx.Exec(ctx, `INSERT INTO cost_values(org_id,project_id,plan_version_id,cost_item_id,metric,value_state,amount,low,high,as_of,origin,meaning,rationale,provenance)

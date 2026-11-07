@@ -15,7 +15,14 @@ Conditions not yet known: Works in a public road or intersection; Site fronts or
 
 ### 2. Scope of services
 
-Traffic engineer for the applicant. You advise the design team on access, parking and circulation while the design develops, and prepare the traffic report the consent authority needs. Plans come from the architect in DWG and PDF.
+You are the traffic engineer for the applicant. Your job is to make sure people and vehicles can reach, park at and leave the site safely and efficiently, and that the consent authority accepts the traffic effects.
+To do this you:
+- Advise the design team on access, parking numbers, design vehicles and circulation while the design develops.
+- Test the design: swept paths, sight lines and queuing.
+- Prepare the traffic report the consent authority needs.
+Plans come from the architect in DWG and PDF.
+For the office or retail space, fit for purpose means customer and staff parking, servicing and loading that work at peak times.
+For the warehouse or factory, fit for purpose means heavy-vehicle access, turning and loading that keep trucks off the street.
 Design vehicle: B-double
 Controls: Strathfield DCP parking rates · Development application (DA)
 

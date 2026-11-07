@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/costs"
 	"sitewise/internal/invoices"
+	"sitewise/internal/procurement"
 	"sitewise/internal/proposals"
 	"sitewise/internal/rfp"
 )
@@ -107,6 +108,10 @@ func (s *Store) OpenSubmission(ctx context.Context, org, project, documentID, pa
 		if err := packageInProject(ctx, tx, org, project, packageID); err != nil {
 			return "", err
 		}
+		// Dropped on a grouped member: the group holds its proposals.
+		if packageID, err = routeToGroup(ctx, tx, org, project, packageID); err != nil {
+			return "", err
+		}
 	}
 	var id string
 	err = tx.QueryRow(ctx, `SELECT id::text FROM submissions WHERE org_id=$1::uuid AND document_id=$2::uuid`, org, documentID).Scan(&id)
@@ -196,23 +201,26 @@ WHERE d.org_id=$1::uuid AND d.id=$2::uuid`, org, sub.DocumentID).Scan(&in.SHA256
 	if err := tx.QueryRow(ctx, `SELECT COALESCE((SELECT value FROM decisions WHERE org_id=$1::uuid AND document_id=$2::uuid AND field='discipline'),'')`, org, sub.DocumentID).Scan(&pc.Discipline); err != nil {
 		return in, err
 	}
-	rows, err := tx.Query(ctx, `SELECT id::text, title, COALESCE(discipline_id,'') FROM packages
+	rows, err := tx.Query(ctx, `SELECT id::text, title, COALESCE(discipline_id,''), role, COALESCE(group_id::text,'') FROM packages
 WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND lifecycle_status <> 'cancelled' ORDER BY title, id`, org, sub.ProjectID)
 	if err != nil {
 		return in, err
 	}
+	var candidates []candidateRow
 	for rows.Next() {
-		var p proposals.Package
-		if err := rows.Scan(&p.ID, &p.Title, &p.Discipline); err != nil {
+		var c candidateRow
+		if err := rows.Scan(&c.ID, &c.Title, &c.Discipline, &c.Role, &c.GroupID); err != nil {
 			rows.Close()
 			return in, err
 		}
-		pc.Packages = append(pc.Packages, p)
+		candidates = append(candidates, c)
 	}
 	rows.Close()
 	if err := rows.Err(); err != nil {
 		return in, err
 	}
+	var members map[string]string
+	pc.Packages, members = groupCandidates(candidates)
 	in.Keep = map[string]proposals.Decision{}
 	decs, err := submissionDecisions(ctx, tx, org, id)
 	if err != nil {
@@ -228,16 +236,33 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND lifecyc
 	} else if sub.PackageID != "" && decs[proposals.FieldPackage].DecidedBy == proposals.ByUser {
 		pc.PackageID = sub.PackageID
 	}
+	// A proposal put on a member before it was combined is the group's now.
+	if group, ok := members[pc.PackageID]; ok {
+		pc.PackageID = group
+		if u, kept := in.Keep[proposals.FieldPackage]; kept {
+			u.Value = group
+			in.Keep[proposals.FieldPackage] = u
+		}
+	}
 	// Schedules for the package a rule or the user will settle, or every
 	// candidate when Jev must choose.
 	for _, p := range pc.Packages {
 		if pc.PackageID != "" && p.ID != pc.PackageID {
 			continue
 		}
-		if pc.PackageID == "" && pc.Discipline != "" && p.Discipline != pc.Discipline && countDiscipline(pc.Packages, pc.Discipline) > 0 {
+		if pc.PackageID == "" && pc.Discipline != "" && !servesDiscipline(p, pc.Discipline) && countDiscipline(pc.Packages, pc.Discipline) > 0 {
 			continue
 		}
-		if err := s.ensureSchedule(ctx, tx, org, sub.ProjectID, p.ID); err != nil {
+		if isGroupCandidate(candidates, p.ID) {
+			g, err := s.ensureGroupSchedule(ctx, tx, org, sub.ProjectID, p.ID)
+			if err != nil {
+				return in, err
+			}
+			if pc.Groups == nil {
+				pc.Groups = map[string]proposals.GroupLayout{}
+			}
+			pc.Groups[p.ID] = g.Layout
+		} else if err := s.ensureSchedule(ctx, tx, org, sub.ProjectID, p.ID); err != nil {
 			return in, err
 		}
 		items, err := readSchedule(ctx, tx, org, p.ID)
@@ -245,7 +270,8 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND lifecyc
 			return in, err
 		}
 		for _, it := range items {
-			if !it.Retired && !it.Custom {
+			// Combined cells are placed by code, never asked.
+			if _, _, combined := proposals.SplitItemKey(it.Key); !it.Retired && !it.Custom && !(combined && pc.Groups[p.ID].Members != nil) {
 				pc.Schedules[p.ID] = append(pc.Schedules[p.ID], it.ScheduleItem)
 			}
 		}
@@ -277,11 +303,20 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND lifecyc
 func countDiscipline(ps []proposals.Package, d string) int {
 	n := 0
 	for _, p := range ps {
-		if p.Discipline == d {
+		if servesDiscipline(p, d) {
 			n++
 		}
 	}
 	return n
+}
+
+func isGroupCandidate(rows []candidateRow, id string) bool {
+	for _, r := range rows {
+		if r.ID == id {
+			return r.Role == procurement.RoleGroup
+		}
+	}
+	return false
 }
 
 // constructionBudget is the cost plan's construction budget in cents when it
@@ -459,6 +494,9 @@ func (s *Store) CommitSubmissionRead(ctx context.Context, org, id string, out pr
 	if pkg != "" {
 		if err := packageInProject(ctx, tx, org, project, pkg); err != nil {
 			pkg = ""
+		}
+		if pkg, err = routeToGroup(ctx, tx, org, project, pkg); err != nil {
+			return false, err
 		}
 	}
 	match := out.Firm

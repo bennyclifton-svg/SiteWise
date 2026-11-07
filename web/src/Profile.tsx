@@ -12,7 +12,7 @@ import { PagePrimaryAction } from "./PageActions";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ProfileSources } from "./ProfileSources";
-import { FieldRow, type Setter } from "./ProfileFields";
+import { FieldRow, NotYetKnown, unanswered, type Setter } from "./ProfileFields";
 import { PLANNING, ScopeWorks, entryInputs } from "./ScopeWorks";
 import { ApiError } from "./api";
 import { profileApi, type Profile as ProfileData, type ProfileField, type ScopeChoice, type Site } from "./profileApi";
@@ -251,7 +251,8 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   };
   const firstCheck = entries.find((id) => entryChecks(id) > 0);
   const checks = cardChecks + entries.reduce((n, id) => n + entryChecks(id), 0);
-  const selected = entry || firstCheck || "site";
+  // Scope entries start collapsed; "Go" on a check opens the first one.
+  const selected = entry;
   const goToCheck = () => {
     const red = document.querySelector<HTMLElement>(".pf-card .pf-row[data-band=red], .pf-card .pf-choice[data-band=red]");
     if (red) {
@@ -351,19 +352,6 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
       </PagePrimaryAction>
       <section className="pf-lede" aria-label="Summary">
         <ProjectSummary fields={cardFields} />
-        <SourcesNote
-          filed={data.read_documents + data.skipped_documents}
-          read={data.read_documents}
-          skipped={data.skipped_documents}
-          skippedKind={data.skipped_kind ? KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ") : ""}
-          unresolved={unresolved}
-          checks={checks}
-          thresholds={!data.thresholds.applied ? "Not yet applied" : data.thresholds.provisional ? "Provisional" : "Approved"}
-          updated={builtAt ? builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
-          onShowNotRead={onShowNotRead}
-          onSources={() => setSourcesOpen(true)}
-          onCheck={goToCheck}
-        />
       </section>
 
       <section className="pf-section" aria-labelledby="pf-project">
@@ -402,6 +390,22 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         onSources={openSources}
         onSignedOut={onSignedOut}
       />
+
+      <section className="pf-foot">
+        <SourcesNote
+          filed={data.read_documents + data.skipped_documents}
+          read={data.read_documents}
+          skipped={data.skipped_documents}
+          skippedKind={data.skipped_kind ? KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ") : ""}
+          unresolved={unresolved}
+          checks={checks}
+          thresholds={!data.thresholds.applied ? "Not yet applied" : data.thresholds.provisional ? "Provisional" : "Approved"}
+          updated={builtAt ? builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
+          onShowNotRead={onShowNotRead}
+          onSources={() => setSourcesOpen(true)}
+          onCheck={goToCheck}
+        />
+      </section>
     </div>
   );
 }
@@ -424,50 +428,89 @@ function ProfileFeedback({ target, children }: { target?: HTMLDivElement | null;
   );
 }
 
-// The Project card is a drawing title block: five ruled columns, each value
-// beneath its label, how it was decided at the label's end. Every key lands in
-// a column; one the layout does not place falls to approvals and delivery.
-const COLUMNS: { title: string; keys: string[]; tiers: Tier[] }[] = [
-  { title: "Place", keys: ["proj.client", "site.address", "site.lot", "proj.lga", "proj.zone", "det.state"], tiers: ["identity", "place"] },
-  { title: "Building", keys: ["hdr.building_class", "hdr.subclass", "det.ncc_class", "hdr.work_type", "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "hdr.cond.quality_level"], tiers: ["class", "work", "subclass"] },
-  { title: "Scale", keys: [], tiers: ["scale", "budget"] },
-  { title: "Approvals and delivery", keys: ["hdr.cond.planning", "hdr.cond.procurement_route", "hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints"], tiers: ["approvals", "delivery"] },
-  { title: "Site conditions", keys: ["hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity", "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status"], tiers: ["complexity"] },
+// The Project card is a drawing title block in the three columns of RFP page
+// one (internal/knowledge/rfp.go ProjectGrid), so a fact sits in the same
+// place on both. Each row reads label then value, as the RFP grid does. Only
+// the RFP's key fields show until the card is opened (plus any value the
+// documents disagree on); open, the rest follow, the unknown tail folded.
+// Listed keys come first, in this order; the rest of a column's tiers follow;
+// a key no column claims falls to Delivery.
+const COLUMNS: { title: string; key: string[]; keys: string[]; tiers: Tier[] }[] = [
+  {
+    title: "Site and planning",
+    key: ["site.address", "site.lot", "proj.lga", "proj.zone", "hdr.scale.site_sqm", "hdr.cond.planning"],
+    keys: [
+      "det.state", "fact.consent_number", "fact.consent_date", "fact.consent_lapse_date",
+      "hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity", "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status",
+    ],
+    tiers: ["place"],
+  },
+  {
+    title: "The building",
+    key: [
+      "hdr.work_type", "hdr.building_class", "hdr.subclass",
+      "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm",
+      "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces", "hdr.cond.quality_level",
+    ],
+    keys: ["det.ncc_class", "det.ncc_edition"],
+    tiers: ["class", "work", "subclass", "scale"],
+  },
+  {
+    title: "Delivery",
+    key: ["proj.client", "hdr.cond.procurement_route", "proj.program", "proj.sustainability", "proj.regulated_design", "proj.budget_stated"],
+    keys: ["hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints"],
+    tiers: ["identity", "budget", "approvals", "complexity", "delivery"],
+  },
 ];
 
-function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
-  const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact stacked />;
-  const tiers = Object.keys(card) as Tier[];
-  const shown = tiers.flatMap((t) => card[t].shown);
-  const placed = new Set<ProfileField>();
-  const take = (f: ProfileField) => (placed.add(f), f);
-  const columns = COLUMNS.map((c) => ({ ...c, fields: c.keys.flatMap((k) => shown.filter((f) => f.key === k && !placed.has(f)).map(take)) }));
-  for (const c of columns) c.fields.push(...shown.filter((f) => !placed.has(f) && c.tiers.includes(tierOf(f.key))).map(take));
-  columns[3].fields.push(...shown.filter((f) => !placed.has(f)).map(take));
-  return (
-    <div className="pf-card pf-tiers pf-titleblock pencil-rule">
-      {columns.map((c) => (
-        <TitleColumn key={c.title} title={c.title} more={c.tiers.flatMap((t) => card[t].more)} render={row}>
-          {c.fields.length > 0 ? c.fields.map(row) : <p className="muted pf-tb-empty">Choose a subclass to see its measures.</p>}
-        </TitleColumn>
-      ))}
-    </div>
-  );
+const KEY_FIELDS = new Set(COLUMNS.flatMap((c) => c.key));
+const listed = (i: number) => [...COLUMNS[i].key, ...COLUMNS[i].keys];
+
+function columnOf(key: string): number {
+  const at = COLUMNS.findIndex((_, i) => listed(i).includes(key));
+  if (at >= 0) return at;
+  const byTier = COLUMNS.findIndex((c) => c.tiers.includes(tierOf(key)));
+  return byTier >= 0 ? byTier : COLUMNS.length - 1;
 }
 
-function TitleColumn({ title, more, render, children }: { title: string; more: ProfileField[]; render: (f: ProfileField) => ReactNode; children: ReactNode }) {
+/** One column's fields: its listed keys in order, then the rest in tier order. */
+function inColumn(fields: ProfileField[], i: number): ProfileField[] {
+  const keys = listed(i);
+  const mine = fields.filter((f) => columnOf(f.key) === i);
+  const at = (f: ProfileField) => (keys.includes(f.key) ? keys.indexOf(f.key) : keys.length);
+  return mine.map((f, n) => ({ f, n })).sort((a, b) => at(a.f) - at(b.f) || a.n - b.n).map(({ f }) => f);
+}
+
+function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
   const [open, setOpen] = useState(false);
+  const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact paired />;
+  const all = (Object.keys(card) as Tier[]).flatMap((t) => [...card[t].shown, ...card[t].more]);
+  // A conflict always shows, so "to check" can reach it with the card closed.
+  const always = (f: ProfileField) => KEY_FIELDS.has(f.key) || f.band === "red";
+  const rest = all.filter((f) => !always(f));
   return (
-    <div className="pf-tb-col" role="group" aria-label={title}>
-      <h3 className="pf-tb-head">{title}</h3>
-      {children}
-      {open && more.map(render)}
-      {more.length > 0 && (
-        <button type="button" className="cell-link pf-col-more" aria-expanded={open} onClick={() => setOpen(!open)}>
-          {open ? "Fewer" : `+ ${more.length} more`}
+    <>
+      <div className="pf-card pf-tiers pf-titleblock pf-paired pencil-rule">
+        {COLUMNS.map((c, i) => {
+          const fields = inColumn(all.filter(always), i);
+          const extra = inColumn(rest, i);
+          return (
+            <div key={c.title} className="pf-tb-col" role="group" aria-label={c.title}>
+              <h3 className="pf-tb-head">{c.title}</h3>
+              {fields.length > 0 ? fields.map(row) : <p className="muted pf-tb-empty">Nothing read yet.</p>}
+              {open && extra.filter((f) => !unanswered(f)).map(row)}
+              {open && <NotYetKnown fields={extra.filter(unanswered)} render={row} className="pf-col-more" />}
+            </div>
+          );
+        })}
+      </div>
+      {rest.length > 0 && (
+        <button type="button" className="cell-link pf-card-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
+          <span aria-hidden="true">{open ? "▾" : "▸"}</span>{" "}
+          {open ? "Show key details only" : `Show all project details (${rest.filter((f) => !unanswered(f)).length} more answered, ${rest.filter(unanswered).length} not yet known)`}
         </button>
       )}
-    </div>
+    </>
   );
 }
 

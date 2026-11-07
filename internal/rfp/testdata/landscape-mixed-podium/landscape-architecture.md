@@ -11,8 +11,15 @@ Conditions that apply: Parts with different NCC classes.
 
 ### 2. Scope of services
 
-Selected landscape design/advice from instruction, inputs and access to named output/response milestone. Specialists own technical design; authorities approve. No approval, plant-survival or unseen-work guarantee.
-Controlled PDFs/plans, schedules/calculations and registers; agree native formats, recipients/reliance, input revisions, rounds/dates. Verify instrument/edition before using ratios, canopy, soil-depth or load figures.
+You are the landscape architect. Your job is to design outdoor spaces that work for the people who use them, suit the site and its climate, meet the planning controls, and can be built and maintained within budget.
+To do this you:
+- Set the landscape strategy early with the architect and civil engineer: levels, deep soil, drainage and tree retention.
+- Design and document the selected landscape works to the level each appointed stage buys.
+- Specify planting and materials the client can maintain.
+For the apartments, this includes communal open space, deep soil, and planting on structure that residents use every day.
+For the office or retail space, this includes the street frontage and outdoor spaces for staff and customers.
+Your appointment runs from our instruction, inputs and site access to the output and response milestone we name. Specialists own technical design; authorities approve. You do not guarantee approval, plant survival or work you did not see.
+Issue controlled PDFs, plans, schedules, calculations and registers, and agree native formats, recipients, reliance, input revisions, review rounds and dates. Check the instrument and edition before using any ratio, canopy, soil-depth or load figure.
 Landscape basis: Confirm measured extent/map revision, actual users, private/common/public ground/roof areas; survey, levels/services, tree IDs, soil/environmental and structural/waterproofing evidence, current controls/consents, operator and access. Record gaps/conflicts.
 
 Select base/options and end; later stages require instruction. Fit-out without landscape impact buys no design; advice ends at its report/response round. R1 Fee by stage: Price selected stages/quantities once: fixed/ceiling/unit, base/options/dependencies, ex GST/GST/total and milestones; confirm validity, authorised signatory and numbered addenda. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

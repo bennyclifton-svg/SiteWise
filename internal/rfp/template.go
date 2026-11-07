@@ -104,7 +104,7 @@ func (b *builder) consultantServices() {
 	for _, service := range services {
 		// These controls share a stage selection. The issued schedule already
 		// prints their deliverable and price, so do not repeat that scope.
-		if strings.HasPrefix(service.Control, "stage:") || (service.Inactive && len(service.Notes) == 0) {
+		if strings.HasPrefix(service.Control, "stage:") || (service.Inactive && len(service.Notes) == 0) || b.opt.moved[service.Key] {
 			continue
 		}
 		p := service.PositionResult
@@ -222,7 +222,7 @@ func (b *builder) stageScopeTable() {
 	services := func(stage string) [][]string {
 		rows := [][]string{}
 		for _, p := range b.stageServices() {
-			if p.Stage != stage || p.Inactive {
+			if p.Stage != stage || p.Inactive || b.opt.moved[p.Key] {
 				continue
 			}
 			rows = append(rows, []string{"", serviceText(p), position(p.Value), ""})
@@ -267,6 +267,10 @@ func (b *builder) stageScopeTable() {
 	stageRows := len(rows)
 	rows = append(rows, []string{"Reimbursables", "Included in the fee, or each item with its rate (R9)", "", ""})
 	rows = append(rows, []string{"Total fee", "Included stages and reimbursables", "", ""})
+	if b.opt.part {
+		b.partStageTable(rows[:stageRows])
+		return
+	}
 	instructions := append([]string{b.r.StageIntro}, "Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.")
 	for _, ret := range b.r.Returnables {
 		if ret.Key == "r1" {
@@ -275,6 +279,20 @@ func (b *builder) stageScopeTable() {
 	}
 	b.add("stages", "rfp:stages", "", strings.TrimSpace(strings.Join(instructions, " ")), doc([]string{"Stage", "Scope", "Position", "Fee $"}, rows),
 		map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "services": b.stageServices(), "stage_rows": stageRows, "schedule": Schedule(b.r), "layout": "stage_scope"})
+}
+
+// partStageTable is the stage table of one discipline in a combined
+// engagement: the same stages, lines and positions, with no fee column. The
+// engagement's fee schedule prices every discipline once (group.go), so the
+// schedule is not repeated in this block's basis.
+func (b *builder) partStageTable(rows [][]string) {
+	printed := make([][]string, len(rows))
+	for i, row := range rows {
+		printed[i] = row[:3]
+	}
+	text := strings.TrimSpace(b.r.StageIntro + " A line marked Included is part of its stage; a line marked Excluded is not part of this engagement. Price each included stage in the fee schedule. Propose any departure in R6.")
+	b.add("stages", "rfp:stages", "", text, doc([]string{"Stage", "Scope", "Position"}, printed),
+		map[string]any{"stages": b.r.Stages, "elements": b.r.Elements, "services": b.stageServices(), "stage_rows": len(rows), "layout": "stage_scope"})
 }
 
 // serviceText is a service as the table prints it: its label, detail and

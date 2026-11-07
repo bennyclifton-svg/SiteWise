@@ -150,6 +150,11 @@ func TestPDFPageLimitFollowsTemplate(t *testing.T) {
 	if limit, target := PageLimit(documentFixture(1)); limit != 4 || target != 3 {
 		t.Fatalf("consultant RFP limit %d/%v", limit, target)
 	}
+	group := documentFixture(1)
+	group.SourceRevisions.RFPParts = 3
+	if limit, target := PageLimit(group); limit != 12 || target != 9 {
+		t.Fatalf("a combined engagement gives each discipline four pages, got %d/%v", limit, target)
+	}
 	if limit, _ := PageLimit(fixture()); limit != 2 {
 		t.Fatalf("other reports keep two pages, got %d", limit)
 	}

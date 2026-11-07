@@ -736,7 +736,7 @@ func getResponseForm(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	var buf bytes.Buffer
-	if err := xlsx.WriteXLSX(&buf, rfp.ResponseForm(form.Header, form.Items, form.Returnables)); err != nil {
+	if err := xlsx.WriteXLSX(&buf, form.Sheets()); err != nil {
 		procurementError(w, deps, err)
 		return
 	}

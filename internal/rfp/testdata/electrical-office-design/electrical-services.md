@@ -7,10 +7,17 @@ Example Client intends to build Office (Class 5) at 1 Example Street, Example NS
 | Work type: New build | Site address: 1 Example Street, Example NSW | Client: Example Client |
 | Building: Office: Class 5 | Planning pathway: Development application (DA) | Procurement route: Traditional lump sum; continuation/novation separately appointed. |
 
+Conditions that do not apply: Work to an existing building.
+
 ### 2. Scope of services
 
-Design selected systems to purchased maturity; retain measured/utility/calculated basis, utility/deliverable/decision registers. Never assume spare capacity.
-Power is not process design. Utility/ASP3, ICT operator and contractors retain duties; review/witnessing is not installation testing/certification.
+You are the electrical services engineer. Your job is to give the building safe, reliable power, lighting and communications that suit how it is used, fit the supply available, and can be built and maintained.
+To do this you:
+- Confirm the supply early: the load, the capacity available and what the network operator needs. Never assume spare capacity.
+- Design the selected systems to the level of detail each appointed stage buys.
+- Keep the measured, utility and calculated basis of the design, and registers of utility matters, deliverables and decisions.
+For the office or retail space, this includes tenancy metering and capacity set aside for tenants' fit-outs.
+Power to process equipment is not process design. The network operator, its accredited service provider (Level 3), the ICT operator and the contractors keep their own duties. Your reviews and witnessing are not installation testing or certification.
 
 R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by stage: Fees/basis/quantities/ceilings by stage/system; ex GST/GST/total, base/options/milestones/dependencies; authorised signatory, addenda/validity; no duplication. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 

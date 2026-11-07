@@ -52,15 +52,18 @@ type ReportDraft struct {
 type ReportView struct {
 	// RFP holds the consultant RFP editor controls; RFPSuggestion proposes a
 	// discipline for a services package that has none confirmed.
-	RFP           *rfp.Controls        `json:"rfp,omitempty"`
-	RFPSuggestion *RFPSuggestion       `json:"rfp_suggestion,omitempty"`
-	Issues        []ReportIssueSummary `json:"issues"`
-	Changes       []reports.Change     `json:"changes_since_issue"`
-	Report        Report               `json:"report"`
-	Draft         *ReportDraft         `json:"draft"`
-	Edits         []reports.Edit       `json:"edits"`
-	Stale         []string             `json:"stale"`
-	PageFit       *render.PageFit      `json:"page_fit,omitempty"`
+	RFP           *rfp.Controls  `json:"rfp,omitempty"`
+	RFPSuggestion *RFPSuggestion `json:"rfp_suggestion,omitempty"`
+	// RFPGroup is a combined engagement's members, each with its own
+	// controls; RFP then holds the engagement's shared controls.
+	RFPGroup *RFPGroupView        `json:"rfp_group,omitempty"`
+	Issues   []ReportIssueSummary `json:"issues"`
+	Changes  []reports.Change     `json:"changes_since_issue"`
+	Report   Report               `json:"report"`
+	Draft    *ReportDraft         `json:"draft"`
+	Edits    []reports.Edit       `json:"edits"`
+	Stale    []string             `json:"stale"`
+	PageFit  *render.PageFit      `json:"page_fit,omitempty"`
 }
 
 func readReport(ctx context.Context, tx pgx.Tx, org, id string) (Report, error) {
@@ -164,6 +167,12 @@ func (s *Store) CreateReport(ctx context.Context, org, project, actor, kind, pkg
 	if r, err = insertReport(ctx, tx, org, project, kind, pkg, name); err != nil {
 		return r, err
 	}
+	if kind == "rfp" {
+		// A combined engagement's members each keep their own RFP report.
+		if err := ensureMemberReports(ctx, tx, org, project, pkg); err != nil {
+			return r, err
+		}
+	}
 	return r, s.finishReportWrite(ctx, tx, org, r, "", "drafting")
 }
 
@@ -211,8 +220,7 @@ func (s *Store) ProcurementCreate(ctx context.Context, org, project, actor, pack
 		return p, r, false, ErrNotFound
 	}
 	kind := map[string]string{"services": "rfp", "works": "rft"}[p.Kind]
-	// A combined engagement's RFP is the next slice; until then it has none.
-	if kind == "" || p.IsGroup() {
+	if kind == "" {
 		return p, r, false, ErrInvalidReport
 	}
 	var raw []byte
@@ -233,6 +241,13 @@ func (s *Store) ProcurementCreate(ctx context.Context, org, project, actor, pack
 	}
 	if r, err = insertReport(ctx, tx, org, project, kind, p.ID, p.Title); err != nil {
 		return p, r, false, err
+	}
+	// A combined engagement's members each keep their own RFP report, made
+	// here if missing; the group's first build assembles their drafts.
+	if p.IsGroup() {
+		if err := ensureMemberReports(ctx, tx, org, project, p.ID); err != nil {
+			return p, r, false, err
+		}
 	}
 	if accepted {
 		if err := s.packagesChanged(ctx, tx, org, project); err != nil {
@@ -289,6 +304,19 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	if onlyMissing && r.CurrentDraftVersionID != "" {
 		return readReportDraft(ctx, tx, org, r.CurrentDraftVersionID)
 	}
+	d, err = s.assembleDraftTx(ctx, tx, org, r, appBuild, useLastCompleted)
+	if err != nil {
+		return d, err
+	}
+	return d, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
+}
+
+// assembleDraftTx assembles or refreshes a report's draft inside the
+// caller's transaction, which holds the project and report locks. A combined
+// engagement's RFP assembles its members' drafts in the same transaction.
+func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Report, appBuild string, useLastCompleted bool) (ReportDraft, error) {
+	var d ReportDraft
+	var err error
 	var pkg procurement.Package
 	if r.Kind != "pmp" {
 		pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
@@ -332,27 +360,20 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 			return d, err
 		}
 	}
-	snap, state, err := s.reportSnapshot(ctx, tx, org, r.ProjectID, r.PackageID, appBuild, template)
-	if err != nil {
-		return d, err
+	// Settings come from the current draft, or from the last issue when
+	// this refresh starts the next draft.
+	source := d.ID
+	if source == "" {
+		source = previous
 	}
 	var sections []reports.Section
-	if template.ID == rfpTemplateID {
-		// Settings come from the current draft, or from the last issue when
-		// this refresh starts the next draft.
-		source := d.ID
-		if source == "" {
-			source = previous
-		}
-		settings, err := readReportSettings(ctx, tx, org, source)
-		if err != nil {
-			return d, err
-		}
-		sections, err = s.assembleRFP(snap, template, settings, edits, useLastCompleted, &state)
-		if err != nil {
-			return d, err
-		}
-	} else if sections, err = reports.Assemble(snap, template, s.workCatalog(), edits, useLastCompleted); err != nil {
+	var state reports.SourceState
+	if pkg.IsGroup() {
+		sections, state, err = s.groupSectionsTx(ctx, tx, org, r, pkg, source, edits, appBuild, useLastCompleted, template)
+	} else {
+		sections, state, err = s.reportSectionsTx(ctx, tx, org, r, source, edits, appBuild, useLastCompleted, template)
+	}
+	if err != nil {
 		return d, err
 	}
 	sections, refs, err := reports.Cite(sections)
@@ -376,7 +397,8 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 		return d, err
 	}
 	// A new RFP draft records the stage plan it is built from (program plan
-	// 7.6); a refresh leaves its rows to Update or Keep.
+	// 7.6); a refresh leaves its rows to Update or Keep. A group's draft
+	// records the group's own stage lines (combined engagements slice 4).
 	if creatingDraft {
 		if err := recordRFPStages(ctx, tx, org, r, d.ID); err != nil {
 			return d, err
@@ -400,7 +422,26 @@ func (s *Store) refreshReportOnce(ctx context.Context, org, id, actor, appBuild 
 	if _, err := tx.Exec(ctx, `UPDATE reports SET current_draft_version_id=$3::uuid,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ID, d.ID); err != nil {
 		return d, err
 	}
-	return d, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
+	return d, nil
+}
+
+// reportSectionsTx assembles one package's or the project's report from a
+// fresh snapshot.
+func (s *Store) reportSectionsTx(ctx context.Context, tx pgx.Tx, org string, r Report, source string, edits []reports.Edit, appBuild string, useLastCompleted bool, template knowledge.ReportTemplate) ([]reports.Section, reports.SourceState, error) {
+	snap, state, err := s.reportSnapshot(ctx, tx, org, r.ProjectID, r.PackageID, appBuild, template)
+	if err != nil {
+		return nil, state, err
+	}
+	if template.ID != rfpTemplateID {
+		sections, err := reports.Assemble(snap, template, s.workCatalog(), edits, useLastCompleted)
+		return sections, state, err
+	}
+	settings, err := readReportSettings(ctx, tx, org, source)
+	if err != nil {
+		return nil, state, err
+	}
+	sections, err := s.assembleRFP(snap, template, settings, edits, useLastCompleted, &state)
+	return sections, state, err
 }
 
 func (s *Store) finishReportWrite(ctx context.Context, tx pgx.Tx, org string, r Report, versionID, state string) error {

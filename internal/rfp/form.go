@@ -2,6 +2,7 @@ package rfp
 
 import (
 	"strconv"
+	"strings"
 
 	"sitewise/internal/xlsx"
 )
@@ -29,8 +30,31 @@ type FormHeader struct {
 // fee rows of section 3 and the R3 roles keyed by schedule item, then one
 // table for each non-price schedule.
 func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.Sheet {
-	bold := func(s string) xlsx.Cell { return xlsx.Cell{Text: s, Bold: true} }
-	text := func(s string) xlsx.Cell { return xlsx.Cell{Text: s} }
+	fees := feeSheetHeader(h)
+	first := len(fees.Rows) + 1
+	var options []ScheduleItem
+	for _, item := range items {
+		if !item.Price() {
+			continue
+		}
+		if !item.Base {
+			options = append(options, item)
+			continue
+		}
+		fees.Rows = append(fees.Rows, []xlsx.Cell{formText(item.Key), formText(item.Label), {}, {}})
+	}
+	last := len(fees.Rows)
+	fees.Rows = append(fees.Rows, []xlsx.Cell{formBold("base_total"), formBold("Base fee total"), sum("C", first, last), {}})
+	appendOptions(&fees, options)
+	return formSheets(fees, items, returnables)
+}
+
+func formText(s string) xlsx.Cell { return xlsx.Cell{Text: s} }
+func formBold(s string) xlsx.Cell { return xlsx.Cell{Text: s, Bold: true} }
+
+// feeSheetHeader is the top of the R1 fee sheet, down to its column titles.
+func feeSheetHeader(h FormHeader) xlsx.Sheet {
+	bold, text := formBold, formText
 	// Fee only: weeks and hours per item cost a firm effort the comparison
 	// does not use (owner direction, 2 November 2026). R7 holds durations.
 	fees := xlsx.Sheet{Name: "R1 Fees", Widths: []float64{22, 60, 18, 40}}
@@ -45,27 +69,64 @@ func ResponseForm(h FormHeader, items []ScheduleItem, returnables []Row) []xlsx.
 	fees.Rows = append(fees.Rows, nil, []xlsx.Cell{text("Fees exclude GST. Enter \"Not priced\" or \"Included in <ref>\" instead of an amount where that applies.")}, nil)
 	fees.Rows = append(fees.Rows, []xlsx.Cell{bold(FormRef), bold("Item"), bold("Fee $ excl. GST"), bold("Notes")})
 	fees.TitleRow = len(fees.Rows)
+	return fees
+}
+
+// appendOptions lists the options below the base fee, with their own total.
+func appendOptions(fees *xlsx.Sheet, options []ScheduleItem) {
+	if len(options) == 0 {
+		return
+	}
 	first := len(fees.Rows) + 1
-	var options []ScheduleItem
-	for _, item := range items {
-		if !item.Price() {
-			continue
-		}
-		if !item.Base {
-			options = append(options, item)
-			continue
-		}
-		fees.Rows = append(fees.Rows, []xlsx.Cell{text(item.Key), text(item.Label), {}, {}})
+	for _, item := range options {
+		fees.Rows = append(fees.Rows, []xlsx.Cell{formText(item.Key), formText("Option: " + item.Label), {}, {}})
 	}
-	last := len(fees.Rows)
-	fees.Rows = append(fees.Rows, []xlsx.Cell{bold("base_total"), bold("Base fee total"), sum("C", first, last), {}})
-	if len(options) > 0 {
-		first = len(fees.Rows) + 1
-		for _, item := range options {
-			fees.Rows = append(fees.Rows, []xlsx.Cell{text(item.Key), text("Option: " + item.Label), {}, {}})
+	fees.Rows = append(fees.Rows, []xlsx.Cell{formBold("options_total"), formBold("Options total"), sum("C", first, len(fees.Rows)), {}})
+}
+
+// GroupResponseForm is a combined engagement's response form: a sum for
+// each discipline and the engagement total (owner decision 2). Each key is
+// the discipline's key and the item's own, so a returned form reads back
+// discipline by discipline; a stage priced as one amount is entered once
+// and marked "Included in" against the others.
+func GroupResponseForm(h FormHeader, fees []FeeSection, returnables []Row) []xlsx.Sheet {
+	sheet := feeSheetHeader(h)
+	sheet.Rows = append(sheet.Rows[:sheet.TitleRow-1], []xlsx.Cell{formText(CombinedStageNote)}, nil, sheet.Rows[sheet.TitleRow-1])
+	sheet.TitleRow = len(sheet.Rows)
+	sums := []string{}
+	var options, all []ScheduleItem
+	for _, f := range fees {
+		sheet.Rows = append(sheet.Rows, []xlsx.Cell{{}, formBold(f.Title), {}, {}})
+		first := len(sheet.Rows) + 1
+		for _, item := range f.Items {
+			item.Key, item.Label = f.Key+":"+item.Key, f.Title+" — "+item.Label
+			all = append(all, item)
+			if !item.Base {
+				options = append(options, item)
+				continue
+			}
+			sheet.Rows = append(sheet.Rows, []xlsx.Cell{formText(item.Key), formText(item.Label), {}, {}})
 		}
-		fees.Rows = append(fees.Rows, []xlsx.Cell{bold("options_total"), bold("Options total"), sum("C", first, len(fees.Rows)), {}})
+		sheet.Rows = append(sheet.Rows, []xlsx.Cell{formBold("sum:" + f.Key), formBold("Sum for " + f.Title), sum("C", first, len(sheet.Rows)), {}})
+		sums = append(sums, "C"+strconv.Itoa(len(sheet.Rows)))
+		for _, rate := range f.Rates {
+			rate.Key, rate.Label = f.Key+":"+rate.Key, f.Title+" — "+rate.Label
+			all = append(all, rate)
+		}
 	}
+	total := xlsx.Cell{Bold: true}
+	if len(sums) > 0 {
+		total.Formula = "SUM(" + strings.Join(sums, ",") + ")"
+	}
+	sheet.Rows = append(sheet.Rows, []xlsx.Cell{formBold("engagement_total"), formBold("Engagement total"), total, {}})
+	appendOptions(&sheet, options)
+	return formSheets(sheet, all, returnables)
+}
+
+// formSheets follows the fee sheet with the rate sheet and one table for
+// each non-price schedule.
+func formSheets(fees xlsx.Sheet, items []ScheduleItem, returnables []Row) []xlsx.Sheet {
+	bold, text := formBold, formText
 	rates := xlsx.Sheet{Name: "R3 Rates", Widths: []float64{28, 40, 30, 18}, TitleRow: 1}
 	rates.Rows = append(rates.Rows, []xlsx.Cell{bold(FormRef), bold("Role"), bold("Name"), bold("Rate $/h excl. GST")})
 	for _, item := range items {

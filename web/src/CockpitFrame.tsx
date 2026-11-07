@@ -1,9 +1,7 @@
 import { PageActionsContext } from "./PageActions";
 import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { IconDocumentsPanel } from "./icons";
 import { ProjectName } from "./ProjectName";
-import { SignOutButton } from "./SignOutButton";
-import { ThemeButton } from "./ThemeButton";
-
 interface Props {
   nav: ReactNode;
   actionSurface?: string;
@@ -35,15 +33,18 @@ const REPO_ABS_MAX = 920;
 const MAIN_FLOOR = 200;
 const MAIN_DEFAULT = 420;
 const WIDE_SHELL = "(min-width: 1101px)";
+// The left nav, about 15% narrower than its old 236px.
+const NAV_WIDTH = 200;
+const NAV_COLUMN = `minmax(170px, ${NAV_WIDTH}px)`;
 
 function repoMax(viewport: number) {
   // The rail can be dragged until the working view is about 200px, which is
   // wide enough to open every document column.
-  return Math.max(REPO_MIN, Math.min(REPO_ABS_MAX, viewport - 236 - MAIN_FLOOR - 56));
+  return Math.max(REPO_MIN, Math.min(REPO_ABS_MAX, viewport - NAV_WIDTH - MAIN_FLOOR - 56));
 }
 
 function repoDefault(viewport: number) {
-  const room = viewport - 236 - MAIN_DEFAULT - 56;
+  const room = viewport - NAV_WIDTH - MAIN_DEFAULT - 56;
   return Math.min(repoMax(viewport), Math.max(REPO_MIN, Math.min(REPO_PREFERRED, room)));
 }
 
@@ -148,8 +149,8 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
     }
   }
 
-  // The butter-paper band covers the header rows. Its height is the space the
-  // working view leaves at its top, so scrolled content passes under the paper.
+  // The perspex band covers the header rows. Its height is the space the
+  // working view leaves at its top, so scrolled content passes under it.
   const shell = useRef<HTMLDivElement>(null);
   const paper = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -163,14 +164,15 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
   }, []);
 
   const [actionTarget, setActionTarget] = useState<HTMLDivElement | null>(null);
+  const [besideTarget, setBesideTarget] = useState<HTMLDivElement | null>(null);
   const [primaryTarget, setPrimaryTarget] = useState<HTMLDivElement | null>(null);
   return (
-    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget }}>
+    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget, besideTarget }}>
     <div className={`cockpit-page${wideWorkspace?" specification-page":""}`}>
       <div
         ref={shell}
         className={dragging ? "cockpit-shell is-resizing" : "cockpit-shell"}
-        style={wide ? { gridTemplateColumns: focusWorkspace?"minmax(200px, 236px) minmax(0, 1fr)":`minmax(200px, 236px) minmax(0, 1fr) ${width}px` } : undefined}
+        style={wide ? { gridTemplateColumns: focusWorkspace?`${NAV_COLUMN} minmax(0, 1fr)`:`${NAV_COLUMN} minmax(0, 1fr) ${width}px` } : undefined}
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}
         onDragOverCapture={onDragOverCapture}
@@ -182,7 +184,6 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
         {nav}
         <div className="trace-sheet" aria-hidden="true" />
         <div className="trace-paper" ref={paper} aria-hidden="true">
-          <div className="trace-paper-fringe"><i /></div>
           <div className="trace-paper-sheet" />
         </div>
         <header className="cockpit-shell-header">
@@ -191,21 +192,31 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
             <p className="cockpit-address">{subtitle}</p>
           </div>
           <div className="cockpit-header-actions">
-            <ThemeButton />
-            <SignOutButton />
+            <button
+              type="button"
+              className="documents-toggle"
+              aria-expanded={showDocuments}
+              aria-controls="project-documents"
+              aria-label={showDocuments ? "Hide documents" : "Show documents"}
+              title={showDocuments ? "Hide documents" : "Show documents"}
+              onClick={() => setShowDocuments(open => !open)}
+            >
+              <IconDocumentsPanel />
+            </button>
           </div>
         </header>
-        <div className="workspace-controls" aria-label="Workspace actions">
-          <div className="workspace-primary-actions" ref={setPrimaryTarget} />
-          <div className="page-action-rail" ref={setActionTarget} />
-          {/* Show sits at the far right, where Hide documents was. */}
-          {!showDocuments && <button type="button" className="btn" aria-expanded={false} aria-controls="project-documents" onClick={() => setShowDocuments(true)}>Show documents</button>}
-        </div>
-        {showDocuments && <div className="repository-controls">
-          <button type="button" className="btn" aria-expanded={true} aria-controls="project-documents" onClick={() => setShowDocuments(false)}>Hide documents</button>
-        </div>}
         <main className="project-main-panel" id="main">
-          <div className="cockpit-scroll">{children}</div>
+          <div className="cockpit-scroll">
+            {/* Page actions sit on the sheet, under the title band, so the ribbon stays the title only. */}
+            <div className="panel-actions" aria-label="Workspace actions">
+              <div className="workspace-primary-actions" ref={setPrimaryTarget} />
+              <div className="page-action-rail">
+                <div className="page-action-beside" ref={setBesideTarget} />
+                <div ref={setActionTarget} />
+              </div>
+            </div>
+            {children}
+          </div>
           <div ref={profileFeedbackRef} hidden={!showProfileFeedback} className="profile-feedback-slot" />
         </main>
         <aside id="project-documents" className="project-side-panel" aria-label="Document register" style={focusWorkspace?{display:"none"}:undefined}>

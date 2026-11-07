@@ -48,7 +48,7 @@ func (a *apiClient) packages(ctx context.Context, n int) error {
 		if _, err := a.timed(ctx, "packages_write", http.MethodPatch, base+"/"+p.ID+"/stages/"+p.Stages[0].ID, body, http.StatusOK); err != nil {
 			return err
 		}
-		body = []byte(`{"stage_id":"completion","label":"Handover","ordinal":5}`)
+		body = []byte(`{"stage_id":"delivery","label":"Handover","ordinal":5}`)
 		if _, err := a.timed(ctx, "packages_write", http.MethodPost, base+"/"+p.ID+"/stages", body, http.StatusCreated); err != nil {
 			return err
 		}

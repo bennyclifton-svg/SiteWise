@@ -144,7 +144,103 @@
     "role": [
       {
         "key": "adviser",
-        "text": "You advise on access for each appointed stage, from our written instruction to your final report and response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint.",
+        "text": "You are the access consultant. Your job is to make sure people with disability can reach, enter and use the building and its facilities, and that the design meets the access requirements that apply.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "access#13,20"
+          },
+          {
+            "kind": "seed",
+            "ref": "access#31,36"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "access#39,40",
+            "why": "Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not establish included work or current statutory requirements."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "access#36",
+            "why": "Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling and reliance; no discrimination-immunity promise."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Review the design at each appointed stage against the access requirements and the brief's inclusive-design goals.\n- Say what must change, and propose Performance Solutions where a compliant outcome needs one.\n- Keep compliance separate from good practice, so the client can choose what goes beyond the minimum.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes any livable or adaptable housing requirements that apply, and access from the street and car park to each apartment entry.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this includes accessible entries, paths of travel and sanitary facilities for staff and the public, and how tenancies connect to them.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_care",
+        "text": "For the health or care building, this includes patients, residents and visitors with limited mobility, and the staff and equipment that assist them.",
+        "when": [
+          {
+            "class": [
+              "9a",
+              "9c"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "text": "You advise for each appointed stage, from our written instruction to your final report and response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint.",
         "provenance": [
           {
             "kind": "evidence",
@@ -1428,7 +1524,42 @@
     "role": [
       {
         "key": "adviser",
-        "text": "Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent tree-work contractor executes pruning/removal/protection. Advice grants no permission, survival or future-safety guarantee; escalate urgent concerns.",
+        "text": "You are the arborist. Your job is to tell the client which trees matter, how the works will affect them, and how to protect the ones being kept, so design and approval decisions rest on sound tree evidence.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "arborist#2,4,7,18"
+          },
+          {
+            "kind": "seed",
+            "ref": "arborist#21,26,27"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "arborist#29",
+            "why": "Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or current requirements."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Assess the scheduled trees: their health, value and root zones.\n- Advise the design team on encroachments, and on how to protect or remove trees.\n- Report in the form the consent authority needs.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "text": "Advise within your competence. The client or planning lead obtains permissions; a competent tree-work contractor carries out pruning, removal and protection. Your advice grants no permission and does not guarantee survival or future safety; tell us at once about any urgent concern.",
         "provenance": [
           {
             "kind": "evidence",
@@ -1447,7 +1578,7 @@
       },
       {
         "key": "records",
-        "text": "Coordinate survey, landscape, civil, structure and utilities; retain their design duties. Revision-controlled PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred basis, access limits, recipients and reliance.",
+        "text": "Coordinate with the surveyor, landscape architect, civil and structural engineers and utility designers; they keep their design responsibility. Issue revision-controlled PDF and CAD plans, calculations and editable registers that say whether each fact was observed, measured, reported or inferred, any access limits, who receives the advice and who may rely on it.",
         "provenance": [
           {
             "kind": "evidence",
@@ -2580,7 +2711,7 @@
     "role": [
       {
         "key": "lead",
-        "text": "Lead design consultant: you coordinate the consultants and integrate their work into your documents. You are not responsible for the accuracy of their work. {engagement}",
+        "text": "You are the lead designer. You turn the client's brief, the site and the project's constraints into one coordinated design that meets the brief, fits the budget, gains approval, complies, and can be built and maintained.",
         "provenance": [
           {
             "kind": "evidence",
@@ -2594,6 +2725,240 @@
             "kind": "evidence",
             "ref": "architecture#158"
           },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
+            "why": "Owner 2026-10-13: the client engages each consultant directly or the architect engages it as a subconsultant; the RFP says which."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Resolve the brief spatially: test it against the site, the planning controls and the budget, and tell the client early where they conflict.\n- Lead and integrate the design team: set the design program, bring in each consultant's input, resolve clashes and issue one coherent set of documents. Each consultant remains responsible for its own work.\n- Use your judgement: recommend options rather than only presenting them, and state what each decision means for cost, approval, risk and buildability.\n- Keep the design intent through to the end of your appointment.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, fit for purpose means a home that suits how the owners will live in it, on their site and within their budget.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, fit for purpose means the apartment mix and yield, and residential amenity: solar access, cross-ventilation, apartment sizes and storage.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments_nsw",
+        "text": "In NSW that amenity is measured against the Apartment Design Guide. You provide the design verification statement as a registered architect, and design compliance declarations as a regulated designer.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ],
+            "state": [
+              "NSW"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          },
+          {
+            "kind": "practice",
+            "ref": "Apartment Design Guide; Environmental Planning and Assessment Regulation (design verification statement); Design and Building Practitioners Act 2020 (NSW); named from practice, not verified against the instrument"
+          }
+        ]
+      },
+      {
+        "key": "fit_accommodation",
+        "text": "For the residential accommodation, fit for purpose means the room mix and yield, guest or resident amenity, acoustic separation between rooms, and a back of house that runs well.",
+        "when": [
+          {
+            "class": [
+              "3"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, fit for purpose means efficient, flexible floor plates, clear tenancy boundaries, and base-building services that tenants can fit out.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, fit for purpose means a layout that suits the operation: clear heights, loading, vehicle movements and room to expand.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_health",
+        "text": "For the health building, fit for purpose means clinical and patient flows, infection control and the operator's functional brief.",
+        "when": [
+          {
+            "class": [
+              "9a"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_assembly",
+        "text": "For the assembly or education building, fit for purpose means how large groups gather and move, sightlines and acoustics, and safe crowd egress.",
+        "when": [
+          {
+            "class": [
+              "9b"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_care",
+        "text": "For the residential care building, fit for purpose means resident dignity and safety, clear staff supervision, and care that works day and night.",
+        "when": [
+          {
+            "class": [
+              "9c"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, fit for purpose also means working with what is there: its structure, services, approvals and occupants.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_heritage",
+        "text": "On a heritage item or in a conservation area, the design must also respect the heritage significance the heritage advice identifies.",
+        "when": [
+          {
+            "flag": [
+              "heritage"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "subconsultants",
+        "text": "{engagement}",
+        "provenance": [
           {
             "kind": "client_decision",
             "ref": "docs/plans/2026-10-13-house-rfp-brief.md",
@@ -4245,7 +4610,7 @@
     "role": [
       {
         "key": "advisory",
-        "text": "A: design-team BCA adviser; identify risks and evidence gaps, coordinate specialists and report. No statutory appointment or specialist design.",
+        "text": "As BCA consultant to the design team, your job is to give the design a clear, early path to NCC compliance: identify the compliance risks and evidence gaps, set the code strategy, coordinate the specialists and report at each stage. You hold no statutory appointment under this package and do no specialist design.",
         "when": [
           {
             "flag": [
@@ -4257,12 +4622,17 @@
           {
             "kind": "evidence",
             "ref": "bca-certification#1-4,22"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
           }
         ]
       },
       {
         "key": "statutory",
-        "text": "B: independent regulatory assessor for expressly appointed functions. Fees buy assessment and duties; issue of a certificate depends on satisfactory assessment.",
+        "text": "As the independent certifier for the functions we expressly appoint you to, your job is to assess the work and decide compliance impartially. Your fee pays for the assessment and your statutory duties; a certificate issues only if the assessment is satisfactory.",
         "when": [
           {
             "flag": [
@@ -4274,12 +4644,90 @@
           {
             "kind": "evidence",
             "ref": "bca-certification#6,13-24,38"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Assess the design against the NCC at each appointed stage and say what evidence is missing.\n- Give clear, timely answers so compliance issues are settled before they cause late redesign.\n- Keep a register of compliance matters, Performance Solutions and evidence through to occupation.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments_nsw",
+        "text": "For the apartments, this includes the NSW design and building practitioner requirements that apply to Class 2 work.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ],
+            "state": [
+              "NSW"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          },
+          {
+            "kind": "practice",
+            "ref": "Design and Building Practitioners Act 2020 (NSW); named from practice, not verified against the instrument"
+          }
+        ]
+      },
+      {
+        "key": "fit_care",
+        "text": "For the health or care building, this includes the fire safety and egress needs of people who need help to evacuate.",
+        "when": [
+          {
+            "class": [
+              "9a",
+              "9c"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes how far the existing building must be upgraded.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       },
       {
         "key": "independence",
-        "text": "Disclose involvement/conflicts; separate appointments where needed. No ordinary D&C novation of B; advisory transfer needs independence review. Inspections do not replace supervision or specialist work.",
+        "text": "Tell us about any involvement or conflict that affects your independence; separate appointments where needed. The certifier role is not novated under an ordinary design and construct contract, and moving the advisory role to a contractor needs an independence review. Your inspections do not replace the builder's supervision or specialist work.",
         "provenance": [
           {
             "kind": "evidence",
@@ -5327,7 +5775,7 @@
     "role": [
       {
         "key": "engineer",
-        "text": "Civil engineer for work outside building footprints: earthworks, roads and pavements, levels, stormwater and water quality. The hydraulic engineer designs roof drainage, downpipes and pumped systems; utility designers do water, sewer, power and communications; you combine their layouts with yours. The traffic engineer sets parking numbers, design vehicles and intersection layout; you design to them.",
+        "text": "You are the civil engineer for the site outside the building footprints. You make the site work: levels, earthworks, roads and pavements, and stormwater that drains safely, meets council's requirements and leaves neighbours no worse off.",
         "provenance": [
           {
             "kind": "evidence",
@@ -5348,6 +5796,77 @@
           {
             "kind": "evidence",
             "ref": "civil#134"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Set the site levels with the architect and landscape architect so the building, access and drainage work together.\n- Design and document earthworks, roads and pavements, stormwater and water quality.\n- Combine your layouts with the hydraulic engineer's roof drainage, downpipes and pumped systems, and the utility designers' water, sewer, power and communications.\n- Design to the traffic engineer's parking numbers, design vehicles and intersection layout.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, fit for purpose means a driveway that works and stormwater that reaches an approved outlet.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, fit for purpose means hardstands and pavements that carry the operation's heavy vehicles and their turning paths.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_flood",
+        "text": "On this flood-affected site, fit for purpose also means floor and access levels that meet the flood controls without worsening flooding elsewhere.",
+        "when": [
+          {
+            "flag": [
+              "flood"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       },
@@ -6649,7 +7168,115 @@
     "role": [
       {
         "key": "cost",
-        "text": "Independent cost advice from written instruction/complete inputs to named final output and query-period end. Estimate uncertainty is explicit; no guaranteed tender, final cost, approval or funding.",
+        "text": "You are the independent cost planner. Your job is to give the client a reliable picture of what the project will cost at every stage, so design decisions are made with the money in view and the budget holds.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "cost-planning#4,16"
+          },
+          {
+            "kind": "seed",
+            "ref": "cost-planning#27,34"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "cost-planning#36",
+            "why": "Client confirms actual extent, appointment start/end and priced assumptions across building/work types; unknown scope remains unresolved."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Price the design at each appointed stage and report against the budget.\n- Show the cost of design options before the client chooses.\n- Name the risks, allowances and gaps in the information, and say what would close them.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, this means a clear build cost against the owners' budget, with allowances for the choices still to be made.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes cost per apartment and per square metre of saleable area, so the design can be tested against the feasibility.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this separates base-building cost from tenant fit-out cost.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes allowances for what will only be found once the building is opened up.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "text": "Your advice runs from our written instruction and complete inputs to the final output we name and the end of the query period. Show estimate uncertainty plainly; you do not guarantee a tender price, final cost, approval or funding.",
         "provenance": [
           {
             "kind": "evidence",
@@ -6668,7 +7295,7 @@
       },
       {
         "key": "interfaces",
-        "text": "Designers/specialists define design, compliance, retained-system adequacy and remediation; operator supplies equipment/owner costs; PM owns budget/change approval. QS prices gaps, administrator directs/certifies, advisers own tax/legal/valuation. Disclose client/contractor/lender conflicts.",
+        "text": "Designers and specialists define the design, compliance, whether retained systems are adequate, and remediation. The operator supplies equipment and owner costs. The project manager approves the budget and changes. You price the gaps; the contract administrator directs and certifies; other advisers own tax, legal and valuation advice. Tell us about any conflict with the client, contractor or lender.",
         "provenance": [
           {
             "kind": "evidence",
@@ -7897,7 +8524,7 @@
     "role": [
       {
         "key": "designer",
-        "text": "Design selected systems to purchased maturity; retain measured/utility/calculated basis, utility/deliverable/decision registers. Never assume spare capacity.",
+        "text": "You are the electrical services engineer. Your job is to give the building safe, reliable power, lighting and communications that suit how it is used, fit the supply available, and can be built and maintained.",
         "provenance": [
           {
             "kind": "evidence",
@@ -7906,12 +8533,138 @@
           {
             "kind": "seed",
             "ref": "electrical-services#40-49"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Confirm the supply early: the load, the capacity available and what the network operator needs. Never assume spare capacity.\n- Design the selected systems to the level of detail each appointed stage buys.\n- Keep the measured, utility and calculated basis of the design, and registers of utility matters, deliverables and decisions.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, this means power, lighting and data that suit how the owners will live, within the supply available.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes metering for each apartment, common-area power and lighting, and any electric vehicle charging the brief asks for.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this includes tenancy metering and capacity set aside for tenants' fit-outs.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, this includes supply for the operation's plant and lighting for high-bay spaces.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_health",
+        "text": "For the health building, this includes essential and backup power for clinical areas.",
+        "when": [
+          {
+            "class": [
+              "9a"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes confirming what the existing installation and supply can support.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       },
       {
         "key": "boundary",
-        "text": "Power is not process design. Utility/ASP3, ICT operator and contractors retain duties; review/witnessing is not installation testing/certification.",
+        "text": "Power to process equipment is not process design. The network operator, its accredited service provider (Level 3), the ICT operator and the contractors keep their own duties. Your reviews and witnessing are not installation testing or certification.",
         "provenance": [
           {
             "kind": "evidence",
@@ -9680,7 +10433,117 @@
     "role": [
       {
         "key": "engineer",
-        "text": "Own strategy/analysis. BCA adviser coordinates departures; system/passive/structure/facade designers detail; contractors install/test; authorities decide. Scoped FEIR is not occupation approval.",
+        "text": "You are the fire safety engineer. Your job is to set a fire safety strategy that keeps occupants and fire fighters safe, and to prove the Performance Solutions the design needs, so the building complies without unnecessary cost.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "fire-engineering#7,8,17,19,29"
+          },
+          {
+            "kind": "seed",
+            "ref": "fire-engineering#38"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "fire-engineering#47,48",
+            "why": "Selected services and quantities need explicit appointment; historic offers do not appoint them."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Agree the fire safety objectives and the departures to address with the BCA consultant, early.\n- Own the strategy and the analysis, and document each Performance Solution in the fire engineering report.\n- Give the fire systems, passive fire, structural and façade designers the requirements they must detail.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_residential",
+        "text": "For the residential parts, this includes occupants who may be asleep when a fire starts.",
+        "when": [
+          {
+            "class": [
+              "2",
+              "3"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_care",
+        "text": "For the health or care building, this includes patients and residents who need help to evacuate, and the staff procedures the strategy relies on.",
+        "when": [
+          {
+            "class": [
+              "9a",
+              "9c"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, this includes the fire load of the stored goods and the size of undivided spaces.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes reconciling the existing fire safety measures and any earlier fire engineering.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "text": "The BCA consultant coordinates the departures; the designers detail; contractors install and test; authorities decide. A fire engineering report for the scoped solutions is not occupation approval.",
         "provenance": [
           {
             "kind": "evidence",
@@ -9699,7 +10562,7 @@
       },
       {
         "key": "limits",
-        "text": "Report unsupported solutions/alternatives; no approval guarantee. Operator accepts staffing/maintenance/storage/use limits. Revision-controlled plans/registers trace solutions to designer/verification.",
+        "text": "Tell us when a solution is not supported or an alternative is better; you do not guarantee approval. The operator accepts the staffing, maintenance, storage and use limits the solutions rely on. Keep revision-controlled plans and registers that trace each solution to its designer and its verification.",
         "provenance": [
           {
             "kind": "evidence",
@@ -11114,7 +11977,7 @@
     "role": [
       {
         "key": "designer",
-        "text": "Design selected physical systems at purchased maturity. Concept tank/pump capacity is not full hydraulic design or proof of existing adequacy.",
+        "text": "You are the fire services engineer. Your job is to design the fire systems allocated to you so they protect occupants and property, deliver the fire strategy, meet the authority's requirements, and can be tested and maintained.",
         "provenance": [
           {
             "kind": "evidence",
@@ -11123,12 +11986,102 @@
           {
             "kind": "seed",
             "ref": "fire-services#40-43"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Confirm the water supply and the authority's requirements early.\n- Design the selected systems to the level of detail each appointed stage buys.\n- Coordinate space, tanks, pumps and penetrations with the architect, structural and other services engineers.\nA concept tank and pump capacity is not full hydraulic design or proof that the existing supply is adequate.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes systems that protect residents who may be asleep when a fire starts.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, this includes systems matched to the stored goods and their fire load.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_care",
+        "text": "For the health or care building, this includes systems that protect patients and residents who cannot evacuate without help.",
+        "when": [
+          {
+            "class": [
+              "9a",
+              "9c"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes what the existing systems can do and what must be upgraded.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       },
       {
         "key": "boundaries",
-        "text": "Fire engineer owns strategy/solutions; authorities decide. Trades install/test/certify; review/witnessing neither executes tests nor certifies unseen work. Name network design/application owners.",
+        "text": "The fire engineer owns the fire strategy and Performance Solutions; authorities decide. Trades install, test and certify. Your reviews and witnessing neither carry out tests nor certify work you did not see. Name who owns network design and authority applications.",
         "provenance": [
           {
             "kind": "evidence",
@@ -12623,7 +13576,73 @@
     "role": [
       {
         "key": "geotechnical",
-        "text": "Investigate and interpret ground for the stated decision; identify preliminary/final reports and monitoring endpoint. Civil/structural designers own design; contractor owns methods, temporary works and supervision. Environmental assessment is a separate appointment.",
+        "text": "You are the geotechnical engineer. Your job is to tell the design team what the ground is and how it will behave, so foundations, excavation and earthworks are designed safely and economically, and ground risk is known before the client commits.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "geotechnical#1,9,15,24,25,26,27,28,42"
+          },
+          {
+            "kind": "seed",
+            "ref": "geotechnical#45,50"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Investigate and interpret the ground for the decision this appointment serves.\n- Say which reports are preliminary and which are final, and when any monitoring ends.\n- Give the structural and civil engineers the design parameters they need, with the uncertainty stated.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, this means a site classification and footing advice the builder can price.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_basement",
+        "text": "With a basement or deep excavation, this includes groundwater, retention and the effect on neighbouring structures.",
+        "when": [
+          {
+            "flag": [
+              "basement"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "text": "The civil and structural designers own the design; the contractor owns construction methods, temporary works and supervision. Environmental assessment is a separate appointment.",
         "provenance": [
           {
             "kind": "evidence",
@@ -12637,7 +13656,7 @@
       },
       {
         "key": "advice_limits",
-        "text": "Advice/defect work states decision, evidence cutoff, reliance, gaps and further tests; observations are not proof of causation or unconditional suitability. Preserve evidence before remedy.",
+        "text": "For advice or defect work, state the decision, the date the evidence stops, who may rely on the advice, the gaps and the further tests needed. Observations do not prove cause or unconditional suitability. Preserve the evidence before any repair.",
         "when": [
           {
             "work_type": [
@@ -13644,7 +14663,7 @@
     "role": [
       {
         "key": "designer",
-        "text": "Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, schedules and design-basis records. For shared connections name the design, evidence, installation, controls, testing and acceptance owners. Resolve gaps before reliance.",
+        "text": "You are the hydraulic services engineer. Your job is to give the building safe, reliable water, drainage and gas services that meet the authorities' requirements, suit how the building is used, and can be maintained.",
         "provenance": [
           {
             "kind": "evidence",
@@ -13671,6 +14690,132 @@
             "kind": "client_decision",
             "ref": "hydraulic-services#55,56",
             "why": "Owner-approved Hydraulic pilot structure and explicit pricing defaults; not evidence that an unknown system exists."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Confirm the authorities' connection requirements and the capacity of existing services early.\n- Provide coordinated hydraulic design for the selected services and stages, with calculations, drawings, schedules and design-basis records.\n- For each shared connection, name who owns its design, evidence, installation, controls, testing and acceptance.\n- Resolve gaps before anyone relies on the design.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, this means water, hot water and drainage that suit the owners' daily use.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes water metering for each apartment, the hot water strategy, and quiet pipework past bedrooms.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this includes tenancy metering and connections left ready for food and other tenant fit-outs.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, this includes the operation's process water and trade waste.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_health",
+        "text": "For the health building, this includes water quality and temperature control for clinical areas.",
+        "when": [
+          {
+            "class": [
+              "9a"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes tracing the existing services before relying on them.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       }
@@ -15759,7 +16904,37 @@
     "role": [
       {
         "key": "survey",
-        "text": "Provide selected survey evidence; detail observations, legal boundary/title, utility detection and set-out are distinct purchases. Confirm task/jurisdiction competence. Fence lines or title searches are not boundary proof; legal adviser owns rights advice.",
+        "text": "You are the surveyor. Your job is to give the design team an accurate, reliable record of the site, its boundaries, levels and features, so the design and approvals rest on facts.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "land-surveying#2,3"
+          },
+          {
+            "kind": "seed",
+            "ref": "land-surveying#23,24"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Provide the survey work selected for the extent and purpose shown. Detail survey, legal boundary and title, utility detection and set-out are separate purchases.\n- Confirm you are competent and registered for each task in this jurisdiction.\n- Say what was observed and how accurately.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "limits",
+        "text": "Fence lines and title searches do not prove a boundary; the client's legal adviser advises on rights.",
         "provenance": [
           {
             "kind": "evidence",
@@ -15773,7 +16948,7 @@
       },
       {
         "key": "interfaces",
-        "text": "Designers own design; locator detects, surveyor captures, plumber provides sewer evidence. Name client-direct/subcontract work. Tank geometry is not hydraulic capacity, integrity or watertightness certification.",
+        "text": "Designers own the design. The utility locator detects services, you capture them, and the plumber provides sewer evidence. Name any work done directly for the client or by a subcontractor. Measuring a tank's geometry does not certify its hydraulic capacity, integrity or watertightness.",
         "provenance": [
           {
             "kind": "evidence",
@@ -15788,19 +16963,19 @@
       },
       {
         "key": "advice",
-        "text": "For advice/defects state question, evidence cutoff and uncertainty; engineers own diagnosis, repair and monitoring triggers. No certification of concealed/unobserved work.",
-        "provenance": [
-          {
-            "kind": "seed",
-            "ref": "land-surveying#26,28,29"
-          }
-        ],
+        "text": "For advice or defect monitoring, state the question, the date the evidence stops and the uncertainty. Engineers own diagnosis, repair and monitoring triggers. You do not certify concealed or unobserved work.",
         "when": [
           {
             "work_type": [
               "advisory",
               "remediation"
             ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "seed",
+            "ref": "land-surveying#26,28,29"
           }
         ]
       }
@@ -16900,7 +18075,115 @@
     "role": [
       {
         "key": "appointment",
-        "text": "Selected landscape design/advice from instruction, inputs and access to named output/response milestone. Specialists own technical design; authorities approve. No approval, plant-survival or unseen-work guarantee.",
+        "text": "You are the landscape architect. Your job is to design outdoor spaces that work for the people who use them, suit the site and its climate, meet the planning controls, and can be built and maintained within budget.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "landscape-architecture#5-10"
+          },
+          {
+            "kind": "seed",
+            "ref": "landscape-architecture#26-29,33"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "landscape-architecture#34,36",
+            "why": "Explicit appointment, extent and procurement choice; historical agreement does not establish universal scope, quantities or current terms."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Set the landscape strategy early with the architect and civil engineer: levels, deep soil, drainage and tree retention.\n- Design and document the selected landscape works to the level each appointed stage buys.\n- Specify planting and materials the client can maintain.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, this means a garden that suits how the owners live and what they can maintain.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes communal open space, deep soil, and planting on structure that residents use every day.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this includes the street frontage and outdoor spaces for staff and customers.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_assembly",
+        "text": "For the assembly or education building, this includes robust outdoor spaces for large groups.",
+        "when": [
+          {
+            "class": [
+              "9b"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "text": "Your appointment runs from our instruction, inputs and site access to the output and response milestone we name. Specialists own technical design; authorities approve. You do not guarantee approval, plant survival or work you did not see.",
         "provenance": [
           {
             "kind": "evidence",
@@ -16919,7 +18202,7 @@
       },
       {
         "key": "records",
-        "text": "Controlled PDFs/plans, schedules/calculations and registers; agree native formats, recipients/reliance, input revisions, rounds/dates. Verify instrument/edition before using ratios, canopy, soil-depth or load figures.",
+        "text": "Issue controlled PDFs, plans, schedules, calculations and registers, and agree native formats, recipients, reliance, input revisions, review rounds and dates. Check the instrument and edition before using any ratio, canopy, soil-depth or load figure.",
         "provenance": [
           {
             "kind": "evidence",
@@ -18285,7 +19568,7 @@
     "role": [
       {
         "key": "designer",
-        "text": "Design selected systems to purchased maturity; retain load/airflow/pressure/selection calculations. AC is not outdoor air; resolve missing loads/evidence.",
+        "text": "You are the mechanical services engineer. Your job is to keep the occupants comfortable and healthy, with the right temperatures, fresh air and ventilation, using plant that fits the building, meets the energy targets and can be maintained.",
         "provenance": [
           {
             "kind": "evidence",
@@ -18294,12 +19577,138 @@
           {
             "kind": "seed",
             "ref": "mechanical-services#40-43,48"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Set the design loads and plant strategy early, and give the architect and structural engineer the space, weight and penetrations the plant needs.\n- Design the selected systems to the level of detail each appointed stage buys, with load, airflow, pressure and selection calculations.\n- Show how the outdoor-air requirement is met: air conditioning is not fresh air.\n- Say what loads or evidence are missing and resolve them before relying on them.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, this means comfortable rooms at a running cost the owners can live with.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes apartment air conditioning and where its condensers go, bathroom and kitchen exhaust, and car park ventilation.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this includes zoning that tenants can adapt and the energy rating the brief targets.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, this includes ventilation and heat control for the operation.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_health",
+        "text": "For the health building, this includes the pressure regimes and air changes clinical spaces need.",
+        "when": [
+          {
+            "class": [
+              "9a"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, this includes confirming what the existing plant can still do.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       },
       {
         "key": "boundaries",
-        "text": "Fire engineer owns strategy/solutions; mechanical implements selected plant/fire modes. Trades install/program/test; review/witnessing is not execution, continuous supervision or unseen-work certification.",
+        "text": "The fire engineer owns the fire strategy and Performance Solutions; you design the selected plant and its fire modes to suit them. Trades install, program and test. Your reviews and witnessing are not their work, continuous supervision, or certification of work you did not see.",
         "provenance": [
           {
             "kind": "evidence",
@@ -19865,7 +21274,7 @@
     "role": [
       {
         "key": "engineer",
-        "text": "Structural engineer, engaged by the client and coordinated by the architect. You design and document the permanent structure. Where a specialist contractor designs an element (piles, post-tensioned slabs, specialist floors), you write its performance documentation and review the contractor's design; the contractor designs and certifies it.",
+        "text": "You are the structural engineer, engaged by the client and coordinated by the architect. You make the building stand up safely and economically: a structure that carries its loads, suits the architecture and the ground, and can be built and maintained.",
         "provenance": [
           {
             "kind": "evidence",
@@ -19874,6 +21283,159 @@
           {
             "kind": "evidence",
             "ref": "structural#41-43"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Choose the structural system early with the architect and cost planner, and show what each option means for cost, floor-to-floor height and buildability.\n- Design and document the permanent structure with calculations, drawings and specification.\n- Coordinate loads, penetrations and set-downs with the geotechnical, civil, services and façade designers before construction.\n- Where a specialist contractor designs an element (piles, post-tensioned slabs, specialist floors), write its performance documentation and review the contractor's design; the contractor designs and certifies it.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_house",
+        "text": "For this house, fit for purpose means a simple, economical structure matched to the ground and the owners' budget.",
+        "when": [
+          {
+            "module": [
+              "house"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, fit for purpose means column grids and slab depths that suit the apartment layouts, and floors that limit vibration and sound between homes.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments_nsw",
+        "text": "In NSW you also provide design compliance declarations for the structure as a regulated designer.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ],
+            "state": [
+              "NSW"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          },
+          {
+            "kind": "practice",
+            "ref": "Design and Building Practitioners Act 2020 (NSW); named from practice, not verified against the instrument"
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, fit for purpose means long, flexible spans and floor loads that let the space be re-let and refitted.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, fit for purpose means clear spans, and slabs that carry the operation's racking, forklift and plant loads.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_institutional",
+        "text": "For the health, education or care building, fit for purpose means spans, loads and floor vibration that suit the equipment and how the rooms are used.",
+        "when": [
+          {
+            "class": [
+              "9a",
+              "9b",
+              "9c"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_existing",
+        "text": "Because this is work to an existing building, fit for purpose also means establishing what the existing structure can carry before relying on it.",
+        "when": [
+          {
+            "module": [
+              "existing_building"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       },
@@ -20854,7 +22416,7 @@
     "role": [
       {
         "key": "planner",
-        "text": "Planning consultant for the applicant. You prepare the planning report, collate and lodge the application, and manage it through assessment. The architect leads design; the client engages the specialist consultants ({consultants}). You review their plans and reports for planning compliance before lodgement, and help scope the specialist reports the authority requires.",
+        "text": "You are the planning consultant for the applicant. Your job is to get the project the approval it needs, on a sound basis and without avoidable delay: a design the authority can support, and an application it can assess quickly.",
         "when": [
           {
             "pathway": [
@@ -20871,12 +22433,36 @@
           {
             "kind": "evidence",
             "ref": "town-planning#59"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "planner_duties",
+        "text": "To do this you:\n- Advise early on the controls, the pathway and the planning risks, so the design responds to them before lodgement.\n- Prepare the planning report, then collate and lodge the application.\n- Help scope the specialist reports the authority requires, and review the consultants' plans and reports for planning compliance before lodgement.\n- Manage the application through assessment, including requests for information and the conditions.\nThe architect leads design; the client engages the specialist consultants listed in the design team below.",
+        "when": [
+          {
+            "pathway": [
+              "da",
+              "ssd"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
           }
         ]
       },
       {
         "key": "adviser",
-        "text": "Planning adviser to the client. You advise on the controls, the approval pathway and the planning risks so the client can decide whether and how to proceed. No application is lodged under this appointment.",
+        "text": "You are the planning adviser to the client. Your job is to tell the client whether and how the project can be approved: the controls that apply, the realistic pathway, and the planning risks and how to manage them. No application is lodged under this appointment.",
         "when": [
           {
             "pathway": [
@@ -20889,6 +22475,54 @@
           {
             "kind": "seed",
             "ref": "data/reference/clerk/data/seed/advisory-services-guide.md"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments_nsw",
+        "text": "For the apartments, this includes the Apartment Design Guide and any design review panel the authority uses.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ],
+            "state": [
+              "NSW"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          },
+          {
+            "kind": "practice",
+            "ref": "Apartment Design Guide; State Environmental Planning Policy (Housing) 2021; named from practice, not verified against the instrument"
+          }
+        ]
+      },
+      {
+        "key": "fit_heritage",
+        "text": "On a heritage item or in a conservation area, this includes the heritage controls and the heritage impact statement they call for.",
+        "when": [
+          {
+            "flag": [
+              "heritage"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       }
@@ -21629,11 +23263,101 @@
     "role": [
       {
         "key": "engineer",
-        "text": "Traffic engineer for the applicant. You advise the design team on access, parking and circulation while the design develops, and prepare the traffic report the consent authority needs. Plans come from the architect in DWG and PDF.",
+        "text": "You are the traffic engineer for the applicant. Your job is to make sure people and vehicles can reach, park at and leave the site safely and efficiently, and that the consent authority accepts the traffic effects.",
         "provenance": [
           {
             "kind": "evidence",
             "ref": "traffic#8"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Advise the design team on access, parking numbers, design vehicles and circulation while the design develops.\n- Test the design: swept paths, sight lines and queuing.\n- Prepare the traffic report the consent authority needs.\nPlans come from the architect in DWG and PDF.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, fit for purpose means resident and visitor parking, deliveries, removalists and waste collection that work without queuing onto the street.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, fit for purpose means customer and staff parking, servicing and loading that work at peak times.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, fit for purpose means heavy-vehicle access, turning and loading that keep trucks off the street.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_assembly",
+        "text": "For the assembly or education building, fit for purpose means safe peak arrivals and departures, including pick-up and drop-off.",
+        "when": [
+          {
+            "class": [
+              "9b"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
           }
         ]
       }
@@ -22384,7 +24108,121 @@
     "role": [
       {
         "key": "adviser",
-        "text": "Selected waste advice from written instruction/agreed inputs to named final output and response round. Contractor implements; operator contracts collections; specialists classify controlled waste; traffic tests access. No approval, facility acceptance, diversion or savings guarantee.",
+        "text": "You are the waste consultant. Your job is to make sure the building's waste can be stored, sorted and collected safely and efficiently, during construction and in use, and that it meets council's requirements.",
+        "provenance": [
+          {
+            "kind": "evidence",
+            "ref": "waste-management#4,12,16,23,25"
+          },
+          {
+            "kind": "seed",
+            "ref": "waste-management#32,37,38"
+          },
+          {
+            "kind": "client_decision",
+            "ref": "waste-management#40,41,42,44",
+            "why": "Explicit extent, evidence and appointment policy; historic offers do not establish universal scope, rates or current requirements."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "waste-management#37",
+            "why": "Apply remediation evidence principles to waste extent; waste adviser does not diagnose defects or contamination."
+          },
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "duties",
+        "text": "To do this you:\n- Set waste volumes, bin numbers and storage areas early, so the architect can plan for them.\n- Confirm how collection vehicles reach and service the bins.\n- Prepare the waste management plans this appointment selects.",
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."
+          }
+        ]
+      },
+      {
+        "key": "fit_apartments",
+        "text": "For the apartments, this includes chutes or bin rooms on each floor, and a collection point the collection trucks can reach.",
+        "when": [
+          {
+            "class": [
+              "2"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_commercial",
+        "text": "For the office or retail space, this includes separate tenant waste streams, including food waste.",
+        "when": [
+          {
+            "class": [
+              "5",
+              "6"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_industrial",
+        "text": "For the warehouse or factory, this includes the operation's process waste.",
+        "when": [
+          {
+            "class": [
+              "7b",
+              "8"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "fit_health",
+        "text": "For the health building, this includes clinical and other controlled waste.",
+        "when": [
+          {
+            "class": [
+              "9a"
+            ]
+          }
+        ],
+        "provenance": [
+          {
+            "kind": "client_decision",
+            "ref": "docs/plans/2026-11-07-rfp-role-purpose.md",
+            "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "text": "Your advice runs from our written instruction and agreed inputs to the output and response round we name. The contractor implements the plan; the operator contracts collections; specialists classify controlled waste; the traffic engineer tests vehicle access. You do not guarantee approval, facility acceptance, diversion or savings.",
         "provenance": [
           {
             "kind": "evidence",
@@ -22408,7 +24246,7 @@
       },
       {
         "key": "records",
-        "text": "Revision-controlled PDFs/plans/calculations and editable registers: input revisions, units/source/date, assumptions, owners/dates, recipients/reliance and closure evidence. Separate observed, reported and estimated conditions.",
+        "text": "Issue revision-controlled PDFs, plans, calculations and editable registers that record input revisions, units, sources and dates, assumptions, owners and due dates, recipients and reliance, and close-out evidence. Keep observed, reported and estimated conditions separate.",
         "provenance": [
           {
             "kind": "evidence",

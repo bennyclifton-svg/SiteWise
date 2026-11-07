@@ -70,6 +70,53 @@ export const IconUpload = () => (
   </Icon>
 );
 
+/** Select all: list rules and a tick over the set. */
+export const IconSelectAll = () => (
+  <Icon>
+    <path d="M2.5 4.5h5.5M2.5 8h5.5M2.5 11.5h3.5" />
+    <path d="M9.2 9.2l1.7 1.7 3.2-3.6" />
+  </Icon>
+);
+
+/** Response form: a sheet ruled as a table. */
+export const IconResponseForm = () => (
+  <Icon>
+    <rect x="2.5" y="2.5" width="11" height="11" rx="1" />
+    <path d="M2.5 6.5h11M2.5 10h11M6.5 2.5v11" />
+  </Icon>
+);
+
+/** Update: an arrow turning back onto the page. */
+export const IconUpdate = () => (
+  <Icon>
+    <path d="M13 8.2a5 5 0 1 1-1.5-3.6" />
+    <path d="M13.2 2.4v3.2H10" />
+  </Icon>
+);
+
+/** Documents panel: a sheet split by a rule, the register listed on the right. */
+export const IconDocumentsPanel = () => (
+  <Icon>
+    <rect x="2.5" y="2.5" width="11" height="11" rx="1.5" />
+    <path d="M9 2.5v11M10.8 5.5h1M10.8 8h1M10.8 10.5h1" />
+  </Icon>
+);
+
+/** Log out: an arrow leaving an open door frame. */
+export const IconLogOut = () => (
+  <Icon>
+    <path d="M6.5 2.5h-4v11h4" />
+    <path d="M6 8h7.5M10.5 5l3 3-3 3" />
+  </Icon>
+);
+
+/** Close: two strokes crossing at the corner of a sheet. */
+export const IconClose = () => (
+  <Icon>
+    <path d="M4 4l8 8M12 4L4 12" />
+  </Icon>
+);
+
 /** Download: an arrow into the tray, the reverse of upload. */
 export const IconDownload = () => (
   <Icon>

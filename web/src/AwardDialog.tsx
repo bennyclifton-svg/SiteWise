@@ -44,7 +44,8 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
       const label = it.key === "comparison:appointment" ? "Professional fee" : it.label;
       if (it.kind !== "rate" && it.kind !== "criterion" && c?.state === "priced" && c.amount != null) out.push({ id: `k:${it.key}`, key: it.key, priceId: "", quoteId: "", label, amount: c.amount, extra: !it.base });
     }
-    if (!table.builder && !col.quote && !col.cells["comparison:appointment"]) for (const o of col.others) if (o.amount != null) out.push({ id: `p:${o.id}`, key: "", priceId: o.id, quoteId: "", label: o.label || "Offered item", amount: o.amount, extra: true });
+    // A group awards only placed cells: an unplaced amount has no discipline.
+    if (!table.builder && !table.group && !col.quote && !col.cells["comparison:appointment"]) for (const o of col.others) if (o.amount != null) out.push({ id: `p:${o.id}`, key: "", priceId: o.id, quoteId: "", label: o.label || "Offered item", amount: o.amount, extra: true });
     return out;
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,7 +182,7 @@ export function AwardDialog({ projectId, table, submissionId, onClose, onAwarded
     </> : preview && <>
       <div className="award-preview">
         <p><strong>{preview.parent_label}</strong> · contract {money(preview.total)} · budget {preview.budget != null ? `${money(preview.budget)} (unchanged)` : "not set, so no variance is shown"}</p>
-        <ul>{preview.lines.map(l => <li key={l.label}><span>{l.label}</span><span className="num">{money(l.amount)}</span></li>)}</ul>
+        <ul>{preview.lines.map(l => <li key={l.label}><span>{l.label}{l.under && <span className="award-muted"> · under {l.under}</span>}</span><span className="num">{money(l.amount)}</span></li>)}</ul>
         <p className="award-muted">{table.columns.length > 1 ? `The other ${table.columns.length - 1} proposal${table.columns.length === 2 ? " is" : "s are"} marked unsuccessful and kept unchanged. ` : ""}The package is appointed to {firm}; invoices from its ABN will find these lines. You can undo this until an invoice is allocated to one of them.</p>
       </div>
       <div className="award-actions">

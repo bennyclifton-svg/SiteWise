@@ -12,8 +12,13 @@ Conditions that do not apply: Delivered in stages.
 
 ### 2. Scope of services
 
-Provide selected survey evidence; detail observations, legal boundary/title, utility detection and set-out are distinct purchases. Confirm task/jurisdiction competence. Fence lines or title searches are not boundary proof; legal adviser owns rights advice.
-Designers own design; locator detects, surveyor captures, plumber provides sewer evidence. Name client-direct/subcontract work. Tank geometry is not hydraulic capacity, integrity or watertightness certification.
+You are the surveyor. Your job is to give the design team an accurate, reliable record of the site, its boundaries, levels and features, so the design and approvals rest on facts.
+To do this you:
+- Provide the survey work selected for the extent and purpose shown. Detail survey, legal boundary and title, utility detection and set-out are separate purchases.
+- Confirm you are competent and registered for each task in this jurisdiction.
+- Say what was observed and how accurately.
+Fence lines and title searches do not prove a boundary; the client's legal adviser advises on rights.
+Designers own the design. The utility locator detects services, you capture them, and the plumber provides sewer evidence. Name any work done directly for the client or by a subcontractor. Measuring a tank's geometry does not certify its hydraulic capacity, integrity or watertightness.
 Survey brief: Attach marked extent/features, purpose/users, title/DP/easements, dated records/conflicts, coordinate system/zone/epoch, vertical datum/control/transformation and accuracy by purpose.
 
 From written instruction/inputs/access to named final issue/handover, with agreed query period; later options need instruction. R1 Fee by stage: Price stages/options separately, basis/quantity/GST/dependencies; base/options/alternative totals. No detail/stormwater/locator double count. Validity/milestones, addenda acknowledged; authorised signatory. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

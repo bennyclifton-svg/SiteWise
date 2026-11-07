@@ -104,11 +104,26 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   }
   function renderRow(it: ScheduleItem) {
     if (table?.builder && it.key === "stage:lump_sum" && it.label === "Lump sum fee") it = { ...it, label: "Construction price used" };
-    return <Row key={it.key} item={it} cols={cols} editing={editing} onEdit={setEditing}
+    return <Row key={it.key} item={it} cols={cols} editing={editing} onEdit={setEditing} blank={combinedRow(it.key) ? "—" : undefined}
       onSave={(sub, state, amount, note) => void run(() => submissionApi.setCell(projectId, sub, it.key, state, amount, note)).then(ok => { if (ok) setEditing(null); })}
       busy={locked} perHour={it.kind === "rate"} moving={moving} onMove={startMove}
       onTarget={target => setMoving(m => m ? { ...m, target } : null)} onRename={() => setRowEditor(it)}
       onPlacement={() => void run(() => submissionApi.row(projectId, pkg, it.key, it.label, it.base ? "option" : "base", it.unit || ""))} />;
+  }
+
+  // A group's rows are headed by discipline, then the combined stages.
+  const combinedRow = (key: string) => !!table?.group && key.startsWith("combined:");
+  function headed(list: ScheduleItem[]) {
+    if (!table?.group) return list.map(renderRow);
+    const out = [];
+    let last = "";
+    for (const it of list) {
+      const head = combinedRow(it.key) ? "Combined stages — one amount for several disciplines, never split" : table.group.members.find(m => it.key.startsWith(`${m.key}:`))?.title ?? "";
+      if (head && head !== last) out.push(<tr key={`head:${head}`} className="prices-group"><th colSpan={cols.length + 2} scope="rowgroup">{head}</th></tr>);
+      last = head;
+      out.push(renderRow(it));
+    }
+    return out;
   }
 
   if (showReport && table) return <ProcurementReport projectId={projectId} table={table} onBack={() => setShowReport(false)} onSignedOut={onSignedOut} />;
@@ -168,7 +183,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
         </tr></thead>
         <tbody>
           {table.builder && <BuilderWorkSections cols={cols} projectId={projectId} />}
-          {base.filter(it=>!table.builder || it.key!=="stage:lump_sum").map(renderRow)}
+          {headed(base.filter(it=>!table.builder || it.key!=="stage:lump_sum"))}
           {!table.builder && <tr className="prices-total">
             <th scope="row">{table.builder ? "Comparison total" : quoted ? "Confirmed comparison fee — independent of schedule breakdown" : "Base fee total"}</th>
             {cols.map(c => <td key={c.submission.id} className={c.totals.lowest ? "lowest" : undefined}>
@@ -184,6 +199,9 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
           </tr>}
           {options.length > 0 && <tr className="prices-group"><th colSpan={cols.length + 2} scope="rowgroup">Options, priced separately</th></tr>}
           {options.map(renderRow)}
+          {table.group && table.group.left.length > 0 && <tr className="prices-group"><th colSpan={cols.length + 2} scope="rowgroup">Left the group — not awarded until placed again</th></tr>}
+          {table.group?.left.map(it => <tr key={`left:${it.key}`} className="prices-left"><th scope="row" className="prices-item">{it.label}</th>
+            {cols.map(c => <td key={c.submission.id}><span className={c.cells[it.key]?.state === "priced" ? "prices-figure" : "prices-word"}>{c.cells[it.key] ? cellWords(c.cells[it.key]) : "—"}</span></td>)}<td /></tr>)}
           {!table.builder && cols.some(c => c.others.length > 0) && <tr className="prices-others">
             <th scope="row">Fees awaiting alignment <span>not included in comparison totals</span></th>
             {cols.map(c => <td key={c.submission.id}>{c.others.length ? <ul>{c.others.map(o => <li key={o.id} title={o.passage}>{o.state === "excluded" ? "Set aside" : money(o.amount)} <span>{o.label}</span>{o.state === "priced" && o.amount != null && <button className="price-icon" disabled={locked || !!moving} aria-label={`Move or combine ${o.label}, ${c.firm?.name ?? c.submission.filename}`} title="Move or combine fee" onClick={() => startMove(c, o)}><PriceIcon kind="move" /></button>}</li>)}</ul> : "—"}</td>)}<td />
@@ -221,8 +239,8 @@ function PriceIcon({ kind }: { kind: "up" | "down" | "move" | "warning" }) {
   </svg>;
 }
 
-function Row({ item, cols, editing, onEdit, onSave, busy, perHour, moving, onMove, onTarget, onRename, onPlacement }: {
-  item: ScheduleItem; cols: Column[]; editing: { sub: string; key: string } | null; busy: boolean; perHour?: boolean;
+function Row({ item, cols, editing, onEdit, onSave, busy, perHour, moving, onMove, onTarget, onRename, onPlacement, blank }: {
+  item: ScheduleItem; cols: Column[]; blank?: string; editing: { sub: string; key: string } | null; busy: boolean; perHour?: boolean;
   moving: { sub: string; cell: Cell; target: string; rate: boolean } | null;
   onMove: (col: Column, cell: Cell) => void; onTarget: (key: string) => void; onRename: () => void; onPlacement: () => void;
   onEdit: (e: { sub: string; key: string } | null) => void; onSave: (sub: string, state: CellState, amount: string, note: string) => void;
@@ -239,8 +257,8 @@ function Row({ item, cols, editing, onEdit, onSave, busy, perHour, moving, onMov
       return <td key={c.submission.id} className={`${cell?.decided_by === "user" ? "user" : ""} ${source ? "prices-source-selected" : ""} ${sameFirm && moving?.target === item.key ? "prices-target-selected" : ""}`}>
         {open ? <CellEditor cell={cell} busy={busy} onCancel={() => onEdit(null)} onSave={(s, a, note) => onSave(c.submission.id, s, a, note)} />
           : <div className="prices-cell-line"><button type="button" className="prices-cell" disabled={busy || !!moving || c.submission.status === "awarded" || c.submission.status === "unsuccessful"} onClick={() => onEdit({ sub: c.submission.id, key: item.key })}
-            aria-label={`${item.label}, ${c.firm?.name ?? c.submission.filename}: ${cellWords(cell)}. Change`} title={[provenance(cell), cell?.basis].filter(Boolean).join(". ")}>
-            <span className={cell?.state === "priced" ? "prices-figure" : "prices-word"}>{cellWords(cell)}</span>
+            aria-label={`${item.label}, ${c.firm?.name ?? c.submission.filename}: ${blank && !cell ? "none" : cellWords(cell)}. Change`} title={[provenance(cell), cell?.basis].filter(Boolean).join(". ")}>
+            <span className={cell?.state === "priced" ? "prices-figure" : "prices-word"}>{blank && (!cell || cell.state === "") ? blank : cellWords(cell)}</span>
             {review && <span className="prices-warning" aria-label="Review needed"><PriceIcon kind="warning" /></span>}
             {cell?.basis && <span className="prices-sr-only">{cell.basis}</span>}
           </button>

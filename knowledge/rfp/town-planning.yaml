@@ -36,18 +36,33 @@ scale:
 
 role:
   - key: planner
-    text: "Planning consultant for the applicant. You prepare the planning report, collate and lodge the application,
-      and manage it through assessment. The architect leads design; the client engages the specialist consultants ({consultants}).
-      You review their plans and reports for planning compliance before lodgement, and help scope the specialist reports
-      the authority requires."
-    when: [pathway: [da, ssd]]
-    provenance: [{kind: evidence, ref: "town-planning#58"}, {kind: evidence, ref: "town-planning#59"}]
+    text: "You are the planning consultant for the applicant. Your job is to get the project the approval it needs, on a sound basis and without avoidable delay: a design the authority can support, and an application it can assess quickly."
+    when: [{"pathway": ["da", "ssd"]}]
+    provenance: [{"kind": "evidence", "ref": "town-planning#58"}, {"kind": "evidence", "ref": "town-planning#59"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: planner_duties
+    text: |-
+      To do this you:
+      - Advise early on the controls, the pathway and the planning risks, so the design responds to them before lodgement.
+      - Prepare the planning report, then collate and lodge the application.
+      - Help scope the specialist reports the authority requires, and review the consultants' plans and reports for planning compliance before lodgement.
+      - Manage the application through assessment, including requests for information and the conditions.
+      The architect leads design; the client engages the specialist consultants listed in the design team below.
+    when: [{"pathway": ["da", "ssd"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
   - key: adviser
-    text: "Planning adviser to the client. You advise on the controls, the approval pathway and the planning risks so
-      the client can decide whether and how to proceed. No application is lodged under this appointment."
-    when: [pathway: [advice_only, exempt]]
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/advisory-services-guide.md"}]
+    text: "You are the planning adviser to the client. Your job is to tell the client whether and how the project can be approved: the controls that apply, the realistic pathway, and the planning risks and how to manage them. No application is lodged under this appointment."
+    when: [{"pathway": ["advice_only", "exempt"]}]
+    provenance: [{"kind": "seed", "ref": "data/reference/clerk/data/seed/advisory-services-guide.md"}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_apartments_nsw
+    text: "For the apartments, this includes the Apartment Design Guide and any design review panel the authority uses."
+    when: [{"class": ["2"], "state": ["NSW"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}, {"kind": "practice", "ref": "Apartment Design Guide; State Environmental Planning Policy (Housing) 2021; named from practice, not verified against the instrument"}]
+  - key: fit_heritage
+    text: "On a heritage item or in a conservation area, this includes the heritage controls and the heritage impact statement they call for."
+    when: [{"flag": ["heritage"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
 
+design_team: true
 stage_intro: "Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction."
 # One table: each stage with its lines and services (owner direction, 3 November 2026).
 scope_by_stage: true

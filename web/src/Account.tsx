@@ -131,7 +131,8 @@ function PlanSummary({ account }: { account: AccountData }) {
   return (
     <section className="account-section" aria-labelledby="plan-heading">
       <h2 id="plan-heading">Plan</h2>
-      <p className="account-plan">{account.plan.name}</p>
+      {/* With billing off nothing is enforced, so naming a plan would mislead. */}
+      <p className="account-plan">{account.billing_enabled ? account.plan.name : "No limits"}</p>
       {status && <p className="muted">{status}</p>}
       {owner && account.billing_enabled && account.has_customer && (
         <button className="btn" disabled={busy} onClick={() => void manage()}>
@@ -159,7 +160,9 @@ function Meter({ label, used, cap, format }: { label: string; used: number; cap:
 }
 
 function Usage({ account }: { account: AccountData }) {
-  const { plan, usage } = account;
+  const { usage } = account;
+  // A cap of 0 shows the count alone; with billing off no cap applies.
+  const plan = account.billing_enabled ? account.plan : { documents_per_month: 0, storage_bytes: 0, projects: 0, users: 0 };
   const n = (v: number) => v.toLocaleString("en-AU");
   return (
     <section className="account-section" aria-labelledby="usage-heading">
@@ -287,7 +290,7 @@ function TeamSection({ account }: { account: AccountData }) {
   return (
     <section className="account-section" aria-labelledby="team-heading">
       <h2 id="team-heading">Team</h2>
-      <p className="muted">{team.members.length + team.invites.length} of {team.seats} seats used, counting open invites.</p>
+      {account.billing_enabled && <p className="muted">{team.members.length + team.invites.length} of {team.seats} seats used, counting open invites.</p>}
       <ul className="account-team">
         {team.members.map((m) => (
           <li key={m.user_id}>

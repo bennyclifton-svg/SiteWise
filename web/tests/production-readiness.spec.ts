@@ -46,11 +46,13 @@ test("narrow shell keeps navigation, controls and tables reachable", async ({ pa
   await expect(page.getByRole("button", { name: "Profile", exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(900);
   await page.screenshot({ path: "../tmp/readiness-desktop.png", fullPage: true });
-  // Trace opens in light; the theme button goes to dark and back.
-  await page.getByRole("button", { name: "Dark", exact: true }).click();
+  // Trace opens in light; the account menu at the foot of the nav picks dark and back.
+  await page.getByRole("button", { name: "Account menu", exact: true }).click();
+  await page.getByRole("menuitemradio", { name: "Dark", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: "Light", exact: true }).click();
+  await page.getByRole("menuitemradio", { name: "Light", exact: true }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.keyboard.press("Escape");
   await page.getByRole("link", { name: "Skip to content" }).focus();
   const skip = await page.getByRole("link", { name: "Skip to content" }).boundingBox();
   expect(skip!.width).toBeGreaterThan(100);

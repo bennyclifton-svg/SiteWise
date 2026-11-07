@@ -17,7 +17,10 @@ type PackageBaseline struct {
 	ExceptBuildingClasses []string `yaml:"except_building_classes"`
 	WorkTypes             []string `yaml:"work_types"`
 	Systems               []string `yaml:"systems"`
-	Consultants           []string `yaml:"consultants"`
+	// NCCClasses narrows a baseline below the building category: Class 2
+	// apartments and a Class 1a house are both residential.
+	NCCClasses  []string `yaml:"ncc_classes"`
+	Consultants []string `yaml:"consultants"`
 }
 
 // PackageScopeDefault suggests consultants when a listed system, or one
@@ -58,6 +61,12 @@ func (c *Catalog) loadPackageDefaults(path string) error {
 	}
 	for _, w := range c.profile.taxonomy.WorkTypes {
 		types[w.ID] = true
+	}
+	nccClasses := map[string]bool{}
+	if d, ok := c.Determinant("ncc_class"); ok {
+		for _, o := range d.Options {
+			nccClasses[o.ID] = true
+		}
 	}
 	// A suggestion must name a discipline the Procurement table can make an
 	// RFP for, so names are checked against the shipped discipline list.
@@ -113,6 +122,11 @@ func (c *Catalog) loadPackageDefaults(path string) error {
 		for _, id := range b.Systems {
 			if _, ok := c.System(id); !ok {
 				return fmt.Errorf("%s: unknown system %q", path, id)
+			}
+		}
+		for _, id := range b.NCCClasses {
+			if !nccClasses[id] {
+				return fmt.Errorf("%s: unknown NCC class %q", path, id)
 			}
 		}
 	}

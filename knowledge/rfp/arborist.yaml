@@ -102,32 +102,22 @@ project_rows:
       current requirements.
   label: Tree basis
 role:
-- key: adviser
-  text: Assess scheduled trees and advise within competence. Client/approval lead obtains permissions; competent 
-    tree-work contractor executes pruning/removal/protection. Advice grants no permission, survival or future-safety
-    guarantee; escalate urgent concerns.
-  provenance:
-  - kind: evidence
-    ref: arborist#2,4,7,18
-  - kind: seed
-    ref: arborist#21,26,27
-  - kind: client_decision
-    ref: arborist#29
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
-      current requirements.
-- key: records
-  text: Coordinate survey, landscape, civil, structure and utilities; retain their design duties. 
-    Revision-controlled PDF/CAD plans, calculations and editable registers state observed/measured/reported/inferred
-    basis, access limits, recipients and reliance.
-  provenance:
-  - kind: evidence
-    ref: arborist#7,9
-  - kind: seed
-    ref: arborist#22,23,24,27
-  - kind: client_decision
-    ref: arborist#28,32
-    why: Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or 
-      current requirements.
+  - key: adviser
+    text: "You are the arborist. Your job is to tell the client which trees matter, how the works will affect them, and how to protect the ones being kept, so design and approval decisions rest on sound tree evidence."
+    provenance: [{"kind": "evidence", "ref": "arborist#2,4,7,18"}, {"kind": "seed", "ref": "arborist#21,26,27"}, {"kind": "client_decision", "ref": "arborist#29", "why": "Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or current requirements."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Assess the scheduled trees: their health, value and root zones.
+      - Advise the design team on encroachments, and on how to protect or remove trees.
+      - Report in the form the consent authority needs.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: limits
+    text: "Advise within your competence. The client or planning lead obtains permissions; a competent tree-work contractor carries out pruning, removal and protection. Your advice grants no permission and does not guarantee survival or future safety; tell us at once about any urgent concern."
+    provenance: [{"kind": "evidence", "ref": "arborist#2,4,7,18"}, {"kind": "seed", "ref": "arborist#21,26,27"}, {"kind": "client_decision", "ref": "arborist#29", "why": "Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or current requirements."}]
+  - key: records
+    text: "Coordinate with the surveyor, landscape architect, civil and structural engineers and utility designers; they keep their design responsibility. Issue revision-controlled PDF and CAD plans, calculations and editable registers that say whether each fact was observed, measured, reported or inferred, any access limits, who receives the advice and who may rely on it."
+    provenance: [{"kind": "evidence", "ref": "arborist#7,9"}, {"kind": "seed", "ref": "arborist#22,23,24,27"}, {"kind": "client_decision", "ref": "arborist#28,32", "why": "Explicit appointment, extent and procurement policy; historic offers do not establish universal scope or current requirements."}]
 stage_intro: Written instruction/agreed inputs to named output/response end. Price once across stages and positions;
   options need written activation.
 boundary:

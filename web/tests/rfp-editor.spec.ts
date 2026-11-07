@@ -16,7 +16,7 @@ async function refreshDraft(page: Page) {
   const toolbar = page.locator(".report-toolbar");
   const version = (await toolbar.innerText()).match(/Version (\d+)/);
   expect(version).not.toBeNull();
-  await toolbar.getByRole("button", { name: "Refresh draft", exact: true }).click();
+  await page.getByRole("button", { name: "Refresh draft", exact: true }).click();
   // Existing controls can still show the previous value while the new draft
   // loads. Wait for its version before testing persistence or another edit.
   await expect(toolbar).toContainText(`Version ${Number(version![1]) + 1}`);
@@ -49,7 +49,8 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await expect(page.getByRole("button", { name: "Edit 1. Project", exact: true })).toHaveCount(0);
   const pageOne = page.locator(".rfp-page-one");
   for (const column of ["The building", "Site and planning", "Delivery"]) await expect(pageOne.getByRole("group", { name: column, exact: true })).toBeVisible();
-  await expect(pageOne.getByRole("group", { name: "Project conditions", exact: true })).toBeVisible();
+  // Project conditions are set in Profile; only one that blocks issue stays here.
+  await expect(pageOne.locator('.rfp-conditions [data-control^="fact:flag."]:not([data-blocked])')).toHaveCount(0);
 
   // A blocking check sits beside what it concerns; the Issue section counts them.
   const issue = page.getByRole("region", { name: "Issue", exact: true });
@@ -78,16 +79,12 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await site.getByLabel("Zone", { exact: true }).fill("R2");
   await site.getByLabel("Zone", { exact: true }).press("Enter");
   await expect(pageOne.locator('[data-control="fact:zone"]')).toContainText("R2");
-  // A condition answers in place.
-  const country = pageOne.locator('[data-control="fact:flag.country"]');
-  await country.getByRole("radio", { name: "Yes", exact: true }).check();
-  await expect(country.locator(".rfp-source")).toHaveCount(0);
-  await expect(country.getByRole("radio", { name: "Yes", exact: true })).toBeChecked();
+  // A condition that does not block issue is answered in Profile, not here.
+  await expect(pageOne.locator('[data-control="fact:flag.country"]')).toHaveCount(0);
   await page.screenshot({ path: "../.tools/rfp-report-editing.png", fullPage: true });
   const saved = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   expect(saved.details.find((d: { key: string }) => d.key === "proj.zone").value).toBe("R2");
   expect(saved.details.find((d: { key: string }) => d.key === "proj.client").value).toBe("Inner West Council");
-  expect(saved.details.find((d: { key: string }) => d.key === "proj.flag.country").value).toBe("yes");
 
   const scope = page.locator('.report-section').filter({ has: page.getByRole('heading', { name: '2. Scope of services', exact: true }) });
   // Scope by stage: a service is included or excluded in its stage.

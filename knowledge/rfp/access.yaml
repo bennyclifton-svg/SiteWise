@@ -100,37 +100,34 @@ project_rows:
       automatic legal upgrade trigger.
   label: Assessment basis
 role:
-- key: adviser
-  text: You advise on access for each appointed stage, from our written instruction to your final report and 
-    response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the 
-    certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination 
-    complaint.
-  provenance:
-  - kind: evidence
-    ref: access#13,20
-  - kind: seed
-    ref: access#31,36
-  - kind: client_decision
-    ref: access#39,40
-    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not
-      establish included work or current statutory requirements.
-  - kind: client_decision
-    ref: access#36
-    why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling 
-      and reliance; no discrimination-immunity promise.
-- key: records
-  text: Issue each review as a dated PDF report with marked-up drawings and an editable register of issues, 
-    Performance Solutions and evidence, recording location, drawing revision, owner, due date and close-out. 
-    Coordinate with the architect, landscape, civil, services, lift, fire and BCA consultants.
-  provenance:
-  - kind: evidence
-    ref: access#14,15
-  - kind: seed
-    ref: access#32,33
-  - kind: client_decision
-    ref: access#37,39,42
-    why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not
-      establish included work or current statutory requirements.
+  - key: adviser
+    text: "You are the access consultant. Your job is to make sure people with disability can reach, enter and use the building and its facilities, and that the design meets the access requirements that apply."
+    provenance: [{"kind": "evidence", "ref": "access#13,20"}, {"kind": "seed", "ref": "access#31,36"}, {"kind": "client_decision", "ref": "access#39,40", "why": "Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not establish included work or current statutory requirements."}, {"kind": "client_decision", "ref": "access#36", "why": "Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling and reliance; no discrimination-immunity promise."}, {"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Review the design at each appointed stage against the access requirements and the brief's inclusive-design goals.
+      - Say what must change, and propose Performance Solutions where a compliant outcome needs one.
+      - Keep compliance separate from good practice, so the client can choose what goes beyond the minimum.
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: section 2 opens with what the consultant is engaged to achieve and how; the same on every project, with one sentence by building type."}]
+  - key: fit_apartments
+    text: "For the apartments, this includes any livable or adaptable housing requirements that apply, and access from the street and car park to each apartment entry."
+    when: [{"class": ["2"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_commercial
+    text: "For the office or retail space, this includes accessible entries, paths of travel and sanitary facilities for staff and the public, and how tenancies connect to them."
+    when: [{"class": ["5", "6"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: fit_care
+    text: "For the health or care building, this includes patients, residents and visitors with limited mobility, and the staff and equipment that assist them."
+    when: [{"class": ["9a", "9c"]}]
+    provenance: [{"kind": "client_decision", "ref": "docs/plans/2026-11-07-rfp-role-purpose.md", "why": "Owner 2026-11-07: what fit for purpose means changes with the building type; the duties do not."}]
+  - key: limits
+    text: "You advise for each appointed stage, from our written instruction to your final report and response round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint."
+    provenance: [{"kind": "evidence", "ref": "access#13,20"}, {"kind": "seed", "ref": "access#31,36"}, {"kind": "client_decision", "ref": "access#39,40", "why": "Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not establish included work or current statutory requirements."}, {"kind": "client_decision", "ref": "access#36", "why": "Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling and reliance; no discrimination-immunity promise."}]
+  - key: records
+    text: "Issue each review as a dated PDF report with marked-up drawings and an editable register of issues, Performance Solutions and evidence, recording location, drawing revision, owner, due date and close-out. Coordinate with the architect, landscape, civil, services, lift, fire and BCA consultants."
+    provenance: [{"kind": "evidence", "ref": "access#14,15"}, {"kind": "seed", "ref": "access#32,33"}, {"kind": "client_decision", "ref": "access#37,39,42", "why": "Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not establish included work or current statutory requirements."}]
 stage_intro: Select base, options and end boundary; advice-only ends at its report/response round. Later work needs 
   written activation.
 boundary:

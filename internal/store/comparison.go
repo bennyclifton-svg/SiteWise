@@ -45,6 +45,9 @@ type PriceTable struct {
 	Lifecycle  string         `json:"lifecycle_status"`
 	Items      []ScheduleItem `json:"items"`
 	Columns    []FirmColumn   `json:"columns"`
+	// Group is set for a combined engagement: its disciplines in order and
+	// the rows of members that left (shown, never awarded).
+	Group *GroupTable `json:"group,omitempty"`
 	// Earlier is superseded, withdrawn and not-a-proposal submissions,
 	// kept and shown below the table.
 	Earlier []Submission `json:"earlier"`
@@ -85,7 +88,17 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 	if t.Builder, err = builderPackage(ctx, tx, org, pkg); err != nil {
 		return t, err
 	}
-	if err := s.ensureSchedule(ctx, tx, org, project, pkg); err != nil {
+	group, err := groupPackage(ctx, tx, org, project, pkg)
+	if err != nil {
+		return t, err
+	}
+	if group {
+		g, err := s.ensureGroupSchedule(ctx, tx, org, project, pkg)
+		if err != nil {
+			return t, err
+		}
+		t.Group = groupTable(g)
+	} else if err := s.ensureSchedule(ctx, tx, org, project, pkg); err != nil {
 		return t, err
 	}
 	items, err := readSchedule(ctx, tx, org, pkg)
@@ -97,6 +110,8 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 		if !it.Retired {
 			t.Items = append(t.Items, it)
 			live = append(live, it.ScheduleItem)
+		} else if t.Group != nil && t.Group.left(it.Key) {
+			t.Group.Left = append(t.Group.Left, it)
 		}
 	}
 	cols, earlier, err := s.packageColumns(ctx, tx, org, project, pkg, live)
@@ -111,6 +126,10 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 // and decisions, and computes each live column's totals.
 func (s *Store) packageColumns(ctx context.Context, tx pgx.Tx, org, project, pkg string, items []rfp.ScheduleItem) ([]FirmColumn, []Submission, error) {
 	isBuilder, err := builderPackage(ctx, tx, org, pkg)
+	if err != nil {
+		return nil, nil, err
+	}
+	isGroup, err := groupPackage(ctx, tx, org, project, pkg)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -183,7 +202,12 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 			return nil, nil, err
 		}
 		col.Totals = proposals.Totals(items, col.Cells, col.Others, sub.StatedTotal)
-		if !isBuilder {
+		if isGroup {
+			// A group is compared and awarded on its fee schedule's cells:
+			// a source quote's stages would land under one line, not each
+			// discipline's, so they are not offered here.
+			col.Totals = proposals.GroupTotals(items, col.Cells, col.Others, sub.StatedTotal)
+		} else if !isBuilder {
 			col.Quote, err = quotedReview(ctx, tx, org, id)
 			if err != nil {
 				return nil, nil, err
@@ -557,6 +581,11 @@ func (s *Store) EditSubmission(ctx context.Context, org, project, id string, e S
 			if err := packageInProject(ctx, tx, org, project, *e.PackageID); err != nil {
 				return err
 			}
+			routed, err := routeToGroup(ctx, tx, org, project, *e.PackageID)
+			if err != nil {
+				return err
+			}
+			e.PackageID = &routed
 		}
 		if sub.Status == SubmissionAwarded {
 			return ErrConflict
