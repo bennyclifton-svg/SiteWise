@@ -19,9 +19,12 @@ export interface QuoteFee { id: string; label: string; printed: string; amount: 
 export interface QuoteReview { fees: QuoteFee[]; coverage: Record<string, {fee_id: string; status: string}>; issues: string[]; terms?: {kind: string; heading: string; text: string; page: number}[] }
 export interface AppointmentRow { id: string; label: string; amount: Money; state: CellState; included: boolean; quote_id?: string; item_key?: string; keys: string[]; source_label?: string; source?: string; page?: number; mapping_suggested?: boolean; alternative?: boolean; printed?: string }
 export interface Column { appointment_rows?: AppointmentRow[]; appointment_total?: Money; appointment_basis?: "reconciled" | "listed"; quote?: QuoteReview; award_stages?: QuoteFee[]; builder?: BuilderReview; undo_alignment: boolean; submission: Submission; firm: Firm | null; cells: Record<string, Cell>; others: Cell[]; totals: Totals; needs_review: boolean; fields: Record<string, FieldDecision> }
-export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[]; amount: Money; invoiced: boolean }
+export interface AwardLine { cost_item_id?: string; label: string; item_keys: string[]; price_ids: string[]; quote_ids?: string[]; amount: Money; invoiced: boolean; under?: string }
 export interface Award { id?: string; submission_id: string; firm_name: string; parent_label: string; parent_item_id?: string; budget: Money; total: Money; lines: AwardLine[]; created_at?: string; locked: boolean }
-export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null }
+// A combined engagement's table: its disciplines in Procurement order (each
+// row key starts with the member's key) and the rows of members who left.
+export interface GroupTable { members: { package_id: string; key: string; title: string }[]; left: ScheduleItem[] }
+export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null; group?: GroupTable }
 export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number }
 export interface Board { packages: Record<string, FirmCard[]>; unassigned: FirmCard[] }
 export interface FirmFields { name: string; abn: string; address: string; contact: string; email: string; phone: string }
