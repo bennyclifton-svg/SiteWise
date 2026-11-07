@@ -13,12 +13,12 @@ ALTER TABLE orgs
     -- arrives late never overwrites a newer state.
     ADD COLUMN billing_event_at timestamptz;
 
--- Users made before verification existed were already trusted.
+-- Only self sign-up starts unverified. Users made any other way (invite
+-- era, accepted team invites, operators) were reached at their address.
 ALTER TABLE users
-    ADD COLUMN email_verified_at timestamptz,
+    ADD COLUMN email_verified boolean NOT NULL DEFAULT true,
     ADD COLUMN terms_accepted_at timestamptz,
     ADD COLUMN terms_version text NOT NULL DEFAULT '' CHECK (length(terms_version) <= 40);
-UPDATE users SET email_verified_at = created_at;
 
 -- A verification link is presented without an org id, so the hash is unique.
 CREATE TABLE email_verifications (
