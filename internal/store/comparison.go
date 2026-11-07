@@ -9,6 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/invoices"
+	"sitewise/internal/procurement"
 	"sitewise/internal/proposals"
 	"sitewise/internal/rfp"
 )
@@ -336,6 +337,9 @@ type FirmCard struct {
 	PIExpiresOn  string `json:"pi_expires_on,omitempty"`
 	PIExpired    bool   `json:"pi_expired,omitempty"`
 	PILimitCents *int64 `json:"pi_limit_cents,omitempty"`
+	// Combined marks an unplaced proposal filed as a combined discipline
+	// ("Services Engineer"): the PM combines rows for it or places it.
+	Combined bool `json:"combined,omitempty"`
 }
 
 // ProcurementBoard is every package's live firm cards, and the submissions
@@ -394,18 +398,25 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 		}
 	}
 	loose := []FirmCard{}
-	rows, err = tx.Query(ctx, `SELECT id::text FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id IS NULL AND status IN ('reading','received','needs_review') ORDER BY created_at`, org, project)
+	// A proposal filed as the combined services discipline is marked, so
+	// Procurement offers Combine for this proposal (slice 5).
+	rows, err = tx.Query(ctx, `SELECT s.id::text, COALESCE(d.value,'')=$3 FROM submissions s
+LEFT JOIN decisions d ON d.org_id=s.org_id AND d.document_id=s.document_id AND d.field='discipline'
+WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id IS NULL AND s.status IN ('reading','received','needs_review') ORDER BY s.created_at`, org, project, procurement.ServicesFiling)
 	if err != nil {
 		return nil, nil, err
 	}
 	var ids []string
+	combined := map[string]bool{}
 	for rows.Next() {
 		var id string
-		if err := rows.Scan(&id); err != nil {
+		var services bool
+		if err := rows.Scan(&id, &services); err != nil {
 			rows.Close()
 			return nil, nil, err
 		}
 		ids = append(ids, id)
+		combined[id] = services
 	}
 	rows.Close()
 	for _, id := range ids {
@@ -421,6 +432,7 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 		}
 		card := cardOf(c)
 		card.NeedsReview = true
+		card.Combined = combined[id]
 		loose = append(loose, card)
 	}
 	return out, loose, tx.Commit(ctx)
@@ -577,23 +589,7 @@ func (s *Store) EditSubmission(ctx context.Context, org, project, id string, e S
 		return err
 	}
 	if e.PackageID != nil {
-		if *e.PackageID != "" {
-			if err := packageInProject(ctx, tx, org, project, *e.PackageID); err != nil {
-				return err
-			}
-			routed, err := routeToGroup(ctx, tx, org, project, *e.PackageID)
-			if err != nil {
-				return err
-			}
-			e.PackageID = &routed
-		}
-		if sub.Status == SubmissionAwarded {
-			return ErrConflict
-		}
-		if _, err := tx.Exec(ctx, `UPDATE submissions SET package_id=NULLIF($3,'')::uuid WHERE org_id=$1::uuid AND id::text=$2`, org, id, *e.PackageID); err != nil {
-			return err
-		}
-		if err := upsertSubmissionDecision(ctx, tx, org, project, id, proposals.Decision{Field: proposals.FieldPackage, Value: *e.PackageID}, true); err != nil {
+		if err := placeSubmission(ctx, tx, org, project, sub, *e.PackageID); err != nil {
 			return err
 		}
 	}
@@ -636,6 +632,29 @@ func (s *Store) EditSubmission(ctx context.Context, org, project, id string, e S
 		return err
 	}
 	return s.finishSubmissionWrite(ctx, tx, org, project, id)
+}
+
+// placeSubmission puts a proposal on pkg ("" detaches it) as the user's
+// choice, which a later read keeps. A grouped member's proposals go to its
+// group. The caller holds the project lock and the submission's row.
+func placeSubmission(ctx context.Context, tx pgx.Tx, org, project string, sub Submission, pkg string) error {
+	if pkg != "" {
+		if err := packageInProject(ctx, tx, org, project, pkg); err != nil {
+			return err
+		}
+		routed, err := routeToGroup(ctx, tx, org, project, pkg)
+		if err != nil {
+			return err
+		}
+		pkg = routed
+	}
+	if sub.Status == SubmissionAwarded {
+		return ErrConflict
+	}
+	if _, err := tx.Exec(ctx, `UPDATE submissions SET package_id=NULLIF($3,'')::uuid WHERE org_id=$1::uuid AND id::text=$2`, org, sub.ID, pkg); err != nil {
+		return err
+	}
+	return upsertSubmissionDecision(ctx, tx, org, project, sub.ID, proposals.Decision{Field: proposals.FieldPackage, Value: pkg}, true)
 }
 
 // saveFirm writes the user's firm details: the linked firm is updated and

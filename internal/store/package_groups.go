@@ -35,6 +35,12 @@ type groupMember struct {
 // CombinePackages makes a group of the given consultant rows. title is the
 // group's name; empty joins the members' names in the order given.
 func (s *Store) CombinePackages(ctx context.Context, org, project, actor string, ids []string, title string) (procurement.Package, error) {
+	return s.combine(ctx, org, project, actor, ids, title, nil)
+}
+
+// combine is one Combine transaction; then, when given, runs in it after the
+// group is made (Combine for this proposal places the proposal there).
+func (s *Store) combine(ctx context.Context, org, project, actor string, ids []string, title string, then func(pgx.Tx, procurement.Package) error) (procurement.Package, error) {
 	var group procurement.Package
 	ids = distinct(ids)
 	if len(ids) < 2 {
@@ -94,7 +100,9 @@ func (s *Store) CombinePackages(ctx context.Context, org, project, actor string,
 	if _, err := tx.Exec(ctx, `INSERT INTO packages(org_id,id,project_id,kind,title,novation,lifecycle_status,origin,review_status,meaning,provenance,role) VALUES($1::uuid,$2::uuid,$3::uuid,'services',$4,'no','planned','user','accepted_for_planning','stated',$5::jsonb,'group')`, org, group.ID, project, title, provenance); err != nil {
 		return group, err
 	}
-	if _, err := tx.Exec(ctx, `UPDATE packages SET group_id=$3::uuid,version=version+1 WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=ANY($4::uuid[])`, org, project, group.ID, ids); err != nil {
+	// The group now says who is engaged: a retired "engaged by" value on a
+	// member is cleared with it (slice 5), so no RFP says it twice.
+	if _, err := tx.Exec(ctx, `UPDATE packages SET group_id=$3::uuid,engaged_by=NULL,version=version+1 WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=ANY($4::uuid[])`, org, project, group.ID, ids); err != nil {
 		return group, err
 	}
 	// Proposals already in hand become the group's; each remembers its member.
@@ -111,6 +119,11 @@ func (s *Store) CombinePackages(ctx context.Context, org, project, actor string,
 	}
 	if group, err = readPackage(ctx, tx, org, project, group.ID); err != nil {
 		return group, err
+	}
+	if then != nil {
+		if err := then(tx, group); err != nil {
+			return group, err
+		}
 	}
 	return group, s.finishGroupWrite(ctx, tx, org, project, plan)
 }

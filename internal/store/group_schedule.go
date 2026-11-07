@@ -18,11 +18,20 @@ import (
 
 // servicesDisciplines are the disciplines a combined "Services Engineer"
 // filing (consultant.services) covers.
-var servicesDisciplines = map[string]bool{
-	"consultant.mechanical": true, "consultant.electrical": true, "consultant.hydraulic": true, "consultant.fire_services": true,
-}
+var servicesDisciplines = procurement.ServicesDisciplines
 
-const servicesFiling = "consultant.services"
+const servicesFiling = procurement.ServicesFiling
+
+// servicesSplit reports whether any live row holds one of the services a
+// combined services filing covers, grouped or not.
+func servicesSplit(rows []candidateRow) bool {
+	for _, r := range rows {
+		if servicesDisciplines[r.Discipline] {
+			return true
+		}
+	}
+	return false
+}
 
 // groupPackage reports whether pkg is a live combined engagement in this
 // org and project.

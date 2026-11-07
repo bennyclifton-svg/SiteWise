@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/procurement"
@@ -23,6 +24,9 @@ type PackageOverview struct {
 	Route        RouteState                      `json:"route"`
 	ProposedWork *procurement.WorksProposal      `json:"proposed_works"`
 	Gaps         []procurement.Gap               `json:"gaps"`
+	// Prompts offer to combine rows made before combined engagements
+	// (docs/plans/2026-11-07-combined-engagements-slice5.md).
+	Prompts []procurement.CombinePrompt `json:"prompts"`
 }
 
 // RouteState is the procurement route packages follow. Value is empty when
@@ -109,7 +113,49 @@ func (s *Store) packageOverview(ctx context.Context, tx pgx.Tx, org, project str
 		return o, err
 	}
 	o.ProposedWork = procurement.ProposeHeadContract(o.Gaps, work, items, route)
+	awarded, err := awardedPackages(ctx, tx, org, project)
+	if err != nil {
+		return o, err
+	}
+	o.Prompts = procurement.CombinePrompts(items, s.namesSubconsultants, awarded, dismissed)
 	return o, nil
+}
+
+// namesSubconsultants reports a discipline whose RFP role names the
+// consultants it engages: the lead an "engaged by" row belongs with.
+func (s *Store) namesSubconsultants(discipline string) bool {
+	cat := s.workCatalog()
+	if cat == nil {
+		return false
+	}
+	d, ok := cat.RFPForDiscipline(discipline)
+	if !ok {
+		return false
+	}
+	for _, row := range d.Role {
+		if strings.Contains(row.Text, "{engagement}") {
+			return true
+		}
+	}
+	return false
+}
+
+// awardedPackages holds the project's packages with a live award.
+func awardedPackages(ctx context.Context, q rowQuerier, org, project string) (map[string]bool, error) {
+	rows, err := q.Query(ctx, `SELECT DISTINCT package_id::text FROM awards WHERE org_id=$1::uuid AND project_id=$2::uuid AND undone_at IS NULL`, org, project)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string]bool{}
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		out[id] = true
+	}
+	return out, rows.Err()
 }
 
 // readPackageFacts reads the profile rows packages are proposed from.
@@ -177,7 +223,15 @@ func (s *Store) ReadPackages(ctx context.Context, org, project string) ([]procur
 	return readPackages(ctx, s.pool, org, project)
 }
 
+// errEngagedByRetired refuses a new "engaged by" value: a subconsultant is
+// combined with its lead (combined engagements slice 5, owner decision 3).
+// Stored values stay and keep their RFP wording until the PM combines.
+var errEngagedByRetired = fmt.Errorf("%w: engaged by is retired; combine the consultant with its lead on Procurement instead", ErrInvalidPackage)
+
 func (s *Store) CreatePackage(ctx context.Context, org, project, actor string, p procurement.Package) (procurement.Package, error) {
+	if p.EngagedBy != "" {
+		return p, errEngagedByRetired
+	}
 	if len(p.Stages) > 100 {
 		return p, fmt.Errorf("%w: too many stages", ErrInvalidPackage)
 	}

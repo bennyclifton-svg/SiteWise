@@ -12,7 +12,9 @@ export const procurementApi = {
   /** Removes a suggested consultant row; it is not suggested again on this project. */
   dismiss: (project: string, proposalKey: string) => request<void>("POST", `/projects/${project}/procurement/dismiss`, { proposal_key: proposalKey }),
   /** Combines two or more consultant rows into one engagement (a group row). */
-  combine: (project: string, packageIds: string[], title: string) => request<PackageRecord>("POST", `/projects/${project}/packages/combine`, { package_ids: packageIds, title }),
+  combine: (project: string, packageIds: string[], title: string, submissionId?: string) => request<PackageRecord>("POST", `/projects/${project}/packages/combine`, { package_ids: packageIds, title, ...(submissionId ? { submission_id: submissionId } : {}) }),
+  /** Hides a combine prompt on this project for good. */
+  dismissPrompt: (project: string, key: string) => request<void>("POST", `/projects/${project}/procurement/dismiss`, { proposal_key: key }),
   /** Releases every member of a group; the group row and its fee line go. */
   uncombine: (project: string, group: string) => request<void>("POST", `/projects/${project}/packages/${group}/uncombine`),
   /** Takes one member out of its group; the last two release the group. */

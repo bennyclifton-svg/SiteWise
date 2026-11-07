@@ -25,7 +25,7 @@ export interface Award { id?: string; submission_id: string; firm_name: string; 
 // row key starts with the member's key) and the rows of members who left.
 export interface GroupTable { members: { package_id: string; key: string; title: string }[]; left: ScheduleItem[] }
 export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null; group?: GroupTable }
-export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number }
+export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number; /** Unplaced and filed as a combined discipline ("Services Engineer"). */ combined?: boolean }
 export interface Board { packages: Record<string, FirmCard[]>; unassigned: FirmCard[] }
 export interface FirmFields { name: string; abn: string; address: string; contact: string; email: string; phone: string }
 export interface ResponsePassage { ordinal: number; heading: string; page: number; excerpt: string }

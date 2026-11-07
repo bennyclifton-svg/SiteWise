@@ -234,6 +234,11 @@
 .procurement-table tr.row-drop td, .procurement-table tr.row-drop th { background: var(--azure-soft); box-shadow: inset 0 0 0 1px var(--azure); }
 .procurement-unassigned label { display: inline-flex; align-items: center; gap: 6px; }
 .procurement-unassigned select { padding: 3px 6px; font: inherit; font-size: var(--fs-sm); }
+/* Combined engagements slice 5: a prompt's members, and the rows ticked for
+   a combined proposal, read as one line of choices. */
+.procurement-prompt label, .procurement-combine-for label { display: inline-flex; align-items: center; gap: 6px; }
+.procurement-combine-for { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; }
+.procurement-combine-for legend { padding: 0 4px; font-size: var(--fs-sm); }
 .procurement-pmp { margin-top: 6px; }
 .procurement .banner { flex-wrap: wrap; }
 
