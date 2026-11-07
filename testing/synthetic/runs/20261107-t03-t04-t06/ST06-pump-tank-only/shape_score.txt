@@ -3,8 +3,8 @@ T06 Sprinkler pump and tank upgrade, with fit-out (pump-tank-only)
     false positives: consultant.architect; consultant.hydraulic; consultant.bca; consultant.access; consultant.interior_design
   Cost plan [scored]: matched 13/28, missed 15 (0 built in, 15 known gaps), extra 0, false positives 5, fabricated amounts 0 (from documents 1, typed 0)
     false positives: Architect; Hydraulic; BCA; Access; Interior Design
-  Program [scored]: skeleton sk.refurb-traditional-cdc (match), matched 22/61, missed 39 (6 built in, 33 known gaps), extra 0, false positives 1, wrong stage 0; links holds 16, violated 0, unknown 0, unscored 55; orphans 1, cycles 0
-    missed built in: Alter and protect retained structure; Seal service penetrations; Electrical rough-in; Alter and test sprinklers; Alter detection and warning; Electrical fit-off
+  Program [scored]: skeleton sk.refurb-traditional-cdc (match), matched 22/62, missed 40 (7 built in, 33 known gaps), extra 0, false positives 1, wrong stage 0; links holds 16, violated 0, unknown 0, unscored 55; orphans 1, cycles 0
+    missed built in: Alter and protect retained structure; Seal service penetrations; Electrical rough-in; Alter sprinkler pipework above the ceiling; Alter and test sprinklers; Alter detection and warning (+1 more)
   RFPs: found 6/6 (0 built-in missing), not expected present 1, extra 4; expect ok 105, new failures 5, known differences 20, fixed 0, awaiting user input 62; must_include missing 6 (unknown 0); must_not_include present 8 (known 2)
     consultant.fire_services: blocking.details; has 'Advisory-only report'
     consultant.structural: blocking.details; missing 'Tank and pump plinth design; slab strengthening if the assessment needs it'; missing 'Core hole and penetration review, with scanning before coring'; has 'Construction certificate certification'

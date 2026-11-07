@@ -1,0 +1,14 @@
+T06 Sprinkler pump and tank upgrade, with fit-out (pump-tank-only)
+  Procurement [scored]: matched 6/7, missed 1 (0 built in, 1 known gaps), extra 0, false positives 4
+    false positives: consultant.architect; consultant.hydraulic; consultant.bca; consultant.access
+  Cost plan [scored]: matched 14/28, missed 14 (0 built in, 14 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 2, typed 0)
+    false positives: Architect; Hydraulic; BCA; Access
+  Program [scored]: skeleton sk.refurb-traditional-cdc (match), matched 22/62, missed 40 (7 built in, 33 known gaps), extra 0, false positives 1, wrong stage 0; links holds 16, violated 0, unknown 0, unscored 55; orphans 1, cycles 0
+    missed built in: Alter and protect retained structure; Seal service penetrations; Electrical rough-in; Alter sprinkler pipework above the ceiling; Alter and test sprinklers; Alter detection and warning (+1 more)
+  RFPs: found 6/6 (0 built-in missing), not expected present 1, extra 3; expect ok 105, new failures 0, known differences 20, fixed 0, awaiting user input 62; must_include missing 6 (unknown 0); must_not_include present 8 (known 2)
+    consultant.fire_services: has 'Advisory-only report'
+    consultant.structural: missing 'Tank and pump plinth design; slab strengthening if the assessment needs it'; missing 'Core hole and penetration review, with scanning before coring'; has 'Construction certificate certification'
+    consultant.electrical: has 'Utility (DNSP) application'; has 'Fire detection and EWIS design (fire services engineer)'; has 'Standby generation, PV or EV design'
+    consultant.mechanical: has 'Smoke control design'; has 'Commercial kitchen exhaust'; has 'Planning submission'
+    consultant.hazmat: missing 'Pre-refurbishment hazardous materials survey: pump room, store, risers and level 3 ceiling and floor'; missing 'Sampling and NATA-accredited laboratory analysis'; missing 'Update of the asbestos register and management plan (WHS Regulation 2025 (NSW; clause numbers verified: false))'; missing 'Removal scope if asbestos is found, then air monitoring and clearance inspection'
+    consultant.interior_design: not_expected

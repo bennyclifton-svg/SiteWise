@@ -57,6 +57,140 @@ strata or community scheme with shared common property. The T11 base and
 CDC keys now expect `house`; the four-townhouse variant keeps `townhouses`.
 The subclass criteria carry the rule (`profile-13`).
 
+## Status after the fixes (7 November 2026, T03, T04 and T06)
+
+Re-ran the nine T03, T04 and T06 scenarios unchanged on a fresh database
+(`runs/20261107-t03-t04-t06-after-fixes/`; app at local main `bd24ab1`
+plus another session's uncommitted display edits). Both runs are scored
+with the same current shapes and keys. The T06 sprinkler rows were
+corrected after the re-run (see below), and both T06 runs were re-scored.
+Plan: `docs/plans/2026-11-07-synthetic-findings-f43-f50.md`.
+
+**Fixed and confirmed:** F45, F46, F47, F48, F49 and F50. F43 and F44 are
+fixed as far as the run can show, with a residual for F43 (F51).
+
+- **F43 (R16), mostly fixed.** Systems filed as existing fall from 18 to 2
+  (T03 base), 7 to 2 (T06 base) and 2 to 1 (pump-tank-only).
+  - T03 now has partitions, ceilings, glazing, joinery, floors, lighting,
+    cabling, switchboards and comms in scope. Its cost plans gain
+    Electrical and Communications lines, and its programs gain partitions,
+    ceilings, joinery, luminaires, cabling and floors.
+  - T06 now has `fire-active.fire-water` and `sprinklers` in scope.
+    ST06-pump-tank-only splits its $1.2M as Active fire protection
+    $800,000 and Hydraulic $400,000 (was all Hydraulic). T06 base no longer
+    puts $1.8M on Mechanical.
+  - Still filed as existing: `structure.alterations` in all T06 runs and
+    T03 painting in all three runs (F51).
+- **F44, fixed where the run reaches it.** Services rough-in, ductwork,
+  sprinkler pipework and the pressure-test hold point now all precede the
+  ceilings. There is no `link_skipped` note, and "Alter and test
+  sprinklers" follows the ceilings. Fire stopping is not seen live: no run
+  reads `fire-passive.penetrations` (a known gap), so the fire-stopping
+  order rests on the unit test.
+- **F45.** T03 no longer gets wet-area waterproofing, tiling, cold or hot
+  water from "bathrooms ... are not in scope", nor demolition from "No
+  strip-out or demolition is required". `hydraulic.sanitary` stays in
+  scope, correctly: the kitchenette waste is stated. The "fire stairs"
+  suggestion of stairs and ramps is still there (not a denial, so out of
+  this fix).
+- **F46.** `proj.client` is "Corvina Property Holdings Pty Ltd" in all
+  three T06 runs. T06 RFP new failures fall from 5 to 0.
+- **F47.** Every program is dated: T04 "All 52 durations known" (was 52 of
+  53, no dates). The DA variants ST03-da-pathway and ST06-tank-needs-consent
+  lose their last unknown row as well. All 175 previously unknown links are
+  now scored.
+- **F48.** `proj.lga` is North Sydney in ST03-base and strip-out (was
+  blank).
+- **F49.** FS-101 Rev A and B file as fire services in all three T06 runs.
+  The options report (d12), blank before, now files too. T06 discipline is
+  all correct (was 3 wrong or missed per run).
+- **F50.** ST06-pump-tank-only has no Interior Design package, fee line or
+  RFP. Its procurement false positives fall from 5 to 4.
+
+| Scenario | Profile correct (missed, conflict) | Cost plan matched | Program matched | Links violated / unknown | RFP new failures | Fees (total, firm) |
+|---|---|---|---|---|---|---|
+| ST03-base | 44 (6, 0) → 45 (5, 0) | 21 → 22 / 38 | 29 → 39 / 71 | 0 / 0 → 1 / 0 | 0 → 0 | 6/6, 6/6 both |
+| ST03-da-pathway | 45 (5, 0) → 45 (5, 0) | 24 → 24 / 39 | 33 → 40 / 73 | 0 / 12 → 1 / 0 | 0 → 0 | 7/7, 7/7 both |
+| ST03-strip-out | 44 (6, 0) → 45 (5, 0) | 22 → 23 / 39 | 25 → 34 / 74 | 0 / 0 → 0 / 0 | 0 → 0 | 6/6, 6/6 both |
+| ST04-base | 65 (5, 1) → same | 33 → 33 / 49 | 51 → 51 / 95 | 0 / 52 → 3 / 0 | 0 → 0 | 6/6, 6/6 both |
+| ST04-cdc | 65 (5, 1) → same | 32 → 32 / 49 | 49 → 49 / 91 | 0 / 47 → 4 / 0 | 0 → 0 | 5/5, 5/5 both |
+| ST04-flood | 64 (5, 2) → same | 33 → 33 / 51 | 51 → 51 / 97 | 0 / 52 → 3 / 0 | 0 → 0 | 6/6, 6/6 both |
+| ST06-base | 44 (2, 3) → 45 (2, 2) | 16 → 19 / 36 | 24 → 30 / 86 | 1 / 0 → 1 / 0 | 5 → 0 | 7/7, 7/7 both |
+| ST06-pump-tank-only | 45 (2, 2) → 46 (2, 1) | 13 → 14 / 28 | 22 → 22 / 62 | 0 / 0 → 0 / 0 | 5 → 0 | 6/6, 6/6 both |
+| ST06-tank-consent | 44 (2, 3) → 44 (2, 3) | 18 → 22 / 38 | 26 → 32 / 87 | 0 / 12 → 1 / 0 | 5 → 0 | 8/8, 8/8 both |
+
+Notes on the table:
+- Firm names, invoice amounts and invoice flags are unchanged and all
+  correct. The only field outcomes that changed are `proj.lga` (T03),
+  `proj.client` and the d12, d16 and d17 disciplines (T06), and the
+  scorer case below.
+- T04 conflicts are the planned site-area conflict, plus
+  `environmental_sensitivity` in the flood variant. T06 conflicts are
+  occupation and `flag.staged`.
+- ST06-tank-consent's third "conflict" is `hdr.work_type` `conflict_false`.
+  This is a scorer limit, not an app defect: the app shows refurb (amber,
+  correct) with two losing alternatives, extend (the SEE) and remediation
+  (the Calder fee proposal). `score_profile` (`harness/score.py:180`) scores
+  any cell with more than one alternative as a conflict and checks only
+  the alternatives, never the value. Before the re-run there was one
+  alternative, so it scored correct.
+- Regression check: none in any scored area. T03 base and da-pathway lose
+  their "Tenancy signage" cost line, but that match came from the "01 Site
+  works" line, which only F45's false demolition created. `site.signage`
+  is not in scope in either run.
+
+**Every violated link explained.**
+- *ST03 base and da-pathway: "Fit off electrical and hydraulic services"
+  after "Install joinery".* App defect (F52). Neither fit-off row links to
+  the joinery.
+- *T04 (all three): "Install erosion and sediment controls" after
+  "Establish the site", and "Bulk earthworks" after the erosion controls.*
+  App defect (F53, F29 family). All three rows start on construction day
+  0, in parallel.
+- *ST04-base and flood: "Construction certificate: early works" after
+  "Coordinate consultant documentation".* Known gap, already in the T04
+  shape. The app's single CC sits in approvals (day 160), before D&C
+  procurement and the contractor's documentation (days 235-255).
+- *ST04-cdc: "Prepare construction documentation" and "Coordinate
+  consultant documentation" after "Novate the design consultants".* Known
+  gap. D&C plus CDC falls back to `sk.generic` (named in the variant), which
+  puts construction documentation (days 75-95) before procurement and
+  novation (185-200). The variant inherits the base's D&C "after novation"
+  links. Owner question: on a D&C CDC, is the CDC documentation done
+  before tender, so that these links should be variant removals?
+- *T06 base and tank-consent: "Coordinate consultant documentation" after
+  "Prepare fit-out documentation".* Scorer limit, already known: the app's
+  link is start-to-start, and the scorer reads `after` as finish-to-start.
+- *T06 base and tank-consent: the sprinkler pressure-test hold point after
+  "Alter and test sprinklers".* Shape error, now corrected. Since F44 the
+  app makes the pipework row, then the hold point, the ceilings and the
+  fit-off row, which is right. The T06 shape still had one row, labelled
+  like the app's fit-off row, so the scorer paired them. T06 now has the
+  two rows that T03 has (`types/T06-sprinkler-pump-tank-upgrade/DOMAIN.md`,
+  last section). That violation is gone after re-scoring.
+
+**Still open.**
+- F51, F52 and F53 (new, below).
+- ST03 strip-out variant: walls, joinery and floors read `remove` (amber),
+  so only the strip-out is seen. No new partitions, joinery or floor rows
+  are made, though the documents strip and then renew them.
+- `site.demolition`'s action is blank in the strip-out variant. It stays
+  in scope, but takes the refurb default `alter`, so `fr.strip-out-fitout`
+  (which needs `remove`) never fires. No run has strip-out rows (F51
+  knock-on).
+- T06 still reads no partitions, joinery, doors or painting for level 3.
+  The concept report never lists them, so this is a reading or corpus
+  question, not D-27. T06 base keeps 20 built-in program misses.
+- T06 has no fire-water, pump or tank construction rows (a known gap). The
+  commercial fit-out split gives Active fire protection only $128,571 of
+  T06 base's $2.7M (a known gap).
+- Repeats: F16, F18 (doors as Investigation rows), F29, the F41 family,
+  the missed "no" flags, `proj.regulated_design`, and the "fire stairs"
+  stairs-and-ramps suggestion.
+- Scorer limits: `after` is read as finish-to-start, and a cell with two or
+  more alternatives is scored as a conflict even when its value is
+  settled.
+
 ## App defects
 
 **F1. Update profile response cut off while the app is busy.** *(2 Nov: improved by an owner fix, still 3 of 12 waves, only the first Update on a new project; see `runs/20261102-fixes-1-4-6`.)* In 8 of 12
@@ -961,6 +1095,72 @@ upgrade.**
 - Should a combined services proposal fold into the four discipline
   packages, rather than add a "Services Engineer" package beside them?
   T03's cost plan carries five services fee lines.
+
+**Found in the re-run `runs/20261107-t03-t04-t06-after-fixes` (app at
+`bd24ab1`).** F47 now dates every program, so links that were unscorable
+before are now scored.
+
+**F51. The F43 fix still files two kinds of unsettled refurb works as
+existing (traced).**
+- *Expected (R16, and the plan's direction):* an included system on a
+  refurb is filed as existing only when its works action settles on a
+  non-works value.
+- *Actual:*
+  - *A conflict with `several`.* T06 `structure.alterations` (all three
+    runs) is red with alternatives `investigate` (from the slab-scanning
+    and assessment passages) and `several` (from the structural fee table).
+    `unsettledWorksAction` (`internal/profile/existing.go:66-81`) counts a
+    red row as unsettled only when an alternative is in `scopeAction`
+    (`internal/profile/build.go:311`: new, replace, upgrade, alter, repair,
+    remove). `several` is not in that list, so D-27 files the system as
+    existing. The result: no "Alter and protect retained structure" row
+    and no structure cost line, on a job with tank plinths and core holes.
+  - *No action row at all.* T03 `interiors.painting` (all three runs:
+    "painting throughout" in the concept report's "## Interiors" list,
+    presence 0.99), `mechanical.local-exhaust` (all three),
+    `access-egress.exits` (da-pathway and strip-out), and da-pathway
+    `interiors.floor-finishes`; also T06 `interiors.internal-glazing`.
+    Each has presence included and no `.action` row, so
+    `unsettledWorksAction` never sees them. `existingPresence` (`:114-129`)
+    then finds no action and files them as existing. Why no action row is
+    stored for a works-list passage is suspected, not traced.
+- *Knock-on:* there is no "Paint the fit-out" row in any T03 program.
+  Separately, an unsettled system that stays in scope takes the refurb
+  default `alter` (`internal/works/workitems.go` `LegacyDefaultAction`).
+  So an unsettled `site.demolition` never meets `fr.strip-out-fitout`'s
+  `remove`, and the strip-out variant has no strip-out rows.
+- *Location:* `unsettledWorksAction` (add `several`), and `existingPresence`
+  for a presence with no action reading (lane A).
+
+**F52. Services fit-off is not linked after the joinery (traced).**
+- *Expected:* in T03, sanitary fit-off (kitchenette sink and taps) and
+  electrical fit-off (power to joinery) follow "Install joinery". The T06
+  shape expects the same.
+- *Actual:* in ST03-base and da-pathway the two "Fit off" rows start on
+  days 233-235, but the joinery install finishes on day 248.
+  - `fr.hydraulic-sanitary-fitout` and `fr.electrical-fitout`
+    (`knowledge/program/fragments.yaml:2179`, `:2227`) link fit-off only to
+    their own rough-in (FS plus the close-in lag).
+  - `fr.joinery-fitout` (`:2360`) has no `before` to either fit-off.
+- *Location:* add `after: [fr.joinery-fitout]` to both fit-off activities
+  (lane A, program library).
+
+**F53. A new warehouse's site start rows all start together (traced; F29
+family).**
+- *Expected (T04):* establish the site, then erosion and sediment
+  controls, then bulk earthworks.
+- *Actual:* in all three T04 runs, "Establish the site", "Erosion,
+  sediment and dust control" and "Earthworks, cut and fill" have no
+  predecessor. All three start on the first day of construction (day 265,
+  or 200 for the CDC variant), in parallel.
+  - `fr.site-establishment-7b` and `fr.erosion-control` both attach
+    `after: stage_start`.
+  - `fr.earthworks-7b` attaches after `fr.demolition-7b`. On a greenfield
+    site that fragment is absent, and it has no attach of its own, so
+    `presentAnchor` (`internal/program/generate.go:1009-1026`) falls back
+    to `stage_start`.
+- *Location:* the attach anchors of these three fragments, with F29
+  (lane A, program library).
 
 ## Known gaps confirmed (already named in the shape)
 

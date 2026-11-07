@@ -4,8 +4,8 @@ T06 Sprinkler pump and tank upgrade, with fit-out (tank-needs-consent)
   Cost plan [scored]: matched 18/38, missed 20 (2 built in, 18 known gaps), extra 0, false positives 4, fabricated amounts 0 (from documents 3, typed 0)
     missed built in: Interiors and finishes; Communications and security
     false positives: Architect; Hydraulic; BCA; Access
-  Program [scored]: skeleton sk.refurb-traditional-da (match), matched 26/86, missed 60 (25 built in, 35 known gaps), extra 1, false positives 0, wrong stage 0; links holds 3, violated 0, unknown 12, unscored 88; orphans 1, cycles 0
-    missed built in: Isolate services and protect adjacent areas; Soft-strip partitions, ceilings and services; Make good retained structure and services; Alter and protect retained structure; Seal service penetrations; Hold point: a location-based inspection record for concealed fire stopping (+19 more)
+  Program [scored]: skeleton sk.refurb-traditional-da (match), matched 26/87, missed 61 (26 built in, 35 known gaps), extra 1, false positives 0, wrong stage 0; links holds 3, violated 0, unknown 12, unscored 89; orphans 1, cycles 0
+    missed built in: Isolate services and protect adjacent areas; Soft-strip partitions, ceilings and services; Make good retained structure and services; Alter and protect retained structure; Seal service penetrations; Hold point: a location-based inspection record for concealed fire stopping (+20 more)
   RFPs: found 9/9 (0 built-in missing), not expected present 0, extra 3; expect ok 110, new failures 5, known differences 25, fixed 0, awaiting user input 62; must_include missing 13 (unknown 0); must_not_include present 10 (known 2)
     consultant.fire_services: blocking.details; has 'Advisory-only report'
     consultant.structural: blocking.details; missing 'Tank and pump plinth design; slab strengthening if the assessment needs it'; missing 'Core hole and penetration review, with scanning before coring'; has 'Construction certificate certification'

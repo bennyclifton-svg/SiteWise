@@ -824,3 +824,14 @@ From FINDINGS "Shape and key gaps" for that run, and owner ruling R19.
   `not_read`.
 - R19: the ST06 keys accept `urban_constrained` or `restricted_hours` for `hdr.cond.access_constraints`
   (`operational_constraints` already accepted both occupation values).
+
+## Shape correction after run `20261107-t03-t04-t06-after-fixes` (7 November 2026)
+
+- The sprinkler fit-out is two rows, as in T03. Since the F44 fix `fr.sprinklers-fitout` makes "Alter sprinkler
+  pipework above the ceiling" (before the pressure-test hold point and the ceilings) and "Alter and test sprinklers"
+  (heads fitted off and tested after the ceilings). The shape had one row, "Alter and test sprinklers", meaning the
+  pipework, with the hold point after it. The scorer paired that label with the app's fit-off row, so the correct
+  app order (pipework, hold point, ceilings, fit-off) scored "violated" in ST06-base and tank-needs-consent. The
+  pipework row is now "Alter sprinkler pipework above the ceiling", the hold point follows it, and "Alter and test
+  sprinklers" follows "Install ceilings". The gap "the hold point's link to the ceilings is dropped as a loop" is
+  removed: the re-run shows the link held, with no `link_skipped` note. Both runs were re-scored.

@@ -756,7 +756,7 @@
           "trigger": null
         },
         {
-          "expected": "Alter and test sprinklers",
+          "expected": "Alter sprinkler pipework above the ceiling",
           "stage": "construction",
           "built_in": "yes",
           "trigger": null
@@ -769,6 +769,12 @@
         },
         {
           "expected": "Install ceilings",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
+          "expected": "Alter and test sprinklers",
           "stage": "construction",
           "built_in": "yes",
           "trigger": null
@@ -1257,18 +1263,18 @@
           "reason": "activity missed"
         },
         {
-          "activity": "Alter and test sprinklers",
+          "activity": "Alter sprinkler pipework above the ceiling",
           "after": "Frame and line partitions",
           "reason": "activity missed"
         },
         {
-          "activity": "Alter and test sprinklers",
+          "activity": "Alter sprinkler pipework above the ceiling",
           "after": "Alter ductwork and pipework",
           "reason": "activity missed"
         },
         {
           "activity": "Hold point: a recorded pressure test of the sprinkler pipework",
-          "after": "Alter and test sprinklers",
+          "after": "Alter sprinkler pipework above the ceiling",
           "reason": "activity missed"
         },
         {
@@ -1279,6 +1285,11 @@
         {
           "activity": "Install ceilings",
           "after": "Hold point: a location-based inspection record for concealed fire stopping",
+          "reason": "activity missed"
+        },
+        {
+          "activity": "Alter and test sprinklers",
+          "after": "Install ceilings",
           "reason": "activity missed"
         },
         {
@@ -2276,10 +2287,10 @@
       "amounts_user": 0
     },
     "program": {
-      "expected": 85,
+      "expected": 86,
       "matched": 24,
-      "missed": 61,
-      "missed_built_in": 25,
+      "missed": 62,
+      "missed_built_in": 26,
       "missed_known_gap": 36,
       "extra": 1,
       "false_positive": 0,
@@ -2288,7 +2299,7 @@
       "links_holds": 17,
       "links_violated": 1,
       "links_unknown": 0,
-      "links_unscored": 96,
+      "links_unscored": 97,
       "orphans": 1,
       "cycles": 0
     },

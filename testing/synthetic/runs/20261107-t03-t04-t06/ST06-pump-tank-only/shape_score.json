@@ -626,6 +626,12 @@
           "trigger": null
         },
         {
+          "expected": "Alter sprinkler pipework above the ceiling",
+          "stage": "construction",
+          "built_in": "yes",
+          "trigger": null
+        },
+        {
           "expected": "Alter and test sprinklers",
           "stage": "construction",
           "built_in": "yes",
@@ -1837,10 +1843,10 @@
       "amounts_user": 0
     },
     "program": {
-      "expected": 61,
+      "expected": 62,
       "matched": 22,
-      "missed": 39,
-      "missed_built_in": 6,
+      "missed": 40,
+      "missed_built_in": 7,
       "missed_known_gap": 33,
       "extra": 0,
       "false_positive": 1,

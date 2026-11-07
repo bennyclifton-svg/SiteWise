@@ -1,0 +1,26 @@
+T04 Industrial warehouse (cdc-industrial-code)
+  Procurement [scored]: matched 12/19, missed 7 (0 built in, 7 known gaps), extra 0, false positives 2
+    false positives: consultant.mechanical; consultant.town_planner
+  Cost plan [scored]: matched 32/49, missed 17 (0 built in, 17 known gaps), extra 0, false positives 2, fabricated amounts 0 (from documents 11, typed 0)
+    false positives: Passive fire protection; Mechanical
+  Program [scored]: skeleton sk.generic (match), matched 49/91, missed 42 (0 built in, 42 known gaps), extra 1, false positives 0, wrong stage 0; links holds 43, violated 4, unknown 0, unscored 69; orphans 2, cycles 0
+    violated: Prepare construction documentation after Novate the design consultants; Coordinate consultant documentation after Novate the design consultants; Install erosion and sediment controls after Establish the site; Bulk earthworks to the warehouse pad after Install erosion and sediment controls
+  RFPs: found 12/18 (0 built-in missing), not expected present 1, extra 1; expect ok 290, new failures 0, known differences 51, fixed 0, awaiting user input 119; must_include missing 15 (unknown 0); must_not_include present 19 (known 3)
+    consultant.architect: missing 'Concept and schematic design'; missing 'DA planning approval documentation'; missing 'Office interiors and finishes'
+    consultant.structural: missing 'Portal frame and precast panel design with connections'; missing 'Pad and strip footings'; missing 'Industrial slab for racking and forklift loads with joint and flatness specification'
+    consultant.civil: missing 'Earthworks and cut-fill design'; missing 'Crossings and boundary levels'; missing 'Erosion and sediment control plan'
+    consultant.bca: missing 'Large isolated building strategy and performance solution schedule'; has 'Package B statutory functions'; has 'Mixed-use classification map'
+    consultant.certifier: missing 'Principal certifier services and mandatory inspections for a Class 5-9 building (first footing, stormwater, final; verified: false)'; missing 'Occupation certificate'; has 'Staged occupation'; has 'Residential BASIX evidence'
+    consultant.fire_services: missing 'Pressure and flow enquiry and fire-water strategy'; has 'Existing system investigation'; has 'Upgrade of existing systems'
+    consultant.fire_engineer: missing
+    consultant.electrical: has 'Fire detection design'; has 'Existing services investigation'
+    consultant.hydraulic: has 'Trade waste'; has 'Gas'; has 'Onsite sewage treatment'; has 'Site stormwater and detention'
+    consultant.access: has 'Housing targets'
+    consultant.geotechnical: missing 'Boreholes and test pits with CBR, reactivity and salinity testing'; has 'Acid sulfate soils'; has 'Asset exposure'; has 'Groundwater monitoring wells'
+    consultant.surveyor: missing 'Detail and contour survey on AHD'; has 'Subdivision or strata titling'; has 'Interior scan'; has 'Movement monitoring'
+    consultant.landscape: missing
+    consultant.quantity_surveyor: missing
+    consultant.waste: missing
+    consultant.acoustic: missing
+    consultant.esd: missing
+    consultant.town_planner: not_expected

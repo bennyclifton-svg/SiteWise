@@ -1,0 +1,20 @@
+T03 Commercial office fit-out (da-pathway)
+  Procurement [scored]: matched 10/14, missed 4 (0 built in, 4 known gaps), extra 1, false positives 1
+    false positives: consultant.architect
+  Cost plan [scored]: matched 24/39, missed 15 (0 built in, 15 known gaps), extra 2, false positives 2, fabricated amounts 0 (from documents 6, typed 0)
+    false positives: Architect; Service authority connection fees
+  Program [scored]: skeleton sk.refurb-traditional-da (match), matched 40/73, missed 33 (0 built in, 33 known gaps), extra 4, false positives 0, wrong stage 0; links holds 29, violated 1, unknown 0, unscored 72; orphans 1, cycles 0
+    violated: Fit off electrical and hydraulic services after Install joinery
+  RFPs: found 10/12 (0 built-in missing), not expected present 0, extra 2; expect ok 113, new failures 0, known differences 68, fixed 0, awaiting user input 120; must_include missing 19 (unknown 0); must_not_include present 19 (known 4)
+    consultant.interior_design: missing 'Workplace brief and test fit'; missing 'Concept design and client review'; missing 'Landlord concept and detailed design approval submissions'; missing 'Design development with finishes and FF&E selections'; missing 'Fit-out documentation and specification for tender'; missing 'CDC drawings coordinated with the BCA consultant and certifier' (+2 more)
+    consultant.project_manager: missing
+    consultant.mechanical: missing 'Investigation of base-building AC capacity, zoning, outside air and operating hours'; missing 'Landlord's base-building engineer review'; has 'Commercial kitchen exhaust'; has 'Smoke control design'; has 'Planning stage'; has 'Seasonal commissioning'
+    consultant.electrical: missing 'Investigation of the tenant distribution board capacity and existing circuits'; missing 'Section J lighting and power compliance (Part number verified: false)'; has 'Standby generation, UPS, PV or EV'; has 'Fire detection design (allocated to fire services)'; has 'Planning stage'
+    consultant.fire_services: missing 'Review of the existing sprinkler, detection and EWIS layout and the base-building fire engineering report'; has 'Fire-water supply, pumps and tanks'; has 'Authority enquiry and connection'; has 'Existing system upgrade'
+    consultant.hydraulic: missing 'Investigation of base-building hydraulic risers and tenant points'; has 'Trade waste'; has 'Site stormwater and detention'
+    consultant.bca: missing 'BCA assessment of the fit-out design at concept and detailed design'; missing 'Egress, travel distance and door hardware review'; missing 'Assessment of the existing building's fire safety against any upgrade the consent requires'; has 'Principal certifier functions'
+    consultant.certifier: missing 'Occupation certificate'; has 'Design'
+    consultant.access: has 'Housing or SDA targets'; has 'Planning report'
+    consultant.quantity_surveyor: has 'Authority estimate'; has 'Lender reports'; has 'Remediation costing'
+    consultant.acoustic: missing
+    consultant.town_planner: missing 'Responses to council requests'

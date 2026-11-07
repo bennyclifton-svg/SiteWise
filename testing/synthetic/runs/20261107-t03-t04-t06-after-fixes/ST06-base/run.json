@@ -1,0 +1,394 @@
+{
+  "scenario": "ST06-base",
+  "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+  "base": "http://127.0.0.1:8091",
+  "git": {
+    "head": "bd24ab11c308ea59b5a60982537833d086122919",
+    "app_files_modified": 16
+  },
+  "started": "20261107-t03-t04-t06-after-fixes",
+  "waves": [
+    {
+      "wave": 1,
+      "documents": 4,
+      "idle": true,
+      "profile_queued": 2,
+      "seconds": 12.6
+    },
+    {
+      "wave": 2,
+      "documents": 7,
+      "idle": true,
+      "profile_queued": 7,
+      "seconds": 17.1
+    },
+    {
+      "wave": 3,
+      "documents": 6,
+      "idle": true,
+      "profile_queued": 4,
+      "seconds": 15.0
+    },
+    {
+      "wave": 4,
+      "documents": 3,
+      "idle": true,
+      "profile_queued": 0,
+      "seconds": 6.4
+    }
+  ],
+  "drops": [
+    {
+      "doc": "d01",
+      "filename": "Owner brief - 41 Callowhill Street fire services upgrade and level 3 fit-out.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f8e41ef2-7662-469d-aae2-b27b09adf426",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Owner brief - 41 Callowhill Street fire services upgrade and level 3 fit-out.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:27.140713+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d02",
+      "filename": "Planning certificate s10.7 - Lot 12 DP 1093476.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "8b850a5c-1444-4131-8692-28eb06f16f62",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Planning certificate s10.7 - Lot 12 DP 1093476.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:27.167894+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d03",
+      "filename": "Annual fire safety statement 2025 and fire safety schedule - 41 Callowhill Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "340b5247-844b-4162-bda8-98de211eca97",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Annual fire safety statement 2025 and fire safety schedule - 41 Callowhill Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:27.187286+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d04",
+      "filename": "Sydney Water statement of available pressure and flow - 41 Callowhill Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "8f86b3a5-9552-400e-a7dd-e7b2439ec809",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Sydney Water statement of available pressure and flow - 41 Callowhill Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:27.205149+11:00",
+        "fields": []
+      },
+      "wave": 1
+    },
+    {
+      "doc": "d05",
+      "filename": "Fee proposal - Calder Fire and Hydraulic Engineers - 41 Callowhill Street.md",
+      "drop": "row:consultant.fire_services",
+      "http": 201,
+      "response": {
+        "document_id": "e4c25cc6-9e27-4d58-b542-12722c95c733",
+        "submission_id": "8c7048a0-d4e9-48bb-9feb-21f5862b36ff"
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d06",
+      "filename": "Structural engineering fee proposal FCE-Q-2207.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2d7e4b2f-d768-4428-932f-dd2458aaf125",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Structural engineering fee proposal FCE-Q-2207.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:39.973464+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d07",
+      "filename": "Kilnworth fee proposal KEE-P-0342 - Callowhill Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "0c26b309-d92b-438a-badb-a7e0eb6b1695",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Kilnworth fee proposal KEE-P-0342 - Callowhill Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:39.998299+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d08",
+      "filename": "Plenum fee submission - Callowhill Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "12895153-9e57-4b9d-ab4b-324d5a920677",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Plenum fee submission - Callowhill Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:40.028727+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d09",
+      "filename": "Fee proposal - Lintel Building Certifiers - 41 Callowhill Street.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "882233c3-5c31-4e2b-8459-a66c63052944",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Fee proposal - Lintel Building Certifiers - 41 Callowhill Street.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:40.052066+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d10",
+      "filename": "Fee proposal - Marlowe Interiors - Level 3 fit-out.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "91b12a73-8946-4ca2-b9e1-9b72d1fbe46b",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Fee proposal - Marlowe Interiors - Level 3 fit-out.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:40.097637+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d11",
+      "filename": "Hazardous materials survey quote SHS-Q-1187.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "9b72e449-a6ae-4347-9235-51427b632aa9",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Hazardous materials survey quote SHS-Q-1187.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:40.136745+11:00",
+        "fields": []
+      },
+      "wave": 2
+    },
+    {
+      "doc": "d12",
+      "filename": "Fire services options report CFH-R-26-019-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "96dbf433-9068-4f37-b279-679ffa5b6b7b",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Fire services options report CFH-R-26-019-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:57.209629+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d13",
+      "filename": "Structural assessment of tank location FCE-R-2207-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "2d88f927-0620-430c-b75f-a79a7a6ca8f0",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Structural assessment of tank location FCE-R-2207-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:57.228949+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d14",
+      "filename": "Hazardous materials survey report SHS-R-1187.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "f0d4c211-7f66-42e5-a012-7dbd18bba2f6",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Hazardous materials survey report SHS-R-1187.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:57.256413+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d15",
+      "filename": "Level 3 fit-out concept design report MI-R-2603-01.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "75fa0f54-6834-4c3b-b65c-c6ac402def10",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "Level 3 fit-out concept design report MI-R-2603-01.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:57.274261+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d16",
+      "filename": "FS-101 Rev A - Basement fire pump room layout.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "08208ff1-1184-4cea-9b35-e23c552ba3b4",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "FS-101 Rev A - Basement fire pump room layout.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:57.292971+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d17",
+      "filename": "FS-101 Rev B - Basement fire pump room layout.md",
+      "drop": "repository",
+      "http": 201,
+      "response": {
+        "id": "26bbcb4c-62cd-4626-b8f8-7f5e620bab2c",
+        "project_id": "26ff8544-31c1-4215-94ba-d41d45c0379d",
+        "filename": "FS-101 Rev B - Basement fire pump room layout.md",
+        "status": "pending",
+        "text_pages": 0,
+        "text_empty_pages": 0,
+        "text_source_version": "",
+        "profile_read": "auto",
+        "created_at": "2026-11-07T10:42:57.336954+11:00",
+        "fields": []
+      },
+      "wave": 3
+    },
+    {
+      "doc": "d18",
+      "filename": "Tax invoice CFH-INV-0412.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "30d453fb-7efc-45a9-adf4-0674beac5469",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d19",
+      "filename": "Ferrule invoice FCE-2611.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "ee1bd275-611d-4190-b562-ff3de00d06ca",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    },
+    {
+      "doc": "d20",
+      "filename": "Sentinel tax invoice SHS-INV-5530.md",
+      "drop": "invoices",
+      "http": 201,
+      "response": {
+        "id": "e44abc94-cc30-49af-8372-11480ef8b535",
+        "status": "reading",
+        "created": true
+      },
+      "wave": 4
+    }
+  ],
+  "profile_update_cut": []
+}
