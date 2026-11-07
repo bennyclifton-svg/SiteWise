@@ -1,16 +1,17 @@
-// Sign in, create an account, or reset a forgotten password.
-// One panel, four modes; the reset link lands here with its token in the
-// fragment, which is read once and removed from the address bar.
+// Sign in, create an account, reset a forgotten password, or accept a team
+// invite. One panel; reset and invite links land here with their token in
+// the fragment, which is read once and removed from the address bar.
 
 import { useState, type FormEvent } from "react";
 import { Pending } from "./Activity";
 import { api, ApiError } from "./api";
+import { LegalLinks } from "./LegalLinks";
 import { Wordmark } from "./Wordmark";
 
-type Mode = "signin" | "signup" | "forgot" | "sent" | "reset";
+type Mode = "signin" | "signup" | "forgot" | "sent" | "reset" | "invite";
 
-function takeResetToken(): string {
-  const m = location.hash.match(/reset=([0-9a-fA-F]+)/);
+function takeToken(key: "reset" | "invite"): string {
+  const m = location.hash.match(new RegExp(`${key}=([0-9a-fA-F]+)`));
   if (!m) return "";
   history.replaceState(null, "", location.pathname + location.search);
   return m[1];
@@ -22,15 +23,20 @@ const titles: Record<Mode, string> = {
   forgot: "Reset your password",
   sent: "Check your email",
   reset: "Choose a new password",
+  invite: "Join your team",
 };
 
 export function SignIn({ initialError, onSignedIn }: { initialError: string; onSignedIn: () => void }) {
-  const [resetToken] = useState(takeResetToken);
-  const [mode, setMode] = useState<Mode>(resetToken ? "reset" : "signin");
+  const [resetToken] = useState(() => takeToken("reset"));
+  const [inviteToken] = useState(() => takeToken("invite"));
+  const [mode, setMode] = useState<Mode>(resetToken ? "reset" : inviteToken ? "invite" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(resetToken ? "" : initialError);
+  const [terms, setTerms] = useState(false);
+  const [error, setError] = useState(resetToken || inviteToken ? "" : initialError);
   const [busy, setBusy] = useState(false);
+  const needsTerms = mode === "signup" || mode === "invite";
+  const needsEmail = mode !== "reset" && mode !== "invite";
 
   function go(next: Mode) {
     setMode(next);
@@ -41,12 +47,16 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
   async function submit(e: FormEvent) {
     e.preventDefault();
     const address = email.trim();
-    if (mode !== "reset" && !address.includes("@")) {
+    if (needsEmail && !address.includes("@")) {
       setError("Enter your email address.");
       return;
     }
-    if ((mode === "signup" || mode === "reset") && password.length < 8) {
+    if ((mode === "signup" || mode === "reset" || mode === "invite") && password.length < 8) {
       setError("Choose a password of at least 8 characters.");
+      return;
+    }
+    if (needsTerms && !terms) {
+      setError("Tick the box to accept the Terms of Service and Privacy Policy.");
       return;
     }
     if (mode === "signin" && !password) {
@@ -57,8 +67,9 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
     setError("");
     try {
       if (mode === "signin") await api.signInWithPassword(address, password);
-      if (mode === "signup") await api.signUp(address, password);
+      if (mode === "signup") await api.signUp(address, password, terms);
       if (mode === "reset") await api.resetPassword(resetToken, password);
+      if (mode === "invite") await api.acceptInvite(inviteToken, password, terms);
       if (mode === "forgot") {
         await api.forgotPassword(address);
         setBusy(false);
@@ -74,8 +85,8 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
     }
   }
 
-  const label = { signin: "Sign in", signup: "Create account", forgot: "Send reset link", reset: "Save password", sent: "" }[mode];
-  const pending = { signin: "Signing in…", signup: "Creating account…", forgot: "Sending…", reset: "Saving…", sent: "" }[mode];
+  const label = { signin: "Sign in", signup: "Create account", forgot: "Send reset link", reset: "Save password", sent: "", invite: "Join team" }[mode];
+  const pending = { signin: "Signing in…", signup: "Creating account…", forgot: "Sending…", reset: "Saving…", sent: "", invite: "Joining…" }[mode];
 
   return (
     <main className="entry">
@@ -83,7 +94,8 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
         <Wordmark height={32} />
         <span className="sr-only">SiteWise</span>
         <h1>{titles[mode]}</h1>
-        {mode === "signup" && <p>Free to use. Your projects are private to your account.</p>}
+        {mode === "signup" && <p>Start on the Free plan. Your projects are private to your account. We'll email you a link to confirm your address.</p>}
+        {mode === "invite" && <p>Choose a password to join the team that invited you. You'll work in their projects.</p>}
         {mode === "forgot" && <p>Enter the email you signed up with. We'll send a link to choose a new password.</p>}
         {mode === "sent" ? (
           <>
@@ -92,7 +104,7 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
           </>
         ) : (
           <form className="stack-form" onSubmit={submit} noValidate>
-            {mode !== "reset" && (
+            {needsEmail && (
               <>
                 <label htmlFor="email">Email</label>
                 <input
@@ -119,13 +131,22 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  autoFocus={mode === "reset"}
+                  autoFocus={mode === "reset" || mode === "invite"}
                   maxLength={72}
                   aria-invalid={error ? "true" : undefined}
                   aria-describedby={mode === "signin" ? (error ? "auth-error" : undefined) : "password-hint"}
                 />
                 {mode !== "signin" && <span id="password-hint" className="muted">At least 8 characters.</span>}
               </>
+            )}
+            {needsTerms && (
+              <label className="entry-terms">
+                <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
+                <span>
+                  I agree to the <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a> and{" "}
+                  <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.
+                </span>
+              </label>
             )}
             {error && (
               <span id="auth-error" className="error-text" role="alert">
@@ -147,9 +168,12 @@ export function SignIn({ initialError, onSignedIn }: { initialError: string; onS
           {mode === "signup" && (
             <span>Already have an account? <button type="button" className="link-button" onClick={() => go("signin")}>Sign in</button></span>
           )}
-          {(mode === "forgot" || mode === "reset") && (
+          {(mode === "forgot" || mode === "reset" || mode === "invite") && (
             <button type="button" className="link-button" onClick={() => go("signin")}>Back to sign in</button>
           )}
+        </div>
+        <div className="entry-legal">
+          <LegalLinks />
         </div>
       </div>
     </main>

@@ -115,7 +115,20 @@ export const api = {
   checkSession: () => request<void>("GET", "/session"),
   signIn: (token: string) => request<void>("POST", "/session", { token }),
   signInWithPassword: (email: string, password: string) => request<void>("POST", "/signin", { email, password }),
-  signUp: (email: string, password: string) => request<void>("POST", "/signup", { email, password }),
+  signUp: (email: string, password: string, acceptTerms: boolean) =>
+    request<void>("POST", "/signup", { email, password, accept_terms: acceptTerms }),
+  acceptInvite: (token: string, password: string, acceptTerms: boolean) =>
+    request<void>("POST", "/invites/accept", { token, password, accept_terms: acceptTerms }),
+  verifyEmail: (token: string) => request<void>("POST", "/email/verify", { token }),
+  resendVerify: () => request<void>("POST", "/email/verify/resend"),
+  account: () => request<Account>("GET", "/account"),
+  checkout: (plan: "starter" | "team", interval: "month" | "year") =>
+    request<{ url: string }>("POST", "/billing/checkout", { plan, interval }),
+  billingPortal: () => request<{ url: string }>("POST", "/billing/portal"),
+  team: () => request<Team>("GET", "/team"),
+  inviteMember: (email: string) => request<TeamInvite>("POST", "/team/invites", { email }),
+  revokeInvite: (id: string) => request<void>("DELETE", `/team/invites/${id}`),
+  removeMember: (userId: string) => request<void>("DELETE", `/team/members/${userId}`),
   forgotPassword: (email: string) => request<void>("POST", "/password/forgot", { email }),
   resetPassword: (token: string, password: string) => request<void>("POST", "/password/reset", { token, password }),
   projects: () => request<Project[]>("GET", "/projects"),
@@ -135,6 +148,55 @@ export const api = {
   deleteDocuments: (projectId: string, ids: string[]) =>
     request<{ deleted: string[] }>("POST", `/projects/${projectId}/documents/delete`, { document_ids: ids }),
 };
+
+export interface Plan {
+  id: "free" | "starter" | "team";
+  name: string;
+  /** AUD cents excluding GST. */
+  monthly_cents: number;
+  annual_cents: number;
+  /** 0 is unlimited. */
+  projects: number;
+  documents_per_month: number;
+  storage_bytes: number;
+  users: number;
+}
+
+export interface Account {
+  email: string;
+  email_verified: boolean;
+  role: string;
+  billing_enabled: boolean;
+  /** The plan whose limits apply now. */
+  plan: Plan;
+  subscribed_plan: string;
+  status: string;
+  interval: "" | "month" | "year";
+  paid_until: string | null;
+  cancel_at_period_end: boolean;
+  has_customer: boolean;
+  usage: { documents_this_month: number; storage_bytes: number; projects: number; seats: number };
+  plans: Plan[];
+}
+
+export interface TeamMember {
+  user_id: string;
+  email: string;
+  role: string;
+  since: string;
+}
+
+export interface TeamInvite {
+  id: string;
+  email: string;
+  expires_at: string;
+}
+
+export interface Team {
+  members: TeamMember[];
+  invites: TeamInvite[];
+  seats: number;
+}
 
 /** created is false when these bytes were already filed in the project. */
 export interface Uploaded {

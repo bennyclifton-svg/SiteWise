@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"sitewise/internal/auth"
+	"sitewise/internal/billing"
 	"sitewise/internal/config"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
@@ -53,6 +54,9 @@ func run(args []string, getenv func(string) string, stderr, stdout io.Writer) in
 	}
 	if len(args) > 0 && args[0] == "set-password" {
 		return runSetPassword(args[1:], getenv, os.Stdin, stderr, stdout)
+	}
+	if len(args) > 0 && args[0] == "set-plan" {
+		return runSetPlan(args[1:], getenv, stderr, stdout)
 	}
 	if len(args) > 0 && args[0] == "serve" {
 		return runServe(args[1:], getenv, stderr, stdout)
@@ -218,6 +222,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		SecureCookie:   cfg.Env == "production",
 		DevLogin:       *devLogin,
 		ResetMail:      resetMail(cfg, *devLogin, logger),
+		Billing:        billingFrom(cfg.Stripe),
 		MaxUploadBytes: *maxUpload,
 		Log:            logger,
 
@@ -403,6 +408,58 @@ func resetMail(cfg config.Config, devLogin bool, logger *log.Logger) auth.ResetM
 		return auth.DevResetMail{Log: logger}
 	}
 	return nil
+}
+
+// billingFrom turns on paid plans and limits when Stripe is configured.
+// Config already refuses production without it.
+func billingFrom(s config.Stripe) *httpapi.Billing {
+	if !s.Enabled() {
+		return nil
+	}
+	return &httpapi.Billing{
+		Stripe:        billing.Client{Key: s.SecretKey, HTTP: &http.Client{Timeout: 10 * time.Second}},
+		WebhookSecret: s.WebhookSecret,
+		TaxRateID:     s.TaxRateID,
+		Prices:        s.Prices,
+	}
+}
+
+// runSetPlan is the operator's override for a comped or test org. A later
+// Stripe event for that org replaces it.
+func runSetPlan(args []string, getenv func(string) string, stderr, stdout io.Writer) int {
+	fs := flag.NewFlagSet("set-plan", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	org := fs.String("org", "", "org id")
+	plan := fs.String("plan", "", "free, starter or team")
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	if *org == "" || (*plan != billing.Free && !billing.Paid(*plan)) {
+		fmt.Fprintln(stderr, "set-plan requires -org <id> and -plan free|starter|team")
+		return 2
+	}
+	cfg, err := config.Load(getenv)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	ctx := context.Background()
+	st, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	defer st.Close()
+	if err := st.Migrate(ctx); err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	if err := st.SetPlan(ctx, *org, *plan); err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	fmt.Fprintln(stdout, "plan set:", *org, *plan)
+	return 0
 }
 
 // runSetPassword gives an existing user a password, for accounts made by

@@ -20,6 +20,16 @@ export function SignOutButton() {
     window.dispatchEvent(new Event("sitewise:signed-out"));
   }
   return <div className="sign-out-control">
+    <a
+      className="btn account-link"
+      href="/account"
+      onClick={(e) => {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent("sitewise:navigate", { detail: "/account" }));
+      }}
+    >
+      Account
+    </a>
     <button type="button" className="btn" disabled={busy} onClick={() => void signOut()}>{busy ? "Signing out…" : "Sign out"}</button>
     {error && <span role="alert" className="error-text">{error}</span>}
   </div>;
