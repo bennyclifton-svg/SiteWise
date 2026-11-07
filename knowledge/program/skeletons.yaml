@@ -58,6 +58,18 @@ skeletons:
     status: draft
     sources:
       - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.new-dc-da"}
+  - id: sk.new-dc-cdc
+    label: "New building, design and construct, complying development"
+    applies_when:
+      all:
+        - {det: work_type, eq: new}
+        - {cond: procurement_route, eq: design_construct}
+        - {cond: planning, any_of: [cdc, exempt]}
+    stages: [investigation, concept_design, procurement, construction_documentation, approvals, construction, completion, defects]
+    links: []
+    status: draft
+    sources:
+      - {design: docs/research/2026-10-21-program-library.md, anchor: "### sk.new-dc-cdc"}
   - id: sk.new-eci-da
     label: "New building, early contractor or managing contractor, development consent"
     applies_when:
