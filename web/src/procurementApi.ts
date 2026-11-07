@@ -11,5 +11,12 @@ export const procurementApi = {
   adopt: (project: string) => request<{ added: number }>("POST", `/projects/${project}/procurement/adopt`, {}),
   /** Removes a suggested consultant row; it is not suggested again on this project. */
   dismiss: (project: string, proposalKey: string) => request<void>("POST", `/projects/${project}/procurement/dismiss`, { proposal_key: proposalKey }),
+  /** Combines two or more consultant rows into one engagement (a group row). */
+  combine: (project: string, packageIds: string[], title: string) => request<PackageRecord>("POST", `/projects/${project}/packages/combine`, { package_ids: packageIds, title }),
+  /** Releases every member of a group; the group row and its fee line go. */
+  uncombine: (project: string, group: string) => request<void>("POST", `/projects/${project}/packages/${group}/uncombine`),
+  /** Takes one member out of its group; the last two release the group. */
+  ungroup: (project: string, member: string) => request<void>("POST", `/projects/${project}/packages/${member}/ungroup`),
+  rename: (project: string, pkg: string, version: number, title: string) => request<PackageRecord>("PATCH", `/projects/${project}/packages/${pkg}`, { version, title }),
   retire: (project: string, pkg: string, version: number, costPlan?: CostPlan) => request<PackageRecord>("PATCH", `/projects/${project}/packages/${pkg}`, { retired: true, version, ...(costPlan ? {remove_cost_lines: true, cost_plan_id: costPlan.id, cost_plan_version: costPlan.version} : {}) }),
 };
