@@ -15,7 +15,7 @@ import (
 func billingAccount(t *testing.T, st *store.Store) store.Session {
 	t.Helper()
 	email := fmt.Sprintf("billing-%d@example.test", time.Now().UnixNano())
-	s, err := st.CreateAccount(context.Background(), email, []byte("hash"))
+	s, err := st.CreateAccount(context.Background(), email, []byte("hash"), "test")
 	if err != nil {
 		t.Fatal(err)
 	}

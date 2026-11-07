@@ -42,14 +42,22 @@ const (
 
 const msgWrongPassword = "Wrong email or password."
 
+const msgAcceptTerms = "Accept the Terms of Service and Privacy Policy to continue."
+
 type credentials struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	// AcceptTerms is required at sign-up and ignored at sign-in.
+	AcceptTerms bool `json:"accept_terms"`
 }
 
 func signUp(w http.ResponseWriter, r *http.Request, deps Deps) {
 	c, ok := readCredentials(w, r, deps)
 	if !ok {
+		return
+	}
+	if !c.AcceptTerms {
+		http.Error(w, msgAcceptTerms, http.StatusBadRequest)
 		return
 	}
 	if err := auth.CheckPasswordRule(c.Password); err != nil {
@@ -61,7 +69,7 @@ func signUp(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "sign up failed", http.StatusInternalServerError)
 		return
 	}
-	session, err := deps.Store.CreateAccount(r.Context(), c.Email, hash)
+	session, err := deps.Store.CreateAccount(r.Context(), c.Email, hash, TermsVersion)
 	if errors.Is(err, store.ErrEmailTaken) {
 		http.Error(w, "An account with that email already exists. Sign in instead.", http.StatusConflict)
 		return
@@ -73,6 +81,7 @@ func signUp(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	setSessionCookie(w, deps, session.ID)
 	w.WriteHeader(http.StatusNoContent)
+	go sendVerify(deps, session.OrgID, session.UserID, c.Email)
 }
 
 func signIn(w http.ResponseWriter, r *http.Request, deps Deps) {
