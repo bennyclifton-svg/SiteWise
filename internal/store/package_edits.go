@@ -150,6 +150,9 @@ func (s *Store) CreatePackageStage(ctx context.Context, org, project, id, actor 
 	if err != nil {
 		return stage, err
 	}
+	if p.GroupID != "" {
+		return stage, ErrPackageGrouped
+	}
 	if len(p.Stages) >= 100 {
 		return stage, fmt.Errorf("%w: too many stages", ErrInvalidPackage)
 	}
@@ -187,6 +190,9 @@ func (s *Store) PatchPackageStage(ctx context.Context, org, project, id, stageID
 	p, err := readPackage(ctx, tx, org, project, id)
 	if err != nil {
 		return stage, err
+	}
+	if p.GroupID != "" {
+		return stage, ErrPackageGrouped
 	}
 	for _, existing := range p.Stages {
 		if existing.ID == stageID {

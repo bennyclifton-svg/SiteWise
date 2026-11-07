@@ -46,6 +46,8 @@ func stageSyncError(w http.ResponseWriter, current store.StageSync, err error) {
 		http.Error(w, "not found", http.StatusNotFound)
 	case errors.Is(err, store.ErrVersionConflict):
 		writeJSON(w, http.StatusConflict, map[string]any{"error": "The program's stages changed; showing the latest differences.", "current": current})
+	case errors.Is(err, store.ErrPackageGrouped):
+		http.Error(w, "this consultant's stages are its combined engagement's", http.StatusConflict)
 	case errors.Is(err, store.ErrInvalidPackage), errors.Is(err, store.ErrInvalidReport):
 		http.Error(w, "invalid stage sync", http.StatusUnprocessableEntity)
 	default:

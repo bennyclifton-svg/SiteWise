@@ -222,6 +222,9 @@ type StageSync struct {
 	ProposalsFlagged int    `json:"proposals_flagged"`
 	Awarded          bool   `json:"awarded"`
 	PackageID        string `json:"package_id"`
+	// GroupID names the combined engagement a member belongs to: its stage
+	// lines are the group's while grouped, so it offers nothing itself.
+	GroupID string `json:"group_id,omitempty"`
 	// Package: the picker, and stages kept after leaving the program.
 	Stages []PickerStage       `json:"stages"`
 	Kept   []procurement.Stage `json:"kept"`
@@ -324,6 +327,12 @@ func computePackageSync(ctx context.Context, tx pgx.Tx, org, project, pkg string
 	rec, err := readPackageStageRecord(ctx, tx, org, project, pkg)
 	if err != nil {
 		return out, rec, err
+	}
+	if rec.pkg.GroupID != "" {
+		// A grouped member's lines are its group's (slice 4): no picker and
+		// no offer here until it is released.
+		out.GroupID = rec.pkg.GroupID
+		return out, rec, nil
 	}
 	if out.Awarded, err = packageAwarded(ctx, tx, org, project, pkg); err != nil {
 		return out, rec, err
@@ -463,6 +472,9 @@ func (s *Store) SyncPackageStages(ctx context.Context, org, project, pkg, actor,
 	cur, rec, err := computePackageSync(ctx, tx, org, project, pkg, plan)
 	if err != nil {
 		return cur, err
+	}
+	if cur.GroupID != "" {
+		return cur, ErrPackageGrouped
 	}
 	if plan == nil {
 		return cur, ErrNotFound
@@ -695,6 +707,13 @@ func computeReportSync(ctx context.Context, tx pgx.Tx, org string, r Report, pla
 	if r.Kind != "rfp" || r.PackageID == "" {
 		return out, pkg, nil
 	}
+	// A grouped member's RFP holds its choices only; the group's RFP carries
+	// the engagement's stage lines (slice 4).
+	group, err := groupedMember(ctx, tx, org, r.ProjectID, r.PackageID)
+	if err != nil || group != "" {
+		out.GroupID = group
+		return out, pkg, err
+	}
 	versionID := r.CurrentDraftVersionID
 	if versionID == "" {
 		history, _, err := reportHistory(ctx, tx, org, r.ID)
@@ -841,6 +860,9 @@ func (s *Store) SyncReportStages(ctx context.Context, org, id, actor, appBuild, 
 	cur, pkg, err := computeReportSync(ctx, tx, org, r, plan)
 	if err != nil {
 		return cur, err
+	}
+	if cur.GroupID != "" {
+		return cur, ErrPackageGrouped
 	}
 	if plan == nil || cur.VersionID == "" || r.Kind != "rfp" {
 		return cur, ErrNotFound
