@@ -2,7 +2,9 @@ package httpapi_test
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"sitewise/internal/procurement"
@@ -89,4 +91,58 @@ func groupBody(t *testing.T, v any) []byte {
 		t.Fatal(err)
 	}
 	return raw
+}
+
+// Combined engagements slice 5: prompts on the Procurement read, dismissed
+// through the procurement dismiss route; "engaged by" writes refused; the
+// combine route's submission_id for an unplaced proposal.
+func TestCombinePromptRoutesAndRetiredEngagedBy(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Combine prompts")
+	base := "/api/projects/" + project
+	jevBefore := a.jevHits.Load()
+	rows := []procurement.Package{}
+	for _, d := range []string{"consultant.services", "consultant.mechanical", "consultant.electrical"} {
+		var p procurement.Package
+		m.call(t, http.MethodPost, base+"/procurement/rows", []byte(`{"discipline_id":"`+d+`"}`), http.StatusCreated, &p)
+		rows = append(rows, p)
+	}
+	type overview struct {
+		Prompts []procurement.CombinePrompt `json:"prompts"`
+	}
+	var o overview
+	m.getJSON(t, base+"/packages", &o)
+	if len(o.Prompts) != 1 || o.Prompts[0].Key != procurement.PromptServices || len(o.Prompts[0].PackageIDs) != 3 {
+		t.Fatalf("services prompt %+v", o.Prompts)
+	}
+	dismiss := base + "/procurement/dismiss"
+	m.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"combine:other"}`), http.StatusBadRequest, nil)
+	foreign := a.member(t, newUUID(t))
+	foreign.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"combine:services"}`), http.StatusNotFound, nil)
+
+	// Engaged by is refused with a message pointing to Combine.
+	res := m.do(t, http.MethodPatch, base+"/packages/"+rows[1].ID, groupBody(t, map[string]any{"version": rows[1].Version, "engaged_by": "lead_consultant"}))
+	msg, _ := io.ReadAll(res.Body)
+	res.Body.Close()
+	if res.StatusCode != http.StatusUnprocessableEntity || !strings.Contains(string(msg), "combine") {
+		t.Fatalf("engaged by write: %d %s", res.StatusCode, msg)
+	}
+
+	// Combine for a proposal that is not this project's combines nothing.
+	combine := base + "/packages/combine"
+	ids := []string{rows[1].ID, rows[2].ID}
+	m.call(t, http.MethodPost, combine, groupBody(t, map[string]any{"package_ids": ids, "submission_id": "nope"}), http.StatusBadRequest, nil)
+	m.call(t, http.MethodPost, combine, groupBody(t, map[string]any{"package_ids": ids, "submission_id": newUUID(t)}), http.StatusNotFound, nil)
+	m.call(t, http.MethodPost, combine, groupBody(t, map[string]any{"package_ids": ids}), http.StatusCreated, nil)
+
+	m.call(t, http.MethodPost, dismiss, []byte(`{"proposal_key":"combine:services"}`), http.StatusNoContent, nil)
+	o = overview{}
+	m.getJSON(t, base+"/packages", &o)
+	if len(o.Prompts) != 0 {
+		t.Fatalf("dismissed prompt %+v", o.Prompts)
+	}
+	if a.jevHits.Load() != jevBefore {
+		t.Fatal("prompts called Jev")
+	}
 }

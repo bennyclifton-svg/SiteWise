@@ -86,11 +86,21 @@ func postProcurementDismiss(w http.ResponseWriter, r *http.Request, deps Deps) {
 	var body struct {
 		ProposalKey string `json:"proposal_key"`
 	}
-	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || !strings.HasPrefix(body.ProposalKey, "default:services:") || len(body.ProposalKey) > 300 {
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || len(body.ProposalKey) > 300 {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
-	if err := deps.Store.DismissPackageSuggestion(r.Context(), session.OrgID, project, session.UserID, body.ProposalKey); err != nil {
+	// A suggested consultant row, or a prompt to combine rows (slice 5).
+	combine := procurement.IsCombinePrompt(body.ProposalKey)
+	if !combine && !strings.HasPrefix(body.ProposalKey, "default:services:") {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	dismiss := deps.Store.DismissPackageSuggestion
+	if combine {
+		dismiss = deps.Store.DismissCombinePrompt
+	}
+	if err := dismiss(r.Context(), session.OrgID, project, session.UserID, body.ProposalKey); err != nil {
 		packageError(w, err)
 		return
 	}

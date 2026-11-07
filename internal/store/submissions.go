@@ -244,6 +244,13 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL AND lifecyc
 			in.Keep[proposals.FieldPackage] = u
 		}
 	}
+	// A combined services filing that no candidate serves, on a project
+	// whose services have their own rows, is not guessed onto one of them:
+	// it waits for the PM to combine or place it (slice 5). No package
+	// question, so no schedules either.
+	if pc.PackageID == "" && pc.Discipline == servicesFiling && countDiscipline(pc.Packages, servicesFiling) == 0 && servicesSplit(candidates) {
+		pc.Packages = nil
+	}
 	// Schedules for the package a rule or the user will settle, or every
 	// candidate when Jev must choose.
 	for _, p := range pc.Packages {

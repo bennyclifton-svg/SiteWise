@@ -54,6 +54,10 @@ func (s *Store) PatchPackage(ctx context.Context, org, project, id, actor string
 	if err := groupPatchAllowed(p, patch); err != nil {
 		return p, err
 	}
+	// Clearing a stored value is allowed; setting one is not.
+	if patch.EngagedBy != nil && *patch.EngagedBy != "" {
+		return p, errEngagedByRetired
+	}
 	patch.Apply(&p)
 	if err := procurement.ValidatePackage(p); err != nil {
 		return p, fmt.Errorf("%w: %v", ErrInvalidPackage, err)

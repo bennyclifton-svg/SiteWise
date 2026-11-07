@@ -49,7 +49,7 @@ func rfpProject(t *testing.T, s *store.Store, b store.ProfileBuild, part string)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Civil", LifecycleStatus: "proposed", EngagedBy: procurement.EngagedByClient}); err != nil {
+	if _, err := s.CreatePackage(ctx, orgA, projectA, userA, procurement.Package{Kind: "services", Title: "Civil", LifecycleStatus: "proposed"}); err != nil {
 		t.Fatal(err)
 	}
 	if err := s.RebuildProfile(ctx, orgA, projectA, "", b.Compute); err != nil {
