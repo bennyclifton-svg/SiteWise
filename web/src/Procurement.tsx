@@ -232,7 +232,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
   // listed beneath it rather than among the other rows.
   const rows: Row[] = data ? [
     ...live.filter(pkg => !pkg.group_id).map((pkg): Row => pkg.role === "group"
-      ? { key: pkg.id, label: pkg.title, kind: pkg.kind, pkg, group: true }
+      ? { key: pkg.id, label: pkg.title, kind: pkg.kind, pkg, group: true, report: reportOf(pkg) }
       : { key: pkg.id, label: label(pkg), kind: pkg.kind, pkg, report: reportOf(pkg) }),
     ...data.overview.suggestions.map(s => ({ key: s.key, label: s.title, kind: s.kind || "services", proposalKey: s.key })),
     // A head-contract proposal that adds lines to an existing package is
@@ -267,7 +267,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, tran
       </th>
       <FirmSlots busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
         onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })} />
-      <td>{row.kind === "supply" || row.group ? "—"
+      <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
       <td>{row.pkg && !row.group ? (() => {

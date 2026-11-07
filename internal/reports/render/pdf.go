@@ -28,11 +28,16 @@ var ErrOverflow = errors.New("report exceeds its page limit; shorten the report 
 // PageLimit is the issued length allowed for a report's template. Consultant
 // RFPs retain complete scope and element pricing in up to four pages after
 // the October 2026 template consolidation. Three remains the target; other reports keep two.
+// A combined engagement's RFP gives each discipline that same allowance: its
+// shared parts print once, so it is never longer than the separate RFPs.
 func PageLimit(s reports.IssueSnapshot) (int, float64) {
 	if s.SourceRevisions.TemplateID == "tpl.specifications" {
 		return 100, 20
 	}
 	if s.SourceRevisions.TemplateID == "tpl.rfp-consultant" {
+		if n := s.SourceRevisions.RFPParts; n > 1 {
+			return 4 * n, 3 * float64(n)
+		}
 		return 4, 3
 	}
 	return 2, 1.5

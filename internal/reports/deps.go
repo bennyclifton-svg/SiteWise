@@ -23,6 +23,9 @@ type SourceState struct {
 	// setting change re-resolves without reloading the project and an issue
 	// records exactly what the selection was made from.
 	RFP json.RawMessage `json:"rfp,omitempty"`
+	// RFPParts counts the disciplines of a combined engagement's RFP; each
+	// keeps its own page allowance. Zero for any other report.
+	RFPParts int `json:"rfp_parts,omitempty"`
 }
 
 // Every report shares explicit revision dependencies, including the cost plan.
