@@ -84,9 +84,9 @@ project_rows:
   label: Procurement
   replace: true
 - key: access_basis
-  text: Confirm uses/classes by part, affected access chain and tenant/operator boundaries; current jurisdiction/editions,
-    housing targets and mandatory versus voluntary objectives. Attach measured evidence, approvals, conditions and
-    gaps.
+  text: The uses and classes in section 1, against the current NCC, its livable housing requirements where housing
+    is included, and any council adaptable-housing target. We provide the survey, approvals and conditions; tell us
+    what is missing.
   provenance:
   - kind: seed
     ref: access#31,33,34
@@ -101,9 +101,9 @@ project_rows:
   label: Assessment basis
 role:
 - key: adviser
-  text: Access advice from written instruction/agreed inputs to named final output and response-round end. Architect/specialists
-    retain design; BCA adviser coordinates code; independent statutory certifier decides approval. No approval or
-    discrimination-immunity guarantee.
+  text: You advise on access for each appointed stage, from our written instruction to your final report and response
+    round. Designers keep design responsibility, the BCA consultant coordinates the code strategy and the certifier
+    decides compliance. Your advice does not guarantee approval or protect against a discrimination complaint.
   provenance:
   - kind: evidence
     ref: access#13,20
@@ -118,9 +118,9 @@ role:
     why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling
       and reliance; no discrimination-immunity promise.
 - key: records
-  text: Dated PDFs/mark-ups and editable issues, assumptions, solutions and evidence registers; locations, input
-    revisions, owners/dates and closure proof. Coordinate architecture, landscape/civil, services/AV, lifts, fire,
-    BCA and operator.
+  text: Issue each review as a dated PDF report with marked-up drawings and an editable register of issues, Performance
+    Solutions and evidence, recording location, drawing revision, owner, due date and close-out. Coordinate with the
+    architect, landscape, civil, services, lift, fire and BCA consultants.
   provenance:
   - kind: evidence
     ref: access#14,15
