@@ -51,6 +51,9 @@ type AwardLineView struct {
 	QuoteIDs   []string `json:"quote_ids"`
 	Cents      int64    `json:"-"`
 	Invoiced   bool     `json:"invoiced"`
+	// Under names the fee line a combined engagement's line sits beneath:
+	// its discipline, or the engagement for a combined stage.
+	Under string `json:"under,omitempty"`
 }
 
 // AwardView is a package's live award, or a preview of one.
@@ -335,6 +338,12 @@ func (s *Store) PreviewAward(ctx context.Context, org, project, pkg string, in A
 		return AwardView{}, err
 	}
 	defer tx.Rollback(ctx)
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil || group {
+		if err != nil {
+			return AwardView{}, err
+		}
+		return s.previewGroupAward(ctx, tx, org, project, pkg, in)
+	}
 	v, _, _, _, err := awardPlan(ctx, tx, org, project, pkg, in)
 	if err != nil {
 		return v, err
@@ -429,6 +438,12 @@ func (s *Store) Award(ctx context.Context, org, project, pkg, actor string, in A
 	}
 	if grouped {
 		return AwardView{}, ErrPackageGrouped
+	}
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil || group {
+		if err != nil {
+			return AwardView{}, err
+		}
+		return s.awardGroup(ctx, tx, p, org, project, pkg, actor, in)
 	}
 	v, sub, firm, _, err := awardPlan(ctx, tx, org, project, pkg, in)
 	if err != nil {
@@ -575,6 +590,12 @@ func (s *Store) UndoAward(ctx context.Context, org, project, pkg, actor string) 
 		return err
 	}
 	defer tx.Rollback(ctx)
+	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil || group {
+		if err != nil {
+			return err
+		}
+		return s.undoGroupAward(ctx, tx, p, org, project, pkg, actor)
+	}
 	var awardID, sub, parentID string
 	var created bool
 	var raw []byte
