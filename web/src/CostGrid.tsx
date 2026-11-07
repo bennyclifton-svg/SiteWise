@@ -2,7 +2,7 @@ import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { RowHandle, startRowDrag } from "./table/RowHandle";
 import { createContext, use, useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import type { BudgetCheck, ConstructionBudget, CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue, PreliminaryEstimate } from "./costApi";
+import type { CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue, PreliminaryEstimate } from "./costApi";
 import type { PackageRecord } from "./packageApi";
 import type { Ledger, LedgerLine } from "./invoiceApi";
 
@@ -24,9 +24,10 @@ export const fmt = (m: string | null | undefined, cents = true) => {
 export const CentsContext = createContext(true);
 const money = (m: string | null | undefined) => fmt(m, use(CentsContext));
 const cell = (v?: CostValue) => v?.value_state !== "known" ? "—" : v.amount != null ? money(v.amount) : `${money(v.low)}–${money(v.high)}`;
-// A subtotal with no known line is unknown, not a zero with a footnote.
-// The unknown count sits on its own small line so it never widens the column.
-const subtotal = (t?: CostTotal) => !t || t.lines === 0 || t.unknown === t.lines ? "—" : t.amount != null ? money(t.amount) : t.unknown > 0 ? <>{money(t.known_subtotal)}<span className="cost-unknown"> + {t.unknown} unknown</span></> : `${money(t.low)}–${money(t.high)}`;
+// A subtotal with no known line is unknown, not a zero. With some lines
+// unknown it shows what is known; the count is left off (owner direction,
+// 7 Nov 2026: it cluttered every column).
+const subtotal = (t?: CostTotal) => !t || t.lines === 0 || t.unknown === t.lines ? "—" : t.amount != null ? money(t.amount) : t.unknown > 0 ? money(t.known_subtotal) : `${money(t.low)}–${money(t.high)}`;
 const words = (s: string) => s.replaceAll("_", " ");
 
 const GROUPS = [
@@ -36,28 +37,26 @@ const GROUPS = [
   { kind: "project_wide", title: "Contingency", bucket: "contingency", category: "contingency" },
 ] as const;
 // Placeholder columns keep the cost report's shape until variations and monthly
-// claims are tracked; they never show a figure.
-const COLUMNS = ["Budget", "Approved Contract", "Forecast Variations", "Approved Variations", "Forecast Final Cost", "Budget Variance", "Claimed to Date", "This Month", "Remaining"];
+// claims are tracked; they never show a figure. Claimed to Date and Remaining
+// come from the invoice ledger (owner direction, 7 Nov 2026: one claimed
+// figure, from uploaded invoices; remaining is approved contract less it).
+const COLUMNS = ["Budget", "Approved Contract", "Forecast Variations", "Approved Variations", "Forecast Final Cost", "Claimed to Date", "This Month", "Remaining"];
+const LEDGER_COLUMNS = new Set(["Claimed to Date", "Remaining"]);
 const PLACEHOLDER = new Set(["Forecast Variations", "Approved Variations", "This Month"]);
 type SortKey = "category" | "item";
 
-// Ledger columns come from the invoice ledger, computed on the server: the
-// same figures the Invoices tab sums, so the two views cannot disagree.
-const LEDGER = ["Invoiced to Date", "Budget Remaining", "% Spent"];
-function LedgerCells({ line, onInvoices }: { line?: LedgerLine; onInvoices?: (id: string) => void }) {
-  if (!line) return <><td className="cost-num cost-ledger">—</td><td className="cost-num cost-ledger">—</td><td className="cost-num cost-ledger">—</td></>;
+// Claimed to Date is invoiced to date from the ledger, computed on the server:
+// the same figure the Invoices tab sums, so the two views cannot disagree.
+function ClaimedCell({ line, onInvoices }: { line?: LedgerLine; onInvoices?: (id: string) => void }) {
+  if (!line) return <td className="cost-num cost-ledger">—</td>;
   const over = line.over_budget ? " cost-over" : "";
-  return <><td className={`cost-num cost-ledger${over}`}>{onInvoices && line.invoices > 0 ? <button type="button" className="cost-open" title={`Show the ${line.invoices} invoice${line.invoices === 1 ? "" : "s"} on ${line.label}`} onClick={e => { e.stopPropagation(); onInvoices(line.id || "unallocated"); }}>{money(line.invoiced)}</button> : money(line.invoiced)}</td>
-    <td className={`cost-num cost-ledger${over}`}>{money(line.remaining)}{line.over_budget && <span className="cost-tag">over budget</span>}</td>
-    <td className={`cost-num cost-ledger${over}`}>{line.percent_spent ? `${line.percent_spent}%` : "—"}</td></>;
+  return <td className={`cost-num cost-ledger${over}`}>{onInvoices && line.invoices > 0 ? <button type="button" className="cost-open" title={`Show the ${line.invoices} invoice${line.invoices === 1 ? "" : "s"} on ${line.label}`} onClick={e => { e.stopPropagation(); onInvoices(line.id || "unallocated"); }}>{money(line.invoiced)}</button> : money(line.invoiced)}{line.over_budget && <span className="cost-tag">over budget</span>}</td>;
 }
 
-export function CostGrid({ projectId, reveal, plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onItem, quantities, ledger, onInvoices, onBudget }: {
+export function CostGrid({ projectId, reveal, plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onItem, quantities, ledger, onInvoices }: {
   projectId: string; reveal?: { id: string };
   plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; editable: boolean;
   ledger?: Ledger | null; onInvoices?: (lineId: string) => void;
-  /** Saves the construction budget to the profile; the plan re-spreads from it. */
-  onBudget?: (amount: string | null) => Promise<boolean>;
   quantities: boolean; busy: boolean;
   onSubdivide: (item: CostItem) => void;
   onDetailedValue: (item: CostItem, metric: string, value: CostValue) => Promise<boolean>;
@@ -114,7 +113,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
     setSelection(emptySelection);
   }
   const ledgerLine = new Map((ledger?.summary.lines ?? []).map(l => [l.id, l]));
-  const width = 4 + COLUMNS.length + LEDGER.length + (quantities ? 3 : 0);
+  const width = 4 + COLUMNS.length + (quantities ? 3 : 0);
   // Display positions are not identities: links continue to use cost_item_id.
   let rowNumber = 0;
   // Children follow their group line; sorting applies within a level. Item
@@ -159,11 +158,10 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   }}>
     <thead><tr><th scope="col" className="cost-sticky" data-col="code">No.</th>{header("category", "Category")}{header("item", "Item", masterToggle)}
       {quantities && ["Qty", "Unit", "Rate"].map(c => <th key={c} scope="col">{c}</th>)}
-      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}
-      {LEDGER.map(c => <th key={c} scope="col" className="cost-num cost-ledger" title="From the invoice ledger, ex GST">{c}</th>)}<th scope="col" className="cost-actions"><span className="sr-only">Actions</span></th></tr></thead>
+      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : LEDGER_COLUMNS.has(c) ? <th key={c} scope="col" className="cost-num cost-ledger" title={c === "Remaining" ? "Approved contract less invoices to date, ex GST" : "From the uploaded invoices, ex GST"}>{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions"><span className="sr-only">Actions</span></th></tr></thead>
     {GROUPS.map(g => {
       const top = items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id)));
-      const t = totals?.sections[g.bucket], d = totals?.section_figures[g.bucket];
+      const t = totals?.sections[g.bucket];
       return <tbody key={g.bucket}>
         <tr className="cost-group"><th colSpan={width} scope="colgroup"><span>{g.title}</span></th></tr>
         {tree(top, 0).map(({ item: i, depth }) => {
@@ -181,21 +179,17 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
               <td className="cost-num">{expanded ? null : subtotal(summary?.values.commitment)}</td>
               <td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td><td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td>
               <td className="cost-num">{expanded ? null : subtotal(summary?.values.forecast)}</td>
-              <td className="cost-num">{expanded ? null : money(summary?.budget_variance)}</td>
-              <td className="cost-num">{expanded ? null : subtotal(summary?.values.claimed_to_date)}</td>
+              {expanded ? <td className="cost-ledger" /> : <ClaimedCell line={ledger?.groups?.[i.cost_item_id]} onInvoices={onInvoices} />}
               <td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td>
-              <td className="cost-num">{expanded ? null : money(summary?.remaining)}</td>
-              {expanded ? <><td className="cost-ledger" /><td className="cost-ledger" /><td className="cost-ledger" /></> : <LedgerCells line={ledger?.groups?.[i.cost_item_id]} onInvoices={onInvoices} />}
+              <td className="cost-num cost-ledger">{expanded ? null : money(ledger?.groups?.[i.cost_item_id]?.contract_remaining)}</td>
             </> : <>
               <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /></td>
               <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "commitment", v)} metric="commitment" item={i} editable={editable} onSave={a => onValue(i, "commitment", a)} /></td>
               <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
               <td className="cost-num">{cell(f?.forecast)}</td>
-              <td className="cost-num">{money(f?.budget_variance)}</td>
-              <td className="cost-num"><DetailedValueCell item={i} metric="claimed_to_date" editable={editable} onSave={v => onDetailedValue(i, "claimed_to_date", v)} /></td>
+              <ClaimedCell line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} />
               <td className="cost-num cost-placeholder">—</td>
-              <td className="cost-num">{money(f?.remaining)}</td>
-              <LedgerCells line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} /></>}
+              <td className="cost-num cost-ledger">{money(ledgerLine.get(i.cost_item_id)?.contract_remaining)}</td></>}
             <td className="cost-actions" onClick={e => e.stopPropagation()}><RowActions item={i} editable={editable} busy={busy} onOpen={() => onOpen(i.cost_item_id)} onSubdivide={() => onSubdivide(i)} onToggle={() => void onItem(editContent(i, { excluded: !i.excluded }), i.cost_item_id)} onDelete={() => void onDelete(i)} /></td>
           </tr>;
         })}
@@ -203,46 +197,24 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
         <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">{g.title} subtotal</th>{quantities && <td colSpan={3} />}
           <td className="cost-num">{subtotal(t?.budget)}</td><td className="cost-num">{subtotal(t?.commitment)}</td>
           <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
-          <td className="cost-num">{subtotal(t?.forecast)}</td><td className="cost-num">{money(d?.budget_variance)}</td>
-          <td className="cost-num">{subtotal(t?.claimed_to_date)}</td><td className="cost-num cost-placeholder">—</td>
-          <td className="cost-num">{money(d?.remaining)}</td>
-          <td className="cost-num cost-ledger">{ledger ? money(ledger.summary.sections[g.bucket] ?? "0.00") : "—"}</td><td className="cost-ledger" /><td className="cost-ledger" /><td /></tr>
+          <td className="cost-num">{subtotal(t?.forecast)}</td>
+          <td className="cost-num cost-ledger">{ledger ? money(ledger.summary.sections[g.bucket] ?? "0.00") : "—"}</td><td className="cost-num cost-placeholder">—</td>
+          <td className="cost-num cost-ledger">{money(ledger?.summary.sections_contract_remaining?.[g.bucket])}</td><td /></tr>
       </tbody>;
     })}
     <tbody className="cost-totals">
       <tr className="cost-subtotal cost-total"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Total</th>{quantities && <td colSpan={3} />}
         <td className="cost-num">{subtotal(totals?.overall.budget)}</td><td className="cost-num">{subtotal(totals?.overall.commitment)}</td>
         <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
-        <td className="cost-num">{subtotal(totals?.overall.forecast)}</td><td className="cost-num">{money(totals?.buckets?.overall?.budget_variance)}</td>
-        <td className="cost-num">{subtotal(totals?.overall.claimed_to_date)}</td><td className="cost-num cost-placeholder">—</td>
-        <td className="cost-num">{money(totals?.buckets?.overall?.remaining)}</td>
-        <td className="cost-ledger" /><td className="cost-ledger" /><td className="cost-ledger" /><td /></tr>
-      {(plan.construction_budget || (editable && onBudget)) && <tr className="cost-row cost-budget-row">
-        <th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Construction budget</th>{quantities && <td colSpan={3} />}
-        <td className="cost-num"><BudgetCell budget={plan.construction_budget} editable={editable && !!onBudget} onSave={a => onBudget ? onBudget(a) : Promise.resolve(false)} /></td>
-        <td colSpan={COLUMNS.length - 1 + LEDGER.length} className="cost-note cost-budget-note"><span>{budgetNote(plan.construction_budget, totals?.construction_budget)}</span></td><td /></tr>}
+        <td className="cost-num">{subtotal(totals?.overall.forecast)}</td>
+        <td className="cost-num cost-ledger">{ledger ? money(ledger.summary.invoiced) : "—"}</td><td className="cost-num cost-placeholder">—</td>
+        <td className="cost-num cost-ledger">{money(ledger?.summary.contract_remaining)}</td><td /></tr>
       {plan.preliminary_estimate && <tr className="cost-row cost-budget-row">
         <th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Builder's preliminary estimate</th>{quantities && <td colSpan={3} />}
         <td className="cost-num">{plan.preliminary_estimate.low === plan.preliminary_estimate.high ? money(plan.preliminary_estimate.low) : `${money(plan.preliminary_estimate.low)} – ${money(plan.preliminary_estimate.high)}`}</td>
-        <td colSpan={COLUMNS.length - 1 + LEDGER.length} className="cost-note cost-budget-note"><span>{estimateNote(plan.preliminary_estimate)}</span></td><td /></tr>}
+        <td colSpan={COLUMNS.length - 1} className="cost-note cost-budget-note"><span>{estimateNote(plan.preliminary_estimate)}</span></td><td /></tr>}
     </tbody>
   </table></div></>;
-}
-
-// budgetNote says where the construction budget came from, how it is spread
-// and how much of it the construction lines hold (figures from the server).
-function budgetNote(b?: ConstructionBudget, check?: BudgetCheck) {
-  if (!b) return "Not set. Type the construction budget, or upload a brief that states it: the construction lines are spread from it.";
-  if (!b.known) return `“${b.stated.text}” gives no single amount. Type the budget to spread it.`;
-  const parts: string[] = [];
-  if (check) {
-    parts.push(`Allocated ${money(check.allocated)}${check.unpriced ? ` + ${check.unpriced} unpriced` : ""}`);
-    if (check.difference != null) parts.push(check.difference.startsWith("-") ? `Over budget by ${money(check.difference.slice(1))}` : check.difference === "0.00" ? "Fully allocated" : `To allocate ${money(check.difference)}`);
-  }
-  parts.push(b.split ? `${b.split} split, ${b.split_confidence} confidence (draft)` : b.no_split ?? "");
-  parts.push(b.origin === "document" ? `Read from a source document: “${b.stated.text}”` : "Typed");
-  parts.push(b.stated.gst === "inc" ? "Converted from GST inclusive" : b.stated.gst === "ex" ? "Ex GST" : "GST not stated; taken as ex GST");
-  return parts.filter(Boolean).join(" · ");
 }
 
 // estimateNote says what the builder's figure is: advice read from a
@@ -250,29 +222,6 @@ function budgetNote(b?: ConstructionBudget, check?: BudgetCheck) {
 function estimateNote(e: PreliminaryEstimate) {
   return [`Read from a source document: “${e.text}”`, e.gst === "inc" ? "GST inclusive" : e.gst === "ex" ? "Ex GST" : "GST not stated",
     "Preliminary advice for comparison: not a budget or a tender price"].join(" · ");
-}
-
-// BudgetCell edits the construction budget in place. It saves to the profile
-// row, so the Profile and the cost plan always show the same figure.
-function BudgetCell({ budget, editable, onSave }: { budget?: ConstructionBudget; editable: boolean; onSave: (amount: string | null) => Promise<boolean> }) {
-  const [draft, setDraft] = useState<string | null>(null), [invalid, setInvalid] = useState(false);
-  const saving = useRef(false);
-  const current = budget?.known ? budget.stated.amount : null;
-  async function commit() {
-    if (draft == null || saving.current) return;
-    const raw = draft.replace(/[,\s$]/g, "");
-    if (raw !== "" && !/^\d+(\.\d{1,2})?$/.test(raw)) { setInvalid(true); return; }
-    const amount = raw === "" ? null : raw;
-    if (amount === current) { setDraft(null); return; }
-    saving.current = true;
-    const ok = await onSave(amount);
-    saving.current = false;
-    if (ok) { setDraft(null); setInvalid(false); }
-  }
-  if (draft != null) return <input className="cost-input" aria-label="Construction budget" aria-invalid={invalid || undefined} autoFocus inputMode="decimal" value={draft}
-    onChange={e => { setDraft(e.target.value); setInvalid(false); }} onBlur={() => void commit()}
-    onKeyDown={e => { if (e.key === "Enter") void commit(); if (e.key === "Escape") { setDraft(null); setInvalid(false); } }} />;
-  return <button type="button" className="cost-cell" aria-label="Construction budget" disabled={!editable} onClick={() => setDraft(current ?? "")}>{current ? money(current) : "—"}</button>;
 }
 
 // Excel-style movement between editable cells (those carrying data-metric;

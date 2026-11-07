@@ -84,11 +84,15 @@ test("cost groups switch detail locally and invoice links reveal their activity"
   await expect(childRow).toHaveCount(0);
   await expect(groupRow.locator('td').nth(4)).toHaveText('96,500.00');
   // Decimals off shows whole dollars and survives a reload; on brings cents back.
-  await page.getByRole('checkbox', { name: 'Decimals', exact: true }).uncheck();
+  await page.getByRole('button', { name: 'Cost plan actions', exact: true }).click();
+  await page.getByRole('menuitemcheckbox', { name: 'Decimals', exact: true }).click();
+  await expect(page.getByRole('menuitemcheckbox', { name: 'Decimals', exact: true })).toHaveAttribute('aria-checked', 'false');
   await expect(groupRow.locator('td').nth(4)).toHaveText('96,500');
   await page.reload();
   await expect(groupRow.locator('td').nth(4)).toHaveText('96,500');
-  await page.getByRole('checkbox', { name: 'Decimals', exact: true }).check();
+  await page.getByRole('button', { name: 'Cost plan actions', exact: true }).click();
+  await page.getByRole('menuitemcheckbox', { name: 'Decimals', exact: true }).click();
+  await page.keyboard.press('Escape');
   await expect(groupRow.locator('td').nth(4)).toHaveText('96,500.00');
   await page.setViewportSize({ width: 1600, height: 1000 });
   await page.screenshot({ path: testInfo.outputPath('collapsed-desktop.png'), fullPage: true });

@@ -16,7 +16,7 @@ test("procurement first shares one stage plan with Program", async ({ page, base
   expect((await page.request.get(`/api/projects/${project}/program`)).status()).toBe(404);
 
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+  await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await page.getByLabel("Discipline", { exact: true }).selectOption("consultant.architect");
   await page.getByRole("button", { name: "Add row", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Architect", exact: true }).click();

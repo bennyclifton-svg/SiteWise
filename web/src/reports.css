@@ -30,6 +30,9 @@
 .report-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
 .report-toolbar h2 { font-size: 22px; overflow-wrap: anywhere; }
 .report-toolbar > .btn { flex-shrink: 0; }
+.report-toolbar { align-items: center; }
+.report-toolbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
+@media print { .report-toolbar-actions { display: none; } }
 .report-notice { margin: 20px 0; padding: 16px; background: var(--warn-soft); color: var(--ink-body); }
 .report-notice h3 { margin: 0 0 10px; font-size: 16px; }
 .report-notice ul { padding-left: 20px; margin: 8px 0; }
@@ -41,7 +44,7 @@
 .report-block-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
 .report-block h4 { margin: 0; font-size: var(--fs-lg); }
 .report-block-heading span { font-size: var(--fs-sm); color: var(--ink-muted); }
-.report-wording { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 10px; max-width: 75ch; }
+.report-wording { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 10px; }
 .report-conflict { margin: 8px 0; color: var(--alert); }
 .report-block form { margin-top: 12px; }
 .report-block label { display: block; margin-bottom: 6px; }
@@ -261,7 +264,7 @@
 .rfp-page-one .report-block { margin: 0; }
 .rfp-strip { justify-self: start; padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-md); color: var(--ink-muted); text-align: left; cursor: pointer; }
 .rfp-strip:hover { color: var(--ink); text-decoration: underline dotted; }
-.rfp-grid h4, .rfp-conditions h4 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--line); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
+.rfp-conditions h4 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: 1px solid var(--line); font-size: var(--fs-md); font-weight: 600; color: var(--ink); }
 .rfp-grid .pf-row { grid-template-columns: minmax(84px, 8.5rem) minmax(0, 1fr); gap: 8px; min-height: 30px; padding: 1px 4px; }
 .rfp-page-one .pf-label { color: var(--ink-muted); font-size: var(--fs-sm); line-height: 1.25; }
 .rfp-cell { min-width: 0; padding: 2px 0; border: 0; background: none; font: inherit; color: var(--ink); text-align: left; overflow-wrap: anywhere; cursor: pointer; }
@@ -345,8 +348,6 @@
 @media (hover: none), (pointer: coarse) { .firm-detach { opacity: 1; } }
 
 /* Compact report editing: values carry the page; actions sit at its edge. */
-.rfp-version { margin-left: .6rem; font-size: var(--fs-md); font-weight: 400; color: var(--ink-muted); white-space: nowrap; }
-.rfp-grid { gap: 12px; }
 .rfp-grid .pf-row { grid-template-columns: minmax(68px, 38%) minmax(0, 1fr); gap: 6px; min-height: 26px; padding: 3px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
 .rfp-grid .pf-value { font-size: var(--fs-sm); line-height: 1.35; }
 .rfp-grid .rfp-why { display: none; }
@@ -400,8 +401,8 @@
 .rfp-stage-toggle:hover span:last-child { text-decoration: underline; text-underline-offset: 3px; }
 .rfp-stage-toggle:focus-visible { outline: 2px solid var(--sw-focus, var(--ink)); outline-offset: 2px; border-radius: 4px; }
 /* A thin chevron: points right when closed, down when open. */
-.rfp-stage-caret { flex: none; width: 6px; height: 6px; margin: 0 2px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; color: var(--sw-text-secondary, var(--ink)); transform: rotate(-45deg); transition: transform 120ms ease; }
-.rfp-stage-toggle[aria-expanded="true"] .rfp-stage-caret { transform: rotate(45deg); margin-top: -3px; }
+.rfp-stage-caret { flex: none; width: 9px; height: 9px; margin: 0 4px 0 2px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--sw-text-secondary, var(--ink)); transform: rotate(-45deg); transition: transform 120ms ease; }
+.rfp-stage-toggle[aria-expanded="true"] .rfp-stage-caret { transform: rotate(45deg); margin-top: -5px; }
 @media (prefers-reduced-motion: reduce) { .rfp-stage-caret { transition: none; } }
 .rfp-stage-summary { cursor: pointer; }
 .rfp-stage-count { color: var(--sw-text-secondary, var(--ink)); }
@@ -417,3 +418,18 @@
 .rfp-stage-total th, .rfp-stage-total td { font-weight: 600; border-top: 2px solid var(--line-strong, var(--line)); }
 .rfp-stage-more { margin-top: 12px; }
 tbody[data-stage-state="exclude"] .rfp-stage-row th, tbody[data-stage-state="exclude"] .rfp-stage-row td:nth-child(2) { color: var(--sw-text-tertiary, var(--ink)); }
+
+/* Page one's facts sit in the Profile's title block (table-heads.css,
+   trace-profile.css); only the row spacing is the RFP's own. */
+.rfp-grid.pf-titleblock .pf-tb-col .pf-row { padding: 4px 12px; }
+
+/* Wording edited in place (InlineText): text and edit box share every
+   metric, so nothing moves when editing starts. The box grows with its
+   text; a soft frame and lifted ground show it is being edited. */
+.inline-text { box-sizing: border-box; display: block; width: calc(100% + 18px); margin: 8px -9px 10px; padding: 4px 8px; border: 1px solid transparent; border-radius: var(--radius-sm); font: inherit; letter-spacing: inherit; color: var(--ink); background: transparent; white-space: pre-wrap; overflow-wrap: anywhere; }
+p.inline-text[data-editable] { cursor: text; }
+p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
+.report-block textarea.inline-text, textarea.inline-text { width: calc(100% + 18px); min-height: 0; padding: 4px 8px; resize: none; overflow: hidden; border-color: var(--sw-selection-border, var(--azure)); background: var(--sw-surface-elevated); box-shadow: 0 0 0 3px color-mix(in oklab, var(--sw-action-focus, var(--azure)) 22%, transparent); outline: none; }
+.report-block form.inline-text-form { margin-top: 0; }
+.inline-text-form .report-actions { margin-top: 0; }
+@media print { p.inline-text { margin: 8px 0 10px; width: auto; padding: 0; border: 0; } }

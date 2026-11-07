@@ -14,12 +14,13 @@ async function signIn(page: Page, name: string) {
 
 async function refreshDraft(page: Page) {
   const toolbar = page.locator(".report-toolbar");
-  const version = (await toolbar.innerText()).match(/Version (\d+)/);
+  // The version is kept off screen (owner, 7 Nov 2026) but stays on the toolbar.
+  const version = await toolbar.getAttribute("data-version");
   expect(version).not.toBeNull();
-  await page.getByRole("button", { name: "Refresh draft", exact: true }).click();
+  await page.getByRole("button", { name: "Update", exact: true }).click();
   // Existing controls can still show the previous value while the new draft
   // loads. Wait for its version before testing persistence or another edit.
-  await expect(toolbar).toContainText(`Version ${Number(version![1]) + 1}`);
+  await expect(toolbar).toHaveAttribute("data-version", String(Number(version) + 1));
 }
 
 test("one RFP report: page one edited where it prints, checks beside their values, issue at the end", async ({ page }) => {
@@ -37,7 +38,7 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Procurement", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Create RFP for Architect", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
 
   // One report: page one is the project, always open in the Profile card's
   // columns; no decisions banner, no stale block.
@@ -116,6 +117,25 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await refreshDraft(page);
   await expect(scope.getByText('Client-approved scope wording; retain this exactly.', { exact: true })).toBeVisible();
   await expect(scope.getByRole('table')).toHaveCount(1);
+
+  // Wording edits where it reads (owner, 7 Nov 2026): a click opens the box
+  // in the same place, as tall as its text, and clicking away saves.
+  const wording = scope.locator('p.inline-text[data-editable]').first();
+  const original = (await wording.textContent())!;
+  await wording.scrollIntoViewIfNeeded();
+  const before = (await wording.boundingBox())!;
+  await wording.click();
+  const box = page.getByLabel('Report wording', { exact: true });
+  await expect(box).toBeFocused();
+  const after = (await box.boundingBox())!;
+  expect(Math.abs(after.y - before.y)).toBeLessThan(2);
+  expect(Math.abs(after.x - before.x)).toBeLessThan(2);
+  expect(await box.evaluate(el => el.scrollHeight <= el.clientHeight)).toBeTruthy();
+  await page.keyboard.press('Control+End');
+  await page.keyboard.type(' Edited in place.');
+  await page.getByRole('heading', { name: '1. Project' }).click();
+  await expect(box).toHaveCount(0);
+  await expect(scope.getByText(`${original} Edited in place.`, { exact: true })).toBeVisible();
 });
 
 test("a package titled Civil is offered the civil RFP and switches only when confirmed", async ({ page }) => {
@@ -148,7 +168,7 @@ test("electrical keeps its allocation schedule beside grouped positions, with se
   }
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Electrical", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Use last completed state", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Edit 4. Allowances", exact: true }).click();
@@ -195,9 +215,10 @@ test("transmittal follows repository selection, saves snapshots and stays inside
   await expect(transmittal.locator('tbody tr td:nth-child(3)')).toHaveText(['B','B','B']);
   await expect(page.locator('.rfp-release-dates + .rfp-markers')).toHaveCount(0);
   await expect(page.locator('.report-toolbar')).not.toContainText('Draft — not for issue');
-  await expect(page.locator('.rfp-grid .pf-col h4')).toHaveText(['Site and planning', 'The building', 'Delivery']);
+  await expect(page.locator('.rfp-grid .pf-tb-head')).toHaveText(['Site and planning', 'The building', 'Delivery']);
   await expect(page.locator('.rfp-page-one .rfp-source')).toHaveCount(0);
-  await transmittal.getByRole('button', {name:'Select all documents', exact:true}).click();
+  // The button picks up the saved schedule (all three here), not the whole register.
+  await transmittal.getByRole('button', {name:'Select transmittal documents', exact:true}).click();
   await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
   await repoRows.nth(1).locator('.reg-title').click({modifiers:['Control']});
   await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(2);
@@ -221,8 +242,13 @@ test("transmittal follows repository selection, saves snapshots and stays inside
   await transmittal.screenshot({path:'../.tools/rfp-transmittal-mobile.png'});
   await page.setViewportSize({width:1900,height:1000});
 
+  // Selecting again brings back the two saved documents only; Ctrl-click adds the third.
+  await transmittal.getByRole('button', {name:'Select transmittal documents', exact:true}).click();
+  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(2);
+  await repoRows.nth(1).locator('.reg-title').click({modifiers:['Control']});
+  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
+
   // A failed write leaves both the previous saved schedule and the selection intact.
-  await transmittal.getByRole('button', {name:'Select all documents', exact:true}).click();
   await page.route('**/settings/transmittal', route => route.fulfill({status:503,body:'Unavailable'}));
   await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
   await expect(page.getByRole('alert')).toContainText('Could not load or save');

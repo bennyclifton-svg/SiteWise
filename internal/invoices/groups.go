@@ -24,6 +24,11 @@ func GroupSummaries(items []costs.Item, ledger []Invoice, taxBasis string) map[s
 				g.Budget = &n
 			}
 		}
+		if c := r.Values["commitment"].Amount; c != nil {
+			if n, ok, err := ParseCents(string(*c)); ok && err == nil {
+				g.ContractRemaining = &n
+			}
+		}
 		out[item.ID] = g
 		for _, id := range g.LineIDs {
 			ancestors[id] = append(ancestors[id], item.ID)
@@ -50,6 +55,14 @@ func GroupSummaries(items []costs.Item, ledger []Invoice, taxBasis string) map[s
 		}
 	}
 	for id, g := range out {
+		if g.ContractRemaining != nil {
+			if taxBasis == "inc_tax" {
+				g.ContractRemaining = nil
+			} else {
+				r := *g.ContractRemaining - g.Invoiced
+				g.ContractRemaining = &r
+			}
+		}
 		if g.Budget != nil && taxBasis != "inc_tax" {
 			r := *g.Budget - g.Invoiced
 			g.Remaining = &r

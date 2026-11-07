@@ -27,14 +27,6 @@ To do this you:
 For this house, fit for purpose means a home that suits how the owners will live in it, on their site and within their budget.
 You engage these consultants as your subconsultants and include their fees in your price; name them in R4: Structural.
 
-**Design team**:
-
-| Consultant | Engaged by | Status |
-|---|---|---|
-| Structural | You, as your subconsultant | To be appointed |
-| Surveyor | Client | To be appointed |
-| Geotechnical | Client | To be appointed |
-
 Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
 | Stage | Scope | Position | Fee $ |

@@ -5,7 +5,7 @@ test("room layout answer is explicit and survives a work correction", async ({ p
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Layout review");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   const project = new URL(page.url()).pathname.split("/").pop();
   const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
   const base = `/api/projects/${project}/works`;

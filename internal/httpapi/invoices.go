@@ -491,6 +491,8 @@ type invoiceLineJSON struct {
 	Percent    string     `json:"percent_spent"`
 	OverBudget bool       `json:"over_budget"`
 	Invoices   int        `json:"invoices"`
+	// ContractRemaining is approved contract less invoiced to date.
+	ContractRemaining moneyField `json:"contract_remaining"`
 }
 
 type invoiceSummaryJSON struct {
@@ -505,6 +507,9 @@ type invoiceSummaryJSON struct {
 	Excluded      int                   `json:"excluded"`
 	Comparable    bool                  `json:"comparable"`
 	Sections      map[string]moneyField `json:"sections"`
+	// Contract remaining per section and overall, over lines with a contract.
+	SectionsContractRemaining map[string]moneyField `json:"sections_contract_remaining"`
+	ContractRemaining         moneyField            `json:"contract_remaining"`
 }
 
 type invoiceFieldJSON struct {
@@ -579,7 +584,8 @@ type invoiceGroupJSON struct {
 
 func lineBody(l invoices.LineSummary) invoiceLineJSON {
 	return invoiceLineJSON{ID: l.ID, Label: l.Label, Section: l.Section, Category: l.Category, Archived: l.Archived, Budget: cents(l.Budget),
-		Invoiced: centsValue(l.Invoiced), Remaining: cents(l.Remaining), Percent: l.Percent, OverBudget: l.OverBudget, Invoices: l.Invoices}
+		Invoiced: centsValue(l.Invoiced), Remaining: cents(l.Remaining), Percent: l.Percent, OverBudget: l.OverBudget, Invoices: l.Invoices,
+		ContractRemaining: cents(l.ContractRemaining)}
 }
 
 func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
@@ -594,9 +600,13 @@ func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
 	}
 	s := v.Summary
 	out.Summary = invoiceSummaryJSON{Lines: []invoiceLineJSON{}, Unallocated: lineBody(s.Unallocated), Total: centsValue(s.Total), Budget: centsValue(s.Budget), BudgetUnknown: s.BudgetUnknown,
-		Remaining: cents(s.Remaining), Percent: s.Percent, Counted: s.Counted, Excluded: s.Excluded, Comparable: s.Comparable, Sections: map[string]moneyField{}}
+		Remaining: cents(s.Remaining), Percent: s.Percent, Counted: s.Counted, Excluded: s.Excluded, Comparable: s.Comparable, Sections: map[string]moneyField{},
+		SectionsContractRemaining: map[string]moneyField{}, ContractRemaining: cents(s.ContractRemaining)}
 	for k, n := range s.Sections {
 		out.Summary.Sections[k] = centsValue(n)
+	}
+	for k, n := range s.SectionsContractRemaining {
+		out.Summary.SectionsContractRemaining[k] = centsValue(n)
 	}
 	for _, l := range s.Lines {
 		out.Summary.Lines = append(out.Summary.Lines, lineBody(l))

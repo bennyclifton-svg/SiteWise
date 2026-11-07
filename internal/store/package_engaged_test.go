@@ -97,7 +97,7 @@ func TestStoredEngagedByKeptUntilCombined(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !draftHas(d, "You engage these consultants as your subconsultants") || !strings.Contains(blockTable(d, "rfp:role:team"), "Civil engineer|You, as your subconsultant") {
+	if !draftHas(d, "You engage these consultants as your subconsultants") {
 		t.Fatal("the lead's RFP keeps the stored subconsultant wording")
 	}
 	// The prompt offers the lead and its subconsultant, ticked.

@@ -4,8 +4,9 @@ import { BuilderQuotedTotals, BuilderWorkSections } from "./BuilderComparison";
 // The price table: schedule items down the side, firms across. With one firm
 // it is the review screen; with several it is the comparison. Every total
 // arrives computed by the server; a cell a user corrects is final.
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { IconMore } from "./icons";
+import { PageActionsContext, PageSidePanel } from "./PageActions";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
 import { ComparisonRowEditor } from "./ComparisonAlignment";
@@ -29,13 +30,19 @@ interface Props {
   onBack: () => void;
   onSignedOut: () => void;
   onOpenCostPlan?: () => void;
+  /** Opens a filed document in the middle panel; false when it is not in the register. */
+  onOpenDocument?: (documentId: string) => boolean;
 }
 
-export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, onOpenCostPlan }: Props) {
+export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, onOpenCostPlan, onOpenDocument }: Props) {
   const [table, setTable] = useState<PriceTable | null>(null);
   const [error, setError] = useState("");
   const [editing, setEditing] = useState<{ sub: string; key: string } | null>(null);
   const [panel, setPanel] = useState("");
+  // The firm panel belongs to this price table: it stays beside the proposal
+  // when that opens in the middle, and closes when the user leaves Procurement.
+  const { surface } = useContext(PageActionsContext);
+  useEffect(() => { if (surface !== "procurement" && surface !== "document") setPanel(""); }, [surface]);
   const [awardFor, setAwardFor] = useState("");
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -235,7 +242,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <ul>{table.earlier.map(s => <li key={s.id}>{s.filename} · {day(s.received_on)} · {STATUS_WORDS[s.status]}
         {(s.status === "withdrawn" || s.status === "not_proposal") && <button type="button" className="table-action" onClick={() => void run(() => submissionApi.edit(projectId, s.id, { status: "received" }))}>Restore</button>}</li>)}</ul>
     </details>}
-    {selected && <SubmissionPanel key={selected.submission.id} projectId={projectId} col={selected} busy={busy} error={error} onClose={() => setPanel("")}
+    {selected && <SubmissionPanel key={selected.submission.id} projectId={projectId} col={selected} busy={busy} error={error} onClose={() => setPanel("")} onOpenDocument={onOpenDocument}
       onReassign={destination => void reassign(selected.submission.id, destination)}
       onSave={edit => void run(() => submissionApi.edit(projectId, selected.submission.id, edit))} />}
     {awardFor && table && <AwardDialog projectId={projectId} table={table} submissionId={awardFor} onClose={() => setAwardFor("")} onAwarded={t => { setTable(t); setAwardFor(""); }} onTable={setTable} onSignedOut={onSignedOut} />}
@@ -310,7 +317,7 @@ function CellEditor({ cell, busy, onSave, onCancel }: { cell?: Cell; busy: boole
   </div>;
 }
 
-function SubmissionPanel({ projectId, col, busy, error, onClose, onSave, onReassign }: { projectId: string; col: Column; busy: boolean; error: string; onClose: () => void; onSave: (e: { firm?: FirmFields; status?: string; received_on?: string }) => void; onReassign: (destination: string) => void }) {
+function SubmissionPanel({ projectId, col, busy, error, onClose, onSave, onReassign, onOpenDocument }: { projectId: string; col: Column; busy: boolean; error: string; onClose: () => void; onOpenDocument?: (documentId: string) => boolean; onSave: (e: { firm?: FirmFields; status?: string; received_on?: string }) => void; onReassign: (destination: string) => void }) {
   const f = col.firm;
   const [packages, setPackages] = useState<PackageRecord[] | null>(null);
   const [destination, setDestination] = useState(col.submission.package_id);
@@ -327,13 +334,16 @@ function SubmissionPanel({ projectId, col, busy, error, onClose, onSave, onReass
     <input value={firm[k]} onChange={e => setFirm({ ...firm, [k]: e.target.value })} disabled={busy} />
     {col.fields[`firm_${k === "name" ? "name" : k}`] && <Chip field={col.fields[`firm_${k}`]} />}
   </label>;
-  return <aside className="prices-panel" aria-label="Proposal">
+  // Firm details are not a document, so they take the right-hand column; the
+  // proposal itself opens in the middle panel like every other document.
+  const docId = col.submission.document_id;
+  const openProposal = () => { if (docId && !onOpenDocument?.(docId)) window.open(submissionApi.fileURL(projectId, col.submission.id), "_blank", "noopener"); };
+  return <PageSidePanel><section className="prices-panel" aria-label="Firm details">
     <header><h2>{f?.name ?? col.submission.filename}</h2><button type="button" className="btn btn-small" onClick={onClose}>Close</button></header>
     <div className="prices-panel-body">
-      {col.submission.document_id ? <iframe title={`Proposal ${col.submission.filename}`} src={submissionApi.fileURL(projectId, col.submission.id)} /> : <p className="prices-empty">No file: prices for this firm are typed in the table.</p>}
       <form onSubmit={e => { e.preventDefault(); onSave({ firm }); }}>
-        <h3>Proposal package</h3>
-        <p>{col.submission.filename}</p>
+        <h3>Proposal</h3>
+        {docId ? <button type="button" className="table-action prices-open-proposal" onClick={openProposal}>{col.submission.filename}</button> : <p className="prices-note">No file: prices for this firm are typed in the table.</p>}
         {error && <p role="alert">{error}</p>}
         {packageError && <p role="alert">{packageError}</p>}
         <label className="prices-field">Package<select aria-label="Package" value={destination} disabled={busy || !packages || col.submission.status === "awarded"} onChange={e => setDestination(e.target.value)}>
@@ -351,7 +361,7 @@ function SubmissionPanel({ projectId, col, busy, error, onClose, onSave, onReass
         {col.submission.status !== "awarded" && <button type="button" className="table-action" disabled={busy} onClick={() => onSave({ status: "withdrawn" })}>Mark withdrawn</button>}
       </form>
     </div>
-  </aside>;
+  </section></PageSidePanel>;
 }
 
 function AddFirm({ projectId, pkg, onDone, onFail, onCancel }: { projectId: string; pkg: string; onDone: (t: PriceTable) => void; onFail: (e: unknown) => void; onCancel: () => void }) {

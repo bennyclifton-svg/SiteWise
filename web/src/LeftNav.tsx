@@ -5,7 +5,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AccountMenu } from "./AccountMenu";
 import { requestCostSettings } from "./costSettingsRequest";
-import { DevStatus } from "./DevStatus";
 import { Wordmark } from "./Wordmark";
 
 export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program";
@@ -99,7 +98,7 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
             <ul className="switcher-results">
               {(projects ?? []).filter(p => p.name.toLowerCase().includes(query.toLowerCase())).map(p => (
                 <li key={p.id}>
-                  <button type="button" onClick={() => go(`/projects/${p.id}`)} aria-current={p.id === currentId ? "true" : undefined} data-active={p.id === currentId || undefined}>{p.name}</button>
+                  <button type="button" onClick={() => go(`/projects/${p.id}`)} aria-current={p.id === currentId ? "true" : undefined} data-active={p.id === currentId || undefined} title={p.name}>{p.name}</button>
                 </li>
               ))}
               {projects && !projects.some(p => p.name.toLowerCase().includes(query.toLowerCase())) && <li className="muted">No matching projects.</li>}
@@ -138,7 +137,6 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
         })}
       </div>
       <div className="nav-spacer" />
-      <DevStatus />
       <AccountMenu onCostSettings={() => { onView("costs"); setMobileOpen(false); requestCostSettings(); }} />
       </div>
     </nav>

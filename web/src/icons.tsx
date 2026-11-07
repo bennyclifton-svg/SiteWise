@@ -215,6 +215,13 @@ export const IconBin = () => (
   </Icon>
 );
 
+/** Add: a plus. */
+export const IconPlus = () => (
+  <Icon>
+    <path d="M8 3v10M3 8h10" />
+  </Icon>
+);
+
 /** More actions: three dots, as in a file browser row. */
 export const IconMore = () => (
   <Icon className="icon-more" fill="currentColor" stroke="none">
@@ -262,5 +269,39 @@ export const IconEye = () => (
   <Icon strokeLinecap="round" strokeLinejoin="round">
     <path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z" />
     <circle cx="8" cy="8" r="2" />
+  </Icon>
+);
+
+/** Print: a sheet leaving a printer. */
+export const IconPrint = () => (
+  <Icon strokeLinejoin="round">
+    <path d="M4.5 6V2.5h7V6" />
+    <path d="M4.5 11.5h-2v-5.5h11v5.5h-2" />
+    <path d="M4.5 9.5h7v4h-7z" />
+  </Icon>
+);
+
+/** Quantities: a dimension line with end ticks. */
+export const IconQuantity = () => (
+  <Icon strokeLinecap="round">
+    <path d="M2.5 8h11M2.5 5v6M13.5 5v6" />
+    <path d="M6 6.5v3M10 6.5v3" />
+  </Icon>
+);
+
+/** Decimals: a point between two figures. */
+export const IconDecimals = () => (
+  <Icon strokeLinecap="round">
+    <path d="M3 4.5v7" />
+    <circle cx="6.5" cy="11.2" r=".4" fill="currentColor" />
+    <rect x="9" y="4.5" width="4" height="7" rx="2" />
+  </Icon>
+);
+
+/** Freeze: a padlock, the revision locked as the baseline. */
+export const IconLock = () => (
+  <Icon strokeLinejoin="round">
+    <rect x="3.5" y="7" width="9" height="6.5" rx="1" />
+    <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
   </Icon>
 );

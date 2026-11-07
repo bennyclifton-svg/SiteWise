@@ -62,7 +62,10 @@ type BudgetLine struct {
 	Category  string
 	PackageID string
 	Budget    *int64
-	Archived  bool
+	// Contract is the line's approved contract; Remaining on the cost plan is
+	// this less what has been invoiced.
+	Contract *int64
+	Archived bool
 	// Parent is the awarded group this line belongs to. The group holds the
 	// budget; the line's spend rolls up to it.
 	Parent string
@@ -105,6 +108,9 @@ type LineSummary struct {
 	Percent    string `json:"percent_spent"`
 	OverBudget bool   `json:"over_budget"`
 	Invoices   int    `json:"invoices"`
+	// ContractRemaining is the approved contract less invoiced to date, nil
+	// while the contract is unknown or the plan's figures include GST.
+	ContractRemaining *int64 `json:"-"`
 }
 
 // Summary is the cost plan's view of the ledger. Total is every counted
@@ -124,6 +130,10 @@ type Summary struct {
 	Excluded      int
 	// Sections is invoiced to date per cost plan section, for subtotal rows.
 	Sections map[string]int64
+	// SectionsContractRemaining and ContractRemaining sum the posting lines
+	// that have an approved contract; a section with none is absent.
+	SectionsContractRemaining map[string]int64
+	ContractRemaining         *int64
 	// Comparable is false when the plan's budgets include GST: invoiced to
 	// date stays ex GST and remaining is unknown rather than mixed.
 	Comparable bool
@@ -132,11 +142,11 @@ type Summary struct {
 // Summarize computes the summary from the ledger. taxBasis is the cost
 // plan's ("ex_tax" or "inc_tax").
 func Summarize(lines []BudgetLine, ledger []Invoice, taxBasis string) Summary {
-	s := Summary{Comparable: taxBasis != "inc_tax", Sections: map[string]int64{}}
+	s := Summary{Comparable: taxBasis != "inc_tax", Sections: map[string]int64{}, SectionsContractRemaining: map[string]int64{}}
 	index := map[string]int{}
 	for _, l := range lines {
 		index[l.ID] = len(s.Lines)
-		s.Lines = append(s.Lines, LineSummary{ID: l.ID, Label: l.Label, Section: l.Section, Category: l.Category, Archived: l.Archived, Budget: l.Budget})
+		s.Lines = append(s.Lines, LineSummary{ID: l.ID, Label: l.Label, Section: l.Section, Category: l.Category, Archived: l.Archived, Budget: l.Budget, ContractRemaining: l.Contract})
 	}
 	s.Unallocated = LineSummary{ID: "", Label: "Unallocated", Section: "unallocated"}
 	var held int64
@@ -182,6 +192,27 @@ func Summarize(lines []BudgetLine, ledger []Invoice, taxBasis string) Summary {
 			g.Invoiced += s.Lines[i].Invoiced
 			g.Invoices += s.Lines[i].Invoices
 		}
+	}
+	// Contract remaining is per posting line (a group's comes from its rollup),
+	// so a group's invoices are not counted twice in a section.
+	group := map[string]bool{}
+	for _, l := range lines {
+		group[l.ID] = l.Group
+	}
+	for i := range s.Lines {
+		l := &s.Lines[i]
+		if l.ContractRemaining == nil || group[l.ID] || !s.Comparable {
+			l.ContractRemaining = nil
+			continue
+		}
+		r := *l.ContractRemaining - l.Invoiced
+		l.ContractRemaining = &r
+		s.SectionsContractRemaining[l.Section] += r
+		total := r
+		if s.ContractRemaining != nil {
+			total += *s.ContractRemaining
+		}
+		s.ContractRemaining = &total
 	}
 	for i := range s.Lines {
 		l := &s.Lines[i]

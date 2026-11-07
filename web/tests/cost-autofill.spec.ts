@@ -37,7 +37,7 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
  const saved=await(await page.request.get(base+'/cost-plan')).json();expect(saved.suggestions).toHaveLength(0);expect(saved.items.length).toBeGreaterThan(12);
  await page.getByRole('button',{name:'+ Add line to Construction',exact:true}).click();await page.getByLabel('New Construction physical scope').selectOption('envelope');await page.getByLabel('New Construction item').fill('Facade access allowance');await page.getByLabel('New Construction item').press('Enter');
  const row=page.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText('Facade access allowance',{exact:true})});await expect(row).toContainText('Main Works');
- await page.getByLabel('Quantities',{exact:true}).check();await row.getByLabel('quantity for Facade access allowance').fill('10');await row.getByLabel('unit for Facade access allowance').fill('m2');await row.getByLabel('rate for Facade access allowance').fill('120');await row.getByLabel('rate for Facade access allowance').press('Enter');
+ await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitemcheckbox',{name:'Quantities',exact:true}).click();await page.keyboard.press('Escape');await row.getByLabel('quantity for Facade access allowance').fill('10');await row.getByLabel('unit for Facade access allowance').fill('m2');await row.getByLabel('rate for Facade access allowance').fill('120');await row.getByLabel('rate for Facade access allowance').press('Enter');
  await expect(row.getByRole('button',{name:'Budget for Facade access allowance'})).toHaveText('1,200.00');
 
  const physicalBefore=await(await page.request.get(base+'/cost-plan')).json();
@@ -68,5 +68,5 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
  await page.screenshot({path:testInfo.outputPath('cost-autofill-actions.png'),fullPage:true});
  await page.locator('.cost-grid-scroll').evaluate(e=>{e.scrollLeft=0;});
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:testInfo.outputPath('cost-autofill-mobile.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
- await page.getByRole('button',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await page.getByRole('button',{name:'View frozen baseline',exact:true}).click();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(page.getByRole('button',{name:/^Delete /})).toHaveCount(0);
+ await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'View frozen baseline',exact:true}).click();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(page.getByRole('button',{name:/^Delete /})).toHaveCount(0);
 });

@@ -26,7 +26,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
     expect(added.ok(), await added.text()).toBeTruthy();
   }
   await page.getByRole("button", { name: "Create RFP for Fire engineering", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Use last completed state", exact: true })).toHaveCount(0);
   await page.route("**/api/reports/*/draft", async route => {
@@ -45,7 +45,7 @@ test("saved report creation, citations, protected edit, refresh and mobile readi
   await expect(packageBlock.getByText("User wording by", { exact: false })).toBeVisible();
   const change = await page.request.patch(`/api/projects/${project}/packages/${pkg.id}`, { headers: { Origin: "http://127.0.0.1:4173" }, data: { version: pkg.version, title: "Revised fire engineering" } });
   expect(change.ok()).toBeTruthy();
-  await page.getByRole("button", { name: "Refresh draft", exact: true }).click();
+  await page.getByRole("button", { name: "Update", exact: true }).click();
   await expect(packageBlock.getByText("The source changed.", { exact: false })).toBeVisible();
   await expect(packageBlock.getByText("Protect this appointment wording.", { exact: true })).toBeVisible();
   await packageBlock.getByRole("button", { name: "Edit wording: Package", exact: true }).click();

@@ -293,13 +293,9 @@
   .trace-paper-sheet { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet); }
 }
 
-/* ---------- Nav icons: brass or blue per view (owner direction, 7 Nov 2026);
-   green and rose are kept for status. Tones are defined in table-heads.css. ---------- */
-.nav-icon[data-tone="brass"] { color: var(--tone-brass); }
-.nav-icon[data-tone="blue"] { color: var(--tone-blue); }
-.nav-icon[data-tone="report"] { color: var(--trace-ink-4); }
-.nav-item[aria-current="page"] .nav-icon[data-tone="brass"] { color: var(--tone-brass); }
-.nav-item[aria-current="page"] .nav-icon[data-tone="blue"] { color: var(--tone-blue); }
+/* ---------- Nav icons: all one blue (owner direction, 7 Nov 2026). data-tone
+   still sets each page's table-head colour in table-heads.css. ---------- */
+.leftnav .nav-icon, .leftnav .nav-item[aria-current="page"] .nav-icon { color: var(--tone-blue); }
 .nav-icon-wash { fill: currentColor; opacity: .18; stroke: none; }
 .nav-item[aria-current="page"] .nav-icon-wash { opacity: .3; }
 @media (forced-colors: active) { .nav-icon-wash { display: none; } }

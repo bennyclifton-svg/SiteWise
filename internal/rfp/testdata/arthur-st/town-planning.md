@@ -22,15 +22,6 @@ To do this you:
 - Manage the application through assessment, including requests for information and the conditions.
 The architect leads design; the client engages the specialist consultants listed in the design team below.
 
-**Design team**:
-
-| Consultant | Engaged by | Status |
-|---|---|---|
-| Architect | Client | To be appointed |
-| Structural | Client | To be appointed |
-| Civil | Client | To be appointed |
-| Traffic | Client | To be appointed |
-
 Price each stage that applies as a lump sum. Work beyond an allowance needs a written instruction. R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
 | Stage | Scope | Position | Fee $ |

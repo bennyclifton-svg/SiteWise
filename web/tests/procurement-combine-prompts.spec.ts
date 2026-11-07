@@ -57,7 +57,7 @@ test("a dismissed combine prompt stays dismissed", async ({ page }) => {
   await expect(prompt).toHaveCount(0);
   await page.reload();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Add discipline" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "New discipline" })).toBeVisible();
   await expect(prompt).toHaveCount(0);
 });
 

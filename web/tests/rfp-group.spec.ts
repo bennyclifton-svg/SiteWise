@@ -29,10 +29,10 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   await expect(page.getByRole("heading", { name: "Procurement", exact: true })).toBeVisible();
   for (const [discipline, label] of [["consultant.structural", "Structural"], ["consultant.civil", "Civil"]]) {
     // The project's facts may already have made the row.
-    await expect(page.getByRole("button", { name: "Add discipline", exact: true })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "New discipline", exact: true })).toBeEnabled();
     await page.waitForLoadState("networkidle");
     if (await page.getByRole("rowheader", { name: label, exact: true }).count() > 0) continue;
-    await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+    await page.getByRole("button", { name: "New discipline", exact: true }).click();
     await page.getByLabel("Discipline", { exact: true }).selectOption(discipline);
     await page.getByRole("button", { name: "Add row", exact: true }).click();
     await expect(page.getByRole("rowheader", { name: label, exact: true })).toBeVisible();
@@ -47,7 +47,7 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   // The group row offers Create RFP.
   const start = Date.now();
   await page.getByRole("button", { name: "Create RFP for Civil and Structural", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   const civil = page.getByRole("region", { name: "2.1 Civil engineering services", exact: true });
   const structural = page.getByRole("region", { name: "2.2 Structural engineering services", exact: true });
   await expect(structural.locator(".rfp-stage-scope")).toBeVisible();
@@ -66,7 +66,7 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   // Exclude a line in the structural part: it is written to the structural
   // engineer's own report and the document shows it at once.
   const toolbar = page.locator(".report-toolbar");
-  const before = Number((await toolbar.innerText()).match(/Version (\d+)/)![1]);
+  const before = Number(await toolbar.getAttribute("data-version"));
   await expandStages(structural);
   // An open stage's lines fill the table's four columns, no stray fee cell.
   const widths = await structural.locator(".rfp-stage-scope tr").evaluateAll(rows =>
@@ -76,7 +76,7 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   const name = (await boxes.first().getAttribute("aria-label"))!;
   const edit = Date.now();
   await boxes.first().check();
-  await expect(toolbar).toContainText(`Version ${before + 1}`);
+  await expect(toolbar).toHaveAttribute("data-version", String(before + 1));
   testInfo.annotations.push({ type: "timing", description: `member setting through the group: ${Date.now() - edit}ms` });
   await expandStages(structural);
   await expect(structural.getByRole("checkbox", { name, exact: true })).toBeChecked();

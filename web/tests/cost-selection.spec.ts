@@ -38,11 +38,6 @@ test("cost selection, shared drag handles, inline names and row actions", async 
   await first.getByText('First custom',{exact:true}).dblclick();
   await page.getByRole('textbox',{name:'First custom',exact:true}).fill('Renamed custom'); await page.getByRole('textbox',{name:'First custom',exact:true}).press('Enter');
   await expect(row('Renamed custom')).toBeVisible();
-  await row('Renamed custom').getByRole('button',{name:'Claimed to Date for Renamed custom'}).click();
-  await page.getByRole('textbox',{name:'Claimed to Date for Renamed custom amount'}).fill('12.34');
-  await page.getByLabel('Claims date for Renamed custom').fill('2026-10-24');
-  await row('Renamed custom').getByRole('button',{name:'Save',exact:true}).click();
-  await expect(row('Renamed custom').getByRole('button',{name:'Claimed to Date for Renamed custom'})).toHaveText('12.34');
   await page.setViewportSize({width:1440,height:1000});
   await row('Renamed custom').getByRole('button',{name:'Actions for Renamed custom',exact:true}).click();
   await expect(page.locator('.cost-row-menu:popover-open')).toBeVisible();

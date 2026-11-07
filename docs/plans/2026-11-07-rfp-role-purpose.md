@@ -39,6 +39,11 @@ When the table prints, the procurement-route rows (`novation`,
 rows follow it, beside the stage pricing. Without a table the role stays one
 block, as before.
 
+**Superseded 7 Nov 2026 (owner):** the Design team table is removed from
+every RFP; the role is always one block. The consultant team now lives on
+the project profile, as a Discipline table that always shows (blank rows
+"Discipline 1–3" until consultants are appointed).
+
 Every existing role key and its condition is kept, so the answer keys still
 hold. The scope-alignment inventory's role entries are updated to the new
 wording on purpose.

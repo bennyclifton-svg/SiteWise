@@ -19,13 +19,13 @@ test("procurement creates proposed and chosen disciplines, removes rows", async 
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
   await expect(page.getByRole("button", { name: "View RFT for Main Works", exact: true })).toBeVisible();
   await expect(page.getByText("Every accepted work item is covered.", { exact: true })).toHaveCount(0);
-  await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+  await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await page.getByLabel("Discipline", { exact: true }).selectOption("consultant.structural");
   await page.getByRole("button", { name: "Add row", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Structural", exact: true }).click();
   await expect(page.getByRole("heading", { name: "RFP — Structural", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "← Procurement", exact: true }).click();
-  await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+  await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await expect(page.getByLabel("Discipline", { exact: true }).locator('option[value="consultant.structural"]')).toHaveCount(0);
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
   // Three firm slots wait for proposals; nobody asks who engages the firm.
@@ -38,14 +38,12 @@ test("procurement creates proposed and chosen disciplines, removes rows", async 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   await page.screenshot({ path: "../.tools/procurement-mobile.png", fullPage: true });
-  await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+  await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await page.getByLabel("Discipline", { exact: true }).selectOption("consultant.civil");
   await page.getByRole("button", { name: "Add row", exact: true }).click();
   await page.getByRole("button", { name: "Remove Civil", exact: true }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Remove", exact: true }).click();
   await expect(page.getByRole("button", { name: "Create RFP for Civil", exact: true })).toHaveCount(0);
-  await page.getByRole("button", { name: "Create project management plan", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
-  await expect(page.getByRole("button", { name: "View project management plan", exact: true })).toBeVisible();
+  // The project management plan is no longer offered here (owner, 7 Nov 2026).
+  await expect(page.getByText("Project management plan")).toHaveCount(0);
 });

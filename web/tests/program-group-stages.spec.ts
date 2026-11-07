@@ -18,10 +18,10 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Procurement", exact: true })).toBeVisible();
   for (const [discipline, label] of [["consultant.structural", "Structural"], ["consultant.civil", "Civil"]]) {
-    await expect(page.getByRole("button", { name: "Add discipline", exact: true })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "New discipline", exact: true })).toBeEnabled();
     await page.waitForLoadState("networkidle");
     if (await page.getByRole("rowheader", { name: label, exact: true }).count() > 0) continue;
-    await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+    await page.getByRole("button", { name: "New discipline", exact: true }).click();
     await page.getByLabel("Discipline", { exact: true }).selectOption(discipline);
     await page.getByRole("button", { name: "Add row", exact: true }).click();
     await expect(page.getByRole("rowheader", { name: label, exact: true })).toBeVisible();
@@ -44,7 +44,7 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
 
   // Create RFP on the group: the program is created and the group's lines link to it.
   await page.getByRole("button", { name: "Create RFP for Civil and Structural", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Refresh draft", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   const read = await page.request.get(`/api/projects/${project}/program`);
   expect(read.status()).toBe(200);
   let program = await read.json();

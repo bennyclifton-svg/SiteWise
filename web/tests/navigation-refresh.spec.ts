@@ -36,7 +36,7 @@ test("panel actions align with the workspace and documents stay visible across t
   await page.getByLabel("New project").fill("Panel alignment");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
-  const update = page.getByRole("button", { name: "Update project profile", exact: true });
+  const update = page.getByRole("button", { name: "Update", exact: true });
   const download = page.getByRole("button", { name: "Download", exact: true });
   const docs = page.getByRole("complementary", { name: "Document register" });
   await expect(update).toBeVisible();
@@ -63,7 +63,9 @@ test("panel actions align with the workspace and documents stay visible across t
   for (const name of ['Costs', 'Procurement', 'Specifications', 'Profile']) {
     await page.getByRole('button', { name, exact: true }).click();
     await expect(docs).toBeVisible();
-    if (name !== 'Profile') await expect(download).toBeVisible();
+    // Costs and Procurement keep their actions in three dots above the table (owner, 7 Nov 2026).
+    if (name === 'Specifications') await expect(download).toBeVisible();
+    if (name === 'Costs' || name === 'Procurement') await expect(download).toHaveCount(0);
     if (name === 'Costs') await page.screenshot({ path: '../tmp/panel-actions-costs.png', fullPage: true });
   }
   await hide.click();

@@ -25,15 +25,6 @@ For the office or retail space, fit for purpose means efficient, flexible floor 
 For the warehouse or factory, fit for purpose means a layout that suits the operation: clear heights, loading, vehicle movements and room to expand.
 Because this is work to an existing building, fit for purpose also means working with what is there: its structure, services, approvals and occupants.
 
-**Design team**:
-
-| Consultant | Engaged by | Status |
-|---|---|---|
-| Structural | Client | To be appointed |
-| Civil | Client | To be appointed |
-| Traffic | Client | To be appointed |
-| Town Planner | Client | To be appointed |
-
 Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.
 
 | Stage | Scope | Position | Fee $ |

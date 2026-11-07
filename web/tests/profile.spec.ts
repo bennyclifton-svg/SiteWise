@@ -5,7 +5,7 @@ test("stopped profile work offers retry despite a queued dependent job", async (
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Interrupted profile regression");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   let active = 0;
   let failed = 1;
   await page.route("**/api/projects/*/profile", async route => {
@@ -29,7 +29,7 @@ test("profile update clears its pending state when completion SSE is missed", as
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Profile completion regression");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   let requested = false;
   let completionReads = 0;
   await page.route("**/api/projects/*/profile", async (route) => {
@@ -52,9 +52,9 @@ test("profile update clears its pending state when completion SSE is missed", as
     body.queued = 1;
     await route.fulfill({ response, json: body });
   });
-  await page.getByRole("button", { name: "Update project profile", exact: true }).click();
+  await page.getByRole("button", { name: "Update", exact: true }).click();
   await expect(page.getByRole("button", { name: "Updating project profile…", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible({ timeout: 10000 });
   await expect(page.getByRole("combobox", { name: "Work type", exact: true }).locator("option:checked")).toHaveText("New build");
   expect(completionReads).toBeGreaterThan(0);
 });
@@ -73,7 +73,7 @@ test("source requirements preserve full text, page links, filters and mobile lay
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Source requirements regression");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   let requestedFilter = "";
   await page.route("**/api/projects/*/profile/sources?*", async route => {
     requestedFilter = new URL(route.request().url()).searchParams.get("outcome") ?? "";
@@ -148,7 +148,7 @@ test("choose which documents the profile reads, in bulk", async ({ browser }) =>
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Reading selection");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
   const names = ["identity-page.pdf", "docx-table.docx", "merged-cells.xlsx"];
   await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
@@ -207,7 +207,7 @@ test("delete documents from the register after confirming", async ({ browser }) 
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Deletion");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   const fixtures = resolve(import.meta.dirname, "../../testdata/identity");
   const names = ["identity-page.pdf", "docx-table.docx", "merged-cells.xlsx"];
   await page.getByTestId("file-input").setInputFiles(names.map((n) => resolve(fixtures, n)));
@@ -244,7 +244,7 @@ test("delete documents from the register after confirming", async ({ browser }) 
   await dialog.getByRole("button", { name: "Delete" }).click();
   await expect(rows).toHaveCount(0);
   await page.reload();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   await expect(page.locator("tbody.reg-doc")).toHaveCount(0);
 });
 
@@ -319,7 +319,7 @@ test("a site address read from documents shows until the user types one", async 
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Address read from documents");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   // The profile as the server returns it once a document states the address.
   await page.route("**/api/projects/*/profile", async (route) => {
     const response = await route.fetch();
@@ -354,7 +354,7 @@ test("profile distinguishes inclusion, queued reading, progress and completion",
   const page = await signIn(browser);
   await page.getByLabel("New project").fill("Reading progress regression");
   await page.getByRole("button", { name: "Create project" }).click();
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   let counts = { read_documents: 3, skipped_documents: 1, completed_documents: 0, unread_documents: 3, pending_documents: 0, active_documents: 0, failed_documents: 0 };
   await page.route("**/api/projects/*/profile", async route => {
     const response = await route.fetch();
@@ -368,7 +368,7 @@ test("profile distinguishes inclusion, queued reading, progress and completion",
   await expect(page.getByPlaceholder("Ask about your project documents")).toHaveCount(0);
   expect(await updates.evaluate(element => getComputedStyle(element).overflowY)).toBe("auto");
   await expect(page.getByRole("status").filter({ hasText: "Ready to read" })).toHaveText("Ready to read · 0 of 3 documents read");
-  await expect(page.getByText("3 documents ready to read. Select Update project profile to start.")).toBeVisible();
+  await expect(page.getByText("3 documents ready to read. Select Update to start.")).toBeVisible();
   const progress = page.getByRole("progressbar", { name: "Documents read for profile" });
   await expect(progress).toHaveAttribute("aria-valuenow", "0");
   counts = { ...counts, unread_documents: 0, pending_documents: 3 };
@@ -389,7 +389,7 @@ test("profile distinguishes inclusion, queued reading, progress and completion",
   await expect(progress).toHaveAttribute("aria-valuenow", "3");
   await expect(page.locator(".profile-progress")).toContainText("Reading complete · 3 of 3 documents read");
   await expect(page.getByText("not read yet", { exact: false })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Update project profile", exact: true })).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeEnabled();
   await updates.scrollIntoViewIfNeeded();
   const bounds = await updates.boundingBox();
   expect(bounds!.height).toBeLessThanOrEqual(144);
@@ -401,4 +401,38 @@ test("profile distinguishes inclusion, queued reading, progress and completion",
   await page.getByRole("button", { name: "Profile", exact: true }).click();
   await expect(updates).toContainText("Reading complete");
   await page.context().close();
+});
+
+test("card edit box fills its row exactly and the team table offers blank disciplines", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.getByLabel("New project").fill("Card geometry regression");
+  await page.getByRole("button", { name: "Create project" }).click();
+  await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
+  // An edited field carries a pencil, a count and a reset beside its label.
+  const client = page.getByRole("textbox", { name: "Client", exact: true });
+  await client.fill("Marko and Ana Kovac");
+  await client.press("Enter");
+  await expect(page.locator(".pf-titleblock .pf-row[data-band=user]")).toHaveCount(1);
+  const cell = page.locator(".pf-titleblock .pf-row[data-band=user] .pf-value");
+  await cell.locator(".pf-control").focus();
+  const geometry = await cell.evaluate((value) => {
+    const row = value.closest(".pf-row")!;
+    const r = row.getBoundingClientRect();
+    const v = value.getBoundingClientRect();
+    const rule = parseFloat(getComputedStyle(row).borderBottomWidth);
+    const col = row.closest(".pf-tb-col")!.getBoundingClientRect();
+    const head = row.closest(".pf-tb-col")!.querySelector(".pf-tb-head")!.getBoundingClientRect();
+    const heads = [...document.querySelectorAll(".pf-titleblock .pf-tb-head")].map((h) => h.getBoundingClientRect().height);
+    return { rowTop: r.top, rowBottom: r.bottom - rule, rowRight: r.right, valueTop: v.top, valueBottom: v.bottom, valueRight: v.right, colRight: col.right, headTop: head.top, colTop: col.top, heads };
+  });
+  console.log(JSON.stringify(geometry));
+  expect(geometry.valueTop).toBeCloseTo(geometry.rowTop, 0);
+  expect(geometry.valueBottom).toBeCloseTo(geometry.rowBottom, 0);
+  expect(geometry.valueRight).toBeCloseTo(geometry.rowRight, 0);
+  expect(geometry.headTop).toBeCloseTo(geometry.colTop, 0);
+  expect(new Set(geometry.heads.map((h) => Math.round(h))).size).toBe(1);
+  const team = page.getByTestId("profile-appointed");
+  await expect(team.getByRole("columnheader", { name: "Discipline" })).toBeVisible();
+  for (const n of [1, 2, 3]) await expect(team.getByRole("rowheader", { name: `Discipline ${n}` })).toBeVisible();
 });

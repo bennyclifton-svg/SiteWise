@@ -8,8 +8,8 @@ import { CentsContext, CostGrid, editContent } from "./CostGrid";
 import { onCostSettingsRequest, takeCostSettingsRequest } from "./costSettingsRequest";
 import { InvoicesTab, VariationsTab } from "./Invoices";
 import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
-import { PageActions } from "./PageActions";
-import { profileApi } from "./profileApi";
+import { MoreMenu } from "./PageActions";
+import { IconDecimals, IconDownload, IconEye, IconLock, IconPrint, IconQuantity, IconUndo, IconUpload } from "./icons";
 import "./invoices.css";
 import "./reports.css";
 import "./costs.css";
@@ -23,14 +23,27 @@ const valueBlank = (): CostValue => ({ amount: null, low: null, high: null, valu
 type CostTab = "plan" | "invoices" | "variations";
 const NO_FILTER: InvoiceFilter = { supplier: "", month: "", line: "", status: "" };
 
-function CostDownloads({ projectId, tab, filter }: { projectId: string; tab: CostTab; filter: InvoiceFilter }) {
+type PlanMenu = { quantities: boolean; onQuantities: () => void; decimals: boolean; onDecimals: () => void; onFreeze?: () => void; canFreeze: boolean; baseline?: { viewing: boolean; onToggle: () => void; disabled: boolean } };
+
+// The page's actions sit behind three dots on the right, just above the
+// table. On the plan tab the view switches and the baseline live here too.
+function CostMenu({ projectId, tab, filter, onUpload, plan }: { projectId: string; tab: CostTab; filter: InvoiceFilter; onUpload: () => void; plan: PlanMenu }) {
   const scoped = tab === "invoices" ? filter : NO_FILTER;
-  return <PageActions surface="costs">
-    <a href={invoiceApi.exportURL(projectId, scoped)} download>Export to Excel</a>
-    <a href={invoiceApi.exportURL(projectId, NO_FILTER, "csv", "cost_plan")} download>Cost plan CSV</a>
-    <a href={invoiceApi.exportURL(projectId, scoped, "csv", "invoices")} download>Invoices CSV</a>
-    <button type="button" onClick={() => window.print()}>Print</button>
-  </PageActions>;
+  return <MoreMenu label="Cost plan actions" items={[
+    ...(tab === "invoices" ? [{ label: "Upload invoices", icon: <IconUpload />, onSelect: onUpload }] : []),
+    ...(tab === "plan" ? [
+      { label: "Quantities", icon: <IconQuantity />, checked: plan.quantities, onSelect: plan.onQuantities },
+      { label: "Decimals", icon: <IconDecimals />, checked: plan.decimals, onSelect: plan.onDecimals },
+      ...(plan.onFreeze ? [{ label: "Freeze baseline", icon: <IconLock />, onSelect: plan.onFreeze, disabled: !plan.canFreeze }] : []),
+      ...(plan.baseline ? [plan.baseline.viewing
+        ? { label: "Return to current draft", icon: <IconUndo />, onSelect: plan.baseline.onToggle, disabled: plan.baseline.disabled }
+        : { label: "View frozen baseline", icon: <IconEye />, onSelect: plan.baseline.onToggle, disabled: plan.baseline.disabled }] : []),
+    ] : []),
+    { label: "Export to Excel", icon: <IconDownload />, href: invoiceApi.exportURL(projectId, scoped), download: true },
+    { label: "Cost plan CSV", icon: <IconDownload />, href: invoiceApi.exportURL(projectId, NO_FILTER, "csv", "cost_plan"), download: true },
+    { label: "Invoices CSV", icon: <IconDownload />, href: invoiceApi.exportURL(projectId, scoped, "csv", "invoices"), download: true },
+    { label: "Print", icon: <IconPrint />, onSelect: () => window.print() },
+  ]} />;
 }
 
 export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { projectId: string; tick: number; invoiceTick?: number; onSignedOut: () => void }) {
@@ -42,6 +55,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   const [ledger, setLedger] = useState<Ledger | null>(null), [ledgerReload, setLedgerReload] = useState(0), [ledgerError, setLedgerError] = useState(false);
   const [filter, setFilter] = useState<InvoiceFilter>(NO_FILTER), [invoice, setInvoice] = useState("");
   const [incoming, setIncoming] = useState<File[] | null>(null);
+  const uploadInput = useRef<HTMLInputElement>(null);
   // One ledger feeds both tabs, so a change in one shows in the other.
   useEffect(() => {
     let stop = false;
@@ -146,19 +160,6 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
     const current = i.values[metric];
     return save(() => costApi.value(projectId, plan!, i.cost_item_id, metric, { ...valueBlank(), ...current, amount, low: null, high: null, value_state: amount == null ? "unknown" : "known", origin: "user", meaning: current?.meaning || "allowance" }), false);
   }
-  // The construction budget lives on the profile row; saving it there and
-  // preparing again re-spreads the construction lines from the new figure.
-  async function saveBudget(amount: string | null) {
-    if (saving.current) return false;
-    saving.current = true; ++loadSequence.current; setBusy(true); setError("");
-    try {
-      await profileApi.set(projectId, "proj.budget_stated", { value: amount == null ? null : `$${amount}` });
-      const r = await costApi.prepare(projectId);
-      setPlan(r.plan); setTotals(r.totals);
-      return true;
-    } catch (e) { fail(e); return false; }
-    finally { saving.current = false; setBusy(false); }
-  }
   const status = plan?.status === "unavailable" ? "not started" : plan?.status;
   return <section className="costs" aria-label="Costs" aria-busy={busy} {...(tab === "invoices" ? {} : dropFiles)}>
     <div className="costs-head"><h1 className="sr-only">Cost Plan</h1>
@@ -169,13 +170,15 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
             onClick={() => setTab(id)}>{label}{id === "invoices" && ledger ? <span className="costs-tab-count">{ledger.invoices.length}</span> : null}</button>)}
       </div>
       <span role="status">{busy && <Pending delayed>Saving…</Pending>}</span>
-      <CostDownloads projectId={projectId} tab={tab} filter={filter} /></div>
-    <div className="costs-toolbar" hidden={tab !== "plan"}>
-      <label><input type="checkbox" checked={quantities} onChange={e => {setQuantities(e.target.checked);try{localStorage.setItem("sitewise.costs.quantities",String(e.target.checked));}catch{/* Storage is optional. */}}} /> Quantities</label>
-      <label><input type="checkbox" checked={decimals} onChange={e => {setDecimals(e.target.checked);try{localStorage.setItem("sitewise.costs.decimals",String(e.target.checked));}catch{/* Storage is optional. */}}} /> Decimals</label>
-      {plan?.id && <button className="btn" disabled={busy || editing || frozen} onClick={() => setBaseline(true)}>Freeze baseline</button>}
-      {plan?.baseline_version_id && <button className="btn" disabled={busy || editing} onClick={() => { close(); setHistory(history ? "" : plan?.baseline_version_id!); }}>{history ? "Return to current draft" : "View frozen baseline"}</button>}
-      {history && <span className="costs-viewing">Viewing r{plan?.revision || 1} · {status}</span>}</div>
+      <input ref={uploadInput} type="file" multiple accept=".pdf,.docx,.xlsx,.md,.markdown,application/pdf" hidden data-testid="invoice-input" onChange={e => { if (e.target.files?.length) { setIncoming(Array.from(e.target.files)); setTab("invoices"); } e.target.value = ""; }} /></div>
+    <div className="costs-toolbar">
+      {tab === "plan" && history && <span className="costs-viewing">Viewing r{plan?.revision || 1} · {status}</span>}
+      <CostMenu projectId={projectId} tab={tab} filter={filter} onUpload={() => uploadInput.current?.click()} plan={{
+        quantities, onQuantities: () => { const on = !quantities; setQuantities(on); try { localStorage.setItem("sitewise.costs.quantities", String(on)); } catch { /* Storage is optional. */ } },
+        decimals, onDecimals: () => { const on = !decimals; setDecimals(on); try { localStorage.setItem("sitewise.costs.decimals", String(on)); } catch { /* Storage is optional. */ } },
+        onFreeze: plan?.id ? () => setBaseline(true) : undefined, canFreeze: !busy && !editing && !frozen,
+        baseline: plan?.baseline_version_id ? { viewing: !!history, disabled: busy || editing, onToggle: () => { close(); setHistory(history ? "" : plan.baseline_version_id!); } } : undefined,
+      }} /></div>
     {baseline && plan && <div className="report-notice"><p>Freeze this revision and continue in a new editable draft?</p><button className="btn" disabled={busy} onClick={() => { void save(async () => { const p = await costApi.baseline(projectId, plan); setBaseline(false); return p; }); }}>Confirm baseline</button><button className="btn" onClick={() => setBaseline(false)}>Cancel baseline</button></div>}
     {error && <div className="banner" role="alert"><p>{error}</p><button className="btn" disabled={busy} onClick={() => { setError(""); setReload(n => n + 1); }}>Reload cost plan</button></div>}
     <p className="print-only">{ledger?.project ?? ""} · {tab === "invoices" ? "Invoices" : tab === "variations" ? "Variations" : "Cost plan"} · printed {new Date().toLocaleString("en-AU", { timeZone: "Australia/Sydney", dateStyle: "long", timeStyle: "short" })} · filters: {tab === "invoices" && (filter.supplier || filter.month || filter.line || filter.status) ? [filter.supplier && `supplier ${ledger?.packages.find(p => p.id === filter.supplier)?.title ?? ""}`, filter.month && `month ${filter.month}`, filter.line && `line ${filter.line === "unallocated" ? "Unallocated" : ledger?.lines.find(l => l.id === filter.line)?.label ?? ""}`, filter.status && `status ${filter.status.replace("_", " ")}`].filter(Boolean).join("; ") : "none"}</p>
@@ -190,7 +193,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
         onDetailedValue={(item, name, value) => save(() => costApi.value(projectId, plan, item.cost_item_id, name, value), false)}
         onReorder={ids => save(() => costApi.reorder(projectId, plan, ids), false)}
         onDelete={remove} ledger={history ? null : ledger} onInvoices={showInvoices}
-        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} onBudget={history ? undefined : saveBudget} /></CentsContext>}
+        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} /></CentsContext>}
     </div>
     {open && tab === "plan" && <aside className="cost-drawer" aria-label="Cost line">
       <button type="button" className="btn btn-small cost-drawer-close" onClick={close}>Close</button>

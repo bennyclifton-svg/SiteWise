@@ -25,7 +25,10 @@ test("a proposal can move, detach and reattach without losing its firm or fee", 
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Review Hydraulic", exact: true }).click();
   await page.getByRole("button", { name: "Synthetic Flow Consultant", exact: true }).click();
-  const panel = page.locator('aside[aria-label="Proposal"]');
+  // Firm details are not a document: they take the right-hand column in place of the register.
+  const panel = page.locator('#project-documents section[aria-label="Firm details"]');
+  await expect(panel).toBeVisible();
+  await expect(page.locator("#project-documents .reg-table")).toBeHidden();
   await panel.getByLabel("Package", { exact: true }).selectOption(civil.id);
   await page.screenshot({ path: "../.tools/proposal-move-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });

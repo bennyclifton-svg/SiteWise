@@ -15,8 +15,8 @@ export interface Invoice {
   superseded_by?: string; duplicate_ok: boolean; counted: boolean; created_at: string; flags: InvoiceFlag[];
   fields: Record<string, InvoiceField>; allocations: InvoiceAllocation[] | null; rows: InvoiceRow[] | null;
 }
-export interface LedgerLine { id: string; label: string; section: string; category: string; archived: boolean; budget: Money; invoiced: Money; remaining: Money; percent_spent: string; over_budget: boolean; invoices: number }
-export interface LedgerSummary { lines: LedgerLine[]; unallocated: LedgerLine; invoiced: Money; budget: Money; budget_unknown: number; remaining: Money; percent_spent: string; counted: number; excluded: number; comparable: boolean; sections: Record<string, Money> }
+export interface LedgerLine { id: string; label: string; section: string; category: string; archived: boolean; budget: Money; invoiced: Money; remaining: Money; percent_spent: string; over_budget: boolean; invoices: number; contract_remaining: Money }
+export interface LedgerSummary { lines: LedgerLine[]; unallocated: LedgerLine; invoiced: Money; budget: Money; budget_unknown: number; remaining: Money; percent_spent: string; counted: number; excluded: number; comparable: boolean; sections: Record<string, Money>; sections_contract_remaining: Record<string, Money>; contract_remaining: Money }
 export interface LedgerPackage { id: string; title: string; kind: string; discipline: string; abn: string }
 export interface Ledger { groups?: Record<string, LedgerLine & { line_ids: string[] }>; project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[] }
 export interface InvoiceFilter { supplier: string; month: string; line: string; status: string }

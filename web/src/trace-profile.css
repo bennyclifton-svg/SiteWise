@@ -289,6 +289,15 @@
   .pf-tb-col { border-left: 0; }
   .pf-tb-col .pf-tb-head, .pf-tb-col .pf-row { padding-left: 0; }
 }
+/* The title block (Profile and RFP page one) also folds by its pane width:
+   the documents panel can narrow the sheet on a wide screen. */
+@container workspace (max-width: 760px) {
+  .cockpit-scroll .pf-card.pf-titleblock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container workspace (max-width: 520px) {
+  .cockpit-scroll .pf-card.pf-titleblock { grid-template-columns: minmax(0, 1fr); }
+  .pf-titleblock .pf-tb-col { border-left: 0; }
+}
 
 /* ---------- Refinements ---------- */
 
@@ -433,18 +442,10 @@
 
 /* ---------- Profile layout, owner direction 7 Nov 2026 ---------- */
 
-/* Section titles take the table heading's blue. */
+/* Section titles take the table heading's blue (table-heads.css). */
 .profile .pf-head { align-items: center; }
-.profile .pf-head h2 { color: color-mix(in oklab, var(--head-tone) 78%, var(--sw-text-primary)); }
 .cockpit-scroll .pf-head-actions { flex-wrap: nowrap; }
 
-/* Three dots beside Update project profile: Download and Add part. */
-.pf-more { position: relative; }
-.pf-more-btn { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--sw-text-secondary); cursor: pointer; }
-.pf-more-btn svg { width: 18px; height: 18px; }
-.pf-more-btn:hover, .pf-more-btn[aria-expanded="true"] { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
-.pf-more-menu { z-index: 20; margin-top: 4px; }
-.pf-more-menu button { white-space: nowrap; }
 .pf-add-part { display: flex; align-items: center; gap: 6px; }
 .pf-add-part .input { width: 160px; }
 
@@ -453,6 +454,7 @@
 .cockpit-scroll .pf-card.pf-titleblock { margin-top: 0; }
 .pf-titleblock .pf-tb-head {
   height: auto;
+  margin: 0;
   padding: 8px 12px;
   border-bottom: 1px solid var(--sw-border-strong);
   font-family: inherit;
@@ -466,6 +468,9 @@
    other readings fold behind "+n". */
 .pf-titleblock.pf-paired .pf-row {
   grid-template-columns: minmax(64px, 42%) minmax(0, 1fr);
+  /* One track the row's own height: a tall label side (pencil, count, reset)
+     must not grow it, or the edit box below grows past the row. */
+  grid-template-rows: minmax(0, 1fr);
   height: 48px;
   min-height: 0;
   align-items: start;
@@ -480,7 +485,8 @@
 .pf-titleblock.pf-paired .pf-pair-head { gap: 3px; }
 .pf-pair-why { display: flex; align-items: center; gap: 6px; min-height: 14px; min-width: 0; }
 .pf-titleblock.pf-paired .pf-value { overflow: visible; white-space: nowrap; }
-.pf-titleblock.pf-paired .pf-value:has(.pf-control) { margin-bottom: -7px; }
+/* The edit box runs from the rule above to the row's own rule, not over it. */
+.pf-titleblock.pf-paired .pf-value:has(.pf-control) { margin-bottom: -6px; }
 .pf-titleblock.pf-paired .pf-col-more .pf-row { height: 48px; }
 
 .pf-alts-pop { position: relative; }
@@ -527,6 +533,7 @@
 .pf-team-table thead th { height: auto; padding: 8px 12px; border-bottom: 1px solid var(--sw-border-strong); line-height: 1.5; }
 .pf-team-table tbody th { color: var(--sw-text-tertiary); font-weight: 400; }
 .pf-team-table td { color: var(--sw-text-primary); }
+.pf-team-table .pf-team-blank th { color: var(--sw-text-disabled, var(--sw-text-tertiary)); opacity: 0.7; }
 
 @media print {
   .pf-head-actions { display: none !important; }

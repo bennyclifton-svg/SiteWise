@@ -33,6 +33,6 @@ test("a commercial fit-out saves each service as a row; a removed row stays remo
   await expect(page.getByRole("rowheader", { name: /^Electrical/ })).toBeVisible();
   await expect(page.getByRole("rowheader", { name: /^Certifier/ })).toHaveCount(0);
   // The PM can still add it back by hand.
-  await page.getByRole("button", { name: "Add discipline", exact: true }).click();
+  await page.getByRole("button", { name: "New discipline", exact: true }).click();
   await expect(page.getByLabel("Discipline", { exact: true }).locator('option[value="consultant.certifier"]')).toHaveCount(1);
 });

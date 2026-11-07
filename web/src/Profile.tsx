@@ -1,5 +1,6 @@
 import { Pending } from "./Activity";
-import { IconMore } from "./icons";
+import { IconDownload, IconPlus } from "./icons";
+import { MoreMenu, UpdateButton } from "./PageActions";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
@@ -273,7 +274,7 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   const note = data.failed_documents > 0
     ? `${data.failed_documents} document${data.failed_documents === 1 ? "" : "s"} could not be processed${data.active_documents > 0 ? ` · ${data.active_documents} still processing` : ""}`
     : data.unread_documents > 0
-      ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} ready to read. Select Update project profile to start.`
+      ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} ready to read. Select Update to start.`
       : data.pending_documents > 0
         ? data.active_documents > 0 ? "Documents are being processed; fields appear as reading finishes" : "Waiting for document processing to start or resume"
         : requestNote || (total + data.skipped_documents === 0 ? "Upload documents to start" : coverage.some((d) => !d.current) ? "Update needed to check complete source coverage" : "");
@@ -355,10 +356,13 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
           <h2 id="pf-project">Project</h2>
           <div className="pf-head-actions">
             {addingPart && <AddPart projectId={projectId} onDone={() => { setAddingPart(false); profileApi.get(projectId).then(setData, fail); }} onCancel={() => setAddingPart(false)} onError={fail} />}
-            <button type="button" className="btn" onClick={update} disabled={requesting}>
-              {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update project profile" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update project profile"}
-            </button>
-            <MoreMenu onAddPart={() => setAddingPart(true)} />
+            <UpdateButton onClick={update} disabled={requesting}>
+              {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update"}
+            </UpdateButton>
+            <MoreMenu label="Profile actions" items={[
+              { label: "Download project profile", icon: <IconDownload />, onSelect: () => window.print() },
+              { label: "Add part", icon: <IconPlus />, onSelect: () => setAddingPart(true) },
+            ]} />
           </div>
         </div>
         <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} />
@@ -574,33 +578,6 @@ function useSiteFields(projectId: string, tick: number, readings: ProfileField[]
 
 const KINDS = ["building", "part", "storey", "compartment", "tenancy", "outbuilding"];
 
-/** The page's other actions, behind three dots beside Update project profile. */
-function MoreMenu({ onAddPart }: { onAddPart: () => void }) {
-  const [open, setOpen] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    root.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
-    const close = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
-  }, [open]);
-  const pick = (action: () => void) => () => { setOpen(false); action(); };
-  return (
-    <div className="pf-more" ref={root} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}>
-      <button type="button" className="pf-more-btn" aria-label="Profile actions" title="Profile actions" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
-        <IconMore />
-      </button>
-      {open && (
-        <div className="page-action-menu pf-more-menu" role="menu" aria-label="Profile actions">
-          <button type="button" role="menuitem" onClick={pick(() => window.print())}>Download project profile</button>
-          <button type="button" role="menuitem" onClick={pick(onAddPart)}>Add part</button>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function AddPart({ projectId, onDone, onCancel, onError }: { projectId: string; onDone: () => void; onCancel: () => void; onError: (e: unknown) => void }) {
   const [label, setLabel] = useState("");
   const [kind, setKind] = useState("building");
@@ -642,9 +619,12 @@ function PartsRow({ parts }: { parts: ProfileData["parts"] }) {
   );
 }
 
-/** Consultants appointed through Procurement, one per row. */
+/** Rows the consultant team always shows, so the table reads as a slot to fill. */
+const TEAM_PLACEHOLDER_ROWS = 3;
+
+/** Consultants appointed through Procurement, one per row, padded with blank discipline rows. */
 function ConsultantTeam({ appointed }: { appointed: NonNullable<ProfileData["appointed"]> }) {
-  if (appointed.length === 0) return null;
+  const blanks = Array.from({ length: Math.max(0, TEAM_PLACEHOLDER_ROWS - appointed.length) }, (_, i) => appointed.length + i + 1);
   return (
     <section className="pf-section pf-team" aria-labelledby="pf-team">
       <div className="pf-head">
@@ -652,7 +632,7 @@ function ConsultantTeam({ appointed }: { appointed: NonNullable<ProfileData["app
       </div>
       <table className="pf-team-table" data-testid="profile-appointed">
         <thead>
-          <tr><th scope="col">Role</th><th scope="col">Consultant</th><th scope="col">Contact</th><th scope="col">Email</th><th scope="col">Phone</th></tr>
+          <tr><th scope="col">Discipline</th><th scope="col">Consultant</th><th scope="col">Contact</th><th scope="col">Email</th><th scope="col">Phone</th></tr>
         </thead>
         <tbody>
           {appointed.map((a) => (
@@ -662,6 +642,12 @@ function ConsultantTeam({ appointed }: { appointed: NonNullable<ProfileData["app
               <td>{a.contact || "—"}</td>
               <td title={a.email || undefined}>{a.email ? <a className="cell-link" href={`mailto:${a.email}`}>{a.email}</a> : "—"}</td>
               <td>{a.phone ? <a className="cell-link" href={`tel:${a.phone.replace(/\s/g, "")}`}>{a.phone}</a> : "—"}</td>
+            </tr>
+          ))}
+          {blanks.map((n) => (
+            <tr key={`blank-${n}`} className="pf-team-blank">
+              <th scope="row">Discipline {n}</th>
+              <td /><td /><td /><td />
             </tr>
           ))}
         </tbody>

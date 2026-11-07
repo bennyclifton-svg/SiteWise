@@ -233,20 +233,10 @@ func (b *builder) role() {
 		}
 		route = append(route, row.Text)
 	}
+	// The owner removed the Design team table (7 Nov 2026): the consultant
+	// team lives on the project profile, not in each RFP.
 	basis := map[string]any{"rows": b.r.Role, "appointment": b.r.Appointment}
-	if len(b.r.Team) == 0 {
-		b.add("role", "rfp:role", "", strings.Join(append(lines, route...), "\n"), nil, basis)
-		return
-	}
-	b.add("role", "rfp:role", "", strings.Join(lines, "\n"), nil, basis)
-	rows := [][]string{}
-	for _, m := range b.r.Team {
-		rows = append(rows, []string{m.Title, m.EngagedBy, m.Status})
-	}
-	b.add("role", "rfp:role:team", "Design team", "", doc([]string{"Consultant", "Engaged by", "Status"}, rows), map[string]any{"team": b.r.Team})
-	if len(route) > 0 {
-		b.add("role", "rfp:role:appointment", "", strings.Join(route, "\n"), nil, basis)
-	}
+	b.add("role", "rfp:role", "", strings.Join(append(lines, route...), "\n"), nil, basis)
 }
 
 func (b *builder) stages() { b.consultantStages() }

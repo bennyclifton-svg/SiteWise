@@ -262,6 +262,12 @@ body {
   display: none !important;
 }
 
+/* A details panel (firm details beside a price table) takes the column in
+   place of the register while it is open; the register returns on Close. */
+.side-panel-slot:empty { display: none; }
+.side-panel-slot { display: flex; flex: 1; min-height: 0; flex-direction: column; }
+.project-side-panel:has(> .side-panel-slot:not(:empty)) > :not(.side-panel-slot, .repo-resize) { display: none; }
+
 .project-side-panel {
   position: relative;
   grid-column: 3;
@@ -445,10 +451,6 @@ body {
   padding: 0 12px 8px;
   color: var(--sw-text-tertiary);
   font-size: var(--fs-md);
-}
-
-.leftnav .devstatus {
-  margin: 8px 18px 0;
 }
 
 /* ---------- document repository ---------- */
@@ -1342,6 +1344,29 @@ body {
 .page-action-menu { position: absolute; right: 0; top: 100%; min-width: 200px; max-width: calc(100vw - 32px); padding: 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-sm); }
 .page-action-menu a, .page-action-menu button { display: block; width: 100%; padding: 9px 12px; color: var(--ink); background: none; border: 0; text-align: left; text-decoration: none; font: inherit; font-size: var(--fs-md); cursor: pointer; }
 .page-action-menu a:hover, .page-action-menu button:hover, .page-action-menu :focus-visible { background: var(--ground); }
+/* Menus sit a step off the page so they read as raised (owner direction,
+   7 Nov 2026): a touch of ink mixed into the surface, both themes. */
+.page-action-menu { z-index: 30; background: color-mix(in oklab, var(--sw-text-primary) 6%, var(--sw-surface-elevated)); }
+.page-action-menu a:hover, .page-action-menu button:hover, .page-action-menu :focus-visible { background: color-mix(in oklab, var(--sw-text-primary) 12%, var(--sw-surface-elevated)); outline: none; }
+
+/* Update: the same button on Profile and on an RFP or RFT. */
+.btn-update { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn-update svg { flex: none; width: 15px; height: 15px; }
+
+/* Three dots: the page's other actions, each with its icon (Profile, RFP). */
+.more-menu { position: relative; display: inline-flex; }
+.more-menu-btn { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--sw-text-secondary); cursor: pointer; }
+.more-menu-btn svg { width: 18px; height: 18px; }
+.more-menu-btn:hover, .more-menu-btn[aria-expanded="true"] { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.more-menu-btn:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
+.more-menu-list { margin-top: 4px; padding: 6px 0; }
+.more-menu-list a, .more-menu-list button { display: flex; align-items: center; gap: 14px; padding: 9px 18px 9px 14px; white-space: nowrap; border-radius: 0; }
+.more-menu-icon { display: grid; place-items: center; flex: none; width: 18px; height: 18px; color: var(--sw-text-secondary); }
+.more-menu-icon svg { width: 18px; height: 18px; }
+/* A switch in the menu shows a tick on the right while it is on. */
+.more-menu-tick { display: grid; place-items: center; margin-left: auto; padding-left: 14px; color: var(--sw-text-primary); }
+.more-menu-list button:disabled { color: var(--sw-text-tertiary); cursor: default; }
+.more-menu-list button:disabled:hover { background: none; }
 @media print { .page-action-rail { display: none !important; } .cockpit-page { display: block; } }
 
 @media print {
@@ -1377,11 +1402,16 @@ body {
 .theme-button { width: 36px; height: 36px; box-shadow: none; }
 .theme-button svg { width: 20px; height: 20px; }
 .page-download { display: flex; align-items: center; gap: 6px; width: auto; min-height: 36px; padding: 0 10px; color: var(--ink); font: inherit; font-size: var(--fs-md); text-decoration: none; cursor: pointer; }
-.navigation-content { display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; }
-.cockpit-shell .switcher-list { position: relative; top: auto; width: 100%; max-height: none; margin-top: 6px; box-sizing: border-box; box-shadow: none; }
+.navigation-content { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+/* The project switcher floats over the page, wider than the nav, so opening
+   it moves nothing and the nav never needs a scrollbar. Only the result list
+   scrolls, and only when there are many projects. */
+.cockpit-shell > .leftnav { position: relative; z-index: 30; overflow: visible; }
+.cockpit-shell .switcher-list { top: calc(100% - 2px); width: max-content; min-width: 100%; max-width: min(440px, calc(100vw - 48px)); max-height: none; overflow: visible; padding: 6px; box-sizing: border-box; box-shadow: 0 10px 28px color-mix(in oklab, var(--sw-p-neutral-950) 30%, transparent); }
 .switcher-list .input { width: 100%; min-width: 0; box-sizing: border-box; }
-.switcher-results { padding: 0; margin: 6px 0; list-style: none; max-height: 30vh; overflow-y: auto; }
-.switcher-results button, .switcher-home { overflow-wrap: anywhere; font-size: var(--fs-md); }
+.switcher-results { padding: 0; margin: 6px 0; list-style: none; max-height: 50vh; overflow-y: auto; }
+.switcher-results button, .switcher-home { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-md); }
+.switcher-results button { display: block; }
 .switcher-home { border-top: 1px solid var(--line) !important; border-radius: 0 !important; }
 .nav-planned { display: block; font-size: var(--fs-sm); font-weight: 400; }
 .nav-item[aria-current="page"], .nav-item:hover:not(:disabled) { background: var(--sw-hover-bg); }
@@ -1401,7 +1431,9 @@ body {
   .mobile-nav-toggle { display: inline-flex; align-self: flex-start; }
   .leftnav:not([data-mobile-open]) .navigation-content { display: none; }
   .leftnav .leftnav-logo { height: 56px; }
-  .leftnav .navigation-content { max-height: 65vh; }
+  .leftnav .navigation-content { max-height: 65vh; overflow-y: auto; }
+  .cockpit-shell .switcher-list { position: relative; top: auto; width: 100%; max-width: none; margin-top: 6px; box-shadow: none; }
+  .switcher-results button, .switcher-home { white-space: normal; overflow-wrap: anywhere; }
   .cockpit-shell-header { height: auto; min-height: 80px; }
   .cockpit-header-actions { gap: 8px; align-self: center; padding-bottom: 0; }
   .cockpit-address { overflow-wrap: anywhere; }
@@ -1411,11 +1443,10 @@ body {
 .project-list li { grid-template-columns: minmax(0, 1fr) auto; }
 /* Account menu, foot of the left nav. The popover opens upward inside the nav. */
 .account-menu { position: relative; margin: 8px 12px 0; padding-top: 8px; border-top: 1px solid var(--sw-border-default); }
-.account-trigger { display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-md); text-align: left; cursor: pointer; }
+.account-trigger { display: flex; align-items: center; gap: 10px; width: auto; min-width: 0; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-md); text-align: left; cursor: pointer; }
 .account-trigger:hover, .account-trigger[aria-expanded="true"] { background: var(--sw-hover-bg); }
 .account-trigger:focus-visible, .account-item:focus-visible { outline: 2px solid var(--azure); outline-offset: 2px; }
 .account-initials { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--sw-text-primary); color: var(--sw-surface); font-size: var(--fs-sm); font-weight: 600; letter-spacing: 0.02em; }
-.account-email { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--sw-text-secondary); }
 .account-popover { position: absolute; left: 0; right: 0; bottom: calc(100% + 4px); z-index: 30; display: grid; gap: 2px; padding: 5px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-sm); }
 .account-group { display: grid; gap: 2px; margin: 2px 0; padding: 4px 0; border-block: 1px solid var(--sw-border-default); }
 .account-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-md); text-align: left; text-decoration: none; cursor: pointer; }

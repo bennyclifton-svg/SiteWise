@@ -1,8 +1,59 @@
 import { Children, cloneElement, createContext, isValidElement, useContext, useEffect, useId, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { IconDownload } from "./icons";
+import { IconConfirmed, IconDownload, IconMore, IconUpdate } from "./icons";
 
-export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
+/** The page's Update: the same button on Profile and on an RFP or RFT. */
+export function UpdateButton({ onClick, disabled, title, busy, children = "Update" }: { onClick: () => void; disabled?: boolean; title?: string; busy?: boolean; children?: ReactNode }) {
+  return <button type="button" className="btn btn-update" onClick={onClick} disabled={disabled} title={title} aria-busy={busy || undefined}><IconUpdate /><span>{children}</span></button>;
+}
+
+/** A menu item; one with `checked` is a switch that stays open when toggled. */
+export type MenuItem = { label: string; icon: ReactNode; onSelect?: () => void; href?: string; download?: boolean; checked?: boolean; disabled?: boolean };
+
+/** The page's other actions behind three dots; each item shows its icon. */
+export function MoreMenu({ label, items }: { label: string; items: MenuItem[] }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const id = useId();
+  useEffect(() => {
+    if (!open) return;
+    root.current?.querySelector<HTMLElement>('[role^="menuitem"]:not(:disabled)')?.focus();
+    const close = (e: PointerEvent) => { if (!root.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
+  }, [open]);
+  const pick = (item: MenuItem) => () => { if (item.checked === undefined) setOpen(false); item.onSelect?.(); };
+  return <div className="more-menu" ref={root} onKeyDown={e => {
+    if (e.key === "Escape") { e.stopPropagation(); setOpen(false); trigger.current?.focus(); }
+    if (open && ["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) {
+      e.preventDefault();
+      const all = Array.from(root.current?.querySelectorAll<HTMLElement>('[role^="menuitem"]:not(:disabled)') ?? []);
+      const at = all.indexOf(document.activeElement as HTMLElement);
+      const next = e.key === "Home" ? 0 : e.key === "End" ? all.length - 1 : (at + (e.key === "ArrowUp" ? -1 : 1) + all.length) % all.length;
+      all[next]?.focus();
+    }
+  }}>
+    <button ref={trigger} type="button" className="more-menu-btn" aria-label={label} title={label} aria-haspopup="menu" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><IconMore /></button>
+    {open && <div id={id} className="page-action-menu more-menu-list" role="menu" aria-label={label}>
+      {items.map(item => item.href
+        ? <a key={item.label} role="menuitem" href={item.href} download={item.download || undefined} onClick={pick(item)}><span className="more-menu-icon" aria-hidden="true">{item.icon}</span>{item.label}</a>
+        : <button key={item.label} type="button" role={item.checked === undefined ? "menuitem" : "menuitemcheckbox"} aria-checked={item.checked} disabled={item.disabled} onClick={pick(item)}>
+          <span className="more-menu-icon" aria-hidden="true">{item.icon}</span>{item.label}
+          {item.checked && <span className="more-menu-tick" aria-hidden="true"><IconConfirmed /></span>}</button>)}
+    </div>}
+  </div>;
+}
+
+export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null; sideTarget?: HTMLDivElement | null; openSide?: () => void }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
+
+/** Details about the thing in the working view (not a document) take the
+ * right-hand column in place of the register while they are open. */
+export function PageSidePanel({ children }: { children: ReactNode }) {
+  const { sideTarget, openSide } = useContext(PageActionsContext);
+  useEffect(() => { openSide?.(); }, [openSide]);
+  return sideTarget ? createPortal(children, sideTarget) : null;
+}
 
 export function PagePrimaryAction({ surface, children }: { surface: string; children: ReactNode }) {
   const { surface: active, primaryTarget } = useContext(PageActionsContext);
@@ -46,7 +97,7 @@ function DownloadMenu({ children }: { children: ReactNode }) {
     if (event.key === "Escape") { event.stopPropagation(); setOpen(false); trigger.current?.focus(); }
     if (open && ["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
       event.preventDefault();
-      const items = Array.from(root.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
+      const items = Array.from(root.current?.querySelectorAll<HTMLElement>('[role^="menuitem"]:not(:disabled)') ?? []);
       const current = items.indexOf(document.activeElement as HTMLElement);
       const next = event.key === "Home" ? 0 : event.key === "End" ? items.length - 1 : (current + (event.key === "ArrowUp" ? -1 : 1) + items.length) % items.length;
       items[next]?.focus();

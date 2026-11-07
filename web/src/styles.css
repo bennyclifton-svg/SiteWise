@@ -1608,42 +1608,6 @@ button.cell[data-state="check"]:hover {
   font-size: var(--fs-sm);
 }
 
-/* development server status, foot of the left nav */
-
-.devstatus {
-  margin-top: auto;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--ink-body);
-  font-size: var(--fs-sm);
-}
-
-.devstatus small {
-  display: block;
-  color: var(--ink-muted);
-  font-size: var(--fs-xs);
-}
-
-.devstatus-dot {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  margin-top: 4px;
-  border-radius: 50%;
-  background: var(--ok);
-}
-
-.devstatus[data-state="stale"] .devstatus-dot {
-  background: var(--warn);
-}
-
-.devstatus[data-state="offline"] .devstatus-dot {
-  background: var(--alert);
-}
-
 .pf-sources { border-block: 1px solid var(--line); padding: 14px 0; scroll-margin-top: 16px; }
 .pf-sources h2 button { font: inherit; }
 .pf-source-filters { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }

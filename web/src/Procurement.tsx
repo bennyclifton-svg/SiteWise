@@ -11,7 +11,7 @@ import { api, ApiError, type Option } from "./api";
 import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
-import { IconBin, IconUpload } from "./icons";
+import { IconBin, IconPrint, IconUpload } from "./icons";
 import { packageApi, type CombinePrompt, type PackageOverview, type PackageRecord } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
@@ -19,6 +19,7 @@ import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard 
 import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
+import { MoreMenu, PageActions } from "./PageActions";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { clickRow, emptySelection, prune } from "./table/selection";
 import "./reports.css";
@@ -197,11 +198,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
     try { await procurementApi.dismiss(projectId, row.proposalKey!); setReload(n => n + 1); }
     catch (e) { fail(e, "create"); } finally { setBusyRow(""); }
   }
-  async function createPmp() {
-    setBusyRow("pmp"); setError("");
-    try { const report = await reportApi.create(projectId, "", "pmp"); setView({ at: "report", id: report.id }); }
-    catch (e) { fail(e); } finally { setBusyRow(""); }
-  }
   const back = () => { setView({ at: "table" }); setReload(n => n + 1); };
   // A proposal dropped on a row is filed like any upload, and its package
   // is the row's: the firm column appears once it is read.
@@ -241,7 +237,10 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   }
 
   if (view.at === "report") return <Reports transmittal={transmittal} key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
-  if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} onOpenDocument={onOpenDocument} />;
+  // An open RFP has its own menu (Reports); prices print from the top right,
+  // the table from its own three dots beside New.
+  const print = <PageActions surface="procurement"><button type="button" onClick={() => window.print()}>Print procurement</button></PageActions>;
+  if (view.at === "prices") return <>{print}<Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} onOpenDocument={onOpenDocument} /></>;
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
   const reportOf = (pkg: PackageRecord) => data?.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp");
@@ -272,7 +271,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   const trades = rows.filter(r => r.kind !== "services").sort(byTitle);
   const used = new Set(live.map(p => p.discipline_id).filter(Boolean));
   const options = (prefix: string) => disciplines.filter(d => d.id.startsWith(prefix) && !used.has(d.id));
-  const pmp = data?.reports.find(r => r.kind === "pmp");
 
   function rowView(row: Row) {
     const busy = busyRow === row.key;
@@ -317,7 +315,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
       <h1>Procurement</h1>
       <div className="procurement-actions">
       {tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
-      <button type="button" className="btn btn-small" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>Add discipline</button>
+      <button type="button" className="btn btn-small" aria-label="New discipline" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>New</button>
+      <MoreMenu label="Procurement actions" items={[{ label: "Print procurement", icon: <IconPrint />, onSelect: () => window.print() }]} />
       </div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
@@ -372,9 +371,6 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         {!rows.length && draft === null && <tbody><tr><td colSpan={COLUMNS} className="procurement-empty">No disciplines yet. Add one to start an RFP or RFT.</td></tr></tbody>}
       </table>
     </div>}
-    {data && <p className="procurement-line procurement-pmp">Project management plan:{" "}
-      {pmp ? <button type="button" className="table-action" aria-label="View project management plan" onClick={() => setView({ at: "report", id: pmp.id })}>View</button>
-        : <button type="button" className="table-action" aria-label="Create project management plan" disabled={busyRow === "pmp"} onClick={() => void createPmp()}>{busyRow === "pmp" ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</p>}
     {combining && <ConfirmDialog tone="plain" title={`Combine ${combining.members.length} consultants?`}
       message={`${joinNames(combining.names)} become one engagement named “${combining.title}”: one row here and one fee line in the cost plan. ${combining.costLabels.length ? `These fee lines move under it and keep their budgets: ${combining.costLabels.join(", ")}.` : "No fee lines move yet."}${combining.submissionId ? " The proposal is placed on it." : ""} Double-click the name to change it. Uncombine reverses this.`}
       confirmLabel="Combine" busy={busyRow === "combine"} busyLabel="Combining…" onConfirm={() => void combine()} onCancel={() => setCombining(null)} />}

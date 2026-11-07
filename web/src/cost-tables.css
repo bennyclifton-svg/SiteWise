@@ -115,15 +115,13 @@
 
 /* ---------- Invoices ---------- */
 
-.inv-toolbar { min-height: 36px; }
+/* Upload now lives in the page menu; the toolbar shows only when a filter is on. */
+.inv-toolbar:empty { display: none; }
 .inv-filtered { margin: 0 auto 0 0; color: var(--sw-text-secondary); font-size: var(--fs-sm); }
-.inv-upload { width: 36px; padding: 0; justify-content: center; }
-.inv-upload svg { width: 18px; height: 18px; }
 
 /* The whole table is the drop zone; dragging files over it outlines it. */
 .invoices { min-height: max(320px, calc(100vh - 300px)); }
-.invoices[data-over] .inv-table-scroll,
-.invoices[data-over] .inv-empty { outline: 1.5px dashed var(--sw-text-tertiary); outline-offset: 2px; }
+.invoices[data-over] .inv-table-scroll { outline: 1.5px dashed var(--sw-text-tertiary); outline-offset: 2px; }
 
 .cockpit-scroll .inv-table :is(th, td) { padding-left: 12px; padding-right: 12px; }
 .cockpit-scroll .inv-table :is(th, td):first-child { padding-left: 15px; }
@@ -183,14 +181,18 @@
 .cockpit-scroll .procurement-table tbody th.discipline-cell { overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-md); font-weight: 400; }
 .cockpit-scroll .procurement-table .row-suggested th.discipline-cell::after { content: " · Suggested"; display: inline; font-size: var(--fs-sm); }
 
-/* Narrower firm columns leave room for Uncombine and Remove from group. */
-.procurement-table thead th:nth-child(1) { width: 20%; }
+/* The firms get the width: RFP / RFT, Prices and the bin need only a word. */
+.procurement-table thead th:nth-child(1) { width: 15%; }
 .procurement-table thead th:nth-child(2),
 .procurement-table thead th:nth-child(3),
-.procurement-table thead th:nth-child(4) { width: 16%; }
-.procurement-table thead th:nth-child(5) { width: 9%; }
-.procurement-table thead th:nth-child(6) { width: 11%; }
-.procurement-table thead th:nth-child(7) { width: 12%; text-align: right; }
+.procurement-table thead th:nth-child(4) { width: 20.5%; }
+.procurement-table thead th:nth-child(5) { width: 7.5%; }
+.procurement-table thead th:nth-child(6) { width: 9%; }
+.procurement-table thead th:nth-child(7) { width: 7%; text-align: right; }
+/* Each row is two lines tall so a firm reads name over price. */
+.cockpit-scroll .procurement-table tbody tr:not(.group-row, .draft-row) :is(th, td) { height: calc(var(--ct-row-h) * 2); }
+/* Uncombine and Remove from group may take two lines in the narrow bin column. */
+.cockpit-scroll .procurement-table td.row-bin-cell { white-space: normal; line-height: 16px; }
 /* Nothing spills into the next column: long words are cut short. */
 .cockpit-scroll .procurement-table tbody td { overflow: hidden; text-overflow: ellipsis; }
 .cockpit-scroll .procurement-table td.row-bin-cell { text-align: right; }
@@ -202,20 +204,23 @@
 .procurement-table th.discipline-cell:focus-visible { box-shadow: inset 2px 0 0 var(--sw-text-tertiary); }
 .procurement-actions { display: flex; align-items: center; gap: 8px; }
 
-/* A firm on one line: name (cut short if it must be), then its price. */
+/* A firm on two lines: its name, then its price (and any status) below. */
 .cockpit-scroll .procurement-table .firm-card .firm-chip {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  align-content: center;
+  gap: 2px 8px;
   width: 100%;
-  height: 26px;
+  height: auto;
+  min-height: 44px;
   margin: 0 0 0 -6px;
-  padding: 0 28px 0 6px;
+  padding: 3px 28px 3px 6px;
   border-radius: 4px;
   font-size: var(--fs-md);
 }
-.cockpit-scroll .procurement-table .firm-chip-name { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; line-height: 18px; font-weight: 400; }
-.cockpit-scroll .procurement-table .firm-chip-figure { flex: none; color: var(--sw-text-secondary); font-size: var(--fs-md); }
+.cockpit-scroll .procurement-table .firm-chip-name { flex: 1 0 100%; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; line-height: 18px; font-weight: 400; color: var(--sw-text-primary); }
+.cockpit-scroll .procurement-table .firm-chip-figure { flex: none; color: var(--sw-text-primary); font-size: var(--fs-md); line-height: 18px; }
 .cockpit-scroll .procurement-table .firm-chip-status { flex: none; font-size: var(--fs-sm); }
 .cockpit-scroll .procurement-table .firm-chip.lowest .firm-chip-figure { font-weight: 400; color: var(--sw-text-primary); }
 .cockpit-scroll .procurement-table .firm-chip[data-status="awarded"] { background: color-mix(in oklab, var(--sw-success-text) 12%, transparent); color: var(--sw-success-text); }
@@ -226,9 +231,10 @@
 .cockpit-scroll .procurement-table .firm-slot .table-action { margin: 0 0 0 6px; }
 
 /* Drop a proposal: a target big enough to see and hit. */
-.cockpit-scroll .procurement-table .proposal-drop-icon { width: 30px; height: 26px; margin-left: -6px; border-radius: 4px; color: var(--sw-text-tertiary); opacity: 1; }
+/* Empty slots are ghosted so the firms that are in stand out. */
+.cockpit-scroll .procurement-table .proposal-drop-icon { width: 30px; height: 26px; margin-left: -6px; border-radius: 4px; color: var(--sw-text-tertiary); opacity: .4; }
 .cockpit-scroll .procurement-table .proposal-drop-icon svg { width: 20px; height: 20px; }
-.cockpit-scroll .procurement-table tr:hover .proposal-drop-icon { color: var(--sw-text-primary); }
+.cockpit-scroll .procurement-table tr:hover .proposal-drop-icon { opacity: .8; }
 
 /* View, Create, Prices, Review, Uncombine: words, not pills. */
 .cockpit-scroll .procurement-table .table-action {
@@ -245,3 +251,11 @@
 }
 .cockpit-scroll .procurement-table .table-action:hover:not(:disabled) { border: 0; background: none; color: var(--sw-text-primary); text-decoration: underline; text-underline-offset: 3px; }
 .cockpit-scroll .procurement-table .draft-row td { height: auto; padding-top: 6px; padding-bottom: 6px; }
+
+/* Empty ledger: grey example row, drop hint, blank lines. No hover, nothing to select. */
+.cockpit-scroll .inv-table[data-empty] tbody tr:hover td { background: var(--paper); }
+.cockpit-scroll .inv-table .inv-example td { color: var(--sw-text-tertiary); font-style: italic; }
+.cockpit-scroll .inv-table .inv-hint td { max-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--sw-text-secondary); }
+.inv-table .inv-hint svg { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
+.inv-table .inv-hint strong { font-weight: 500; color: var(--sw-text-primary); }
+.invoices[data-over] .inv-table[data-empty] tbody td { background: var(--ct-selected); }

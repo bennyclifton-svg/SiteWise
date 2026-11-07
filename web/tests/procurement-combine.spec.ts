@@ -9,7 +9,7 @@ test("two consultants combine into one engagement and uncombine", async ({page},
   await page.getByRole('button', {name:'Create project', exact:true}).click();
   await page.getByRole('button', {name:'Procurement', exact:true}).click();
   for (const discipline of ['consultant.structural', 'consultant.civil']) {
-    await page.getByRole('button', {name:'Add discipline', exact:true}).click();
+    await page.getByRole('button', {name:'New discipline', exact:true}).click();
     await page.getByLabel('Discipline', {exact:true}).selectOption(discipline);
     await page.getByRole('button', {name:'Add row', exact:true}).click();
   }

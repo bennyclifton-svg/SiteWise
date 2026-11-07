@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { ApiError } from "./api";
 import { fmt } from "./CostGrid";
 import { IconCheck, IconConfirmed, IconNotChecked, IconNotSet, IconUpload, IconYou } from "./icons";
+import { PageSidePanel } from "./PageActions";
 import { invoiceApi, uploadInvoice, type Invoice, type InvoiceField, type InvoiceFilter, type Ledger } from "./invoiceApi";
 
 export const STATUS_WORD: Record<string, string> = { reading: "Reading…", filed: "Filed", needs_review: "Needs review", not_read: "Not read", void: "Void", superseded: "Superseded" };
@@ -81,16 +82,18 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
   const [disciplineError, setDisciplineError] = useState("");
   const disciplineSaving = useRef(false);
 
-  async function saveDiscipline(invoice: Invoice, supplier: string) {
-    if (disciplineSaving.current || supplier === invoice.supplier_id) return;
+  // Discipline and activity line are picked straight from the row: one edit, no Jev.
+  async function saveRowField(invoice: Invoice, field: "supplier" | "line", value: string) {
+    if (disciplineSaving.current) return;
+    if (field === "supplier" ? value === invoice.supplier_id : !value) return;
     disciplineSaving.current = true;
     setSavingDiscipline(invoice.id);
     setDisciplineError("");
     try {
-      onLedger(await invoiceApi.edit(projectId, invoice.id, { supplier }));
+      onLedger(await invoiceApi.edit(projectId, invoice.id, { [field]: value }));
     } catch (e) {
       if (e instanceof ApiError && e.status === 401) { onSignedOut(); return; }
-      setDisciplineError(`Could not save the discipline for ${invoice.number || invoice.filename}. Choose it again to retry.`);
+      setDisciplineError(`Could not save the ${field === "supplier" ? "discipline" : "activity line"} for ${invoice.number || invoice.filename}. Choose it again to retry.`);
     } finally {
       disciplineSaving.current = false;
       setSavingDiscipline("");
@@ -98,7 +101,6 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
   }
   const queue = useRef<{ key: string; file: File }[]>([]);
   const active = useRef(0);
-  const input = useRef<HTMLInputElement>(null);
   const depth = useRef(0);
 
   function pump() {
@@ -176,8 +178,6 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
     {/* The whole tab is the drop zone; the button opens the file picker. */}
     <div className="costs-toolbar inv-toolbar">
       {filtered && <p className="inv-filtered">Showing invoices on {filterName} · <button type="button" className="inv-open" onClick={() => onFilter({ supplier: "", month: "", line: "", status: "" })}>Show all</button></p>}
-      <button type="button" className="btn inv-upload" aria-label="Upload invoices" title="Upload invoices, or drop them on the table" onClick={() => input.current?.click()}><IconUpload /></button>
-      <input ref={input} type="file" multiple accept=".pdf,.docx,.xlsx,.md,.markdown,application/pdf" hidden data-testid="invoice-input" onChange={e => { if (e.target.files) add(e.target.files); e.target.value = ""; }} />
     </div>
     <p className="sr-only" role="status" aria-live="polite">{message}{reading ? ` ${reading} still reading.` : ""}</p>
     {uploads.length > 0 && <ul className="inv-uploads" aria-label="Uploads">{uploads.map(u => <li key={u.key} data-state={u.state}>
@@ -186,22 +186,26 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
       {(u.state === "already" || u.state === "failed") && <button type="button" className="btn btn-small" onClick={() => setUploads(x => x.filter(y => y.key !== u.key))}>Dismiss</button>}
     </li>)}</ul>}
     {disciplineError && <p role="alert" className="inv-error">{disciplineError}</p>}
-    <span className="sr-only" role="status">{savingDiscipline && "Saving discipline…"}</span>
-    {!ledger ? <p role="status"><Pending delayed>Loading invoices…</Pending></p> : invoices.length === 0 ? <div className="inv-empty"><p><strong>No invoices yet.</strong> Drop the month's invoices here, or use the upload button. Each one is read, mapped to a cost plan line, and counted in the Cost plan tab's invoiced to date.</p></div> :
-      <div className="inv-table-scroll"><table className="inv-table">
+    <span className="sr-only" role="status">{savingDiscipline && "Saving…"}</span>
+    {!ledger ? <p role="status"><Pending delayed>Loading invoices…</Pending></p> :
+      <div className="inv-table-scroll"><table className="inv-table" data-empty={invoices.length === 0 || undefined}>
         <caption className="sr-only">Invoice ledger, newest first, one row per activity line</caption>
         <thead><tr>{COLUMNS.map(([key, label]) => <th key={key} scope="col" className={key === "ex_gst" ? "num" : undefined} aria-sort={sort?.key === key ? (sort.dir === 1 ? "ascending" : "descending") : undefined}>
           <button type="button" onClick={() => setSort(sort?.key === key ? (sort.dir === 1 ? { key, dir: -1 } : null) : { key, dir: 1 })}>{label}</button></th>)}</tr></thead>
-        <tbody>{sorted.length === 0 ? <tr><td colSpan={7}>No invoices on {filterName}.</td></tr> : sorted.map(({ inv, row }) => {
+        <tbody>{invoices.length === 0 ? <EmptyRows /> : sorted.length === 0 ? <tr><td colSpan={7}>No invoices on {filterName}.</td></tr> : sorted.map(({ inv, row }) => {
           return <tr key={`${inv.id}:${row.share}`} aria-selected={selected === inv.id} data-status={inv.status}>
             <td>{day(inv.date)}</td>
             <td><button type="button" className="inv-open" onClick={() => onSelect(inv.id)}>{inv.number || inv.filename}</button>{row.shares > 1 && <span className="inv-share"> · {row.share + 1}/{row.shares}</span>}</td>
-            <td><select className="field-plain inv-discipline" aria-label={`Discipline for ${inv.number || inv.filename}${row.shares > 1 ? ` share ${row.share + 1}` : ""}`} value={inv.supplier_id} disabled={!!savingDiscipline} onChange={e => void saveDiscipline(inv, e.target.value)}>
+            <td><select className="field-plain inv-discipline" aria-label={`Discipline for ${inv.number || inv.filename}${row.shares > 1 ? ` share ${row.share + 1}` : ""}`} value={inv.supplier_id} disabled={!!savingDiscipline} onChange={e => void saveRowField(inv, "supplier", e.target.value)}>
               <option value="">Not set</option>
               {inv.supplier_id && !ledger.packages.some(p => p.id === inv.supplier_id) && <option value={inv.supplier_id}>{inv.supplier || "Unavailable discipline"}</option>}
               {ledger.packages.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
             </select></td>
-            <td>{row.line_id && onCostLine && costLineIds?.includes(row.line_id) ? <button type="button" className="inv-open" title="Show activity in cost plan" onClick={() => onCostLine(row.line_id)}>{lineLabel(row.line_id, row.line)}</button> : row.line_id ? lineLabel(row.line_id, row.line) : "Unallocated"}</td>
+            <td>{row.line_id && onCostLine && costLineIds?.includes(row.line_id) ? <button type="button" className="inv-open" title="Show activity in cost plan" onClick={() => onCostLine(row.line_id)}>{lineLabel(row.line_id, row.line)}</button> : row.line_id ? lineLabel(row.line_id, row.line) : row.shares > 1 ? "Unallocated" :
+              <select className="field-plain inv-discipline inv-line-pick" aria-label={`Activity line for ${inv.number || inv.filename}`} value="" disabled={!!savingDiscipline || inv.status === "reading"} onChange={e => void saveRowField(inv, "line", e.target.value)}>
+                <option value="">Unallocated</option>
+                {ledger.lines.filter(l => !l.archived && !ledger.groups?.[l.id]).map(l => <option key={l.id} value={l.id}>{activityLabel(l)}</option>)}
+              </select>}</td>
             <td>{month(inv.period)}</td>
             <td className="num">{fmt(row.ex_gst)}</td>
             <td><span className="inv-status" data-status={inv.status} title={inv.flags.map(x => x.reason).join("; ")}>{inv.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[inv.status] ?? inv.status}</span>{!inv.counted && inv.status !== "reading" && <span className="inv-out"> · not in totals</span>}</td>
@@ -212,11 +216,23 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
   </section>;
 }
 
+// An empty ledger still looks like the table it will become: one grey example
+// row, a drop hint and blank lines, so dropping invoices on it is the obvious move.
+const EXAMPLE_ROW = ["12 Nov 2026", "INV-0001", "Discipline", "Activity line", "Nov 2026", "0.00", "Status"];
+const BLANK_LINES = 4;
+function EmptyRows() {
+  return <>
+    <tr className="inv-example" aria-hidden="true">{EXAMPLE_ROW.map((text, i) => <td key={i} className={i === 5 ? "num" : undefined}>{text}</td>)}</tr>
+    <tr className="inv-hint"><td colSpan={7}><IconUpload /> <strong>No invoices yet.</strong> Drop invoices anywhere on this table, or choose Upload invoices from the ⋯ menu.</td></tr>
+    {Array.from({ length: BLANK_LINES }, (_, i) => <tr key={i} className="inv-blank" aria-hidden="true"><td colSpan={7} /></tr>)}
+  </>;
+}
+
 function InvoicePanel({ onCostLine, costLineIds, projectId, ledger, invoice, onClose, onLedger, onSignedOut }: { onCostLine?: (id: string) => void; costLineIds?: string[]; projectId: string; ledger: Ledger; invoice: Invoice | undefined; onClose: () => void; onLedger: (l: Ledger) => void; onSignedOut: () => void }) {
   const [busy, setBusy] = useState(false), [error, setError] = useState(""), [split, setSplit] = useState<{ line_id: string; amount: string }[] | null>(null);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape" && !(e.target instanceof HTMLInputElement)) onClose(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [onClose]);
   useEffect(() => { setSplit(null); setError(""); }, [invoice?.id]);
-  if (!invoice) return <aside className="inv-panel" aria-label="Invoice"><button type="button" className="btn btn-small" onClick={onClose}>Close</button><p>That invoice is no longer in the ledger.</p></aside>;
+  if (!invoice) return <PageSidePanel><aside className="inv-panel" aria-label="Invoice"><button type="button" className="btn btn-small" onClick={onClose}>Close</button><p>That invoice is no longer in the ledger.</p></aside></PageSidePanel>;
   async function run(action: () => Promise<Ledger>) {
     setBusy(true); setError("");
     try { onLedger(await action()); }
@@ -229,7 +245,7 @@ function InvoicePanel({ onCostLine, costLineIds, projectId, ledger, invoice, onC
   const dup = invoice.flags.find(x => x.code === "duplicate" || x.code === "look_alike");
   const twin = dup ? ledger.invoices.find(o => o.id !== invoice.id && o.status !== "void" && o.status !== "superseded" && (o.supplier_id && o.supplier_id === invoice.supplier_id || o.abn && o.abn === invoice.abn) && (o.number === dup.reason.replace(/^(Possible duplicate of|Looks like) /, "") || o.filename === dup.reason.replace(/^(Possible duplicate of|Looks like) /, ""))) : undefined;
   const money = (field: string, label: string) => <div className="inv-field"><label htmlFor={`inv-${field}`}>{label}</label><input id={`inv-${field}`} key={`${invoice.id}:${field}:${f[field]?.value}`} inputMode="decimal" defaultValue={f[field]?.value ? fmt(centsToDecimal(f[field].value)) : ""} disabled={busy} onBlur={e => save(field, e.target.value.replace(/[,$\s]/g, ""))} onKeyDown={e => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} /><Chip field={f[field]} /></div>;
-  return <aside className="inv-panel" aria-label={`Invoice ${invoice.number || invoice.filename}`}>
+  return <PageSidePanel><aside className="inv-panel" aria-label={`Invoice ${invoice.number || invoice.filename}`}>
     <span role="status">{busy && <Pending delayed>Saving…</Pending>}</span>
     <div className="inv-panel-head"><h2>{invoice.number || invoice.filename}</h2><span className="inv-status" data-status={invoice.status}>{invoice.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[invoice.status]}</span><button type="button" className="btn btn-small" onClick={onClose}>Close</button></div>
     <div className="inv-panel-body">
@@ -265,7 +281,7 @@ function InvoicePanel({ onCostLine, costLineIds, projectId, ledger, invoice, onC
         <p className="inv-file">Source file: {invoice.filename}</p>
       </form>
     </div>
-  </aside>;
+  </aside></PageSidePanel>;
 }
 
 // Decisions store amounts in cents; the inputs show dollars.

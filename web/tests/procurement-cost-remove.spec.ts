@@ -6,7 +6,7 @@ test("removing a procurement discipline offers its draft cost lines", async ({pa
   await page.getByLabel('New project').fill('Linked cost removal');
   await page.getByRole('button', {name:'Create project', exact:true}).click();
   await page.getByRole('button', {name:'Procurement', exact:true}).click();
-  await page.getByRole('button', {name:'Add discipline', exact:true}).click();
+  await page.getByRole('button', {name:'New discipline', exact:true}).click();
   await page.getByLabel('Discipline', {exact:true}).selectOption('consultant.structural');
   await page.getByRole('button', {name:'Add row', exact:true}).click();
   await expect(page.getByRole('button', {name:'Remove Structural', exact:true})).toBeVisible();

@@ -1,6 +1,5 @@
-/* Table headings (owner direction, 7 Nov 2026): every table's header row is a
-   muted band in one of two drawing colours, brass or blue, set by the page's
-   nav icon. Green and rose stay free for status (approved, flagged). */
+/* Table headings (owner direction, 7 Nov 2026): every table's header row is
+   one muted blue band. Green and rose stay free for status (approved, flagged). */
 :root, :root[data-theme="light"] {
   --tone-brass: #977426;
   --tone-blue: #2D5E9E;
@@ -9,32 +8,32 @@
   --tone-brass: #D6B565;
   --tone-blue: #93B8E0;
 }
-/* The page's tone follows its nav icon; Documents always reads blue. */
-body { --head-tone: var(--tone-brass); }
-body:has(.nav-item[aria-current="page"] .nav-icon[data-tone="blue"]) { --head-tone: var(--tone-blue); }
-.project-side-panel { --head-tone: var(--tone-blue); }
+/* Every table head is the Documents blue (owner direction, 7 Nov 2026). */
+body { --head-tone: var(--tone-blue); }
 
 :is(.cockpit-scroll, .project-side-panel) table thead th,
-.pf-titleblock .pf-tb-head,
+.pf-tb-head,
 .sw-matrow .sw-th,
 .pg-gridhead {
   /* Opaque, because sticky headers sit over scrolled rows. */
   background-color: color-mix(in oklab, var(--head-tone) 9%, var(--sw-surface)) !important;
   color: color-mix(in oklab, var(--head-tone) 78%, var(--sw-text-primary)) !important;
-  font-size: 10.5px !important;
+  /* One size for every table head: the smallest text anywhere. */
+  font-size: var(--fs-xs) !important;
   font-weight: 650 !important;
   letter-spacing: .06em !important;
   text-transform: uppercase !important;
 }
 :is(.cockpit-scroll, .project-side-panel) table thead th :is(button, a) { color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; }
-.pf-titleblock .pf-tb-head { padding-top: 8px; padding-bottom: 8px; }
-/* The register's heads are sort buttons, which render at --fs-xs; the
-   profile's heads match them so the two side-by-side tables read alike. */
-.pf-titleblock .pf-tb-head, .sw-matrow .sw-th { font-size: var(--fs-xs) !important; }
+.pf-tb-head { padding-top: 8px; padding-bottom: 8px; }
+/* Section titles take the table heading's blue: Profile and RFP alike. */
+.profile .pf-head h2,
+.report-view .report-section > h3,
+.report-view .report-section-head h3 { color: color-mix(in oklab, var(--head-tone) 78%, var(--sw-text-primary)); }
 /* Narrow figure columns keep their width: tighter tracking there. */
 .cost-grid thead th { letter-spacing: .03em !important; }
 
 @media print {
   :is(.cockpit-scroll, .project-side-panel) table thead th,
-  .pf-titleblock .pf-tb-head, .sw-matrow .sw-th, .pg-gridhead { background-color: transparent !important; color: #000 !important; }
+  .pf-tb-head, .sw-matrow .sw-th, .pg-gridhead { background-color: transparent !important; color: #000 !important; }
 }

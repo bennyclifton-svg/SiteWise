@@ -1,5 +1,5 @@
-import { IconResponseForm, IconUpdate } from "./icons";
-import { PageBesideDownload, PagePrimaryAction } from "./PageActions";
+import { IconDownload, IconResponseForm } from "./icons";
+import { MoreMenu, PagePrimaryAction, UpdateButton } from "./PageActions";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
 // One report, full width, opened from a Procurement row. Sources open beside
@@ -13,6 +13,7 @@ import { RfpStages } from "./PackageStages";
 import { ProjectPage, RfpReleaseDates, RfpIssue, RfpSectionEditor, SectionMarkers, controlSection, editableSections, type Write } from "./RfpEditor";
 import "./reports.css";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { InlineText } from "./InlineText";
 import { RfpScopePosition } from "./RfpScopePosition";
 import { RfpScopeTable, scopeTable } from "./RfpScopeTable";
 
@@ -186,7 +187,16 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
   const blockView = (block: ReportBlock, controls: RfpControls | undefined = view?.rfp, onWrite: Write = writeSetting) => draft && <article className="report-block" key={block.id}>
             <div className="report-block-heading">{block.label && <h4>{block.label}</h4>}{block.provisional && !view?.rfp && <span>Provisional</span>}{block.edited && <span>Protected wording</span>}</div>
             {block.conflict && <p className="report-conflict">{block.source_missing ? "The source is no longer present. Your wording has been kept for review." : "The source changed. Review your protected wording against its updated source."}</p>}
-            {editor?.target === block.id ? <form onSubmit={e => { e.preventDefault(); void save(); }}><label htmlFor="report-wording">Report wording</label><textarea id="report-wording" maxLength={20000} rows={5} value={editor.text} onChange={e => setEditor({ ...editor, text: e.target.value })} disabled={busy} autoFocus /><div className="report-actions"><button className="btn" disabled={busy || editConflict}>Save wording</button><button type="button" className="btn btn-small" disabled={busy} onClick={() => { setEditor(null); setLatest(null); setEditConflict(false); setError(""); }}>Cancel edit</button></div></form> : <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : block.id === "rfp:positions" ? <RfpScopePosition block={block} /> : <p className="report-wording">{block.text}</p>}<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button></>}
+            {(() => {
+              const editing = editor?.target === block.id;
+              const cancel = () => { setEditor(null); setLatest(null); setEditConflict(false); setError(""); };
+              const start = () => setEditor({ target: block.id, text: block.text, version: draft.version });
+              const inline = <InlineText text={block.text} label="Report wording" editing={editing} value={editing ? editor.text : block.text} disabled={busy || !!editor || block.source_missing} busy={busy} saveDisabled={editConflict}
+                onStart={start} onChange={text => setEditor(current => current && { ...current, text })} onSave={() => void save()} onCancel={cancel} actions={<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>} />;
+              // Tables edit as their wording; plain wording edits where it reads.
+              if (editing || !((controls && scopeTable(block)) || block.id === "rfp:positions")) return inline;
+              return <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : <RfpScopePosition block={block} />}{<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>}</>;
+            })()}
             {block.table && !(controls && scopeTable(block) && editor?.target !== block.id) && <div className="report-table-scroll"><table className="report-table">{block.table.display !== "document" && <caption>Saved source comparison{block.edited ? " — independent of edited wording" : ""}</caption>}<thead><tr>{block.table.columns.map((column,i) => <th key={i} scope="col">{column}</th>)}</tr></thead><tbody>{block.table.rows.map((row,i) => <tr key={i}>{row.map((cell,j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>}
             <BlockReferences block={block} references={draft.references} hideCalculations={view?.report.kind === "rfp"} />
             {block.edited && !block.source_missing && block.generated_text === undefined && <p>Refresh this draft before restoring its saved source wording.</p>}{block.edited && (block.source_missing || block.generated_text !== undefined) && <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => setResetTarget({ id: block.id, missing: block.source_missing, version: draft.version })}>{block.source_missing ? "Remove orphaned wording" : "Restore saved source wording"}</button>}
@@ -208,8 +218,16 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
-        <header className="report-toolbar"><div><h2>{view.rfp ? <>{view.report.title.replace(/^RFP\s*[—–-]\s*/, "RFP ")} {draft && <span className="rfp-version">Version {draft.version}</span>}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div></header>
-        <PageBesideDownload surface="procurement">{view.rfp && draft && <a className="page-refresh" href={submissionApi.responseFormURL(view.report.id)} download aria-label="Response form" title="An Excel form with a row for every fee item and a table for each returnable schedule. Proposals returned on it are read row by row."><IconResponseForm /></a>}<button type="button" className="page-refresh" aria-label={draft ? "Refresh draft" : "Assemble draft"} title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Refresh draft" : "Assemble draft"} aria-busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()}><IconUpdate /></button></PageBesideDownload>
+        <header className="report-toolbar" data-version={draft?.version}><div><h2>{view.rfp ? <>{view.report.title.replace(/^RFP\s*[—–-]\s*/, "RFP ")}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div>
+          {/* Actions sit on the title's line, flush with the page's right edge (owner, 7 Nov 2026). */}
+          <div className="report-toolbar-actions">
+          <UpdateButton title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Rebuild this draft from the project" : "Assemble the draft"} busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()} />
+          <MoreMenu label="Report actions" items={[
+            { label: "Download", icon: <IconDownload />, onSelect: () => window.print() },
+            ...(view.rfp && draft ? [{ label: "Download Excel response form", icon: <IconResponseForm />, href: submissionApi.responseFormURL(view.report.id), download: true }] : []),
+          ]} />
+          </div>
+        </header>
         {view.rfp_suggestion && <div className="report-notice" role="status"><strong>This package looks like {view.rfp_suggestion.title.toLowerCase()}</strong><p>Use the {view.rfp_suggestion.title.toLowerCase()} RFP, built from the reviewed golden set, instead of the generic one? This records the package's discipline; the package title alone never changes the scope.</p><div className="report-actions"><button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => void confirmDiscipline()}>Use the {view.rfp_suggestion.title.toLowerCase()} RFP</button></div></div>}
         {group && group.left.length > 0 && <div className="report-notice" role="status"><strong>{group.left.join(", ")} {group.left.length === 1 ? "has" : "have"} left this engagement.</strong><p>{group.left.length === 1 ? "Its part is" : "Their parts are"} dropped when you refresh the draft.</p></div>}
         {view.rfp && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}

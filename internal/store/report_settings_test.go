@@ -127,8 +127,8 @@ func TestConsultantRFPDraftAndSettings(t *testing.T) {
 	if len(visible) < 2 || visible[0] != "1. Project" || visible[len(visible)-1] != "Proposal dates" {
 		t.Fatalf("first visible section %v", visible)
 	}
-	if team := blockTable(d, "rfp:role:team"); !strings.Contains(team, "Civil|Client|To be appointed") {
-		t.Fatalf("other consultants carry their real status: %q", team)
+	if team := blockTable(d, "rfp:role:team"); team != "" {
+		t.Fatalf("the RFP prints no design team table: %q", team)
 	}
 	view, err := s.ReadReport(ctx, orgA, r.ID, "test-build")
 	if err != nil || view.RFP == nil || view.PageFit == nil || view.PageFit.Limit != 4 {

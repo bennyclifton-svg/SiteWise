@@ -1,5 +1,5 @@
 import { PageActionsContext } from "./PageActions";
-import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type DragEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { IconDocumentsPanel } from "./icons";
 import { ProjectName } from "./ProjectName";
 interface Props {
@@ -166,8 +166,10 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
   const [actionTarget, setActionTarget] = useState<HTMLDivElement | null>(null);
   const [besideTarget, setBesideTarget] = useState<HTMLDivElement | null>(null);
   const [primaryTarget, setPrimaryTarget] = useState<HTMLDivElement | null>(null);
+  const [sideTarget, setSideTarget] = useState<HTMLDivElement | null>(null);
+  const openSide = useCallback(() => setShowDocuments(true), []);
   return (
-    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget, besideTarget }}>
+    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget, besideTarget, sideTarget, openSide }}>
     <div className={`cockpit-page${wideWorkspace?" specification-page":""}`}>
       <div
         ref={shell}
@@ -237,6 +239,7 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
               onKeyDown={onResizeKey}
             />
           )}
+          <div className="side-panel-slot" ref={setSideTarget} />
           {repository}
         </aside>
       </div>

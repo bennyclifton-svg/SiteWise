@@ -359,11 +359,17 @@ ORDER BY title, id`, orgID, projectID)
 				budget = &c
 			}
 		}
+		var contract *int64
+		if v, ok := it.Values["commitment"]; ok && v.ValueState == "known" && v.Amount != nil {
+			if c, ok, err := invoices.ParseCents(string(*v.Amount)); err == nil && ok {
+				contract = &c
+			}
+		}
 		parent := ""
 		if groups[it.ParentItemID] {
 			parent = it.ParentItemID
 		}
-		plan.lines = append(plan.lines, invoices.BudgetLine{ID: it.ID, Label: it.Label, Section: line.Section, Category: category, PackageID: pkg, Budget: budget, Parent: parent})
+		plan.lines = append(plan.lines, invoices.BudgetLine{ID: it.ID, Label: it.Label, Section: line.Section, Category: category, PackageID: pkg, Budget: budget, Contract: contract, Parent: parent})
 	}
 	hist, err := tx.Query(ctx, `
 SELECT DISTINCT i.package_id::text, a.cost_item_id::text

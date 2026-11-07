@@ -81,7 +81,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   const plan = page.locator("#cost-panel-plan");
   // The tab count arrives with the ledger. The invoice footer is not part of the plan.
   await expect(page.getByRole("tab", { name: /Invoices/ })).toContainText("0");
-  await expect(plan.getByRole("row", { name: /Construction budget/ })).toBeVisible();
+  await expect(plan.getByRole("row", { name: /^Total/ })).toBeVisible();
   await expectNoInvoiceFooter(plan);
 
   // Drop ten invoices at once; every row appears as it is read.
@@ -159,7 +159,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await panel.getByRole("button", { name: "Close", exact: true }).click();
   await expect(table.getByRole("row", { name: /INV-00004/ })).toContainText("Unallocated");
   await page.getByRole("tab", { name: /Cost plan/i }).click();
-  await expect(plan.getByRole("row", { name: /Construction budget/ })).toBeVisible();
+  await expect(plan.getByRole("row", { name: /^Total/ })).toBeVisible();
   await expectNoInvoiceFooter(plan);
   const after = await ledgerSummary(page, project);
   expect(after.invoiced).toBe(before.invoiced);
@@ -170,7 +170,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   const shown = after.invoiced;
 
   // Export: the workbook's Cost plan total is the ledger total, including the invoice now off a line.
-  await page.getByRole("button", { name: "Download", exact: true }).click();
+  await page.getByRole("button", { name: "Cost plan actions" }).click();
   const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("menuitem", { name: "Export to Excel" }).click()]);
   const path = testInfo.outputPath("ledger.xlsx");
   await download.saveAs(path);

@@ -239,3 +239,26 @@ func TestPeriodIsTheSydneyMonth(t *testing.T) {
 		t.Fatal(got)
 	}
 }
+
+// Remaining on the cost plan is approved contract less invoiced to date, per
+// line and summed per section over lines that have a contract.
+func TestContractRemaining(t *testing.T) {
+	lines := []BudgetLine{
+		{ID: "L1", Section: "consultants", Budget: i64(500000), Contract: i64(300000)},
+		{ID: "L2", Section: "consultants", Budget: i64(200000)},
+	}
+	inv := readInvoice("1", 120000, 12000)
+	s := Summarize(lines, []Invoice{inv}, "ex_tax")
+	if r := s.Lines[0].ContractRemaining; r == nil || *r != 180000 {
+		t.Fatalf("line remaining %v", r)
+	}
+	if s.Lines[1].ContractRemaining != nil {
+		t.Fatal("a line without a contract has no remaining")
+	}
+	if s.SectionsContractRemaining["consultants"] != 180000 || s.ContractRemaining == nil || *s.ContractRemaining != 180000 {
+		t.Fatalf("section %v total %v", s.SectionsContractRemaining, s.ContractRemaining)
+	}
+	if inc := Summarize(lines, []Invoice{inv}, "inc_tax"); inc.Lines[0].ContractRemaining != nil || inc.ContractRemaining != nil {
+		t.Fatal("GST-inclusive contracts are not compared with ex-GST invoices")
+	}
+}

@@ -23,13 +23,6 @@ To do this you:
 For the residential accommodation, fit for purpose means the room mix and yield, guest or resident amenity, acoustic separation between rooms, and a back of house that runs well.
 For the assembly or education building, fit for purpose means how large groups gather and move, sightlines and acoustics, and safe crowd egress.
 Because this is work to an existing building, fit for purpose also means working with what is there: its structure, services, approvals and occupants.
-
-**Design team**:
-
-| Consultant | Engaged by | Status |
-|---|---|---|
-| Civil | Client | To be appointed |
-
 After novation you are engaged by the head contractor. Price the stages before and after novation separately.
 
 Price each stage that applies. Each stage ends at client sign-off, and that design is the basis for later stages (section 5). R1 Fee by stage: Excl. GST, in the table below. Base fee and options are totalled separately; price an item once. Acknowledge each addendum by number and confirm the signatory can bind your firm. Price each included stage. A line marked Included is part of its stage fee; a line marked Excluded is not part of this appointment. Fees exclude GST; state GST and total in your proposal. Propose any departure in R6.

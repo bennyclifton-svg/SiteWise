@@ -110,7 +110,7 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, transmittal }:
   const conditions = project.filter(c => c.key.startsWith("fact:flag.") && blocked.has(c.key));
   const parts = byKey.get("parts:affected");
   return <div className="rfp-page-one">
-    <div className="pf-card rfp-grid">
+    <div className="pf-card pf-titleblock rfp-grid">
       {columns.map(col => <GridColumn key={col.title} column={col.title === "Delivery" ? { ...col, cells: [...col.cells, { key: "budget", label: "Construction budget", text: budget?.text || "—", control: "fact:budget" }] } : col} byKey={byKey} busyKey={busyKey} blocked={blocked} onWrite={onWrite} />)}
     </div>
     {parts && <ControlRow control={parts} busy={busyKey === parts.key} blocked={blocked.has(parts.key)} showSource={false} onWrite={onWrite} />}
@@ -125,8 +125,9 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, transmittal }:
 }
 
 function GridColumn({ column, byKey, busyKey, blocked, onWrite }: { column: GridColumnData; byKey: Map<string, RfpControl>; busyKey: string; blocked: Set<string>; onWrite: Write }) {
-  return <div className="pf-col" role="group" aria-label={column.title}>
-    <h4>{column.title}</h4>
+  // The Profile's title-block column and head, so the two cannot drift.
+  return <div className="pf-tb-col" role="group" aria-label={column.title}>
+    <h4 className="pf-tb-head">{column.title}</h4>
     {column.cells.map(c => <GridValue key={c.key} label={c.label} text={c.empty ? "—" : c.text} control={c.control ? byKey.get(c.control) : undefined} busy={!!c.control && busyKey === c.control} blocked={!!c.control && blocked.has(c.control)} onWrite={onWrite} />)}
   </div>;
 }
