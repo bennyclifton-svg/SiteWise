@@ -90,8 +90,10 @@ if ($exists -ne '1') {
 # which mangles "--prefix web" into "Unknown command: pm".
 if ($Build -or -not (Test-Path (Join-Path $Root 'web\dist\index.html'))) {
     Push-Location (Join-Path $Root 'web')
-    & npm.cmd ci
-    $code = $LASTEXITCODE
+    # npm ci deletes node_modules first, which fails (EPERM) while any Vite
+    # or test process holds a native binary open. Install only when missing.
+    $code = 0
+    if (-not (Test-Path 'node_modules\.package-lock.json')) { & npm.cmd ci; $code = $LASTEXITCODE }
     if ($code -eq 0) { & npm.cmd run build; $code = $LASTEXITCODE }
     Pop-Location
     if ($code -ne 0) { exit $code }
