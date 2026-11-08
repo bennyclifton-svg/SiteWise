@@ -130,6 +130,48 @@ building_classes:
       triggers: &id004
       - \b\d+\s+(units|apartments|dwellings)\b
       - apartment mix
+    # Unit mix (owner, 8 Nov 2026): one count per type. Code offers only a
+    # number written against the type ("14 one-bedroom", "6 x 2B", "2 Bed: 4");
+    # Jev picks one or none. See docs/plans/2026-11-08-unit-mix.md.
+    - &mix_studio
+      key: units_studio
+      label: Studio units
+      type: integer
+      asks: the number of studio apartments or units
+      triggers:
+      - '\bstudios?\b'
+    - &mix_1
+      key: units_1_bed
+      label: 1-bed units
+      type: integer
+      asks: the number of one-bedroom apartments or units
+      triggers:
+      - '\b(1|one)[ -]?(bed(room)?s?|br)\b'
+      - '\b1b\b'
+    - &mix_2
+      key: units_2_bed
+      label: 2-bed units
+      type: integer
+      asks: the number of two-bedroom apartments or units
+      triggers:
+      - '\b(2|two)[ -]?(bed(room)?s?|br)\b'
+      - '\b2b\b'
+    - &mix_3
+      key: units_3_bed
+      label: 3-bed units
+      type: integer
+      asks: the number of three-bedroom apartments or units
+      triggers:
+      - '\b(3|three)[ -]?(bed(room)?s?|br)\b'
+      - '\b3b\b'
+    - &mix_4
+      key: units_4_bed
+      label: 4+ bed units
+      type: integer
+      asks: the number of apartments or units with four or more bedrooms
+      triggers:
+      - '\b(4|5|four|five)\+?[ -]?(bed(room)?s?|br)\b'
+      - '\b[45]b\b'
     - key: avg_unit_size_sqm
       label: Average unit size sqm
       type: number
@@ -151,6 +193,11 @@ building_classes:
       triggers: &id006
       - \b\d+\s+(dwellings|lots|homes)\b
       typical: 3-50
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: gfa_sqm
       label: Proposed GFA sqm
       type: number
@@ -193,15 +240,16 @@ building_classes:
       type: integer
       triggers: *id004
       typical: 100-500+
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: amenity_gfa_sqm
       label: Amenity GFA sqm
       type: number
       unit: m2
       typical: 5-10% amenity
-    - key: unit_mix
-      label: Unit mix
-      type: text
-      typical: Studio/1B/2B/3B
   - id: student_housing
     label: Student Housing (PBSA)
     ncc_class: '3'
@@ -351,6 +399,11 @@ building_classes:
       label: Dwellings
       type: integer
       triggers: *id006
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: gfa_sqm
       label: Proposed GFA sqm
       type: number
@@ -1439,6 +1492,11 @@ building_classes:
       - \b\d+\s+(sole\s+occupancy\s+)?(units|apartments|dwellings)\b
       - apartment mix
       typical: 50-500
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: retail_gla_sqm
       label: Retail GLA sqm
       type: number
@@ -1487,6 +1545,11 @@ building_classes:
       type: integer
       triggers: *id014
       typical: 50-500
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: commercial_nla_sqm
       label: Commercial NLA sqm
       type: number
@@ -1528,6 +1591,11 @@ building_classes:
       label: Residential units
       type: integer
       triggers: *id014
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: hotel_rooms
       label: Hotel rooms
       type: integer
@@ -1611,6 +1679,11 @@ building_classes:
       label: Residential units
       type: integer
       triggers: *id014
+    - *mix_studio
+    - *mix_1
+    - *mix_2
+    - *mix_3
+    - *mix_4
     - key: amenity_gfa_sqm
       label: Amenity GFA sqm
       type: number

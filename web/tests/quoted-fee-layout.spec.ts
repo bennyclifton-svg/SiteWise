@@ -66,7 +66,7 @@ Fixed professional fee: **$3,000 excluding GST**, staged as follows:
   await page.screenshot({ path: "../.tools/award-stages-added-fee.png", fullPage: true });
   await award.getByRole("button", { name: "Cancel", exact: true }).click();
   await upload("Second Architecture Pty Ltd", 2);
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Back to Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Compare Architect", exact: true }).click();
   await expect(comparison.locator("thead")).toContainText("Second Architecture Pty Ltd", { timeout: 20000 });
   await expect(total.locator("td").first()).toContainText("$3,500.00");

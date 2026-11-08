@@ -18,7 +18,7 @@ test("Hydraulic pilot: dates last, scope by stage, one fee per stage and persist
   expect(pkg.ok(), await pkg.text()).toBeTruthy();
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Hydraulic", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "2. Scope of services", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Scope of services", exact: true })).toBeVisible();
   const dates = page.getByRole("group", { name: "Proposal dates", exact: true });
   await expect(dates.getByLabel("Release date", { exact: true })).toBeVisible();
   await expect(dates.getByLabel("Proposals close", { exact: true })).toBeVisible();
@@ -78,11 +78,12 @@ test("Hydraulic pilot: dates last, scope by stage, one fee per stage and persist
   await expect(dates.getByLabel("Proposals close", { exact: true })).toHaveValue("2026-10-30");
   await expect(page.getByRole("columnheader", { name: "Fee $", exact: true })).toHaveCount(1);
   const datesBox = await dates.boundingBox();
-  const projectBox = await page.getByRole("heading", { name: "1. Project", exact: true }).boundingBox();
+  const projectBox = await page.getByRole("region", { name: "Project", exact: true }).boundingBox();
   // Dates close the RFP, in the Issue section, below the project and scope.
   expect(datesBox!.y).toBeGreaterThan(projectBox!.y);
   const order = await page.locator(".report-section h3").allTextContents();
-  expect(order.slice(0, 4)).toEqual(["1. Project", "2. Scope of services", "3. Allowances", "4. Transmittal"]);
+  // On screen the sections drop their print numbers and page one its title (owner, 8 Nov 2026).
+  expect(order.slice(0, 3)).toEqual(["Scope of services", "Allowances", "Transmittal"]);
   await page.setViewportSize({ width: 1280, height: 2600 });
   await scope.screenshot({ path: "../.tools/hydraulic-pilot-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });

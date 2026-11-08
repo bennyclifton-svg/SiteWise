@@ -10,9 +10,6 @@ title_aliases:
 - hydraulic services
 - hydraulic design
 evidence_limit: Historical offers do not verify current capacity, instruments, insurance or appointment.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Actual systems, sources, affected works and purchased maturity govern scope.
   complex: []

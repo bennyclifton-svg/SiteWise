@@ -6,7 +6,7 @@ import { BuilderQuotedTotals, BuilderWorkSections } from "./BuilderComparison";
 // arrives computed by the server; a cell a user corrects is final.
 import { useCallback, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { IconMore } from "./icons";
-import { PageActionsContext, PageSidePanel } from "./PageActions";
+import { BackButton, PageActionsContext, PageSidePanel } from "./PageActions";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
 import { ComparisonRowEditor } from "./ComparisonAlignment";
@@ -138,7 +138,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
 
   return <section className="prices" aria-label="Price table" aria-busy={busy}>
     <header className="prices-head">
-      <button type="button" className="btn btn-small" onClick={onBack}>← Procurement</button>
+      <BackButton to="Procurement" onClick={onBack} />
       <h1>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></h1>
       <div className="prices-actions"><span role="status">{busy && !uploading && <Pending delayed>Saving…</Pending>}</span>
         {/* One "+ New" pill and one ⋮ menu keep the head clean (owner direction, 7 Nov 2026). */}

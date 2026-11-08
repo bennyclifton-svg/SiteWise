@@ -1,10 +1,16 @@
 import { Children, cloneElement, createContext, isValidElement, useContext, useEffect, useId, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { IconConfirmed, IconDownload, IconMore, IconUpdate } from "./icons";
+import { GroundButton } from "./GroundButton";
+import { IconConfirmed, IconDownload, IconMore } from "./icons";
 
 /** The page's Update: the same button on Profile and on an RFP or RFT. */
 export function UpdateButton({ onClick, disabled, title, busy, children = "Update" }: { onClick: () => void; disabled?: boolean; title?: string; busy?: boolean; children?: ReactNode }) {
-  return <button type="button" className="btn btn-update" onClick={onClick} disabled={disabled} title={title} aria-busy={busy || undefined}><IconUpdate /><span>{children}</span></button>;
+  return <GroundButton primary icon="refresh" className="btn-update" onClick={onClick} disabled={disabled} title={title} busy={busy}>{children}</GroundButton>;
+}
+
+/** Back out of a drilled-in view: the same drawn button, ground line only. */
+export function BackButton({ to, onClick, disabled, title, className }: { to: string; onClick: () => void; disabled?: boolean; title?: string; className?: string }) {
+  return <GroundButton small icon="back" className={className} onClick={onClick} disabled={disabled} title={title} aria-label={`Back to ${to}`}>{to}</GroundButton>;
 }
 
 /** A menu item; one with `checked` is a switch that stays open when toggled. */

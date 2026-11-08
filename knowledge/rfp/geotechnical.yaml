@@ -11,9 +11,6 @@ title_aliases:
 - geotech
 evidence_limit: Four historical warehouse-extension offers disagree on quantities and assumptions; other uses follow
   physical scope and client selections.
-field_defaults:
-  pi: ''
-  pl: ''
 evaluation_note: Check coverage, competence, insurance and departures first. Normalise quantities, labs, monitoring,
   restoration and options; lowest price need not win.
 allowances_note: Client completes the reconciled plan and quantities. Guaranteed work is separate from time 

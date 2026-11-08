@@ -51,7 +51,7 @@ type Engagement struct {
 // engagement rather than one discipline: the issue details, terms and the
 // transmittal print once, so they are stored once, on the group's report.
 func SharedSetting(sk knowledge.RFPSkeleton, key string) bool {
-	if key == "transmittal" {
+	if DocumentListSetting(key) {
 		return true
 	}
 	name, ok := strings.CutPrefix(key, "field:")

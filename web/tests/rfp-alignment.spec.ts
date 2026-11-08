@@ -12,7 +12,7 @@ for (const d of disciplines) test(`${d.id}: complete unified scope, inputs and s
  expect(pkg.ok(),await pkg.text()).toBeTruthy();
  await page.getByRole("button",{name:"Procurement",exact:true}).click();
  await page.getByRole("button",{name:/^Create RFP for /}).click();
- await expect(page.getByRole("heading",{name:"2. Scope of services",exact:true})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Scope of services",exact:true})).toBeVisible();
  // Scope by stage (3 November 2026): one stage table under section 2.
  await expect(page.getByRole("heading",{name:"3. Allowances",exact:true})).toBeVisible();
  await expect(page.getByRole("heading",{name:"4. Transmittal",exact:true})).toBeVisible();

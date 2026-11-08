@@ -203,6 +203,8 @@ var tenancyCountRe = regexp.MustCompile(`(?i)(?:^|[^\d.])(\d+)\s+(?:separate\s+)
 
 func scaleCandidates(f knowledge.ScaleField, text string) []Candidate {
 	switch {
+	case IsUnitMix(f.Key):
+		return unitMixCandidates(f.Key, text)
 	case f.Key == "dock_doors":
 		return verbatim(dockCountRe, text, func(m []string) string { return m[1] })
 	case f.Key == "tenancies":

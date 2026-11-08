@@ -362,7 +362,6 @@ Issued system/load/utility evidence and separately quantified R1-R9 schedules.
 - Mechanical services, Fire services: Payment 30 days from correct milestone invoices; R6 declares prepayment/release conditions, interest/recovery/suspension.
 - Mechanical services: State rate hold/escalation; preapprove extras/expenses; no duplicate package fees.
 - Mechanical services, Fire services: Valid 90 days after closing; ex GST/GST/total, base/options separate.
-- Send questions in writing to Project manager by 2026-10-23.
 - Mechanical services, Electrical services, Fire services: Issue numbered addenda to all, acknowledged in R1.
 - Mechanical services: Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; confidentiality permits authorised/lawful disclosure; marketing by consent.
 - Mechanical services: Settle caps/indemnities, law/disputes, notices/cure/suspension/termination, assignment/novation/subcontracts; insurance is not a cap; conflicts/staff changes agreed.

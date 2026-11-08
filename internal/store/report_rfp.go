@@ -493,7 +493,7 @@ func (s *Store) writeRFPSetting(ctx context.Context, tx pgx.Tx, org, project, ac
 		}
 		delete(settings, key)
 	} else {
-		if key == "transmittal" {
+		if rfp.DocumentListSetting(key) {
 			if value, err = transmittalSelection(ctx, tx, org, project, value); err != nil {
 				return err
 			}

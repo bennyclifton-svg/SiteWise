@@ -1,0 +1,137 @@
+/* The ground-line button (owner pick 8 Nov 2026). The label stands above a pen
+   ground line; the primary button has section hatch below it that holds to half
+   its width and then runs out. All lines are static marks, stretched or tiled
+   by masks, in the current text colour so they follow the theme. */
+
+@property --ground-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@property --ground-b { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
+@property --ground-reveal { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+
+.ground-btn {
+  --ground-pen: var(--sw-text-primary);
+  --ground-line-at: 9px;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  margin-inline: 2px; /* room for the corners to run past the box */
+  padding: 0 16px 5px;
+  border: 0;
+  border-radius: 0;
+  background: var(--sw-surface);
+  color: var(--sw-text-primary);
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+.ground-btn.is-primary { font-weight: 600; }
+.ground-btn.is-small { --ground-line-at: 7px; height: 28px; padding: 0 11px 3px; font-size: var(--fs-sm, 13px); }
+.ground-btn:hover:not(:disabled) { background: var(--sw-hover-bg); }
+.ground-btn:active:not(:disabled) { background: var(--sw-pressed-bg); transform: translateY(1px); }
+.ground-btn:focus-visible { outline: 2px solid var(--azure, var(--sw-link)); outline-offset: 5px; }
+.ground-btn:disabled { cursor: not-allowed; color: var(--sw-text-tertiary); }
+.ground-btn[aria-busy="true"] { cursor: progress; }
+
+/* Four pen edges and the ground line, one element. The frame sits 2.5px outside
+   the button so the edges cross at the corners. */
+.ground-frame {
+  position: absolute;
+  inset: -2.5px;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--ground-pen);
+  -webkit-mask:
+    url("./assets/marks/pen-edge-top.svg") left top / 100% 5px no-repeat,
+    url("./assets/marks/pen-edge-bottom.svg") left bottom / 100% 5px no-repeat,
+    url("./assets/marks/pen-edge-left.svg") left top / 5px 100% no-repeat,
+    url("./assets/marks/pen-edge-right.svg") right top / 5px 100% no-repeat,
+    url("./assets/marks/pen-ground.svg") left 4px bottom var(--ground-line-at) / calc(100% - 8px) 5px no-repeat;
+  mask:
+    url("./assets/marks/pen-edge-top.svg") left top / 100% 5px no-repeat,
+    url("./assets/marks/pen-edge-bottom.svg") left bottom / 100% 5px no-repeat,
+    url("./assets/marks/pen-edge-left.svg") left top / 5px 100% no-repeat,
+    url("./assets/marks/pen-edge-right.svg") right top / 5px 100% no-repeat,
+    url("./assets/marks/pen-ground.svg") left 4px bottom var(--ground-line-at) / calc(100% - 8px) 5px no-repeat;
+}
+
+/* Hatch under the ground line: full to half the width, then an eased run-out
+   gone by 90%. The third layer is the busy reveal; at rest it shows everything. */
+.ground-hatch {
+  position: absolute;
+  left: 1.5px;
+  right: 1.5px;
+  bottom: 1px;
+  height: 7.5px;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--ground-pen);
+  opacity: .78;
+  transition: opacity 150ms ease-out;
+  -webkit-mask:
+    url("./assets/marks/pen-hatch.svg") left bottom / 54px 100% repeat-x,
+    linear-gradient(to right, #000 50%, rgba(0, 0, 0, .84) 60%, rgba(0, 0, 0, .5) 70%, rgba(0, 0, 0, .16) 80%, transparent 90%),
+    linear-gradient(to right, #000 var(--ground-reveal), transparent calc(var(--ground-reveal) + 8%));
+  -webkit-mask-composite: source-in;
+  mask:
+    url("./assets/marks/pen-hatch.svg") left bottom / 54px 100% repeat-x,
+    linear-gradient(to right, #000 50%, rgba(0, 0, 0, .84) 60%, rgba(0, 0, 0, .5) 70%, rgba(0, 0, 0, .16) 80%, transparent 90%),
+    linear-gradient(to right, #000 var(--ground-reveal), transparent calc(var(--ground-reveal) + 8%));
+  mask-composite: intersect;
+}
+.ground-btn:hover:not(:disabled) .ground-hatch { opacity: 1; }
+
+.ground-icon { flex: none; width: 16px; height: 16px; background: currentColor; }
+.ground-icon-refresh {
+  -webkit-mask: url("./assets/marks/pen-refresh.svg") center / 16px 16px no-repeat;
+  mask: url("./assets/marks/pen-refresh.svg") center / 16px 16px no-repeat;
+}
+.ground-icon-back {
+  -webkit-mask: url("./assets/marks/pen-back.svg") center / 16px 16px no-repeat;
+  mask: url("./assets/marks/pen-back.svg") center / 16px 16px no-repeat;
+}
+
+.ground-btn:disabled .ground-frame,
+.ground-btn:disabled .ground-hatch { opacity: .4; }
+
+/* Sketching while busy: the circle is pencilled round and erased from its tail,
+   while the hatch is shaded in left to right, on one 2.4s beat. */
+.ground-btn[data-sketching] .ground-icon-refresh {
+  -webkit-mask:
+    url("./assets/marks/pen-refresh.svg") center / 16px 16px no-repeat,
+    conic-gradient(from 120deg, transparent var(--ground-a), #000 var(--ground-a) var(--ground-b), transparent var(--ground-b));
+  -webkit-mask-composite: source-in;
+  mask:
+    url("./assets/marks/pen-refresh.svg") center / 16px 16px no-repeat,
+    conic-gradient(from 120deg, transparent var(--ground-a), #000 var(--ground-a) var(--ground-b), transparent var(--ground-b));
+  mask-composite: intersect;
+  animation: ground-sweep 2.4s cubic-bezier(.45, .05, .4, 1) infinite;
+}
+.ground-btn[data-sketching] .ground-hatch { animation: ground-shade 2.4s ease-in-out infinite; }
+@keyframes ground-sweep {
+  0% { --ground-a: 0deg; --ground-b: 0deg; }
+  48%, 72% { --ground-a: 0deg; --ground-b: 340deg; }
+  100% { --ground-a: 340deg; --ground-b: 340deg; }
+}
+@keyframes ground-shade {
+  0% { --ground-reveal: -8%; opacity: 1; }
+  45%, 72% { --ground-reveal: 100%; opacity: 1; }
+  100% { --ground-reveal: 100%; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ground-btn { transition: none; }
+  .ground-btn:active:not(:disabled) { transform: none; }
+  .ground-btn[data-sketching] .ground-icon-refresh,
+  .ground-btn[data-sketching] .ground-hatch { animation: none; }
+  .ground-btn[aria-busy="true"] .ground-hatch { opacity: .4; }
+}
+
+/* Marks turn off for higher contrast and print, as the other Trace marks do. */
+@media (prefers-contrast: more), (forced-colors: active), print {
+  .ground-frame, .ground-hatch { display: none; }
+  .ground-btn { border: 1px solid currentColor; }
+}

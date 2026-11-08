@@ -97,7 +97,7 @@ func slotLabel(sk knowledge.RFPSkeleton, name string) string {
 func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, key string) bool {
 	prefix, name, _ := strings.Cut(key, ":")
 	switch key {
-	case "scale", "boundary:range", "parts:affected", "transmittal":
+	case "scale", "boundary:range", "parts:affected", "transmittal", AgreementDocs:
 		return true
 	}
 	switch prefix {
@@ -170,11 +170,21 @@ var (
 	numberRE     = regexp.MustCompile(`^[0-9]{1,12}(\.[0-9]{1,2})?$`)
 )
 
+// AgreementDocs is the setting that attaches the client agreement's
+// documents, chosen from the repository as the transmittal's are.
+const AgreementDocs = "agreement_docs"
+
+// DocumentListSetting reports whether a setting holds repository documents:
+// the store turns the ids a user chose into document rows before saving.
+func DocumentListSetting(key string) bool {
+	return key == "transmittal" || key == AgreementDocs
+}
+
 // ValidateSetting checks a key and its value for the discipline. A key that
 // names nothing in the current rules is refused for writing; existing orphans
 // can still be deleted.
 func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers DriverSet, key string, raw json.RawMessage) error {
-	if key == "transmittal" {
+	if DocumentListSetting(key) {
 		var docs []reports.BriefValue
 		if len(raw) > 2000000 || json.Unmarshal(raw, &docs) != nil || docs == nil || len(docs) > 5000 {
 			return ErrInvalidSetting

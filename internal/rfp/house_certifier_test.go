@@ -1,6 +1,7 @@
 package rfp
 
 import (
+	"slices"
 	"strings"
 	"testing"
 )
@@ -162,6 +163,48 @@ func TestStructuralRootZoneFootings(t *testing.T) {
 		if c.want != "absent" && !strings.Contains(strings.ToLower(p.Label), "structural root zone") {
 			t.Errorf("label names the structural root zone: %q", p.Label)
 		}
+	}
+}
+
+// The procurement row names the role: a BCA consultant row is advisory and a
+// certifier row is certification, without a tick in Profile (owner, 8 Nov
+// 2026). Each opens its scope with its own purpose sentence.
+func TestPackageDisciplineNamesTheBCARole(t *testing.T) {
+	sk, d := skeleton(t), discipline(t, "bca-certification")
+	office := Part{ID: "o", Classes: []string{"5"}}
+	roles := func(r Resolved) []string {
+		keys := []string{}
+		for _, row := range r.Role {
+			keys = append(keys, row.Key)
+		}
+		return keys
+	}
+	for _, c := range []struct {
+		discipline, want, not string
+	}{
+		{"consultant.bca", "advisory", "statutory"},
+		{"consultant.certifier", "statutory", "advisory"},
+	} {
+		drivers := houseDrivers(t, "da", nil, office)
+		derivePackageRole(drivers.Facts, c.discipline)
+		r := Resolve(d, sk, drivers, Settings{})
+		got := roles(r)
+		if len(got) == 0 || got[0] != c.want || slices.Contains(got, c.not) {
+			t.Errorf("%s: scope opens with %s only, got %v", c.discipline, c.want, got)
+		}
+	}
+	// A house's BCA consultant row stays advisory over the house default.
+	facts := map[string]Fact{}
+	derivePackageRole(facts, "consultant.bca")
+	deriveFlags(facts, []Part{{ID: "h", Classes: []string{"1a"}}})
+	if facts["flag.bca_advisory"].Values[0] != "yes" || facts["flag.bca_certification"].Values[0] != "no" {
+		t.Errorf("house BCA row: want advisory only, got %+v %+v", facts["flag.bca_advisory"], facts["flag.bca_certification"])
+	}
+	// A saved Profile answer wins over the row.
+	facts = map[string]Fact{"flag.bca_certification": {Values: []string{"yes"}, State: Known, Source: "profile"}}
+	derivePackageRole(facts, "consultant.bca")
+	if facts["flag.bca_certification"].Values[0] != "yes" || facts["flag.bca_advisory"].Values[0] != "yes" {
+		t.Errorf("profile both: want both kept, got %+v %+v", facts["flag.bca_advisory"], facts["flag.bca_certification"])
 	}
 }
 

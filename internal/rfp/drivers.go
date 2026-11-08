@@ -149,6 +149,16 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 			}
 		}
 	}
+	// The unit mix prints known counts only (docs/plans/2026-11-08-unit-mix.md).
+	mix := map[string]string{}
+	for _, k := range knowledge.UnitMixKeys {
+		if v, ok := value("hdr.scale." + k); ok {
+			mix[k] = v
+		}
+	}
+	if t := knowledge.UnitMixText(mix); t != "" {
+		d.Text["unit_mix"] = t
+	}
 	choice("quality", "hdr.cond.quality_level")
 	for _, key := range []string{"hdr.scale.total_gfa_sqm", "hdr.scale.gfa_sqm"} {
 		if v, ok := value(key); ok {
@@ -187,6 +197,7 @@ func Drivers(s reports.Snapshot, sk knowledge.RFPSkeleton) DriverSet {
 			d.Facts["flag."+f.Key] = Fact{Values: []string{v}, State: Known, Source: "profile", Detail: FlagHome(f.Key).Key}
 		}
 	}
+	derivePackageRole(d.Facts, s.Package.DisciplineID)
 	deriveFlags(d.Facts, d.Parts)
 	for _, f := range sk.Flags {
 		if _, ok := d.Facts["flag."+f.Key]; !ok {
@@ -328,6 +339,27 @@ func deriveFlags(facts map[string]Fact, parts []Part) {
 }
 
 func isClassTen(c string) bool { return strings.HasPrefix(c, "10") }
+
+// packageRoles name the role a BCA-family procurement row buys: the BCA
+// consultant row is advisory, the certifier row is certification. Both rows
+// share one RFP file (bca-certification.yaml).
+var packageRoles = map[string]map[string]string{
+	"consultant.bca":       {"bca_advisory": "yes", "bca_certification": "no"},
+	"consultant.certifier": {"bca_certification": "yes", "bca_advisory": "no"},
+}
+
+// derivePackageRole fills the advisory/certification choice from the row the
+// RFP is for, so each RFP opens with its own role without a Profile tick
+// (owner, 8 November 2026). A saved answer always wins. It runs before the
+// house default so a house's BCA consultant row stays advisory.
+func derivePackageRole(facts map[string]Fact, discipline string) {
+	for flag, v := range packageRoles[discipline] {
+		if f, ok := facts["flag."+flag]; ok && f.State != Unknown {
+			continue
+		}
+		facts["flag."+flag] = Fact{Values: []string{v}, State: Known, Source: "derived", Detail: "the procurement row is " + discipline}
+	}
+}
 
 // houseClasses mirror the house module (knowledge/rfp/modules.yaml): Class 1,
 // with any Class 10 outbuilding.

@@ -67,9 +67,6 @@ terms:
   - key: validity
     text: "Your tender stays valid for {field:validity_days} days."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Essential returnable schedules: Form of Tender)"}]
-  - key: questions_to
-    text: "Send questions in writing to {field:contact} by {field:questions_by}."
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: firms need a contact and a date for questions; printed only when both are set."}]
   - key: questions
     text: "Answers to scope questions go to every tenderer as numbered addenda."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Tender period administration and probity)"}]

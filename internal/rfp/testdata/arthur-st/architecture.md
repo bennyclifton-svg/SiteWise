@@ -124,8 +124,8 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 - Each stage ends at client sign-off, which sets the baseline for later stages. Design development within the brief is not a variation; a client change after sign-off is assessed under the agreement.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Invoice monthly against stage progress; payment within 30 days, not dependent on any authority approval.
+- Rates hold until 12 months after appointment; state how they are indexed after that.
 - Your proposal stays valid for 90 days.
-- Send questions in writing to Project manager, pm@example.com by 2026-10-23.
 - Answers to scope questions go to every tenderer as numbered addenda.
 
 ### Returnable schedules: reply using this structure only

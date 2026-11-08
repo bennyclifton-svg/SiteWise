@@ -132,10 +132,14 @@
   margin-right: 5px;
   border-radius: 50%;
   vertical-align: 1px;
-  background: var(--trace-ember);
+  background: var(--origin-doc);
 }
-.pf-titleblock .pf-row[data-band="amber"] .pf-sources summary::before { background: transparent; box-shadow: inset 0 0 0 1.3px var(--trace-azure); }
-.pf-titleblock .pf-row[data-band="user"] .pf-sources summary::before { border-radius: 1.5px; background: var(--sw-text-primary); }
+/* Origin rule (trace.css): green documents (a ring when they lean, not
+   agree), blue typical, rust square yours, amber to check. */
+.pf-titleblock .pf-row[data-band="amber"] .pf-sources summary::before { background: transparent; box-shadow: inset 0 0 0 1.3px var(--origin-doc); }
+.pf-titleblock .pf-row[data-band="suggested"] .pf-sources summary::before { background: var(--origin-typical); }
+.pf-titleblock .pf-row[data-band="red"] .pf-sources summary::before { background: var(--origin-check); }
+.pf-titleblock .pf-row[data-band="user"] .pf-sources summary::before { border-radius: 1.5px; background: var(--origin-user); }
 
 /* Values read as type; the control shows itself on hover and focus. */
 .pf-titleblock .pf-control,
@@ -207,6 +211,9 @@
 .sw-key span { display: inline-flex; align-items: center; gap: 8px; }
 /* Key and the Show all toggle sit together at the right of the table. */
 .sw-keyrow { display: flex; justify-content: flex-end; align-items: center; gap: 20px; margin: 0 0 12px; }
+/* In the band head the key shares the title's row (owner, 8 Nov 2026). */
+.sw-head .sw-keyrow { margin: 0 0 0 auto; }
+.sw-head .sw-keyrow .sw-key { font-size: 12px; }
 .sw-keyrow .sw-key { margin: 0; font-size: 13px; }
 .profile .sw-keyrow .sw-all { margin-left: 0; }
 
@@ -351,13 +358,73 @@
 .sw-matrow .sw-group-tick input,
 .sw-matrow .sw-name input { accent-color: var(--sw-text-primary); width: 15px; height: 15px; }
 
-/* A narrow pane stacks each system: its name on one line, works and provider below. */
+/* Each scope entry opens with a chevron before its name, the same thin
+   chevron as the RFP stage table (owner, 8 Nov 2026). */
+.sw-matrix .sw-entry-label { display: inline-flex; align-items: center; gap: 8px; min-width: 0; padding-left: 4px; }
+.sw-caret { flex: none; width: 9px; height: 9px; margin: 0 2px 0 2px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--sw-text-secondary); transform: rotate(-45deg); transition: transform 120ms ease; }
+.sw-entry[aria-expanded="true"] .sw-caret { transform: rotate(45deg); margin-top: -5px; }
+@media (prefers-reduced-motion: reduce) { .sw-caret { transition: none; } }
+.sw-empty { margin: 12px 4px; font-size: 13.5px; }
+
+/* An open entry's systems sit in two tables side by side, so the list is
+   half as long. System | Evidence: works and supplier are exceptions, set in
+   the dot's pop-up and shown as a note after the name (owner, 8 Nov 2026). */
 .sw-matrow .sw-pane { container: swpane / inline-size; }
+.sw-cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 28px; align-items: start; }
+.sw-cols[data-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @container swpane (max-width: 620px) {
-  .sw-matrow .sw-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 3.5rem 1.75rem; row-gap: 2px; padding: 6px 0; }
-  .sw-matrow .sw-row > :first-child { grid-column: 1 / -1; }
-  .sw-matrow .sw-th > :first-child { grid-column: 1 / -1; }
+  .sw-cols[data-cols="2"] { grid-template-columns: minmax(0, 1fr); }
+  .sw-cols[data-cols="2"] > .sw-table + .sw-table > .sw-th { display: none; }
 }
+.sw-matrow .sw-table { min-width: 0; }
+.sw-matrow .sw-row { grid-template-columns: minmax(0, 1fr) 4.25rem; min-height: 36px; }
+.sw-matrow .sw-name label { min-width: 0; }
+.sw-except { color: var(--origin-user); font-size: 12.5px; font-style: italic; white-space: nowrap; }
+
+/* The dot says who settled the scope: green documents, blue typical, a rust
+   square for you (owner, 8 Nov 2026). Amber half dot: documents disagree. */
+.pf-ev { display: inline-block; flex: none; }
+.pf-ev[data-ev="doc"] { border-color: var(--origin-doc); background: var(--origin-doc); }
+.pf-ev[data-ev="typical"] { border-color: var(--origin-typical); background: var(--origin-typical); }
+.pf-ev[data-ev="user"] { border-color: var(--origin-user); background: var(--origin-user); border-radius: 1.5px; }
+.pf-ev[data-ev="mixed"] { border-color: var(--origin-check); background: linear-gradient(90deg, var(--origin-check) 50%, transparent 50%); }
+.sw-key .pf-ev { width: 8px; height: 8px; }
+.sw-key .sw-key-gap { margin-left: 8px; }
+
+/* The evidence dot opens where the evidence came from. */
+.sw-evmark { display: inline-flex; align-items: center; gap: 6px; padding: 3px 5px; border-radius: 6px; list-style: none; }
+.sw-evmark::-webkit-details-marker { display: none; }
+summary.sw-evmark { cursor: pointer; }
+summary.sw-evmark:hover { background: var(--sw-hover-bg); }
+summary.sw-evmark:focus-visible { outline: 2px solid var(--sw-action-focus); outline-offset: 1px; }
+.sw-evpop { position: relative; }
+.sw-line:has(.sw-evpop[open]) { position: relative; z-index: 30; }
+.sw-evpanel {
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  width: min(420px, 80vw);
+  margin-top: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--sw-border-strong);
+  border-radius: 8px;
+  background: var(--sw-surface-elevated);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
+  color: var(--sw-text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.sw-evpanel .sw-evtitle { margin: 0 0 6px; font-weight: 600; }
+.sw-evpanel ul { margin: 0 0 8px; padding: 0; list-style: none; }
+.sw-evpanel li + li { margin-top: 6px; }
+.sw-evpanel p { margin: 0 0 6px; }
+.sw-evreset { display: flex; align-items: center; gap: 6px; color: var(--sw-text-secondary); }
+.sw-evfields { display: grid; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--trace-rule); }
+.sw-evfields label { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); align-items: center; gap: 8px; }
+.sw-evfields label > span:first-child { color: var(--sw-text-tertiary); font-size: 12.5px; }
+.sw-evfields .sw-select { border-color: var(--sw-border-default); }
+.sw-evfields > .cell-link { justify-self: start; }
 
 /* ---------- Title block, paired: label | value, as on RFP page one ---------- */
 
@@ -418,7 +485,8 @@
   background-color: transparent;
 }
 
-.pf-card-toggle { display: inline-flex; align-items: baseline; gap: 4px; margin: 10px 0 0; font-size: 13px; }
+.pf-card-toggle { display: inline-flex; align-items: baseline; gap: 4px; margin: 10px 0 0; font-size: 13px; text-decoration: none; }
+.pf-card-toggle:hover { color: var(--sw-text-primary); }
 .pf-unknown-toggle { justify-self: start; margin: 4px 0; font-size: 12.5px; }
 
 /* A value the documents disagree on: the whole cell takes a rose fill in place

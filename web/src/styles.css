@@ -706,12 +706,12 @@ button.cell[data-state="check"]:hover {
   left: 5px;
   width: 9px;
   height: 9px;
-  border-top: 1.5px solid var(--ember);
-  border-left: 1.5px solid var(--ember);
+  border-top: 1.5px solid var(--origin-user, var(--ember));
+  border-left: 1.5px solid var(--origin-user, var(--ember));
 }
 
 .cell[data-state="user"] .cell-why {
-  color: var(--ember-hot);
+  color: var(--origin-user, var(--ember-hot));
 }
 
 .cell-link {
@@ -1451,7 +1451,7 @@ button.cell[data-state="check"]:hover {
   height: 13px;
 }
 .pf-mark[data-band="green"] {
-  color: var(--ok);
+  color: var(--origin-doc, var(--ok));
 }
 .pf-mark[data-band="amber"] {
   color: var(--warn);
@@ -1460,13 +1460,13 @@ button.cell[data-state="check"]:hover {
   color: var(--alert);
 }
 .pf-mark[data-band="user"] {
-  color: var(--ember-hot);
+  color: var(--origin-user, var(--ember-hot));
 }
 .pf-mark[data-band="suggested"] .pf-mark-text {
   padding: 0 6px;
-  border: 1px dashed var(--azure);
+  border: 1px dashed var(--origin-typical, var(--azure));
   border-radius: 999px;
-  color: var(--azure);
+  color: var(--origin-typical, var(--azure));
 }
 .pf-mark[data-band="blank"] {
   color: var(--ink-muted);
@@ -1498,9 +1498,12 @@ button.cell[data-state="check"]:hover {
   list-style: none;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-control);
-  background: var(--paper);
-  box-shadow: var(--shadow-sm);
+  background: var(--sw-surface-elevated, var(--paper));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .28);
 }
+
+/* The open passage list sits above the rows and columns after it. */
+:is(.pf-row, .pf-tb-col, .pf-stack):has(.pf-sources[open]) { position: relative; z-index: 30; }
 
 .pf-sources li + li {
   margin-top: 6px;

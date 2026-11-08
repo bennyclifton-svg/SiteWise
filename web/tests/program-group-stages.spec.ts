@@ -67,7 +67,7 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
     data: { program_id: program.program.id, version: program.program.version, ops: [{ op: "update", id: concept.id, label: "Sketch design" }] } });
   expect(ops.ok()).toBeTruthy();
   program = await ops.json();
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Back to Procurement", exact: true }).click();
   await page.getByRole("button", { name: "View RFP for Civil and Structural", exact: true }).click();
   const notice = page.getByRole("status", { name: "Stage changes for RFP draft" });
   await expect(notice).toContainText("Brief and concept renamed Sketch design");
@@ -88,7 +88,7 @@ test("a combined engagement has one set of stage lines; uncombine restores the m
   expect((await packages()).find(p => p.id === group.id)!.stages.some(l => l.label === "Sketch design")).toBeTruthy();
 
   // Program shows its own stages, with no row per package.
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Back to Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Program", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Program", exact: true })).toBeVisible();
   const rows = page.getByRole("treegrid", { name: "Program rows" });

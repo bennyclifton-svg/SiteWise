@@ -1,5 +1,5 @@
 import { IconDownload, IconPrint, IconResponseForm } from "./icons";
-import { MoreMenu, PagePrimaryAction, UpdateButton } from "./PageActions";
+import { BackButton, MoreMenu, PagePrimaryAction, UpdateButton } from "./PageActions";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
 // One report, full width, opened from a Procurement row. Sources open beside
@@ -17,6 +17,7 @@ import { InlineText } from "./InlineText";
 import { RfpScopePosition } from "./RfpScopePosition";
 import { RfpScopeTable, scopeTable } from "./RfpScopeTable";
 import { RfpAllowanceTable, allowanceTable } from "./RfpAllowanceTable";
+import { AGREEMENT_BLOCK, RfpTermsTable } from "./RfpTerms";
 
 function localDate() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "Assumption" };
@@ -219,6 +220,8 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
               const inline = <InlineText text={block.text} label="Report wording" editing={editing} value={editing ? editor.text : block.text} disabled={busy || !!editor || block.source_missing} busy={busy} saveDisabled={editConflict}
                 onStart={start} onChange={text => setEditor(current => current && { ...current, text })} onSave={() => void save()} onCancel={cancel} actions={allowanceTable(block) ? undefined : <button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>} />;
               // Tables edit as their wording; plain wording edits where it reads.
+              // Terms read numbered in the terms table above; their wording edits as one list.
+              if (!editing && controls && block.id === "rfp:terms") return <><button type="button" className="btn btn-small" aria-label={`Edit wording: Terms`} disabled={busy || !!editor || block.source_missing} onClick={start}>Edit wording</button></>;
               if (editing || !((controls && scopeTable(block)) || block.id === "rfp:positions")) return inline;
               return <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : <RfpScopePosition block={block} />}{<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>}</>;
             })()}
@@ -240,7 +243,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
   </form>;
   return <section className="reports report-view" aria-label="Report" aria-busy={busy}>
     <div className="report-reader" ref={reader}>
-      <PagePrimaryAction surface="procurement"><button type="button" className="btn btn-small report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack}>← Procurement</button></PagePrimaryAction>
+      <PagePrimaryAction surface="procurement"><BackButton to="Procurement" className="report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} /></PagePrimaryAction>
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
@@ -270,8 +273,8 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
           {!!draft.material_assumptions?.length && <section className="report-notice" aria-label="Material assumptions"><h3>Material assumptions</h3>{draft.material_assumptions.map(ref => <Citation key={ref.citation_id} reference={ref} />)}</section>}
           {!view.rfp && draft.sections.filter(section => section.internal && section.blocks?.length).map(section => <details className="report-notice report-review" key={section.id}><summary><strong>{section.title} ({section.blocks.length})</strong> — kept out of the issued report</summary><ul>{section.blocks.map(block => <li key={block.id}><strong>{block.label}:</strong> {block.text}</li>)}</ul></details>)}
           {draft.sections.filter(section => !section.internal && section.id !== "issue_dates").map(section => view.rfp && section.id === "project"
-            ? <section className="report-section" key={section.id}>
-              <h3 id={`rs-${section.id}`}>{section.title}</h3>
+            ? <section className="report-section rfp-project" key={section.id} aria-label="Project">
+              {/* No "1. Project" title on screen (owner, 8 Nov 2026): the grid's blue head row opens the page. */}
               {/* No banner on page one: a value that blocks issue is marked in place (owner, 2026-11-06). */}
               {/* A combined engagement's page one names it and its disciplines. */}
               {section.blocks?.filter(b => b.id === "rfp:group:engagement").map(b => <p key={b.id} className="report-wording rfp-engagement">{b.text}</p>)}
@@ -281,14 +284,15 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
             ? <MemberPart key={section.id} section={section} member={group.members.find(m => m.section === section.id)!} onWrite={writeMember(group.members.find(m => m.section === section.id)!)} blockView={blockView} />
             : view.rfp && section.id === "transmittal"
             ? <section className="report-section" key={section.id}>
-              <h3 id={`rs-${section.id}`}>{section.title}</h3>
+              <div className="report-section-head section-band"><h3 id={`rs-${section.id}`}>{screenTitle(section.title)}</h3></div>
               <RfpTransmittal block={section.blocks?.find(b => b.id === "rfp:project:information")} selection={transmittal} busy={!!busyKey} onWrite={writeSetting} />
             </section>
             : <section className="report-section" key={section.id}>
-            {view.rfp && editable.has(section.id) ? <div className="report-section-head"><h3 id={`rs-${section.id}`}>{section.title}</h3><button type="button" className="btn btn-small" aria-expanded={openEdits.has(section.id)} aria-controls={`rfp-edit-${section.id}`} aria-label={`${openEdits.has(section.id) ? "Done editing" : "Edit"} ${section.title}`} disabled={!!editor} onClick={() => toggleEdit(section.id)}>{openEdits.has(section.id) ? "Done" : "Edit"}</button></div> : <h3>{section.title}</h3>}
+            {view.rfp && editable.has(section.id) ? <div className="report-section-head section-band"><h3 id={`rs-${section.id}`}>{screenTitle(section.title)}</h3><button type="button" className="btn btn-small" aria-expanded={openEdits.has(section.id)} aria-controls={`rfp-edit-${section.id}`} aria-label={`${openEdits.has(section.id) ? "Done editing" : "Edit"} ${section.title}`} disabled={!!editor} onClick={() => toggleEdit(section.id)}>{openEdits.has(section.id) ? "Done" : "Edit"}</button></div> : view.rfp ? <div className="report-section-head section-band"><h3 id={`rs-${section.id}`}>{screenTitle(section.title)}</h3></div> : <h3>{section.title}</h3>}
             {view.rfp && <SectionMarkers controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} onJump={jump} />}
             {view.rfp && editable.has(section.id) && openEdits.has(section.id) && <div id={`rfp-edit-${section.id}`}><RfpSectionEditor controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} /></div>}
-            {(section.blocks ?? []).map(b => blockView(b))}</section>)}
+            {view.rfp && section.id === "terms" && <RfpTermsTable controls={view.rfp} block={section.blocks?.find(b => b.id === "rfp:terms")} selection={transmittal} busy={busy || !!busyKey || !!editor} onWrite={writeSetting} />}
+            {(section.blocks ?? []).filter(b => !(view.rfp && (b.id === OLD_TEAM_BLOCK || b.id === AGREEMENT_BLOCK))).map(b => blockView(b))}</section>)}
           {view.rfp && <RfpIssue controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump}>
             {draft.sections.find(s => s.id === "issue_dates")?.blocks.filter(b => b.edited || b.source_missing).map(b => blockView(b))}
             <RfpReleaseDates controls={view.rfp} busyKey={busy || !!busyKey || !!editor ? "busy" : ""} onWrite={writeSetting} />
@@ -305,6 +309,18 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
 type Section = { id: string; title: string; blocks: ReportBlock[] };
 
 /**
+ * An RFP section title as the screen shows it: without its print number
+ * ("2. Scope of services" reads "Scope of services"). The issued PDF keeps
+ * the numbers, since the wording cites sections by number (owner, 8 Nov 2026).
+ */
+function screenTitle(title: string): string {
+  return title.replace(/^\d+\.\s+/, "");
+}
+
+/** Drafts saved before 7 Nov 2026 still hold the removed Design team table; refresh drops it. */
+const OLD_TEAM_BLOCK = "rfp:role:team";
+
+/**
  * One discipline's part of a combined engagement's RFP, edited exactly as
  * that discipline's own RFP: its scope table and allowances use its own
  * controls, and every write goes to its own report.
@@ -314,7 +330,7 @@ function MemberPart({ section, member, onWrite, blockView }: { section: Section;
   // A blank quantity is marked on its row in the allowance table instead.
   const decisions = (controls?.decisions ?? []).filter(d => !d.control?.startsWith("allowance:"));
   return <section className="report-section" aria-label={section.title} data-member={member.package_id}>
-    <div className="report-section-head"><h3 id={`rs-${section.id}`}>{section.title}</h3>
+    <div className="report-section-head section-band"><h3 id={`rs-${section.id}`}>{screenTitle(section.title)}</h3>
     </div>
     {decisions.length > 0 && <ul className="rfp-markers" aria-label={`Blocks issue for ${member.title}`}>{decisions.map(d => <li key={d.id}><strong>{d.label}.</strong> {d.text}</li>)}</ul>}
     {section.blocks.map(b => blockView(b, controls, onWrite))}

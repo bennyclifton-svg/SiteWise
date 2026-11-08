@@ -2,6 +2,7 @@ package export
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"sitewise/internal/reports"
@@ -44,6 +45,11 @@ func block(b reports.Block) Block {
 		// The transmittal reads as on screen: the table, then any note.
 		out.Label, out.TextAfter = "", true
 		out.Text = strings.TrimPrefix(out.Text, "Information provided: ")
+	}
+	if b.ID == "rfp:terms" && out.Text != "" {
+		// Numbered as on screen, so a term is cited by its number.
+		out.Table, out.Text = termsTable(out.Text), ""
+		return out
 	}
 	if b.Table == nil || len(b.Table.Columns) == 0 {
 		return out
@@ -151,6 +157,28 @@ func ticks(position string) []Cell {
 		return []Cell{{}, {}}
 	}
 	return []Cell{{Runs: text(position), Align: Center, ColSpan: 2}}
+}
+
+// termLines splits the terms wording into its numbered terms: one per line,
+// any list marker removed. The screen numbers the same lines.
+func termLines(text string) []string {
+	out := []string{}
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "- "))
+		if line != "" {
+			out = append(out, line)
+		}
+	}
+	return out
+}
+
+func termsTable(text string) *Table {
+	out := &Table{Columns: []Column{{Fixed: tickWidth, Align: Center}, {Share: 100}}}
+	out.Head = []Cell{centred(head("No.")), head("Term")}
+	for i, line := range termLines(text) {
+		out.Rows = append(out.Rows, Row{MinHeight: rowHeight, Cells: []Cell{centred(plain(strconv.Itoa(i + 1))), plain(line)}})
+	}
+	return out
 }
 
 // allowanceTable keeps the two pairs, each item's detail quieter after its

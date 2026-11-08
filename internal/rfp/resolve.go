@@ -158,7 +158,9 @@ type Boundary struct {
 
 type Resolved struct {
 	Transmittal []reports.BriefValue `json:"transmittal"`
-	Discipline  string               `json:"discipline"`
+	// Agreement is the client agreement's documents, attached in Terms.
+	Agreement  []reports.BriefValue `json:"agreement,omitempty"`
+	Discipline string               `json:"discipline"`
 	// Kind is works on a trade RFT; the layout words follow it.
 	Kind          string                `json:"kind,omitempty"`
 	Version       int                   `json:"version"`
@@ -313,6 +315,9 @@ func Resolve(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Driver
 	r.out.Transmittal = drivers.DocumentSchedule
 	if raw, ok := r.setting("transmittal"); ok {
 		_ = json.Unmarshal(raw, &r.out.Transmittal)
+	}
+	if raw, ok := r.setting(AgreementDocs); ok {
+		_ = json.Unmarshal(raw, &r.out.Agreement)
 	}
 	r.applyFacts()
 	if d.ID == "hydraulic-services" {
@@ -1401,6 +1406,15 @@ func (r *resolver) resolveFields() {
 		}
 		r.out.Fields[f.Key] = v
 	}
+	// Agreement documents chosen in the repository name the agreement, by
+	// title alone (owner, 8 Nov 2026), when the user has not typed a name.
+	if a := r.out.Fields["agreement"]; a.Source != "user" && len(r.out.Agreement) > 0 {
+		names := []string{}
+		for _, doc := range DocumentRows(r.out.Agreement) {
+			names = append(names, doc.Title)
+		}
+		r.out.Fields["agreement"] = FieldValue{Value: strings.Join(names, " and "), Source: "document"}
+	}
 }
 
 func (r *resolver) resolveRows() {
@@ -1933,6 +1947,11 @@ func (r *resolver) finishChecks() {
 	}
 }
 
+// retiredSettings were removed on purpose, so a saved value is ignored
+// rather than raised for review: the questions contact and date left Terms
+// (owner, 8 Nov 2026).
+var retiredSettings = map[string]bool{"field:contact": true, "field:questions_by": true}
+
 func (r *resolver) findOrphans() {
 	keys := make([]string, 0, len(r.settings))
 	for k := range r.settings {
@@ -1940,7 +1959,7 @@ func (r *resolver) findOrphans() {
 	}
 	sort.Strings(keys)
 	for _, k := range keys {
-		if r.used[k] || validKey(r.d, r.sk, r.drivers, k) {
+		if r.used[k] || validKey(r.d, r.sk, r.drivers, k) || retiredSettings[k] {
 			continue
 		}
 		r.out.Orphans = append(r.out.Orphans, k)
@@ -2102,6 +2121,9 @@ func (r *resolver) gridText(key string) (string, bool) {
 		return r.slot(key)
 	case "regulated_design":
 		return answer(r.fact("regulated_design")), true
+	case "unit_mix":
+		v := r.drivers.Text["unit_mix"]
+		return v, v != ""
 	}
 	v := r.out.Fields[key].Value
 	return v, v != ""

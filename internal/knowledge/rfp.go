@@ -321,6 +321,7 @@ var ProjectGrid = []GridRow{
 	{"storeys", "Storeys", "The building", false},
 	{"gfa", "Gross floor area", "The building", false},
 	{"bedrooms", "Bedrooms", "The building", false},
+	{"unit_mix", "Unit mix", "The building", false},
 	{"bathrooms", "Bathrooms", "The building", false},
 	{"parking", "Car parks", "The building", false},
 	{"quality", "Quality level", "The building", false},

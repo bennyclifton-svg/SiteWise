@@ -35,6 +35,16 @@
   --trace-check: #B07A2A;
 }
 
+:root {
+  /* Where a value came from, one rule across the app (owner, 8 Nov 2026):
+     green from documents, blue typical or inferred, rust set by you (drawn
+     as a square), amber to check (with a warning mark). */
+  --origin-doc: var(--sw-success-text);
+  --origin-typical: var(--trace-azure);
+  --origin-user: var(--trace-ember);
+  --origin-check: var(--trace-check);
+}
+
 :root[data-theme="dark"] {
   --trace-table: var(--sw-canvas);
   --trace-sheet: var(--sw-surface);
@@ -203,7 +213,7 @@
   position: absolute;
   z-index: -1;
   left: 2px;
-  right: 6px;
+  right: -4px;
   top: 3px;
   bottom: 3px;
   background: var(--trace-brush-hover);
@@ -250,6 +260,8 @@
 }
 .pencil-doc { background-image: url("./assets/marks/pencil-ember.svg"); }
 .pencil-jev { background-image: url("./assets/marks/pencil-azure.svg"); }
+:root[data-theme="dark"] .pencil-doc { background-image: url("./assets/marks/pencil-ember-dark.svg"); }
+:root[data-theme="dark"] .pencil-jev { background-image: url("./assets/marks/pencil-azure-dark.svg"); }
 
 /* A graphite rule drawn by hand, overshooting both ends like a drafter's line. */
 .pencil-rule {

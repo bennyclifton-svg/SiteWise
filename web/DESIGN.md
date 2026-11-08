@@ -24,12 +24,14 @@ hold the surfaces. They load after the surface stylesheets.
   page actions. Its bottom edge is torn with a soft fibrous band. Content that
   scrolls up passes under it, blurred and faded, so it never competes with
   the title. Wide screens only; below 1101px the shell stacks as before.
-- **Three hand marks, used sparingly, one meaning each.**
+- **Four hand marks, used sparingly, one meaning each.**
   Pencil: provenance underlines in the profile summary (ember from documents,
   dotted blue for Jev, graphite for the user's word), the title-block rule,
   the open Cost Plan tab and the awarded firm. Squared highlighter: a value
   that needs a decision (sources differ, a proposal without a package). Paint
-  stroke: the selected navigation item, fainter on hover.
+  stroke: the selected navigation item, fainter on hover; a dry brush, solid
+  to 68% of its length with streaks throughout, feathered out by 81%. Pen:
+  the ground-line button (below).
 - **Marks are static files** in `src/assets/marks`, made once by
   `scripts/make-marks.mjs` and applied by CSS (masks and backgrounds). No
   runtime drawing, no Jev, no layout cost. Marks turn off for
@@ -38,8 +40,19 @@ hold the surfaces. They load after the surface stylesheets.
   it, the Project as a five-column title block whose choices are dropdowns
   ("Unknown" when unset), and scope as a matrix with one cell per system in
   building order; the open entry's table sits beneath its row.
-- **Logo.** The datum lockup in `Wordmark.tsx`, in the current text colour;
-  the circle alone is the favicon (`public/brand/sitewise-datum.svg`).
+- **Logo.** The datum lockup in `Wordmark.tsx`, Section version (owner pick
+  8 Nov 2026): the structure above the level line is solid, the slipped ground
+  below it is drawn in 45° section hatch. In the current text colour. The
+  favicon (`public/brand/sitewise-datum.svg`) keeps the plain half-tint,
+  which reads better at 16px.
+- **Ground-line button** (owner pick 8 Nov 2026). Page-level actions only:
+  Update (`UpdateButton`) and back out of a drilled-in view (`BackButton`),
+  both `GroundButton.tsx`. A pen-drawn box whose corners cross, the label
+  standing on a ground line; the primary button has section hatch below the
+  line, full to half its width, gone by 90%. The back button keeps the line
+  only. Busy work over 400 ms "sketches": the refresh circle is pencilled
+  round while the hatch is shaded in, on a 2.4 s beat, and finishes its cycle
+  before settling. Table, menu and inline buttons stay plain `.btn`.
 
 ## Runtime source of truth
 
@@ -100,6 +113,12 @@ keeps navigation available without pushing the work offscreen; the project
 heading stays visible. Opening the disclosure exposes normal keyboard controls.
 Tables scroll inside their workspace; never widen the page to fit their minimum
 column widths. Keep scrollbars discoverable.
+
+A field inside a table cell is the cell (owner, 8 Nov 2026): no border, no
+rounded box, no second frame inside the table's own lines. Hover shades the
+cell; focus draws one line. `sizing.css` sets this globally for every
+`td`/`th` field, so a new table needs no field styling of its own; never add a
+bordered input inside a table.
 
 Profile fields respond to the workspace container, not just the viewport.
 At 560px of pane width and below, identity, place and detail grids become one

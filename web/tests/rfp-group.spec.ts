@@ -111,6 +111,6 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   await expect(page.getByRole("button", { name: "Issue report", exact: true })).toHaveCount(1);
 
   // Back on Procurement the group row opens the same report.
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Back to Procurement", exact: true }).click();
   await expect(page.getByRole("button", { name: "View RFP for Civil and Structural", exact: true })).toBeVisible();
 });

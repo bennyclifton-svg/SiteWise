@@ -12,6 +12,8 @@
 body { --head-tone: var(--tone-blue); }
 
 :is(.cockpit-scroll, .project-side-panel) table thead th,
+/* A head row inside the body, where one table changes its columns. */
+:is(.cockpit-scroll, .project-side-panel) table tr.table-subhead > th,
 .pf-tb-head,
 .sw-matrow .sw-th,
 .pg-gridhead {
@@ -30,10 +32,43 @@ body { --head-tone: var(--tone-blue); }
 .profile .pf-head h2,
 .report-view .report-section > h3,
 .report-view .report-section-head h3 { color: color-mix(in oklab, var(--head-tone) 78%, var(--sw-text-primary)); }
+/* Section heads read as a table's top row (owner direction, 8 Nov 2026):
+   the same blue band as the Site and planning / The building / Delivery head,
+   on Profile (Scope and works, Consultant team) and every RFP section. */
+.section-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-height: 36px;
+  margin: 0 !important;
+  padding: 4px 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--sw-border-strong) !important;
+  background-color: color-mix(in oklab, var(--head-tone) 9%, var(--sw-surface));
+}
+.section-band :is(h2, h3) {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  color: color-mix(in oklab, var(--head-tone) 78%, var(--sw-text-primary)) !important;
+  font-size: var(--fs-xs) !important;
+  font-weight: 650 !important;
+  line-height: 1.3 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+.section-band :is(.btn, .cell-link, .rfp-status) { font-size: var(--fs-xs); }
+/* The Project card keeps its actions without a title above it. */
+.profile .pf-head.pf-head-bare { justify-content: flex-end; margin-bottom: 8px; }
+/* Page one opens on the grid's head row: no gap where its title was. */
+.report-view .report-section.rfp-project .rfp-grid { margin-top: 0; }
 /* Narrow figure columns keep their width: tighter tracking there. */
 .cost-grid thead th { letter-spacing: .03em !important; }
 
 @media print {
   :is(.cockpit-scroll, .project-side-panel) table thead th,
-  .pf-tb-head, .sw-matrow .sw-th, .pg-gridhead { background-color: transparent !important; color: #000 !important; }
+  :is(.cockpit-scroll, .project-side-panel) table tr.table-subhead > th,
+  .pf-tb-head, .sw-matrow .sw-th, .pg-gridhead, .section-band, .section-band :is(h2, h3) { background-color: transparent !important; color: #000 !important; }
 }

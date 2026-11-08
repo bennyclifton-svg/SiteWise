@@ -13,8 +13,8 @@
 // document that says a ticked system is not included is flagged, never
 // allowed to untick it.
 
-import { useCallback, useEffect, useState } from "react";
-import { Conflict, FieldRow, Mark, NotYetKnown, ResetButton, Sources, unanswered, type Setter } from "./ProfileFields";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Conflict, FieldRow, NotYetKnown, ResetButton, unanswered, type Setter } from "./ProfileFields";
 import { WORK_ACTIONS, WorkItemDetail, patchWorkRow, workError } from "./WorkItem";
 import { workApi, type WorkRecord } from "./workApi";
 import type { Profile, ProfileField, ScopeChoice, SystemRow } from "./profileApi";
@@ -32,31 +32,45 @@ interface Props {
   onScope: (systems: Record<string, ScopeChoice>) => Promise<void>;
   onSet: Setter;
   onJump: (id: string) => void;
-  /** Opens the source requirements filtered to a system or group. */
-  onSources: (system: string) => void;
+  /** Opens the source requirements filtered to a system or group (no longer shown here). */
+  onSources?: (system: string) => void;
   onSignedOut: () => void;
 }
 
-const PROVIDERS: Record<string, string> = { contractor: "Contractor", owner: "Owner", landlord: "Landlord", others: "Others" };
+// The viewer's "Active only" choice, kept across visits on this browser.
+const ACTIVE_KEY = "sitewise.scope.activeOnly";
+function readActiveOnly() {
+  try {
+    return localStorage.getItem(ACTIVE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+function storeActiveOnly(on: boolean) {
+  try {
+    localStorage.setItem(ACTIVE_KEY, on ? "1" : "0");
+  } catch {
+    // Storage blocked: the toggle still works for this visit.
+  }
+}
 
-const ORIGINS: Record<string, string> = {
-  default: "Typical",
-  document: "From documents",
-  user: "You",
-};
+const PROVIDERS: Record<string, string> = { contractor: "Contractor", owner: "Owner", landlord: "Landlord", others: "Others" };
 
 // Evidence, not a typical default or a blank reading, that the completed
 // project will not have the system.
 const saysOut = (r: SystemRow) =>
   r.presence.value === "not_included" && !["", "blank", "suggested"].includes(r.presence.band);
 
-// What the documents say about a system, as one colour: included, not
-// included, disagreeing, or nothing read (a typical default or silence).
+// Who settled a system's scope, as one dot colour (owner, 8 Nov 2026):
+// green from documents, blue typical for the building, rust set by you.
+// Disagreeing documents keep the amber half dot; the count beside the dot
+// is the number of source passages.
 function evidence(r: SystemRow): { state: string; label: string } {
   if (r.presence.band === "red") return { state: "mixed", label: "Documents disagree" };
-  if (saysOut(r)) return { state: "out", label: "Documents say not included" };
-  if (r.presence.value === "included" && !["", "blank", "suggested"].includes(r.presence.band))
-    return { state: "in", label: r.presence.band === "user" ? "You say included" : "Documents say included" };
+  if (r.scope_origin === "user") return { state: "user", label: r.in_scope ? "Set by you" : "Removed by you" };
+  if (r.scope_origin === "document" || saysOut(r))
+    return { state: "doc", label: saysOut(r) ? "Documents say not included" : "From documents" };
+  if (r.scope_origin === "default") return { state: "typical", label: "Typical for this building" };
   return { state: "none", label: "No document evidence" };
 }
 
@@ -69,12 +83,14 @@ export function entryInputs(data: Profile, id: string) {
   };
 }
 
-export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope, onSet, onJump, onSources, onSignedOut }: Props) {
+export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope, onSet, onJump, onSignedOut }: Props) {
   const [busy, setBusy] = useState(false);
   // A tick shows at once; the rebuilt profile then settles it.
   const [pending, setPending] = useState<Record<string, boolean>>({});
   const [open, setOpen] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
+  // Active only hides every system, cell and entry not in scope. A system
+  // still to check stays, so a warning never disappears.
+  const [activeOnly, setActiveOnly] = useState(readActiveOnly);
   const [works, setWorks] = useState<WorkRecord[]>([]);
   const [workNote, setWorkNote] = useState("");
   const [reload, setReload] = useState(0);
@@ -135,12 +151,17 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
     const { flags, inputs } = entryInputs(data, id);
     return rows.filter(needsCheck).length + [...flags, ...inputs].filter((f) => f.band === "red").length;
   };
+  const answered = (id: string) => entryInputs(data, id).flags.filter((f) => !f.scope_decision && f.value !== "").length;
+  const shownEntries = activeOnly
+    ? entries.filter((e) =>
+        e.id === OTHER || checksIn(e.id, e.rows) > 0 || (e.id === PLANNING ? answered(e.id) > 0 : e.rows.some(isIn)))
+    : entries;
   // Nothing open until a line is clicked; clicking the open line closes it.
-  const current = entries.find((e) => e.id === selected);
+  const current = shownEntries.find((e) => e.id === selected);
 
   return (
     <section className="pf-section sw" aria-labelledby="pf-scope">
-      <div className="pf-head sw-head">
+      <div className="pf-head sw-head section-band">
         <h2 id="pf-scope">Scope and works</h2>
         {yours.length > 0 && (
           <button
@@ -153,6 +174,27 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
             Reset to defaults
           </button>
         )}
+        <div className="sw-keyrow">
+          <div className="sw-key" aria-hidden="true">
+            <span><i className="sw-cell" data-on="true" />In scope</span>
+            <span><i className="sw-cell" />Not in scope</span>
+            <span><i className="sw-cell" data-check="true" />To check</span>
+            <span className="sw-key-gap"><i className="pf-ev" data-ev="doc" />Documents</span>
+            <span><i className="pf-ev" data-ev="typical" />Typical</span>
+            <span><i className="pf-ev" data-ev="user" />You</span>
+          </div>
+          <label className="pf-toggle sw-all" title="Show only the systems in scope">
+            <input
+              type="checkbox"
+              checked={activeOnly}
+              onChange={(e) => {
+                setActiveOnly(e.target.checked);
+                storeActiveOnly(e.target.checked);
+              }}
+            />{" "}
+            Active only
+          </label>
+        </div>
       </div>
       {/* Presets start an empty scope; once anything is in scope a preset
           would only add systems nobody chose, so they step aside. */}
@@ -186,18 +228,9 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
       )}
 
       <div className="sw-body sw-matrix">
-        <div className="sw-keyrow">
-          <div className="sw-key" aria-hidden="true">
-            <span><i className="sw-cell" data-on="true" />In scope</span>
-            <span><i className="sw-cell" />Not in scope</span>
-            <span><i className="sw-cell" data-check="true" />To check</span>
-          </div>
-          <label className="pf-toggle sw-all" title="Also show inputs this scope does not need">
-            <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> Show all
-          </label>
-        </div>
         <div className="sw-rail" role="group" aria-label="Scope entries">
-          {entries.map((e) => {
+          {activeOnly && shownEntries.length === 0 && <p className="sw-empty muted">Nothing in scope yet. Turn off Active only to choose systems.</p>}
+          {shownEntries.map((e) => {
             const on = e.rows.filter(isIn).length;
             const checks = checksIn(e.id, e.rows);
             // Planning's cells are its conditions; appointment choices are not cells.
@@ -207,6 +240,7 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
               : e.id === OTHER
                 ? orphans.map((w) => ({ key: w.id, on: true, check: false }))
                 : e.rows.map((r) => ({ key: r.leaf, on: isIn(r), check: needsCheck(r) }));
+            const shownCells = activeOnly ? cells.filter((c) => c.on || c.check) : cells;
             const active = e.id === current?.id;
             return (
               <div key={e.id} className="sw-matrow" data-open={active || undefined}>
@@ -221,9 +255,12 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
                     setOpen(null);
                   }}
                 >
-                  <span className="sw-entry-label">{e.label}</span>
+                  <span className="sw-entry-label">
+                    <span className="sw-caret" aria-hidden="true" />
+                    {e.label}
+                  </span>
                   <span className="sw-cells" aria-hidden="true">
-                    {cells.map((c) => <i key={c.key} className="sw-cell" data-on={c.on || undefined} data-check={c.check || undefined} />)}
+                    {shownCells.map((c) => <i key={c.key} className="sw-cell" data-on={c.on || undefined} data-check={c.check || undefined} />)}
                   </span>
                   {checks > 0 && <span className="sw-check" title={`${checks} to check`}>{checks} to check</span>}
                   <span className="sw-count">
@@ -232,74 +269,50 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
                 </button>
                 {active && current && (
             <div className="sw-pane" role="region" aria-label={current.label}>
-              <div className="sw-pane-head">
-                {current.rows.length > 0 && (() => {
-                  const on = current.rows.filter(isIn).length;
-                  return (
-                    <label className="sw-group-tick">
-                      <input
-                        type="checkbox"
-                        aria-label={`All of ${current.label}`}
-                        checked={on > 0 && on === current.rows.length}
-                        ref={(el) => {
-                          if (el) el.indeterminate = on > 0 && on < current.rows.length;
-                        }}
-                        disabled={busy}
-                        onChange={() => {
-                          const every = on === current.rows.length;
-                          run(Object.fromEntries(current.rows.filter((r) => isIn(r) === every).map((r) => [r.leaf, every ? "out" : "in"])));
-                        }}
-                      />
-                    </label>
-                  );
-                })()}
-                <h3>{current.label}</h3>
-                {current.rows.length > 0 && <span className="muted">{current.rows.filter(isIn).length} of {current.rows.length} in scope</span>}
-                {current.id !== PLANNING && current.id !== OTHER && (
-                  <button type="button" className="cell-link sw-req" onClick={() => onSources(current.id)} aria-label={`View requirements for ${current.label}`}>
-                    Requirements
-                  </button>
-                )}
-              </div>
-
-              {current.rows.length > 0 && (
-                <div className="sw-table" role="table" aria-label={`${current.label} systems`}>
-                  <div className="sw-row sw-th" role="row">
-                    <span role="columnheader">System</span>
-                    <span role="columnheader">Works</span>
-                    <span role="columnheader">By</span>
-                    <span role="columnheader">Evidence</span>
-                    <span role="columnheader"><span className="sr-only">Details</span></span>
+              {/* No title line or column heads: the entry row above names it,
+                  the rows are system then dot (owner, 8 Nov 2026). */}
+              {(() => {
+                // Two tables side by side halve the rows; the first reads
+                // down, then the second.
+                const rows = activeOnly ? current.rows.filter((r) => isIn(r) || needsCheck(r)) : current.rows;
+                if (rows.length === 0) return null;
+                const half = Math.ceil(rows.length / 2);
+                const cols = rows.length > 1 ? [rows.slice(0, half), rows.slice(half)] : [rows];
+                return (
+                  <div className="sw-cols" data-cols={cols.length}>
+                    {cols.map((col, i) => (
+                      <div key={i} className="sw-table" role="table" aria-label={`${current.label} systems${cols.length > 1 ? `, column ${i + 1}` : ""}`}>
+                        {col.map((r) => (
+                          <SystemLine
+                            key={r.leaf}
+                            projectId={projectId}
+                            row={r}
+                            items={byLeaf.get(r.leaf) ?? []}
+                            parts={data.parts}
+                            inScope={isIn(r)}
+                            open={open === r.leaf}
+                            busy={busy}
+                            setBusy={setBusy}
+                            onOpen={() => setOpen(open === r.leaf ? null : r.leaf)}
+                            onTick={(choice) => run({ [r.leaf]: choice })}
+                            onSet={onSet}
+                            onJump={onJump}
+                            onWorkChanged={() => setReload((n) => n + 1)}
+                            onWorkError={failWork}
+                            onWorks={setWorks}
+                          />
+                        ))}
+                      </div>
+                    ))}
                   </div>
-                  {current.rows.map((r) => (
-                    <SystemLine
-                      key={r.leaf}
-                      projectId={projectId}
-                      row={r}
-                      items={byLeaf.get(r.leaf) ?? []}
-                      parts={data.parts}
-                      inScope={isIn(r)}
-                      open={open === r.leaf}
-                      busy={busy}
-                      setBusy={setBusy}
-                      onOpen={() => setOpen(open === r.leaf ? null : r.leaf)}
-                      onTick={(choice) => run({ [r.leaf]: choice })}
-                      onSet={onSet}
-                      onJump={onJump}
-                      onSources={() => onSources(r.leaf)}
-                      onWorkChanged={() => setReload((n) => n + 1)}
-                      onWorkError={failWork}
-                      onWorks={setWorks}
-                    />
-                  ))}
-                </div>
-              )}
+                );
+              })()}
 
               {current.id === OTHER && (
                 <WorkList projectId={projectId} items={orphans} parts={data.parts} label={(w) => labels.get(w.system_id) ?? w.system_id} busy={busy} setBusy={setBusy} onChanged={() => setReload((n) => n + 1)} onError={failWork} onWorks={setWorks} />
               )}
 
-              <EntryInputs data={data} id={current.id} showAll={showAll} onSet={onSet} onJump={onJump} />
+              <EntryInputs data={data} id={current.id} onSet={onSet} onJump={onJump} />
             </div>
                 )}
               </div>
@@ -311,7 +324,9 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
   );
 }
 
-function EntryInputs({ data, id, showAll, onSet, onJump }: { data: Profile; id: string; showAll: boolean; onSet: Setter; onJump: (id: string) => void }) {
+function EntryInputs({ data, id, onSet, onJump }: { data: Profile; id: string; onSet: Setter; onJump: (id: string) => void }) {
+  // Inputs this scope does not need stay hidden until asked for.
+  const [showAll, setShowAll] = useState(false);
   const { flags: all, inputs } = entryInputs(data, id);
   const flags = all.filter((f) => !f.scope_decision);
   // What each consultant is asked to do here. Answered ones show; the
@@ -341,7 +356,15 @@ function EntryInputs({ data, id, showAll, onSet, onJump }: { data: Profile; id: 
       )}
       {inputs.length > 0 && (
         <div className="sw-inputs" role="group" aria-label="Compliance inputs">
-          <h4>Compliance inputs {hidden > 0 && <span className="muted">{hidden} not needed for this scope</span>}</h4>
+          <h4>
+            Compliance inputs
+            {hidden > 0 && <span className="muted">{hidden} not needed for this scope</span>}
+            {(hidden > 0 || showAll) && (
+              <button type="button" className="cell-link" onClick={() => setShowAll(!showAll)}>
+                {showAll ? "Hide unneeded" : "Show"}
+              </button>
+            )}
+          </h4>
           {shown.length > 0 && (
             <div className="pf-grid">
               {shown.map((f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={data.parts} />)}
@@ -353,17 +376,16 @@ function EntryInputs({ data, id, showAll, onSet, onJump }: { data: Profile; id: 
   );
 }
 
-function SystemLine({ projectId, row: r, items, parts, inScope, open, busy, setBusy, onOpen, onTick, onSet, onJump, onSources, onWorkChanged, onWorkError, onWorks }: {
+// One system: its scope tick and name, then the dot. Works and supplier are
+// almost always "new" and "Contractor", so they live in the dot's pop-up and
+// only an exception shows, as a short note after the name (owner, 8 Nov 2026).
+function SystemLine({ projectId, row: r, items, parts, inScope, open, busy, setBusy, onOpen, onTick, onSet, onJump, onWorkChanged, onWorkError, onWorks }: {
   projectId: string; row: SystemRow; items: WorkRecord[]; parts: Profile["parts"]; inScope: boolean; open: boolean;
   busy: boolean; setBusy: (b: boolean) => void; onOpen: () => void; onTick: (choice: ScopeChoice) => void;
-  onSet: Setter; onJump: (id: string) => void; onSources: () => void;
+  onSet: Setter; onJump: (id: string) => void;
   onWorkChanged: () => void; onWorkError: (e: unknown) => void; onWorks: (f: (w: WorkRecord[]) => WorkRecord[]) => void;
 }) {
-  const base = `sys.${r.leaf}`;
-  const ev = evidence(r);
   const own = items.length === 1 && !items[0].is_group ? items[0] : undefined;
-  const [note, setNote] = useState(r.note.value);
-  useEffect(() => setNote(r.note.value), [r.note.value]);
   const check = r.presence.band === "red" || (inScope && saysOut(r));
 
   const setAction = async (work: WorkRecord, action: string) => {
@@ -380,6 +402,12 @@ function SystemLine({ projectId, row: r, items, parts, inScope, open, busy, setB
     }
   };
 
+  const exceptions = [
+    own && own.action !== "new" ? own.action : "",
+    !own && items.length > 0 ? `${items.length} work item${items.length === 1 ? "" : "s"}` : "",
+    r.provider.value && r.provider.value !== "contractor" ? `by ${PROVIDERS[r.provider.value] ?? r.provider.value}` : "",
+  ].filter(Boolean);
+
   return (
     <div className="sw-line" data-open={open ? "true" : undefined} data-check={check ? "true" : undefined}>
       <div className="sw-row" role="row">
@@ -388,27 +416,116 @@ function SystemLine({ projectId, row: r, items, parts, inScope, open, busy, setB
             <input type="checkbox" checked={inScope} disabled={busy} onChange={() => onTick(inScope ? "out" : "in")} />
             {r.label}
           </label>
-          {r.scope_origin && (
-            <span className="pf-scope-origin" data-origin={r.scope_origin}>
-              {r.in_scope || r.scope_origin !== "user" ? ORIGINS[r.scope_origin] : "Removed by you"}
-            </span>
-          )}
+          {exceptions.length > 0 && <span className="sw-except">{exceptions.join(" · ")}</span>}
         </span>
-        <span role="cell">
-          {own ? (
-            <select className="select sw-select" aria-label={`Action for ${own.title}`} disabled={busy || own.deprecated || !inScope} value={own.action} onChange={(e) => void setAction(own, e.target.value)}>
-              {WORK_ACTIONS.map((a) => <option key={a} value={a}>{a}</option>)}
-            </select>
-          ) : items.length > 1 ? (
-            <button type="button" className="cell-link" onClick={onOpen}>{items.length} work items</button>
-          ) : (
-            <span className="muted">—</span>
-          )}
+        <span role="cell" className="sw-ev">
+          <SystemPop row={r} check={check} own={own} items={items} inScope={inScope} busy={busy} open={open} onOpen={onOpen} onAction={setAction} onSet={onSet} onJump={onJump} />
         </span>
-        <span role="cell">
-          {saysOut(r) && !inScope ? (
-            <span className="pf-scope-out">Not included</span>
-          ) : (
+      </div>
+      {saysOut(r) && inScope && (
+        <p className="pf-scope-check">
+          Documents say not included{" "}
+          <button type="button" className="cell-link" disabled={busy} onClick={() => onTick("out")}>
+            Remove from scope
+          </button>
+        </p>
+      )}
+      {r.scope_note && <p className="pf-scope-note">{r.scope_note}</p>}
+      {open && items.length > 0 && (
+        <div className="sw-strip">
+          <WorkList projectId={projectId} items={items} parts={parts} label={() => r.label} busy={busy} setBusy={setBusy} onChanged={onWorkChanged} onError={onWorkError} onWorks={onWorks} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// The dot, its source count and the system's pop-up: where the evidence
+// came from (each passage with a link to its document, disagreeing readings
+// to pick from, a reset when the choice is yours), then the exceptions:
+// works, who supplies it, and the work item's parts and split.
+function SystemPop({ row: r, check, own, items, inScope, busy, open: workOpen, onOpen, onAction, onSet, onJump }: {
+  row: SystemRow; check: boolean; own: WorkRecord | undefined; items: WorkRecord[]; inScope: boolean; busy: boolean;
+  open: boolean; onOpen: () => void; onAction: (w: WorkRecord, action: string) => void; onSet: Setter; onJump: (id: string) => void;
+}) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  const [open, setOpen] = useState(false);
+  const close = () => {
+    if (ref.current) ref.current.open = false;
+  };
+  // Clicking outside the pop-up, or Escape, closes it.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const base = `sys.${r.leaf}`;
+  const ev = evidence(r);
+  const n = r.presence.sources.length;
+  const picks = (r.presence.band === "red" || r.presence.band === "amber") && r.presence.alternatives.length > 0;
+  const mine = r.presence.band === "user";
+  return (
+    <details className="sw-evpop" ref={ref} onToggle={(e) => setOpen(e.currentTarget.open)}>
+      <summary
+        className="sw-evmark"
+        title={`${ev.label}. Sources, works and supplier`}
+        aria-label={`${r.label}: ${ev.label}, ${n} source${n === 1 ? "" : "s"}. Sources, works and supplier`}
+      >
+        <span className="pf-ev" data-ev={ev.state} />
+        {n > 0 && <span className="pf-scope-count">{n}</span>}
+        {check && <span className="sw-check">⚠</span>}
+      </summary>
+      <div className="sw-evpanel" role="group" aria-label={`Details for ${r.label}`}>
+        <p className="sw-evtitle">{ev.label}</p>
+        {n > 0 && (
+          <ul>
+            {r.presence.sources.map((s, i) => (
+              <li key={i}>
+                {s.excerpt ? <q>{s.excerpt}</q> : <span className="muted">No excerpt</span>}{" "}
+                <button type="button" className="cell-link" onClick={() => onJump(s.document_id)}>
+                  Show in register
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {picks && <Conflict cell={r.presence} onPick={(v) => onSet(`${base}.presence`, { part_id: r.part_id, value: v })} />}
+        {mine && (
+          <p className="sw-evreset">
+            Set by you <ResetButton onClick={() => onSet(`${base}.presence`, { part_id: r.part_id, reset: true })} />
+          </p>
+        )}
+
+        <div className="sw-evfields">
+          <label>
+            <span>Works</span>
+            {own ? (
+              <select
+                className="select sw-select"
+                aria-label={`Action for ${own.title}`}
+                disabled={busy || own.deprecated || !inScope}
+                value={own.action}
+                onChange={(e) => onAction(own, e.target.value)}
+              >
+                {WORK_ACTIONS.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
+            ) : (
+              <span className="muted">{items.length > 0 ? `${items.length} work items, set in each` : "—"}</span>
+            )}
+          </label>
+          <label>
+            <span>Supplied by</span>
             <select
               className="select sw-select"
               aria-label={`Who provides ${r.label}`}
@@ -425,57 +542,24 @@ function SystemLine({ projectId, row: r, items, parts, inScope, open, busy, setB
               <option value="">{inScope ? "Contractor (default)" : "—"}</option>
               {Object.entries(PROVIDERS).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
             </select>
-          )}
-        </span>
-        <span role="cell" className="sw-ev">
-          <span className="pf-ev" data-ev={ev.state} title={ev.label} />
-          <span className="sr-only">{ev.label}</span>
-          {r.presence.sources.length > 0 && <span className="pf-scope-count">{r.presence.sources.length}</span>}
-          {check && <span className="sw-check" title={r.presence.band === "red" ? "Documents disagree" : "Documents say not included"}>⚠</span>}
-        </span>
-        <span role="cell">
-          <button type="button" className="sw-more" aria-expanded={open} aria-label={`Details for ${r.label}`} onClick={onOpen}>
-            {open ? "▾" : "▸"}
-          </button>
-        </span>
-      </div>
-      {saysOut(r) && inScope && (
-        <p className="pf-scope-check">
-          Documents say not included{" "}
-          <button type="button" className="cell-link" disabled={busy} onClick={() => onTick("out")}>
-            Remove from scope
-          </button>
-        </p>
-      )}
-      {r.scope_note && <p className="pf-scope-note">{r.scope_note}</p>}
-      {open && (
-        <div className="sw-strip">
-          <div className="sw-strip-line">
-            <input
-              className="input pf-note"
-              aria-label={`Note for ${r.label}`}
-              maxLength={120}
-              value={note}
-              placeholder={r.presence.note ?? "Note"}
-              onChange={(e) => setNote(e.target.value)}
-              onBlur={() => note !== r.note.value && onSet(`${base}.note`, { part_id: r.part_id, value: note })}
-            />
-            <span className="pf-sys-marks">
-              {r.presence.band !== "suggested" && <Mark cell={r.presence} />}
-              <Mark cell={r.provider.band === "red" ? r.provider : { ...r.provider, band: "" }} />
-              <Conflict cell={r.presence} onPick={(v) => onSet(`${base}.presence`, { part_id: r.part_id, value: v })} />
-              <Conflict cell={r.provider} onPick={(v) => onSet(`${base}.provider`, { part_id: r.part_id, value: v })} />
-              <Sources cell={r.presence} onJump={onJump} />
-              <button type="button" className="cell-link" onClick={onSources} aria-label={`View requirements for ${r.label}`}>Requirements</button>
-              {r.presence.band === "user" && <ResetButton onClick={() => onSet(`${base}.presence`, { part_id: r.part_id, reset: true })} />}
-            </span>
-          </div>
+          </label>
+          <Conflict cell={r.provider} onPick={(v) => onSet(`${base}.provider`, { part_id: r.part_id, value: v })} />
           {items.length > 0 && (
-            <WorkList projectId={projectId} items={items} parts={parts} label={() => r.label} busy={busy} setBusy={setBusy} onChanged={onWorkChanged} onError={onWorkError} onWorks={onWorks} />
+            <button
+              type="button"
+              className="cell-link"
+              aria-expanded={workOpen}
+              onClick={() => {
+                close();
+                onOpen();
+              }}
+            >
+              {workOpen ? "Close parts and split" : "Parts and split…"}
+            </button>
           )}
         </div>
-      )}
-    </div>
+      </div>
+    </details>
   );
 }
 

@@ -188,15 +188,16 @@ fields:
   - {key: ref, label: RFP reference, kind: text, required: true, group: issue}
   - {key: issued, label: Issue date, kind: date, required: true, group: issue}
   - {key: closes, label: Proposals close, kind: date, required: true, group: issue}
-  - {key: contact, label: Contact for questions, kind: text, required: false, group: issue}
-  - {key: questions_by, label: Questions in writing by, kind: date, required: false, group: issue}
-  - {key: agreement, label: Client agreement, kind: text, required: true, group: terms, help: "Name the agreement attached to this RFP. A missing agreement is an open question, never acceptance of the consultant's terms."}
+  # Terms print in this order in the RFP's terms table (owner, 8 Nov 2026).
+  # The agreement is met by attaching its documents (setting agreement_docs)
+  # or by naming it here.
+  - {key: agreement, label: Client agreement, kind: text, required: true, group: terms, help: "Attach the agreement from the document repository, or name it. A missing agreement is an open question, never acceptance of the consultant's terms."}
   - {key: start_by, label: Start by, kind: date, required: false, group: issue}
-  - {key: rates_hold_until, label: Rates hold until, kind: date, required: false, group: terms}
-  - {key: validity_days, label: Proposal validity (days), kind: number, required: true, group: terms, default: "90"}
-  - {key: payment_days, label: Payment terms (days), kind: number, required: true, group: terms, default: "30"}
   - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: terms, default: "$10 million"}
   - {key: pl, label: Public liability cover, kind: text, required: true, group: terms, default: "$20 million"}
+  - {key: validity_days, label: Proposal validity (days), kind: number, required: true, group: terms, default: "90"}
+  - {key: rates_hold_until, label: Rates hold until, kind: text, required: false, group: terms, default: "12 months after appointment"}
+  - {key: payment_days, label: Payment terms (days), kind: number, required: true, group: terms, default: "30"}
   - {key: client, label: Client, kind: text, required: true, group: project, profile: proj.client}
   - {key: address, label: Site address, kind: text, required: false, group: project, profile: site.address}
   - {key: lga, label: Local government area, kind: text, required: false, group: project, profile: proj.lga}
@@ -218,6 +219,7 @@ evaluation:
 thresholds:
   - {key: evaluation_weights, kind: client_default, text: "Price 40%, experience 20%, team 20%, methodology and program 10%, compliance 10%", source: "Golden drafts; client preference, editable per RFP", verified: false}
   - {key: insurance_limits, kind: client_default, text: "PI $10 million and PL $20 million unless the discipline sets another default", source: "Golden proposals (architecture A p4, planning M p11, structural/civil E p4); client preference, not a statutory minimum", verified: false}
+  - {key: rates_hold, kind: client_default, text: "Rates hold for 12 months after appointment", source: "Owner 2026-11-08: prefill every term with a reasonable answer; client preference, editable per RFP", verified: false}
   - {key: proposal_validity, kind: client_default, text: "Proposals valid for 90 days; payment within 30 days", source: "Golden proposals (architecture #153, #155); client preference", verified: false}
   - {key: management_systems, kind: client_default, text: "ISO 9001 / 45001 / 14001 or an equivalent described system", source: "Golden proposals; the client accepts an equivalent system unless it states otherwise", verified: false}
 
@@ -255,9 +257,6 @@ terms:
   - key: validity
     text: "Your proposal stays valid for {field:validity_days} days."
     provenance: [{kind: evidence, ref: "architecture#155"}]
-  - key: questions_to
-    text: "Send questions in writing to {field:contact} by {field:questions_by}."
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-10-13-house-rfp-brief.md", why: "Owner 2026-10-13: firms need a contact and a date for questions; printed only when both are set."}]
   - key: questions
     text: "Answers to scope questions go to every tenderer as numbered addenda."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-guide.md (numbered addenda and acknowledgement)"}]

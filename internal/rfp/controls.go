@@ -239,12 +239,6 @@ func BuildControls(r Resolved, d knowledge.RFPDiscipline, sk knowledge.RFPSkelet
 			terms.Controls = append(terms.Controls, field(f))
 		case "issue":
 			{
-				// The contact and questions date print one optional line in
-				// Terms, so their controls sit there.
-				if f.Key == "contact" || f.Key == "questions_by" {
-					terms.Controls = append(terms.Controls, field(f))
-					continue
-				}
 				if !proposalDateField(f.Key) {
 					continue
 				}

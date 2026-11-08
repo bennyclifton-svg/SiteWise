@@ -177,3 +177,27 @@ func TestQualityLabelsMatchTaxonomy(t *testing.T) {
 	}
 	t.Fatal("taxonomy has no quality_level condition")
 }
+
+// An apartment brief prints its unit mix in the project grid, known counts
+// only, in type order (docs/plans/2026-11-08-unit-mix.md).
+func TestGridPrintsTheUnitMix(t *testing.T) {
+	s := houseSnapshot()
+	s.Brief = append(s.Brief,
+		reports.BriefValue{ID: "w:hdr.scale.units_3_bed", Text: "12"},
+		reports.BriefValue{ID: "w:hdr.scale.units_1_bed", Text: "14"},
+		reports.BriefValue{ID: "w:hdr.scale.units_2_bed", Text: "38"},
+		reports.BriefValue{ID: "w:hdr.scale.units_studio", Unknown: true})
+	sk := skeleton(t)
+	r := Resolve(discipline(t, "architecture"), sk, Drivers(s, sk), Settings{})
+	for _, c := range r.Grid {
+		for _, cell := range c.Cells {
+			if cell.Key == "unit_mix" {
+				if cell.Text != "14 × 1-bed, 38 × 2-bed, 12 × 3-bed" {
+					t.Fatalf("unit mix = %q", cell.Text)
+				}
+				return
+			}
+		}
+	}
+	t.Fatal("the grid has no unit mix row")
+}

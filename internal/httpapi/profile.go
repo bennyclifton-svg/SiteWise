@@ -311,22 +311,11 @@ func profileBody(projectID string, view store.ProfileView, deps Deps) profileJSO
 	// Labels only: stored keys keep the taxonomy's names (class, subclass).
 	out.Header = append(out.Header, field("hdr.building_class", "Building category", "choice", classes),
 		field("hdr.subclass", "Building class", "choice", subclasses), field("hdr.work_type", "Work type", "choice", works))
-	var scaleFields []knowledge.ScaleField
-	seenScale := map[string]bool{}
-	if sub, ok := tax.Subclass(subclass); ok {
-		for _, f := range sub.ScaleFields {
-			scaleFields = append(scaleFields, f)
-			seenScale[f.Key] = true
-		}
-	}
-	// A type's default fields must not hide evidence in another measurement
-	// basis (for example a warehouse brief states GLA, while defaults ask GFA).
-	for _, f := range cat.ScaleFields() {
-		c := cell(whole, "hdr.scale."+f.Key)
-		if !seenScale[f.Key] && (c.Value != "" || len(c.Sources) > 0) {
-			scaleFields = append(scaleFields, f)
-		}
-	}
+	sub, subKnown := tax.Subclass(subclass)
+	scaleFields := listedScale(sub.ScaleFields, subKnown, cat.ScaleFields(), func(key string) (bool, bool) {
+		c := cell(whole, "hdr.scale."+key)
+		return c.Value != "" || len(c.Sources) > 0, c.Band == "user"
+	})
 	for _, f := range scaleFields {
 		kind := "number"
 		if f.Type == "text" {
@@ -494,6 +483,47 @@ func detOptions(d knowledge.Determinant) []optionJSON {
 		out = append(out, optionJSON{o.ID, o.ID})
 	}
 	return out
+}
+
+// listedScale is the building type's scale fields, then any other field a
+// document or the user filled: a type's defaults must not hide evidence in
+// another measurement basis (a warehouse brief states GLA, defaults ask GFA).
+// Two exceptions keep house and apartment readings apart
+// (docs/plans/2026-11-08-unit-mix.md): a type known to have no unit mix does
+// not list one from documents, and where the mix is listed a house's
+// Bedrooms is not listed from documents. A value the user typed always shows.
+func listedScale(typeFields []knowledge.ScaleField, typeKnown bool, all []knowledge.ScaleField, filled func(key string) (evidence, user bool)) []knowledge.ScaleField {
+	out := append([]knowledge.ScaleField(nil), typeFields...)
+	seen := map[string]bool{}
+	for _, f := range out {
+		seen[f.Key] = true
+	}
+	mix := false
+	for _, f := range all {
+		evidence, user := filled(f.Key)
+		if seen[f.Key] || !evidence {
+			continue
+		}
+		if profile.IsUnitMix(f.Key) && typeKnown && !user {
+			continue
+		}
+		out = append(out, f)
+		seen[f.Key] = true
+	}
+	for _, f := range out {
+		mix = mix || profile.IsUnitMix(f.Key)
+	}
+	if !mix {
+		return out
+	}
+	kept := out[:0]
+	for i, f := range out {
+		if _, user := filled(f.Key); f.Key == "bedrooms" && i >= len(typeFields) && !user {
+			continue
+		}
+		kept = append(kept, f)
+	}
+	return kept
 }
 
 func contains(list []string, v string) bool {

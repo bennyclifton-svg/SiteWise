@@ -38,7 +38,7 @@ test("procurement first shares one stage plan with Program", async ({ page, base
     data: { program_id: program.program.id, version: program.program.version, ops: [{ op: "update", id: concept.id, label: "Sketch design" }] } });
   expect(ops.ok()).toBeTruthy();
   program = await ops.json();
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Back to Procurement", exact: true }).click();
   await page.getByRole("button", { name: "View RFP for Architect", exact: true }).click();
   const notice = page.getByRole("status", { name: "Stage changes for RFP draft" });
   await expect(notice).toContainText("Concept design renamed Sketch design");
@@ -47,7 +47,7 @@ test("procurement first shares one stage plan with Program", async ({ page, base
   await expect(rows).toContainText("Sketch design");
   await expect(rows).not.toContainText("Concept design");
 
-  await page.getByRole("button", { name: "← Procurement", exact: true }).click();
+  await page.getByRole("button", { name: "Back to Procurement", exact: true }).click();
   await expect(page.getByRole("button", { name: "Stages for Architect", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "View RFP for Architect", exact: true }).click();
   await expect(rows).toContainText("Sketch design");

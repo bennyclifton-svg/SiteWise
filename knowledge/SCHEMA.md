@@ -368,7 +368,8 @@ The exact wording is in `docs/plans/2026-10-03-project-profile.md` §2.2.
 
 - `taxonomy.yaml`: `status`, `sources`, `building_classes` (with
   `subclasses`, each with `ncc_class` and `scale_fields`: `key`, `label`,
-  `type`, optional `unit`, `basis_required`, `triggers`), `work_types`, and
+  `type`, optional `unit`, `basis_required`, `triggers`, and `asks`, the
+  thing Jev picks when the label reads poorly in a question), `work_types`, and
   `conditions` (`key`, `label`, `options`). A work type may add
   `display_label`, shown to people; `label` stays the wording Jev reads, so a
   screen rename never changes a recorded question. Copied from Clerk's taxonomy as

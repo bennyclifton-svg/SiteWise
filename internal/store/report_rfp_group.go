@@ -467,7 +467,7 @@ func (s *Store) writeGroupSetting(ctx context.Context, tx pgx.Tx, org string, r 
 		}
 		delete(settings, key)
 	} else {
-		if key == "transmittal" {
+		if rfp.DocumentListSetting(key) {
 			if value, err = transmittalSelection(ctx, tx, org, r.ProjectID, value); err != nil {
 				return err
 			}

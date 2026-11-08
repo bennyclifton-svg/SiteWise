@@ -4,6 +4,7 @@ import { Pending } from "./Activity";
 // passages are what Jev picked from each proposal; nothing scores a firm.
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "./api";
+import { BackButton } from "./PageActions";
 import { fmt } from "./CostGrid";
 import { submissionApi, type ReportData, type PriceTable } from "./submissionApi";
 
@@ -24,7 +25,7 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
     setBusy(true); setError("");
     try { const d = await action(); setData(d); } catch (e) { fail(e); } finally { setBusy(false); }
   }
-  if (!data) return <section className="prices"><button type="button" className="btn btn-small" onClick={onBack}>← Price table</button>{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
+  if (!data) return <section className="prices"><BackButton to="Price table" onClick={onBack} />{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
   const { table, report } = data;
   const cols = table.columns;
   const quoted = !table.builder && cols.some(c => c.quote);
@@ -36,7 +37,7 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
 
   return <section className="prices procurement-report" aria-label="Comparison report">
     <header className="prices-head no-print">
-      <button type="button" className="btn btn-small" onClick={onBack}>← Price table</button>
+      <BackButton to="Price table" onClick={onBack} />
       <div className="prices-actions"><button type="button" className="btn btn-small" onClick={() => window.print()}>Print</button></div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p></div>}

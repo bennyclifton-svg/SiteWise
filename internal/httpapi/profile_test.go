@@ -173,6 +173,38 @@ func TestProfileShowsKnownScaleBeforeBuildingType(t *testing.T) {
 	check()
 }
 
+// Multi-unit types list the unit mix, one count per type; a house does not,
+// but a count the user typed is never hidden (docs/plans/2026-11-08-unit-mix.md).
+func TestProfileUnitMixFollowsBuildingType(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Shop-top housing")
+	var p profileBody
+	listed := func(key string) (string, bool) {
+		for _, f := range p.Header {
+			if f.Key == key {
+				return f.Value, true
+			}
+		}
+		return "", false
+	}
+	put(t, m, project, "hdr.subclass", map[string]any{"value": "house"}, http.StatusOK, &p)
+	if _, ok := listed("hdr.scale.units_2_bed"); ok {
+		t.Fatal("a house must not list the unit mix")
+	}
+	put(t, m, project, "hdr.subclass", map[string]any{"value": "residential_retail"}, http.StatusOK, &p)
+	for _, k := range []string{"units_studio", "units_1_bed", "units_2_bed", "units_3_bed", "units_4_bed"} {
+		if _, ok := listed("hdr.scale." + k); !ok {
+			t.Fatalf("mixed use must list %s", k)
+		}
+	}
+	put(t, m, project, "hdr.scale.units_2_bed", map[string]any{"value": "38"}, http.StatusOK, &p)
+	put(t, m, project, "hdr.subclass", map[string]any{"value": "house"}, http.StatusOK, &p)
+	if v, ok := listed("hdr.scale.units_2_bed"); !ok || v != "38" {
+		t.Fatalf("a typed count must stay listed, got %q %v", v, ok)
+	}
+}
+
 func TestProfileReadEditLatencyBudgets(t *testing.T) {
 	a := newApp(t, withProfile(t))
 	m := a.member(t, newUUID(t))

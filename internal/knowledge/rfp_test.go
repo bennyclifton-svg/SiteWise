@@ -289,7 +289,7 @@ func TestSkeletonProfileHomes(t *testing.T) {
 			t.Fatalf("%s home = %q, want %q", key, homes[key], want)
 		}
 	}
-	bad := strings.Replace(mustRead(t, "../../knowledge/rfp/skeleton.yaml"), "group: terms, help: \"Name the agreement", "group: terms, profile: proj.agreement, help: \"Name the agreement", 1)
+	bad := strings.Replace(mustRead(t, "../../knowledge/rfp/skeleton.yaml"), "group: terms, help: \"Attach the agreement", "group: terms, profile: proj.agreement, help: \"Attach the agreement", 1)
 	if _, err := parseRFPSkeleton([]byte(bad)); err == nil {
 		t.Fatal("an issue field cannot have a profile home")
 	}
@@ -314,7 +314,7 @@ func TestSkeletonFieldGroups(t *testing.T) {
 	}
 	for key, want := range map[string]string{
 		"agreement": "terms", "payment_days": "terms", "validity_days": "terms", "rates_hold_until": "terms", "pi": "terms", "pl": "terms",
-		"ref": "issue", "closes": "issue", "contact": "issue", "client": "project", "design_vehicle": "appointment", "design_loads": "appointment",
+		"ref": "issue", "closes": "issue", "client": "project", "design_vehicle": "appointment", "design_loads": "appointment",
 	} {
 		if groups[key] != want {
 			t.Errorf("%s group = %q, want %q", key, groups[key], want)

@@ -1350,8 +1350,6 @@ body {
 .page-action-menu a:hover, .page-action-menu button:hover, .page-action-menu :focus-visible { background: color-mix(in oklab, var(--sw-text-primary) 12%, var(--sw-surface-elevated)); outline: none; }
 
 /* Update: the same button on Profile and on an RFP or RFT. */
-.btn-update { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.btn-update svg { flex: none; width: 15px; height: 15px; }
 
 /* Three dots: the page's other actions, each with its icon (Profile, RFP). */
 .more-menu { position: relative; display: inline-flex; }

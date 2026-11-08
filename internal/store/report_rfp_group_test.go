@@ -328,7 +328,7 @@ func TestGroupRFPIssuesAsOneAndUncombineKeepsMembers(t *testing.T) {
 	// Settle the shared issue details once, then each member's decisions.
 	v := g.view(t)
 	version := v.Draft.Version
-	for key, value := range map[string]string{"field:ref": `"RFP-7"`, "field:issued": `"2026-11-07"`, "field:closes": `"2026-11-28"`, "field:contact": `"pm@example.com"`, "field:questions_by": `"2026-11-21"`, "field:agreement": `"AS 4122-2010 as amended"`} {
+	for key, value := range map[string]string{"field:ref": `"RFP-7"`, "field:issued": `"2026-11-07"`, "field:closes": `"2026-11-28"`, "field:agreement": `"AS 4122-2010 as amended"`} {
 		d, _, err := s.SetReportSettingInGroup(ctx, orgA, g.report.ID, userA, key, json.RawMessage(value), version)
 		if err != nil {
 			t.Fatalf("%s: %v", key, err)

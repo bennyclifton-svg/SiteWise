@@ -81,8 +81,8 @@ Dated use/occupancy and stream schedule, plans/sections, contractor quantities a
 - Sign-off sets baseline; normal development and own-error correction included. Distinguish included clarification from changed design/process/evidence; agree delay/remobilisation.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
 - Payment 30 days against agreed milestones. R6 declares deposits/prepayment, release restrictions, surcharges, recovery and suspension terms.
+- Rates fixed to 12 months after appointment; disclose GST, travel/forms/data/platform and cancellation costs; no historical fees as benchmarks.
 - Proposal valid 90 days; base/options, ex GST/GST/total and third-party costs separate.
-- Send questions in writing to Project manager by 2026-10-23.
 - Issue changed answers issued to all as numbered addenda.
 - Reasonable professional skill/care; agree project-use/editable-file rights, reliance, retention/handover and confidential disclosure; marketing needs consent. Agreement resolves IP, liability/caps/indemnities, law/disputes and suspension/termination notice/cure.
 

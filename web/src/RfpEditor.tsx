@@ -39,8 +39,8 @@ export function editableSections(controls: RfpControls): Set<string> {
   const out = new Set(controls.groups.filter(g => g.controls.length > 0).map(g => g.section));
   out.add("stages");
   out.add("role");
-  // Allowance quantities are edited in their table (owner, 8 Nov 2026).
-  out.delete("role"); out.delete("stages"); out.delete("positions"); out.delete("allowances");
+  // Allowance quantities and terms are edited in their tables (owner, 8 Nov 2026).
+  out.delete("role"); out.delete("stages"); out.delete("positions"); out.delete("allowances"); out.delete("terms");
   out.delete("project");
   out.delete("issue");
   out.delete("issue_dates");
@@ -60,8 +60,8 @@ export function blockedKeys(controls: RfpControls): Set<string> {
 
 /** Blocking checks listed under a section's heading; "" lists those no section holds. */
 export function SectionMarkers({ controls, section, busyKey, onWrite, onJump }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
-  // Allowances mark a blank quantity on its own row, not in a banner.
-  if (section === "positions" || section === "stages" || section === "allowances") return null;
+  // Allowances and terms mark a missing value on its own row, not in a banner.
+  if (section === "positions" || section === "stages" || section === "allowances" || section === "terms") return null;
   const here = controls.decisions.filter(d => (d.control ? controlSection(controls, d.control) : "") === section);
   if (!here.length) return null;
   return <ul className="rfp-markers" aria-label="Blocks issue">
@@ -187,7 +187,7 @@ export function RfpIssue({ controls, busyKey, onWrite, onJump, children }: { con
   const blocked = blockedKeys(controls);
   const advisory = controls.checks.filter(c => !c.blocking);
   return <section className="report-section rfp-issue" aria-labelledby="rs-issue">
-    <div className="report-section-head">
+    <div className="report-section-head section-band">
       <h3 id="rs-issue">Issue</h3>
       <p className="rfp-status" role="status">{n ? `${n} ${n === 1 ? "item blocks" : "items block"} issue` : draftRules ? "Choices complete" : "Ready to issue"}
         {n > 0 && controls.decisions[0].control && <> · <button type="button" className="cell-link" onClick={() => onJump(controls.decisions[0].control)}>Show first</button></>}</p>

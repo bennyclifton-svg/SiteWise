@@ -125,23 +125,39 @@ func (b *builder) project() {
 	}
 }
 
-func (b *builder) transmittal() {
+// DocumentRow is one repository document as an RFP schedule prints it.
+type DocumentRow struct {
+	ID, Number, Title, Revision, Date, Discipline string
+}
+
+// DocumentRows reads the saved document identity of each chosen document.
+// A row whose identity cannot be read is left out.
+func DocumentRows(items []reports.BriefValue) []DocumentRow {
 	_, disciplines := vocabLabels()
-	rows := [][]string{}
-	ids := []string{}
-	for _, item := range b.r.Transmittal {
+	out := []DocumentRow{}
+	for _, item := range items {
 		var basis struct {
 			Sources []map[string]string `json:"sources"`
 		}
 		if json.Unmarshal(item.Basis, &basis) != nil || len(basis.Sources) == 0 {
 			continue
 		}
-		source := basis.Sources[0]
-		if label := disciplines[source["discipline"]]; label != "" {
-			source["discipline"] = label
+		s := basis.Sources[0]
+		discipline := s["discipline"]
+		if label := disciplines[discipline]; label != "" {
+			discipline = label
 		}
-		rows = append(rows, []string{source["document_number"], source["title"], source["revision"], source["date"], source["discipline"]})
-		ids = append(ids, item.ID)
+		out = append(out, DocumentRow{ID: item.ID, Number: s["document_number"], Title: s["title"], Revision: s["revision"], Date: s["date"], Discipline: discipline})
+	}
+	return out
+}
+
+func (b *builder) transmittal() {
+	rows := [][]string{}
+	ids := []string{}
+	for _, d := range DocumentRows(b.r.Transmittal) {
+		rows = append(rows, []string{d.Number, d.Title, d.Revision, d.Date, d.Discipline})
+		ids = append(ids, d.ID)
 	}
 	text := ""
 	// Keep explicitly authored information as a note alongside the schedule.
@@ -303,12 +319,21 @@ func allowanceQty(a AllowanceResult) string {
 // the golden I/O/X table and, unlike a table row, can break across pages.
 func (b *builder) positions() { b.consultantServices() }
 
+// terms prints the numbered terms (owner, 8 Nov 2026): firms and the client
+// cite a term by its number. The agreement is named by its documents'
+// titles in term 1; the documents themselves travel in the transmittal, so
+// no document table prints here. The basis keeps the chosen ids so the
+// editor can show them selected in the repository.
 func (b *builder) terms() {
 	lines := []string{}
 	for _, t := range b.r.Terms {
 		lines = append(lines, "- "+t.Text)
 	}
-	b.add("terms", "rfp:terms", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Terms})
+	ids := []string{}
+	for _, d := range DocumentRows(b.r.Agreement) {
+		ids = append(ids, d.ID)
+	}
+	b.add("terms", "rfp:terms", "", strings.Join(lines, "\n"), nil, map[string]any{"rows": b.r.Terms, "layout": "numbered_terms", "agreement_ids": ids})
 }
 
 // returnables prints one row per schedule in the order the comparison

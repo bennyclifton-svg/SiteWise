@@ -12,9 +12,6 @@ title_aliases:
 - wet fire design
 evidence_limit: Historic concept and combined-services offers establish bounded scope, not system adequacy, current 
   instruments or a fire-engineering appointment.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Actual systems, hazards, evidence and selected stages govern scope.
   complex: []

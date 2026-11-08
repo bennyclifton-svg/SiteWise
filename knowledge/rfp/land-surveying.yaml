@@ -11,9 +11,6 @@ title_aliases:
 - surveyor
 evidence_limit: Historical carpark/services offers do not establish other scopes, current insurance or legal 
   requirements.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Purpose, extent and accuracy govern survey scope; building type alone appoints no package.
   complex: []

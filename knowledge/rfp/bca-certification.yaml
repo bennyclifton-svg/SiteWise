@@ -10,7 +10,6 @@ discipline_ids: [consultant.bca, consultant.certifier]
 title_aliases: [bca, certifier, certification]
 evidence_limit: "NSW advisory and CC/principal-certifier/occupation scope only. Current appointment, payment and independence
   requirements require confirmation; no guarantee of approval."
-field_defaults: {pi: "", pl: ""}
 evaluation:
   - {key: methodology, label: Technical coverage and method, default: 35, provenance: [{kind: client_decision, ref: "bca-certification#55",
           why: "Proposed role-aware evaluation, not a statutory rule."}]}

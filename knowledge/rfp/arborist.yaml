@@ -11,9 +11,6 @@ title_aliases:
 - arboricultural
 evidence_limit: Two historical report offers differ in tree count, access and terms; neither appoints construction 
   or physical tree works.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Actual trees, impacts, evidence and selected services govern every use and work type.
   complex: []

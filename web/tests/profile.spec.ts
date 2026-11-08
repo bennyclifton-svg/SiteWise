@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import { expect, test, type Browser, type Page } from "@playwright/test";
+import { openSystemWork } from "./scope-open";
 
 test("stopped profile work offers retry despite a queued dependent job", async ({ browser }) => {
   const page = await signIn(browser);
@@ -125,14 +126,16 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   await scope.locator(".sw-entry", { hasText: "Hydraulic" }).click();
   const water = scope.locator(".sw-line", { hasText: "Heated water" });
   await expect(water.getByRole("checkbox", { name: "Heated water" })).toBeChecked();
-  await expect(water.locator(".pf-scope-origin")).toHaveText("Typical");
+  await expect(water.locator(".pf-ev")).toHaveAttribute("data-ev", "typical");
   await expect(water.getByLabel("Who provides Heated water")).toHaveValue("");
-  await water.getByRole("button", { name: "Details for Heated water" }).click();
+  // No drill-in arrow on the row; the work item opens from the Works menu.
+  await expect(water.getByRole("button", { name: "Details for Heated water" })).toHaveCount(0);
+  await openSystemWork(scope, "Heated water");
   await expect(water.locator(".sw-strip")).toBeVisible();
 
   // The user's word: take it out of scope; it survives a reload.
   await water.getByRole("checkbox", { name: "Heated water" }).uncheck();
-  await expect(water.locator(".pf-scope-origin")).toHaveText("Removed by you");
+  await expect(water.locator(".pf-ev")).toHaveAttribute("data-ev", "user");
   await page.reload();
   const again = page.getByRole("region", { name: "Scope and works" });
   await again.locator(".sw-entry", { hasText: "Hydraulic" }).click();
@@ -267,20 +270,28 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await scope.getByRole("checkbox", { name: "Automatic fire sprinklers" }).check();
   await expect(scope).toContainText("1 system");
   const sprinklers = scope.locator(".sw-line", { hasText: "Automatic fire sprinklers" });
-  await expect(sprinklers.locator(".pf-scope-origin")).toHaveText("You");
+  await expect(sprinklers.locator(".pf-ev")).toHaveAttribute("data-ev", "user");
 
   // Who provides it defaults to the contractor, shown but not stored.
   await expect(sprinklers.getByLabel("Who provides Automatic fire sprinklers").locator("option:checked")).toHaveText("Contractor (default)");
-  await sprinklers.getByRole("button", { name: "Details for Automatic fire sprinklers" }).click();
+  await openSystemWork(scope, "Automatic fire sprinklers");
   await expect(sprinklers.locator(".sw-strip")).toBeVisible();
   // Compliance inputs follow the scope and sit under their system.
   await expect(page.getByLabel("Top of storage height")).toBeVisible();
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(scope).toContainText(/\d+ not needed for this scope/);
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeHidden();
-  await page.getByLabel("Show all").check();
+  await scope.getByRole("button", { name: "Show", exact: true }).click();
   await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
-  await page.getByLabel("Show all").uncheck();
+  await scope.getByRole("button", { name: "Hide unneeded", exact: true }).click();
+
+  // Active only keeps just the entries and cells in scope: one system, one cell.
+  await page.getByLabel("Active only").check();
+  await expect(scope.locator(".sw-entry", { hasText: "Substructure" })).toHaveCount(0);
+  const fire = scope.locator(".sw-entry", { hasText: "Active fire protection" });
+  await expect(fire.locator(".sw-cell")).toHaveCount(1);
+  await page.getByLabel("Active only").uncheck();
+  await expect(scope.locator(".sw-entry", { hasText: "Substructure" })).toHaveCount(1);
 
   // Presets only start an empty scope; Reset hands every choice back.
   await expect(scope.getByRole("button", { name: "Commercial fit-out" })).toHaveCount(0);
@@ -435,4 +446,26 @@ test("card edit box fills its row exactly and the team table offers blank discip
   const team = page.getByTestId("profile-appointed");
   await expect(team.getByRole("columnheader", { name: "Discipline" })).toBeVisible();
   for (const n of [1, 2, 3]) await expect(team.getByRole("rowheader", { name: `Discipline ${n}` })).toBeVisible();
+});
+
+test("an apartment building records its unit mix and the summary reads it", async ({ browser }) => {
+  const page = await signIn(browser);
+  await page.getByLabel("New project").fill("Unit mix");
+  await page.getByRole("button", { name: "Create project" }).click();
+  const card = page.locator(".pf-tiers");
+  await card.getByLabel("Building class").selectOption({ label: "Apartments (Class 2)" });
+  // Empty counts fold behind View more; nothing is guessed.
+  await expect(card.getByLabel("2-bed units")).toHaveCount(0);
+  await page.getByRole("button", { name: "View more" }).click();
+  await card.getByRole("group", { name: "The building" }).getByRole("button", { name: /not yet known/ }).click();
+  await card.getByLabel("1-bed units").fill("14");
+  await card.getByLabel("1-bed units").blur();
+  await card.getByLabel("2-bed units").fill("38");
+  await card.getByLabel("2-bed units").blur();
+  await expect(page.locator(".pf-summary")).toContainText("with 14 one-bed and 38 two-bed units");
+  await page.reload();
+  // Known counts show with the card closed; the unknown ones stay folded.
+  await expect(page.locator(".pf-tiers").getByLabel("2-bed units")).toHaveValue("38");
+  await expect(page.locator(".pf-tiers").getByLabel("Studio units")).toHaveCount(0);
+  await expect(page.locator(".pf-tiers").getByLabel("Bedrooms")).toHaveCount(0);
 });

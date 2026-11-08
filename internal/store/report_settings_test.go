@@ -238,8 +238,6 @@ func finishRFP(t *testing.T, s *store.Store, r store.Report, d store.ReportDraft
 		"field:ref":                      `"RFP-1"`,
 		"field:issued":                   `"2026-10-12"`,
 		"field:closes":                   `"2026-10-30"`,
-		"field:contact":                  `"pm@example.com"`,
-		"field:questions_by":             `"2026-10-23"`,
 		"field:agreement":                `"AS 4122-2010 as amended"`,
 		"allowance:client_presentations": `"2"`,
 		"allowance:planning_cap":         `"20"`,

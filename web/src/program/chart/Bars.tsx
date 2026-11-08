@@ -1,6 +1,7 @@
 // Bars layer (plan 9.2): one bar per row in the render window. Colour says
-// who owns the value and a second cue says it again: ember solid fill for a
-// user or evidenced duration, azure light fill for library inference, amber
+// who owns the value and a second cue says it again: rust solid fill for a
+// user duration, green solid fill for one read from documents or the
+// Profile, blue light fill for library inference, amber
 // dashed outline for a proposal, alert red 2 px outline for the critical
 // path. A row with an unknown duration has no bar, only a dotted
 // "duration unknown" marker. useDrag finds bars by data-id and moves them
@@ -56,11 +57,12 @@ export function textWidth(s: string): number {
   return w;
 }
 
-const OWNED = new Set(["user", "document", "reading", "evidence", "profile"]);
+const EVIDENCED = new Set(["document", "reading", "evidence", "profile"]);
 
-/** Ember for user or evidenced values, azure for library inference (plan 9.2). */
-export function ownerClass(origin: string, durationOrigin: string | null): "o-user" | "o-library" {
-  return origin === "user" || OWNED.has(durationOrigin ?? "") ? "o-user" : "o-library";
+/** The origin rule (trace.css): rust yours, green evidenced, blue library inference. */
+export function ownerClass(origin: string, durationOrigin: string | null): "o-user" | "o-doc" | "o-library" {
+  if (origin === "user" || durationOrigin === "user") return "o-user";
+  return EVIDENCED.has(durationOrigin ?? "") ? "o-doc" : "o-library";
 }
 
 function ariaLabel(r: Row, t: Times | undefined, relative: boolean, held: string | undefined): string {

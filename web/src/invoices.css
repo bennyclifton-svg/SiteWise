@@ -55,9 +55,10 @@
 .inv-chip { display: flex; align-items: center; gap: 4px; margin-top: 2px; font-size: var(--fs-xs); color: var(--ink-muted); white-space: nowrap; text-decoration: none; }
 .inv-table .num .inv-chip { justify-content: flex-end; }
 .inv-chip svg { flex: none; width: 12px; height: 12px; }
-.inv-chip[data-state="confirmed"] { color: var(--ok); }
-.inv-chip[data-state="check"] { color: var(--warn); }
-.inv-chip[data-state="user"] { color: var(--ember-hot); }
+/* Origin rule (trace.css): green read from the invoice, amber to check, rust yours. */
+.inv-chip[data-state="confirmed"] { color: var(--origin-doc); }
+.inv-chip[data-state="check"] { color: var(--origin-check); }
+.inv-chip[data-state="user"] { color: var(--origin-user); }
 .inv-chip[data-state="unchecked"] { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--hatch) 4px 5px); }
 
 .inv-status { display: inline-block; padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: var(--fs-xs); white-space: nowrap; }

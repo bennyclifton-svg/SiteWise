@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openSystemPop, openSystemWork } from "./scope-open";
 
 test("work corrections retain targets, survive navigation and reconcile concurrent edits", async ({ page }) => {
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
@@ -19,7 +20,7 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   const gas = gasGroup.rows.find((r: { leaf: string }) => r.leaf === "hydraulic.gas");
   await page.locator(".sw-entry", { hasText: gasGroup.label }).click();
   const pane = page.getByRole("region", { name: gasGroup.label, exact: true });
-  await pane.getByRole("button", { name: `Details for ${gas.label}`, exact: true }).click();
+  await openSystemWork(pane, gas.label);
   await expect(pane.getByRole("button", { name: /Synthetic gas service/ })).toBeVisible();
   await expect(page.getByLabel("Planning quantity")).toHaveCount(0);
   await pane.getByRole("button", { name: /Synthetic gas service/ }).click();
@@ -49,9 +50,11 @@ test("work corrections retain targets, survive navigation and reconcile concurre
   expect(saved.target.values[0].value).toBe(200);
   expect(saved.quantity ?? null).toBeNull();
   expect(saved.version).toBe(3);
-  // Action is edited in the system row and keeps the saved target. The item
+  // Action is edited in the system pop-up and keeps the saved target. The item
   // is the system's own (its coarse item), so the row's tick is its inclusion.
+  await openSystemPop(pane, gas.label);
   await page.getByLabel("Action for Synthetic gas service", { exact: true }).selectOption("replace");
+  await page.keyboard.press("Escape");
   await expect.poll(async () => (await (await page.request.get(base)).json()).items[0].action).toBe("replace");
   await expect(pane.getByRole("checkbox", { name: "Included" })).toHaveCount(0);
   await pane.getByRole("checkbox", { name: gas.label, exact: true }).uncheck();

@@ -43,7 +43,7 @@ test("one RFP report: page one edited where it prints, checks beside their value
   // One report: page one is the project, always open in the Profile card's
   // columns; no decisions banner, no stale block.
   await expect(page.getByRole("complementary", { name: "Finish this RFP" })).toHaveCount(0);
-  // Scope by stage: the stage table sits under 2. Scope of services.
+  // Scope by stage: the stage table sits under Scope of services.
   await expect(page.locator(".rfp-stage-scope")).toHaveCount(1);
   await expect(page.getByRole("heading", { name: /Scope by stage/ })).toHaveCount(0);
   await expect(page.getByRole("region", { name: "Decide before issue" })).toHaveCount(0);
@@ -95,7 +95,7 @@ test("one RFP report: page one edited where it prints, checks beside their value
   expect(saved.details.find((d: { key: string }) => d.key === "proj.zone").value).toBe("R2");
   expect(saved.details.find((d: { key: string }) => d.key === "proj.client").value).toBe("Inner West Council");
 
-  const scope = page.locator('.report-section').filter({ has: page.getByRole('heading', { name: '2. Scope of services', exact: true }) });
+  const scope = page.locator('.report-section').filter({ has: page.getByRole('heading', { name: 'Scope of services', exact: true }) });
   // Scope by stage: a service is included or excluded in its stage.
   const positions = scope.locator('.rfp-stage-scope');
   for (let i = 0; i < await positions.locator('.rfp-stage-toggle').count(); i++) { const t = positions.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }
@@ -182,7 +182,7 @@ test("electrical keeps its allocation schedule beside grouped positions, with se
   await expect(page.getByLabel("Design meetings quantity", { exact: true })).toHaveValue("4");
   await expect(page.getByLabel("Design review rounds quantity", { exact: true })).toHaveValue("1");
   await page.screenshot({ path: "../.tools/electrical-simplified-desktop.png", fullPage: true });
-  const scope = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "2. Scope of services", exact: true }) });
+  const scope = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "Scope of services", exact: true }) });
   // Allocation notes sit with their service inside the opened stage.
   const allocation = scope.locator('.rfp-stage-scope');
   for (let i = 0; i < await allocation.locator('.rfp-stage-toggle').count(); i++) { const t = allocation.locator('.rfp-stage-toggle').nth(i); if (await t.getAttribute('aria-expanded') === 'false') await t.click(); }

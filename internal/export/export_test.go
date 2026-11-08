@@ -251,3 +251,16 @@ func TestWriteSample(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// Terms print numbered, one per row, as the screen shows them, so a term is
+// cited by its number in tender correspondence (owner, 8 Nov 2026).
+func TestTermsPrintNumbered(t *testing.T) {
+	b := block(reports.Block{ID: "rfp:terms", Text: "- First term.\n- Second term.\n\nThird, edited without a marker."})
+	if b.Text != "" || b.Table == nil || len(b.Table.Rows) != 3 {
+		t.Fatalf("terms block = %+v", b)
+	}
+	last := b.Table.Rows[2].Cells
+	if last[0].Runs[0].Text != "3" || last[1].Runs[0].Text != "Third, edited without a marker." {
+		t.Fatalf("third row = %+v", last)
+	}
+}

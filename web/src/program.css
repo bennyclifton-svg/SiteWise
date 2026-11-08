@@ -1,5 +1,6 @@
 /* Program view (plan 9). Colours are DESIGN.md tokens only, so light and
-   dark both work: ember = user or evidenced, azure = library inference,
+   dark both work. Origin rule (trace.css): rust = yours, green = read from
+   documents or the Profile, blue = library inference,
    amber (warn) = proposal awaiting review, alert = critical and conflicts.
    Each also has a second cue: fill weight, dash, stroke width or an icon. */
 
@@ -194,10 +195,11 @@
 .pg-today { stroke: var(--ember); stroke-width: 1.5; stroke-dasharray: 3 3; }
 
 .pg-bar .pg-shape { stroke-width: 1; }
-.pg-bar.o-user .pg-shape { fill: var(--ember); stroke: var(--ember-hot); }
-.pg-bar.o-library .pg-shape { fill: var(--azure-soft); stroke: var(--azure); }
+.pg-bar.o-user .pg-shape { fill: var(--origin-user); stroke: var(--origin-user); }
+.pg-bar.o-doc .pg-shape { fill: var(--origin-doc); stroke: var(--origin-doc); }
+.pg-bar.o-library .pg-shape { fill: color-mix(in oklab, var(--origin-typical) 14%, var(--paper)); stroke: var(--origin-typical); }
 .pg-bar.is-summary .pg-shape { fill: var(--ink-body); stroke: var(--ink-body); }
-.pg-bar.is-summary.o-user .pg-shape { fill: var(--ember-hot); stroke: var(--ember-hot); }
+.pg-bar.is-summary.o-user .pg-shape { fill: var(--origin-user); stroke: var(--origin-user); }
 .pg-bar.is-proposed .pg-shape { stroke: var(--warn); stroke-dasharray: 4 2; stroke-width: 1.5; }
 .pg-bar.is-critical .pg-shape { stroke: var(--alert); stroke-width: 2; stroke-dasharray: none; }
 .pg-bar.is-conflict .pg-shape { stroke: var(--alert); stroke-dasharray: 2 2; stroke-width: 2; }
@@ -207,7 +209,7 @@
 .pg-hold-mark { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
 .pg-label-in, .pg-label-out { font-size: var(--fs-sm); dominant-baseline: auto; pointer-events: none; }
 .pg-label-out { fill: var(--ink-body); }
-.pg-bar.o-user .pg-label-in { fill: var(--sw-p-neutral-0); }
+.pg-bar:is(.o-user, .o-doc) .pg-label-in { fill: var(--sw-p-neutral-0); }
 .pg-bar.o-library .pg-label-in { fill: var(--ink); }
 .pg-bar.is-summary .pg-label-out { font-weight: 600; fill: var(--ink); }
 .pg-unknown rect { fill: none; stroke: var(--warn); stroke-dasharray: 2 2; }

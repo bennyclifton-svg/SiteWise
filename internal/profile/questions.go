@@ -167,14 +167,18 @@ func LabelQuestions(p PassageInfo, h Harvested, cat *knowledge.Catalog) (map[str
 			state[key] = h.Candidates[key]
 		case strings.HasPrefix(key, "hdr.scale."):
 			label := strings.TrimPrefix(key, "hdr.scale.")
+			asks := ""
 			for _, f := range cat.ScaleFields() {
 				if f.Key == label {
-					label = f.Label
+					label, asks = f.Label, f.Asks
 				}
+			}
+			if asks == "" {
+				asks = strings.ToLower(label)
 			}
 			qs[key] = jev.Question{Type: jev.TypeChoice,
 				Instructions: "Using `excerpt` and `candidates`, which candidate does the passage state as this project's " +
-					strings.ToLower(label) + "? Select none when absent or when it describes something other than this project.",
+					asks + "? Select none when absent or when it describes something other than this project.",
 				Criteria: candidateCriteria(label, h.Candidates[key])}
 			state[key] = h.Candidates[key]
 		}

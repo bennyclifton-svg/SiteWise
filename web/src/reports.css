@@ -154,10 +154,11 @@
 .rfp-why { flex-basis: 100%; font-size: var(--fs-xs); color: var(--ink-muted); }
 .rfp-invalid { color: var(--alert); }
 .rfp-source { padding: 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: var(--fs-xs); line-height: 18px; color: var(--ink-muted); white-space: nowrap; }
-.rfp-source[data-source="user"] { border-color: var(--ember); color: var(--ember-hot); }
-.rfp-source[data-source="unknown"], .rfp-source[data-source="assumed"] { border-color: var(--warn); color: var(--warn); }
+/* Origin rule (trace.css): rust yours, blue typical, amber to check. */
+.rfp-source[data-source="user"] { border-color: var(--origin-user); color: var(--origin-user); border-radius: 3px; }
+.rfp-source[data-source="unknown"], .rfp-source[data-source="assumed"] { border-color: var(--origin-check); color: var(--origin-check); }
 .rfp-source[data-source="conflict"] { border-color: var(--alert); color: var(--alert); }
-.rfp-source[data-source="suggested"] { border-style: dashed; border-color: var(--azure); color: var(--azure); }
+.rfp-source[data-source="suggested"], .rfp-source[data-source="default"] { border-style: dashed; border-color: var(--origin-typical); color: var(--origin-typical); }
 .rfp-segment { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-xs); overflow: hidden; }
 .rfp-segment-option { position: relative; display: inline-flex; }
 .rfp-segment-option + .rfp-segment-option { border-left: 1px solid var(--line-strong); }
@@ -437,6 +438,11 @@ tbody[data-stage-state="exclude"] .rfp-stage-row th, tbody[data-stage-state="exc
    table sits under its heading with no rule between them. */
 .report-section:has(> .rfp-page-one) > h3 { border-bottom: 0; }
 .rfp-grid.pf-paired .pf-value { font-size: 14px; line-height: 24px; }
+/* Read-only values (building, budget) can be a sentence long: they wrap and
+   the row grows, rather than run into the next column as Profile's
+   one-line rows would. */
+.rfp-grid.pf-paired .pf-row:has(.rfp-cell-text) { grid-template-rows: auto; height: auto; min-height: 48px; }
+.rfp-grid.pf-paired .pf-value:has(.rfp-cell-text) { white-space: normal; }
 
 /* Wording edited in place (InlineText): text and edit box share every
    metric, so nothing moves when editing starts. The box grows with its

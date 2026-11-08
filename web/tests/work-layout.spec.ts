@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openSystemWork } from "./scope-open";
 
 test("room layout answer is explicit and survives a work correction", async ({ page }) => {
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
@@ -15,7 +16,7 @@ test("room layout answer is explicit and survives a work correction", async ({ p
   const group = profile.systems.find((g: { rows: { leaf: string }[] }) => g.rows.some(r => r.leaf === "interiors.walls-linings"));
   const walls = group.rows.find((r: { leaf: string }) => r.leaf === "interiors.walls-linings");
   await page.locator(".sw-entry", { hasText: group.label }).click();
-  await page.getByRole("button", { name: `Details for ${walls.label}`, exact: true }).click();
+  await openSystemWork(page, walls.label);
   await page.getByRole("button", { name: /Partition layout/ }).click();
   await page.getByRole("button", { name: "Correct work item", exact: true }).click();
   const answer = page.getByLabel("Does this work change room or space boundaries?");

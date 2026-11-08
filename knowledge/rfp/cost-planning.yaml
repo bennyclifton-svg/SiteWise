@@ -12,9 +12,6 @@ title_aliases:
 - cost consultant
 evidence_limit: Historical industrial planning estimates differ in scope, identity, iteration caps and terms; no 
   current cost benchmark or universal CIV requirement established.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Purpose, inputs and selected stages govern scope across all building/work types.
   complex: []

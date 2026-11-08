@@ -11,9 +11,6 @@ title_aliases:
 - waste consultant
 evidence_limit: Four historic warehouse offers differ on operational and C&D plans, reviews and equipment support; 
   none establishes universal rates, appointment, current insurance or collection acceptance.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Actual uses, waste streams and selected services govern scope; no industrial default.
   complex: []

@@ -44,6 +44,13 @@ const KIND_LABELS: Record<string, string> = {
 // of building, the work, then that kind of building's subclass, size and
 // conditions. Approvals and delivery follow. A key not placed here falls to
 // delivery so a new field is never hidden.
+// Unit mix, one count per type, smallest first (docs/plans/2026-11-08-unit-mix.md).
+const UNIT_MIX = ["hdr.scale.units_studio", "hdr.scale.units_1_bed", "hdr.scale.units_2_bed", "hdr.scale.units_3_bed", "hdr.scale.units_4_bed"];
+const UNIT_MIX_WORDS: Record<string, string> = {
+  "hdr.scale.units_studio": "studio", "hdr.scale.units_1_bed": "one-bed", "hdr.scale.units_2_bed": "two-bed",
+  "hdr.scale.units_3_bed": "three-bed", "hdr.scale.units_4_bed": "four-plus-bed",
+};
+
 type Tier = "identity" | "place" | "class" | "work" | "budget" | "subclass" | "scale" | "complexity" | "approvals" | "delivery";
 
 const TIERS: Record<Tier, string[]> = {
@@ -57,7 +64,7 @@ const TIERS: Record<Tier, string[]> = {
   scale: [
     "hdr.scale.site_sqm", "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "det.rise_in_storeys",
     "hdr.scale.existing_gfa_sqm", "hdr.scale.added_gfa_sqm", "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
-    "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units",
+    "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units", ...UNIT_MIX,
     "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces",
     "det.existing_building", "det.existing_building_year",
   ],
@@ -351,13 +358,14 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         <ProjectSummary fields={cardFields} />
       </section>
 
-      <section className="pf-section" aria-labelledby="pf-project">
-        <div className="pf-head">
-          <h2 id="pf-project">Project</h2>
+      {/* No "Project" title (owner, 8 Nov 2026): the card's blue head row says it. */}
+      <section className="pf-section" aria-label="Project">
+        <div className="pf-head pf-head-bare">
           <div className="pf-head-actions">
             {addingPart && <AddPart projectId={projectId} onDone={() => { setAddingPart(false); profileApi.get(projectId).then(setData, fail); }} onCancel={() => setAddingPart(false)} onError={fail} />}
-            <UpdateButton onClick={update} disabled={requesting}>
-              {requesting ? <Pending delayed>Requesting profile update…</Pending> : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? <Pending delayed>Updating project profile…</Pending> : data.pending_documents > 0 ? <Pending queued>Profile update queued</Pending> : "Update"}
+            {/* The button's own refresh mark turns while busy; no second spinner in the label. */}
+            <UpdateButton onClick={update} disabled={requesting} busy={requesting || (data.failed_documents === 0 && data.unread_documents === 0 && data.active_documents > 0)}>
+              {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update"}
             </UpdateButton>
             <MoreMenu label="Profile actions" items={[
               { label: "Download project profile", icon: <IconDownload />, onSelect: () => window.print() },
@@ -426,7 +434,7 @@ const COLUMNS: { title: string; key: string[]; keys: string[]; tiers: Tier[] }[]
     key: [
       "hdr.work_type", "hdr.building_class", "hdr.subclass",
       "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm",
-      "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces", "hdr.cond.quality_level",
+      ...UNIT_MIX, "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces", "hdr.cond.quality_level",
     ],
     keys: ["det.ncc_class", "det.ncc_edition"],
     tiers: ["class", "work", "subclass", "scale"],
@@ -462,7 +470,8 @@ function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: Pr
   const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact paired />;
   const all = (Object.keys(card) as Tier[]).flatMap((t) => [...card[t].shown, ...card[t].more]);
   // A conflict always shows, so "to check" can reach it with the card closed.
-  const always = (f: ProfileField) => KEY_FIELDS.has(f.key) || f.band === "red";
+  // A mix count shows up front once known; the empty ones fold away.
+  const always = (f: ProfileField) => (KEY_FIELDS.has(f.key) && !(UNIT_MIX.includes(f.key) && unanswered(f))) || f.band === "red";
   const rest = all.filter((f) => !always(f));
   // Parts sit in The building, after the class they divide.
   const withParts = (fields: ProfileField[], col: number) => {
@@ -490,7 +499,6 @@ function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: Pr
       </div>
       {rest.length > 0 && (
         <button type="button" className="cell-link pf-card-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
-          <span aria-hidden="true">{open ? "▾" : "▸"}</span>{" "}
           {open ? "View less" : "View more"}
         </button>
       )}
@@ -523,6 +531,7 @@ function ProjectSummary({ fields }: { fields: ProfileField[] }) {
   const gfa = get("hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm"), site = get("hdr.scale.site_sqm"), lga = get("proj.lga"), zone = get("proj.zone");
   const quality = get("hdr.cond.quality_level"), client = get("proj.client"), planning = get("hdr.cond.planning"), budget = get("proj.budget_stated");
   if (!work && !sub && !client && !gfa) return <p className="pf-summary pf-summary-empty">The summary appears once the documents are read.</p>;
+  const mix = UNIT_MIX.map((k) => get(k)).filter((f): f is ProfileField => !!f && /^\d+$/.test(f.value));
   const n = storeys ? Number(storeys.value) : 0;
   const storeyWords = (t: string) => `${WORDS[n] ?? t} ${n === 1 ? "storey" : "storeys"}`;
   return (
@@ -531,6 +540,9 @@ function ProjectSummary({ fields }: { fields: ProfileField[] }) {
       {sub && <>: {an(soft(text(sub)))} {token(sub, soft)}</>}
       {storeys && <>, of {token(storeys, storeyWords)}</>}
       {gfa && <>{storeys ? " and " : ", "}{token(gfa, (t) => `${t} m²`)}</>}
+      {mix.length > 0 && <>, with {mix.map((f, i) => (
+        <span key={f.key}>{i === 0 ? "" : i === mix.length - 1 ? " and " : ", "}{token(f, (t) => `${t} ${UNIT_MIX_WORDS[f.key]}`)}</span>
+      ))} {mix.length === 1 && mix[0].value === "1" ? "unit" : "units"}</>}
       {site && <> on a {token(site, (t) => `${t} m²`)} site</>}
       {lga && <> in {token(lga)}</>}
       {zone && <>, zoned {token(zone)}</>}.
@@ -627,7 +639,7 @@ function ConsultantTeam({ appointed }: { appointed: NonNullable<ProfileData["app
   const blanks = Array.from({ length: Math.max(0, TEAM_PLACEHOLDER_ROWS - appointed.length) }, (_, i) => appointed.length + i + 1);
   return (
     <section className="pf-section pf-team" aria-labelledby="pf-team">
-      <div className="pf-head">
+      <div className="pf-head section-band">
         <h2 id="pf-team">Consultant team</h2>
       </div>
       <table className="pf-team-table" data-testid="profile-appointed">

@@ -11,9 +11,6 @@ title_aliases:
 - HVAC design
 evidence_limit: Historical offers establish scope, not retained capacity, current instruments or accepted 
   appointments.
-field_defaults:
-  pi: ''
-  pl: ''
 scale:
   text: Actual spaces, loads, hours, systems and purchased maturity govern scope.
   complex: []

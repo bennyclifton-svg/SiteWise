@@ -71,6 +71,9 @@ type ScaleField struct {
 	// Typical is a usual range for this kind of building, shown as a hint.
 	Typical         string   `yaml:"typical"`
 	TriggerPatterns []string `yaml:"triggers"`
+	// Asks names what Jev picks ("the number of one-bedroom apartments or
+	// units") where the label alone reads poorly in a question.
+	Asks string `yaml:"asks"`
 
 	triggers []trigger
 }
