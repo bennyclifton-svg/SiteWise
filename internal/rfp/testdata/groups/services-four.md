@@ -84,16 +84,16 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. A line marke
 
 **Allowances**: Separate quantities/durations for each item/system/stage. Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
 
-| Item | Allowance |
-|---|---|
-| Extent | ___ parts/areas/rooms/zones/assets; retained/new/removed, shell/fit-out and tenancy limits |
-| Investigation | ___ visits/hours, tests/logging points/days/openings; method/operator/safety/isolation/reinstatement |
-| Design | ___ options/load scenarios/iterations/calculation packages/issues; maturity/native files |
-| Coordination | ___ meetings/hours, interface reviews/submissions/responses; author/submitter/payer |
-| Tender | ___ packages/tenderers/comparisons/RFI hours/addenda/rounds |
-| Construction | ___ months/design updates/submittals/rounds/RFI hours/visits/reports; notice/response |
-| Completion | ___ scripts/systems/sessions/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds/months |
-| Access | ___ phases/shutdowns/out-of-hours/handbacks; temporary ventilation, permissions/abortive basis |
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent | Building parts; areas/rooms/zones/assets, retained/new/removed, shell/fit-out and tenancy limits | 1 |
+| Investigation | Site visits; hours, tests/logging points/days/openings, method/operator/safety/isolation/reinstatement | 2 |
+| Design | Design iterations; options/load scenarios/calculation packages/issues, maturity/native files | 2 |
+| Coordination | Meetings; hours, interface reviews/submissions/responses; author/submitter/payer | 6 |
+| Tender | Tender packages; tenderers/comparisons/RFI hours/addenda/rounds | 1 |
+| Construction | Months; design updates/submittals/rounds/RFI hours/visits/reports; notice/response | 12 |
+| Completion | Witness test sessions; scripts/systems/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds | 2 |
+| Access | Shutdowns; phases/out-of-hours/handbacks, temporary ventilation, permissions/abortive basis | 1 |
 
 ### 2.2 Electrical services
 
@@ -144,11 +144,11 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. A line marke
 
 **Allowances**: Editable client defaults: 4 design meetings per appointed design stage, 1 consolidated review round per design stage and 1 investigation visit when commissioned. These are pricing assumptions, not measured project quantities. Price later stages separately. In R1/R2, identify the affected buildings and systems from the supplied project information; list assets, tests, durations, authority fees and specialist services separately, with assumptions and excess rates. Do not apply a single count to different units. Agree unresolved scope before the affected work starts.
 
-| Item | Allowance |
-|---|---|
-| Design meetings | 4 per appointed design stage (editable client default) |
-| Design review rounds | 1 consolidated client review round per design stage (editable client default) |
-| Construction inspections | ___ hold-point visits; firm states duration, review support and excess rates separately |
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per appointed design stage (editable client default) | 4 |
+| Design review rounds | Consolidated client review round per design stage (editable client default) | 1 |
+| Construction inspections | Hold-point visits; firm states duration, review support and excess rates separately | 4 |
 
 ### 2.3 Hydraulic services
 
@@ -218,16 +218,16 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 
 **Allowances**: Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption: owner/date/consequence/review point.
 
-| Item | Allowance |
-|---|---|
-| Extent | ___ parts/fixtures/sources/tanks/pumps/meters/catchments/connections; retained/new/removed |
-| Investigation | ___ visits/CCTV lengths/traces/log points-days/samples/openings; test/access/isolation/lab/make-good owners |
-| Design | ___ options/calculations/control modes/drawing issues/rounds/native maturity |
-| Approvals | ___ meetings/hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer |
-| Tender | ___ packages/comparisons/RFI hours/addenda/rounds |
-| Support | ___ duration/submittals/RFI hours/updates/hold-point visits/reports; notice/response |
-| Completion | ___ scripts/sessions-hours/samples/modes/retests/handovers/O&M rounds/training |
-| Staging | ___ shutdowns/out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation |
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent | Building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed | 1 |
+| Investigation | Site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners | 2 |
+| Design | Design iterations; options/calculations/control modes/drawing issues/native maturity | 2 |
+| Approvals | Meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer | 4 |
+| Tender | Tender packages; comparisons/RFI hours/addenda/rounds | 1 |
+| Support | Months; submittals/RFI hours/updates/hold-point visits/reports; notice/response | 12 |
+| Completion | Witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training | 2 |
+| Staging | Shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation | 1 |
 
 ### 2.4 Fire services
 
@@ -298,15 +298,15 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 **Allowances**: Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
 
-| Item | Allowance |
-|---|---|
-| Extent | ___ parts/areas/zones/systems/assets; retained/new network lengths, tenant boundaries and interfaces |
-| Visits/tests | ___ visits/hours; test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis |
-| Design | ___ options/iterations/supply cases/calculation scenarios/packages; maturity and native files |
-| Coordination | ___ meetings/duration, interface reviews, submissions/responses; author/submitter/applicant/payer |
-| Tender | ___ packages, RFI hours/addenda/comparisons/reviews |
-| Construction | ___ months, RFI hours/submittals/reviews/hold-point visits/reports; notice/response |
-| Completion | ___ scripts/rounds, witness sessions/hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests |
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent | Fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces | 2 |
+| Visits/tests | Site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis | 2 |
+| Design | Design iterations; options/supply cases/calculation scenarios/packages, maturity and native files | 2 |
+| Coordination | Meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer | 6 |
+| Tender | Tender packages; RFI hours/addenda/comparisons/reviews | 1 |
+| Construction | Months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response | 12 |
+| Completion | Witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests | 2 |
 
 **Within this engagement**: Other disciplines' scopes in this engagement give these items to you. They are part of your fee and are priced once.
 - Design fire-water systems and fire strategy. Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections. (from the Hydraulic services scope; within this engagement)
@@ -423,22 +423,6 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 **Mechanical services: Rules await owner review**: The mechanical services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
 
-**Blocks issue — Mechanical services: Extent: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Investigation: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Design: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Coordination: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Tender: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Construction: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Completion: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Mechanical services: Access: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
 **Blocks issue — Mechanical services: Planning inputs selected: not established**: Decide before issue. It changes: Planning.
 
 **Blocks issue — Mechanical services: Investigation selected: not established**: Decide before issue. It changes: Brief and concept; Condition/capacity/controls investigation; operation is not proof; upgrade separate.
@@ -459,25 +443,7 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 **Electrical services: Rules await owner review**: The electrical services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
 
-**Electrical services: Construction inspections: count not set**: Only an optional stage uses it. State it so options are priced on the same basis.
-
 **Hydraulic services: Rules await owner review**: The hydraulic services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
-
-**Blocks issue — Hydraulic services: Extent: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Investigation: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Design: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Approvals: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Tender: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Support: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Completion: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Hydraulic services: Staging: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
 
 **Blocks issue — Hydraulic services: Authority inputs selected: not established**: Decide before issue. It changes: Planning.
 
@@ -512,20 +478,6 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 **Hydraulic services: Utility and Water Services Coordinator: not established**: Priced on a printed assumption until confirmed: Coordinate utility connections and approvals.
 
 **Fire services: Rules await owner review**: The fire services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
-
-**Blocks issue — Fire services: Extent: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Fire services: Visits/tests: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Fire services: Design: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Fire services: Coordination: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Fire services: Tender: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Fire services: Construction: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
-
-**Blocks issue — Fire services: Completion: count not set**: State the quantity every firm prices; a blank client quantity makes prices incomparable.
 
 **Blocks issue — Fire services: Existing investigation selected: not established**: Decide before issue. It changes: Brief and concept; Defined investigation; records are not condition proof; upgrade separate.
 

@@ -59,27 +59,27 @@ Base stages only, from written instruction/input-access milestone to the selecte
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Client completes the reconciled plan and quantities. Guaranteed work is separate from time permitting; return insufficiency and fee effects before issue.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Mobilisation | Mobilisations; allocate rigs/locators/excavators, hours/crew/permits/access/water/power | 2 |
+| Boreholes / cores | Boreholes; by location/method/depth, soil/rock metres, penetration/refusal and pavement thickness | 2 |
+| Pits / exposures | Test pits; by location/dimensions/depth, method, target evidence and stopping criteria | 2 |
+| In-situ / laboratory | Laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency; environmental suites separate | 2 |
+| Groundwater option | Optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning owner | 2 |
+| Reports / support | Reports; schedule draft/final/updates, review rounds, meetings/duration and RFI/planning hours | 2 |
+| Construction option | Inspections; schedule hold points, tests/reviews, booking notice, missed work and completion record | 2 |
+| Handback / waste | Repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal records and maintenance owner | 2 |
+
+### 4. Transmittal
 
 Current design and reconciled investigation schedule (locations, methods, depths/refusal, laboratory suite, owners and reliance recipients); quantities are client test-fixture choices.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Client completes the reconciled plan and quantities. Guaranteed work is separate from time permitting; return insufficiency and fee effects before issue.
-
-| Item | Allowance |
-|---|---|
-| Mobilisation | 2 mobilisations; allocate rigs/locators/excavators, hours/crew/permits/access/water/power |
-| Boreholes / cores | 2 by location/method/depth; soil/rock metres, penetration/refusal and pavement thickness |
-| Pits / exposures | 2 by location/dimensions/depth; method, target evidence and stopping criteria |
-| In-situ / laboratory | 2 laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency; environmental suites separate |
-| Groundwater option | 2 optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning owner |
-| Reports / support | 2 reports; schedule draft/final/updates, review rounds, meetings/duration and RFI/planning hours |
-| Construction option | 2 inspections; schedule hold points, tests/reviews, booking notice, missed work and completion record |
-| Handback / waste | 2 repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal records and maintenance owner |
 
 ### 5. Terms
 

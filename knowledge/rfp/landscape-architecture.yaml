@@ -331,7 +331,8 @@ allowances_note: Complete a separate quantity/basis for each listed item by sele
   unit/quantity; options separate; written authority before overruns.
 allowances:
 - key: extent
-  text: '{n} sites/areas/stages/public packages and concept alternatives; map/revision'
+  default: "2"
+  text: "{n} concept options; sites/areas/stages/public packages, map/revision"
   provenance:
   - kind: evidence
     ref: landscape-architecture#8,9
@@ -344,7 +345,8 @@ allowances:
   label: Extent / concepts
   owner: client
 - key: evidence
-  text: '{n} initial visits/duration, test locations/method/lab; access, locating and reinstatement owner'
+  default: "1"
+  text: "{n} site visits; duration, test locations/method/lab, access, locating and reinstatement owner"
   provenance:
   - kind: evidence
     ref: landscape-architecture#8,12
@@ -357,7 +359,8 @@ allowances:
   label: Visits / tests
   owner: client
 - key: reviews
-  text: '{n} workshops/duration, draft/final issues, reviews and authority responses/hours/end'
+  default: "2"
+  text: "{n} workshops; duration, draft/final issues, reviews and authority responses/hours/end"
   provenance:
   - kind: evidence
     ref: landscape-architecture#5,9
@@ -370,7 +373,8 @@ allowances:
   label: Design / approvals
   owner: client
 - key: tender
-  text: '{n} packages, queries/ceiling, submittals/substitutions and post-contract stages'
+  default: "1"
+  text: "{n} tender packages; queries/ceiling, submittals/substitutions and post-contract stages"
   provenance:
   - kind: evidence
     ref: landscape-architecture#8,9
@@ -383,7 +387,8 @@ allowances:
   label: Tender / substitutions
   owner: client
 - key: works
-  text: '{n} stock/hold-point/completion/revisits by purpose/duration; notice/report turnaround'
+  default: "3"
+  text: "{n} works visits (stock, hold point, completion, revisit); purpose/duration, notice/report turnaround"
   provenance:
   - kind: evidence
     ref: landscape-architecture#8,9
@@ -396,6 +401,7 @@ allowances:
   label: Works / completion
   owner: client
 - key: establishment
+  default: "12"
   text: '{n} months/start event; visits/timing/duration, logs, replacements/reinspection and recipient/criteria'
   provenance:
   - kind: evidence
@@ -409,6 +415,7 @@ allowances:
   label: Establishment
   owner: client
 - key: extras
+  default: "12"
   text: '{n} base months; extra visit/round/hour, travel/out-of-hours/callout/cancellation/delay/remobilisation'
   provenance:
   - kind: evidence

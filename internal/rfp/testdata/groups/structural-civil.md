@@ -99,13 +99,13 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 
 **Allowances**: Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Design meetings | 4 per stage |
-| Site visits | 1 at concept and 1 at design development |
-| Authority requests in assessment | 1 response(s) |
-| Peer review or certifier rounds | 1 |
-| Construction inspections | 4 |
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per stage | 4 |
+| Site visits | At concept, then 1 at design development | 1 |
+| Authority requests in assessment | Response(s) | 1 |
+| Peer review or certifier rounds |  | 1 |
+| Construction inspections |  | 4 |
 
 **Within this engagement**: Other disciplines' scopes in this engagement give these items to you. They are part of your fee and are priced once.
 - Structural design of retaining walls (from the Civil engineering services scope; within this engagement)
@@ -183,18 +183,18 @@ Each design stage is issued as one draft and one final. Design stages are priced
 
 **Allowances**: Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Design meetings | 10 per design stage, up to 2 hours, online |
-| Authority meetings | 3 |
-| Site visits during design | 2 |
-| Architect layouts reviewed | 4 |
-| Civil concept options | 2, then one agreed |
-| Drawing revisions before lodgement | 2 |
-| Authority requests in assessment | 1 response(s) |
-| Construction inspections | 6 |
-| Construction RFIs | 10 hours |
-| Construction certificate inputs | 2, and 1 occupation certificate |
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per design stage, up to 2 hours, online | 10 |
+| Authority meetings |  | 3 |
+| Site visits during design |  | 2 |
+| Architect layouts reviewed |  | 4 |
+| Civil concept options | Then one agreed | 2 |
+| Drawing revisions before lodgement |  | 2 |
+| Authority requests in assessment | Response(s) | 1 |
+| Construction inspections |  | 6 |
+| Construction RFIs | Hours | 10 |
+| Construction certificate inputs | And 1 occupation certificate | 2 |
 
 ### 3. Fee schedule
 

@@ -16,6 +16,7 @@ import { ConfirmDialog } from "./ConfirmDialog";
 import { InlineText } from "./InlineText";
 import { RfpScopePosition } from "./RfpScopePosition";
 import { RfpScopeTable, scopeTable } from "./RfpScopeTable";
+import { RfpAllowanceTable, allowanceTable } from "./RfpAllowanceTable";
 
 function localDate() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "Assumption" };
@@ -206,7 +207,8 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
               if (editing || !((controls && scopeTable(block)) || block.id === "rfp:positions")) return inline;
               return <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : <RfpScopePosition block={block} />}{<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>}</>;
             })()}
-            {block.table && !(controls && scopeTable(block) && editor?.target !== block.id) && <div className="report-table-scroll"><table className="report-table">{block.table.display !== "document" && <caption>Saved source comparison{block.edited ? " — independent of edited wording" : ""}</caption>}<thead><tr>{block.table.columns.map((column,i) => <th key={i} scope="col">{column}</th>)}</tr></thead><tbody>{block.table.rows.map((row,i) => <tr key={i}>{row.map((cell,j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>}
+            {controls && allowanceTable(block) && editor?.target !== block.id && <RfpAllowanceTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} />}
+            {block.table && !(controls && (scopeTable(block) || allowanceTable(block)) && editor?.target !== block.id) && <div className="report-table-scroll"><table className="report-table">{block.table.display !== "document" && <caption>Saved source comparison{block.edited ? " — independent of edited wording" : ""}</caption>}<thead><tr>{block.table.columns.map((column,i) => <th key={i} scope="col">{column}</th>)}</tr></thead><tbody>{block.table.rows.map((row,i) => <tr key={i}>{row.map((cell,j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>}
             <BlockReferences block={block} references={draft.references} hideCalculations={!!view?.rfp} />
             {block.edited && !block.source_missing && block.generated_text === undefined && <p>Refresh this draft before restoring its saved source wording.</p>}{block.edited && (block.source_missing || block.generated_text !== undefined) && <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => setResetTarget({ id: block.id, missing: block.source_missing, version: draft.version })}>{block.source_missing ? "Remove orphaned wording" : "Restore saved source wording"}</button>}
           </article>;
@@ -258,7 +260,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
               <ProjectPage transmittal={transmittal} blocks={section.blocks ?? []} controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} />
             </section>
             : group && section.id.startsWith("part:") && group.members.some(m => m.section === section.id)
-            ? <MemberPart key={section.id} section={section} member={group.members.find(m => m.section === section.id)!} open={openEdits.has(section.id)} disabled={!!editor} busyKey={busyKey} onToggle={() => toggleEdit(section.id)} onWrite={writeMember(group.members.find(m => m.section === section.id)!)} blockView={blockView} />
+            ? <MemberPart key={section.id} section={section} member={group.members.find(m => m.section === section.id)!} onWrite={writeMember(group.members.find(m => m.section === section.id)!)} blockView={blockView} />
             : view.rfp && section.id === "transmittal"
             ? <section className="report-section" key={section.id}>
               <h3 id={`rs-${section.id}`}>{section.title}</h3>
@@ -289,15 +291,14 @@ type Section = { id: string; title: string; blocks: ReportBlock[] };
  * that discipline's own RFP: its scope table and allowances use its own
  * controls, and every write goes to its own report.
  */
-function MemberPart({ section, member, open, disabled, busyKey, onToggle, onWrite, blockView }: { section: Section; member: RfpGroupMember; open: boolean; disabled: boolean; busyKey: string; onToggle: () => void; onWrite: Write; blockView: (b: ReportBlock, c?: RfpControls, w?: Write) => ReactNode }) {
+function MemberPart({ section, member, onWrite, blockView }: { section: Section; member: RfpGroupMember; onWrite: Write; blockView: (b: ReportBlock, c?: RfpControls, w?: Write) => ReactNode }) {
   const controls = member.controls;
-  const decisions = controls?.decisions ?? [];
+  // A blank quantity is marked on its row in the allowance table instead.
+  const decisions = (controls?.decisions ?? []).filter(d => !d.control?.startsWith("allowance:"));
   return <section className="report-section" aria-label={section.title} data-member={member.package_id}>
     <div className="report-section-head"><h3 id={`rs-${section.id}`}>{section.title}</h3>
-      {controls && <button type="button" className="btn btn-small" aria-expanded={open} aria-controls={`rfp-edit-${section.id}`} aria-label={`${open ? "Done editing" : "Edit"} allowances for ${member.title}`} disabled={disabled} onClick={onToggle}>{open ? "Done" : "Edit allowances"}</button>}
     </div>
     {decisions.length > 0 && <ul className="rfp-markers" aria-label={`Blocks issue for ${member.title}`}>{decisions.map(d => <li key={d.id}><strong>{d.label}.</strong> {d.text}</li>)}</ul>}
-    {controls && open && <div id={`rfp-edit-${section.id}`}><RfpSectionEditor controls={controls} section="allowances" busyKey={busyKey} onWrite={onWrite} /></div>}
     {section.blocks.map(b => blockView(b, controls, onWrite))}
   </section>;
 }

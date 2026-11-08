@@ -50,26 +50,26 @@ Start on instruction/agreed inputs; end at named output/response. Price once. R1
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Counts by solution/stage, unit/duration; fixed fee, time ceiling or unit rate. Authorised assumptions need owner/date/consequence/review point.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Solution schedule | Performance solutions; each with part/extent, departure, method/criteria, revision/dependencies/package; distinguish grouped subissues | 2 |
+| Analysis / modelling | Scenarios per solution/method; sensitivities, iterations/alternatives, checks and change unit | 2 |
+| Issues / consultation | Issues per report; team/authority rounds, workshops/duration, updates; package author/submitter/applicant/payer, response end | 2 |
+| Evidence / access | Site visits; areas/hours, tests/openings by location, access/shutdown/reinstatement owner; inaccessible-work options | 2 |
+| Tender / construction | Hold-point visits; packages/cycles, RFI hours, duration, dates/notice/response, abortive/out-of-hours basis | 2 |
+| Verification | Completion stages; certificates/scripts, witness sessions/duration, retests/reports, defect endpoint | 2 |
+| Other options | Optional rounds (interim phase, specialist or peer review); advisory cutoff/post-contract period; services-review extent/meetings | 2 |
+
+### 4. Transmittal
 
 Issued architecture, BCA departure register and fire records; solution IDs, methods and review coverage scheduled.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Counts by solution/stage, unit/duration; fixed fee, time ceiling or unit rate. Authorised assumptions need owner/date/consequence/review point.
-
-| Item | Allowance |
-|---|---|
-| Solution schedule | 2 solution IDs: part/extent, departure, method/criteria, revision/dependencies/package; distinguish grouped subissues |
-| Analysis / modelling | 2 scenarios per solution/method; sensitivities, iterations/alternatives, checks and change unit |
-| Issues / consultation | 2 issues per report; team/authority rounds, workshops/duration, updates; package author/submitter/applicant/payer, response end |
-| Evidence / access | 2 areas/visits/hours; tests/openings by location, access/shutdown/reinstatement owner; inaccessible-work options |
-| Tender / construction | 2 packages/cycles; RFI hours, hold-point visits/duration, dates/notice/response, abortive/out-of-hours basis |
-| Verification | 2 completion stages; certificates/scripts, witness sessions/duration, retests/reports, defect endpoint |
-| Other options | 2 interim phases/specialist/peer rounds; advisory cutoff/post-contract period; services-review extent/meetings |
 
 ### 5. Terms
 

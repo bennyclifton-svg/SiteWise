@@ -289,8 +289,9 @@ allowances_note: Separate quantity/duration by item, system and stage (not one p
   ceiling or unit rate; assumptions need owner/date/consequence/review point.
 allowances:
 - key: extent
+  default: "2"
   label: Extent
-  text: '{n} parts/areas/zones/systems/assets; retained/new network lengths, tenant boundaries and interfaces'
+  text: "{n} fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces"
   owner: client
   provenance:
   - kind: evidence
@@ -302,9 +303,9 @@ allowances:
     why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: visits
+  default: "2"
   label: Visits/tests
-  text: '{n} visits/hours; test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive
-    basis'
+  text: "{n} site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis"
   owner: client
   provenance:
   - kind: evidence
@@ -316,8 +317,9 @@ allowances:
     why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: design
+  default: "2"
   label: Design
-  text: '{n} options/iterations/supply cases/calculation scenarios/packages; maturity and native files'
+  text: "{n} design iterations; options/supply cases/calculation scenarios/packages, maturity and native files"
   owner: client
   provenance:
   - kind: evidence
@@ -329,8 +331,9 @@ allowances:
     why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: coordination
+  default: "6"
   label: Coordination
-  text: '{n} meetings/duration, interface reviews, submissions/responses; author/submitter/applicant/payer'
+  text: "{n} meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer"
   owner: client
   provenance:
   - kind: evidence
@@ -342,8 +345,9 @@ allowances:
     why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: tender
+  default: "1"
   label: Tender
-  text: '{n} packages, RFI hours/addenda/comparisons/reviews'
+  text: "{n} tender packages; RFI hours/addenda/comparisons/reviews"
   owner: client
   provenance:
   - kind: evidence
@@ -355,8 +359,9 @@ allowances:
     why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: construction
+  default: "12"
   label: Construction
-  text: '{n} months, RFI hours/submittals/reviews/hold-point visits/reports; notice/response'
+  text: "{n} months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response"
   owner: client
   provenance:
   - kind: evidence
@@ -368,9 +373,9 @@ allowances:
     why: Explicit appointment, quantity or allocation choice; historical offers do not purchase later services or 
       establish universal requirements.
 - key: completion
+  default: "2"
   label: Completion
-  text: '{n} scripts/rounds, witness sessions/hours/modes/retests, certificate packages/handovers, O&M/as-built/defect
-    rounds, deferred tests'
+  text: "{n} witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests"
   owner: client
   provenance:
   - kind: evidence

@@ -345,6 +345,7 @@ allowances:
   provenance: [{kind: client_decision, ref: 'electrical-services#55', why: 'Editable visit allowance only when investigation
         is appointed or offered as an option.'}]
 - key: construction_visits
+  default: "4"
   label: Construction inspections
   text: '{n} hold-point visits; firm states duration, review support and excess rates separately'
   owner: client

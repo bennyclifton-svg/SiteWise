@@ -247,7 +247,8 @@
 
 /* The report and scope views open full width from a row, with a back link. */
 .reports.report-view { display: block; }
-.report-view .report-reader { max-width: 1100px; }
+/* Full width of the middle panel, as Project Profile is (owner, 8 Nov 2026). */
+.report-view .report-reader { max-width: none; padding-left: 8px; padding-right: 8px; }
 .report-back { margin-bottom: 16px; }
 .workspace-primary-actions .report-back { margin-bottom: 0; }
 .scope-back { padding: 24px 36px 0; }
@@ -280,6 +281,18 @@
 .rfp-markers { display: grid; gap: 4px; margin: 10px 0 0; padding: 8px 12px; list-style: none; border-left: 3px solid var(--alert); background: var(--alert-soft); font-size: var(--fs-md); color: var(--ink-body); }
 .rfp-markers .cell-link { margin-left: 6px; }
 
+/* Allowances: item, what it covers, and a quantity nudged with arrows (owner, 8 Nov 2026). */
+.rfp-allowance-table { table-layout: fixed; }
+.rfp-allowance-table th[scope="row"] { font-weight: 400; }
+.rfp-al-item { width: 22%; }
+.rfp-allowance-table .rfp-al-qty { width: 8.5rem; text-align: center; vertical-align: middle; }
+.rfp-stepper { display: inline-flex; align-items: center; gap: 2px; }
+.rfp-step { width: 26px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; color: var(--ink); font-size: 14px; line-height: 1; cursor: pointer; }
+.rfp-step:hover:not(:disabled) { border-color: var(--azure); color: var(--azure); }
+.rfp-step:focus-visible { outline: 2px solid var(--azure); outline-offset: 1px; }
+.rfp-step:disabled { opacity: .35; cursor: default; }
+.rfp-step-value { width: 3.2rem; height: 28px; padding: 0 4px; text-align: center; font-variant-numeric: tabular-nums; }
+
 /* The closing Issue section: screen only, compact. */
 .rfp-issue { margin-top: 32px; }
 .rfp-issue .rfp-status { font-size: var(--fs-md); }
@@ -292,7 +305,8 @@
 /* The printed RFP is the issued PDF; a browser print of the screen still
    reads as a document. */
 @media print {
-  .rfp-source, .rfp-markers, .rfp-issue, .report-back, .report-block .btn, .report-section-head .btn, .rfp-edit { display: none !important; }
+  .rfp-source, .rfp-markers, .rfp-issue, .report-back, .report-block .btn, .report-section-head .btn, .rfp-edit, .rfp-step { display: none !important; }
+  .rfp-step-value { border: 0; background: none; }
   [data-blocked] { box-shadow: none; background: none; }
   .rfp-cell { text-decoration: none; }
 }
@@ -419,9 +433,11 @@
 .rfp-stage-more { margin-top: 12px; }
 tbody[data-stage-state="exclude"] .rfp-stage-row th, tbody[data-stage-state="exclude"] .rfp-stage-row td:nth-child(2) { color: var(--sw-text-tertiary, var(--ink)); }
 
-/* Page one's facts sit in the Profile's title block (table-heads.css,
-   trace-profile.css); only the row spacing is the RFP's own. */
-.rfp-grid.pf-titleblock .pf-tb-col .pf-row { padding: 4px 12px; }
+/* Page one's facts sit in the Profile's paired title block (table-heads.css,
+   trace-profile.css), rows and editing included. Like Profile's card, the
+   table sits under its heading with no rule between them. */
+.report-section:has(> .rfp-page-one) > h3 { border-bottom: 0; }
+.rfp-grid.pf-paired .pf-value { font-size: 14px; line-height: 24px; }
 
 /* Wording edited in place (InlineText): text and edit box share every
    metric, so nothing moves when editing starts. The box grows with its

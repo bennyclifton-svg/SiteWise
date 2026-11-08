@@ -93,22 +93,22 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
-
-| Doc number | Title | Rev | Date | Discipline |
-|---|---|---|---|---|
-
-### 4. Allowances
+### 3. Allowances
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Design meetings | 4 per stage |
-| Site visits | 1 at concept and 1 at design development |
-| Authority requests in assessment | 1 response(s) |
-| Peer review or certifier rounds | 1 |
-| Construction inspections | 4 |
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per stage | 4 |
+| Site visits | At concept, then 1 at design development | 1 |
+| Authority requests in assessment | Response(s) | 1 |
+| Peer review or certifier rounds |  | 1 |
+| Construction inspections |  | 4 |
+
+### 4. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
+|---|---|---|---|---|
 
 ### 5. Terms
 

@@ -14,7 +14,8 @@ for (const d of disciplines) test(`${d.id}: complete unified scope, inputs and s
  await page.getByRole("button",{name:/^Create RFP for /}).click();
  await expect(page.getByRole("heading",{name:"2. Scope of services",exact:true})).toBeVisible();
  // Scope by stage (3 November 2026): one stage table under section 2.
- await expect(page.getByRole("heading",{name:"3. Transmittal",exact:true})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"3. Allowances",exact:true})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"4. Transmittal",exact:true})).toBeVisible();
  await expect(page.getByRole("heading",{name:/Scope by stage|Service positions|Your role|Evaluation|Scope position/})).toHaveCount(0);
  await expect(page.getByText("This appointment buys",{exact:true})).toHaveCount(0);
  await expect(page.getByRole("group",{name:"Proposal dates",exact:true}).locator('input')).toHaveCount(2);

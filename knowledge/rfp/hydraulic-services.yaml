@@ -317,8 +317,9 @@ allowances_note: 'Quantify EACH item/system/stage separately: fixed fee, time ce
   point.'
 allowances:
 - key: extent
+  default: "1"
   label: Extent
-  text: '{n} parts/fixtures/sources/tanks/pumps/meters/catchments/connections; retained/new/removed'
+  text: "{n} building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed"
   owner: client
   provenance:
   - kind: evidence
@@ -330,8 +331,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: investigation
+  default: "2"
   label: Investigation
-  text: '{n} visits/CCTV lengths/traces/log points-days/samples/openings; test/access/isolation/lab/make-good owners'
+  text: "{n} site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners"
   owner: client
   provenance:
   - kind: evidence
@@ -343,8 +345,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: design
+  default: "2"
   label: Design
-  text: '{n} options/calculations/control modes/drawing issues/rounds/native maturity'
+  text: "{n} design iterations; options/calculations/control modes/drawing issues/native maturity"
   owner: client
   provenance:
   - kind: evidence
@@ -356,8 +359,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: coordination
+  default: "4"
   label: Approvals
-  text: '{n} meetings/hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer'
+  text: "{n} meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer"
   owner: client
   provenance:
   - kind: evidence
@@ -369,8 +373,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: tender
+  default: "1"
   label: Tender
-  text: '{n} packages/comparisons/RFI hours/addenda/rounds'
+  text: "{n} tender packages; comparisons/RFI hours/addenda/rounds"
   owner: client
   provenance:
   - kind: evidence
@@ -382,8 +387,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: construction
+  default: "12"
   label: Support
-  text: '{n} duration/submittals/RFI hours/updates/hold-point visits/reports; notice/response'
+  text: "{n} months; submittals/RFI hours/updates/hold-point visits/reports; notice/response"
   owner: client
   provenance:
   - kind: evidence
@@ -395,8 +401,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: completion
+  default: "2"
   label: Completion
-  text: '{n} scripts/sessions-hours/samples/modes/retests/handovers/O&M rounds/training'
+  text: "{n} witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training"
   owner: client
   provenance:
   - kind: evidence
@@ -408,8 +415,9 @@ allowances:
     why: Explicit appointment, allocation or procurement policy; historical offers do not establish universal scope 
       or purchase later stages.
 - key: access
+  default: "1"
   label: Staging
-  text: '{n} shutdowns/out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation'
+  text: "{n} shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation"
   owner: client
   provenance:
   - kind: evidence

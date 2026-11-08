@@ -313,8 +313,9 @@ allowances_note: Separate quantities/durations for each item/system/stage. Fixed
   assumptions need owner/date/consequence/review point.
 allowances:
 - key: extent
+  default: "1"
   label: Extent
-  text: '{n} parts/areas/rooms/zones/assets; retained/new/removed, shell/fit-out and tenancy limits'
+  text: "{n} building parts; areas/rooms/zones/assets, retained/new/removed, shell/fit-out and tenancy limits"
   owner: client
   provenance:
   - kind: evidence
@@ -326,8 +327,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: investigation
+  default: "2"
   label: Investigation
-  text: '{n} visits/hours, tests/logging points/days/openings; method/operator/safety/isolation/reinstatement'
+  text: "{n} site visits; hours, tests/logging points/days/openings, method/operator/safety/isolation/reinstatement"
   owner: client
   provenance:
   - kind: evidence
@@ -339,8 +341,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: design
+  default: "2"
   label: Design
-  text: '{n} options/load scenarios/iterations/calculation packages/issues; maturity/native files'
+  text: "{n} design iterations; options/load scenarios/calculation packages/issues, maturity/native files"
   owner: client
   provenance:
   - kind: evidence
@@ -352,8 +355,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: coordination
+  default: "6"
   label: Coordination
-  text: '{n} meetings/hours, interface reviews/submissions/responses; author/submitter/payer'
+  text: "{n} meetings; hours, interface reviews/submissions/responses; author/submitter/payer"
   owner: client
   provenance:
   - kind: evidence
@@ -365,8 +369,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: tender
+  default: "1"
   label: Tender
-  text: '{n} packages/tenderers/comparisons/RFI hours/addenda/rounds'
+  text: "{n} tender packages; tenderers/comparisons/RFI hours/addenda/rounds"
   owner: client
   provenance:
   - kind: evidence
@@ -378,8 +383,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: construction
+  default: "12"
   label: Construction
-  text: '{n} months/design updates/submittals/rounds/RFI hours/visits/reports; notice/response'
+  text: "{n} months; design updates/submittals/rounds/RFI hours/visits/reports; notice/response"
   owner: client
   provenance:
   - kind: evidence
@@ -391,8 +397,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: completion
+  default: "2"
   label: Completion
-  text: '{n} scripts/systems/sessions/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds/months'
+  text: "{n} witness test sessions; scripts/systems/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds"
   owner: client
   provenance:
   - kind: evidence
@@ -404,8 +411,9 @@ allowances:
     why: Explicit appointment, quantity or procurement policy; historical offers do not establish universal scope or
       current requirements.
 - key: access
+  default: "1"
   label: Access
-  text: '{n} phases/shutdowns/out-of-hours/handbacks; temporary ventilation, permissions/abortive basis'
+  text: "{n} shutdowns; phases/out-of-hours/handbacks, temporary ventilation, permissions/abortive basis"
   owner: client
   provenance:
   - kind: evidence

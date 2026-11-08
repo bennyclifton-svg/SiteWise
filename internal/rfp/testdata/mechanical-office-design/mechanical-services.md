@@ -58,27 +58,27 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. R1 Fee by st
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Separate quantities/durations for each item/system/stage. Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent | Building parts; areas/rooms/zones/assets, retained/new/removed, shell/fit-out and tenancy limits | 2 |
+| Investigation | Site visits; hours, tests/logging points/days/openings, method/operator/safety/isolation/reinstatement | 2 |
+| Design | Design iterations; options/load scenarios/calculation packages/issues, maturity/native files | 2 |
+| Coordination | Meetings; hours, interface reviews/submissions/responses; author/submitter/payer | 2 |
+| Tender | Tender packages; tenderers/comparisons/RFI hours/addenda/rounds | 2 |
+| Construction | Months; design updates/submittals/rounds/RFI hours/visits/reports; notice/response | 2 |
+| Completion | Witness test sessions; scripts/systems/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds | 2 |
+| Access | Shutdowns; phases/out-of-hours/handbacks, temporary ventilation, permissions/abortive basis | 2 |
+
+### 4. Transmittal
 
 Issued space/load/hour, system/extent and evidence registers; separately quantified R1-R9 schedules.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Separate quantities/durations for each item/system/stage. Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
-
-| Item | Allowance |
-|---|---|
-| Extent | 2 parts/areas/rooms/zones/assets; retained/new/removed, shell/fit-out and tenancy limits |
-| Investigation | 2 visits/hours, tests/logging points/days/openings; method/operator/safety/isolation/reinstatement |
-| Design | 2 options/load scenarios/iterations/calculation packages/issues; maturity/native files |
-| Coordination | 2 meetings/hours, interface reviews/submissions/responses; author/submitter/payer |
-| Tender | 2 packages/tenderers/comparisons/RFI hours/addenda/rounds |
-| Construction | 2 months/design updates/submittals/rounds/RFI hours/visits/reports; notice/response |
-| Completion | 2 scripts/systems/sessions/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds/months |
-| Access | 2 phases/shutdowns/out-of-hours/handbacks; temporary ventilation, permissions/abortive basis |
 
 ### 5. Terms
 

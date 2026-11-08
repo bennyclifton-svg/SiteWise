@@ -96,6 +96,9 @@ type AllowanceResult struct {
 	Key    string `json:"key"`
 	Label  string `json:"label"`
 	Text   string `json:"text"`
+	// Detail is Text without its count, for the table's Allowance column;
+	// the count prints in its own Qty column.
+	Detail string `json:"detail"`
 	Value  string `json:"value"`
 	Owner  string `json:"owner"`
 	Source string `json:"source"` // default | user | none
@@ -1012,6 +1015,14 @@ func (r *resolver) resolveAllowances() {
 	}
 }
 
+// withoutCount drops the {n} slot from allowance wording, so "{n} visits;
+// duration" reads "Visits; duration" beside a Qty column.
+func withoutCount(text string) string {
+	t := strings.TrimSpace(strings.ReplaceAll(text, "{n}", ""))
+	t = strings.TrimSpace(strings.TrimLeft(t, ",;:"))
+	return upperFirst(strings.Join(strings.Fields(t), " "))
+}
+
 // boughtNow reports whether a row gated on stages applies to a stage the
 // client is buying in this appointment. Rows with no stage gate apply.
 func (r *resolver) boughtNow(when knowledge.RFPWhen) bool {
@@ -1498,6 +1509,7 @@ func (r *resolver) resolveRows() {
 				n = "proposed by you in R2:"
 			}
 		}
+		a.Detail = withoutCount(a.Text)
 		a.Text = strings.ReplaceAll(a.Text, "{n}", n)
 	}
 	// Missing issue details are one decision, not one per field; missing

@@ -56,27 +56,27 @@ From written instruction/inputs/access to named final issue/handover, with agree
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Complete quantities/extent before issue; return gaps and price alternatives without reducing coverage. Fixed fee, time ceiling or unit rate with quantity; estimated totals are not fixed fees.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent / features | Survey areas; marked plan/revision/area, contours/levels, rooms/floors, roofs/elevations, adjoining windows/trees; accuracy by feature | 2 |
+| Control / cadastral | Control marks; datum checks, titles/lots/DPs/instruments, boundary length/points and plan/report types | 2 |
+| Visits / access | Visits; crew/hours/shifts, simultaneous specialists, permissions/inductions/traffic/access equipment/shutdowns by party | 2 |
+| Underground assets | Pits; service areas/lengths/types, methods, pipe runs/tanks, exposures/depths and inaccessible-feature contingency | 2 |
+| Issues / review | Data issues (PDF/CAD); point-cloud format/extent, review rounds, meetings/duration, query-hour ceiling and revisions | 2 |
+| Set-out option | Set-out visits; hold points, elements/points, booking notice, independent checks, control reinstatement/reinspection basis | 2 |
+| Monitoring option | Rounds; baseline/date, marks, frequency/duration, reports, accuracy/environmental limits and engineer trigger/action plan | 2 |
+| Completion / titling | Plans/certificates; areas/assets, lots/units/easements, submission rounds, final data and endpoint | 2 |
+
+### 4. Transmittal
 
 Marked survey extent/features; title/DP/easements, current design revisions, agreed datum/control/accuracy, methods and named third-party responsibilities. Quantities are client fixture selections.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Complete quantities/extent before issue; return gaps and price alternatives without reducing coverage. Fixed fee, time ceiling or unit rate with quantity; estimated totals are not fixed fees.
-
-| Item | Allowance |
-|---|---|
-| Extent / features | 2 survey areas; marked plan/revision/area, contours/levels, rooms/floors, roofs/elevations, adjoining windows/trees; accuracy by feature |
-| Control / cadastral | 2 control marks; datum checks, titles/lots/DPs/instruments, boundary length/points and plan/report types |
-| Visits / access | 2 visits; crew/hours/shifts, simultaneous specialists, permissions/inductions/traffic/access equipment/shutdowns by party |
-| Underground assets | 2 pits; service areas/lengths/types, methods, pipe runs/tanks, exposures/depths and inaccessible-feature contingency |
-| Issues / review | 2 PDF/CAD/data issues; point-cloud format/extent, review rounds, meetings/duration, query-hour ceiling and revisions |
-| Set-out option | 2 visits/hold points; elements/points, booking notice, independent checks, control reinstatement/reinspection basis |
-| Monitoring option | 2 rounds; baseline/date, marks, frequency/duration, reports, accuracy/environmental limits and engineer trigger/action plan |
-| Completion / titling | 2 plans/certificates; areas/assets, lots/units/easements, submission rounds, final data and endpoint |
 
 ### 5. Terms
 

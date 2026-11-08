@@ -243,7 +243,7 @@ stages:
 allowances:
   - {key: design_meetings, label: Design meetings, text: "{n} per stage", default: "4", owner: client, provenance: [{
           kind: evidence, ref: "structural#19"}, {kind: evidence, ref: "structural#31"}]}
-  - {key: site_visits, label: Site visits, text: "{n} at concept and 1 at design development", default: "1", owner: 
+  - {key: site_visits, label: Site visits, text: "{n} at concept, then 1 at design development", default: "1", owner: 
       client, provenance: [{kind: evidence, ref: "structural#3"}]}
   - {key: authority_requests, label: Authority requests in assessment, text: "{n} response(s)", default: "1", owner: 
       client, when: [{stage: [planning], pathway: [cdc, da, ssd, planning_permit, ref, modification]}], provenance: [
@@ -251,7 +251,7 @@ allowances:
   - {key: review_rounds, label: Peer review or certifier rounds, text: "{n}", default: "1", owner: client, when: [{
             stage: [design_finalisation], procurement: [traditional, managing_contractor, eci, alliance, ppp]}, {
             stage: [design_finalisation], novation: ["option", "yes"]}], provenance: [{kind: evidence, ref: "structural#37"}]}
-  - {key: ca_inspections, label: Construction inspections, text: "{n}", owner: client, when: [stage: [delivery]], 
+  - {key: ca_inspections, label: Construction inspections, text: "{n}", default: "6", owner: client, when: [stage: [delivery]], 
       provenance: [{kind: practice, ref: "structural-commercial-industrial-guide.md construction"}]}
 
 positions:

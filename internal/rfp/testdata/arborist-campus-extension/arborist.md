@@ -51,24 +51,24 @@ Written instruction/agreed inputs to named output/response end. Price once acros
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Allocate counts by service/stage; each quantity needs its own unit/duration. Complete or authorise priced assumptions with owner/date/consequence/review point. Fixed fee, time ceiling or unit rate/quantity; options/dependencies separate.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Tree coverage | Trees by ID/ownership; additional trees, area/alternatives and ground visits/duration | 2 |
+| Reports / rounds | Report rounds (draft and final); plan issues, meetings/duration, authority responses and RFI ceiling | 2 |
+| Investigation / risk | Specialist investigations; methods/trees/samples, equipment/specialist hours, access/permits/locating/reinstatement and formal-risk extent | 2 |
+| Works / monitoring | Works visits (pre-start, hold point, completion); notice/callout and repeat-inspection duration/visits | 2 |
+| Period / extras | Service months; additional tree/visit/revision rates, travel/out-of-hours, delay/abortive visit/remobilisation | 2 |
+
+### 4. Transmittal
 
 Survey DWG, tree IDs/ownership, current works drawings and conditions; access permissions with explicit limits.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Allocate counts by service/stage; each quantity needs its own unit/duration. Complete or authorise priced assumptions with owner/date/consequence/review point. Fixed fee, time ceiling or unit rate/quantity; options/dependencies separate.
-
-| Item | Allowance |
-|---|---|
-| Tree coverage | 2 trees by ID/ownership; additional trees, area/alternatives and ground visits/duration |
-| Reports / rounds | 2 report/plan issues, draft/final rounds, meetings/duration, authority responses and RFI ceiling |
-| Investigation / risk | 2 methods/trees/samples, equipment/specialist hours; access/permits/locating/reinstatement and formal-risk extent |
-| Works / monitoring | 2 pre-start/hold-point/completion visits, notice/callout and repeat-inspection duration/visits |
-| Period / extras | 2 service months; additional tree/visit/revision rates, travel/out-of-hours, delay/abortive visit/remobilisation |
 
 ### 5. Terms
 

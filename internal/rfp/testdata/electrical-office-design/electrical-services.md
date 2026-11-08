@@ -58,22 +58,22 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by st
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Editable client defaults: 4 design meetings per appointed design stage, 1 consolidated review round per design stage and 1 investigation visit when commissioned. These are pricing assumptions, not measured project quantities. Price later stages separately. In R1/R2, identify the affected buildings and systems from the supplied project information; list assets, tests, durations, authority fees and specialist services separately, with assumptions and excess rates. Do not apply a single count to different units. Agree unresolved scope before the affected work starts.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per appointed design stage (editable client default) | 4 |
+| Design review rounds | Consolidated client review round per design stage (editable client default) | 1 |
+| Construction inspections | Hold-point visits; firm states duration, review support and excess rates separately | 4 |
+
+### 4. Transmittal
 
 Issued system/load/utility evidence and separately quantified R1-R9 schedules.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Editable client defaults: 4 design meetings per appointed design stage, 1 consolidated review round per design stage and 1 investigation visit when commissioned. These are pricing assumptions, not measured project quantities. Price later stages separately. In R1/R2, identify the affected buildings and systems from the supplied project information; list assets, tests, durations, authority fees and specialist services separately, with assumptions and excess rates. Do not apply a single count to different units. Agree unresolved scope before the affected work starts.
-
-| Item | Allowance |
-|---|---|
-| Design meetings | 4 per appointed design stage (editable client default) |
-| Design review rounds | 1 consolidated client review round per design stage (editable client default) |
-| Construction inspections | ___ hold-point visits; firm states duration, review support and excess rates separately |
 
 ### 5. Terms
 
@@ -111,6 +111,4 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 ### Before issue — resolve or accept
 
 **Rules await owner review**: The electrical services rules are a draft. Drafting and editing work; issue stays blocked until the owner marks them reviewed.
-
-**Construction inspections: count not set**: Only an optional stage uses it. State it so options are priced on the same basis.
 

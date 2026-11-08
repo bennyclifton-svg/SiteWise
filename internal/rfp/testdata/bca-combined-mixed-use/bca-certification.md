@@ -75,27 +75,27 @@ Confirm separate A/B boundaries in R1. Base stages only; later stages are option
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
-
-| Doc number | Title | Rev | Date | Discipline |
-|---|---|---|---|---|
-
-### 4. Allowances
+### 3. Allowances
 
 Price these quantities; identify insufficiency before engagement. Allowances never permit omission of required statutory duties. R1/R6 must state authorised assumed counts, unit rates and fee effects.
 
-| Item | Allowance |
-|---|---|
-| Plan assessments | 2 plan sets per stage; R1 states revision baseline and coordinated review rounds |
-| Reports / checklists | 2 per deliverable; R2 separates draft, final and updates by purpose |
-| Meetings | 2 by stage; R1 states duration/location |
-| RFI support | 2 design-team hours; state regulatory-feedback basis separately |
-| Performance solutions | 2 brief/report versions per named author/solution; distinguish comment and assessment |
-| CC applications | 2 named packages/areas; amendments separate |
-| OC applications | 2 named occupation packages/areas |
-| Visits | 2 total; R1 splits audit/pre-CC/critical/progress/reinspection/final/fire attendance and identifies overlap |
-| Tests / referrals | 2 events; split hours, initial/final submissions, responses/resubmissions and out-of-hours |
-| Duration / access | 2 months; state dates, safe access, travel area, occupied restrictions and cancellation notice |
+| Item | Allowance | Qty |
+|---|---|---|
+| Plan assessments | Plan sets per stage; R1 states revision baseline and coordinated review rounds | 2 |
+| Reports / checklists | Issues per deliverable; R2 separates draft, final and updates by purpose | 2 |
+| Meetings | Per stage; R1 states duration/location | 2 |
+| RFI support | Design-team hours; state regulatory-feedback basis separately | 2 |
+| Performance solutions | Brief/report versions per named author/solution; distinguish comment and assessment | 2 |
+| CC applications | Named packages/areas; amendments separate | 2 |
+| OC applications | Named occupation packages/areas | 2 |
+| Visits | Total; R1 splits audit/pre-CC/critical/progress/reinspection/final/fire attendance and identifies overlap | 2 |
+| Tests / referrals | Events; split hours, initial/final submissions, responses/resubmissions and out-of-hours | 2 |
+| Duration / access | Months; state dates, safe access, travel area, occupied restrictions and cancellation notice | 2 |
+
+### 4. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
+|---|---|---|---|---|
 
 ### 5. Terms
 

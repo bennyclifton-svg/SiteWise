@@ -146,9 +146,9 @@ allowances:
     default: "2", owner: client, provenance: [{kind: evidence, ref: "town-planning#17"}]}
   - {key: site_inspections, label: Site inspections, text: "{n}", default: "1", owner: client, provenance: [{kind: 
             evidence, ref: "town-planning#16"}]}
-  - {key: plan_reviews, label: Reviews of draft plans, text: "{n} preliminary, then 1 consolidated set before lodgement",
+  - {key: plan_reviews, label: Reviews of draft plans, text: "{n} preliminary reviews, then 1 consolidated set before lodgement",
     default: "1", owner: client, provenance: [{kind: evidence, ref: "town-planning#1"}, {kind: evidence, ref: "town-planning#27"}]}
-  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 client review, 1 final", default: "1", owner: 
+  - {key: report_drafts, label: Report drafts, text: "{n} drafts, then 1 client review and 1 final", default: "1", owner: 
       client, provenance: [{kind: evidence, ref: "town-planning#12"}, {kind: evidence, ref: "town-planning#26"}]}
   - {key: report_updates, label: Report updates after plan revisions, text: "{n}", default: "1", owner: client, when: [
        {stage: [planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#31"}]}
@@ -156,7 +156,7 @@ allowances:
             stage: [planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#22"}]}
   - {key: rfi_responses, label: Authority information requests, text: "{n} response(s)", default: "1", owner: client,
     when: [{stage: [planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#45"}]}
-  - {key: authority_meetings, label: Authority meetings in assessment, text: "{n}", owner: client, when: [{stage: [
+  - {key: authority_meetings, label: Authority meetings in assessment, text: "{n}", default: "1", owner: client, when: [{stage: [
                 planning], pathway: [da, ssd]}], provenance: [{kind: evidence, ref: "town-planning#46"}]}
   - {key: panel_meetings, label: Planning panel meetings, text: "{n}", default: "1", owner: client, when: [flag: [
                 panel]], provenance: [{kind: evidence, ref: "town-planning#51"}]}
@@ -191,7 +191,7 @@ positions:
   - key: panel_attendance
     stage: [planning]
     group: Assessment and coordination
-    label: "Attendance at planning panel meetings, to the allowance in section 4"
+    label: "Attendance at planning panel meetings, to the allowance in section 3"
     kind: technical
     value: {value: I, when: [flag: [panel]], else: O}
     when: [pathway: [da, ssd]]

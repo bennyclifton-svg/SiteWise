@@ -298,7 +298,7 @@ func TestGroupRFPChecksAndResponseForm(t *testing.T) {
 	// A consultant with no discipline file of its own takes the general
 	// consultant RFP (owner, 8 November 2026), named by its package.
 	acoustic := g.member(t, v, g.members[2].ID)
-	if acoustic.Controls == nil || !strings.Contains(draftBlock(*v.Draft, rfp.PartSectionID(g.members[2].ID)+":rfp:role").Text, "Appointment: Acoustic consultant.") {
+	if acoustic.Controls == nil || !strings.Contains(draftBlock(*v.Draft, rfp.PartSectionID(g.members[2].ID)+":rfp:role").Text, "Your job is to give the project") {
 		t.Fatalf("acoustic uses the general consultant RFP: %+v", acoustic)
 	}
 	form, err := s.ReadResponseForm(ctx, orgA, g.report.ID)

@@ -70,23 +70,23 @@ Price each stage that applies as a lump sum; surveys are priced per location. R1
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
-
-| Doc number | Title | Rev | Date | Discipline |
-|---|---|---|---|---|
-
-### 4. Allowances
+### 3. Allowances
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Plan revisions assessed | 1 |
-| Report drafts | 1 draft, 1 final |
-| Design team meetings | 3, online |
-| Site inspections | 1 |
-| Authority responses | 1 |
-| Authority meetings | 1 |
+| Item | Allowance | Qty |
+|---|---|---|
+| Plan revisions assessed |  | 1 |
+| Report drafts | Drafts, then 1 final | 1 |
+| Design team meetings | Online | 3 |
+| Site inspections |  | 1 |
+| Authority responses |  | 1 |
+| Authority meetings |  | 1 |
+
+### 4. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
+|---|---|---|---|---|
 
 ### 5. Terms
 

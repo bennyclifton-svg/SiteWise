@@ -64,7 +64,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | BCA strategy with the BCA consultant | Included |  |
 |  | Interior layouts, finishes and joinery for the base building and common areas | Included |  |
 |  | Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | Included |  |
-|  | BIM model issued to the design team (level in section 4) | Included |  |
+|  | BIM model issued to the design team (level in section 3) | Included |  |
 |  | BIM coordination meetings, clash detection | Included |  |
 |  | Interior layouts for typical rooms | Included |  |
 |  | Base-building and common-area interiors | Included |  |
@@ -97,28 +97,28 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
-
-| Doc number | Title | Rev | Date | Discipline |
-|---|---|---|---|---|
-
-### 4. Allowances
+### 3. Allowances
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Design meetings | 4 per stage, online or in person |
-| Concept options | 2 |
-| Client presentations | 4 |
-| Working 3D views | 1 |
-| Issues per stage | 1 draft and 1 final |
-| Site visits, design stages | 2 |
-| Stakeholder workshops | 1 |
-| QS cost plan reviews | 3, at schematic, design development and pre-tender |
-| BIM level of detail | LOD 300 |
-| Drawing sheets at planning | 12, indicative; list them in R2 |
-| Planning response ceiling | 40 hours |
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per stage, online or in person | 4 |
+| Concept options |  | 2 |
+| Client presentations |  | 4 |
+| Working 3D views |  | 1 |
+| Issues per stage | Drafts, then 1 final | 1 |
+| Site visits, design stages |  | 2 |
+| Stakeholder workshops |  | 1 |
+| QS cost plan reviews | At schematic, design development and pre-tender | 3 |
+| BIM level of detail | LOD | 300 |
+| Drawing sheets at planning | Indicative; list them in R2 | 12 |
+| Planning response ceiling | Hours | 40 |
+
+### 4. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
+|---|---|---|---|---|
 
 ### 5. Terms
 

@@ -79,7 +79,7 @@ func TestHydraulicPilotCombinedScheduleAndDates(t *testing.T) {
 	for _, s := range sections {
 		order = append(order, s.ID)
 	}
-	if strings.Join(order, ",") != "project,role,transmittal,allowances,terms,returnables,issue_dates,pre_issue_review" {
+	if strings.Join(order, ",") != "project,role,allowances,transmittal,terms,returnables,issue_dates,pre_issue_review" {
 		t.Fatalf("section order = %v", order)
 	}
 	for _, section := range sections {

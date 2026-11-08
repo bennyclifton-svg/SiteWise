@@ -256,9 +256,21 @@ func (b *builder) stages() { b.consultantStages() }
 func (b *builder) allowances() {
 	rows := [][]string{}
 	for _, a := range b.r.Allowances {
-		rows = append(rows, []string{a.Label, a.Text})
+		rows = append(rows, []string{a.Label, a.Detail, allowanceQty(a)})
 	}
-	b.add("allowances", "rfp:allowances", "", b.r.AllowNote, doc([]string{"Item", "Allowance"}, rows), map[string]any{"allowances": b.r.Allowances})
+	b.add("allowances", "rfp:allowances", "", b.r.AllowNote, doc([]string{"Item", "Allowance", "Qty"}, rows), map[string]any{"allowances": b.r.Allowances})
+}
+
+// allowanceQty is the Qty cell: the count, a blank to fill, or a note that
+// the firm proposes it.
+func allowanceQty(a AllowanceResult) string {
+	switch {
+	case a.Value != "":
+		return a.Value
+	case a.Owner == "consultant":
+		return "Proposed in R2"
+	}
+	return "___"
 }
 
 // positions prints each canonical item under its position: included,

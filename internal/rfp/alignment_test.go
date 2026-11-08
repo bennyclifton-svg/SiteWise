@@ -28,7 +28,7 @@ func TestConsultantScopeInventoryPreserved(t *testing.T) {
 	normalize := func(v any) string {
 		b, _ := json.Marshal(v)
 		s := string(b)
-		for _, pair := range [][2]string{{"section 5", "section 2"}, {"Section 5", "Section 2"}, {"section 6", "section 5"}, {"sections 3–6", "sections 2–5"}, {"sections 3-6", "sections 2-5"}, {"WSC", "Water Services Coordinator"}} {
+		for _, pair := range [][2]string{{"section 5", "section 2"}, {"Section 5", "Section 2"}, {"section 6", "section 5"}, {"sections 3–6", "sections 2–5"}, {"sections 3-6", "sections 2-5"}, {"WSC", "Water Services Coordinator"}, {"level in section 4", "level in section 3"}, {"allowance in section 4", "allowance in section 3"}} {
 			s = strings.ReplaceAll(s, pair[0], pair[1])
 		}
 		return s

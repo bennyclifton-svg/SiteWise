@@ -46,25 +46,25 @@ Confirm base stages, inputs and final query-period end; later services require w
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Complete counts before issue. Fixed fee, time ceiling or unit rate with quantity; options separately totalled. Construction provisional sums do not authorise consultant fees.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Plans / options | Cost issues; stages/buildings/packages, alternatives, maturity/quantity basis and total-project extent | 2 |
+| Review / meetings | Feedback rounds; draft/final issues, meetings/duration, authority discussions and advice-hour ceiling | 2 |
+| Visits / access | Site visits; hours, sites/areas, access/induction/travel and named specialist investigations; no hidden-work verification | 2 |
+| Tender services | Tender packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues | 2 |
+| Post-contract / completion | Months; claims/variations or hours ceiling, reports/visits, final-account rounds, defects/retention period and extension rates | 2 |
+| Specialist options | Specialist reports; scenarios, purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections | 2 |
+
+### 4. Transmittal
 
 Current drawings/specifications, cost boundary and quantity basis, named input owners; selected counts are fixture choices.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Complete counts before issue. Fixed fee, time ceiling or unit rate with quantity; options separately totalled. Construction provisional sums do not authorise consultant fees.
-
-| Item | Allowance |
-|---|---|
-| Plans / options | 2 cost issues; stages/buildings/packages, alternatives, maturity/quantity basis and total-project extent |
-| Review / meetings | 2 feedback rounds; draft/final issues, meetings/duration, authority discussions and advice-hour ceiling |
-| Visits / access | 2 visits/hours; sites/areas, access/induction/travel and named specialist investigations; no hidden-work verification |
-| Tender services | 2 packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues |
-| Post-contract / completion | 2 months; claims/variations or hours ceiling, reports/visits, final-account rounds, defects/retention period and extension rates |
-| Specialist options | 2 reports/scenarios; purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections |
 
 ### 5. Terms
 

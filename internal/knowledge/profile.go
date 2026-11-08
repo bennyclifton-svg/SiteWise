@@ -108,6 +108,17 @@ type Subclass struct {
 	ScaleFields []ScaleField `yaml:"scale_fields"`
 }
 
+// SingleClass is the one NCC class the building type names, as its label
+// states it ("House (Class 1a)"). A type spanning classes ("2/9c"),
+// "varies" or "not_applicable" names none, so the class stays unknown.
+func (s Subclass) SingleClass() (string, bool) {
+	c := strings.TrimSpace(s.NCCClass)
+	if c == "" || c == "varies" || c == "not_applicable" || strings.ContainsAny(c, "/,; ") {
+		return "", false
+	}
+	return c, true
+}
+
 // BuildingClass groups subclasses (residential, industrial and so on).
 type BuildingClass struct {
 	ID         string     `yaml:"id"`

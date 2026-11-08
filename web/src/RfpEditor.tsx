@@ -6,7 +6,7 @@ import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 // Project facts save to Profile, the one home every RFP reads (owner
 // decision D1); the rest belong to this RFP. Each control writes on change
 // and shows where its value came from.
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import type { ReportBlock, RfpCheck, RfpChoice, RfpControl, RfpControls } from "./reportApi";
 
 export type Write = (key: string, value: unknown | null) => Promise<void>;
@@ -37,7 +37,8 @@ export function editableSections(controls: RfpControls): Set<string> {
   const out = new Set(controls.groups.filter(g => g.controls.length > 0).map(g => g.section));
   out.add("stages");
   out.add("role");
-  out.delete("role"); out.delete("stages"); out.delete("positions");
+  // Allowance quantities are edited in their table (owner, 8 Nov 2026).
+  out.delete("role"); out.delete("stages"); out.delete("positions"); out.delete("allowances");
   out.delete("project");
   out.delete("issue");
   out.delete("issue_dates");
@@ -57,7 +58,8 @@ export function blockedKeys(controls: RfpControls): Set<string> {
 
 /** Blocking checks listed under a section's heading; "" lists those no section holds. */
 export function SectionMarkers({ controls, section, busyKey, onWrite, onJump }: { controls: RfpControls; section: string; busyKey: string; onWrite: Write; onJump: (key?: string) => void }) {
-  if (section === "positions" || section === "stages") return null;
+  // Allowances mark a blank quantity on its own row, not in a banner.
+  if (section === "positions" || section === "stages" || section === "allowances") return null;
   const here = controls.decisions.filter(d => (d.control ? controlSection(controls, d.control) : "") === section);
   if (!here.length) return null;
   return <ul className="rfp-markers" aria-label="Blocks issue">
@@ -110,7 +112,7 @@ export function ProjectPage({ blocks, controls, busyKey, onWrite, transmittal }:
   const conditions = project.filter(c => c.key.startsWith("fact:flag.") && blocked.has(c.key));
   const parts = byKey.get("parts:affected");
   return <div className="rfp-page-one">
-    <div className="pf-card pf-titleblock rfp-grid">
+    <div className="pf-card pf-titleblock pf-paired rfp-grid">
       {columns.map(col => <GridColumn key={col.title} column={col.title === "Delivery" ? { ...col, cells: [...col.cells, { key: "budget", label: "Construction budget", text: budget?.text || "—", control: "fact:budget" }] } : col} byKey={byKey} busyKey={busyKey} blocked={blocked} onWrite={onWrite} />)}
     </div>
     {parts && <ControlRow control={parts} busy={busyKey === parts.key} blocked={blocked.has(parts.key)} showSource={false} onWrite={onWrite} />}
@@ -132,25 +134,44 @@ function GridColumn({ column, byKey, busyKey, blocked, onWrite }: { column: Grid
   </div>;
 }
 
-/** A printed value that opens its control in place; closes once it saves or loses focus. */
+// Grid values with a unit print it after the field, as Profile does.
+const gridUnits: Record<string, string> = { "fact:site_area": "m²", "fact:gfa": "m²" };
+
+/**
+ * A value cell that edits as Profile and Cost Plan cells do (owner, 8 Nov
+ * 2026): the field is always in place, so clicking it changes the style and
+ * never the cell's size. A value with no home the RFP can write (building,
+ * budget, storeys) is plain text; its tooltip says where it changes.
+ */
 function GridValue({ label, text, control, busy, blocked, onWrite }: { label: string; text: string; control?: RfpControl; busy: boolean; blocked: boolean; onWrite: Write }) {
-  const [open, setOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-  const editable = !!control && !control.locked;
+  const editable = !!control && !control.locked && ["choice", "text", "number"].includes(control.kind);
   const id = `rfp-cell-${(control?.key ?? label).replace(/[^a-z0-9]+/gi, "-")}`;
-  useEffect(() => { if (open) box.current?.querySelector<HTMLElement>("input, select")?.focus(); }, [open]);
-  const write: Write = async (key, value) => { await onWrite(key, value); setOpen(false); };
-  return <div className="pf-row rfp-cell-row" data-control={control?.key} data-blocked={blocked || undefined}>
-    {open ? <label className="pf-label" htmlFor={id} id={`${id}-label`}>{label}</label> : <span className="pf-label">{label}</span>}
-    <div className="pf-value" ref={box} onKeyDown={e => { if (e.key === "Escape") setOpen(false); }} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false); }}>
-      {open && control
-        ? <Control control={control} id={id} labelID={`${id}-label`} busy={busy} onWrite={write} />
-        : editable
-          ? <button type="button" className="rfp-cell" aria-label={`${label}: ${text}. Change`} disabled={busy} onClick={() => setOpen(true)}>{text}</button>
-          : <span className="rfp-cell-text">{text}</span>}
-      {control?.locked && control.help && <span className="rfp-why">{control.help}</span>}
+  const where = control?.help || (editable ? "" : "Change this in Project Profile.");
+  return <div className="pf-row rfp-cell-row" data-control={control?.key} data-blocked={blocked || undefined} aria-busy={busy || undefined}>
+    {editable ? <label className="pf-label" htmlFor={id}>{label}</label> : <span className="pf-label">{label}</span>}
+    <div className="pf-value" title={where || undefined}>
+      {editable ? <GridField control={control!} id={id} busy={busy} onWrite={onWrite} /> : <span className="rfp-cell-text">{text}</span>}
     </div>
   </div>;
+}
+
+function GridField({ control: c, id, busy, onWrite }: { control: RfpControl; id: string; busy: boolean; onWrite: Write }) {
+  const value = c.value === null || c.value === undefined ? "" : String(c.value);
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+  if (c.kind === "choice") {
+    return <select id={id} className="select pf-control" value={value} disabled={busy} onChange={e => void onWrite(c.key, e.target.value || "unknown")}>
+      <option value="">—</option>
+      {(c.options ?? []).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>;
+  }
+  // Typed text commits on blur or Enter, so a half-typed value is never saved.
+  const commit = (e?: FormEvent) => { e?.preventDefault(); if (draft.trim() !== value) void onWrite(c.key, draft.trim() === "" ? null : draft.trim()); };
+  const unit = gridUnits[c.key];
+  return <form className="pf-inline" onSubmit={commit}>
+    <input id={id} className="input pf-control" inputMode={c.kind === "number" ? "decimal" : undefined} value={draft} placeholder="—" disabled={busy} onChange={e => setDraft(e.target.value)} onBlur={() => commit()} />
+    {unit && <span className="pf-unit">{unit}</span>}
+  </form>;
 }
 
 /**

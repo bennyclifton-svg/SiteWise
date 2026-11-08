@@ -338,9 +338,9 @@ allowances_note: Complete quantities or authorised assumption with owner/date/co
   or unit rate/quantity; base/options and standalone/package dependencies separate.
 allowances:
 - key: coverage
+  default: "1"
   label: Coverage
-  text: '{n} buildings/uses/floors/units/routes/sample areas; measured versus visual evidence, inaccessible areas and
-    safe-access provider'
+  text: "{n} buildings; uses/floors/units/routes/sample areas, measured versus visual evidence, inaccessible areas and safe-access provider"
   owner: client
   provenance:
   - kind: evidence
@@ -360,8 +360,9 @@ allowances:
     why: Separate operational/inclusive objectives from compliance and limit advice to defined evidence, sampling 
       and reliance; no discrimination-immunity promise.
 - key: reviews
+  default: "2"
   label: Reviews / reports
-  text: '{n} packages/rounds by stage; preliminary/final mark-ups, draft/final reports, client and authority responses'
+  text: "{n} review rounds per stage; preliminary/final mark-ups, draft/final reports, client and authority responses"
   owner: client
   provenance:
   - kind: evidence
@@ -371,9 +372,9 @@ allowances:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not
       establish included work or current statutory requirements.
 - key: meetings
+  default: "3"
   label: Meetings / RFIs
-  text: '{n} meetings by stage/duration/location; RFI hour ceiling and tender period. Reconcile stage counts/concessions
-    and disclose conflicting totals'
+  text: "{n} meetings per stage; duration/location, RFI hour ceiling and tender period. Reconcile stage counts/concessions and disclose conflicting totals"
   owner: client
   provenance:
   - kind: evidence
@@ -383,8 +384,9 @@ allowances:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not
       establish included work or current statutory requirements.
 - key: solutions
+  default: "2"
   label: Solution options
-  text: '{n} departures/groups, briefs/reports, consultations/revisions, independent review and completion checks'
+  text: "{n} performance solutions (departures or groups); briefs/reports, consultations/revisions, independent review and completion checks"
   owner: client
   provenance:
   - kind: evidence
@@ -394,6 +396,7 @@ allowances:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not
       establish included work or current statutory requirements.
 - key: visits
+  default: "2"
   label: Tests / visits
   text: '{n} visits allocated by selected stage: inspections/pre-final/final/revisits/handovers; separate test methods/locations/quantities/provider,
     equipment and certificate gaps'
@@ -408,6 +411,7 @@ allowances:
     why: Client selects explicit extent, quantities and appointment terms; historical offers and capabilities do not
       establish included work or current statutory requirements.
 - key: duration
+  default: "12"
   label: Duration / extras
   text: '{n} months; travel/out-of-hours, delay/remobilisation/cancellation; extra review/meeting/visit/departure units'
   owner: client

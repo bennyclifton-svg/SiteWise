@@ -66,27 +66,27 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption: owner/date/consequence/review point.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent | Building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed | 2 |
+| Investigation | Site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners | 2 |
+| Design | Design iterations; options/calculations/control modes/drawing issues/native maturity | 2 |
+| Approvals | Meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer | 2 |
+| Tender | Tender packages; comparisons/RFI hours/addenda/rounds | 2 |
+| Support | Months; submittals/RFI hours/updates/hold-point visits/reports; notice/response | 2 |
+| Completion | Witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training | 2 |
+| Staging | Shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation | 2 |
+
+### 4. Transmittal
 
 Issued fixture/source/quality/level and evidence registers; separately quantified R1-R9 schedules.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption: owner/date/consequence/review point.
-
-| Item | Allowance |
-|---|---|
-| Extent | 2 parts/fixtures/sources/tanks/pumps/meters/catchments/connections; retained/new/removed |
-| Investigation | 2 visits/CCTV lengths/traces/log points-days/samples/openings; test/access/isolation/lab/make-good owners |
-| Design | 2 options/calculations/control modes/drawing issues/rounds/native maturity |
-| Approvals | 2 meetings/hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer |
-| Tender | 2 packages/comparisons/RFI hours/addenda/rounds |
-| Support | 2 duration/submittals/RFI hours/updates/hold-point visits/reports; notice/response |
-| Completion | 2 scripts/sessions-hours/samples/modes/retests/handovers/O&M rounds/training |
-| Staging | 2 shutdowns/out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation |
 
 ### 5. Terms
 

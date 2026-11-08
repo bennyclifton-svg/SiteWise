@@ -313,6 +313,7 @@ allowances_note: Complete counts before issue. Fixed fee, time ceiling or unit r
   separately totalled. Construction provisional sums do not authorise consultant fees.
 allowances:
 - key: plans
+  default: "3"
   text: '{n} cost issues; stages/buildings/packages, alternatives, maturity/quantity basis and total-project extent'
   provenance:
   - kind: seed
@@ -324,7 +325,8 @@ allowances:
   label: Plans / options
   owner: client
 - key: authority
-  text: '{n} reports/forms; current requirements confirmer, review/update rounds and standalone/dependent fee'
+  default: "1"
+  text: "{n} authority reports; forms, current requirements confirmer, review/update rounds and standalone/dependent fee"
   provenance:
   - kind: evidence
     ref: cost-planning#1,8,15
@@ -340,6 +342,7 @@ allowances:
   owner: client
   when: [stage: [planning]]
 - key: review
+  default: "2"
   text: '{n} feedback rounds; draft/final issues, meetings/duration, authority discussions and advice-hour ceiling'
   provenance:
   - kind: evidence
@@ -351,7 +354,8 @@ allowances:
   label: Review / meetings
   owner: client
 - key: visits
-  text: '{n} visits/hours; sites/areas, access/induction/travel and named specialist investigations; no hidden-work verification'
+  default: "1"
+  text: "{n} site visits; hours, sites/areas, access/induction/travel and named specialist investigations; no hidden-work verification"
   provenance:
   - kind: evidence
     ref: cost-planning#5
@@ -364,7 +368,8 @@ allowances:
   label: Visits / access
   owner: client
 - key: tender
-  text: '{n} packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues'
+  default: "1"
+  text: "{n} tender packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues"
   provenance:
   - kind: evidence
     ref: cost-planning#5
@@ -378,6 +383,7 @@ allowances:
   owner: client
   when: [stage: [tender_documentation]]
 - key: construction
+  default: "12"
   text: '{n} months; claims/variations or hours ceiling, reports/visits, final-account rounds, defects/retention period
     and extension rates'
   provenance:
@@ -397,7 +403,8 @@ allowances:
   owner: client
   when: [{stage: [delivery], work_type: [new, refurb, extend, remediation]}]
 - key: specialist
-  text: '{n} reports/scenarios; purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections'
+  default: "0"
+  text: "{n} specialist reports; scenarios, purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections"
   provenance:
   - kind: evidence
     ref: cost-planning#5,13,24

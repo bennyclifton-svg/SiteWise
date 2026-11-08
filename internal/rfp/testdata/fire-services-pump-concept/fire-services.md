@@ -54,26 +54,26 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Extent | Fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces | 2 |
+| Visits/tests | Site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis | 2 |
+| Design | Design iterations; options/supply cases/calculation scenarios/packages, maturity and native files | 2 |
+| Coordination | Meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer | 2 |
+| Tender | Tender packages; RFI hours/addenda/comparisons/reviews | 2 |
+| Construction | Months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response | 2 |
+| Completion | Witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests | 2 |
+
+### 4. Transmittal
 
 Issued system/area allocation, strategy/BCA, hazard and supply/condition evidence registers; quantified R1-R9 schedules.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
-
-| Item | Allowance |
-|---|---|
-| Extent | 2 parts/areas/zones/systems/assets; retained/new network lengths, tenant boundaries and interfaces |
-| Visits/tests | 2 visits/hours; test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis |
-| Design | 2 options/iterations/supply cases/calculation scenarios/packages; maturity and native files |
-| Coordination | 2 meetings/duration, interface reviews, submissions/responses; author/submitter/applicant/payer |
-| Tender | 2 packages, RFI hours/addenda/comparisons/reviews |
-| Construction | 2 months, RFI hours/submittals/reviews/hold-point visits/reports; notice/response |
-| Completion | 2 scripts/rounds, witness sessions/hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests |
 
 ### 5. Terms
 

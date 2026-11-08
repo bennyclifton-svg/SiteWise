@@ -51,25 +51,25 @@ Select base, options and end boundary; advice-only ends at its report/response r
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Complete quantities or authorised assumption with owner/date/consequence. Fixed fee, time ceiling or unit rate/quantity; base/options and standalone/package dependencies separate.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Coverage | Buildings; uses/floors/units/routes/sample areas, measured versus visual evidence, inaccessible areas and safe-access provider | 2 |
+| Reviews / reports | Review rounds per stage; preliminary/final mark-ups, draft/final reports, client and authority responses | 2 |
+| Meetings / RFIs | Meetings per stage; duration/location, RFI hour ceiling and tender period. Reconcile stage counts/concessions and disclose conflicting totals | 2 |
+| Solution options | Performance solutions (departures or groups); briefs/reports, consultations/revisions, independent review and completion checks | 2 |
+| Tests / visits | Visits allocated by selected stage: inspections/pre-final/final/revisits/handovers; separate test methods/locations/quantities/provider, equipment and certificate gaps | 2 |
+| Duration / extras | Months; travel/out-of-hours, delay/remobilisation/cancellation; extra review/meeting/visit/departure units | 2 |
+
+### 4. Transmittal
 
 Current drawings, access-chain boundary, measured routes, conditions and input owners; fixture counts are client choices.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Complete quantities or authorised assumption with owner/date/consequence. Fixed fee, time ceiling or unit rate/quantity; base/options and standalone/package dependencies separate.
-
-| Item | Allowance |
-|---|---|
-| Coverage | 2 buildings/uses/floors/units/routes/sample areas; measured versus visual evidence, inaccessible areas and safe-access provider |
-| Reviews / reports | 2 packages/rounds by stage; preliminary/final mark-ups, draft/final reports, client and authority responses |
-| Meetings / RFIs | 2 meetings by stage/duration/location; RFI hour ceiling and tender period. Reconcile stage counts/concessions and disclose conflicting totals |
-| Solution options | 2 departures/groups, briefs/reports, consultations/revisions, independent review and completion checks |
-| Tests / visits | 2 visits allocated by selected stage: inspections/pre-final/final/revisits/handovers; separate test methods/locations/quantities/provider, equipment and certificate gaps |
-| Duration / extras | 2 months; travel/out-of-hours, delay/remobilisation/cancellation; extra review/meeting/visit/departure units |
 
 ### 5. Terms
 

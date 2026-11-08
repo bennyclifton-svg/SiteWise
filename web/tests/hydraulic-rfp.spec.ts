@@ -80,7 +80,7 @@ test("Hydraulic pilot: dates last, scope by stage, one fee per stage and persist
   // Dates close the RFP, in the Issue section, below the project and scope.
   expect(datesBox!.y).toBeGreaterThan(projectBox!.y);
   const order = await page.locator(".report-section h3").allTextContents();
-  expect(order.slice(0, 3)).toEqual(["1. Project", "2. Scope of services", "3. Transmittal"]);
+  expect(order.slice(0, 4)).toEqual(["1. Project", "2. Scope of services", "3. Allowances", "4. Transmittal"]);
   await page.setViewportSize({ width: 1280, height: 2600 });
   await scope.screenshot({ path: "../.tools/hydraulic-pilot-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });

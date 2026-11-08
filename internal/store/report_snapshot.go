@@ -70,6 +70,7 @@ func (s *Store) reportSnapshot(ctx context.Context, tx pgx.Tx, org, project, pkg
 		unknown := row.Value == "" || row.ValueState == "unknown" || row.ValueState == "cleared" || row.Band == "red" || row.Band == "blank" || row.Band == "unchecked" || row.Band == "suggested"
 		snap.Brief = append(snap.Brief, reports.BriefValue{ID: row.PartID + ":" + row.Key, Label: label, Text: row.Value, Origin: row.Origin, ReviewStatus: row.ReviewStatus, Meaning: row.Meaning, Basis: basis, Unknown: unknown})
 	}
+	classFromBuildingType(&snap, s.workCatalog())
 	snap.Works, err = readWorkItems(ctx, tx, org, project)
 	if err != nil {
 		return snap, state, err
@@ -148,4 +149,30 @@ func reportBriefLabels(cat *knowledge.Catalog) map[string]string {
 		}
 	}
 	return labels
+}
+
+// classFromBuildingType gives the whole-project part the class its building
+// type names when Profile records no class itself. "House (Class 1a)" is the
+// user's word for Class 1a; without this the RFP printed "class not
+// established" for a house. A class set on the part wins, and det.ncc_class
+// still overrides it later in rfp.partFacts.
+func classFromBuildingType(snap *reports.Snapshot, cat *knowledge.Catalog) {
+	if cat == nil {
+		return
+	}
+	for i, p := range snap.Parts {
+		if p.Kind != "whole" || p.NCCClass != "" {
+			continue
+		}
+		for _, v := range snap.Brief {
+			if v.ID != p.ID+":hdr.subclass" || v.Unknown {
+				continue
+			}
+			if sub, ok := cat.Taxonomy().Subclass(strings.TrimSpace(v.Text)); ok {
+				if class, ok := sub.SingleClass(); ok {
+					snap.Parts[i].NCCClass = class
+				}
+			}
+		}
+	}
 }

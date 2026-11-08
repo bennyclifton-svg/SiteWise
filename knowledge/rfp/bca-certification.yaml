@@ -220,26 +220,26 @@ stages:
     delivery_stage: delivery
 allowances:
   - {key: plan_sets, label: Plan assessments, text: "{n} plan sets per stage; R1 states revision baseline and coordinated
-      review rounds", owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
-  - {key: reports, label: Reports / checklists, text: "{n} per deliverable; R2 separates draft, final and updates by purpose",
-    owner: client, provenance: [{kind: evidence, ref: "bca-certification#2-7,27"}]}
-  - {key: meetings, label: Meetings, text: "{n} by stage; R1 states duration/location", owner: client, provenance: [{
+      review rounds", default: "2", owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
+  - {key: reports, label: Reports / checklists, text: "{n} issues per deliverable; R2 separates draft, final and updates by purpose",
+    default: "2", owner: client, provenance: [{kind: evidence, ref: "bca-certification#2-7,27"}]}
+  - {key: meetings, label: Meetings, text: "{n} per stage; R1 states duration/location", default: "2", owner: client, provenance: [{
           kind: evidence, ref: "bca-certification#27,30"}]}
   - {key: rfi_hours, label: RFI support, text: "{n} design-team hours; state regulatory-feedback basis separately", 
-      owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
+      default: "8", owner: client, provenance: [{kind: evidence, ref: "bca-certification#5,27"}]}
   - {key: solution_versions, label: Performance solutions, text: "{n} brief/report versions per named author/solution;
-      distinguish comment and assessment", owner: client, provenance: [{kind: evidence, ref: "bca-certification#8-10,27"}]}
-  - {key: cc_packages, label: CC applications, text: "{n} named packages/areas; amendments separate", owner: client, 
+      distinguish comment and assessment", default: "2", owner: client, provenance: [{kind: evidence, ref: "bca-certification#8-10,27"}]}
+  - {key: cc_packages, label: CC applications, text: "{n} named packages/areas; amendments separate", default: "1", owner: client, 
       when: [stage: [design_finalisation]], provenance: [{kind: evidence, ref: "bca-certification#13,29"}]}
-  - {key: oc_packages, label: OC applications, text: "{n} named occupation packages/areas", owner: client, when: [{
+  - {key: oc_packages, label: OC applications, text: "{n} named occupation packages/areas", default: "1", owner: client, when: [{
             stage: [delivery], flag: [bca_certification], pathway: [da, ssd, cdc]}], provenance: [{kind: evidence, 
             ref: "bca-certification#21,29"}]}
   - {key: visits, label: Visits, text: "{n} total; R1 splits audit/pre-CC/critical/progress/reinspection/final/fire attendance
-      and identifies overlap", owner: client, provenance: [{kind: evidence, ref: "bca-certification#12,16-18,27-29"}]}
+      and identifies overlap", default: "6", owner: client, provenance: [{kind: evidence, ref: "bca-certification#12,16-18,27-29"}]}
   - {key: witness_events, label: Tests / referrals, text: "{n} events; split hours, initial/final submissions, responses/resubmissions
-      and out-of-hours", owner: client, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-18"}]}
+      and out-of-hours", default: "2", owner: client, provenance: [{kind: evidence, ref: "bca-certification#11-12,17-18"}]}
   - {key: duration_months, label: Duration / access, text: "{n} months; state dates, safe access, travel area, occupied
-      restrictions and cancellation notice", owner: client, provenance: [{kind: evidence, ref: "bca-certification#26,37"},
+      restrictions and cancellation notice", default: "12", owner: client, provenance: [{kind: evidence, ref: "bca-certification#26,37"},
        {kind: seed, ref: "bca-certification#48"}]}
 positions:
   - {group: "Compliance advice and evidence", key: evidence_registers, label: "Compliance evidence, action and condition

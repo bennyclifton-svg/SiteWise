@@ -229,6 +229,7 @@ stages:
   delivery_stage: delivery
 allowances:
 - key: mobilisation
+  default: "1"
   label: Mobilisation
   text: '{n} mobilisations; allocate rigs/locators/excavators, hours/crew/permits/access/water/power'
   owner: client
@@ -237,22 +238,25 @@ allowances:
     ref: geotechnical#21,22
   when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: boreholes
+  default: "3"
   label: Boreholes / cores
-  text: '{n} by location/method/depth; soil/rock metres, penetration/refusal and pavement thickness'
+  text: "{n} boreholes; by location/method/depth, soil/rock metres, penetration/refusal and pavement thickness"
   owner: client
   provenance:
   - kind: evidence
     ref: geotechnical#4,5,6,7
   when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: pits
+  default: "2"
   label: Pits / exposures
-  text: '{n} by location/dimensions/depth; method, target evidence and stopping criteria'
+  text: "{n} test pits; by location/dimensions/depth, method, target evidence and stopping criteria"
   owner: client
   provenance:
   - kind: evidence
     ref: geotechnical#8,16,17,18,19,20
   when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: tests
+  default: "4"
   label: In-situ / laboratory
   text: '{n} laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency;
     environmental suites separate'
@@ -262,6 +266,7 @@ allowances:
     ref: geotechnical#11,12,13,14,26,27,28
   when: [{stage: [brief_concept], flag: [geotech_intrusive]}]
 - key: groundwater
+  default: "0"
   label: Groundwater option
   text: '{n} optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning
     owner'
@@ -273,6 +278,7 @@ allowances:
     ref: geotechnical#53
     why: Apply the draft client scope, records and procurement choices; do not import historical supplier defaults.
 - key: reports
+  default: "1"
   label: Reports / support
   text: '{n} reports; schedule draft/final/updates, review rounds, meetings/duration and RFI/planning hours'
   owner: client
@@ -282,6 +288,7 @@ allowances:
   - kind: seed
     ref: geotechnical#45
 - key: construction
+  default: "2"
   label: Construction option
   text: '{n} inspections; schedule hold points, tests/reviews, booking notice, missed work and completion record'
   owner: client
@@ -292,6 +299,7 @@ allowances:
     ref: geotechnical#46
   when: [stage: [delivery]]
 - key: handback
+  default: "1"
   label: Handback / waste
   text: '{n} repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal
     records and maintenance owner'

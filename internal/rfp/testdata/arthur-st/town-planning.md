@@ -56,7 +56,7 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 |  | Advice on conditions to challenge or modify | Included |  |
 |  | Review of specialist reports for planning compliance before lodgement | Included |  |
 |  | Response to public submissions | Included |  |
-|  | Attendance at planning panel meetings, to the allowance in section 4 | Included |  |
+|  | Attendance at planning panel meetings, to the allowance in section 3 | Included |  |
 |  | Pre-lodgement plans in council's required format | Included |  |
 |  | Land and Environment Court appeal or expert witness | Excluded |  |
 | Design development | Not part of this appointment | Excluded | — |
@@ -67,26 +67,26 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
-
-| Doc number | Title | Rev | Date | Discipline |
-|---|---|---|---|---|
-
-### 4. Allowances
+### 3. Allowances
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Project design meetings | 2 of up to 2 hours including preparation and travel |
-| Site inspections | 1 |
-| Reviews of draft plans | 1 preliminary, then 1 consolidated set before lodgement |
-| Report drafts | 1 draft, 1 client review, 1 final |
-| Report updates after plan revisions | 1 |
-| Pre-lodgement meetings | 1 |
-| Authority information requests | 1 response(s) |
-| Authority meetings in assessment | 1 |
-| Planning panel meetings | 1 |
+| Item | Allowance | Qty |
+|---|---|---|
+| Project design meetings | Of up to 2 hours including preparation and travel | 2 |
+| Site inspections |  | 1 |
+| Reviews of draft plans | Preliminary reviews, then 1 consolidated set before lodgement | 1 |
+| Report drafts | Drafts, then 1 client review and 1 final | 1 |
+| Report updates after plan revisions |  | 1 |
+| Pre-lodgement meetings |  | 1 |
+| Authority information requests | Response(s) | 1 |
+| Authority meetings in assessment |  | 1 |
+| Planning panel meetings |  | 1 |
+
+### 4. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
+|---|---|---|---|---|
 
 ### 5. Terms
 
@@ -132,5 +132,5 @@ Release date: 2026-10-12 · Proposals close: 2026-10-30
 
 **Notification likely to draw objections: not established**: Priced on a printed assumption until confirmed: Response to public submissions.
 
-**Application goes to a planning panel: not established**: Priced on a printed assumption until confirmed: Attendance at planning panel meetings, to the allowance in section 4.
+**Application goes to a planning panel: not established**: Priced on a printed assumption until confirmed: Attendance at planning panel meetings, to the allowance in section 3.
 

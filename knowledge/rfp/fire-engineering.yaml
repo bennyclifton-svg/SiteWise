@@ -324,8 +324,8 @@ allowances_note: Counts by solution/stage, unit/duration; fixed fee, time ceilin
   assumptions need owner/date/consequence/review point.
 allowances:
 - key: solutions
-  text: '{n} solution IDs: part/extent, departure, method/criteria, revision/dependencies/package; distinguish grouped
-    subissues'
+  default: "3"
+  text: "{n} performance solutions; each with part/extent, departure, method/criteria, revision/dependencies/package; distinguish grouped subissues"
   provenance:
   - kind: evidence
     ref: fire-engineering#4,5,17,27
@@ -338,6 +338,7 @@ allowances:
   owner: client
   when: [{stage: [design_development], flag: [fe_solutions]}]
 - key: analysis
+  default: "2"
   text: '{n} scenarios per solution/method; sensitivities, iterations/alternatives, checks and change unit'
   provenance:
   - kind: evidence
@@ -351,6 +352,7 @@ allowances:
   owner: client
   when: [{stage: [design_development], flag: [fe_solutions]}, stage: [s8_specialist]]
 - key: issues
+  default: "2"
   text: '{n} issues per report; team/authority rounds, workshops/duration, updates; package author/submitter/applicant/payer,
     response end'
   provenance:
@@ -362,7 +364,8 @@ allowances:
   label: Issues / consultation
   owner: client
 - key: evidence
-  text: '{n} areas/visits/hours; tests/openings by location, access/shutdown/reinstatement owner; inaccessible-work options'
+  default: "2"
+  text: "{n} site visits; areas/hours, tests/openings by location, access/shutdown/reinstatement owner; inaccessible-work options"
   provenance:
   - kind: evidence
     ref: fire-engineering#2,12,19,30,33
@@ -374,7 +377,8 @@ allowances:
   label: Evidence / access
   owner: client
 - key: construction
-  text: '{n} packages/cycles; RFI hours, hold-point visits/duration, dates/notice/response, abortive/out-of-hours basis'
+  default: "4"
+  text: "{n} hold-point visits; packages/cycles, RFI hours, duration, dates/notice/response, abortive/out-of-hours basis"
   provenance:
   - kind: evidence
     ref: fire-engineering#8,18,20,29
@@ -385,6 +389,7 @@ allowances:
   owner: client
   when: [stage: [tender_documentation], stage: [delivery]]
 - key: verification
+  default: "1"
   text: '{n} completion stages; certificates/scripts, witness sessions/duration, retests/reports, defect endpoint'
   provenance:
   - kind: evidence
@@ -398,7 +403,8 @@ allowances:
   owner: client
   when: [stage: [delivery]]
 - key: options
-  text: '{n} interim phases/specialist/peer rounds; advisory cutoff/post-contract period; services-review extent/meetings'
+  default: "0"
+  text: "{n} optional rounds (interim phase, specialist or peer review); advisory cutoff/post-contract period; services-review extent/meetings"
   provenance:
   - kind: evidence
     ref: fire-engineering#10,18,19,20,21,30,31

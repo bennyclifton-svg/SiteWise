@@ -174,13 +174,13 @@ stages:
     shown_when: Client opts in
     provenance: [{kind: practice, ref: "traffic#35 (excluded by all three firms); traffic-transport-guide.md completion"}]
 allowances:
-  - {key: survey_locations, label: Survey locations, text: "{n}", owner: client, when: [{stage: [planning], flag: [
+  - {key: survey_locations, label: Survey locations, text: "{n}", default: "2", owner: client, when: [{stage: [planning], flag: [
                 intersection_modelling]}], provenance: [{kind: evidence, ref: "traffic#9"}]}
-  - {key: sidra_locations, label: Modelled intersections, text: "{n}", owner: client, when: [{stage: [planning], 
+  - {key: sidra_locations, label: Modelled intersections, text: "{n}", default: "2", owner: client, when: [{stage: [planning], 
             flag: [intersection_modelling]}], provenance: [{kind: evidence, ref: "traffic#13"}]}
   - {key: plan_revisions, label: Plan revisions assessed, text: "{n}", default: "1", owner: client, provenance: [{
             kind: evidence, ref: "traffic#29"}]}
-  - {key: report_drafts, label: Report drafts, text: "{n} draft, 1 final", default: "1", owner: client, provenance: [
+  - {key: report_drafts, label: Report drafts, text: "{n} drafts, then 1 final", default: "1", owner: client, provenance: [
        {kind: evidence, ref: "traffic#26"}]}
   - {key: design_meetings, label: Design team meetings, text: "{n}, online", default: "3", owner: client, provenance: [
        {kind: evidence, ref: "traffic#7"}]}
@@ -188,7 +188,7 @@ allowances:
             evidence, ref: "traffic#3"}]}
   - {key: authority_responses, label: Authority responses, text: "{n}", default: "1", owner: client, when: [{stage: [
             planning], pathway: [da, ssd, planning_permit, modification]}], provenance: [{kind: evidence, ref: "traffic#32"}]}
-  - {key: authority_meetings, label: Authority meetings, text: "{n}", owner: client, when: [{stage: [planning], 
+  - {key: authority_meetings, label: Authority meetings, text: "{n}", default: "1", owner: client, when: [{stage: [planning], 
             pathway: [da, ssd, planning_permit, modification]}], provenance: [{kind: evidence, ref: "traffic#33"}]}
 
 positions:

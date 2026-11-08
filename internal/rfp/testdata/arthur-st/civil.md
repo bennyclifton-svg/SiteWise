@@ -86,27 +86,27 @@ Each design stage is issued as one draft and one final. Design stages are priced
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
-
-| Doc number | Title | Rev | Date | Discipline |
-|---|---|---|---|---|
-
-### 4. Allowances
+### 3. Allowances
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance |
-|---|---|
-| Design meetings | 10 per design stage, up to 2 hours, online |
-| Authority meetings | 3 |
-| Site visits during design | 2 |
-| Architect layouts reviewed | 4 |
-| Civil concept options | 2, then one agreed |
-| Drawing revisions before lodgement | 2 |
-| Authority requests in assessment | 1 response(s) |
-| Construction inspections | 6 |
-| Construction RFIs | 10 hours |
-| Construction certificate inputs | 2, and 1 occupation certificate |
+| Item | Allowance | Qty |
+|---|---|---|
+| Design meetings | Per design stage, up to 2 hours, online | 10 |
+| Authority meetings |  | 3 |
+| Site visits during design |  | 2 |
+| Architect layouts reviewed |  | 4 |
+| Civil concept options | Then one agreed | 2 |
+| Drawing revisions before lodgement |  | 2 |
+| Authority requests in assessment | Response(s) | 1 |
+| Construction inspections |  | 6 |
+| Construction RFIs | Hours | 10 |
+| Construction certificate inputs | And 1 occupation certificate | 2 |
+
+### 4. Transmittal
+
+| Doc number | Title | Rev | Date | Discipline |
+|---|---|---|---|---|
 
 ### 5. Terms
 

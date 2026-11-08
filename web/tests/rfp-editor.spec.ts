@@ -59,27 +59,35 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await expect(page.getByRole("group", { name: "Proposal dates" }).getByLabel("Release date", { exact: true })).toBeVisible();
   await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toBeVisible();
 
-  // A blank client quantity is marked under section 4 and opens its control.
-  const allowances = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "4. Allowances", exact: true }) });
-  await allowances.locator(".rfp-markers li").filter({ hasText: "Client presentations" }).getByRole("button", { name: "Show", exact: true }).click();
-  await allowances.getByLabel("Client presentations", { exact: true }).fill("3");
-  await allowances.getByLabel("Client presentations", { exact: true }).press("Enter");
-  await expect(page.locator(".rfp-draft").getByRole("cell", { name: "Client presentations", exact: true })).toBeVisible();
+  // Allowances follow the scope: one table, each quantity at its default
+  // and nudged with arrows; no banner and no edit panel (owner, 8 Nov 2026).
+  const allowances = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "3. Allowances", exact: true }) });
+  await expect(allowances.locator(".rfp-markers")).toHaveCount(0);
+  await expect(allowances.getByRole("button", { name: /^Edit 3\. Allowances$/ })).toHaveCount(0);
+  await expect(allowances.getByRole("columnheader", { name: "Qty", exact: true })).toBeVisible();
+  const presentations = allowances.getByLabel("Client presentations quantity", { exact: true });
+  await expect(presentations).toHaveValue("2");
+  const qtySaved = page.waitForResponse(r => r.request().method() === "PUT" && r.url().endsWith("/settings/allowance%3Aclient_presentations"));
+  await allowances.getByRole("button", { name: "Increase Client presentations", exact: true }).click();
+  await expect(presentations).toHaveValue("3");
+  expect((await qtySaved).ok()).toBeTruthy();
+  await expect(presentations).toBeEnabled();
+  await expect(presentations).toHaveValue("3");
+  await expect(allowances.locator('tr[data-control="allowance:client_presentations"]')).not.toHaveAttribute("data-blocked");
+  await expect(page.getByRole("heading", { name: "4. Transmittal", exact: true })).toBeVisible();
 
   // Project facts are edited where they print on page one and saved to Profile.
-  await pageOne.getByRole("button", { name: /^Client: .*Change$/ }).click();
   await pageOne.getByLabel("Client", { exact: true }).fill("Inner West Council");
   await pageOne.getByLabel("Client", { exact: true }).press("Enter");
   await expect(pageOne.locator(".rfp-source")).toHaveCount(0);
-  await expect(pageOne.locator('[data-control="fact:client"]')).toContainText("Inner West Council");
+  await expect(pageOne.getByLabel("Client", { exact: true })).toHaveValue("Inner West Council");
   await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toHaveCount(0);
   // An unset row waits behind "more", as on the Profile card.
   const site = pageOne.getByRole("group", { name: "Site and planning", exact: true });
   await expect(site.getByRole("button", { name: /^\+ \d+ more$/ })).toHaveCount(0);
-  await site.getByRole("button", { name: "Zone: —. Change", exact: true }).click();
   await site.getByLabel("Zone", { exact: true }).fill("R2");
   await site.getByLabel("Zone", { exact: true }).press("Enter");
-  await expect(pageOne.locator('[data-control="fact:zone"]')).toContainText("R2");
+  await expect(site.getByLabel("Zone", { exact: true })).toHaveValue("R2");
   // A condition that does not block issue is answered in Profile, not here.
   await expect(pageOne.locator('[data-control="fact:flag.country"]')).toHaveCount(0);
   await page.screenshot({ path: "../.tools/rfp-report-editing.png", fullPage: true });
@@ -171,10 +179,8 @@ test("electrical keeps its allocation schedule beside grouped positions, with se
   await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Assemble draft", exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Use last completed state", exact: true })).toHaveCount(0);
-  await page.getByRole("button", { name: "Edit 4. Allowances", exact: true }).click();
-  const allowances = page.getByRole("group", { name: "Edit allowances" });
-  await expect(allowances.getByLabel("Design meetings", { exact: true })).toHaveValue("4");
-  await expect(allowances.getByLabel("Design review rounds", { exact: true })).toHaveValue("1");
+  await expect(page.getByLabel("Design meetings quantity", { exact: true })).toHaveValue("4");
+  await expect(page.getByLabel("Design review rounds quantity", { exact: true })).toHaveValue("1");
   await page.screenshot({ path: "../.tools/electrical-simplified-desktop.png", fullPage: true });
   const scope = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "2. Scope of services", exact: true }) });
   // Allocation notes sit with their service inside the opened stage.

@@ -318,11 +318,11 @@ allowances:
         evidence, ref: "architecture#64"}]}
 - {key: concept_options, label: Concept options, text: "{n}", default: "2", owner: client, provenance: [{kind: 
         evidence, ref: "architecture#10"}, {kind: evidence, ref: "architecture#20"}]}
-- {key: client_presentations, label: Client presentations, text: "{n}", owner: client, provenance: [{kind: evidence, 
+- {key: client_presentations, label: Client presentations, text: "{n}", default: "2", owner: client, provenance: [{kind: evidence, 
         ref: "architecture#34"}]}
 - {key: renders, label: Working 3D views, text: "{n}", default: "1", owner: client, provenance: [{kind: evidence, 
         ref: "architecture#15"}, {kind: evidence, ref: "architecture#45"}]}
-- {key: issues_per_stage, label: Issues per stage, text: "{n} draft and 1 final", default: "1", owner: client, 
+- {key: issues_per_stage, label: Issues per stage, text: "{n} drafts, then 1 final", default: "1", owner: client, 
     provenance: [{kind: evidence, ref: "architecture#41"}, {kind: evidence, ref: "architecture#90"}]}
 - {key: site_visits, label: "Site visits, design stages", text: "{n}", default: "2", owner: client, provenance: [{
         kind: evidence, ref: "architecture#5"}, {kind: evidence, ref: "architecture#60"}]}
@@ -335,12 +335,12 @@ allowances:
 - {key: drawing_sheets, label: Drawing sheets at planning, text: "{n}, indicative; list them in R2", default: "12", 
     owner: consultant, when: [{stage: [planning], pathway: [cdc, da, ssd, planning_permit, ref, modification]}], 
     provenance: [{kind: evidence, ref: "architecture#45"}]}
-- {key: planning_cap, label: Planning response ceiling, text: "{n} hours", owner: client, when: [{stage: [planning], 
+- {key: planning_cap, label: Planning response ceiling, text: "{n} hours", default: "20", owner: client, when: [{stage: [planning], 
         pathway: [da, ssd, planning_permit, modification]}], provenance: [{kind: evidence, ref: "architecture#53"}]}
 - {key: bidding_cap, label: Bidding ceiling, text: "{n} hours", default: "40", owner: client, when: [{stage: [
           tender_documentation], procurement: [traditional, managing_contractor]}], provenance: [{kind: evidence, 
         ref: "architecture#81"}]}
-- {key: ca_inspections, label: Construction site inspections, text: "{n}", owner: client, when: [{stage: [delivery], 
+- {key: ca_inspections, label: Construction site inspections, text: "{n}", default: "12", owner: client, when: [{stage: [delivery], 
         procurement: [traditional, managing_contractor, eci, alliance, ppp]}], provenance: [{kind: practice, ref: "architectural-services-guide.md
         (construction and completion)"}]}
 
@@ -358,7 +358,7 @@ positions:
 - {group: "Brief and design coordination", key: consultant_selection, stage: [brief_concept], label: "Help selecting other
     consultants", kind: service_level, simple: O, complex: O, provenance: [{kind: evidence, ref: "architecture#4"}]}
 - {group: "Design documentation and models", key: bim_model, stage: [design_development], module: beyond_house, 
-    label: "BIM model issued to the design team (level in section 4)", kind: service_level, simple: I, complex: I, 
+    label: "BIM model issued to the design team (level in section 3)", kind: service_level, simple: I, complex: I, 
     provenance: [{kind: evidence, ref: "architecture#138-140"}]}
 - {group: "Design documentation and models", key: bim_coordination, stage: [design_development], module: 
     beyond_house, label: "BIM coordination meetings, clash detection", kind: service_level, simple: X, complex: O, 

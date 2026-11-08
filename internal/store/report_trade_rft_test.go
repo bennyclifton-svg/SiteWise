@@ -155,7 +155,7 @@ func TestTradeRFTUsesTheRFPFormat(t *testing.T) {
 		t.Fatalf("supply RFT %q", sv.RFP.Discipline)
 	}
 	acoustic := create("consultant.acoustic", "Acoustic")
-	if _, av := open(acoustic); av.RFP.Discipline != "consultant-general" || !strings.Contains(text(av), "Appointment: Acoustic.") || !strings.Contains(text(av), "2. Scope of services") {
+	if _, av := open(acoustic); av.RFP.Discipline != "consultant-general" || !strings.Contains(text(av), "Your job is to give the project") || !strings.Contains(text(av), "2. Scope of services") {
 		t.Fatalf("acoustic RFP %q:\n%s", av.RFP.Discipline, text(av))
 	}
 

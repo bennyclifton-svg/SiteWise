@@ -217,6 +217,7 @@ allowances_note: Complete quantities/extent before issue; return gaps and price 
   coverage. Fixed fee, time ceiling or unit rate with quantity; estimated totals are not fixed fees.
 allowances:
 - key: features
+  default: "1"
   text: '{n} survey areas; marked plan/revision/area, contours/levels, rooms/floors, roofs/elevations, adjoining windows/trees;
     accuracy by feature'
   provenance:
@@ -230,6 +231,7 @@ allowances:
   label: Extent / features
   owner: client
 - key: control
+  default: "3"
   text: '{n} control marks; datum checks, titles/lots/DPs/instruments, boundary length/points and plan/report types'
   provenance:
   - kind: evidence
@@ -239,6 +241,7 @@ allowances:
   label: Control / cadastral
   owner: client
 - key: visits
+  default: "2"
   text: '{n} visits; crew/hours/shifts, simultaneous specialists, permissions/inductions/traffic/access equipment/shutdowns
     by party'
   provenance:
@@ -247,6 +250,7 @@ allowances:
   label: Visits / access
   owner: client
 - key: services
+  default: "4"
   text: '{n} pits; service areas/lengths/types, methods, pipe runs/tanks, exposures/depths and inaccessible-feature contingency'
   provenance:
   - kind: evidence
@@ -258,8 +262,8 @@ allowances:
   owner: client
   when: [{stage: [brief_concept], flag: [survey_services]}]
 - key: issues
-  text: '{n} PDF/CAD/data issues; point-cloud format/extent, review rounds, meetings/duration, query-hour ceiling and
-    revisions'
+  default: "2"
+  text: "{n} data issues (PDF/CAD); point-cloud format/extent, review rounds, meetings/duration, query-hour ceiling and revisions"
   provenance:
   - kind: evidence
     ref: land-surveying#11
@@ -271,8 +275,8 @@ allowances:
   label: Issues / review
   owner: client
 - key: setout
-  text: '{n} visits/hold points; elements/points, booking notice, independent checks, control reinstatement/reinspection
-    basis'
+  default: "2"
+  text: "{n} set-out visits; hold points, elements/points, booking notice, independent checks, control reinstatement/reinspection basis"
   provenance:
   - kind: seed
     ref: land-surveying#23,25,26
@@ -283,6 +287,7 @@ allowances:
   owner: client
   when: [stage: [delivery]]
 - key: monitoring
+  default: "4"
   text: '{n} rounds; baseline/date, marks, frequency/duration, reports, accuracy/environmental limits and engineer trigger/action
     plan'
   provenance:
@@ -295,7 +300,8 @@ allowances:
   owner: client
   when: [stage: [delivery]]
 - key: completion
-  text: '{n} plans/certificates; areas/assets, lots/units/easements, submission rounds, final data and endpoint'
+  default: "1"
+  text: "{n} plans/certificates; areas/assets, lots/units/easements, submission rounds, final data and endpoint"
   provenance:
   - kind: seed
     ref: land-surveying#25,26

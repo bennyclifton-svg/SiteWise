@@ -57,25 +57,25 @@ Select base/options and named end; operational and C&D plans are separate purcha
 | Reimbursables | Included in the fee, or each item with its rate (R9) |  |  |
 | Total fee | Included stages and reimbursables |  |  |
 
-### 3. Transmittal
+### 3. Allowances
+
+Allocate counts to each selected stage/service below, not every category. Complete quantities or authorised assumption with owner/date/consequence; fixed fee, time ceiling or unit/quantity; separate options/package dependencies.
+
+| Item | Allowance | Qty |
+|---|---|---|
+| Physical coverage | Buildings; tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence | 2 |
+| Plans / rounds | Plans (operational and C&D); draft/final issues, consolidated reviews, revisions, authority forms/responses | 2 |
+| Coordination | Meetings per stage; duration/location, council/operator consultations, RFI ceiling and tender period | 2 |
+| Design / testing | Waste rooms; equipment drawings, vehicle/layout tests and specialist investigations; name separate providers | 2 |
+| Site / completion | Site visits; revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational reviews | 2 |
+| Duration / extras | Months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit units | 2 |
+
+### 4. Transmittal
 
 Dated use/occupancy and stream schedule, plans/sections, contractor quantities and collection confirmation owners. Fixture quantities are client choices, not generation-rate defaults.
 
 | Doc number | Title | Rev | Date | Discipline |
 |---|---|---|---|---|
-
-### 4. Allowances
-
-Allocate counts to each selected stage/service below, not every category. Complete quantities or authorised assumption with owner/date/consequence; fixed fee, time ceiling or unit/quantity; separate options/package dependencies.
-
-| Item | Allowance |
-|---|---|
-| Physical coverage | 2 buildings/tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence |
-| Plans / rounds | 2 operational/C&D plans, draft/final issues, consolidated reviews, revisions, authority forms/responses |
-| Coordination | 2 meetings by stage/duration/location; council/operator consultations, RFI ceiling and tender period |
-| Design / testing | 2 equipment rooms/drawings, vehicle/layout tests and specialist investigations; name separate providers |
-| Site / completion | 2 visits/revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational reviews |
-| Duration / extras | 2 months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit units |
 
 ### 5. Terms
 

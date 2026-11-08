@@ -61,13 +61,16 @@ func TestElectricalPricingDefaultsAndLegacyCounts(t *testing.T) {
 	settings["boundary:range"] = set("x", `{"start":"brief_concept","end":"delivery"}`)["x"]
 	settings["stage:delivery"] = set("x", `"include"`)["x"]
 	r = Resolve(d, sk, drivers, settings)
-	found = false
-	for _, c := range r.Checks {
-		if c.ID == "allowance:construction_visits" && c.Blocking {
-			found = true
+	// Every allowance opens at a default (owner, 8 November 2026), so a
+	// base construction appointment specifies its visits without a check.
+	for _, a := range r.Allowances {
+		if a.Key == "construction_visits" && (a.Value != "4" || a.Source != "default") {
+			t.Fatalf("construction visits = %+v, want default 4", a)
 		}
 	}
-	if !found {
-		t.Fatal("base construction appointment must specify visits")
+	for _, c := range r.Checks {
+		if c.ID == "allowance:construction_visits" {
+			t.Fatalf("defaulted visits still raise a check: %+v", c)
+		}
 	}
 }

@@ -38,29 +38,30 @@ func (b *builder) consultantLayout() {
 		}
 	}
 	project.Blocks = keptProject
-	// The stage table and the service positions are parts of section 2, so
-	// every RFP numbers 1 Project to 5 Terms whichever scope layout it uses.
-	// A document with no allowances (most trade RFTs) leaves that section
-	// out and numbers Terms 4.
+	// The stage table and the service positions are parts of section 2.
+	// Allowances follow the scope they quantify, then the documents supplied,
+	// then the terms (owner direction, 8 November 2026): 1 Project,
+	// 2 Scope, 3 Allowances, 4 Transmittal, 5 Terms. A document with no
+	// allowances (most trade RFTs) numbers Transmittal 3 and Terms 4.
 	w := b.words()
 	b.section["role"].Title = "2. " + w.scope
 	b.section["stages"].Title = w.stages
 	b.section["positions"].Title = w.positions
-	b.section["transmittal"].Title = "3. Transmittal"
-	terms := 5
+	next := 3
 	if len(b.r.Allowances) == 0 {
 		delete(b.section, "allowances")
-		terms = 4
 	} else {
-		b.section["allowances"].Title = "4. Allowances"
+		b.section["allowances"].Title = "3. Allowances"
+		next = 4
 	}
-	b.section["terms"].Title = strconv.Itoa(terms) + ". Terms"
-	ids := []string{"project", "role", "stages", "positions", "transmittal", "allowances", "terms", "returnables", "issue_dates"}
+	b.section["transmittal"].Title = strconv.Itoa(next) + ". Transmittal"
+	b.section["terms"].Title = strconv.Itoa(next+1) + ". Terms"
+	ids := []string{"project", "role", "stages", "positions", "allowances", "transmittal", "terms", "returnables", "issue_dates"}
 	if b.r.ScopeByStage {
 		// One table straight under the scope wording: each stage with its
 		// services beneath it (owner direction, 2 November 2026).
 		b.section["role"].Blocks = append(b.section["role"].Blocks, b.section["stages"].Blocks...)
-		ids = []string{"project", "role", "transmittal", "allowances", "terms", "returnables", "issue_dates"}
+		ids = []string{"project", "role", "allowances", "transmittal", "terms", "returnables", "issue_dates"}
 	}
 
 	b.order = []string{}
