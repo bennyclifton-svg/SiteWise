@@ -62,15 +62,12 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent | Fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces | 2 |
-| Visits/tests | Site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis | 2 |
-| Design | Design iterations; options/supply cases/calculation scenarios/packages, maturity and native files | 2 |
-| Coordination | Meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer | 2 |
-| Tender | Tender packages; RFI hours/addenda/comparisons/reviews | 2 |
-| Construction | Months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response | 2 |
-| Completion | Witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent: fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces | 2 | Tender: tender packages; RFI hours/addenda/comparisons/reviews | 2 |
+| Visits/tests: site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis | 2 | Construction: months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response | 2 |
+| Design: design iterations; options/supply cases/calculation scenarios/packages, maturity and native files | 2 | Completion: witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests | 2 |
+| Coordination: meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer | 2 |  |  |
 
 ### 4. Transmittal
 

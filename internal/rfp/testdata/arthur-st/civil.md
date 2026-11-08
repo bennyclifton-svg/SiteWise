@@ -90,18 +90,13 @@ Each design stage is issued as one draft and one final. Design stages are priced
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Design meetings | Per design stage, up to 2 hours, online | 10 |
-| Authority meetings |  | 3 |
-| Site visits during design |  | 2 |
-| Architect layouts reviewed |  | 4 |
-| Civil concept options | Then one agreed | 2 |
-| Drawing revisions before lodgement |  | 2 |
-| Authority requests in assessment | Response(s) | 1 |
-| Construction inspections |  | 6 |
-| Construction RFIs | Hours | 10 |
-| Construction certificate inputs | And 1 occupation certificate | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Design meetings: per design stage, up to 2 hours, online | 10 | Drawing revisions before lodgement | 2 |
+| Authority meetings | 3 | Authority requests in assessment: response(s) | 1 |
+| Site visits during design | 2 | Construction inspections | 6 |
+| Architect layouts reviewed | 4 | Construction RFIs: hours | 10 |
+| Civil concept options: then one agreed | 2 | Construction certificate inputs: and 1 occupation certificate | 2 |
 
 ### 4. Transmittal
 

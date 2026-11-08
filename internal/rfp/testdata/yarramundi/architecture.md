@@ -101,19 +101,14 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Design meetings | Per stage, online or in person | 4 |
-| Concept options |  | 2 |
-| Client presentations |  | 4 |
-| Working 3D views |  | 1 |
-| Issues per stage | Drafts, then 1 final | 1 |
-| Site visits, design stages |  | 2 |
-| Stakeholder workshops |  | 1 |
-| QS cost plan reviews | At schematic, design development and pre-tender | 3 |
-| BIM level of detail | LOD | 300 |
-| Drawing sheets at planning | Indicative; list them in R2 | 12 |
-| Planning response ceiling | Hours | 40 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Design meetings: per stage, online or in person | 4 | Stakeholder workshops | 1 |
+| Concept options | 2 | QS cost plan reviews: at schematic, design development and pre-tender | 3 |
+| Client presentations | 4 | BIM level of detail: LOD | 300 |
+| Working 3D views | 1 | Drawing sheets at planning: indicative; list them in R2 | 12 |
+| Issues per stage: drafts, then 1 final | 1 | Planning response ceiling: hours | 40 |
+| Site visits, design stages | 2 |  |  |
 
 ### 4. Transmittal
 

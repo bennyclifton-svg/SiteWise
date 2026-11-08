@@ -60,16 +60,12 @@ From written instruction/inputs/access to named final issue/handover, with agree
 
 Complete quantities/extent before issue; return gaps and price alternatives without reducing coverage. Fixed fee, time ceiling or unit rate with quantity; estimated totals are not fixed fees.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent / features | Survey areas; marked plan/revision/area, contours/levels, rooms/floors, roofs/elevations, adjoining windows/trees; accuracy by feature | 2 |
-| Control / cadastral | Control marks; datum checks, titles/lots/DPs/instruments, boundary length/points and plan/report types | 2 |
-| Visits / access | Visits; crew/hours/shifts, simultaneous specialists, permissions/inductions/traffic/access equipment/shutdowns by party | 2 |
-| Underground assets | Pits; service areas/lengths/types, methods, pipe runs/tanks, exposures/depths and inaccessible-feature contingency | 2 |
-| Issues / review | Data issues (PDF/CAD); point-cloud format/extent, review rounds, meetings/duration, query-hour ceiling and revisions | 2 |
-| Set-out option | Set-out visits; hold points, elements/points, booking notice, independent checks, control reinstatement/reinspection basis | 2 |
-| Monitoring option | Rounds; baseline/date, marks, frequency/duration, reports, accuracy/environmental limits and engineer trigger/action plan | 2 |
-| Completion / titling | Plans/certificates; areas/assets, lots/units/easements, submission rounds, final data and endpoint | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent / features: survey areas; marked plan/revision/area, contours/levels, rooms/floors, roofs/elevations, adjoining windows/trees; accuracy by feature | 2 | Issues / review: data issues (PDF/CAD); point-cloud format/extent, review rounds, meetings/duration, query-hour ceiling and revisions | 2 |
+| Control / cadastral: control marks; datum checks, titles/lots/DPs/instruments, boundary length/points and plan/report types | 2 | Set-out option: set-out visits; hold points, elements/points, booking notice, independent checks, control reinstatement/reinspection basis | 2 |
+| Visits / access: visits; crew/hours/shifts, simultaneous specialists, permissions/inductions/traffic/access equipment/shutdowns by party | 2 | Monitoring option: rounds; baseline/date, marks, frequency/duration, reports, accuracy/environmental limits and engineer trigger/action plan | 2 |
+| Underground assets: pits; service areas/lengths/types, methods, pipe runs/tanks, exposures/depths and inaccessible-feature contingency | 2 | Completion / titling: plans/certificates; areas/assets, lots/units/easements, submission rounds, final data and endpoint | 2 |
 
 ### 4. Transmittal
 

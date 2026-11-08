@@ -84,16 +84,12 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. A line marke
 
 **Allowances**: Separate quantities/durations for each item/system/stage. Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent | Building parts; areas/rooms/zones/assets, retained/new/removed, shell/fit-out and tenancy limits | 1 |
-| Investigation | Site visits; hours, tests/logging points/days/openings, method/operator/safety/isolation/reinstatement | 2 |
-| Design | Design iterations; options/load scenarios/calculation packages/issues, maturity/native files | 2 |
-| Coordination | Meetings; hours, interface reviews/submissions/responses; author/submitter/payer | 6 |
-| Tender | Tender packages; tenderers/comparisons/RFI hours/addenda/rounds | 1 |
-| Construction | Months; design updates/submittals/rounds/RFI hours/visits/reports; notice/response | 12 |
-| Completion | Witness test sessions; scripts/systems/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds | 2 |
-| Access | Shutdowns; phases/out-of-hours/handbacks, temporary ventilation, permissions/abortive basis | 1 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent: building parts; areas/rooms/zones/assets, retained/new/removed, shell/fit-out and tenancy limits | 1 | Tender: tender packages; tenderers/comparisons/RFI hours/addenda/rounds | 1 |
+| Investigation: site visits; hours, tests/logging points/days/openings, method/operator/safety/isolation/reinstatement | 2 | Construction: months; design updates/submittals/rounds/RFI hours/visits/reports; notice/response | 12 |
+| Design: design iterations; options/load scenarios/calculation packages/issues, maturity/native files | 2 | Completion: witness test sessions; scripts/systems/hours/checks/points/modes/tests/retests/handovers/O&M/training/defect/seasonal rounds | 2 |
+| Coordination: meetings; hours, interface reviews/submissions/responses; author/submitter/payer | 6 | Access: shutdowns; phases/out-of-hours/handbacks, temporary ventilation, permissions/abortive basis | 1 |
 
 ### 2.2 Electrical services
 
@@ -144,11 +140,10 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. A line marke
 
 **Allowances**: Editable client defaults: 4 design meetings per appointed design stage, 1 consolidated review round per design stage and 1 investigation visit when commissioned. These are pricing assumptions, not measured project quantities. Price later stages separately. In R1/R2, identify the affected buildings and systems from the supplied project information; list assets, tests, durations, authority fees and specialist services separately, with assumptions and excess rates. Do not apply a single count to different units. Agree unresolved scope before the affected work starts.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Design meetings | Per appointed design stage (editable client default) | 4 |
-| Design review rounds | Consolidated client review round per design stage (editable client default) | 1 |
-| Construction inspections | Hold-point visits; firm states duration, review support and excess rates separately | 4 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Design meetings: per appointed design stage (editable client default) | 4 | Construction inspections: hold-point visits; firm states duration, review support and excess rates separately | 4 |
+| Design review rounds: consolidated client review round per design stage (editable client default) | 1 |  |  |
 
 ### 2.3 Hydraulic services
 
@@ -218,16 +213,12 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 
 **Allowances**: Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption: owner/date/consequence/review point.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent | Building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed | 1 |
-| Investigation | Site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners | 2 |
-| Design | Design iterations; options/calculations/control modes/drawing issues/native maturity | 2 |
-| Approvals | Meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer | 4 |
-| Tender | Tender packages; comparisons/RFI hours/addenda/rounds | 1 |
-| Support | Months; submittals/RFI hours/updates/hold-point visits/reports; notice/response | 12 |
-| Completion | Witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training | 2 |
-| Staging | Shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation | 1 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent: building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed | 1 | Tender: tender packages; comparisons/RFI hours/addenda/rounds | 1 |
+| Investigation: site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners | 2 | Support: months; submittals/RFI hours/updates/hold-point visits/reports; notice/response | 12 |
+| Design: design iterations; options/calculations/control modes/drawing issues/native maturity | 2 | Completion: witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training | 2 |
+| Approvals: meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer | 4 | Staging: shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation | 1 |
 
 ### 2.4 Fire services
 
@@ -298,15 +289,12 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 **Allowances**: Separate quantity/duration by item, system and stage (not one pooled count). Fixed fee, time ceiling or unit rate; assumptions need owner/date/consequence/review point.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent | Fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces | 2 |
-| Visits/tests | Site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis | 2 |
-| Design | Design iterations; options/supply cases/calculation scenarios/packages, maturity and native files | 2 |
-| Coordination | Meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer | 6 |
-| Tender | Tender packages; RFI hours/addenda/comparisons/reviews | 1 |
-| Construction | Months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response | 12 |
-| Completion | Witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent: fire systems; parts/areas/zones/assets, retained/new network lengths, tenant boundaries and interfaces | 2 | Tender: tender packages; RFI hours/addenda/comparisons/reviews | 1 |
+| Visits/tests: site visits; hours, test type/location/operator, openings/access/shutdown/water disposal/reinstatement; out-of-hours/abortive basis | 2 | Construction: months; RFI hours/submittals/reviews/hold-point visits/reports; notice/response | 12 |
+| Design: design iterations; options/supply cases/calculation scenarios/packages, maturity and native files | 2 | Completion: witness test sessions; scripts/rounds, hours/modes/retests, certificate packages/handovers, O&M/as-built/defect rounds, deferred tests | 2 |
+| Coordination: meetings; duration, interface reviews, submissions/responses; author/submitter/applicant/payer | 6 |  |  |
 
 **Within this engagement**: Other disciplines' scopes in this engagement give these items to you. They are part of your fee and are priced once.
 - Design fire-water systems and fire strategy. Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections. (from the Hydraulic services scope; within this engagement)

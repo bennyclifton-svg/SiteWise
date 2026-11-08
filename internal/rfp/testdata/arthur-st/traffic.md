@@ -74,14 +74,11 @@ Price each stage that applies as a lump sum; surveys are priced per location. R1
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Plan revisions assessed |  | 1 |
-| Report drafts | Drafts, then 1 final | 1 |
-| Design team meetings | Online | 3 |
-| Site inspections |  | 1 |
-| Authority responses |  | 1 |
-| Authority meetings |  | 1 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Plan revisions assessed | 1 | Site inspections | 1 |
+| Report drafts: drafts, then 1 final | 1 | Authority responses | 1 |
+| Design team meetings: online | 3 | Authority meetings | 1 |
 
 ### 4. Transmittal
 

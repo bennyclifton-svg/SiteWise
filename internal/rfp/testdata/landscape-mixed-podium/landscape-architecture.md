@@ -68,15 +68,12 @@ Select base/options and end; later stages require instruction. Fit-out without l
 
 Complete a separate quantity/basis for each listed item by selected stage; grouped entries are not a common count. Record authorised assumptions (owner/date/consequence/review). Fixed fee, ceiling or unit/quantity; options separate; written authority before overruns.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent / concepts | Concept options; sites/areas/stages/public packages, map/revision | 2 |
-| Visits / tests | Site visits; duration, test locations/method/lab, access, locating and reinstatement owner | 2 |
-| Design / approvals | Workshops; duration, draft/final issues, reviews and authority responses/hours/end | 2 |
-| Tender / substitutions | Tender packages; queries/ceiling, submittals/substitutions and post-contract stages | 2 |
-| Works / completion | Works visits (stock, hold point, completion, revisit); purpose/duration, notice/report turnaround | 2 |
-| Establishment | Months/start event; visits/timing/duration, logs, replacements/reinspection and recipient/criteria | 2 |
-| Duration / extras | Base months; extra visit/round/hour, travel/out-of-hours/callout/cancellation/delay/remobilisation | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent / concepts: concept options; sites/areas/stages/public packages, map/revision | 2 | Works / completion: works visits (stock, hold point, completion, revisit); purpose/duration, notice/report turnaround | 2 |
+| Visits / tests: site visits; duration, test locations/method/lab, access, locating and reinstatement owner | 2 | Establishment: months/start event; visits/timing/duration, logs, replacements/reinspection and recipient/criteria | 2 |
+| Design / approvals: workshops; duration, draft/final issues, reviews and authority responses/hours/end | 2 | Duration / extras: base months; extra visit/round/hour, travel/out-of-hours/callout/cancellation/delay/remobilisation | 2 |
+| Tender / substitutions: tender packages; queries/ceiling, submittals/substitutions and post-contract stages | 2 |  |  |
 
 ### 4. Transmittal
 

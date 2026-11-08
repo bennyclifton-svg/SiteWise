@@ -50,14 +50,11 @@ Confirm base stages, inputs and final query-period end; later services require w
 
 Complete counts before issue. Fixed fee, time ceiling or unit rate with quantity; options separately totalled. Construction provisional sums do not authorise consultant fees.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Plans / options | Cost issues; stages/buildings/packages, alternatives, maturity/quantity basis and total-project extent | 2 |
-| Review / meetings | Feedback rounds; draft/final issues, meetings/duration, authority discussions and advice-hour ceiling | 2 |
-| Visits / access | Site visits; hours, sites/areas, access/induction/travel and named specialist investigations; no hidden-work verification | 2 |
-| Tender services | Tender packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues | 2 |
-| Post-contract / completion | Months; claims/variations or hours ceiling, reports/visits, final-account rounds, defects/retention period and extension rates | 2 |
-| Specialist options | Specialist reports; scenarios, purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Plans / options: cost issues; stages/buildings/packages, alternatives, maturity/quantity basis and total-project extent | 2 | Tender services: tender packages; bills/schedules/tenders, clarification/interview hours and reconciliation issues | 2 |
+| Review / meetings: feedback rounds; draft/final issues, meetings/duration, authority discussions and advice-hour ceiling | 2 | Post-contract / completion: months; claims/variations or hours ceiling, reports/visits, final-account rounds, defects/retention period and extension rates | 2 |
+| Visits / access: site visits; hours, sites/areas, access/induction/travel and named specialist investigations; no hidden-work verification | 2 | Specialist options: specialist reports; scenarios, purpose/extent/horizon, drawdowns, reliance users and extra inputs/inspections | 2 |
 
 ### 4. Transmittal
 

@@ -71,17 +71,13 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Project design meetings | Of up to 2 hours including preparation and travel | 2 |
-| Site inspections |  | 1 |
-| Reviews of draft plans | Preliminary reviews, then 1 consolidated set before lodgement | 1 |
-| Report drafts | Drafts, then 1 client review and 1 final | 1 |
-| Report updates after plan revisions |  | 1 |
-| Pre-lodgement meetings |  | 1 |
-| Authority information requests | Response(s) | 1 |
-| Authority meetings in assessment |  | 1 |
-| Planning panel meetings |  | 1 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Project design meetings: of up to 2 hours including preparation and travel | 2 | Pre-lodgement meetings | 1 |
+| Site inspections | 1 | Authority information requests: response(s) | 1 |
+| Reviews of draft plans: preliminary reviews, then 1 consolidated set before lodgement | 1 | Authority meetings in assessment | 1 |
+| Report drafts: drafts, then 1 client review and 1 final | 1 | Planning panel meetings | 1 |
+| Report updates after plan revisions | 1 |  |  |
 
 ### 4. Transmittal
 

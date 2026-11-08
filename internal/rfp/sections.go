@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"unicode"
 
 	"sitewise/internal/knowledge"
 	"sitewise/internal/reports"
@@ -254,11 +255,35 @@ func (b *builder) role() {
 func (b *builder) stages() { b.consultantStages() }
 
 func (b *builder) allowances() {
-	rows := [][]string{}
-	for _, a := range b.r.Allowances {
-		rows = append(rows, []string{a.Label, a.Detail, allowanceQty(a)})
+	// Two pairs of columns (owner direction, 8 November 2026): read down
+	// the left pair, then the right, so the table takes half the length.
+	half := (len(b.r.Allowances) + 1) / 2
+	rows := make([][]string, half)
+	for i, a := range b.r.Allowances {
+		row := i % half
+		if rows[row] == nil {
+			rows[row] = []string{"", "", "", ""}
+		}
+		col := 0
+		if i >= half {
+			col = 2
+		}
+		rows[row][col], rows[row][col+1] = allowanceItem(a), allowanceQty(a)
 	}
-	b.add("allowances", "rfp:allowances", "", b.r.AllowNote, doc([]string{"Item", "Allowance", "Qty"}, rows), map[string]any{"allowances": b.r.Allowances})
+	b.add("allowances", "rfp:allowances", "", b.r.AllowNote, doc([]string{"Item", "Qty", "Item", "Qty"}, rows), map[string]any{"allowances": b.r.Allowances, "layout": "allowance_pairs"})
+}
+
+// allowanceItem is an allowance's item cell: its label, then what it covers.
+func allowanceItem(a AllowanceResult) string {
+	if a.Detail == "" {
+		return a.Label
+	}
+	detail := a.Detail
+	// "Per stage" reads on as "per stage"; an acronym such as "LOD" keeps its case.
+	if r := []rune(detail); len(r) > 1 && unicode.IsUpper(r[0]) && unicode.IsLower(r[1]) {
+		detail = string(unicode.ToLower(r[0])) + string(r[1:])
+	}
+	return a.Label + ": " + detail
 }
 
 // allowanceQty is the Qty cell: the count, a blank to fill, or a note that

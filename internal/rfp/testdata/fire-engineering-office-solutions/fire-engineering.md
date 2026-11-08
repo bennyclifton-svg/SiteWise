@@ -54,15 +54,12 @@ Start on instruction/agreed inputs; end at named output/response. Price once. R1
 
 Counts by solution/stage, unit/duration; fixed fee, time ceiling or unit rate. Authorised assumptions need owner/date/consequence/review point.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Solution schedule | Performance solutions; each with part/extent, departure, method/criteria, revision/dependencies/package; distinguish grouped subissues | 2 |
-| Analysis / modelling | Scenarios per solution/method; sensitivities, iterations/alternatives, checks and change unit | 2 |
-| Issues / consultation | Issues per report; team/authority rounds, workshops/duration, updates; package author/submitter/applicant/payer, response end | 2 |
-| Evidence / access | Site visits; areas/hours, tests/openings by location, access/shutdown/reinstatement owner; inaccessible-work options | 2 |
-| Tender / construction | Hold-point visits; packages/cycles, RFI hours, duration, dates/notice/response, abortive/out-of-hours basis | 2 |
-| Verification | Completion stages; certificates/scripts, witness sessions/duration, retests/reports, defect endpoint | 2 |
-| Other options | Optional rounds (interim phase, specialist or peer review); advisory cutoff/post-contract period; services-review extent/meetings | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Solution schedule: performance solutions; each with part/extent, departure, method/criteria, revision/dependencies/package; distinguish grouped subissues | 2 | Tender / construction: hold-point visits; packages/cycles, RFI hours, duration, dates/notice/response, abortive/out-of-hours basis | 2 |
+| Analysis / modelling: scenarios per solution/method; sensitivities, iterations/alternatives, checks and change unit | 2 | Verification: completion stages; certificates/scripts, witness sessions/duration, retests/reports, defect endpoint | 2 |
+| Issues / consultation: issues per report; team/authority rounds, workshops/duration, updates; package author/submitter/applicant/payer, response end | 2 | Other options: optional rounds (interim phase, specialist or peer review); advisory cutoff/post-contract period; services-review extent/meetings | 2 |
+| Evidence / access: site visits; areas/hours, tests/openings by location, access/shutdown/reinstatement owner; inaccessible-work options | 2 |  |  |
 
 ### 4. Transmittal
 

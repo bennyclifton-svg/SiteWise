@@ -97,13 +97,11 @@ Price each stage that applies as a lump sum. Each stage ends at client sign-off.
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Design meetings | Per stage | 4 |
-| Site visits | At concept, then 1 at design development | 1 |
-| Authority requests in assessment | Response(s) | 1 |
-| Peer review or certifier rounds |  | 1 |
-| Construction inspections |  | 4 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Design meetings: per stage | 4 | Peer review or certifier rounds | 1 |
+| Site visits: at concept, then 1 at design development | 1 | Construction inspections | 4 |
+| Authority requests in assessment: response(s) | 1 |  |  |
 
 ### 4. Transmittal
 

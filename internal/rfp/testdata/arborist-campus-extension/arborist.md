@@ -55,13 +55,11 @@ Written instruction/agreed inputs to named output/response end. Price once acros
 
 Allocate counts by service/stage; each quantity needs its own unit/duration. Complete or authorise priced assumptions with owner/date/consequence/review point. Fixed fee, time ceiling or unit rate/quantity; options/dependencies separate.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Tree coverage | Trees by ID/ownership; additional trees, area/alternatives and ground visits/duration | 2 |
-| Reports / rounds | Report rounds (draft and final); plan issues, meetings/duration, authority responses and RFI ceiling | 2 |
-| Investigation / risk | Specialist investigations; methods/trees/samples, equipment/specialist hours, access/permits/locating/reinstatement and formal-risk extent | 2 |
-| Works / monitoring | Works visits (pre-start, hold point, completion); notice/callout and repeat-inspection duration/visits | 2 |
-| Period / extras | Service months; additional tree/visit/revision rates, travel/out-of-hours, delay/abortive visit/remobilisation | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Tree coverage: trees by ID/ownership; additional trees, area/alternatives and ground visits/duration | 2 | Works / monitoring: works visits (pre-start, hold point, completion); notice/callout and repeat-inspection duration/visits | 2 |
+| Reports / rounds: report rounds (draft and final); plan issues, meetings/duration, authority responses and RFI ceiling | 2 | Period / extras: service months; additional tree/visit/revision rates, travel/out-of-hours, delay/abortive visit/remobilisation | 2 |
+| Investigation / risk: specialist investigations; methods/trees/samples, equipment/specialist hours, access/permits/locating/reinstatement and formal-risk extent | 2 |  |  |
 
 ### 4. Transmittal
 

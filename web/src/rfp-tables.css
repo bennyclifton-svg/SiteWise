@@ -1,0 +1,44 @@
+/* RFP allowances and transmittal (owner direction, 8 November 2026): rows
+   as compact as the stage table's, no boxes inside cells. */
+
+/* Allowances: two pairs of columns, Item | Qty | Item | Qty. */
+.rfp-allowance-pairs { table-layout: fixed; font-size: var(--fs-md); }
+.rfp-allowance-pairs .rfp-al-qty-col { width: 96px; }
+.report-table.rfp-allowance-pairs :is(td, th) { padding: 3px 10px; vertical-align: middle; }
+/* One row height across the RFP's tables: a one-line row here matches a
+   stage table line (its tick boxes set that height). */
+:root { --rfp-row-h: 35px; }
+.report-table.rfp-allowance-pairs tbody tr, .rfp-stage-scope tbody tr.rfp-stage-line { height: var(--rfp-row-h); }
+.rfp-allowance-pairs td.rfp-al-item + td.rfp-al-qty + td.rfp-al-item { border-left: 2px solid var(--line-strong, var(--line)); }
+.report-table.rfp-allowance-pairs :is(th, td).rfp-al-qty { text-align: center; padding-left: 2px; padding-right: 2px; }
+.rfp-al-label { color: var(--ink); }
+/* What the item covers reads on, quieter, on the same line where it fits. */
+.rfp-al-detail { margin-left: 6px; color: var(--sw-text-secondary, var(--ink-muted)); }
+.rfp-allowance-pairs td[data-blocked] { background: color-mix(in oklab, var(--alert) 8%, transparent); }
+
+/* A quantity is a plain number between two small arrows: no borders. */
+.rfp-al-stepper { display: inline-flex; align-items: center; justify-content: center; gap: 0; }
+.rfp-allowance-pairs button.rfp-al-step { display: inline-grid; place-items: center; width: 18px; height: 22px; min-height: 0; min-width: 0; padding: 0; border: 0; border-radius: 0; background: none; color: var(--sw-text-secondary, var(--ink-muted)); font-size: 13px; line-height: 1; cursor: pointer; }
+.rfp-al-step:hover:not(:disabled) { color: var(--ink); background: var(--sw-hover-bg); }
+.rfp-al-step:focus-visible { outline: 1px solid var(--sw-selection-border, var(--line-strong)); outline-offset: -1px; }
+.rfp-al-step:disabled { opacity: .3; cursor: default; }
+.rfp-allowance-pairs input.rfp-al-value { box-sizing: border-box; width: 3.2em; height: 22px; min-height: 0; line-height: 22px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); font: inherit; text-align: center; font-variant-numeric: tabular-nums; }
+.rfp-allowance-pairs input.rfp-al-value:hover { background: var(--sw-hover-bg); }
+.rfp-allowance-pairs input.rfp-al-value:focus { outline: 1px solid var(--sw-selection-border, var(--line-strong)); outline-offset: -1px; background: var(--table-edit-bg); }
+.rfp-al-value::placeholder { color: var(--sw-text-tertiary); }
+
+/* Transmittal: its buttons sit in the section's blue band, and the table's
+   column heads sit directly under it, one header block. */
+.report-section:has(> .rfp-transmittal) { position: relative; }
+.rfp-transmittal .rfp-transmittal-heading { position: absolute; top: 0; right: 12px; height: 36px; display: flex; align-items: center; margin: 0; }
+.rfp-transmittal .rfp-transmittal-actions { margin: 0; }
+.rfp-transmittal .rfp-transmittal-actions .btn { height: 26px; font-size: var(--fs-xs); }
+.rfp-transmittal > .report-table-scroll { margin-top: 0; }
+.rfp-transmittal > .report-table-scroll > .rfp-transmittal-table { margin-top: 0; border-top: 0; }
+.rfp-transmittal > .report-wording { margin-top: 8px; }
+
+@media print {
+  .rfp-al-step { display: none !important; }
+  .rfp-al-value { width: auto; }
+  .rfp-transmittal .rfp-transmittal-heading { display: none; }
+}

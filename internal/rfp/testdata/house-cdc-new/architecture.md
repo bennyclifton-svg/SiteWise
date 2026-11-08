@@ -89,17 +89,13 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 Price exactly these. Work beyond an allowance needs a written instruction (section 5) and is then charged at your R3 rates.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Design meetings | Per stage, online or in person | 4 |
-| Concept options |  | 2 |
-| Client presentations |  | 2 |
-| Working 3D views |  | 1 |
-| Issues per stage | Drafts, then 1 final | 1 |
-| Site visits, design stages |  | 2 |
-| Drawing sheets at planning | Indicative; list them in R2 | 12 |
-| Bidding ceiling | Hours | 40 |
-| Construction site inspections |  | 6 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Design meetings: per stage, online or in person | 4 | Site visits, design stages | 2 |
+| Concept options | 2 | Drawing sheets at planning: indicative; list them in R2 | 12 |
+| Client presentations | 2 | Bidding ceiling: hours | 40 |
+| Working 3D views | 1 | Construction site inspections | 6 |
+| Issues per stage: drafts, then 1 final | 1 |  |  |
 
 ### 4. Transmittal
 

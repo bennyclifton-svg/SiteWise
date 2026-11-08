@@ -63,16 +63,12 @@ Base stages only, from written instruction/input-access milestone to the selecte
 
 Client completes the reconciled plan and quantities. Guaranteed work is separate from time permitting; return insufficiency and fee effects before issue.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Mobilisation | Mobilisations; allocate rigs/locators/excavators, hours/crew/permits/access/water/power | 2 |
-| Boreholes / cores | Boreholes; by location/method/depth, soil/rock metres, penetration/refusal and pavement thickness | 2 |
-| Pits / exposures | Test pits; by location/dimensions/depth, method, target evidence and stopping criteria | 2 |
-| In-situ / laboratory | Laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency; environmental suites separate | 2 |
-| Groundwater option | Optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning owner | 2 |
-| Reports / support | Reports; schedule draft/final/updates, review rounds, meetings/duration and RFI/planning hours | 2 |
-| Construction option | Inspections; schedule hold points, tests/reviews, booking notice, missed work and completion record | 2 |
-| Handback / waste | Repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal records and maintenance owner | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Mobilisation: mobilisations; allocate rigs/locators/excavators, hours/crew/permits/access/water/power | 2 | Groundwater option: optional monitoring visits; schedule spot readings, wells/loggers, tests, duration, updates and protection/decommissioning owner | 2 |
+| Boreholes / cores: boreholes; by location/method/depth, soil/rock metres, penetration/refusal and pavement thickness | 2 | Reports / support: reports; schedule draft/final/updates, review rounds, meetings/duration and RFI/planning hours | 2 |
+| Pits / exposures: test pits; by location/dimensions/depth, method, target evidence and stopping criteria | 2 | Construction option: inspections; schedule hold points, tests/reviews, booking notice, missed work and completion record | 2 |
+| In-situ / laboratory: laboratory tests; attach counts by suite/sample, method/accreditation/turnaround and in-situ type/location/frequency; environmental suites separate | 2 | Handback / waste: repair areas; surface/temporary/permanent standard; schedule spoil/fluid quantities, classification/disposal records and maintenance owner | 2 |
 
 ### 4. Transmittal
 

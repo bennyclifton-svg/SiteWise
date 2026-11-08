@@ -61,14 +61,11 @@ Select base/options and named end; operational and C&D plans are separate purcha
 
 Allocate counts to each selected stage/service below, not every category. Complete quantities or authorised assumption with owner/date/consequence; fixed fee, time ceiling or unit/quantity; separate options/package dependencies.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Physical coverage | Buildings; tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence | 2 |
-| Plans / rounds | Plans (operational and C&D); draft/final issues, consolidated reviews, revisions, authority forms/responses | 2 |
-| Coordination | Meetings per stage; duration/location, council/operator consultations, RFI ceiling and tender period | 2 |
-| Design / testing | Waste rooms; equipment drawings, vehicle/layout tests and specialist investigations; name separate providers | 2 |
-| Site / completion | Site visits; revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational reviews | 2 |
-| Duration / extras | Months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit units | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Physical coverage: buildings; tenancies/uses, rooms, streams, points/routes and staging packages; desktop versus measured evidence | 2 | Design / testing: waste rooms; equipment drawings, vehicle/layout tests and specialist investigations; name separate providers | 2 |
+| Plans / rounds: plans (operational and C&D); draft/final issues, consolidated reviews, revisions, authority forms/responses | 2 | Site / completion: site visits; revisits, areas/hold points, tracking samples/reporting periods, staged handovers and operational reviews | 2 |
+| Coordination: meetings per stage; duration/location, council/operator consultations, RFI ceiling and tender period | 2 | Duration / extras: months; access/travel/out-of-hours, delay/cancellation/remobilisation and extra review/meeting/room/visit units | 2 |
 
 ### 4. Transmittal
 

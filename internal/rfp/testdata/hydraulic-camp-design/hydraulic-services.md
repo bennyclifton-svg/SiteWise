@@ -70,16 +70,12 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 
 Quantify EACH item/system/stage separately: fixed fee, time ceiling or unit rate. Assumption: owner/date/consequence/review point.
 
-| Item | Allowance | Qty |
-|---|---|---|
-| Extent | Building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed | 2 |
-| Investigation | Site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners | 2 |
-| Design | Design iterations; options/calculations/control modes/drawing issues/native maturity | 2 |
-| Approvals | Meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer | 2 |
-| Tender | Tender packages; comparisons/RFI hours/addenda/rounds | 2 |
-| Support | Months; submittals/RFI hours/updates/hold-point visits/reports; notice/response | 2 |
-| Completion | Witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training | 2 |
-| Staging | Shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation | 2 |
+| Item | Qty | Item | Qty |
+|---|---|---|---|
+| Extent: building parts; fixtures/sources/tanks/pumps/meters/catchments/connections, retained/new/removed | 2 | Tender: tender packages; comparisons/RFI hours/addenda/rounds | 2 |
+| Investigation: site visits; CCTV lengths/traces/log points-days/samples/openings, test/access/isolation/lab/make-good owners | 2 | Support: months; submittals/RFI hours/updates/hold-point visits/reports; notice/response | 2 |
+| Design: design iterations; options/calculations/control modes/drawing issues/native maturity | 2 | Completion: witness test sessions; scripts/hours/samples/modes/retests/handovers/O&M rounds/training | 2 |
+| Approvals: meetings; hours/enquiries/applications/responses/landlord/Water Services Coordinator; author/submitter/payer | 2 | Staging: shutdowns; out-of-hours/temporary water-sanitation/handbacks/aborted/defect visits/observation | 2 |
 
 ### 4. Transmittal
 
