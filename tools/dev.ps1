@@ -86,11 +86,15 @@ if ($exists -ne '1') {
 }
 
 # The Go binary embeds web/dist.
+# npm.cmd, not npm: in PowerShell 7 "npm" resolves to the npm.ps1 shim,
+# which mangles "--prefix web" into "Unknown command: pm".
 if ($Build -or -not (Test-Path (Join-Path $Root 'web\dist\index.html'))) {
-    & npm --prefix web ci
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-    & npm --prefix web run build
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    Push-Location (Join-Path $Root 'web')
+    & npm.cmd ci
+    $code = $LASTEXITCODE
+    if ($code -eq 0) { & npm.cmd run build; $code = $LASTEXITCODE }
+    Pop-Location
+    if ($code -ne 0) { exit $code }
 }
 
 # A built executable, not go run: Ctrl+C then stops the server itself rather
