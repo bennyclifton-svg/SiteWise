@@ -181,16 +181,20 @@
 .cockpit-scroll .procurement-table tbody th.discipline-cell { overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-md); font-weight: 400; }
 .cockpit-scroll .procurement-table .row-suggested th.discipline-cell::after { content: " · Suggested"; display: inline; font-size: var(--fs-sm); }
 
-/* The firms get the width: RFP / RFT, Prices and the bin need only a word. */
+/* The firms get most of the width; RFP / RFT and Prices keep room for
+   Create, Review and Prices without crowding (owner, 8 Nov 2026). */
 .procurement-table thead th:nth-child(1) { width: 15%; }
 .procurement-table thead th:nth-child(2),
 .procurement-table thead th:nth-child(3),
-.procurement-table thead th:nth-child(4) { width: 20.5%; }
-.procurement-table thead th:nth-child(5) { width: 7.5%; }
-.procurement-table thead th:nth-child(6) { width: 9%; }
+.procurement-table thead th:nth-child(4) { width: 18.5%; }
+.procurement-table thead th:nth-child(5) { width: 10.5%; }
+.procurement-table thead th:nth-child(6) { width: 12%; }
 .procurement-table thead th:nth-child(7) { width: 7%; text-align: right; }
-/* Each row is two lines tall so a firm reads name over price. */
-.cockpit-scroll .procurement-table tbody tr:not(.group-row, .draft-row) :is(th, td) { height: calc(var(--ct-row-h) * 2); }
+/* Each row is as tall as a firm (name over price) plus its rule, and no
+   taller, so the awarded green fills the cell (owner, 8 Nov 2026). */
+.cockpit-scroll .procurement-table tbody tr:not(.group-row, .draft-row) :is(th, td) { height: 45px; }
+.cockpit-scroll .procurement-table td.firm-slot { padding: 0; }
+.cockpit-scroll .procurement-table .firm-slot .firms-none { padding-left: 10px; }
 /* Uncombine and Remove from group may take two lines in the narrow bin column. */
 .cockpit-scroll .procurement-table td.row-bin-cell { white-space: normal; line-height: 16px; }
 /* Nothing spills into the next column: long words are cut short. */
@@ -212,11 +216,10 @@
   align-content: center;
   gap: 2px 8px;
   width: 100%;
-  height: auto;
-  min-height: 44px;
-  margin: 0 0 0 -6px;
-  padding: 3px 28px 3px 6px;
-  border-radius: 4px;
+  height: 44px;
+  margin: 0;
+  padding: 3px 42px 3px 10px;
+  border-radius: 0;
   font-size: var(--fs-md);
 }
 .cockpit-scroll .procurement-table .firm-chip-name { flex: 1 0 100%; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; line-height: 18px; font-weight: 400; color: var(--sw-text-primary); }
@@ -227,8 +230,10 @@
 .cockpit-scroll .procurement-table .firm-chip[data-status="awarded"] .firm-chip-name { padding: 0; background: none; font-weight: 400; }
 .cockpit-scroll .procurement-table .firm-chip[data-status="awarded"] .firm-chip-figure { color: var(--sw-success-text); }
 .firm-awarded { display: inline-flex; flex: none; color: var(--sw-success-text); }
-.cockpit-scroll .procurement-table .firm-detach { top: 50%; right: 0; width: 24px; height: 24px; margin-top: -12px; }
-.cockpit-scroll .procurement-table .firm-slot .table-action { margin: 0 0 0 6px; }
+/* A detach X the size of the panel headings' letters, set in from the edge. */
+.cockpit-scroll .procurement-table .firm-detach { top: 50%; right: 8px; width: 32px; height: 32px; margin-top: -16px; }
+.cockpit-scroll .procurement-table .firm-detach svg { width: 20px; height: 20px; stroke-width: 1.75; }
+.cockpit-scroll .procurement-table .firm-slot .table-action { margin: 0 0 0 10px; }
 
 /* Drop a proposal: a target big enough to see and hit. */
 /* Empty slots are ghosted so the firms that are in stand out. */

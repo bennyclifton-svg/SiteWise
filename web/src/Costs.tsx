@@ -167,7 +167,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
         {([["plan", "Cost Plan"], ["invoices", "Invoices"], ["variations", "Variations"]] as [CostTab, string][]).map(([id, label]) =>
           <button key={id} type="button" role="tab" id={`cost-tab-${id}`} aria-controls={`cost-panel-${id}`} aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
             onKeyDown={e => { const order: CostTab[] = ["plan", "invoices", "variations"]; const i = order.indexOf(tab); if (e.key === "ArrowRight") setTab(order[(i + 1) % 3]); if (e.key === "ArrowLeft") setTab(order[(i + 2) % 3]); }}
-            onClick={() => setTab(id)}>{label}{id === "invoices" && ledger ? <span className="costs-tab-count">{ledger.invoices.length}</span> : null}</button>)}
+            onClick={() => setTab(id)}>{label}</button>)}
       </div>
       <span role="status">{busy && <Pending delayed>Saving…</Pending>}</span>
       <input ref={uploadInput} type="file" multiple accept=".pdf,.docx,.xlsx,.md,.markdown,application/pdf" hidden data-testid="invoice-input" onChange={e => { if (e.target.files?.length) { setIncoming(Array.from(e.target.files)); setTab("invoices"); } e.target.value = ""; }} /></div>

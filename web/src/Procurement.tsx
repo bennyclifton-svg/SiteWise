@@ -317,10 +317,9 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
       <h1 className="sr-only">Procurement</h1>
       <div className="costs-tabs" role="tablist" aria-label="Procurement views">
         {TABS.map(([id, name]) => {
-          const n = id === "consultants" ? consultants.filter(r => !r.member).length : trades.length;
           return <button key={id} type="button" role="tab" id={`procurement-tab-${id}`} aria-controls="procurement-panel" aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
             onKeyDown={e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); setTab(id === "consultants" ? "trades" : "consultants"); } }}
-            onClick={() => setTab(id)}>{name}{data && n > 0 ? <span className="costs-tab-count">{n}</span> : null}</button>;
+            onClick={() => setTab(id)}>{name}</button>;
         })}
       </div>
       <div className="procurement-actions">

@@ -168,7 +168,6 @@
 .costs-head .costs-tab, .procurement-head .costs-tab { padding: 0 0 6px; color: var(--sw-text-tertiary, var(--ink-muted)); font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
 .costs-head .costs-tab[aria-selected="true"], .procurement-head .costs-tab[aria-selected="true"] { color: var(--sw-text-primary, var(--ink)); }
 .costs-head .costs-tab:hover, .procurement-head .costs-tab:hover { color: var(--sw-text-primary, var(--ink)); }
-.costs-head .costs-tab-count, .procurement-head .costs-tab-count { vertical-align: middle; font-size: var(--fs-xs); font-weight: 500; letter-spacing: 0; }
 @media (max-width: 600px) { .costs-head .costs-tab, .procurement-head .costs-tab { font-size: 20px; } .costs-head .costs-tabs, .procurement-head .costs-tabs { gap: 4px 18px; } }
 /* The Item head's chevron opens or closes every group. */
 .cost-grid thead .cost-master-toggle { width: 26px; height: 26px; margin-right: 2px; vertical-align: middle; border-radius: var(--radius-sm); }

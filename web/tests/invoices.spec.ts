@@ -79,8 +79,7 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await page.getByRole("button", { name: "Costs", exact: true }).click();
   await expect(page.getByRole("tab", { name: /Cost plan/i })).toHaveAttribute("aria-selected", "true");
   const plan = page.locator("#cost-panel-plan");
-  // The tab count arrives with the ledger. The invoice footer is not part of the plan.
-  await expect(page.getByRole("tab", { name: /Invoices/ })).toContainText("0");
+  // The invoice footer is not part of the plan.
   await expect(plan.getByRole("row", { name: /^Total/ })).toBeVisible();
   await expectNoInvoiceFooter(plan);
 

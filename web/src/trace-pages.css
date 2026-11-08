@@ -19,7 +19,6 @@
   background: url("./assets/marks/pencil-graphite.svg") left 6px bottom 2px / 480px 6px repeat-x;
   background-size: 480px 6px;
 }
-.costs-tab-count { background: var(--sw-surface-inset); }
 
 .cockpit-scroll .cost-grid thead th {
   border-top: 1.5px solid var(--trace-rule-strong);

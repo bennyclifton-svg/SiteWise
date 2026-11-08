@@ -13,7 +13,6 @@
 .costs-tab { position: relative; padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-muted); font: inherit; font-weight: 500; cursor: pointer; }
 .costs-tab[aria-selected="true"] { border-bottom-color: var(--ember); color: var(--ink); }
 .costs-tab:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
-.costs-tab-count { margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--ground); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; }
 
 .cost-ledger { background-color: var(--canvas) !important; }
 .cost-grid thead .cost-ledger { color: var(--ink); }
