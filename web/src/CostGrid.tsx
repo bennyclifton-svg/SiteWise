@@ -1,6 +1,7 @@
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { RowHandle, startRowDrag } from "./table/RowHandle";
+import { IconBin, IconEye, IconEyeOff, IconOpen, IconSubdivide } from "./icons";
 import { createContext, use, useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import type { CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue, PreliminaryEstimate } from "./costApi";
 import type { PackageRecord } from "./packageApi";
@@ -62,7 +63,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   onDetailedValue: (item: CostItem, metric: string, value: CostValue) => Promise<boolean>;
   onReorder: (ids: string[]) => Promise<boolean>;
   onDelete: (item: CostItem) => Promise<boolean>;
-  onItem: (content: CostContent, id?: string, calculate?: boolean) => Promise<boolean>;
+  onItem: (content: CostContent, id?: string, calculate?: boolean, values?: Record<string, CostValue>) => Promise<boolean>;
   onOpen: (id: string) => void; onValue: (item: CostItem, metric: "budget" | "commitment", amount: string | null) => Promise<boolean>;
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
@@ -81,7 +82,9 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   useEffect(() => setSelection(s => prune(s, items.map(i => i.cost_item_id))), [items]);
   const category = (i: CostItem) => i.resolved_category || (i.line_kind === "project_wide" ? words(i.category) : packages.find(p => p.id === i.package_id)?.title || "Unassigned");
   const sortValue = (i: CostItem) => sort?.key === "category" ? category(i) : i.label;
-  const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER) || (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
+  // A line typed into the ghost row has no code; it stays below the coded
+  // lines, where it was entered.
+  const ordered = (list: CostItem[]) => sort ? [...list].sort((a, b) => sort.dir * sortValue(a).localeCompare(sortValue(b), undefined, { numeric: true })) : [...list].sort((a,b) => (a.display_order ?? Number.MAX_SAFE_INTEGER) - (b.display_order ?? Number.MAX_SAFE_INTEGER) || (Number(["other", "exclusions"].includes(a.category)) - Number(["other", "exclusions"].includes(b.category))) || (Number(!a.code) - Number(!b.code)) || a.code.localeCompare(b.code, undefined, {numeric:true}) || a.label.localeCompare(b.label));
   const ids = new Set(items.map(i => i.cost_item_id));
   const children = new Map<string, CostItem[]>();
   for (const item of items) {
@@ -193,7 +196,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
             <td className="cost-actions" onClick={e => e.stopPropagation()}><RowActions item={i} editable={editable} busy={busy} onOpen={() => onOpen(i.cost_item_id)} onSubdivide={() => onSubdivide(i)} onToggle={() => void onItem(editContent(i, { excluded: !i.excluded }), i.cost_item_id)} onDelete={() => void onDelete(i)} /></td>
           </tr>;
         })}
-        {editable && <AddLineRow key={g.bucket} group={g} plan={plan} packages={packages} columns={width} onSave={onItem} />}
+        {editable && <GhostRow key={g.bucket} group={g} plan={plan} packages={packages} quantities={!!quantities} onSave={(c, values) => onItem(c, undefined, false, values)} />}
         <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">{g.title} subtotal</th>{quantities && <td colSpan={3} />}
           <td className="cost-num">{subtotal(t?.budget)}</td><td className="cost-num">{subtotal(t?.commitment)}</td>
           <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
@@ -320,13 +323,55 @@ function QuantityCells({item, editable, onSave}: {item:CostItem;editable:boolean
  async function commit(){if(saving.current || JSON.stringify(draft)===saved.current || !draft.quantity || !draft.unit || !draft.rate)return;if(draft.quantity===item.quantity && draft.unit===item.unit && draft.rate===item.rate)return;saving.current=true;const ok=await onSave(editContent(item,{quantity:draft.quantity,unit:draft.unit,rate:draft.rate,rate_basis:"User supplied"}));if(ok)saved.current=JSON.stringify(draft);saving.current=false;}
  return <>{(["quantity","unit","rate"] as const).map(k=><td key={k} className="cost-num">{editable?<input className="cost-input" data-metric={k} aria-label={`${k} for ${item.label}`} value={draft[k]} onClick={e=>e.stopPropagation()} onChange={e=>setDraft({...draft,[k]:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft({quantity:item.quantity??"",unit:item.unit??"",rate:item.rate??""});const next=cellFor(e);if(next){e.preventDefault();enterCell(next);}}} onFocus={e=>e.currentTarget.select()} />:item[k]??"—"}</td>)}</>;
 }
-function AddLineRow({group:g,plan,packages,columns,onSave}:{group:typeof GROUPS[number];plan:CostPlan;packages:PackageRecord[];columns:number;onSave:(c:CostContent)=>Promise<boolean>}){
+// The ghost line at the foot of each section: a blank line showing only
+// "Add item…" (its pickers appear once clicked into) that
+// becomes a real line once it has an item (owner direction, 8 Nov 2026,
+// replacing "+ Add line"). Item, budget and approved contract save together in
+// one write; nothing is created until the line is complete.
+type Ghost={category:string;package_id:string;system_id:string;label:string;budget:string;commitment:string};
+const GHOST_PLACEHOLDER={fee:"consultant",works:"trade"} as const;
+const parseMoney=(s:string)=>{const raw=s.replace(/[,\s$]/g,"");return raw===""?null:/^-?\d+(\.\d{1,2})?$/.test(raw)?raw:undefined;};
+function GhostRow({group:g,plan,packages,quantities,onSave}:{group:typeof GROUPS[number];plan:CostPlan;packages:PackageRecord[];quantities:boolean;onSave:(c:CostContent,values:Record<string,CostValue>)=>Promise<boolean>}){
  const kind=g.kind;
- const [draft,setDraft]=useState<CostContent|null>(null);const saving=useRef(false);
+ const blank:Ghost={category:g.category,package_id:"",system_id:"",label:"",budget:"",commitment:""};
+ const [draft,setDraft]=useState<Ghost>(blank),[active,setActive]=useState(false),[tried,setTried]=useState(false);
+ const saving=useRef(false),item=useRef<HTMLInputElement>(null);
  const options=kind==="fee"?packages.filter(p=>p.kind==="services").map(p=>({id:p.id,label:p.title})):kind==="works"?packages.filter(p=>p.kind==="works"&&!p.retired_at).map(p=>({id:p.id,label:p.title})):categories.map(id=>({id,label:words(id)}));
- const group=g.title;
- async function commit(){if(!draft || saving.current || !draft.label.trim() || (kind==="fee"&&!draft.package_id) || (kind==="works"&&!draft.system_id))return;saving.current=true;const ok=await onSave(draft);saving.current=false;if(ok)setDraft(null);}
- return <tr className="cost-add">{!draft?<td colSpan={columns}><button type="button" className="cost-open" onClick={()=>setDraft({parent_item_id:"",code:"",label:"",line_kind:kind,category:g.category,work_item_id:"",system_id:"",package_id:"",package_stage_id:"",posting:true,quantity:null,unit:"",rate:null,rate_basis:"",excluded:false,origin:"user",meaning:"allowance",rationale:""})}>+ Add line to {group}</button></td>:<><td/><td data-col="category"><select autoFocus={kind==="fee"} aria-label={`New ${group} category`} value={kind!=="project_wide"?draft.package_id:draft.category} onChange={e=>setDraft({...draft,[kind!=="project_wide"?"package_id":"category"]:e.target.value})}><option value="">{kind==="works"?"Use automatic assignment":"Choose category"}</option>{options.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select></td><td>{kind==="works" && <select aria-label="New Construction physical scope" value={draft.system_id} onChange={e=>setDraft({...draft,system_id:e.target.value})}><option value="">Choose physical scope</option>{plan.systems?.map(sys=><option key={sys.id} value={sys.id}>{sys.label}</option>)}</select>}<input autoFocus={kind!=="fee"} aria-label={`New ${group} item`} value={draft.label} maxLength={500} onChange={e=>setDraft({...draft,label:e.target.value})} onBlur={()=>void commit()} onKeyDown={e=>{if(e.key==="Enter")void commit();if(e.key==="Escape")setDraft(null);}}/></td><td colSpan={columns-3}><button type="button" className="btn btn-small" onClick={()=>void commit()}>Save line</button><button type="button" className="btn btn-small" onClick={()=>setDraft(null)}>Cancel</button></td></>}</tr>;
+ const dirty=draft.label!==""||draft.budget!==""||draft.commitment!==""||draft.package_id!==""||draft.system_id!==""||draft.category!==g.category;
+ // A consultant line names its package and a construction line its physical
+ // scope; either stands in for a blank item, as the seeded lines do.
+ const label=draft.label.trim()||(kind==="fee"?options.find(o=>o.id===draft.package_id)?.label:kind==="works"?plan.systems?.find(x=>x.id===draft.system_id)?.label:"")||"";
+ const budget=parseMoney(draft.budget),commitment=parseMoney(draft.commitment);
+ const missing={label:!label,package:kind==="fee"&&!draft.package_id,scope:kind==="works"&&!draft.system_id,budget:budget===undefined,commitment:commitment===undefined};
+ const set=(k:keyof Ghost)=>(e:{target:{value:string}})=>setDraft(d=>({...d,[k]:e.target.value}));
+ async function commit(refocus:boolean){
+  if(!dirty||saving.current)return;
+  setTried(true);
+  if(Object.values(missing).some(Boolean))return;
+  const values:Record<string,CostValue>={};
+  for(const [m,a] of [["budget",budget],["commitment",commitment]] as const)if(a)values[m]={amount:a,low:null,high:null,value_state:"known",as_of:null,origin:"user",meaning:"allowance",rationale:""};
+  saving.current=true;
+  const ok=await onSave({parent_item_id:"",code:"",label,line_kind:kind,category:kind==="project_wide"?draft.category:"",work_item_id:"",system_id:kind==="works"?draft.system_id:"",package_id:kind==="project_wide"?"":draft.package_id,package_stage_id:"",posting:true,quantity:null,unit:"",rate:null,rate_basis:"",excluded:false,origin:"user",meaning:"allowance",rationale:""},values);
+  saving.current=false;
+  if(ok){setDraft(blank);setTried(false);if(refocus)item.current?.focus();}
+ }
+ const keys=(e:React.KeyboardEvent)=>{if(e.key==="Enter"){e.preventDefault();void commit(true);}if(e.key==="Escape"){setDraft(blank);setTried(false);(e.target as HTMLElement).blur();}};
+ const bad=(k:keyof typeof missing)=>tried&&missing[k]||undefined;
+ const pick=kind==="project_wide"?draft.category:draft.package_id;
+ const ghostPick=kind==="project_wide"?!dirty:!draft.package_id;
+ return <tr className={`cost-ghost${dirty?" cost-ghost-dirty":""}`} onKeyDown={keys} onClick={e=>e.stopPropagation()}
+  onFocus={()=>setActive(true)} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget as Node)){setActive(false);void commit(false);}}}>
+  <td className="cost-sticky" data-col="code" />
+  <td className="cost-sticky" data-col="category">{(active||dirty)&&<select className={ghostPick?"cost-ghost-hint":undefined} aria-label={`New ${g.title} category`} aria-invalid={bad("package")} value={pick} onChange={set(kind==="project_wide"?"category":"package_id")}>
+   {kind!=="project_wide"&&<option value="">{GHOST_PLACEHOLDER[kind]}</option>}{options.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select>}</td>
+  <td className="cost-sticky" data-col="item"><span className="cost-ghost-item">{kind==="works"&&(active||dirty)&&<select className={draft.system_id?undefined:"cost-ghost-hint"} aria-label="New Construction physical scope" aria-invalid={bad("scope")} value={draft.system_id} onChange={set("system_id")}><option value="">Choose physical scope</option>{plan.systems?.map(x=><option key={x.id} value={x.id}>{x.label}</option>)}</select>}
+   <input ref={item} aria-label={`New ${g.title} item`} aria-invalid={bad("label")} placeholder="Add item…" maxLength={500} value={draft.label} onChange={set("label")}/></span></td>
+  {quantities&&<><td/><td/><td/></>}
+  <td className="cost-num"><input inputMode="decimal" aria-label={`New ${g.title} budget`} aria-invalid={bad("budget")} placeholder="—" value={draft.budget} onChange={set("budget")}/></td>
+  <td className="cost-num"><input inputMode="decimal" aria-label={`New ${g.title} approved contract`} aria-invalid={bad("commitment")} placeholder="—" value={draft.commitment} onChange={set("commitment")}/></td>
+  <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td><td className="cost-num">—</td>
+  <td className="cost-num cost-ledger">—</td><td className="cost-num cost-placeholder">—</td><td className="cost-num cost-ledger">—</td><td className="cost-actions"/>
+ </tr>;
 }
 
 function RowActions({ item, editable, busy, onOpen, onSubdivide, onToggle, onDelete }: { item: CostItem; editable: boolean; busy: boolean; onOpen: () => void; onSubdivide: () => void; onToggle: () => void; onDelete: () => void }) {
@@ -346,9 +391,9 @@ function RowActions({ item, editable, busy, onOpen, onSubdivide, onToggle, onDel
     setPosition({ top: Math.max(8, Math.min(rect.bottom + 4, window.innerHeight - 150)), left: Math.max(8, Math.min(rect.right - 210, window.innerWidth - 218)) });
   }}><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.5" /><circle cx="10" cy="10" r="1.5" /><circle cx="16" cy="10" r="1.5" /></svg></button>
     <div ref={menu} id={id} popover="auto" onToggle={e => setOpen(e.newState === "open")} className="cost-row-menu" style={position} aria-label={`Actions for ${item.label}`}>
-      <button type="button" onClick={() => act(onOpen)}>View line details</button>
-      {editable && <><button type="button" disabled={busy || !item.posting || item.excluded} onClick={() => act(onSubdivide)}>Subdivide allowance</button><button type="button" disabled={busy} onClick={() => act(onToggle)}>{item.excluded ? "Include in totals" : "Exclude from totals"}</button>
-        <button type="button" className="cost-menu-delete" disabled={busy} aria-label={`Delete ${item.label}`} onClick={() => act(onDelete)}>Delete line</button></>}
+      <button type="button" onClick={() => act(onOpen)}><span className="more-menu-icon"><IconOpen /></span>View line details</button>
+      {editable && <><button type="button" disabled={busy || !item.posting || item.excluded} onClick={() => act(onSubdivide)}><span className="more-menu-icon"><IconSubdivide /></span>Subdivide allowance</button><button type="button" disabled={busy} onClick={() => act(onToggle)}><span className="more-menu-icon">{item.excluded ? <IconEye /> : <IconEyeOff />}</span>{item.excluded ? "Include in totals" : "Exclude from totals"}</button>
+        <button type="button" className="cost-menu-delete" disabled={busy} aria-label={`Delete ${item.label}`} onClick={() => act(onDelete)}><span className="more-menu-icon"><IconBin /></span>Delete line</button></>}
     </div></>;
 }
 

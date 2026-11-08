@@ -193,7 +193,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
         onDetailedValue={(item, name, value) => save(() => costApi.value(projectId, plan, item.cost_item_id, name, value), false)}
         onReorder={ids => save(() => costApi.reorder(projectId, plan, ids), false)}
         onDelete={remove} ledger={history ? null : ledger} onInvoices={showInvoices}
-        onItem={(c, id, calculate) => save(() => costApi.item(projectId, plan, c, id, calculate), false)} /></CentsContext>}
+        onItem={(c, id, calculate, values) => save(() => costApi.item(projectId, plan, c, id, calculate, values), false)} /></CentsContext>}
     </div>
     {open && tab === "plan" && <aside className="cost-drawer" aria-label="Cost line">
       <button type="button" className="btn btn-small cost-drawer-close" onClick={close}>Close</button>

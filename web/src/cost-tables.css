@@ -264,3 +264,39 @@
 .inv-table .inv-hint svg { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
 .inv-table .inv-hint strong { font-weight: 500; color: var(--sw-text-primary); }
 .invoices[data-over] .inv-table[data-empty] tbody td { background: var(--ct-selected); }
+
+/* Section headings carry a light grey band so each section's start reads at
+   a glance (owner direction, 8 Nov 2026). A tint of the text colour works in
+   both themes. */
+.cockpit-scroll .cost-grid tr.cost-group th {
+  background: color-mix(in srgb, var(--sw-text-primary) 8%, var(--trace-sheet));
+}
+
+/* Subtotals close a section: bold figures under a firmer rule, no fill, so
+   they never read as a section heading. */
+.cockpit-scroll .cost-grid tr.cost-subtotal :is(th, td) {
+  border-top: 1px solid var(--sw-text-tertiary);
+  font-weight: 600;
+}
+
+/* The ghost line: every cell is a quiet field in grey until typed into. */
+.cockpit-scroll .cost-grid .cost-ghost td { padding-top: 0; padding-bottom: 0; color: var(--sw-text-tertiary); }
+.cost-ghost :is(input, select) {
+  width: 100%; min-width: 0; height: var(--ct-row-h, 28px); padding: 0; border: 0; border-radius: 0;
+  background: transparent; color: var(--sw-text-primary); font: inherit;
+}
+.cost-ghost td.cost-num input { text-align: right; }
+.cost-ghost td { vertical-align: middle; }
+.cost-ghost select { appearance: none; -webkit-appearance: none; cursor: pointer; text-overflow: ellipsis; }
+.cost-ghost-item { display: flex; gap: 8px; align-items: center; }
+.cost-ghost-item select { flex: 0 1 45%; }
+.cost-ghost input::placeholder { color: var(--sw-text-tertiary); opacity: .7; }
+.cost-ghost select.cost-ghost-hint { color: var(--sw-text-tertiary); opacity: .7; }
+.cost-ghost select option { color: var(--sw-text-primary); background: var(--paper); }
+.cost-ghost :is(input, select):focus-visible { outline: 1px solid var(--sw-link); outline-offset: -1px; }
+.cost-ghost [aria-invalid="true"] { outline: 1px solid var(--alert); outline-offset: -1px; }
+.cost-ghost td[data-col="code"] { text-align: center; opacity: .6; }
+
+/* Row menu: an icon leads each action, as in the page menus. */
+.cost-row-menu button { display: flex; align-items: center; gap: 10px; }
+.cost-row-menu .cost-menu-delete .more-menu-icon { color: inherit; }

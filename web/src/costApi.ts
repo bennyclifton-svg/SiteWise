@@ -31,7 +31,7 @@ export const costApi = {
   read: (p: string, v = "") => request<CostPlan>("GET", path(p) + (v ? `?version=${v}` : "")),
   totals: (p: string, by = "overall", v = "") => request<CostTotals>("GET", `${path(p)}/totals?by=${by}${v ? `&version=${v}` : ""}`),
   settings: (p: string, plan: CostPlan, settings: CostSettings) => request<CostPlan>("PUT", path(p), { ...pin(plan), ...settings }),
-  item: (p: string, plan: CostPlan, content: CostContent, id = "", calculate_budget = false) => request<CostPlan>(id ? "PATCH" : "POST", `${path(p)}/items${id ? `/${id}` : ""}`, { ...pin(plan), ...content, calculate_budget }),
+  item: (p: string, plan: CostPlan, content: CostContent, id = "", calculate_budget = false, values?: Record<string, CostValue>) => request<CostPlan>(id ? "PATCH" : "POST", `${path(p)}/items${id ? `/${id}` : ""}`, { ...pin(plan), ...content, calculate_budget, ...(values ? { values } : {}) }),
   value: (p: string, plan: CostPlan, id: string, metric: string, value: CostValue, calculate = false) => request<CostPlan>("PUT", `${path(p)}/items/${id}/values/${metric}`, { plan_version_id: plan.id, plan_version: plan.version, ...value, calculate }),
   baseline: (p: string, plan: CostPlan) => request<CostPlan>("POST", `${path(p)}/baseline`, pin(plan)),
   subdivide: (p: string, plan: CostPlan, item: CostItem, children: { content: CostContent; amount: string }[], metric: string, residual: string) => request<CostPlan>("POST", `${path(p)}/items/${item.cost_item_id}/subdivide`, { ...pin(plan), residual, children: children.map(c => ({ ...c.content, values: { [metric]: { amount: c.amount || null, low: null, high: null, value_state: c.amount ? "known" : "unknown", as_of: null, origin: "user", meaning: "allowance", rationale: "Explicit subdivision" } } })) }),

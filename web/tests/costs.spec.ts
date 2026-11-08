@@ -14,7 +14,7 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await page.getByLabel('New project').fill('Cost controls');await page.getByRole('button',{name:'Create project',exact:true}).click();
   await page.getByRole('button',{name:'Costs',exact:true}).click();
   await expect(page.getByRole("button",{name:"Actions for Escalation",exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();await page.getByLabel('New Contingency item',{exact:true}).fill('Unallocated allowance');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
+  await page.getByLabel('New Contingency item',{exact:true}).fill('Unallocated allowance');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
   const grid=page.getByRole('table');
   for (const h of ['Forecast Variations','Approved Variations','This Month']) await expect(grid.getByRole('columnheader',{name:h})).toHaveAttribute('aria-disabled','true');
   const rowOf=(label:string)=>grid.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText(label,{exact:true})});
@@ -43,7 +43,7 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await drawer.getByRole('button',{name:'Close',exact:true}).click();await expect(drawer).toBeHidden();
 
   // An approved contract becomes the forecast; remaining is the contract less invoices to date.
-  await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();await page.getByLabel('New Contingency item',{exact:true}).fill('Head contract');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
+  await page.getByLabel('New Contingency item',{exact:true}).fill('Head contract');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
   const head=rowOf('Head contract');await head.getByRole('button',{name:'Budget for Head contract'}).click();await page.getByRole('textbox',{name:'Budget for Head contract'}).fill('500');await page.getByRole('textbox',{name:'Budget for Head contract'}).press('Enter');await expect(head.getByRole('button',{name:'Budget for Head contract'})).toHaveText('500.00');
   await head.getByRole('button',{name:'Approved Contract for Head contract',exact:true}).click();
   const contract=page.getByRole('textbox',{name:'Approved Contract for Head contract',exact:true});
@@ -62,7 +62,7 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await expect(head.getByRole('button',{name:'Approved Contract for Head contract',exact:true})).toHaveText('450.00');
   const sub=grid.getByRole('row',{name:/Contingency subtotal/});await expect(sub).toContainText('1,500.00');await expect(sub.getByRole('cell').nth(7)).toHaveText('450.00');
 
-  await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await expect(page.getByRole('menuitem',{name:'View frozen baseline',exact:true})).toBeVisible();await page.getByRole('menuitem',{name:'View frozen baseline',exact:true}).click();await expect(page.getByText('Viewing r1 · baseline',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(head.getByRole('button',{name:'Budget for Head contract'})).toBeDisabled();await expect(head.getByRole('button',{name:'Approved Contract for Head contract'})).toBeDisabled();
+  await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await expect(page.getByRole('menuitem',{name:'View frozen baseline',exact:true})).toBeVisible();await page.getByRole('menuitem',{name:'View frozen baseline',exact:true}).click();await expect(page.getByText('Viewing r1 · baseline',{exact:true})).toBeVisible();await expect(page.getByLabel(/^New .* item$/)).toHaveCount(0);await expect(head.getByRole('button',{name:'Budget for Head contract'})).toBeDisabled();await expect(head.getByRole('button',{name:'Approved Contract for Head contract'})).toBeDisabled();
   await page.setViewportSize({width:1360,height:1000});await page.screenshot({path:testInfo.outputPath('next-wave-costs-desktop.png'),fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:testInfo.outputPath('next-wave-costs-mobile.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
 });
 
@@ -71,7 +71,6 @@ test("arrow keys move between cost cells like a spreadsheet, saving as they go",
   await page.getByLabel('New project').fill('Arrow keys');await page.getByRole('button',{name:'Create project',exact:true}).click();
   await page.getByRole('button',{name:'Costs',exact:true}).click();
   for (const name of ['Allowance A','Allowance B']) {
-    await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();
     await page.getByLabel('New Contingency item',{exact:true}).fill(name);await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
     await expect(page.getByRole('button',{name:`Budget for ${name}`,exact:true})).toBeVisible();
   }
@@ -106,4 +105,42 @@ test("arrow keys move between cost cells like a spreadsheet, saving as they go",
   // Tab off the last editable cell of a line wraps to the next line.
   await a.press('Tab');await expect(ac).toBeFocused();
   await ac.press('Tab');await expect(page.getByRole('textbox',{name:'Budget for Allowance B',exact:true})).toBeFocused();
+});
+
+test("the ghost line saves item, budget and approved contract in one write", async ({ page }, testInfo) => {
+  const {token}=await(await page.request.post('/__e2e/invite?org=a')).json(); await page.goto(`/#token=${token}`);
+  await page.getByLabel('New project').fill('Ghost line');await page.getByRole('button',{name:'Create project',exact:true}).click();
+  await page.getByRole('button',{name:'Costs',exact:true}).click();
+  const item=page.getByLabel('New Fees and charges item',{exact:true});
+  await expect(item).toHaveAttribute('placeholder','Add item…');
+  await expect(page.getByLabel('New Fees and charges category',{exact:true})).toHaveCount(0);
+  await item.focus();await expect(page.getByLabel('New Fees and charges category',{exact:true})).toHaveValue('authority_fees');
+  // Clicking in and out of a blank ghost line creates nothing.
+  let creates=0, values=0;
+  page.on('request',r=>{if(r.method()==='POST'&&/\/cost-plan\/items$/.test(r.url()))creates++;if(/\/values\//.test(r.url()))values++;});
+  await item.focus();await item.blur();
+  expect(creates).toBe(0);
+  // A bad figure holds the line and marks the cell.
+  await item.fill('Section 7.11 contributions');await page.getByLabel('New Fees and charges budget').fill('12,5x');await page.getByLabel('New Fees and charges budget').press('Enter');
+  await expect(page.getByLabel('New Fees and charges budget')).toHaveAttribute('aria-invalid','true');expect(creates).toBe(0);
+  await page.getByLabel('New Fees and charges budget').fill('12,500');await page.getByLabel('New Fees and charges approved contract').fill('12000');await page.getByLabel('New Fees and charges approved contract').press('Enter');
+  const row=page.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText('Section 7.11 contributions',{exact:true})});
+  await expect(row.getByRole('button',{name:'Budget for Section 7.11 contributions'})).toHaveText('12,500.00');
+  await expect(row.getByRole('button',{name:'Approved Contract for Section 7.11 contributions'})).toHaveText('12,000.00');
+  expect(creates).toBe(1);expect(values).toBe(0);
+  // A fresh ghost line waits underneath.
+  await expect(item).toHaveValue('');await expect(page.getByLabel('New Fees and charges budget')).toHaveValue('');
+  await expect(page.getByRole('row',{name:/Fees and charges subtotal/})).toContainText('12,500.00');
+  await page.setViewportSize({width:1600,height:900});await page.screenshot({path:testInfo.outputPath('ghost-line-desktop.png')});await page.evaluate(()=>document.documentElement.dataset.theme='dark');await page.screenshot({path:testInfo.outputPath('ghost-line-dark.png')});await page.evaluate(()=>document.documentElement.dataset.theme='light');
+  await page.evaluate(()=>document.documentElement.dataset.theme='dark');await page.getByRole('button',{name:'Actions for Section 7.11 contributions',exact:true}).click();await expect(page.getByRole('button',{name:'Delete Section 7.11 contributions'})).toBeVisible();await page.screenshot({path:testInfo.outputPath('row-menu-dark.png')});await page.keyboard.press('Escape');await page.evaluate(()=>document.documentElement.dataset.theme='light');
+  // Speed: a ghost-line save is one cost write (budget p50 100 ms, p90 250 ms).
+  const times:number[]=[];
+  for(let n=0;n<20;n++){
+    await item.fill(`Fee ${n}`);await page.getByLabel('New Fees and charges budget').fill(String(100+n));
+    const done=page.waitForResponse(r=>r.request().method()==='POST'&&/\/cost-plan\/items$/.test(r.url()));
+    const t=Date.now();await item.press('Enter');await done;times.push(Date.now()-t);
+    await expect(page.getByRole('button',{name:`Budget for Fee ${n}`,exact:true})).toBeVisible();
+  }
+  times.sort((a,b)=>a-b);console.log(`ghost line save p50=${times[9]}ms p90=${times[17]}ms; budgets 100/250ms`);
+  expect(times[9]).toBeLessThanOrEqual(100);expect(times[17]).toBeLessThanOrEqual(250);
 });

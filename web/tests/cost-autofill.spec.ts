@@ -35,8 +35,15 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
  await page.reload();await page.getByRole('button',{name:'Costs',exact:true}).click();await expect(page.getByRole('button',{name:'Actions for Architect',exact:true})).toBeVisible();
  await expect(page.locator('[data-col="item"]').getByText('Escalation',{exact:true})).toHaveCount(0);
  const saved=await(await page.request.get(base+'/cost-plan')).json();expect(saved.suggestions).toHaveLength(0);expect(saved.items.length).toBeGreaterThan(12);
- await page.getByRole('button',{name:'+ Add line to Construction',exact:true}).click();await page.getByLabel('New Construction physical scope').selectOption('envelope');await page.getByLabel('New Construction item').fill('Facade access allowance');await page.getByLabel('New Construction item').press('Enter');
+ await page.getByLabel('New Construction item').fill('Facade access allowance');await page.getByLabel('New Construction physical scope').selectOption('envelope');await page.getByLabel('New Construction item').press('Enter');
  const row=page.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText('Facade access allowance',{exact:true})});await expect(row).toContainText('Main Works');
+ // A consultant ghost line takes its package's name when no item is typed.
+ const consultant=page.getByLabel('New Consultants category',{exact:true});await expect(consultant).toHaveCount(0);
+ await page.getByLabel('New Consultants budget',{exact:true}).fill('30000');await expect(consultant).toHaveValue('');await page.getByLabel('New Consultants budget',{exact:true}).press('Enter');
+ await expect(consultant).toHaveAttribute('aria-invalid','true');
+ await consultant.selectOption({index:1});const firm=(await consultant.locator('option:checked').textContent())!.trim();
+ await page.getByLabel('New Consultants budget',{exact:true}).press('Enter');
+ await expect(page.getByRole('button',{name:`Budget for ${firm}`,exact:true}).filter({hasText:'30,000.00'})).toHaveCount(1);await expect(consultant).toHaveValue('');
  await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitemcheckbox',{name:'Quantities',exact:true}).click();await page.keyboard.press('Escape');await row.getByLabel('quantity for Facade access allowance').fill('10');await row.getByLabel('unit for Facade access allowance').fill('m2');await row.getByLabel('rate for Facade access allowance').fill('120');await row.getByLabel('rate for Facade access allowance').press('Enter');
  await expect(row.getByRole('button',{name:'Budget for Facade access allowance'})).toHaveText('1,200.00');
 
@@ -68,5 +75,5 @@ test("cost defaults, four sections, deletion and inline quantities",async({page,
  await page.screenshot({path:testInfo.outputPath('cost-autofill-actions.png'),fullPage:true});
  await page.locator('.cost-grid-scroll').evaluate(e=>{e.scrollLeft=0;});
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:testInfo.outputPath('cost-autofill-mobile.png'),fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
- await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'View frozen baseline',exact:true}).click();await expect(page.getByRole('button',{name:/Add line to/})).toHaveCount(0);await expect(page.getByRole('button',{name:/^Delete /})).toHaveCount(0);
+ await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'Freeze baseline',exact:true}).click();await page.getByRole('button',{name:'Confirm baseline',exact:true}).click();await page.getByRole('button',{name:'Cost plan actions',exact:true}).click();await page.getByRole('menuitem',{name:'View frozen baseline',exact:true}).click();await expect(page.getByLabel(/^New .* item$/)).toHaveCount(0);await expect(page.getByRole('button',{name:/^Delete /})).toHaveCount(0);
 });

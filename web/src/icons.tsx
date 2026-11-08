@@ -305,3 +305,11 @@ export const IconLock = () => (
     <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
   </Icon>
 );
+
+/** Subdivide: one allowance branching into two parts. */
+export const IconSubdivide = () => (
+  <Icon>
+    <path d="M8 2.5v4M4 6.5h8M4 6.5v3M12 6.5v3" />
+    <path d="M2.5 9.5h3v4h-3zM10.5 9.5h3v4h-3z" />
+  </Icon>
+);

@@ -11,7 +11,6 @@ test("cost selection, shared drag handles, inline names and row actions", async 
   await page.getByLabel('New project').fill('Cost selection'); await page.getByRole('button',{name:'Create project',exact:true}).click();
   await page.getByRole('button',{name:'Costs',exact:true}).click();
   for (const name of ['First custom','Second custom','Third custom']) {
-    await page.getByRole('button',{name:'+ Add line to Contingency',exact:true}).click();
     await page.getByLabel('New Contingency item',{exact:true}).fill(name); await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
     await expect(page.locator('.cost-row [data-col="item"]').getByText(name,{exact:true})).toBeVisible();
   }
