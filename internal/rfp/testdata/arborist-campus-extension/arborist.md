@@ -25,7 +25,7 @@ Written instruction/agreed inputs to named output/response end. Price once acros
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Inspect scheduled trees: survey-linked IDs/photos, species/dimensions/measurement basis, health/structure/retention, root/protection zones/calculation basis, access limits/further tests | Included |  |
 |  | No impact report | Included |  |
 |  | Retention and footprint/access/services alternatives | Included |  |
@@ -36,7 +36,7 @@ Written instruction/agreed inputs to named output/response end. Price once acros
 |  | Excavation/demolition/levels/foundations/services impacts and hold points at appointed stages; civil/structure design, surveyor locations | Included |  |
 |  | Visual pruning/removal/clearance recommendations; specification only in appointed S3; tree-work contractor executes/disposes/reinstates | Included |  |
 |  | Existing/occupied/staged/remediation baseline, access constraints and temporary-protection advice; S3 plan separate; investigate before root attribution, structure/geotech diagnose | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Conditions review and coordinated plan/method: fencing, ground protection, access/storage, excavation/services, monitoring/hold points, investigation dependencies and unclosed conditions | Included |  |
 | Tender documentation | Not part of this appointment | Excluded | — |
 | Delivery | Not part of this appointment | Excluded | — |

@@ -439,46 +439,48 @@ func hasMember(st groupState, report string) bool {
 	return false
 }
 
-// setGroupSetting stores one of the engagement's shared settings on the
-// group's draft and recomposes it. A discipline's own choice belongs to its
+// writeGroupSetting stores one of the engagement's shared settings on the
+// group's draft; the caller recomposes it. A discipline's own choice belongs to its
 // member's report and is refused here.
-func (s *Store) setGroupSetting(ctx context.Context, tx pgx.Tx, org string, r Report, d ReportDraft, actor, key string, value json.RawMessage, settings rfp.Settings) (ReportDraft, error) {
+func (s *Store) writeGroupSetting(ctx context.Context, tx pgx.Tx, org string, r Report, d ReportDraft, actor, key string, value json.RawMessage, settings rfp.Settings) error {
 	sk, ok := s.workCatalog().RFPSkeleton()
 	if !ok {
-		return d, ErrInvalidReport
+		return ErrInvalidReport
 	}
 	if !rfp.SharedSetting(sk, key) {
-		return d, ErrInvalidSetting
+		return ErrInvalidSetting
 	}
 	_, parts, _, err := s.groupEngagementTx(ctx, tx, org, r, d)
 	if err != nil {
-		return d, err
+		return err
 	}
 	lead, ok := leadPart(parts)
 	if !ok {
-		return d, ErrInvalidReport
+		return ErrInvalidReport
 	}
 	if value == nil {
 		if _, ok := settings[key]; !ok {
-			return d, ErrNotFound
+			return ErrNotFound
 		}
 		if _, err := tx.Exec(ctx, `DELETE FROM report_settings WHERE org_id=$1::uuid AND report_version_id=$2::uuid AND key=$3`, org, d.ID, key); err != nil {
-			return d, err
+			return err
 		}
+		delete(settings, key)
 	} else {
 		if key == "transmittal" {
 			if value, err = transmittalSelection(ctx, tx, org, r.ProjectID, value); err != nil {
-				return d, err
+				return err
 			}
 		}
 		if err := rfp.ValidateSetting(lead.Disc, lead.Sk, lead.Drivers, key, value); err != nil {
-			return d, err
+			return err
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,$3,$4::jsonb,'{}'::jsonb,$5::uuid) ON CONFLICT(org_id,report_version_id,key) DO UPDATE SET value=EXCLUDED.value,basis=EXCLUDED.basis,user_id=EXCLUDED.user_id,version=report_settings.version+1,updated_at=now()`, org, d.ID, key, []byte(value), actor); err != nil {
-			return d, err
+			return err
 		}
+		settings[key] = rfp.Setting{Value: value}
 	}
-	return s.recomposeGroupTx(ctx, tx, org, r)
+	return nil
 }
 
 // RFPGroupView is the editor's view of a combined engagement: each member

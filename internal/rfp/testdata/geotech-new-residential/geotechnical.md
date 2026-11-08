@@ -24,7 +24,7 @@ Base stages only, from written instruction/input-access milestone to the selecte
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Review design and prior tests for relevance | Included |  |
 |  | Agree location/method/depth/refusal/lab schedule, groundwater, clearance, safe fieldwork, access and handback | Included |  |
 |  | Reconcile counts/levels | Included |  |
@@ -47,7 +47,7 @@ Base stages only, from written instruction/input-access milestone to the selecte
 |  | Contamination, waste classification, remediation/validation and independent audit | Excluded |  |
 |  | Acid sulfate soil assessment; define desktop/intrusive/management package from evidence | Included |  |
 |  | Reinstatement, spoil/fluid disposal; name repair, classification, transport and disposal owners | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Compare selected ground/foundation options and risk | Included |  |
 |  | Nominated planning report and responses | Included |  |
 |  | Interim report has stated limits | Included |  |

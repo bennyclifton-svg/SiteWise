@@ -26,7 +26,7 @@ Select base, options and end boundary; advice-only ends at its report/response r
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Agree brief/basis | Included |  |
 |  | Inspect agreed existing routes, separate observed/measured/reported facts | Included |  |
 |  | Route map/photos, inaccessible areas, upgrade questions and prioritised actions | Included |  |
@@ -35,7 +35,7 @@ Select base, options and end boundary; advice-only ends at its report/response r
 |  | Retained/new work and affected routes; BCA/certifier assess obligations, no automatic whole-building upgrade or exemption | Included |  |
 |  | Mixed uses/buildings/tenancies: continuous routes, shared entries/lifts/amenities; resolve adjoining-property/tenancy reliance | Included |  |
 |  | Remediation/heritage access options from specialist diagnosis/advice; no structural/fire/conservation/hazardous-material design | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Review conditions and coordinated drawings/specs | Included |  |
 |  | Preliminary mark-ups/final access report, close earlier findings and schedule product/measurement evidence | Included |  |
 |  | Solution preparation separate | Included |  |

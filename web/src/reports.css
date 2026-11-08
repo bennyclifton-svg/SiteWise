@@ -412,7 +412,7 @@
 .rfp-stage-scope td, .rfp-stage-scope th { vertical-align: middle; padding: 4px 10px; }
 .rfp-stage-row th, .rfp-stage-row td { border-top: 2px solid var(--line-strong, var(--line)); background: var(--sw-surface, var(--paper)); }
 .rfp-stage-toggle { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 28px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
-.rfp-stage-toggle:hover span:last-child { text-decoration: underline; text-underline-offset: 3px; }
+.rfp-stage-toggle:hover > span:nth-child(2) { text-decoration: underline; text-underline-offset: 3px; }
 .rfp-stage-toggle:focus-visible { outline: 2px solid var(--sw-focus, var(--ink)); outline-offset: 2px; border-radius: 4px; }
 /* A thin chevron: points right when closed, down when open. */
 .rfp-stage-caret { flex: none; width: 9px; height: 9px; margin: 0 4px 0 2px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--sw-text-secondary, var(--ink)); transform: rotate(-45deg); transition: transform 120ms ease; }
@@ -449,3 +449,54 @@ p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
 .report-block form.inline-text-form { margin-top: 0; }
 .inline-text-form .report-actions { margin-top: 0; }
 @media print { p.inline-text { margin: 8px 0 10px; width: auto; padding: 0; border: 0; } }
+
+/* Scope lines edited in place (owner direction, 8 November 2026). Narrower
+   Stage, tick and fee columns give the scope wording the width; a closed
+   stage previews its lines on one line, its item count in a circle beside
+   the name. Opened, the stage name and its one fee cell run down beside
+   the lines. */
+.rfp-stage-scope { min-width: 640px; }
+.rfp-stage-scope .rfp-col-stage { width: 23%; }
+.rfp-stage-scope .rfp-col-tick { width: 52px; }
+.rfp-stage-scope .rfp-col-fee { width: 10%; }
+.rfp-stage-scope th:first-child, .rfp-stage-scope .rfp-inout, .rfp-stage-scope .rfp-fee { width: auto; }
+.rfp-stage-scope thead abbr { text-decoration: none; }
+.rfp-stage-scope tbody[data-open] .rfp-stage-name, .rfp-stage-scope tbody[data-open] .rfp-fee-stage { vertical-align: top; }
+/* Stage names wrap between words, never inside one. */
+.rfp-stage-scope .rfp-stage-name { overflow-wrap: normal; word-break: normal; hyphens: manual; }
+.rfp-stage-scope .rfp-stage-toggle { align-items: flex-start; gap: 6px; }
+.rfp-stage-scope .rfp-stage-toggle > span:nth-child(2) { flex: 1; min-width: 0; padding-top: 3px; }
+.rfp-stage-scope .rfp-stage-caret { margin-top: 9px; }
+.rfp-stage-scope .rfp-stage-toggle[aria-expanded="true"] .rfp-stage-caret { margin-top: 6px; }
+.rfp-stage-scope tbody[data-open] .rfp-stage-name { border-top: 2px solid var(--line-strong, var(--line)); background: var(--sw-surface, var(--paper)); }
+.rfp-stage-scope tbody[data-open] > tr:first-child > td { border-top: 2px solid var(--line-strong, var(--line)); }
+.rfp-stage-name .hydraulic-detail { font-weight: 400; }
+.rfp-stage-badge { display: inline-grid; place-items: center; flex: none; min-width: 20px; height: 20px; margin-top: 3px; padding: 0 5px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--sw-text-secondary, var(--ink)); font-size: var(--fs-xs, .75rem); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.rfp-stage-preview { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--sw-text-secondary, var(--ink)); }
+.rfp-stage-scope tbody[data-open] .rfp-fee-stage { padding-top: 6px; }
+.rfp-fee-stage { text-align: left; color: var(--sw-text-secondary, var(--ink)); font-weight: 600; }
+/* A line's wording is a quiet field: click where the cursor should land. */
+.rfp-line-text { padding-top: 1px; padding-bottom: 1px; }
+.inline-text.inline-text-cell { width: calc(100% + 18px); margin: 0 -9px; padding: 2px 8px; line-height: 1.4; }
+.report-block textarea.inline-text.inline-text-cell, textarea.inline-text.inline-text-cell { width: calc(100% + 18px); padding: 2px 8px; }
+.rfp-line[data-edited] .rfp-line-text { box-shadow: inset 2px 0 0 var(--sw-link, var(--azure)); }
+.rfp-line[data-selected] td { background: var(--table-selection-bg); }
+.rfp-line[data-selected] .rfp-line-text { box-shadow: inset 2px 0 0 var(--ember); }
+.rfp-line:focus { outline: none; }
+/* "Add item…": grey until typed into, a clear border while it has focus,
+   as the Cost Plan's ghost line. */
+.rfp-stage-add td { padding-top: 1px; padding-bottom: 4px; }
+.report-block textarea.rfp-ghost, .rfp-ghost { box-sizing: border-box; display: block; width: calc(100% + 18px); min-height: 0; margin: 0 -9px; padding: 2px 8px; resize: none; overflow: hidden; border: 1px solid transparent; border-radius: var(--radius-sm); background: transparent; color: var(--sw-text-primary, var(--ink)); font: inherit; line-height: 1.4; }
+.rfp-ghost::placeholder { color: var(--sw-text-tertiary); opacity: .7; }
+.report-block textarea.rfp-ghost:hover, .rfp-ghost:hover { background: var(--sw-hover-bg); }
+.report-block textarea.rfp-ghost:focus, .rfp-ghost:focus { outline: none; border-color: var(--sw-selection-border, var(--azure)); background: var(--sw-surface-elevated, var(--paper)); box-shadow: 0 0 0 3px color-mix(in oklab, var(--sw-action-focus, var(--azure)) 22%, transparent); }
+.rfp-line-selection { position: sticky; bottom: 12px; z-index: 5; display: flex; align-items: center; gap: 8px; width: max-content; margin: 8px 0 0 auto; padding: 6px 8px 6px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--paper); box-shadow: 0 4px 16px color-mix(in oklab, #000 14%, transparent); font-size: var(--fs-sm); }
+.rfp-line-selection .btn { display: inline-flex; align-items: center; gap: 6px; }
+.rfp-line-selection svg { width: 14px; height: 14px; }
+.rfp-line-delete { color: var(--alert); }
+@media print {
+  .rfp-stage-add, .rfp-line-selection, .rfp-stage-caret, .rfp-stage-badge { display: none !important; }
+  .rfp-line[data-edited] .rfp-line-text, .rfp-line[data-selected] .rfp-line-text { box-shadow: none; }
+  .rfp-line[data-selected] td { background: none; }
+  .inline-text.inline-text-cell { width: auto; margin: 0; padding: 0; }
+}

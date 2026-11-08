@@ -24,16 +24,16 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. R1 Fee by st
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Brief/system-space register | Included |  |
 |  | Accessible review, observed/tested/assumed condition/capacity/life | Included |  |
 |  | Gaps/owners | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Options/preliminary loads/zones, plant/routes/replacement access, intakes/discharges/acoustics/cost inputs | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Listed spatial sketches or formal plans/reports | Included |  |
 |  | Screening/noise/energy inputs, submissions and bounded responses | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Load/airflow/pressure/selection calculations, layouts/schedules, refrigerant/condensate, energy/controls/fire modes | Included |  |
 |  | Structure/envelope/power/access coordination | Included |  |
 |  | Selected detailed HVAC design: duties/air paths/outdoor air; loads/hours/reserve | Included |  |
@@ -46,7 +46,7 @@ R2 defines output maturity/formats/reliance/revisions/rounds/dates. R1 Fee by st
 |  | Coordinate supports/plinths/openings/power/refrigerant leak/condensate; respective specialists design. Condensate: agree hydraulic/mechanical connection point/level, receiving capacity, falls/traps/tundish/discharge; name upstream/downstream design/install/test owners. Unresolved allocation stays open. R4 names strategy/cause-and-effect authors, mechanical designer, programmer, power/network provider, test performer/leader/witness. | Included |  |
 |  | Occupied/phased temporary ventilation/isolation/handback by use/phase | Included |  |
 |  | Laboratory/clean-room/medical gases/process refrigeration/hazardous areas | Excluded |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | Traditional design/calculations/specs | Included |  |
 |  | D&C performance/intent, retained/delegated design/test criteria | Included |  |
 |  | RFIs/addenda/comparison | Included |  |

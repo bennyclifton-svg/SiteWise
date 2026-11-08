@@ -146,6 +146,8 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 				}
 			}
 		}
+	case "wording":
+		return validKey(d, sk, drivers, "line:"+name)
 	case "custom":
 		for _, s := range d.Stages {
 			if d.ScopeByStage && s.Key == name {
@@ -157,7 +159,7 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 }
 
 var (
-	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight|line|custom):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
+	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight|line|wording|custom):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
 	customIDRE   = regexp.MustCompile(`^u[a-z0-9]{1,15}$`)
 	dateRE       = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 	numberRE     = regexp.MustCompile(`^[0-9]{1,12}(\.[0-9]{1,2})?$`)
@@ -254,7 +256,13 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 	case prefix == "position":
 		return oneOf("I", "O", "X", Ask)
 	case prefix == "line":
-		return oneOf("I", "X")
+		return oneOf("I", "X", Deleted)
+	case prefix == "wording":
+		s, ok := str()
+		if !ok || !validLineText(s) {
+			return ErrInvalidSetting
+		}
+		return nil
 	case prefix == "responsible":
 		s, ok := str()
 		if !ok || strings.TrimSpace(s) == "" || utf8.RuneCountInString(s) > 120 || !printable(s) {
@@ -304,14 +312,19 @@ func validCustomLines(raw json.RawMessage) error {
 	}
 	seen := map[string]bool{}
 	for _, l := range lines {
-		text := strings.TrimSpace(l.Text)
-		if !customIDRE.MatchString(l.ID) || seen[l.ID] || text == "" || text != l.Text || utf8.RuneCountInString(text) > 300 ||
-			!printable(text) || strings.ContainsAny(text, "{}\n") || (l.Value != "I" && l.Value != "X") {
+		if !customIDRE.MatchString(l.ID) || seen[l.ID] || !validLineText(l.Text) || (l.Value != "I" && l.Value != "X") {
 			return ErrInvalidSetting
 		}
 		seen[l.ID] = true
 	}
 	return nil
+}
+
+// validLineText is a scope line's wording: trimmed, one line of up to 300
+// characters, and never readable as a {slot}.
+func validLineText(text string) bool {
+	return text != "" && text == strings.TrimSpace(text) && utf8.RuneCountInString(text) <= 300 &&
+		printable(text) && !strings.ContainsAny(text, "{}\n")
 }
 
 func printable(s string) bool {

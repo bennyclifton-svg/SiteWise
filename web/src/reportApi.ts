@@ -39,6 +39,8 @@ export const reportApi = {
 	reset: (id: string, target: string, version: number) => request<ReportDraft>("DELETE", `/reports/${id}/edits/${encodeURIComponent(target)}`, { version }),
   /** view names a combined engagement's report: a member's setting then returns that report's view. */
   setting: (id: string, key: string, value: unknown, version: number, view?: string) => request<ReportView>("PUT", `/reports/${id}/settings/${encodeURIComponent(key)}`, { value, version, view }),
+  /** Several settings in one write; a null value deletes that setting. */
+  settings: (id: string, changes: { key: string; value: unknown | null }[], version: number, view?: string) => request<ReportView>("POST", `/reports/${id}/settings`, { changes, version, view }),
   clearSetting: (id: string, key: string, version: number, view?: string) => request<ReportView>("DELETE", `/reports/${id}/settings/${encodeURIComponent(key)}`, { version, view }),
   /** Saves a project fact to Profile and returns the refreshed view; null clears the user's word. */
   fact: (id: string, fact: string, value: string | null, version: number) => request<ReportView>("PUT", `/reports/${id}/facts/${encodeURIComponent(fact)}`, { value, version }),

@@ -6,7 +6,7 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
  * text, so nothing moves when editing starts. A click puts the cursor where
  * it landed; Save or Cancel sit underneath, and clicking away saves.
  */
-export function InlineText({ text, label, editing, value, disabled, busy, saveDisabled, onStart, onChange, onSave, onCancel, actions }: {
+export function InlineText({ text, label, editing, value, disabled, busy, saveDisabled, compact, maxLength, onStart, onChange, onSave, onCancel, actions }: {
   text: string;
   label: string;
   editing: boolean;
@@ -20,6 +20,13 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   onCancel: () => void;
   /** Shown under the text when not editing, such as an Edit button. */
   actions?: ReactNode;
+  /**
+   * A table cell (the RFP scope lines): one line of text with no buttons.
+   * Enter or clicking away saves; Escape cancels; a Ctrl or Shift click
+   * selects the row instead of editing it.
+   */
+  compact?: boolean;
+  maxLength?: number;
 }) {
   const box = useRef<HTMLTextAreaElement>(null);
   const caret = useRef<number | null>(null);
@@ -38,6 +45,7 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
 
   function start(e: React.MouseEvent<HTMLParagraphElement>) {
     if (disabled) return;
+    if (compact && (e.ctrlKey || e.metaKey || e.shiftKey)) return;
     // Selecting text to copy is not a request to edit it.
     if (String(window.getSelection() ?? "")) return;
     caret.current = offsetAt(e.currentTarget, e.clientX, e.clientY);
@@ -45,7 +53,7 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   }
 
   if (!editing) return <>
-    <p className="report-wording inline-text" data-editable={!disabled || undefined} onClick={start}>{text}</p>
+    <p className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} data-editable={!disabled || undefined} onClick={start}>{text}</p>
     {actions}
   </>;
 
@@ -59,12 +67,17 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   return <form className="inline-text-form" onSubmit={e => { e.preventDefault(); onSave(); }}
     onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) leave(); }}
     onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); onCancel(); } }}>
-    <textarea ref={box} className="report-wording inline-text" aria-label={label} maxLength={20000} value={value} disabled={busy}
-      onChange={e => { onChange(e.target.value); grow(e.target); }} />
-    <div className="report-actions">
+    <textarea ref={box} className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} aria-label={label} maxLength={maxLength ?? 20000} value={value} disabled={busy}
+      onChange={e => { onChange(compact ? e.target.value.replace(/\n/g, " ") : e.target.value); grow(e.target); }}
+      onKeyDown={e => {
+        if (!compact || e.key !== "Enter") return;
+        e.preventDefault();
+        if (value === text) onCancel(); else if (!saveDisabled) onSave();
+      }} />
+    {!compact && <div className="report-actions">
       <button className="btn btn-small" disabled={busy || saveDisabled}>Save wording</button>
       <button type="button" className="btn btn-small" disabled={busy} onClick={onCancel}>Cancel edit</button>
-    </div>
+    </div>}
   </form>;
 }
 

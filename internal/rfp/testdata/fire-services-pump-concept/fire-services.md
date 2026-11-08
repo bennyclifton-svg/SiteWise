@@ -26,7 +26,7 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Basis/system register | Included |  |
 |  | Accessible survey, observed/tested/assumed gaps | Included |  |
 |  | Supply/capacity investigation brief and inputs/owners | Included |  |
@@ -34,7 +34,7 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 |  | Retained supply/plant/network suitability, uncertainty/options | Included |  |
 |  | Upgrade design separate | Included |  |
 |  | Defined investigation; records are not condition proof; upgrade separate | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Demand/options/indicative duties | Included |  |
 |  | Plant/booster/valve space, routes/access/power/drainage/brigade | Included |  |
 |  | Listed planning notes/responses | Included |  |

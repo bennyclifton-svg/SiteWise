@@ -27,7 +27,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Review of information | Included |  |
 |  | Site visit | Included |  |
 |  | Survey and services gap analysis (BYDA, existing utilities plan) | Included |  |
@@ -58,7 +58,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Water management strategy (supply, reuse, effluent) | Included |  |
 |  | Civil safety in design report | Included |  |
 |  | Trunk drainage, external catchments, watercourse works | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | You hold the civil design. | Included |  |
 |  | Design to the approved plans and consent conditions, complete enough to price as a lump sum | Included |  |
 |  | Specification | Included |  |
@@ -76,7 +76,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Authority asset approvals (specialist engineering assessment) | Excluded |  |
 |  | Road safety audit by an auditor independent of the design | Included |  |
 |  | Pre-tender estimate or bill of quantities | Excluded |  |
-| Design finalisation | The contractor holds the design after novation. | Included |  |
+| Design finalisation | The contractor holds the design after novation. | Included | $ |
 |  | Construction set | Included |  |
 |  | Construction certificate issue | Included |  |
 | Delivery | Not part of this appointment | Excluded | — |

@@ -26,7 +26,7 @@ Select base/options and named end; operational and C&D plans are separate purcha
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Brief, local controls/consents, operator arrangements and agreed visits | Included |  |
 |  | Input gaps, stream/stakeholder schedule and responsibility map | Included |  |
 |  | Existing work: photos, retained/removed extent and safe access | Included |  |
@@ -35,7 +35,7 @@ Select base/options and named end; operational and C&D plans are separate purcha
 |  | Compare feasibility before space is fixed | Included |  |
 |  | Operational room/chute/compactor capacity and bin routes; architect details space, services design ventilation/drainage/power | Included |  |
 |  | Mixed uses/shared facilities/operators: separate streams, tenancy rights/duties; unknown tenants need stated assumptions | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Separate operational WMP: calculations, annotated rooms/routes/collection layout and management duties | Included |  |
 |  | Scheduled drafts, council forms/consultation/responses to named milestone | Included |  |
 |  | Confirm operator acceptance owner/date | Included |  |

@@ -72,7 +72,12 @@ type LineResult struct {
 	Value  string `json:"value"`
 	Source string `json:"source"` // rule | user
 	Custom bool   `json:"custom,omitempty"`
+	// Edited marks a standard line in the user's own words (wording:<stage>.<line>).
+	Edited bool `json:"edited,omitempty"`
 }
+
+// Deleted is a standard line's setting once the user deletes it from an RFP.
+const Deleted = "D"
 
 // CustomLine is a line the user added to a stage, saved as custom:<stage>.
 type CustomLine struct {
@@ -93,9 +98,9 @@ type ElementResult struct {
 }
 
 type AllowanceResult struct {
-	Key    string `json:"key"`
-	Label  string `json:"label"`
-	Text   string `json:"text"`
+	Key   string `json:"key"`
+	Label string `json:"label"`
+	Text  string `json:"text"`
 	// Detail is Text without its count, for the table's Allowance column;
 	// the count prints in its own Qty column.
 	Detail string `json:"detail"`
@@ -836,8 +841,17 @@ func (r *resolver) resolveLines(s *StageResult, st knowledge.RFPStage) {
 		}
 		line := LineResult{Key: l.Key, Text: l.Text, Value: "I", Source: "rule"}
 		if raw, ok := r.setting("line:" + st.Key + "." + l.Key); ok {
-			if v := settingString(raw); v == "I" || v == "X" {
+			switch v := settingString(raw); v {
+			case "I", "X":
 				line.Value, line.Source = v, "user"
+			case Deleted:
+				// Deleted from this RFP: nobody prices it, and it does not show.
+				continue
+			}
+		}
+		if raw, ok := r.setting("wording:" + st.Key + "." + l.Key); ok {
+			if text := settingString(raw); text != "" {
+				line.Text, line.Edited = text, true
 			}
 		}
 		conditional = conditional || (len(l.When) > 0 && line.Value == "I")

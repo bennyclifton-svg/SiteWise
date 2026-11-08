@@ -261,7 +261,9 @@ func (b *builder) stageScopeTable() {
 		case "per_unit":
 			note = strings.TrimSpace(note + " Fee: rate per unit × quantity.")
 		}
-		rows = append(rows, []string{s.Name, note, "Included", ""})
+		// One fee per stage (owner direction, 8 November 2026): the $ marks
+		// the one cell the firm fills in; its lines carry none.
+		rows = append(rows, []string{s.Name, note, "Included", "$"})
 		for _, l := range s.Lines {
 			rows = append(rows, []string{"", upperFirst(l.Text), position(l.Value), ""})
 		}

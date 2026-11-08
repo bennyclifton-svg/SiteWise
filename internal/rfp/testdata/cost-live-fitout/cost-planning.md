@@ -26,12 +26,12 @@ Confirm base stages, inputs and final query-period end; later services require w
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Reconcile brief, budget, scope/area/quantity definitions and evidence | Included |  |
 |  | Establish source, gap, risk and priced-assumption registers, reporting/program and input owners | Included |  |
 |  | Total project budget: fees/charges, off-site, FF&E, land/finance/tax; item boundaries and tax adviser agreed | Included |  |
 |  | Escalation, risk register and sensitivity; dated endpoints, no duplicate contingency/margin | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | At named milestones measure/price agreed documents | Included |  |
 |  | Coordinate services/siteworks, test value options with designers, reconcile changes/budget and risk/owner costs | Included |  |
 |  | Flag gaps before freeze | Included |  |

@@ -69,8 +69,18 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   const before = Number(await toolbar.getAttribute("data-version"));
   await expandStages(structural);
   // An open stage's lines fill the table's four columns, no stray fee cell.
-  const widths = await structural.locator(".rfp-stage-scope tr").evaluateAll(rows =>
-    rows.map(r => [...r.children].reduce((n, c) => n + ((c as HTMLTableCellElement).colSpan || 1), 0)));
+  // A stage's name cell runs down its open lines (rowspan), so count the
+  // cells each row takes from the rows above as well as its own.
+  const widths = await structural.locator(".rfp-stage-scope tr").evaluateAll(rows => {
+    let carried: number[] = [];
+    return rows.map(r => {
+      const own = [...r.children] as HTMLTableCellElement[];
+      const width = carried.length + own.reduce((n, c) => n + (c.colSpan || 1), 0);
+      carried = [...carried.map(n => n - 1), ...own.filter(c => c.rowSpan > 1).map(c => c.rowSpan - 1)].filter(n => n > 0);
+      if (r.parentElement?.tagName === "THEAD" || r.parentElement !== rows[rows.indexOf(r) + 1]?.parentElement) carried = [];
+      return width;
+    });
+  });
   expect(new Set(widths), "every stage table row is as wide as its header").toEqual(new Set([4]));
   const boxes = structural.locator('tr.rfp-stage-line[data-line] input[type="checkbox"][aria-label$=": excluded"]:not(:checked):not(:disabled)');
   const name = (await boxes.first().getAttribute("aria-label"))!;

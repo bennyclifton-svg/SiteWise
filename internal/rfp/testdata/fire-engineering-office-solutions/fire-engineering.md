@@ -24,14 +24,14 @@ Start on instruction/agreed inputs; end at named output/response. Price once. R1
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Records/inspection, gaps/departures and strategy/markups: active/passive measures, egress/brigade access, options/operating consequences | Included |  |
 |  | Existing extent | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Defined preliminary letter/report and bounded responses | Included |  |
 |  | Partial-upgrade needs | Included |  |
 |  | Not final brief/FER or construction authority | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | PBDB/FEB: IDs/departures, verified requirements, methods/scenarios/criteria, inputs/limits | Included |  |
 |  | Consultation and team/operator/certifier comment closure | Included |  |
 |  | Analysis/calculations/models/sensitivity, draft/final FER/plans and limits | Included |  |

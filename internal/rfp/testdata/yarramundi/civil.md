@@ -28,7 +28,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Review of information | Included |  |
 |  | Site visit | Included |  |
 |  | Survey and services gap analysis (BYDA, existing utilities plan) | Included |  |
@@ -59,7 +59,7 @@ Each design stage is issued as one draft and one final. Design stages are priced
 |  | Water management strategy (supply, reuse, effluent) | Included |  |
 |  | Civil safety in design report | Included |  |
 |  | Trunk drainage, external catchments, watercourse works | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | You hold the design to tender issue; the contractor holds it after award. | Included |  |
 |  | Design developed to the approved plans and consent conditions as far as the D&C tender needs | Included |  |
 |  | Performance specification | Included |  |

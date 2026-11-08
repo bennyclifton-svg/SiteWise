@@ -31,7 +31,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Confirmed, quantified brief (1 draft, 1 final) | Included |  |
 |  | Approval strategy workshop | Included |  |
 |  | Site inspection | Included |  |
@@ -42,26 +42,26 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Check against budget | Included |  |
 |  | Brief gaps, required-input schedule, responsibility matrix and decisions register | Included |  |
 |  | Help selecting other consultants | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Preferred scheme resolved for planning and the cost plan | Included |  |
 |  | Outline materials and systems | Included |  |
 |  | Pre-application meeting where the pathway has one | Included |  |
 |  | Photoreal renders, marketing CGI, models | Excluded |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Architectural drawings and input to the complying development application: one preliminary and one final issue | Included |  |
 |  | Who lodges is set in section 2 | Included |  |
 |  | Modification applications after approval | Included |  |
 |  | Lodging the planning application: a DA with the consent authority, or a CDC with the certifier, who assesses it | Excluded |  |
 |  | Water authority approval to build over or next to its asset: drawings and submission | Included |  |
 |  | Court appeals | Excluded |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Coordinated design to the approval and consent conditions | Included |  |
 |  | Finishes and typical details | Included |  |
 |  | BCA strategy with the BCA consultant | Included |  |
 |  | Specialist inputs (energy, access, fire, façade) shown in your documents; designer and certifier noted per interface | Included |  |
 |  | Loose furniture and FF&E selection | Included |  |
 |  | Value management redesign (at R3 rates) | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | You hold the whole architectural design. | Included |  |
 |  | One documentation set for a lump-sum price and for construction: drawings, door and window schedules, joinery details, the finishes and fixtures schedule and the specification | Included |  |
 |  | One tender issue, then one construction issue with the agreed tender changes and any construction certificate set | Included |  |
@@ -71,7 +71,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Kitchen, bathroom, laundry and joinery design: layouts, elevations and joinery details | Included |  |
 |  | Finishes, fixtures, fittings and appliances schedule, internal and external, with colour schemes | Included |  |
 |  | Door schedule; hardware schedule by the supplier | Included |  |
-| Delivery |  | Included |  |
+| Delivery |  | Included | $ |
 |  | 6 site inspections | Included |  |
 |  | RFIs | Included |  |
 |  | Shop drawing review | Included |  |

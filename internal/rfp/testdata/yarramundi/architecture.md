@@ -29,7 +29,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Confirmed, quantified brief (1 draft, 1 final) | Included |  |
 |  | Up to 2 masterplan options | Included |  |
 |  | Preferred masterplan report | Included |  |
@@ -44,21 +44,21 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Help selecting other consultants | Included |  |
 |  | Connecting with Country input | Included |  |
 |  | Existing building: retain, demolish and alter drawings; investigations needed; old-to-new interfaces | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Preferred scheme resolved for planning and the cost plan | Included |  |
 |  | Outline materials and systems | Included |  |
 |  | Pre-application meeting where the pathway has one | Included |  |
 |  | Photoreal renders, marketing CGI, models | Included |  |
 |  | Community consultation | Included |  |
 |  | Class and use map by part; shared-system interface schedule; shell versus fit-out deliverables | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Architectural drawings and input to the Statement of Environmental Effects: one preliminary and one final issue | Included |  |
 |  | Who lodges is set in section 2 | Included |  |
 |  | Authority information requests and design changes during assessment | Included |  |
 |  | Actual time at R3 rates up to 40 hours | Included |  |
 |  | Modification applications after approval | Included |  |
 |  | Court appeals | Excluded |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Coordinated design to the approval and consent conditions | Included |  |
 |  | Finishes and typical details | Included |  |
 |  | BCA strategy with the BCA consultant | Included |  |
@@ -74,7 +74,7 @@ Price each stage that applies. Each stage ends at client sign-off, and that desi
 |  | Performance solutions (fire, access, weatherproofing) | Excluded |  |
 |  | Green Star or NABERS documentation | Included |  |
 |  | Signage and wayfinding | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | You hold the design to tender issue; the contractor holds it after award. | Included |  |
 |  | Design-intent drawings and performance brief | Included |  |
 |  | Schedule of the design you retain and the design the contractor completes | Included |  |

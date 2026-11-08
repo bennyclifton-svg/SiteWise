@@ -30,12 +30,12 @@ Price each stage that applies as a lump sum; surveys are priced per location. R1
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Site inspection | Included |  |
 |  | Review of plans and controls | Included |  |
 |  | Advice on access, heavy vehicle circulation, loading and parking layout | Included |  |
 |  | Vehicle schedule (waste, emergency, service and operator vehicles); ramps, gradients, headroom, sight lines and pedestrian conflicts checked against the current architect and civil layouts | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Traffic generation and distribution | Included |  |
 |  | Network impact (using the modelling stage where it applies) | Included |  |
 |  | Parking provision against the DCP and demand | Included |  |
@@ -54,16 +54,16 @@ Price each stage that applies as a lump sum; surveys are priced per location. R1
 |  | Swept paths for every loading dock and design vehicle | Included |  |
 |  | Microsimulation beyond SIDRA | Excluded |  |
 |  | Expert witness, Land and Environment Court | Excluded |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Ramps, parking and loading checked against the consent conditions as the design develops or the contractor changes it | Included |  |
 |  | Signage and line-marking submissions to the local traffic committee | Included |  |
 |  | Travel plan meeting the condition or DCP requirement | Included |  |
 |  | Road safety audit by an auditor independent of the design team; state its stage and scope in R2 | Included |  |
 |  | Design of works in the public road (signals, intersections) | Excluded |  |
-| Design finalisation |  | Included |  |
+| Design finalisation |  | Included | $ |
 |  | Construction traffic management plan for council approval, or review of the contractor's plan (say which in R2) | Included |  |
 |  | Traffic control plans | Included |  |
-| Delivery |  | Included |  |
+| Delivery |  | Included | $ |
 |  | Design certification of the car park, access and loading against AS 2890 for the construction certificate | Included |  |
 |  | Completed car park certification after construction | Included |  |
 | Across all stages | Services through the whole appointment |  | In stage fees |

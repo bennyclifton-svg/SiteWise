@@ -10,7 +10,7 @@ import { ApiError } from "./api";
 import { reportApi, type ReportView, type ReportReference, type ReportBlock, type PageFit, type RfpControls, type RfpGroupMember } from "./reportApi";
 import { submissionApi } from "./submissionApi";
 import { RfpStages } from "./PackageStages";
-import { ProjectPage, RfpReleaseDates, RfpIssue, RfpSectionEditor, SectionMarkers, controlSection, editableSections, type Write } from "./RfpEditor";
+import { ProjectPage, RfpReleaseDates, RfpIssue, RfpSectionEditor, SectionMarkers, controlSection, editableSections, type SettingChange, type Write } from "./RfpEditor";
 import "./reports.css";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { InlineText } from "./InlineText";
@@ -137,12 +137,20 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
       setView(next);
     } catch (e) { fail(e); } finally { setBusyKey(""); }
   }
+  // Several choices in one write, such as scope lines deleted together.
+  async function writeSettings(changes: SettingChange[]) {
+    if (!view?.draft || !changes.length) return;
+    setBusyKey("settings"); setError("");
+    try { setView(await reportApi.settings(reportId, changes, view.draft.version)); }
+    catch (e) { fail(e); } finally { setBusyKey(""); }
+  }
+  const ownWrite: Write = Object.assign(writeSetting, { many: writeSettings });
   // A combined engagement: a choice in one discipline's part is written to
   // that member's own report, and the server returns this report's view,
   // recomposed in the same transaction.
   const group = view?.rfp_group;
   function writeMember(member: RfpGroupMember): Write {
-    return async (key, value) => {
+    const one = async (key: string, value: unknown | null) => {
       if (!member.report_id || !member.draft_version) return;
       setBusyKey(key); setError("");
       try {
@@ -150,6 +158,13 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
         setView(next);
       } catch (e) { fail(e); } finally { setBusyKey(""); }
     };
+    const many = async (changes: SettingChange[]) => {
+      if (!member.report_id || !member.draft_version || !changes.length) return;
+      setBusyKey("settings"); setError("");
+      try { setView(await reportApi.settings(member.report_id, changes, member.draft_version, reportId)); }
+      catch (e) { fail(e); } finally { setBusyKey(""); }
+    };
+    return Object.assign(one, { many });
   }
   function toggleEdit(section: string) {
     setOpenEdits(old => { const next = new Set(old); if (next.has(section)) next.delete(section); else next.add(section); return next; });
@@ -194,7 +209,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
   pageLimit.current = view?.page_fit?.limit ?? 2;
   const editable = view?.rfp ? editableSections(view.rfp) : new Set<string>();
   // One saved block as the reader sees it, with protected-wording edits.
-  const blockView = (block: ReportBlock, controls: RfpControls | undefined = view?.rfp, onWrite: Write = writeSetting) => draft && <article className="report-block" key={block.id}>
+  const blockView = (block: ReportBlock, controls: RfpControls | undefined = view?.rfp, onWrite: Write = ownWrite) => draft && <article className="report-block" key={block.id}>
             <div className="report-block-heading">{block.label && <h4>{block.label}</h4>}{block.provisional && !view?.rfp && <span>Provisional</span>}{block.edited && <span>Protected wording</span>}</div>
             {block.conflict && <p className="report-conflict">{block.source_missing ? "The source is no longer present. Your wording has been kept for review." : "The source changed. Review your protected wording against its updated source."}</p>}
             {(() => {

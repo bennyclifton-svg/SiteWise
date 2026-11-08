@@ -407,3 +407,38 @@ func profileBuildFor(cat *knowledge.Catalog) store.ProfileBuild {
 		return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: profile.Thresholds{Amber: map[string]float64{"presence": .6, "header": .6, "action": .8}}}, cat)
 	}}
 }
+
+// Scope lines deleted together save in one transaction (owner direction,
+// 8 November 2026): a standard line is deleted, another reworded and the
+// user's own line removed in one write, and one bad change refuses all.
+func TestReportSettingsBatchEditsScopeLines(t *testing.T) {
+	ctx := context.Background()
+	s, b, part := workStore(t)
+	r, d := rfpProject(t, s, b, part)
+	d = setSetting(t, s, r, d, "custom:brief_concept", `[{"id":"u1","text":"Survey coordination","value":"I"}]`)
+	before := d.Version
+
+	bad := []store.SettingChange{{Key: "line:brief_concept.area_schedule", Value: json.RawMessage(`"D"`)}, {Key: "wording:brief_concept.nope", Value: json.RawMessage(`"A"`)}}
+	if _, _, err := s.SetReportSettingsInGroup(ctx, orgA, r.ID, userA, bad, d.Version); !errors.Is(err, store.ErrInvalidSetting) {
+		t.Fatalf("a batch with a bad change: %v", err)
+	}
+	changes := []store.SettingChange{
+		{Key: "line:brief_concept.area_schedule", Value: json.RawMessage(`"D"`)},
+		{Key: "wording:brief_concept.site_inspection", Value: json.RawMessage(`"Walk the site with the client"`)},
+		{Key: "custom:brief_concept", Value: nil},
+	}
+	next, _, err := s.SetReportSettingsInGroup(ctx, orgA, r.ID, userA, changes, d.Version)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if next.Version != before+1 {
+		t.Fatalf("one batch is one draft version: %d -> %d", before, next.Version)
+	}
+	table := blockTable(next, "rfp:stages")
+	if strings.Contains(table, "Area schedule") || strings.Contains(table, "Survey coordination") || !strings.Contains(table, "|Walk the site with the client|Included|") {
+		t.Fatalf("stage table after the batch:\n%s", table)
+	}
+	if _, _, err := s.SetReportSettingsInGroup(ctx, orgA, r.ID, userA, changes[:1], d.Version); !errors.Is(err, store.ErrVersionConflict) {
+		t.Fatalf("a stale batch: %v", err)
+	}
+}

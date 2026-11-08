@@ -24,17 +24,17 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Basis/system register | Included |  |
 |  | Accessible survey, observed/tested/assumed gaps | Included |  |
 |  | Supply/capacity investigation brief and inputs/owners | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Demand/options/indicative duties | Included |  |
 |  | Plant/booster/valve space, routes/access/power/drainage/brigade | Included |  |
 |  | Listed planning notes/responses | Included |  |
 |  | Unresolved pipework | Included |  |
 |  | Fire strategy and performance solutions | Excluded |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Demand/hydraulics/supply cases/storage/pumps/zones/equipment | Included |  |
 |  | Existing/new, controls/power/loads/maintenance coordination | Included |  |
 |  | Listed authority tasks | Included |  |
@@ -46,7 +46,7 @@ R2 sets each output purpose/maturity, native formats, recipient/reliance, revisi
 |  | Plant interface review; structural/MEP specialists design supports/enclosure/power/ventilation/drainage/penetrations | Included |  |
 |  | Live/staged/mixed-use isolation/protection/restoration; contractor/operator controls, fire engineer strategy | Included |  |
 |  | Special hazards/high storage/process/batteries/special suppression | Excluded |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | Traditional drawings/calculations/schedules/specification | Included |  |
 |  | D&C intent/performance/test criteria and contractor-design handover | Included |  |
 |  | RFIs/addenda/comparison | Included |  |

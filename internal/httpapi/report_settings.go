@@ -54,6 +54,45 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 		return
 	}
 	draft, group, err := deps.Store.SetReportSettingInGroup(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, key, value, body.Version)
+	answerReportSetting(w, r, deps, session.OrgID, draft, group, body.View, err)
+}
+
+// postReportSettings stores several choices in one transaction, such as
+// scope lines deleted together. Each change's null value deletes it.
+func postReportSettings(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := reportSession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var body struct {
+		Changes []store.SettingChange `json:"changes"`
+		Version int64                 `json:"version"`
+		View    string                `json:"view"`
+	}
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if len(body.Changes) == 0 || len(body.Changes) > store.MaxSettingChanges {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "send between one and 200 changes"})
+		return
+	}
+	for i, c := range body.Changes {
+		if !settingKeyPattern.MatchString(c.Key) {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "unknown setting"})
+			return
+		}
+		if len(c.Value) == 0 || string(c.Value) == "null" {
+			body.Changes[i].Value = nil
+		}
+	}
+	draft, group, err := deps.Store.SetReportSettingsInGroup(r.Context(), session.OrgID, r.PathValue("r"), session.UserID, body.Changes, body.Version)
+	answerReportSetting(w, r, deps, session.OrgID, draft, group, body.View, err)
+}
+
+// answerReportSetting returns the report a setting write changed: the
+// combined engagement's when the editor shows it, else this one's.
+func answerReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, org string, draft store.ReportDraft, group, show string, err error) {
 	if err != nil {
 		if errors.Is(err, store.ErrInvalidSetting) {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid_setting", "message": "that value is not allowed for this setting"})
@@ -63,11 +102,11 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 		return
 	}
 	if deps.Broker != nil {
-		deps.Broker.Wake(session.OrgID)
+		deps.Broker.Wake(org)
 	}
 	// Only the group the store recomposed may be returned instead.
-	if body.View != "" && body.View == group && group != r.PathValue("r") {
-		view, err := deps.Store.ReadReport(r.Context(), session.OrgID, group, deps.ReportBuild)
+	if show != "" && show == group && group != r.PathValue("r") {
+		view, err := deps.Store.ReadReport(r.Context(), org, group, deps.ReportBuild)
 		if err != nil {
 			reportError(w, err)
 			return
@@ -75,7 +114,7 @@ func writeReportSetting(w http.ResponseWriter, r *http.Request, deps Deps, remov
 		writeJSON(w, http.StatusOK, view)
 		return
 	}
-	view, err := deps.Store.ReadReport(r.Context(), session.OrgID, r.PathValue("r"), deps.ReportBuild)
+	view, err := deps.Store.ReadReport(r.Context(), org, r.PathValue("r"), deps.ReportBuild)
 	if err != nil {
 		reportError(w, err)
 		return

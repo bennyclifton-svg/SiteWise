@@ -3,16 +3,16 @@ import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 // The document register: one compact line per filing, sortable, opening the
 // source and filing details in the centre workspace.
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode, type HTMLAttributes } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode, type HTMLAttributes } from "react";
 import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, notFiledReason, type RowModel } from "./DocumentRow";
-import { createPortal } from "react-dom";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { IconBin, IconEye, IconEyeOff, IconMore, IconOpen, IconRename, IconRetry, IconStored, IconTag, IconUndo, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
 import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
+import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 import "./register-edit.css";
 
 type Col = "number" | "title" | "revision" | "date" | "discipline";
@@ -154,8 +154,7 @@ function RegisterCell({ doc, field, catalog, onCorrect, editRequest = 0, selecte
 // Kind and lifecycle stay editable in the document's filing details; the
 // register keeps to what people scan for.
 type FieldChoice = "discipline";
-type MenuItem = { label: string; icon: ReactNode; onSelect: () => void; disabled?: boolean; danger?: boolean } | "sep";
-interface MenuState { x: number; y: number; ids: string[]; rowKey: string; trigger: HTMLElement | null }
+interface MenuState extends RowMenuAt { ids: string[]; rowKey: string }
 
 export function Register({
   rows,
@@ -398,7 +397,8 @@ export function Register({
           ))}
         </table>
       )}
-      {menu && <RowMenu menu={menu} items={menuItems(menu)} onClose={closeMenu} />}
+      {menu && <RowMenu at={menu} items={menuItems(menu)} label={menu.ids.length > 1 ? `Actions for ${menu.ids.length} documents` : "Document actions"}
+        head={menu.ids.length > 1 ? `${menu.ids.length} documents selected` : undefined} onClose={closeMenu} />}
       {fieldEdit && (
         <ConfirmDialog
           title={`Set ${fieldEdit.field}${fieldEdit.ids.length > 1 ? ` for ${fieldEdit.ids.length} documents` : ""}`}
@@ -429,71 +429,6 @@ export function Register({
         />
       )}
     </div>
-  );
-}
-
-/** The row actions menu, shared by the ⋮ button and right-click. Rendered on
- * the body so the side panel's containment cannot clip or offset it. */
-function RowMenu({ menu, items, onClose }: { menu: MenuState; items: MenuItem[]; onClose: (restoreFocus: boolean) => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [pos, setPos] = useState({ left: menu.x, top: menu.y });
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const left = Math.max(8, Math.min(menu.x, window.innerWidth - r.width - 8));
-    const top = menu.y + r.height > window.innerHeight - 8 ? Math.max(8, menu.y - r.height) : menu.y;
-    setPos({ left, top });
-    el.querySelector<HTMLElement>('[role="menuitem"]:not(:disabled)')?.focus({ preventScroll: true });
-  }, [menu]);
-  const close = useRef(onClose);
-  close.current = onClose;
-  useEffect(() => {
-    const away = (e: PointerEvent) => {
-      const target = e.target as Node;
-      // The ⋮ button toggles the menu itself on click.
-      const toggle = menu.trigger instanceof HTMLButtonElement && menu.trigger.contains(target);
-      if (!ref.current?.contains(target) && !toggle) close.current(false);
-    };
-    const leave = () => close.current(false);
-    document.addEventListener("pointerdown", away, true);
-    window.addEventListener("resize", leave);
-    window.addEventListener("blur", leave);
-    return () => {
-      document.removeEventListener("pointerdown", away, true);
-      window.removeEventListener("resize", leave);
-      window.removeEventListener("blur", leave);
-    };
-  }, [menu]);
-  const count = menu.ids.length;
-  return createPortal(
-    <div
-      ref={ref}
-      className="reg-menu"
-      role="menu"
-      aria-label={count > 1 ? `Actions for ${count} documents` : "Document actions"}
-      style={{ left: pos.left, top: pos.top }}
-      onContextMenu={e => e.preventDefault()}
-      onKeyDown={e => {
-        if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); e.stopPropagation(); onClose(true); return; }
-        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
-        e.preventDefault();
-        const all = Array.from(ref.current?.querySelectorAll<HTMLElement>('[role="menuitem"]:not(:disabled)') ?? []);
-        const at = all.indexOf(document.activeElement as HTMLElement);
-        const next = e.key === "Home" ? 0 : e.key === "End" ? all.length - 1 : (at + (e.key === "ArrowUp" ? -1 : 1) + all.length) % all.length;
-        all[next]?.focus();
-      }}
-    >
-      {count > 1 && <p className="reg-menu-head" aria-hidden>{count} documents selected</p>}
-      {items.map((item, i) => item === "sep"
-        ? (i > 0 && items[i - 1] !== "sep" && i < items.length - 1 ? <div key={`sep-${i}`} role="separator" className="reg-menu-sep" /> : null)
-        : <button key={item.label} type="button" role="menuitem" className="reg-menu-item" data-danger={item.danger || undefined} disabled={item.disabled}
-            onClick={() => { onClose(true); item.onSelect(); }}>
-            <span className="reg-menu-icon" aria-hidden>{item.icon}</span>
-            {item.label}
-          </button>)}
-    </div>,
-    document.body,
   );
 }
 

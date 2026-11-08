@@ -27,14 +27,14 @@ Confirm separate A/B boundaries in R1. Base stages only; later stages are option
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Review brief/plans | Included |  |
 |  | Classifications/code basis, markups, high-level report, action register and specialist input schedule | Included |  |
 |  | Inspect accessible affected existing fabric | Included |  |
 |  | State investigation limits. | Included |  |
 |  | Existing/fit-out/extension/changed-use assessment: agreed extent; opening-up/surveys by named others; no whole-building upgrade assumed | Included |  |
 |  | Mixed-use/building/tenancy classification and approval map: shared egress, fire/services and shell/tenant boundaries | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Review planning drawings/interfaces and proposed performance solutions | Included |  |
 |  | Draft/final BCA statement and applicable draft fire safety schedule | Included |  |
 |  | Ends at submission | Included |  |
@@ -42,16 +42,16 @@ Confirm separate A/B boundaries in R1. Base stages only; later stages are option
 |  | Preliminary-document assessment, regulatory report and evidence checklist | Included |  |
 |  | Scheduled visit | Included |  |
 |  | Identify independence limits on design advice. | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Review updated plans, selected upgrade interfaces and specialist briefs/reports | Included |  |
 |  | Tender BCA report records unresolved specialist design and statutory assessment issues. | Included |  |
-| Design finalisation |  | Included |  |
+| Design finalisation |  | Included | $ |
 |  | CC checklist/condition register | Included |  |
 |  | Assess plans, specialist evidence and scheduled solutions/referrals | Included |  |
 |  | Determine each CC package with reasons/outstanding actions, supporting documents and applicable fire safety schedule. | Included |  |
 |  | Performance-solution assessment; specialist author and assessor are different parties | Included |  |
 |  | Residential energy/design-evidence review (e.g. BASIX), only if required | Included |  |
-| Delivery |  | Included |  |
+| Delivery |  | Included | $ |
 |  | BCA query/changed-design advice and action updates within allowances | Included |  |
 |  | Price advisory visits, detail reviews and completion report individually | Included |  |
 |  | No statutory appointment | Included |  |

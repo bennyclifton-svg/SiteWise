@@ -26,7 +26,7 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Review of the plans against the LEP, DCP and other controls | Included |  |
 |  | Site constraints | Included |  |
 |  | Historic consents | Included |  |
@@ -38,7 +38,7 @@ Price each stage that applies as a lump sum. Work beyond an allowance needs a wr
 |  | Planning certificate, title and DP searches (fees at cost) | Included |  |
 |  | Historic consents through GIPA | Included |  |
 |  | Controls compliance matrix with departures and the decisions needed; specialist report schedule with owner and required date | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Book the meeting | Included |  |
 |  | Pre-lodgement letter with a scheme overview and compliance summary | Included |  |
 |  | Attend 1 meeting(s) | Included |  |

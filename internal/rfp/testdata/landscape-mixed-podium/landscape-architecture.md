@@ -26,7 +26,7 @@ Select base/options and end; later stages require instruction. Fit-out without l
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Agreed accessible-site review/photos, controls/use/maintenance brief, constraints and investigation register | Included |  |
 |  | Missing levels, services, soil, trees and access. | Included |  |
 |  | Counted alternatives/tree workshops, layout/palette and measured deep-soil/canopy basis | Included |  |
@@ -34,11 +34,11 @@ Select base/options and end; later stages require instruction. Fit-out without l
 |  | Retained/street/neighbouring trees: condition/impact/protection; survey locates; no removal authority | Excluded |  |
 |  | Special external uses: name play/access, lighting/electrical, ecology/heritage/bushfire/horticulture specialists | Included |  |
 |  | Contamination/failed planting/ingress: environmental specialist accepts soil/caps; relevant specialists diagnose cause; assign opening-up/testing/reinstatement | Excluded |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Pathway-specific plans, planting schedule/details/calculations | Included |  |
 |  | Draft/consolidated comment/final and counted council responses to named milestone | Included |  |
 |  | Scales suit submission. | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Conditions/register, hard/soft landscape, soils and planting | Included |  |
 |  | Coordinate irrigation, public domain, civil, structure/waterproofing, access and long-lead items. | Included |  |
 |  | Planting/hardscape/external design only in enabled stages | Included |  |
@@ -46,11 +46,11 @@ Select base/options and end; later stages require instruction. Fit-out without l
 |  | Podium/roof/planter build-up and loads; structure verifies, architect/waterproofing and drainage owners named | Included |  |
 |  | Irrigation notation/performance brief; hydraulic/electrical interfaces named | Included |  |
 |  | Public-domain manuals/approvals/bonds/handover; extent and authority lead agreed | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | Coordinated tender/for-construction drawings, plant/soil/material schedules, specification, establishment requirements/hold points | Included |  |
 |  | Counted queries/substitutions. | Included |  |
 |  | Detailed irrigation design only by expressly selected competent designer | Included |  |
-| Delivery |  | Included |  |
+| Delivery |  | Included | $ |
 |  | Counted stock/submittal/RFI reviews and soil/set-out/concealed-interface visits | Included |  |
 |  | Departures/actions/evidence and bounded completion statement, distinct from contract PC/authority acceptance. | Included |  |
 |  | Period/start event, logs/visits/replacements and acceptance criteria: condition/coverage, weeds, irrigation, erosion/defects | Included |  |

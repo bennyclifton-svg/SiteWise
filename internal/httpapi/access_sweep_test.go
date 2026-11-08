@@ -180,6 +180,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", base + "/reports", nil, false}, {"POST", base + "/reports", reportBody, true}, {"GET", reportPath, nil, false}, {"POST", reportPath + "/draft", []byte(`{"use_last_completed":true}`), false},
 		{"PUT", editPath, jsonBody(map[string]any{"version": draft.Version, "text": "Intrusion"}), false}, {"DELETE", editPath, jsonBody(map[string]any{"version": draft.Version}), false},
 		{"PUT", reportPath + "/settings/scale", jsonBody(map[string]any{"version": draft.Version, "value": "complex"}), false}, {"DELETE", reportPath + "/settings/scale", jsonBody(map[string]any{"version": draft.Version}), false},
+		{"POST", reportPath + "/settings", jsonBody(map[string]any{"version": draft.Version, "changes": []map[string]any{{"key": "scale", "value": "complex"}}}), false},
 		{"GET", base + "/site", nil, false}, {"PATCH", "/api/sites/" + site.ID, []byte(`{"version":1,"address":"Intrusion"}`), false},
 		{"GET", base + "/profile", nil, false}, {"GET", base + "/profile/sources", nil, false},
 		{"PUT", base + "/profile/hdr.subclass", []byte(`{"value":"house"}`), false}, {"PUT", base + "/profile/scope", []byte(`{"systems":{"mechanical.air-conditioning":"in"}}`), false}, {"POST", base + "/profile/read", nil, false},

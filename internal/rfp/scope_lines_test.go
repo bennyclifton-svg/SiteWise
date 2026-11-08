@@ -51,7 +51,7 @@ func TestScopeLinesIncludeExcludeAndOwnLines(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := Markdown(sections)
-	for _, want := range []string{"| Brief and concept |  | Included |  |", "|  | Area schedule | Excluded |  |", "|  | Survey coordination | Included |  |", "| Total fee |"} {
+	for _, want := range []string{"| Brief and concept |  | Included | $ |", "|  | Area schedule | Excluded |  |", "|  | Survey coordination | Included |  |", "| Total fee |"} {
 		if !strings.Contains(text, want) {
 			t.Errorf("printed RFP lacks %q", want)
 		}
@@ -151,5 +151,75 @@ func TestArchitectBriefAlwaysMasterplanOnlyWhenLarge(t *testing.T) {
 	r := Resolve(d, sk, facts(t, "class=9b", "work_type=new", "flag.staged=yes"), set("line:brief_concept.masterplan_options", `"X"`, "line:brief_concept.masterplan_report", `"X"`))
 	if s := r.Stage("brief_concept"); strings.Contains(s.Text, "masterplan") {
 		t.Errorf("masterplan excluded: %q", s.Text)
+	}
+}
+
+// Standard lines are edited in place (owner direction, 8 November 2026): the
+// user's wording replaces the template's for this RFP, and a deleted line is
+// gone from the screen, the printed table and the priced deliverable.
+func TestStandardLinesRewordedAndDeleted(t *testing.T) {
+	d, sk := discipline(t, "architecture"), skeleton(t)
+	drivers := facts(t, "class=1a", "work_type=new", "procurement=traditional", "pathway=cdc")
+	settings := set(
+		"wording:brief_concept.site_inspection", `"Site inspection with the client and builder"`,
+		"line:brief_concept.area_schedule", `"D"`,
+	)
+	r := Resolve(d, sk, drivers, settings)
+	concept := r.Stage("brief_concept")
+	byKey := map[string]LineResult{}
+	for _, l := range concept.Lines {
+		byKey[l.Key] = l
+	}
+	if _, ok := byKey["area_schedule"]; ok {
+		t.Fatal("a deleted line still shows")
+	}
+	got := byKey["site_inspection"]
+	if got.Text != "Site inspection with the client and builder" || !got.Edited || got.Value != "I" {
+		t.Fatalf("reworded line = %+v", got)
+	}
+	if !strings.Contains(concept.Text, "Site inspection with the client and builder") || strings.Contains(concept.Text, "area schedule") {
+		t.Fatalf("concept text = %q", concept.Text)
+	}
+	sections, err := Sections(r, consultantTemplate(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := Markdown(sections)
+	if !strings.Contains(text, "|  | Site inspection with the client and builder | Included |  |") || strings.Contains(text, "Area schedule") {
+		t.Errorf("printed RFP:\n%s", text)
+	}
+	// One fee per stage: the stage row carries the $ the firm fills in.
+	if !strings.Contains(text, "| Brief and concept |  | Included | $ |") {
+		t.Errorf("stage row has no fee cell to fill")
+	}
+}
+
+func TestLineWordingIsValidated(t *testing.T) {
+	d, sk := discipline(t, "architecture"), skeleton(t)
+	drivers := facts(t, "class=1a")
+	if err := ValidateSetting(d, sk, drivers, "wording:brief_concept.site_inspection", json.RawMessage(`"Walk the site"`)); err != nil {
+		t.Fatalf("wording refused: %v", err)
+	}
+	if err := ValidateSetting(d, sk, drivers, "line:brief_concept.site_inspection", json.RawMessage(`"D"`)); err != nil {
+		t.Fatalf("delete refused: %v", err)
+	}
+	for name, raw := range map[string]string{
+		"blank":   `"  "`,
+		"slot":    `"Up to {allowance:x}"`,
+		"newline": `"a\nb"`,
+		"padded":  `" a"`,
+		"long":    `"` + strings.Repeat("a", 301) + `"`,
+		"number":  `3`,
+	} {
+		if ValidateSetting(d, sk, drivers, "wording:brief_concept.site_inspection", json.RawMessage(raw)) == nil {
+			t.Errorf("%s accepted", name)
+		}
+	}
+	if ValidateSetting(d, sk, drivers, "wording:brief_concept.nope", json.RawMessage(`"A"`)) == nil {
+		t.Error("wording for an unknown line accepted")
+	}
+	h := ruled(t, "hydraulic-services")
+	if len(h.Stages) > 0 && len(h.Stages[0].Lines) > 0 && ValidateSetting(h, sk, drivers, "wording:"+h.Stages[0].Key+"."+h.Stages[0].Lines[0].Key, json.RawMessage(`"A"`)) == nil {
+		t.Error("wording accepted for a discipline not by stage")
 	}
 }

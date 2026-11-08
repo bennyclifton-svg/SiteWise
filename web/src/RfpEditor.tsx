@@ -9,7 +9,9 @@ import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import type { ReportBlock, RfpCheck, RfpChoice, RfpControl, RfpControls } from "./reportApi";
 
-export type Write = (key: string, value: unknown | null) => Promise<void>;
+export type SettingChange = { key: string; value: unknown | null };
+/** Writes one RFP setting; `many` writes several in one round trip. */
+export type Write = ((key: string, value: unknown | null) => Promise<void>) & { many?: (changes: SettingChange[]) => Promise<void> };
 
 const sourceNames: Record<string, string> = {
   user: "You", profile: "Profile", package: "Package", derived: "Profile", cost_plan: "Cost plan",

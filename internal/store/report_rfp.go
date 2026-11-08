@@ -179,8 +179,31 @@ func (s *Store) SetReportSetting(ctx context.Context, org, id, actor, key string
 // group's, or the group's own when the setting is a shared one. "" when the
 // report is in no group.
 func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key string, value json.RawMessage, version int64) (d ReportDraft, group string, err error) {
-	if version < 1 || key == "" || len(key) > 120 {
+	return s.SetReportSettingsInGroup(ctx, org, id, actor, []SettingChange{{Key: key, Value: value}}, version)
+}
+
+// SettingChange is one setting in a batch; a nil Value deletes it.
+type SettingChange struct {
+	Key   string          `json:"key"`
+	Value json.RawMessage `json:"value"`
+}
+
+// MaxSettingChanges bounds one batch: a stage table's worth of lines.
+const MaxSettingChanges = 200
+
+// SetReportSettingsInGroup applies several settings in one transaction and
+// rebuilds the draft once, so deleting many scope lines is one round trip.
+// Any refused change refuses the whole batch.
+func (s *Store) SetReportSettingsInGroup(ctx context.Context, org, id, actor string, changes []SettingChange, version int64) (d ReportDraft, group string, err error) {
+	if version < 1 || len(changes) == 0 || len(changes) > MaxSettingChanges {
 		return d, "", ErrInvalidReport
+	}
+	seen := map[string]bool{}
+	for _, c := range changes {
+		if c.Key == "" || len(c.Key) > 120 || seen[c.Key] {
+			return d, "", ErrInvalidReport
+		}
+		seen[c.Key] = true
 	}
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
@@ -221,7 +244,12 @@ func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key
 		return d, "", err
 	}
 	if _, ok := groupDraft(d.SourceRevisions); ok {
-		if d, err = s.setGroupSetting(ctx, tx, org, r, d, actor, key, value, settings); err != nil {
+		for _, c := range changes {
+			if err = s.writeGroupSetting(ctx, tx, org, r, d, actor, c.Key, c.Value, settings); err != nil {
+				return d, "", err
+			}
+		}
+		if d, err = s.recomposeGroupTx(ctx, tx, org, r); err != nil {
 			return d, "", err
 		}
 		return d, r.ID, s.finishReportWrite(ctx, tx, org, r, d.ID, "ready")
@@ -230,43 +258,10 @@ func (s *Store) SetReportSettingInGroup(ctx context.Context, org, id, actor, key
 	if err != nil {
 		return d, "", err
 	}
-	// Older Hydraulic drafts had one water/sanitary choice. Once either
-	// service is edited, keep the other at the position the user saw.
-	if disc.ID == "hydraulic-services" && key == "position:domestic" {
-		if _, set := settings["position:sanitary"]; !set {
-			if p := current.Position("sanitary"); p.Value != "" {
-				raw, _ := json.Marshal(p.Value)
-				_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,'position:sanitary',$3::jsonb,'{}'::jsonb,$4::uuid)`, org, d.ID, raw, actor)
-				if err != nil {
-					return d, "", err
-				}
-				settings["position:sanitary"] = rfp.Setting{Value: raw}
-			}
-		}
-	}
-	if value == nil {
-		if _, ok := settings[key]; !ok {
-			return d, "", ErrNotFound
-		}
-		if _, err = tx.Exec(ctx, `DELETE FROM report_settings WHERE org_id=$1::uuid AND report_version_id=$2::uuid AND key=$3`, org, d.ID, key); err != nil {
+	for _, c := range changes {
+		if err = s.writeRFPSetting(ctx, tx, org, r.ProjectID, actor, d.ID, disc, sk, drivers, current, c.Key, c.Value, settings); err != nil {
 			return d, "", err
 		}
-		delete(settings, key)
-	} else {
-		if key == "transmittal" {
-			if value, err = transmittalSelection(ctx, tx, org, r.ProjectID, value); err != nil {
-				return d, "", err
-			}
-		}
-		if err := rfp.ValidateSetting(disc, sk, drivers, key, value); err != nil {
-			return d, "", err
-		}
-		basis := json.RawMessage(`{}`)
-		_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,$3,$4::jsonb,$5::jsonb,$6::uuid) ON CONFLICT(org_id,report_version_id,key) DO UPDATE SET value=EXCLUDED.value,basis=EXCLUDED.basis,user_id=EXCLUDED.user_id,version=report_settings.version+1,updated_at=now()`, org, d.ID, key, []byte(value), []byte(basis), actor)
-		if err != nil {
-			return d, "", err
-		}
-		settings[key] = rfp.Setting{Value: value, Basis: basis}
 	}
 	template, ok := s.workCatalog().CurrentReportTemplate(d.TemplateID)
 	if !ok {
@@ -470,4 +465,48 @@ func (s *Store) rfpIssueChecks(ctx context.Context, tx pgx.Tx, org string, r Rep
 		return nil, err
 	}
 	return resolved.Blocking(), nil
+}
+
+// writeRFPSetting validates and stores one setting of a discipline's draft,
+// updating settings to match. The caller rebuilds the draft.
+func (s *Store) writeRFPSetting(ctx context.Context, tx pgx.Tx, org, project, actor, draftID string, disc knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers rfp.DriverSet, current rfp.Resolved, key string, value json.RawMessage, settings rfp.Settings) (err error) {
+	// Older Hydraulic drafts had one water/sanitary choice. Once either
+	// service is edited, keep the other at the position the user saw.
+	if disc.ID == "hydraulic-services" && key == "position:domestic" {
+		if _, set := settings["position:sanitary"]; !set {
+			if p := current.Position("sanitary"); p.Value != "" {
+				raw, _ := json.Marshal(p.Value)
+				_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,'position:sanitary',$3::jsonb,'{}'::jsonb,$4::uuid)`, org, draftID, raw, actor)
+				if err != nil {
+					return err
+				}
+				settings["position:sanitary"] = rfp.Setting{Value: raw}
+			}
+		}
+	}
+	if value == nil {
+		if _, ok := settings[key]; !ok {
+			return ErrNotFound
+		}
+		if _, err = tx.Exec(ctx, `DELETE FROM report_settings WHERE org_id=$1::uuid AND report_version_id=$2::uuid AND key=$3`, org, draftID, key); err != nil {
+			return err
+		}
+		delete(settings, key)
+	} else {
+		if key == "transmittal" {
+			if value, err = transmittalSelection(ctx, tx, org, project, value); err != nil {
+				return err
+			}
+		}
+		if err := rfp.ValidateSetting(disc, sk, drivers, key, value); err != nil {
+			return err
+		}
+		basis := json.RawMessage(`{}`)
+		_, err = tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,$3,$4::jsonb,$5::jsonb,$6::uuid) ON CONFLICT(org_id,report_version_id,key) DO UPDATE SET value=EXCLUDED.value,basis=EXCLUDED.basis,user_id=EXCLUDED.user_id,version=report_settings.version+1,updated_at=now()`, org, draftID, key, []byte(value), []byte(basis), actor)
+		if err != nil {
+			return err
+		}
+		settings[key] = rfp.Setting{Value: value, Basis: basis}
+	}
+	return nil
 }

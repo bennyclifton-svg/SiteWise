@@ -23,7 +23,7 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Brief/system map | Included |  |
 |  | Accessible asset/record review | Included |  |
 |  | Connections/levels/capacity/easements | Included |  |
@@ -31,14 +31,14 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 |  | Selected tracing/CCTV/flow/logging/sampling | Included |  |
 |  | Access/isolation/reinstatement, limits | Included |  |
 |  | Upgrades separate | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Brief/options/preliminary demands | Included |  |
 |  | Source/storage/treatment, spatial/access and cost inputs | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Selected servicing plans/water-efficiency inputs | Included |  |
 |  | Applications/roles/tracker and bounded responses | Included |  |
 |  | Coordinate utility connections and approvals. Coordinate utility boundaries, build-over and sewer-proximity requirements and applications. Water Services Coordinator services are separately appointed. | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Selected calculations/schedules | Included |  |
 |  | Levels/routes/plant/controls/penetrations/access/overflow/safety | Included |  |
 |  | Design potable and hot water services. Size pipework and water heaters for demand, pressure and flow; provide backflow protection, temperature control and metering. | Included |  |
@@ -55,7 +55,7 @@ R2 sets maturity, native formats, revisions, review rounds, recipients/reliance 
 |  | Design fire-water systems and fire strategy. Design hydrants, sprinklers, hose reels, fire tanks and pumps; fire engineer owns strategy. Coordinate shared water connections. | Excluded |  |
 |  | Coordinate hydraulic design with other disciplines. Coordinate penetrations, supports, fire stopping, waterproofing, power, controls and condensate connections; specialists retain their design. | Included |  |
 |  | Design staged and temporary hydraulic services. Design temporary supplies and staged connections, including tenancy meters, shutdowns, access and acceptance arrangements. | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | Traditional complete design | Included |  |
 |  | D&C intent/remaining design owner | Included |  |
 |  | Drawings/specs/calculations/RFIs/addenda | Included |  |

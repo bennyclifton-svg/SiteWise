@@ -34,8 +34,10 @@ test("Hydraulic pilot: dates last, scope by stage, one fee per stage and persist
   await expect(page.locator(".hydraulic-scope, .hydraulic-stage-table")).toHaveCount(0);
   await expect(scope.getByRole("radio")).toHaveCount(0);
   const tender = scope.getByRole("checkbox", { name: "S6 Tender: excluded", exact: true });
-  await scope.getByRole("button", { name: "S5 Design", exact: true }).click();
+  // The whole-stage tick sits on the closed stage only (owner, 8 Nov 2026).
   await expect(scope.getByRole("checkbox", { name: "S5 Design: included", exact: true })).toBeChecked();
+  await scope.getByRole("button", { name: "S5 Design", exact: true }).click();
+  await expect(scope.getByRole("checkbox", { name: "S5 Design: included", exact: true })).toHaveCount(0);
   const rainwaterIn = scope.getByRole("checkbox", { name: "Design rainwater collection and reuse: included", exact: true });
   const rainwaterOut = scope.getByRole("checkbox", { name: "Design rainwater collection and reuse: excluded", exact: true });
   await expect(rainwaterIn).toBeChecked();

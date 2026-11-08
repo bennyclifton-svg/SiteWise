@@ -23,15 +23,15 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by st
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Brief/accessible assets/records | Included |  |
 |  | Condition/capacity gaps, utility risks and test plan | Included |  |
-| Schematic design |  | Included |  |
+| Schematic design |  | Included | $ |
 |  | Preliminary demand/options, supply/space/routes, critical loads/autonomy, systems and cost inputs | Included |  |
-| Planning |  | Included |  |
+| Planning |  | Included | $ |
 |  | Infrastructure/lighting/energy plans | Included |  |
 |  | Application author/submitter/payer and response cap | Included |  |
-| Design development |  | Included |  |
+| Design development |  | Included | $ |
 |  | Demand/fault/protection/earthing/lighting calculations | Included |  |
 |  | Boards/cables/routes, controls, safety and builders work | Included |  |
 |  | Detailed distribution/protection/earthing/containment; fault/voltage/discrimination | Included |  |
@@ -47,7 +47,7 @@ R2 defines maturity/native formats/revisions/rounds/reliance/dates. R1 Fee by st
 |  | Mixed/staged/shell/fit-out metering, tenancy and energisation gates/tests | Included |  |
 |  | Hazardous/process/HV/critical distribution studies | Excluded |  |
 |  | Arc-energy/lightning/surge/power-quality assessments by agreed competent assessor | Included |  |
-| Tender documentation |  | Included |  |
+| Tender documentation |  | Included | $ |
 |  | Traditional complete design/specifications | Included |  |
 |  | D&C intent/performance with delegated design matrix | Included |  |
 |  | Comparisons/RFIs/addenda | Included |  |

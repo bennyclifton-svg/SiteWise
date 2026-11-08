@@ -25,7 +25,7 @@ From written instruction/inputs/access to named final issue/handover, with agree
 
 | Stage | Scope | Position | Fee $ |
 |---|---|---|---|
-| Brief and concept |  | Included |  |
+| Brief and concept |  | Included | $ |
 |  | Review records/currency/conflicts | Included |  |
 |  | Agree extent/features, method/accuracy, datum/control, access and hidden-feature treatment | Included |  |
 |  | Boundary work separately selected | Included |  |
