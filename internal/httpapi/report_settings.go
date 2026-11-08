@@ -3,10 +3,12 @@ package httpapi
 import (
 	"encoding/json"
 	"errors"
+	"mime"
 	"net/http"
 	"regexp"
 	"strings"
 
+	"sitewise/internal/export"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/store"
 )
@@ -201,4 +203,46 @@ func getRFPDisciplines(w http.ResponseWriter, r *http.Request, deps Deps) {
 		}
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"items": out})
+}
+
+// getReportExport downloads the current draft as a PDF or a Word document
+// laid out as the screen shows it (owner direction, 8 November 2026). It
+// reads only; no Jev call. An issued RFP's frozen PDF is a separate file.
+func getReportExport(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := reportSession(w, r, deps, false)
+	if !ok {
+		return
+	}
+	format := r.URL.Query().Get("format")
+	if format != "pdf" && format != "docx" {
+		http.Error(w, "format must be pdf or docx", http.StatusBadRequest)
+		return
+	}
+	data, err := deps.Store.ReadReportExport(r.Context(), session.OrgID, r.PathValue("r"))
+	if err != nil {
+		reportError(w, err)
+		return
+	}
+	doc := export.FromSections(data.Title, data.Project, data.Date, data.Sections)
+	var body []byte
+	contentType := "application/pdf"
+	if format == "pdf" {
+		body, err = export.PDF(doc)
+	} else {
+		contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+		body, err = export.DOCX(doc)
+	}
+	if errors.Is(err, export.ErrContent) {
+		writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": "export_content", "message": err.Error()})
+		return
+	}
+	if err != nil {
+		reportError(w, err)
+		return
+	}
+	name := safeFileName(strings.TrimSpace(data.Project+" "+data.Title)) + "." + format
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": name}))
+	w.Header().Set("Cache-Control", "no-store")
+	_, _ = w.Write(body)
 }

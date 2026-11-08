@@ -1,4 +1,4 @@
-import { IconDownload, IconResponseForm } from "./icons";
+import { IconDownload, IconPrint, IconResponseForm } from "./icons";
 import { MoreMenu, PagePrimaryAction, UpdateButton } from "./PageActions";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
@@ -249,8 +249,11 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
           <div className="report-toolbar-actions">
           <UpdateButton title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Rebuild this draft from the project" : "Assemble the draft"} busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()} />
           <MoreMenu label="Report actions" items={[
-            { label: "Download", icon: <IconDownload />, onSelect: () => window.print() },
+            // Word and PDF are laid out as the screen shows the draft (owner, 8 Nov 2026).
+            ...(draft ? [{ label: "Download PDF", icon: <IconDownload />, href: reportApi.exportURL(view.report.id, "pdf"), download: true },
+              { label: "Download Word", icon: <IconDownload />, href: reportApi.exportURL(view.report.id, "docx"), download: true }] : []),
             ...(view.rfp && draft ? [{ label: "Download Excel response form", icon: <IconResponseForm />, href: submissionApi.responseFormURL(view.report.id), download: true }] : []),
+            { label: "Print", icon: <IconPrint />, onSelect: () => window.print() },
           ]} />
           </div>
         </header>

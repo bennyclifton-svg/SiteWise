@@ -211,6 +211,7 @@ func Handler(deps Deps) http.Handler {
 		"PUT /reports/{r}/settings/{key}":                    putReportSetting,
 		"DELETE /reports/{r}/settings/{key}":                 deleteReportSetting,
 		"POST /reports/{r}/settings":                         postReportSettings,
+		"GET /reports/{r}/export":                            getReportExport,
 		"PUT /reports/{r}/facts/{fact}":                      putReportFact,
 		"GET /rfp/disciplines":                               getRFPDisciplines,
 		"GET /projects/{id}/delivery":                        getDelivery,
