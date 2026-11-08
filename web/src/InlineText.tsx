@@ -21,9 +21,9 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   /** Shown under the text when not editing, such as an Edit button. */
   actions?: ReactNode;
   /**
-   * A table cell (the RFP scope lines): one line of text with no buttons.
-   * Enter or clicking away saves; Escape cancels; a Ctrl or Shift click
-   * selects the row instead of editing it.
+   * A table cell (the RFP scope lines), edited as Cost Plan cells are: a
+   * double-click edits, the box keeps the cell's size, no buttons. Enter or
+   * clicking away saves; Escape cancels; a single click selects the row.
    */
   compact?: boolean;
   maxLength?: number;
@@ -46,14 +46,16 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   function start(e: React.MouseEvent<HTMLParagraphElement>) {
     if (disabled) return;
     if (compact && (e.ctrlKey || e.metaKey || e.shiftKey)) return;
-    // Selecting text to copy is not a request to edit it.
-    if (String(window.getSelection() ?? "")) return;
+    // Selecting text to copy is not a request to edit it. A double-click
+    // selects a word on its way; that selection is the edit's, not a copy.
+    if (compact) window.getSelection()?.removeAllRanges();
+    else if (String(window.getSelection() ?? "")) return;
     caret.current = offsetAt(e.currentTarget, e.clientX, e.clientY);
     onStart();
   }
 
   if (!editing) return <>
-    <p className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} data-editable={!disabled || undefined} onClick={start}>{text}</p>
+    <p className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} data-editable={!disabled || undefined} onClick={compact ? undefined : start} onDoubleClick={compact ? start : undefined}>{text}</p>
     {actions}
   </>;
 
@@ -67,7 +69,7 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   return <form className="inline-text-form" onSubmit={e => { e.preventDefault(); onSave(); }}
     onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) leave(); }}
     onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); onCancel(); } }}>
-    <textarea ref={box} className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} aria-label={label} maxLength={maxLength ?? 20000} value={value} disabled={busy}
+    <textarea ref={box} rows={compact ? 1 : undefined} className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} aria-label={label} maxLength={maxLength ?? 20000} value={value} disabled={busy}
       onChange={e => { onChange(compact ? e.target.value.replace(/\n/g, " ") : e.target.value); grow(e.target); }}
       onKeyDown={e => {
         if (!compact || e.key !== "Enter") return;

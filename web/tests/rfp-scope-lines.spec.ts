@@ -57,11 +57,17 @@ test("scope lines: count, one fee cell, reword, add, delete together", async ({ 
   await expect(stage.locator(".rfp-stage-name")).toHaveAttribute("rowspan", String(rows));
   await expect(stage.getByRole("checkbox", { name: "Brief and concept: included", exact: true })).toHaveCount(0);
 
-  // Reword a standard line where it reads; clicking away saves it.
+  // A click selects a row; a double-click edits it in place, the row
+  // keeping its height; clicking away saves.
   const first = stage.locator(`tr[data-line="${lines[0].key}"]`);
   await first.locator("p.inline-text").click();
+  await expect(first).toHaveAttribute("data-selected", "true");
+  await expect(first.locator("textarea")).toHaveCount(0);
+  const height = (await first.boundingBox())!.height;
+  await first.locator("p.inline-text").dblclick();
   const box = first.locator("textarea");
   await expect(box).toBeFocused();
+  expect(Math.abs((await first.boundingBox())!.height - height)).toBeLessThanOrEqual(1);
   await box.press("End");
   await box.pressSequentially(" with the client");
   await Promise.all([
@@ -82,19 +88,32 @@ test("scope lines: count, one fee cell, reword, add, delete together", async ({ 
   await page.locator(".rfp-stage-scope thead th").first().click();
   await stage.scrollIntoViewIfNeeded();
   await page.screenshot({ path: "../.tools/rfp-scope-lines-open.png" });
-  // Ctrl+click two lines, then Delete: one write removes both.
+  // A service reads and edits like a line.
+  const service = stage.locator('tr[data-control="position:input_schedule"]');
+  await service.locator("p.inline-text").dblclick();
+  await service.locator("textarea").fill("Brief gaps and decisions register");
+  await Promise.all([
+    page.waitForResponse(r => r.request().method() === "PUT" && decodeURIComponent(r.url()).includes("/settings/wording:position.input_schedule")),
+    service.locator("textarea").press("Enter"),
+  ]);
+  await expect(service.locator("p.inline-text")).toHaveText("Brief gaps and decisions register");
+
+  // Click one line, Ctrl+click a service and the added line, then the bin
+  // in the Scope heading: one write deletes all three.
   const second = stage.locator(`tr[data-line="${lines[1].key}"]`);
-  await second.click({ modifiers: ["Control"] });
+  const helper = stage.locator('tr[data-control="position:consultant_selection"]');
+  await second.click();
+  await helper.click({ modifiers: ["Control"] });
   await added.click({ modifiers: ["Control"] });
-  await expect(stage.locator("tr[data-selected]")).toHaveCount(2);
-  const toolbar = page.getByRole("toolbar", { name: "Selected scope lines" });
-  await expect(toolbar).toContainText("2 lines selected");
+  await expect(stage.locator("tr[data-selected]")).toHaveCount(3);
+  const bin = page.getByRole("button", { name: "Delete 3 selected lines", exact: true });
   let writes = 0;
   page.on("request", r => { if (r.url().includes("/settings") && r.method() !== "GET") writes++; });
-  await Promise.all([page.waitForResponse(r => r.request().method() === "POST" && r.url().endsWith("/settings")), toolbar.getByRole("button", { name: "Delete" }).click()]);
+  await Promise.all([page.waitForResponse(r => r.request().method() === "POST" && r.url().endsWith("/settings")), bin.click()]);
   expect(writes).toBe(1);
   await expect(second).toHaveCount(0);
   await expect(added).toHaveCount(0);
+  await expect(helper).toHaveCount(0);
 
   // Right-click: delete one line from the menu.
   const third = stage.locator(`tr[data-line="${lines[2].key}"]`);
@@ -108,7 +127,7 @@ test("scope lines: count, one fee cell, reword, add, delete together", async ({ 
   expect(after.map(l => l.key)).not.toContain(lines[2].key);
   expect(after.some(l => l.custom)).toBeFalsy();
   expect(after.find(l => l.key === lines[0].key)).toMatchObject({ edited: true });
-  await expect(stage.locator(".rfp-stage-badge")).toHaveText(String(count - 2));
+  await expect(stage.locator(".rfp-stage-badge")).toHaveText(String(count - 3));
 
   // Reset to standard wording from the menu.
   await first.click({ button: "right" });

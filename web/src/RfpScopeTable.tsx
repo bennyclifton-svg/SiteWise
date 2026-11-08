@@ -2,11 +2,11 @@ import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import type { ReportBlock, RfpControls } from "./reportApi";
 import { ControlRow, type SettingChange, type Write } from "./RfpEditor";
 import { InlineText } from "./InlineText";
-import { IconBin, IconUndo } from "./icons";
+import { IconBin, IconRename, IconUndo } from "./icons";
 import { clickRow, emptySelection, prune, type Selection } from "./table/selection";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 
-type Service = { key: string; control?: string; label: string; value: string; group?: string; stage?: string; detail?: string; assumption?: string; party?: string; source: string; inactive?: boolean; notes?: {label:string;text:string}[] };
+type Service = { key: string; control?: string; label: string; edited?: boolean; value: string; group?: string; stage?: string; detail?: string; assumption?: string; party?: string; source: string; inactive?: boolean; notes?: {label:string;text:string}[] };
 type Stage = { key: string; name: string; summary?: string; state: string; source?: string; by?: string; text: string; assumption?: string; design_responsibility?: string; fee_basis?: string };
 type Props = { block: ReportBlock; controls: RfpControls; busy: boolean; onWrite: Write };
 
@@ -75,9 +75,11 @@ function InOut({ label, value, disabled, onChoose }: { label: string; value: "I"
 const newLineID = () => "u" + Date.now().toString(36);
 /** A line's wording as saved: one line, no {slot} braces. */
 const cleanLine = (text: string) => text.replace(/\s+/g, " ").trim().replace(/[{}]/g, "");
-/** Selection ids name a line within its stage. */
+/** Selection ids: a stage line is stage/line; a service is its position:key control. */
 const lineID = (stage: string, line: string) => `${stage}/${line}`;
 const splitID = (id: string) => id.split("/") as [string, string];
+/** A service the user can reword and delete: one held by a position. */
+const serviceID = (p: { key: string; control?: string }) => (p.control ?? `position:${p.key}`).startsWith("position:") ? `position:${p.key}` : "";
 const items = (n: number) => `${n} ${n === 1 ? "item" : "items"}`;
 
 /**
@@ -86,7 +88,9 @@ const items = (n: number) => `${n} ${n === 1 ? "item" : "items"}`;
  * Excluded tick for the whole stage, and its one fee cell. Opened, the name
  * and the fee cell run down beside its lines; every line is edited where it
  * reads, ticked in or out, and deleted alone or with Ctrl and Shift
- * selections. "Add item…" at the foot of a stage adds a line.
+ * selections. "Add item…" at the foot of a stage adds a line. As in the
+ * Cost Plan, a click selects a row and a double-click edits it in place,
+ * the cell keeping its size (owner direction, 8 November 2026).
  */
 function StageScope({ block, controls, busy, onWrite }: Props) {
   const [open, setOpen] = useState<Set<string>>(new Set());
@@ -115,11 +119,28 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
   const toggle = (key: string) => setOpen(old => { const next = new Set(old); if (next.has(key)) next.delete(key); else next.add(key); return next; });
   const own = (s: ScopeStage) => (s.lines ?? []).filter(l => l.custom).map(l => ({ id: l.key, text: l.text, value: l.value }));
   const saveOwn = (s: ScopeStage, lines: { id: string; text: string; value: string }[]) => onWrite(`custom:${s.key}`, lines.length ? lines : null);
-  // Selection runs over the lines of open stages, in the order they show.
-  const order = shown.filter(s => open.has(s.key)).flatMap(s => [...(s.lines ?? []).filter(l => !l.custom), ...(s.lines ?? []).filter(l => l.custom)].map(l => lineID(s.key, l.key)));
+  // Selection runs over the lines and services of open stages, in the
+  // order they show.
+  const order = shown.filter(s => open.has(s.key)).flatMap(s => [
+    ...(s.lines ?? []).filter(l => !l.custom).map(l => lineID(s.key, l.key)),
+    ...held(s.key).map(serviceID).filter(Boolean),
+    ...(s.lines ?? []).filter(l => l.custom).map(l => lineID(s.key, l.key)),
+  ]).concat(open.has("") ? held("").map(serviceID).filter(Boolean) : []);
   const orderKey = order.join("|");
   useEffect(() => setSelection(s => prune(s, orderKey ? orderKey.split("|") : [])), [orderKey]);
   const selected = new Set(selection.ids);
+  // A click anywhere but a selected row or its menu clears the selection.
+  const scroller = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!selection.ids.length) return;
+    const away = (e: PointerEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(".reg-menu, .rfp-scope-bin") || (scroller.current?.contains(target) && target.closest("tr.rfp-line"))) return;
+      setSelection(emptySelection);
+    };
+    document.addEventListener("pointerdown", away, true);
+    return () => document.removeEventListener("pointerdown", away, true);
+  }, [selection.ids.length]);
 
   // A printed RFP shows every stage open, whatever the screen shows.
   const beforePrint = useRef<Set<string> | null>(null);
@@ -136,6 +157,14 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     const [stage, key] = splitID(id);
     const s = stages.find(x => x.key === stage);
     return { s, l: s?.lines?.find(x => x.key === key) };
+  };
+  const findService = (id: string) => id.startsWith("position:") ? services.find(p => `position:${p.key}` === id) : undefined;
+  /** The wording a row shows, as its editor starts. */
+  const rowText = (id: string) => { const p = findService(id); if (p) return p.label; const { l } = findLine(id); return l ? upperFirst(l.text) : ""; };
+  const saveService = (p: Service, raw: string) => {
+    const text = cleanLine(raw);
+    setEdit(null);
+    if (text && text !== p.label) void onWrite(`wording:position.${p.key}`, text);
   };
   const saveWording = (s: ScopeStage, l: Line, raw: string) => {
     const text = cleanLine(raw);
@@ -156,6 +185,12 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     const changes: SettingChange[] = [];
     const customs = new Map<string, Set<string>>();
     for (const id of ids) {
+      const p = findService(id);
+      if (p) {
+        changes.push({ key: `position:${p.key}`, value: "D" });
+        if (p.edited) changes.push({ key: `wording:position.${p.key}`, value: null });
+        continue;
+      }
       const { s, l } = findLine(id);
       if (!s || !l) continue;
       if (l.custom) { customs.set(s.key, (customs.get(s.key) ?? new Set()).add(l.key)); continue; }
@@ -175,21 +210,20 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
   const menuItems = (ids: string[]): MenuItem[] => {
     const out: MenuItem[] = [];
     const one = ids.length === 1 ? findLine(ids[0]) : null;
-    if (one?.s && one.l?.edited) {
-      const key = `wording:${one.s.key}.${one.l.key}`;
-      out.push({ label: "Reset to standard wording", icon: <IconUndo />, disabled: busy, onSelect: () => void onWrite(key, null) }, "sep");
-    }
+    const service = ids.length === 1 ? findService(ids[0]) : undefined;
+    const reset = service?.edited ? `wording:position.${service.key}` : one?.s && one.l?.edited ? `wording:${one.s.key}.${one.l.key}` : "";
+    if (ids.length === 1) out.push({ label: "Edit wording", icon: <IconRename />, disabled: busy, onSelect: () => setEdit({ id: ids[0], text: rowText(ids[0]) }) });
+    if (reset) out.push({ label: "Reset to standard wording", icon: <IconUndo />, disabled: busy, onSelect: () => void onWrite(reset, null) });
+    out.push("sep");
     out.push({ label: ids.length === 1 ? "Delete line" : `Delete ${ids.length} lines`, icon: <IconBin />, danger: true, disabled: busy, onSelect: () => remove(ids) });
     return out;
   };
+  // A click selects the row; Ctrl adds or removes it, Shift selects a range.
   const rowClick = (id: string) => (e: React.MouseEvent<HTMLTableRowElement>) => {
-    if ((e.target as HTMLElement).closest("input,button,textarea,select,label")) return;
-    if (e.ctrlKey || e.metaKey || e.shiftKey) {
-      e.preventDefault();
-      window.getSelection()?.removeAllRanges();
-      setSelection(s => clickRow(s, id, order, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey }));
-      e.currentTarget.focus({ preventScroll: true });
-    } else if (selection.ids.length) setSelection(emptySelection);
+    if ((e.target as HTMLElement).closest("input,button,textarea,select,label,details")) return;
+    if (e.shiftKey) { e.preventDefault(); window.getSelection()?.removeAllRanges(); }
+    setSelection(s => clickRow(s, id, order, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey }));
+    e.currentTarget.focus({ preventScroll: true });
   };
   // Right-click acts on the selection when the line is in it; otherwise the
   // line becomes the selection, as the document register does.
@@ -204,6 +238,8 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     if ((e.target as HTMLElement).closest("textarea,input")) return;
     if ((e.key === "Delete" || e.key === "Backspace") && selection.ids.length && !busy) { e.preventDefault(); remove([...selection.ids]); }
     if (e.key === "Escape" && selection.ids.length) setSelection(emptySelection);
+    // Enter or F2 edits the one selected row, as in the Cost Plan.
+    if ((e.key === "Enter" || e.key === "F2") && selection.ids.length === 1 && !busy && !edit) { e.preventDefault(); setEdit({ id: selection.ids[0], text: rowText(selection.ids[0]) }); }
   };
 
   // The stage cell: its name opens and closes it (owner direction, 7 November
@@ -218,22 +254,40 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
     {extra}
   </th>;
   const feeCell = (text: string, rows = 1) => priced ? <td className="rfp-fee rfp-fee-stage" rowSpan={rows > 1 ? rows : undefined}>{text}</td> : null;
-  const serviceRow = (s: Service, stageOut: boolean, start: ReactNode = null, end: ReactNode = null) => <tr key={s.key} className="rfp-stage-line" data-control={s.control ?? `position:${s.key}`}>
+  // A row's wording: double-click (or Enter when selected) edits it where
+  // it reads; Enter or clicking away saves, Escape cancels.
+  const textCell = (id: string, text: string, disabled: boolean, save: (raw: string) => void) => {
+    const editing = edit?.id === id;
+    return <InlineText compact text={text} label={`Scope line: ${text}`} editing={editing} value={editing ? edit.text : text} maxLength={300}
+      disabled={disabled || (!!edit && !editing)} busy={busy}
+      onStart={() => { setSelection(clickRow(emptySelection, id, order)); setEdit({ id, text }); }}
+      onChange={next => setEdit({ id, text: next })} onSave={() => save(edit?.text ?? "")} onCancel={() => setEdit(null)} />;
+  };
+  const serviceRow = (s: Service, stageOut: boolean, start: ReactNode = null, end: ReactNode = null) => {
+    const id = serviceID(s);
+    return <tr key={s.key} className={`rfp-stage-line${id ? " rfp-line" : ""}`} data-control={s.control ?? `position:${s.key}`} data-edited={s.edited || undefined}
+      data-selected={(id && selected.has(id)) || undefined} aria-selected={id ? selected.has(id) : undefined} tabIndex={id ? -1 : undefined}
+      onClick={id ? rowClick(id) : undefined} onContextMenu={id ? rowMenu(id) : undefined}>
     {start}
-    <td>{s.label}{s.detail && <p className="hydraulic-detail">{s.detail}</p>}
+    <td className="rfp-line-text">{id ? textCell(id, s.label, busy || stageOut, raw => saveService(s, raw)) : s.label}{s.detail && <p className="hydraulic-detail">{s.detail}</p>}
       {s.notes?.map((n, i) => <p className="hydraulic-detail" key={i}>{n.label && `${n.label}: `}{n.text}</p>)}
       <ScopeChecks controls={controls} controlKey={s.control ?? `position:${s.key}`} label={s.label} busy={busy} onWrite={onWrite} />
       <ScopeInputs controls={controls} target={s.control ?? `position:${s.key}`} busy={busy} onWrite={onWrite} /></td>
     <InOut label={s.label} value={stageOut ? "X" : tick(s.key, s.value === "X" ? "X" : "I")} disabled={busy || stageOut} onChoose={v => choose(s.key, v, () => onWrite(s.control ?? `position:${s.key}`, v))} />
     {end}
   </tr>;
+  };
 
   return <>
     {controls.decisions.filter(c => c.control === "boundary:range").map(c => <p key={c.id} data-control="boundary:range" className="hydraulic-unresolved">{c.label}. {c.text}</p>)}
     {block.edited && <p className="report-wording">{block.text}</p>}
-    <div className="report-table-scroll" onKeyDown={keys}><table className="report-table rfp-stage-scope">
+    <div className="report-table-scroll" ref={scroller} onKeyDown={keys}><table className="report-table rfp-stage-scope">
       <colgroup><col className="rfp-col-stage" /><col /><col className="rfp-col-tick" /><col className="rfp-col-tick" />{priced && <col className="rfp-col-fee" />}</colgroup>
-      <thead><tr><th scope="col">Stage</th><th scope="col">Scope</th><th scope="col" className="rfp-inout">In</th><th scope="col" className="rfp-inout" aria-label="Excluded"><abbr title="Excluded">Excl.</abbr></th>{priced && <th scope="col" className="rfp-fee">Fee $</th>}</tr></thead>
+      <thead><tr><th scope="col">Stage</th><th scope="col"><span className="rfp-scope-head">Scope
+        {/* The bin shows while rows are selected (owner, 8 November 2026). */}
+        {selection.ids.length > 0 && <button type="button" className="rfp-scope-bin" disabled={busy} title={`Delete ${selection.ids.length} selected`}
+          aria-label={`Delete ${selection.ids.length} selected ${selection.ids.length === 1 ? "line" : "lines"}`} onClick={() => remove([...selection.ids])}>
+          <IconBin /><span aria-hidden="true">{selection.ids.length}</span></button>}</span></th><th scope="col" className="rfp-inout">In</th><th scope="col" className="rfp-inout" aria-label="Excluded"><abbr title="Excluded">Excl.</abbr></th>{priced && <th scope="col" className="rfp-fee">Fee $</th>}</tr></thead>
       {shown.map(s => {
         const control = stageControls.find(c => c.key === `stage:${s.key}`);
         const out = tick(`stage:${s.key}`, s.state === "exclude" ? "X" : "I") === "X";
@@ -273,17 +327,11 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
         const lineRow = (l: Line) => {
           const id = lineID(s.key, l.key);
           const shownText = upperFirst(l.text);
-          const editing = edit?.id === id;
           const [start, end] = lead();
           return <tr key={l.key} className="rfp-stage-line rfp-line" data-line={l.key} data-edited={l.edited || undefined} data-selected={selected.has(id) || undefined}
             aria-selected={selected.has(id)} tabIndex={-1} onClick={rowClick(id)} onContextMenu={rowMenu(id)}>
             {start}
-            <td className="rfp-line-text">
-              <InlineText compact text={shownText} label={`Scope line: ${shownText}`} editing={editing} value={editing ? edit.text : shownText} maxLength={300}
-                disabled={busy || out || (!!edit && !editing)} busy={busy}
-                onStart={() => { setSelection(emptySelection); setEdit({ id, text: shownText }); }}
-                onChange={text => setEdit({ id, text })} onSave={() => saveWording(s, l, edit?.text ?? "")} onCancel={() => setEdit(null)} />
-            </td>
+            <td className="rfp-line-text">{textCell(id, shownText, busy || out, raw => saveWording(s, l, raw))}</td>
             <InOut label={shownText} value={out ? "X" : tick(`${s.key}.${l.key}`, l.value === "X" ? "X" : "I")} disabled={busy || out}
               onChoose={v => choose(`${s.key}.${l.key}`, v, () => l.custom ? saveOwn(s, own(s).map(o => o.id === l.key ? { ...o, value: v } : o)) : onWrite(`line:${s.key}.${l.key}`, v))} />
             {end}
@@ -294,7 +342,7 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
           ...stageElements.map(e => {
             const [start, end] = lead();
             return <tr key={`element-${e.key}`} className="rfp-stage-line" data-control={`element:${e.key}`}>
-              {start}<td>{e.code} {e.name}</td>
+              {start}<td className="rfp-line-text">{e.code} {e.name}</td>
               <InOut label={`${e.code} ${e.name}`} value={out ? "X" : tick(`element:${e.key}`, e.state === "exclude" ? "X" : "I")} disabled={busy || out}
                 onChoose={v => choose(`element:${e.key}`, v, () => onWrite(`element:${e.key}`, v === "I" ? "include" : "exclude"))} />
               {end}
@@ -334,11 +382,6 @@ function StageScope({ block, controls, busy, onWrite }: Props) {
       </tbody>
       <tbody>{table.rows.slice(Number(block.basis?.stage_rows ?? 0)).map((row, i) => <tr key={`total-${i}`} className="rfp-stage-total"><th scope="row">{row[0]}</th><td>{row[1]}</td><td /><td />{priced && <td className="rfp-fee" />}</tr>)}</tbody>
     </table></div>
-    {selection.ids.length > 0 && <div className="rfp-line-selection" role="toolbar" aria-label="Selected scope lines">
-      <span>{selection.ids.length} {selection.ids.length === 1 ? "line" : "lines"} selected</span>
-      <button type="button" className="btn btn-small rfp-line-delete" disabled={busy} onClick={() => remove([...selection.ids])}><IconBin /> Delete</button>
-      <button type="button" className="btn btn-small" onClick={() => setSelection(emptySelection)}>Clear</button>
-    </div>}
     {menu && <RowMenu at={menu} items={menuItems(menu.ids)} label={menu.ids.length > 1 ? `Actions for ${menu.ids.length} scope lines` : "Scope line actions"}
       head={menu.ids.length > 1 ? `${menu.ids.length} lines selected` : undefined} onClose={restore => { if (restore) menu.trigger?.focus({ preventScroll: true }); setMenu(null); }} />}
     {hidden > 0 && <button type="button" className="btn btn-small rfp-stage-more" aria-expanded={showAll} onClick={() => setShowAll(!showAll)}>{showAll ? "Hide stages that do not apply" : `Show ${hidden} ${hidden === 1 ? "stage" : "stages"} that do not apply to this project`}</button>}

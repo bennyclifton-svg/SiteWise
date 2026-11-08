@@ -223,3 +223,46 @@ func TestLineWordingIsValidated(t *testing.T) {
 		t.Error("wording accepted for a discipline not by stage")
 	}
 }
+
+// Services in the stage table are lines too (owner, 8 November 2026): their
+// wording is the user's own for this RFP, and a deleted service leaves the
+// RFP: not listed, not priced, nobody named for it.
+func TestServicesRewordedAndDeleted(t *testing.T) {
+	d, sk := discipline(t, "architecture"), skeleton(t)
+	drivers := facts(t, "class=1a", "work_type=new", "procurement=traditional", "pathway=cdc")
+	settings := set(
+		"wording:position.input_schedule", `"Brief gaps and decisions register"`,
+		"position:consultant_selection", `"D"`,
+	)
+	if err := ValidateSetting(d, sk, drivers, "wording:position.input_schedule", json.RawMessage(`"A"`)); err != nil {
+		t.Fatalf("service wording refused: %v", err)
+	}
+	if err := ValidateSetting(d, sk, drivers, "position:consultant_selection", json.RawMessage(`"D"`)); err != nil {
+		t.Fatalf("service delete refused: %v", err)
+	}
+	if ValidateSetting(d, sk, drivers, "wording:position.nope", json.RawMessage(`"A"`)) == nil {
+		t.Error("wording for an unknown service accepted")
+	}
+	r := Resolve(d, sk, drivers, settings)
+	for _, p := range r.Positions {
+		if p.Key == "consultant_selection" {
+			t.Fatalf("a deleted service is still a position: %+v", p)
+		}
+		if p.Key == "input_schedule" && p.Label != "Brief gaps and decisions register" {
+			t.Fatalf("reworded service = %q", p.Label)
+		}
+	}
+	sections, err := Sections(r, consultantTemplate(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := Markdown(sections)
+	if !strings.Contains(text, "Brief gaps and decisions register") || strings.Contains(text, "Help selecting other consultants") {
+		t.Errorf("printed RFP:\n%s", text)
+	}
+	// Hydraulic is not by stage: its positions take no delete.
+	h := ruled(t, "hydraulic-services")
+	if ValidateSetting(h, sk, drivers, "position:"+h.Positions[0].Key, json.RawMessage(`"D"`)) == nil {
+		t.Error("a delete accepted for a discipline not by stage")
+	}
+}

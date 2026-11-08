@@ -123,6 +123,8 @@ type PositionResult struct {
 	Why        string   `json:"why,omitempty"`
 	Assumption string   `json:"assumption,omitempty"`
 	Unknown    []string `json:"unknown,omitempty"`
+	// Edited marks a service in the user's own words (wording:position.<key>).
+	Edited bool `json:"edited,omitempty"`
 }
 
 type FieldValue struct {
@@ -1097,6 +1099,17 @@ func (r *resolver) resolvePositions() {
 		if ok {
 			if v := settingString(raw); contains([]string{"I", "O", "X", Ask}, v) {
 				value, res.Source, res.Assumption = v, "user", ""
+			} else if v == Deleted && r.d.ScopeByStage {
+				// Deleted from this RFP: like a service the brief does not
+				// need, it is not listed, priced or given to anyone.
+				res.Value, res.Inactive, res.Source = "X", true, "user"
+				r.out.Scope = append(r.out.Scope, res)
+				continue
+			}
+		}
+		if raw, ok := r.setting("wording:position." + p.Key); ok && r.d.ScopeByStage {
+			if text := settingString(raw); text != "" {
+				res.Label, res.Edited = text, true
 			}
 		}
 		if value == "-" {

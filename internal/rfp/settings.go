@@ -147,6 +147,11 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 			}
 		}
 	case "wording":
+		// A service's wording is wording:position.<key>; a stage line's is
+		// wording:<stage>.<line>. Both only where scope is by stage.
+		if service, ok := strings.CutPrefix(name, "position."); ok {
+			return d.ScopeByStage && validKey(d, sk, drivers, "position:"+service)
+		}
 		return validKey(d, sk, drivers, "line:"+name)
 	case "custom":
 		for _, s := range d.Stages {
@@ -253,6 +258,9 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 			return ErrInvalidSetting
 		}
 		return nil
+	case prefix == "position" && d.ScopeByStage:
+		// By stage, a service can also be deleted from this RFP.
+		return oneOf("I", "O", "X", Ask, Deleted)
 	case prefix == "position":
 		return oneOf("I", "O", "X", Ask)
 	case prefix == "line":
