@@ -1,7 +1,11 @@
 package profile
 
 import (
+	"math/big"
+	"regexp"
+	"slices"
 	"sort"
+	"strconv"
 	"strings"
 
 	"sitewise/internal/knowledge"
@@ -162,19 +166,20 @@ type Input struct {
 }
 
 const (
-	maxNote      = 120
-	maxSources   = 10
-	kindTender   = "commercial"
-	partWhole    = "whole"
-	bandUser     = "user"
-	bandGreen    = "green"
-	bandAmber    = "amber"
-	bandRed      = "red"
-	bandBlank    = "blank"
-	bandSuggest  = "suggested"
-	bandPlanning = "planning"
-	valIncluded  = "included"
-	assertSuffix = ".assertion"
+	maxNote        = 120
+	maxSources     = 10
+	kindTender     = "commercial"
+	partWhole      = "whole"
+	bandUser       = "user"
+	bandGreen      = "green"
+	bandAmber      = "amber"
+	bandRed        = "red"
+	bandBlank      = "blank"
+	bandSuggest    = "suggested"
+	bandPlanning   = "planning"
+	valIncluded    = "included"
+	valNotIncluded = "not_included"
+	assertSuffix   = ".assertion"
 )
 
 // Reconcile turns readings into rows. It is pure: no I/O, no Jev, no clock.
@@ -380,6 +385,9 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 	for _, f := range facts {
 		stated = stated || (shape == "signal" && f.Value == "true")
 	}
+	// The readings that count come first, strongest first: the note and the
+	// first source shown are the best evidence, not the first passage.
+	facts = strongestFirst(facts, shape, th)
 	for _, f := range facts {
 		if len(r.Sources) < maxSources {
 			r.Sources = append(r.Sources, source(f))
@@ -394,6 +402,12 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 	}
 	if shape == "detail" {
 		order = mergeExtendedText(order, byValue)
+		switch key {
+		case "proj.works_levels":
+			order = mergeFloorRuns(order, byValue)
+		case "proj.contributions_stated":
+			order = mergeSameAmounts(order, byValue)
+		}
 	}
 	if len(order) == 0 {
 		if shape == "action" && len(r.Sources) > 0 {
@@ -401,17 +415,28 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		}
 		return r
 	}
+	var local []Fact
+	if shape == "presence" {
+		if local = localExclusions(key, byValue, cat); local != nil {
+			delete(byValue, valNotIncluded)
+			order = []string{valIncluded}
+		}
+	}
 	multi := false
 	if strings.HasPrefix(key, "det.") {
 		d, _ := cat.Determinant(strings.TrimPrefix(key, "det."))
 		multi = d.Value == "multi_choice"
 	}
 	allTenders := true
+	var counted []Fact
 	for _, v := range order {
 		for _, f := range byValue[v] {
 			allTenders = allTenders && f.DocumentKind == kindTender
 		}
+		counted = append(counted, byValue[v]...)
 	}
+	// One tender that contradicts itself is a conflict, not tenders differing.
+	differ := allTenders && distinctDocs(counted) > 1
 	lead := ""
 	if !multi {
 		lead = lopsidedChoice(key, shape, order, byValue, cat)
@@ -435,6 +460,15 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 		if shape == "presence" && r.Value == valIncluded {
 			r.Note = cut(supporting[0].Excerpt, maxNote)
 		}
+		if local != nil {
+			// Amber, never green, and the exclusion stays listed.
+			r.Band = bandAmber
+			alt := Alternative{Value: valNotIncluded}
+			for _, f := range local {
+				alt.Sources = append(alt.Sources, source(f))
+			}
+			r.Alternatives = append(r.Alternatives, alt)
+		}
 		if shape == "action" && r.Value == "several" {
 			r.Note = "Needs mapping — several actions; choose or split the work"
 		}
@@ -454,7 +488,7 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 			}
 			r.Alternatives = append(r.Alternatives, alt)
 		}
-		if allTenders {
+		if differ {
 			r.Tenders = "differ"
 		}
 	default:
@@ -467,11 +501,82 @@ func evidenceRow(part, key string, facts []Fact, assertions map[string][]Fact, t
 			}
 			r.Alternatives = append(r.Alternatives, alt)
 		}
-		if allTenders {
+		if differ {
 			r.Tenders = "differ"
 		}
 	}
 	return r
+}
+
+// strongestFirst orders one row's readings: those that pass their floor
+// before those that do not, then by confidence. A rule's reading has no
+// confidence and sorts after Jev's among those that count.
+func strongestFirst(facts []Fact, shape string, th Thresholds) []Fact {
+	out := append([]Fact(nil), facts...)
+	rank := func(f Fact) float64 {
+		c := 0.0
+		if f.Confidence != nil {
+			c = *f.Confidence
+		}
+		if applied(f, shape, th) {
+			c += 2
+		}
+		return c
+	}
+	sort.SliceStable(out, func(i, j int) bool { return rank(out[i]) > rank(out[j]) })
+	return out
+}
+
+// localExclusions returns a system's "not included" readings when every one
+// sits under another trade's heading and the same documents also include the
+// system from somewhere that is not. A quote's Demolition section saying "no
+// site earthworks are included" limits the demolition subcontract; it does
+// not contradict the Earthworks line in the price. It returns nil when the
+// rule does not apply, and the conflict stands.
+func localExclusions(key string, byValue map[string][]Fact, cat *knowledge.Catalog) []Fact {
+	excluded, included := byValue[valNotIncluded], byValue[valIncluded]
+	if len(excluded) == 0 || len(included) == 0 || len(byValue) != 2 {
+		return nil
+	}
+	leaf := strings.TrimSuffix(strings.TrimPrefix(key, "sys."), ".presence")
+	docs := map[string]bool{}
+	general := false
+	for _, f := range included {
+		if !otherTrade(f.Section, leaf, cat) {
+			docs[f.DocumentID] = true
+			general = true
+		}
+	}
+	if !general {
+		return nil
+	}
+	for _, f := range excluded {
+		if !otherTrade(f.Section, leaf, cat) || !docs[f.DocumentID] {
+			return nil
+		}
+	}
+	return excluded
+}
+
+// otherTrade reports a section heading that names building work, none of it
+// this leaf: "Demolition" for site.earthworks.
+func otherTrade(section, leaf string, cat *knowledge.Catalog) bool {
+	if section == "" || cat == nil {
+		return false
+	}
+	named := false
+	for _, term := range cat.ScopeTerms() {
+		if term.Find(section) == nil {
+			continue
+		}
+		for _, id := range term.Systems {
+			if cat.Resolve(id) == leaf {
+				return false
+			}
+			named = true
+		}
+	}
+	return named
 }
 
 // bySupport orders values by independent documents, then by value.
@@ -535,6 +640,9 @@ var figureDetails = map[string]bool{
 	"proj.budget_stated":                   true,
 	"proj.contingency_stated":              true,
 	"proj.owner_supply_stated":             true, // items with allowances
+	"proj.budget_aspiration":               true,
+	"proj.contributions_stated":            true,
+	"proj.tenderers":                       true,
 }
 
 // majorityDetail reports whether a project or site detail (free text or a
@@ -582,6 +690,128 @@ func mergeExtendedText(order []string, byValue map[string][]Fact) []string {
 		delete(byValue, v)
 	}
 	return kept
+}
+
+// mergeFloorRuns treats a run of floors inside another as the same answer:
+// "Levels 3 and 4", "Level 4" and "Level 3 and part of Level 4" all describe
+// works on Levels 3 and 4, said more or less precisely. The widest run is
+// kept, and of equal runs the one naming a part floor. A run with a floor
+// outside it ("Levels 2 and 5", the occupied floors) stays separate
+// (Meridian, 2026-11-11).
+func mergeFloorRuns(order []string, byValue map[string][]Fact) []string {
+	floors := map[string][]int{}
+	for _, v := range order {
+		floors[v] = floorNumbers(v)
+	}
+	sort.SliceStable(order, func(i, j int) bool {
+		a, b := floors[order[i]], floors[order[j]]
+		if len(a) != len(b) {
+			return len(a) > len(b)
+		}
+		return strings.Contains(order[i], "part") && !strings.Contains(order[j], "part")
+	})
+	var kept []string
+	for _, v := range order {
+		into := ""
+		for _, k := range kept {
+			if len(floors[v]) > 0 && containsAll(floors[k], floors[v]) {
+				into = k
+				break
+			}
+		}
+		if into == "" {
+			kept = append(kept, v)
+			continue
+		}
+		byValue[into] = append(byValue[into], byValue[v]...)
+		delete(byValue, v)
+	}
+	return kept
+}
+
+var floorNumber = regexp.MustCompile(`\d{1,2}`)
+
+// floorNumbers lists the floors a run names; "Levels 3 to 6" is every floor
+// between.
+func floorNumbers(run string) []int {
+	var out []int
+	for _, m := range floorNumber.FindAllString(run, -1) {
+		n, _ := strconv.Atoi(m)
+		out = append(out, n)
+	}
+	if strings.Contains(run, " to ") && len(out) == 2 && out[1] > out[0] {
+		for n := out[0] + 1; n < out[1]; n++ {
+			out = append(out, n)
+		}
+	}
+	return out
+}
+
+func containsAll(set, sub []int) bool {
+	for _, n := range sub {
+		if !slices.Contains(set, n) {
+			return false
+		}
+	}
+	return true
+}
+
+// mergeSameAmounts treats wordings that state the same sums of money as one
+// answer, keeping the fullest: "allowance $180,000 contributed (ex GST)
+// subject to lease incentive deed" and "landlord HVAC contribution ($180k)"
+// are one contribution. Different sums stay a conflict (R12).
+func mergeSameAmounts(order []string, byValue map[string][]Fact) []string {
+	// The wording that writes the sum out in full ("$180,000", not "$180k")
+	// is the source's own; then the longer wording.
+	full := func(v string) int { return len(fullAmount.FindAllString(v, -1)) }
+	sort.SliceStable(order, func(i, j int) bool {
+		if a, b := full(order[i]), full(order[j]); a != b {
+			return a > b
+		}
+		return len(order[i]) > len(order[j])
+	})
+	var kept []string
+	for _, v := range order {
+		into := ""
+		for _, k := range kept {
+			if a, b := moneyAmounts(k), moneyAmounts(v); len(a) > 0 && slices.Equal(a, b) {
+				into = k
+				break
+			}
+		}
+		if into == "" {
+			kept = append(kept, v)
+			continue
+		}
+		byValue[into] = append(byValue[into], byValue[v]...)
+		delete(byValue, v)
+	}
+	return kept
+}
+
+// fullAmount is a sum written out in figures: "$180,000", "$1,280,000".
+var fullAmount = regexp.MustCompile(`\$\s*\d{1,3}(?:,\d{3})+(?:\.\d+)?\b`)
+
+var moneyAmount = regexp.MustCompile(`(?i)\$\s*([0-9][0-9,]*(?:\.[0-9]+)?)\s*(million|m|thousand|k)?\b`)
+
+// moneyAmounts reads each dollar amount as whole dollars, in order of size.
+func moneyAmounts(text string) []string {
+	var out []string
+	for _, m := range moneyAmount.FindAllStringSubmatch(text, -1) {
+		n, ok := new(big.Rat).SetString(strings.ReplaceAll(m[1], ",", ""))
+		if !ok {
+			continue
+		}
+		switch strings.ToLower(m[2]) {
+		case "million", "m":
+			n.Mul(n, big.NewRat(1_000_000, 1))
+		case "thousand", "k":
+			n.Mul(n, big.NewRat(1_000, 1))
+		}
+		out = append(out, n.FloatString(0))
+	}
+	sort.Strings(out)
+	return out
 }
 
 func textWords(s string) []string {

@@ -20,6 +20,7 @@ type StatedBudget struct {
 
 var (
 	statedAmount = regexp.MustCompile(`(?i)\$\s*([0-9][0-9,]*(?:\.[0-9]+)?)\s*(million|mil|m|thousand|k)?\b`)
+	bareAmount   = regexp.MustCompile(`(?i)^([0-9][0-9,]*(?:\.[0-9]+)?)\s*(million|mil|m|thousand|k)?$`)
 	statedRange  = regexp.MustCompile(`(?i)\$\s*[0-9][0-9,.]*\s*(?:million|m|k)?\s*(?:-|–|—|to)\s*\$?\s*[0-9]`)
 	gstInc       = regexp.MustCompile(`(?i)\b(?:incl(?:uding|usive|\.)?|inc\.?)\s*(?:of\s*)?(?:gst|tax)\b`)
 	gstEx        = regexp.MustCompile(`(?i)\b(?:excl(?:uding|usive|\.)?|ex\.?|plus|\+)\s*(?:of\s*)?(?:gst|tax)\b`)
@@ -33,6 +34,13 @@ func ParseStatedBudget(text string) (StatedBudget, bool) {
 		return out, false
 	}
 	found := statedAmount.FindAllStringSubmatch(text, -1)
+	if len(found) == 0 {
+		// A user typing in Profile often leaves off the dollar sign. Only a
+		// figure standing alone (GST words aside) is read that way, so a lot
+		// number or an area in a document's prose never becomes a budget.
+		bare := strings.Trim(gstEx.ReplaceAllString(gstInc.ReplaceAllString(text, ""), ""), " ()")
+		found = bareAmount.FindAllStringSubmatch(bare, -1)
+	}
 	if len(found) != 1 {
 		return out, false
 	}

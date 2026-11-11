@@ -27,7 +27,7 @@ func (a *sheetAsker) Ask(ctx context.Context, call jev.Call) (jev.Result, error)
 	kind := a.kind
 	if kind == "mixed" || kind == "drawing-schedule" {
 		kind = "drawing"
-		if call.Priority == jev.PriorityBackground && a.pages.Add(1) == 2 {
+		if call.Priority == jev.PriorityBackground && a.pages.Add(1)%2 == 0 { // page 2 of each pass
 			kind = "report"
 			if a.kind == "drawing-schedule" {
 				kind = "schedule"
@@ -168,5 +168,79 @@ func TestUploadDrawingSheetsAndReportRetention(t *testing.T) {
 				t.Fatal("cross-org download", got)
 			}
 		})
+	}
+}
+
+// A set the automatic split stopped on can be split by the user. The page Jev
+// did not read as a drawing keeps Jev's reading rather than being relabelled.
+func TestManualSplitOfStoppedDrawingSet(t *testing.T) {
+	app := newApp(t, func(o *httpapi.Options) { o.Jev = &sheetAsker{kind: "mixed"} })
+	m := app.member(t, "Manual split")
+	p := m.createProject(t, "Manual split")
+	doc := m.upload(t, p, "rotated-title-block.pdf", http.StatusCreated)
+	var view store.DocumentView
+	deadline := time.Now().Add(8 * time.Second)
+	for {
+		m.getJSON(t, "/api/documents/"+doc.ID, &view)
+		if view.Expansion != nil && view.Expansion.Status == "review" {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("automatic split did not stop: %+v", view)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if !view.Expansion.CanSplit {
+		t.Fatalf("stopped set not offered for splitting: %+v", view.Expansion)
+	}
+	other := app.member(t, "Other split tenant")
+	if got := other.status(t, http.MethodPost, "/api/documents/"+doc.ID+"/split", nil); got != http.StatusNotFound {
+		t.Fatal("cross-org split", got)
+	}
+	m.call(t, http.MethodPost, "/api/documents/"+doc.ID+"/split", nil, http.StatusAccepted, &view)
+	var list struct {
+		Documents []store.DocumentView `json:"documents"`
+	}
+	deadline = time.Now().Add(8 * time.Second)
+	for {
+		m.getJSON(t, "/api/projects/"+p+"/documents", &list)
+		if len(list.Documents) == 3 {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatalf("manual split did not publish: %+v", list.Documents)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	kinds := map[int]string{}
+	for _, d := range list.Documents {
+		if d.ID == doc.ID {
+			if d.Status != "split" || d.Expansion == nil || d.Expansion.Status != "complete" || d.Expansion.CanSplit {
+				t.Fatalf("source after manual split %+v", d)
+			}
+			continue
+		}
+		for _, f := range d.Fields {
+			if f.Field == "kind" {
+				kinds[d.SheetPage] = f.Value
+			}
+		}
+	}
+	if kinds[1] != "drawing" || kinds[2] != "report" {
+		t.Fatalf("sheet kinds %v", kinds)
+	}
+	if got := m.status(t, http.MethodPost, "/api/documents/"+doc.ID+"/split", nil); got != http.StatusConflict {
+		t.Fatal("split of a complete set", got)
+	}
+}
+
+// Only a set stopped on an unconfirmed page can be split by hand.
+func TestManualSplitRefusedForOtherDocuments(t *testing.T) {
+	app := newApp(t, func(o *httpapi.Options) { o.Jev = &sheetAsker{kind: "report"} })
+	m := app.member(t, "Split refused")
+	p := m.createProject(t, "Split refused")
+	doc := m.upload(t, p, "rotated-title-block.pdf", http.StatusCreated)
+	if got := m.status(t, http.MethodPost, "/api/documents/"+doc.ID+"/split", nil); got != http.StatusConflict {
+		t.Fatal("split of a report", got)
 	}
 }

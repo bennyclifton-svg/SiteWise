@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/db"
@@ -14,7 +15,26 @@ type DrawingExpansion struct {
 	PageCount int    `json:"page_count"`
 	Status    string `json:"status"`
 	Reason    string `json:"reason,omitempty"`
+	// Manual is set when the user asked for the split.
+	Manual bool `json:"manual,omitempty"`
+	// CanSplit offers the user a split of a set the automatic split stopped on
+	// because one page was not confirmed as a drawing.
+	CanSplit bool `json:"can_split,omitempty"`
 }
+
+// unconfirmedSuffix ends the reason the automatic split records when a page
+// is not confirmed as a drawing. It is what makes a set splittable by hand.
+const unconfirmedSuffix = "was not confirmed as a drawing or schedule within this drawing set. The original is retained as one document."
+
+// UnconfirmedPageReason is the stop reason for page, which the user can
+// override with a manual split.
+func UnconfirmedPageReason(page int) string {
+	return fmt.Sprintf("Page %d %s", page, unconfirmedSuffix)
+}
+
+// ErrNotSplittable means the document is not a drawing set stopped on an
+// unconfirmed page.
+var ErrNotSplittable = errors.New("document cannot be split")
 
 type SheetWrite struct {
 	SHA256    []byte
@@ -34,10 +54,25 @@ func (s *Store) RetryDrawingExpansion(ctx context.Context, orgID, sourceID strin
 	return err
 }
 
+// SplitDrawingSet queues a manual split of a set the automatic split stopped
+// on. The existing background worker does the reading.
+func (s *Store) SplitDrawingSet(ctx context.Context, orgID, sourceID string) error {
+	tag, err := s.pool.Exec(ctx, `UPDATE drawing_expansions SET status='pending',reason='',manual=true
+	WHERE org_id=$1::uuid AND source_id=$2::uuid AND status='review' AND NOT manual AND right(reason,$3)=$4`,
+		orgID, sourceID, len(unconfirmedSuffix), unconfirmedSuffix)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotSplittable
+	}
+	return nil
+}
+
 func (s *Store) DrawingExpansion(ctx context.Context, orgID, sourceID string) (DrawingExpansion, error) {
 	var out DrawingExpansion
 	var present int
-	err := s.pool.QueryRow(ctx, `SELECT source_id::text,page_count,status,reason,(SELECT count(*) FROM drawing_sheets sh WHERE sh.org_id=e.org_id AND sh.source_id=e.source_id) FROM drawing_expansions e WHERE org_id=$1::uuid AND source_id=$2::uuid`, orgID, sourceID).Scan(&out.SourceID, &out.PageCount, &out.Status, &out.Reason, &present)
+	err := s.pool.QueryRow(ctx, `SELECT source_id::text,page_count,status,reason,manual,(SELECT count(*) FROM drawing_sheets sh WHERE sh.org_id=e.org_id AND sh.source_id=e.source_id) FROM drawing_expansions e WHERE org_id=$1::uuid AND source_id=$2::uuid`, orgID, sourceID).Scan(&out.SourceID, &out.PageCount, &out.Status, &out.Reason, &out.Manual, &present)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return out, ErrNotFound
 	}
@@ -52,6 +87,7 @@ func (e *DrawingExpansion) checkPresent(present int) {
 		e.Status = "review"
 		e.Reason = fmt.Sprintf("%d of %d sheets remain listed. Retry sheet processing to restore missing pages from the original.", present, e.PageCount)
 	}
+	e.CanSplit = e.Status == "review" && !e.Manual && strings.HasSuffix(e.Reason, unconfirmedSuffix)
 }
 
 // ExistingDrawingPages lets recovery skip surviving sheets and their edits.
@@ -110,7 +146,7 @@ func (s *Store) sheetViews(ctx context.Context, orgID, projectID string, views [
 	for i := range views {
 		byID[views[i].ID] = &views[i]
 	}
-	rows, err := s.pool.Query(ctx, `SELECT e.source_id::text,e.page_count,e.status,e.reason,d.filename,
+	rows, err := s.pool.Query(ctx, `SELECT e.source_id::text,e.page_count,e.status,e.reason,e.manual,d.filename,
 	COALESCE(sh.document_id::text,''),COALESCE(sh.page_number,0),count(sh.document_id) OVER (PARTITION BY e.source_id)
 	FROM drawing_expansions e JOIN documents d ON d.org_id=e.org_id AND d.id=e.source_id
 	LEFT JOIN drawing_sheets sh ON sh.org_id=e.org_id AND sh.source_id=e.source_id
@@ -123,7 +159,7 @@ func (s *Store) sheetViews(ctx context.Context, orgID, projectID string, views [
 		var e DrawingExpansion
 		var filename, child string
 		var page, present int
-		if err := rows.Scan(&e.SourceID, &e.PageCount, &e.Status, &e.Reason, &filename, &child, &page, &present); err != nil {
+		if err := rows.Scan(&e.SourceID, &e.PageCount, &e.Status, &e.Reason, &e.Manual, &filename, &child, &page, &present); err != nil {
 			return err
 		}
 		if v := byID[e.SourceID]; v != nil {
@@ -146,9 +182,14 @@ func (s *Store) PublishDrawingSheets(ctx context.Context, orgID, sourceID string
 	if len(sheets) < 2 || len(sheets) > 200 {
 		return errors.New("invalid sheet count")
 	}
+	var manual bool
 	validateSheet := func(sheet SheetWrite) error {
 		if len(sheet.SHA256) != 32 || sheet.ByteSize <= 0 {
 			return ErrMetadata
+		}
+		if manual {
+			// The user confirmed the set; each page keeps Jev's own reading.
+			return nil
 		}
 		drawing := false
 		for _, d := range sheet.Decisions {
@@ -179,7 +220,7 @@ func (s *Store) PublishDrawingSheets(ctx context.Context, orgID, sourceID string
 	}
 	var count int
 	var status string
-	err = tx.QueryRow(ctx, `SELECT page_count,status FROM drawing_expansions WHERE org_id=$1::uuid AND source_id=$2::uuid FOR UPDATE`, orgID, sourceID).Scan(&count, &status)
+	err = tx.QueryRow(ctx, `SELECT page_count,status,manual FROM drawing_expansions WHERE org_id=$1::uuid AND source_id=$2::uuid FOR UPDATE`, orgID, sourceID).Scan(&count, &status, &manual)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ErrNotFound
 	}

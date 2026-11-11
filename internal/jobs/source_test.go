@@ -3,6 +3,7 @@ package jobs_test
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
@@ -154,5 +155,132 @@ func TestLeaseRenewalKeepsLongReadOwned(t *testing.T) {
 	}
 	if !errors.Is(err, store.ErrIdle) {
 		t.Fatalf("live lease stolen: %v", err)
+	}
+}
+
+// A builder's quote exported from an estimating tool: the bullet glyph of a
+// wrapped item is emitted after its text, list headings are plain short
+// lines set left of the list, and every page ends with the firm's footer.
+func TestBulletListKeepsBulletsHeadingsAndFooterApart(t *testing.T) {
+	line := func(page int, x, y float64, s string) identity.Run {
+		return identity.Run{Text: s, Source: identity.Source{Page: page, X: x, Y: y, Width: 100, Height: 11.6}}
+	}
+	text := identity.Text{Format: "pdf", PageCount: 4}
+	for p := 1; p <= 4; p++ {
+		if p > 1 {
+			text.Runs = append(text.Runs,
+				line(p, 36.9, 646, fmt.Sprintf("Trade %d", p)),
+				line(p, 62.3, 630, fmt.Sprintf("• PERMITS for trade %d are included.", p)),
+				line(p, 36.9, 60, "Seaview Builders"),
+				line(p, 36.9, 50, "Po Box 12 Seaview VIC 3999"),
+				line(p, 36.9, 40, "ABN: 51824753556"),
+				line(p, 500, 30, fmt.Sprintf("Page %d of 4", p)),
+			)
+			continue
+		}
+		text.Runs = append(text.Runs,
+			line(p, 36.9, 646, "Demolition"),
+			line(p, 77.2, 630, "SCOPE OF WORKS - A single-story brick veneer house on timber and concrete floors with steel roofing."),
+			line(p, 77.2, 620, "No vegetation is included. No site earthworks are"),
+			line(p, 77.2, 610, "included. Site to be track rolled."),
+			line(p, 62.3, 630, "•"),
+			line(p, 62.3, 600, "• PERMITS - Building Permit is included."),
+			line(p, 36.9, 590, "Roofing & Cladding"),
+			line(p, 62.3, 575, "• Supply and fit Colorbond to roof and walls."),
+			line(p, 77.2, 560, "Includes proctor wrap, Colorbond ridges and trims,"),
+			line(p, 77.2, 550, "Colorbond 90mm downpipes."),
+			line(p, 62.3, 560, "•"),
+			line(p, 36.9, 60, "Seaview Builders"),
+			line(p, 36.9, 50, "Po Box 12 Seaview VIC 3999"),
+			line(p, 36.9, 40, "ABN: 51824753556"),
+			line(p, 500, 30, fmt.Sprintf("Page %d of 4", p)),
+		)
+	}
+	src := jobs.SourceFromText(text)
+	var page1 []store.SourceUnit
+	for _, u := range src.Units {
+		if u.Body != src.Source[u.Page-1].Text[u.Start:u.End] {
+			t.Fatal("source offsets do not round-trip")
+		}
+		if strings.Trim(u.Body, " \n•") == "" {
+			t.Fatalf("a bare bullet is a unit: %q", u.Body)
+		}
+		if u.Page == 1 {
+			page1 = append(page1, u)
+		}
+	}
+	find := func(units []store.SourceUnit, words string) store.SourceUnit {
+		t.Helper()
+		for _, u := range units {
+			if strings.Contains(u.Body, words) {
+				return u
+			}
+		}
+		t.Fatalf("no unit holds %q", words)
+		return store.SourceUnit{}
+	}
+	scope := find(page1, "SCOPE OF WORKS")
+	if scope.Section != "Demolition" || !strings.Contains(scope.Body, "• SCOPE OF WORKS") || strings.Contains(scope.Body, "PERMITS") || !strings.Contains(scope.Body, "track rolled") {
+		t.Fatalf("scope unit %+v", scope)
+	}
+	permits := find(page1, "PERMITS")
+	if permits.Section != "Demolition" || strings.Contains(permits.Body, "Roofing") {
+		t.Fatalf("a heading rode on the item above it: %+v", permits)
+	}
+	wrap := find(page1, "proctor wrap")
+	if wrap.Section != "Roofing & Cladding" || !strings.Contains(wrap.Body, "• Includes proctor wrap") || strings.Contains(wrap.Body, "Seaview Builders") {
+		t.Fatalf("wrapped item %+v", wrap)
+	}
+	// The footer is kept, apart from the works; a repeat is not read again.
+	if first := find(page1, "Po Box 12"); first.Category != "" || !strings.Contains(first.Body, "Page 1 of 4") {
+		t.Fatalf("first footer %+v", first)
+	}
+	for _, u := range src.Units {
+		if u.Page > 1 && strings.Contains(u.Body, "Po Box 12") && u.Category != store.RepeatedFurniture {
+			t.Fatalf("repeated footer on page %d is read again: %+v", u.Page, u)
+		}
+		if u.Page > 1 && strings.Contains(u.Body, "PERMITS") && u.Category != "" {
+			t.Fatalf("works marked background: %+v", u)
+		}
+	}
+}
+
+// A priced table: each row is one unit under the table's title, which is
+// only marked by its larger type. A numbered row is not a heading.
+func TestPricedTableRowsAreUnitsUnderTheirTitle(t *testing.T) {
+	text := identity.Text{Format: "pdf", PageCount: 1}
+	y := 700.0
+	cell := func(x, h float64, s string) {
+		text.Runs = append(text.Runs, identity.Run{Text: s, Source: identity.Source{Page: 1, X: x, Y: y, Width: 80, Height: h}})
+	}
+	cell(247, 17.4, "Quoted Categories")
+	y -= 20
+	cell(65, 11.6, "Description of category")
+	cell(504, 11.6, "Total incl. GST")
+	for _, row := range [][3]string{{"19", "Security / Intercom / Data - See Specifications", "$35,000.00"}, {"20", "Solar Panels & Battery System - as per quotation provided", "$90,576.51"}, {"33", "Shed Retaining Walls", "$20,867.72"}} {
+		y -= 20
+		cell(36, 11.9, row[0])
+		cell(65, 11.9, row[1])
+		cell(505, 11.9, row[2])
+	}
+	y -= 20
+	cell(58, 11.6, "4.12 Rock for gravel driveway west to East/West of house")
+	cell(434, 11.6, "6.000 Ea")
+	cell(521, 11.6, "$3,960.00")
+	src := jobs.SourceFromText(text)
+	var solar, rock *store.SourceUnit
+	for i, u := range src.Units {
+		if strings.Contains(u.Body, "Solar Panels") {
+			solar = &src.Units[i]
+		}
+		if strings.Contains(u.Body, "4.12 Rock") {
+			rock = &src.Units[i]
+		}
+	}
+	if solar == nil || solar.Section != "Quoted Categories" || !strings.Contains(solar.Body, "$90,576.51") || strings.Contains(solar.Body, "Security") || strings.Contains(solar.Body, "Retaining") {
+		t.Fatalf("solar row %+v", solar)
+	}
+	if rock == nil || rock.Section != "Quoted Categories" || !strings.Contains(rock.Body, "$3,960.00") {
+		t.Fatalf("numbered row %+v", rock)
 	}
 }

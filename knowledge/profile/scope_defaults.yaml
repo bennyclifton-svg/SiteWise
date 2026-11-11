@@ -453,8 +453,10 @@ categories:
 # and the user's out is final. Draft; owner review pending.
 implied_by:
 - id: wet-room
-  label: bathroom, ensuite or laundry
-  pattern: \b(?:bath(?:room)?s?|ensuites?|laundr(?:y|ies)|powder rooms?)\b
+  label: bathroom, ensuite, laundry, shower or toilet
+  # Showers and WCs added for fit-outs ("shower on Level 4", "1 × accessible
+  # WC"), Meridian 2026-11-11.
+  pattern: \b(?:bath(?:room)?s?|ensuites?|laundr(?:y|ies)|powder rooms?|showers?|toilets?|WCs?)\b
   systems:
   - interiors.wet-area-waterproofing
   - interiors.tiling
@@ -463,8 +465,8 @@ implied_by:
   - hydraulic.hot-water
   - mechanical.local-exhaust
 - id: kitchen
-  label: kitchen
-  pattern: \bkitchens?\b
+  label: kitchen or kitchenette
+  pattern: \bkitchen(?:s|ettes?)?\b
   systems:
   - interiors.joinery
   - hydraulic.sanitary
@@ -508,3 +510,77 @@ implied_by:
   pattern: \bBASIX\b|\bNatHERS\b
   systems:
   - envelope.thermal-performance
+# A fit-out names its trades as words, not systems: "Partitions, ceilings,
+# finishes, joinery, lighting, tenant switchboard extension, data cabling,
+# AV, security access control, kitchen fit-out, signage" (Meridian tenant
+# brief, 2026-11-11). On a refurbishment an included system the documents
+# also call existing does not reach scope without an action, so these
+# words suggest it. Suggestions only; the user's out is final.
+- id: mezzanine
+  label: mezzanine
+  pattern: \bmezzanines?\b
+  systems:
+  - structure.alterations
+  - fire-passive.compartments
+  - access-egress.stairs-and-ramps
+- id: partitions
+  label: partitions
+  pattern: \bpartition(?:s|ing)?\b
+  systems:
+  - interiors.walls-linings
+- id: acoustic-partitions
+  label: acoustic partitions or separation
+  pattern: \bacoustic\s+(?:partitions?|separation|walls?|treatment)\b
+  systems:
+  - interiors.acoustic-separation
+- id: ceilings
+  label: ceilings
+  pattern: \bceilings\b|\bsuspended\s+ceilings?\b|\bceiling\s+(?:tiles?|grid|linings?)\b
+  systems:
+  - interiors.ceilings
+- id: finishes
+  label: finishes, carpet or flooring
+  pattern: \bfinishes\b|\bfloor\s+(?:finish(?:es)?|coverings?)\b|\bcarpet(?:s|ing)?\b|\bvinyl\s+flooring\b
+  systems:
+  - interiors.floor-finishes
+  - interiors.painting
+- id: lighting
+  label: lighting
+  pattern: \blighting\b|\blight\s+fittings?\b|\bluminaires?\b
+  systems:
+  - electrical.lighting
+- id: switchboard
+  label: switchboard or supply upgrade
+  pattern: \b(?:switch|sub-?)boards?\b|\bkVA\b
+  systems:
+  - electrical.switchboards
+- id: final-circuits
+  label: power circuits
+  pattern: \bfinal\s+circuits?\b|\bpower\s+(?:outlets?|points?|circuits?)\b|\bGPOs?\b
+  systems:
+  - electrical.cabling-wiring
+- id: signage
+  label: signage
+  pattern: \bsignage\b
+  systems:
+  - site.signage
+- id: smoke-control
+  label: smoke control
+  pattern: \bsmoke\s+(?:control|exhaust|management)\b
+  systems:
+  - fire-active.smoke-control
+- id: sprinklers
+  label: sprinklers
+  pattern: \bsprinklers?\b
+  systems:
+  - fire-active.sprinklers
+- id: penetrations
+  label: slab penetrations or core drilling
+  pattern: \b(?:slab|floor)\s+penetrations?\b|\bcore[- ]drill(?:ing|ed)?\b
+  systems:
+  - fire-passive.penetrations
+- id: data-cabling
+  label: data cabling
+  pattern: \b(?:data|structured)\s+cabling\b
+  systems:
+  - comms-security.structured-cabling

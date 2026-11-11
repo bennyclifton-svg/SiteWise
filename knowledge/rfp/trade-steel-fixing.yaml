@@ -1,0 +1,103 @@
+# Steel fixing RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-steel-fixing
+version: 1
+status: draft
+kind: works
+title: Steel fixing
+heading: "REQUEST FOR TENDER: STEEL FIXING"
+discipline_ids: [trade.steel_fixing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the steel fixing contractor. Your job is to supply and fix the reinforcement the engineer's drawings show, with the right size, spacing, laps and cover, ready for the pre-pour inspection, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4671 — Steel Reinforcing Materials)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Supply reinforcement that complies with the specified standard, with the supplier's certificates.
+      - Attend the reinforcement inspection and fix what it finds before the pour.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4671 — Steel Reinforcing Materials)"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Inspection and evidence gates)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Schedules and shop drawings"
+    lines:
+      - {key: schedules, text: "Reinforcement schedules and bending lists from the engineer's drawings"}
+      - {key: shop_drawings, text: "Reinforcement shop drawings for the engineer's review where the specification asks for them"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4671 — Steel Reinforcing Materials)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: supply
+    name: "Reinforcement supply"
+    lines:
+      - {key: supply, text: "Reinforcement bar and mesh, cut and bent to the schedules"}
+      - {key: chairs, text: "Bar chairs, spacers and tie wire that hold the specified cover"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4671 — Steel Reinforcing Materials)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}]
+  - key: fixing
+    name: "Fixing"
+    lines:
+      - {key: ground, text: "Fix reinforcement to footings, beams and the ground slab"}
+      - {key: suspended, text: "Fix reinforcement to suspended slabs, beams, columns and walls"}
+      - {key: starters, text: "Starter bars and cast-in bars the drawings show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Slab and footing types)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}]
+  - key: inspection
+    name: "Pre-pour inspection"
+    lines:
+      - {key: attend, text: "Attendance at the engineer's or certifier's reinforcement inspection"}
+      - {key: rectify, text: "Rectification of anything the inspection finds, before the pour"}
+      - {key: pour_attend, text: "A fixer on call during the pour to restore displaced bars"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Inspection and evidence gates)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Supplier's certificates of compliance for the reinforcement"}
+      - {key: records, text: "Delivery dockets and the inspection records for each pour"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4671 — Steel Reinforcing Materials)"}]
+
+positions:
+  - {key: set_out, label: "Survey set-out, grid lines and levels from the survey control, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-owner-builder.md (Subcontractor and trade management)"}, {kind: seed, ref: "data/reference/clerk/data/seed/surveying-guide.md"}]}
+  - {key: formwork, label: "Formwork, edge forms and void formers, by the formwork trade", kind: technical, value: X, responsible: "formwork trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: concrete, label: "Concrete supply, placing and finishing, by the concreter", kind: technical, value: X, responsible: "concreter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: pre_pour_booking, label: "Booking the engineer's and certifier's reinforcement inspection before each pour, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Inspection and evidence gates)"}]}
+  - {key: pile_cages, label: "Reinforcement cages in bored piles, by the piling trade", kind: technical, value: X, responsible: "piling trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

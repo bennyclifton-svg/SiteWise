@@ -80,12 +80,13 @@ Issued system/load/utility evidence and separately quantified R1-R9 schedules.
 - Written authority before scope/quantity/ceiling/rate/program changes; reason/approval/cost/time stated.
 - Approved brief/revisions set baseline; ordinary coordination/design development included.
 - Own-error correction included; reasonable professional skill/care within competence.
+- Hold professional indemnity cover of Project-selected $5m and public liability cover of Project-selected $20m throughout the appointment.
 - Pay 30 days from correct milestone invoices; R6 declares prepayment/release, interest/recovery/suspension.
 - State rate hold/escalation; preapprove extras/expenses; no duplicate fees.
-- Valid 90 days after closing; R1 separates tax/base/options.
-- Issue numbered addenda to all, acknowledged in R1.
 - Agree project copying/use/alteration/native-file/reliance/retention/handover rights; authorised/lawful disclosure allowed, marketing by consent.
 - Settle caps/indemnities, law/disputes, notices/cure/termination, assignment/novation/subcontracts; insurance is not a cap.
+- Valid 90 days after closing; R1 separates tax/base/options.
+- Issue numbered addenda to all, acknowledged in R1.
 
 ### Returnable schedules: reply using this structure only
 

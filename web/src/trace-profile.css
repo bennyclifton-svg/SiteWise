@@ -48,12 +48,7 @@
   cursor: pointer;
 }
 .pf-t:focus-visible { outline: 2px solid var(--sw-action-focus); outline-offset: 2px; }
-.pencil-user {
-  padding-bottom: 3px;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-  background: url("./assets/marks/pencil-graphite.svg") left bottom / 480px 6px repeat-x;
-}
+/* The summary's pencils are in trace.css with the other hand marks. */
 
 /* Sources close the page: how the profile was read, once the reading is done. */
 .pf-foot { max-width: 420px; margin: 56px 0 24px; }
@@ -134,9 +129,9 @@
   vertical-align: 1px;
   background: var(--origin-doc);
 }
-/* Origin rule (trace.css): green documents (a ring when they lean, not
-   agree), blue typical, rust square yours, amber to check. */
-.pf-titleblock .pf-row[data-band="amber"] .pf-sources summary::before { background: transparent; box-shadow: inset 0 0 0 1.3px var(--origin-doc); }
+/* Origin rule (trace.css): a solid green dot from the documents, whether
+   they agree or Jev leans on them (owner, 11 Nov 2026); blue typical, rust
+   square yours, amber to check. */
 .pf-titleblock .pf-row[data-band="suggested"] .pf-sources summary::before { background: var(--origin-typical); }
 .pf-titleblock .pf-row[data-band="red"] .pf-sources summary::before { background: var(--origin-check); }
 .pf-titleblock .pf-row[data-band="user"] .pf-sources summary::before { border-radius: 1.5px; background: var(--origin-user); }
@@ -470,8 +465,8 @@ summary.sw-evmark:focus-visible { outline: 2px solid var(--sw-action-focus); out
   margin: -6px -12px -6px -6px;
   padding: 6px 12px 6px 6px;
 }
-.pf-titleblock.pf-paired .pf-value:has(.pf-control):hover { background: var(--sw-hover-bg); }
-.pf-titleblock.pf-paired .pf-value:has(.pf-control:focus) { background: var(--paper); box-shadow: inset 0 0 0 1px var(--azure); }
+.pf-titleblock.pf-paired .pf-value:has(.pf-control):hover { background: var(--state-hover); }
+.pf-titleblock.pf-paired .pf-value:has(.pf-control:focus) { background: var(--state-edit-bg); box-shadow: inset 0 0 0 1px var(--state-edit-ring); }
 .pf-titleblock.pf-paired .pf-value .pf-control,
 .pf-titleblock.pf-paired .pf-value .pf-control:hover,
 .pf-titleblock.pf-paired .pf-value .pf-control:focus,
@@ -489,9 +484,9 @@ summary.sw-evmark:focus-visible { outline: 2px solid var(--sw-action-focus); out
 .pf-card-toggle:hover { color: var(--sw-text-primary); }
 .pf-unknown-toggle { justify-self: start; margin: 4px 0; font-size: 12.5px; }
 
-/* A value the documents disagree on: the whole cell takes a rose fill in place
-   of the highlighter stroke (owner direction, 7 Nov 2026). Hover and editing
-   keep the Cost Plan treatment above. */
+/* A value the documents disagree on: the app's to-check edge on the cell's
+   left, no fill (owner, 11 Nov 2026; states.css). Hover and editing keep the
+   Cost Plan treatment above. */
 .pf-titleblock.pf-paired .pf-row[data-band="red"] .pf-inline .input,
 .pf-titleblock.pf-paired .pf-row[data-band="red"] select.pf-control { background-image: none; }
 .pf-titleblock.pf-paired .pf-row[data-band="red"] select.pf-control:hover,
@@ -500,8 +495,8 @@ summary.sw-evmark:focus-visible { outline: 2px solid var(--sw-action-focus); out
   background-size: 10px 10px;
   background-position: right 6px center;
 }
-.pf-titleblock.pf-paired .pf-row[data-band="red"] .pf-value:has(.pf-control):not(:hover):not(:focus-within) { background: var(--alert-soft); }
-.pf-titleblock .pf-mark[data-band="red"] { color: var(--alert); }
+.pf-titleblock.pf-paired .pf-row[data-band="red"] .pf-value:has(.pf-control):not(:focus-within) { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+.pf-titleblock .pf-mark[data-band="red"] { color: var(--state-check-edge); }
 
 /* An empty scope offers presets beside the hint. */
 .pf-scope-start { margin: 0 0 16px; }
@@ -606,3 +601,10 @@ summary.sw-evmark:focus-visible { outline: 2px solid var(--sw-action-focus); out
 @media print {
   .pf-head-actions { display: none !important; }
 }
+
+/* Selected scope rows (click, Ctrl+click, Shift+click), as in the register. */
+.sw-matrow .sw-line > .sw-row { cursor: default; user-select: none; }
+.sw-matrow .sw-line > .sw-row:focus { outline: none; }
+.sw-matrow .sw-line > .sw-row[aria-selected="true"],
+.sw-matrow .sw-line > .sw-row[aria-selected="true"]:hover { background: var(--state-selected); box-shadow: inset var(--state-edge) 0 0 var(--state-selected-edge); }
+.reg-menu-group { padding-top: 6px; font-weight: 600; }

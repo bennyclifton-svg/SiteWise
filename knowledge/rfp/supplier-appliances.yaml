@@ -1,0 +1,91 @@
+# Appliances RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml, with supply-oriented stages. Research:
+# docs/research/2026-11-10-trades/completion-supplies.md. Draft until the owner reviews it.
+id: supplier-appliances
+version: 1
+status: draft
+kind: works
+title: Appliances
+heading: "REQUEST FOR TENDER: APPLIANCES"
+discipline_ids: [supplier.appliances]
+evidence_limit: "Seed guidance only; no historical tender for this supply has been encoded."
+
+scale:
+  text: "One supply package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the appliance supplier. Your job is to supply the appliances the documents list, give their installation specifications early enough to set out the joinery, services and benchtop cut-outs, and deliver them for connection at fit-off."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/program-scheduling-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Check the appliance schedule against the documents and the joinery drawings, and flag anything unavailable.
+      - Give the joiner, electrician, plumber, gasfitter and stone supplier each appliance's installation specification before their shop drawings and rough-in.
+      - Hand over manuals and register the warranties in the owner's name.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: establishment, end: handover}
+
+stages:
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own coordination with the head contractor and the connecting trades"}
+      - {key: access, text: "Storage until the head contractor calls for delivery"}
+      - {key: clean, text: "Removal of packaging"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: selection
+    name: "Schedule and specifications"
+    lines:
+      - {key: schedule, text: "Appliance schedule checked against the documents and the joinery drawings"}
+      - {key: specifications, text: "Installation specifications for cut-outs, clearances, power, gas, water, drainage and ventilation"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/program-scheduling-guide.md"}]
+  - key: supply
+    name: "Supply and delivery"
+    lines:
+      - {key: supply, text: "Supply of the appliances to the schedule"}
+      - {key: deliver, text: "Delivery to site at fit-off, checked for damage"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/program-scheduling-guide.md"}]
+  - key: install
+    name: "Installation and connection"
+    lines:
+      - {key: install, text: "Installation and connection by licensed trades"}
+      - {key: commission, text: "Check that each appliance works once connected"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md"}]
+  - key: handover
+    name: Warranties and handover
+    lines:
+      - {key: manuals, text: "Appliance manuals for the building manual"}
+      - {key: records, text: "Warranties registered in the owner's name"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+
+positions:
+  - {key: power, label: "Power outlets, circuits and connection of electric appliances, by the electrical trade", kind: technical, value: X, responsible: "electrical trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: gas, label: "Gas supply and connection of gas appliances, by a licensed gasfitter", kind: technical, value: X, responsible: "gas fitting trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md"}]}
+  - {key: water, label: "Water and drainage connections to dishwashers, fridges and laundry appliances, by the plumbing trade", kind: technical, value: X, responsible: "plumbing trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: integration, label: "Housings, panels and fitting of integrated appliances into the joinery, by the joinery contractor", kind: technical, value: X, responsible: "joinery contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: ducting, label: "Rangehood ducting to outside, by the mechanical trade or the head contractor", kind: technical, value: X, responsible: "mechanical trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: whitegoods, label: "Freestanding whitegoods such as fridges and washing machines, by the client unless the documents include them", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

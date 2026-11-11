@@ -1,0 +1,107 @@
+# Concreting RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-concreting
+version: 1
+status: draft
+kind: works
+title: Concreting
+heading: "REQUEST FOR TENDER: CONCRETING"
+discipline_ids: [trade.concreting]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the concreting contractor. Your job is to supply, place, finish and cure the concrete the engineer's documents show, to the specified strength and finish, with the test records the engineer and certifier need, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Inspection and evidence gates)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3600 — Concrete Structures)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Pour only after the reinforcement inspection has passed and the head contractor releases the pour.
+      - Sample and test the concrete at each pour and keep the delivery dockets.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1012 Series — Methods of Testing Concrete)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Pour plan and mix submissions"
+    lines:
+      - {key: pour_plan, text: "Pour plan: sequence, construction joints, pumping and placing method, for review"}
+      - {key: mix, text: "Concrete mix submissions to the specification"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3600 — Concrete Structures)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: supply
+    name: "Concrete supply"
+    lines:
+      - {key: supply, text: "Concrete supply to the mix and strength the engineer specifies"}
+      - {key: pump, text: "Pumping and placing equipment"}
+      - {key: sampling, text: "Sampling and testing at each pour, with delivery dockets"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1012 Series — Methods of Testing Concrete)"}, {kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}]
+  - key: ground
+    name: "Footings and ground slab"
+    lines:
+      - {key: footings, text: "Place concrete to footings, piers and pile caps"}
+      - {key: slab, text: "Place, compact and finish the ground slab to the specified finish"}
+      - {key: cure, text: "Curing and protection until the slab can be loaded"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Slab and footing types)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]
+  - key: suspended
+    name: "Suspended structure"
+    lines:
+      - {key: structure, text: "Place and finish suspended slabs, beams, columns and walls"}
+      - {key: stairs, text: "Concrete stairs and landings the documents show"}
+      - {key: cure, text: "Curing to the specification"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3600 — Concrete Structures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Strength test results for every pour"}
+      - {key: certificates, text: "Concrete conformance records for the engineer and certifier"}
+      - {key: records, text: "Pour records: dates, locations, dockets and any non-conformance"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}]
+
+positions:
+  - {key: set_out, label: "Survey set-out, grid lines and levels from the survey control, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-owner-builder.md (Subcontractor and trade management)"}, {kind: seed, ref: "data/reference/clerk/data/seed/surveying-guide.md"}]}
+  - {key: formwork, label: "Formwork, edge forms and void formers, by the formwork trade", kind: technical, value: X, responsible: "formwork trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: reinforcement, label: "Reinforcement, bar chairs, spacers and tie wire, by the steel fixer", kind: technical, value: X, responsible: "steel fixer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: pre_pour_booking, label: "Booking the engineer's and certifier's reinforcement inspection before each pour, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Inspection and evidence gates)"}]}
+  - {key: excavation, label: "Footing excavation, by the earthworks trade", kind: technical, value: X, responsible: "earthworks trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]}
+  - {key: cast_in, label: "Plumbing and electrical penetrations and cast-in conduits, set before the pour, by those trades", kind: technical, value: X, responsible: "those trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]}
+  - {key: termite, label: "Termite barriers at slab penetrations and edges, by the termite management trade", kind: technical, value: X, responsible: "termite management trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

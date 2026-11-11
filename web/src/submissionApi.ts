@@ -25,7 +25,9 @@ export interface Award { id?: string; submission_id: string; firm_name: string; 
 // row key starts with the member's key) and the rows of members who left.
 export interface GroupTable { members: { package_id: string; key: string; title: string }[]; left: ScheduleItem[] }
 export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null; group?: GroupTable }
-export interface FirmCard { submission_id: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number; /** Unplaced and filed as a combined discipline ("Services Engineer"). */ combined?: boolean }
+/** A firm on a Procurement row: a proposal, or a firm the PM invited before
+ * its quote arrived (status "invited": no submission, nothing to price). */
+export interface FirmCard { submission_id: string; firm_id?: string; invited_on?: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus | "invited"; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number; /** Unplaced and filed as a combined discipline ("Services Engineer"). */ combined?: boolean }
 export interface Board { packages: Record<string, FirmCard[]>; unassigned: FirmCard[] }
 export interface FirmFields { name: string; abn: string; address: string; contact: string; email: string; phone: string }
 export interface ResponsePassage { ordinal: number; heading: string; page: number; excerpt: string }
@@ -40,7 +42,14 @@ const p = (project: string) => `/projects/${project}`;
 
 export const submissionApi = {
   appointmentRow: (project: string, sub: string, version: number, id: string, included: boolean, keys?: string[]) => request<PriceTable>("PUT", `${p(project)}/submissions/${sub}/appointment-row`, { version, id, included, keys }),
-  linkDocument: (project: string, pkg: string, document_id: string) => request<{ submission_id: string }>("POST", `${p(project)}/procurement/packages/${pkg}/documents`, { document_id }),
+  linkDocument: (project: string, pkg: string, document_id: string, firm_id = "") => request<{ submission_id: string }>("POST", `${p(project)}/procurement/packages/${pkg}/documents`, firm_id ? { document_id, firm_id } : { document_id }),
+  /** invite names a firm on a row before its quote arrives (no Jev). */
+  invite: (project: string, pkg: string, firm: { firm_id: string } | { name: string }) =>
+    request<{ package_id: string; firm_id: string; firm_name: string }>("POST", `${p(project)}/procurement/packages/${pkg}/invitations`, firm),
+  uninvite: (project: string, pkg: string, firm: string) => request<void>("DELETE", `${p(project)}/procurement/packages/${pkg}/invitations/${firm}`),
+  /** correctInvitation puts the firm the PM meant in an invited firm's cell (no Jev). */
+  correctInvitation: (project: string, pkg: string, firm: string, to: { firm_id: string } | { name: string }) =>
+    request<{ package_id: string; firm_id: string; firm_name: string }>("PUT", `${p(project)}/procurement/packages/${pkg}/invitations/${firm}`, to),
   row: (project: string, pkg: string, key: string, label: string, section: string, unit = "") => request<PriceTable>("PUT", `${p(project)}/procurement/packages/${pkg}/comparison-row`, { key, label, section, unit }),
   align: (project: string, sub: string, version: number, target: string, price_ids: string[], undo = false, exclude = false) => request<PriceTable>("POST", `${p(project)}/submissions/${sub}/alignment`, { version, target, price_ids, undo, exclude }),
   board: (project: string) => request<Board>("GET", `${p(project)}/procurement/board`),
@@ -65,11 +74,12 @@ export const submissionApi = {
   responseFormURL: (report: string) => `/api/reports/${report}/response-form`,
 };
 
-/** uploadProposal files one proposal dropped on a package row. */
-export function uploadProposal(project: string, pkg: string, file: File, submissionId = ""): Promise<{ submission_id: string }> {
+/** uploadProposal files one proposal dropped on a package row: into an
+ * existing column, onto an invited firm's cell (that firm's), or the row. */
+export function uploadProposal(project: string, pkg: string, file: File, submissionId = "", firmId = ""): Promise<{ submission_id: string }> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/api${p(project)}/procurement/packages/${pkg}/submissions?name=${encodeURIComponent(file.name)}${submissionId ? `&submission_id=${encodeURIComponent(submissionId)}` : ""}`);
+    xhr.open("POST", `/api${p(project)}/procurement/packages/${pkg}/submissions?name=${encodeURIComponent(file.name)}${submissionId ? `&submission_id=${encodeURIComponent(submissionId)}` : ""}${firmId ? `&firm_id=${encodeURIComponent(firmId)}` : ""}`);
     xhr.withCredentials = true;
     xhr.onload = () => xhr.status === 201 ? resolve(JSON.parse(xhr.responseText)) : reject(new ApiError(xhr.status, xhr.responseText.trim() || "Upload failed"));
     xhr.onerror = () => reject(new ApiError(0, "Upload interrupted. Drop the file again."));
@@ -77,9 +87,9 @@ export function uploadProposal(project: string, pkg: string, file: File, submiss
   });
 }
 
-export const STATUS_WORDS: Record<SubmissionStatus, string> = {
+export const STATUS_WORDS: Record<SubmissionStatus | "invited", string> = {
   reading: "Reading…", received: "Received", needs_review: "Needs review", awarded: "Awarded", unsuccessful: "Unsuccessful",
-  superseded: "Superseded", withdrawn: "Withdrawn", not_proposal: "Not a proposal",
+  superseded: "Superseded", withdrawn: "Withdrawn", not_proposal: "Not a proposal", invited: "Invited",
 };
 
 export const FLAG_WORDS: Record<string, string> = {

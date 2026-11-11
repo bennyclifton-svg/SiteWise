@@ -124,6 +124,9 @@ func HarvestOwn(text, own string, cat *knowledge.Catalog) Harvested {
 		}
 		h.add("hdr.scale."+f.Key, "pre_parsed", scaleCandidates(f, text))
 	}
+	// Spaces, like details, come from the passage's own text: a room named
+	// in an earlier heading must not be offered in every passage after it.
+	h.harvestSpaces(own, cat)
 	return h
 }
 
@@ -157,6 +160,9 @@ func candidatesFor(id, value, extraction, text string) []Candidate {
 	switch {
 	case id == "existing_building_year":
 		return buildingYearCandidates(text, time.Now().Year())
+	case id == "occupant_load":
+		// Persons, never rooms or seats: "142 persons proposed".
+		return verbatim(personsRe, text, func(m []string) string { return strings.ReplaceAll(m[1], ",", "") })
 	case id == "consent_number":
 		return verbatim(consentRe, text, func(m []string) string { return strings.TrimRight(m[0], ".") })
 	case strings.HasSuffix(id, "_date"):
@@ -193,6 +199,8 @@ func buildingYearCandidates(text string, currentYear int) []Candidate {
 	}
 	return capped(out)
 }
+
+var personsRe = regexp.MustCompile(`(?i)\b(\d{1,3}(?:,\d{3})*|\d{1,5})\s+(?:persons|people|occupants)\b`)
 
 var unitCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+(?:sole\s+occupancy\s+)?(?:units|apartments|dwellings)\b`)
 var bedroomCountRe = regexp.MustCompile(`(?i)\b(\d+)\s+bedrooms?\b`)
@@ -346,8 +354,9 @@ const sentenceBreaks = ".;\n"
 var floorAreaRole = map[string]string{"existing_gfa_sqm": "existing", "added_gfa_sqm": "added", "gfa_sqm": "proposed", "total_gfa_sqm": "proposed"}
 
 var (
-	areaExistingCue = regexp.MustCompile(`(?i)\bexisting\b`)
-	areaAddedCue    = regexp.MustCompile(`(?i)\b(?:addition(?:al)?|extension|added|extra)\b`)
+	areaExistingCue  = regexp.MustCompile(`(?i)\bexisting\b`)
+	areaAddedCue     = regexp.MustCompile(`(?i)\b(?:addition(?:al)?|extension|added|extra)\b`)
+	areaMezzanineCue = regexp.MustCompile(`(?i)\bmezzanines?\b`)
 )
 
 // areasOfRole keeps the area candidates whose nearest cue word, within the
@@ -383,6 +392,11 @@ func areaRole(text string, c Candidate) string {
 		hi = end + i
 	}
 	role, best := "proposed", 1<<30
+	// A mezzanine is floor the works add ("Mezzanine insert on Level 4
+	// (~185 m²)"), unless a nearer "existing" or "added" cue says otherwise.
+	if areaMezzanineCue.MatchString(text[lo:hi]) {
+		role = "added"
+	}
 	for _, cue := range []struct {
 		re   *regexp.Regexp
 		role string

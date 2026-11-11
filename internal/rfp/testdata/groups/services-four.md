@@ -359,28 +359,29 @@ Issued system/load/utility evidence and separately quantified R1-R9 schedules.
 - Mechanical services: Written authority before scope/quantity/ceiling/rate/program changes; state reason/system/approval and cost/time.
 - Mechanical services, Fire services: Approved brief/revisions set baseline; ordinary coordination/development included.
 - Mechanical services, Electrical services, Fire services: Own-error correction included; reasonable professional skill/care within competence.
+- Hold professional indemnity cover of Project-selected $5m and public liability cover of Project-selected $20m throughout the appointment.
 - Mechanical services, Fire services: Payment 30 days from correct milestone invoices; R6 declares prepayment/release conditions, interest/recovery/suspension.
 - Mechanical services: State rate hold/escalation; preapprove extras/expenses; no duplicate package fees.
-- Mechanical services, Fire services: Valid 90 days after closing; ex GST/GST/total, base/options separate.
-- Mechanical services, Electrical services, Fire services: Issue numbered addenda to all, acknowledged in R1.
 - Mechanical services: Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; confidentiality permits authorised/lawful disclosure; marketing by consent.
 - Mechanical services: Settle caps/indemnities, law/disputes, notices/cure/suspension/termination, assignment/novation/subcontracts; insurance is not a cap; conflicts/staff changes agreed.
+- Mechanical services, Fire services: Valid 90 days after closing; ex GST/GST/total, base/options separate.
+- Mechanical services, Electrical services, Fire services: Issue numbered addenda to all, acknowledged in R1.
 - Electrical services: Written authority before scope/quantity/ceiling/rate/program changes; reason/approval/cost/time stated.
 - Electrical services: Approved brief/revisions set baseline; ordinary coordination/design development included.
 - Electrical services: Pay 30 days from correct milestone invoices; R6 declares prepayment/release, interest/recovery/suspension.
 - Electrical services, Hydraulic services: State rate hold/escalation; preapprove extras/expenses; no duplicate fees.
-- Electrical services: Valid 90 days after closing; R1 separates tax/base/options.
 - Electrical services: Agree project copying/use/alteration/native-file/reliance/retention/handover rights; authorised/lawful disclosure allowed, marketing by consent.
 - Electrical services: Settle caps/indemnities, law/disputes, notices/cure/termination, assignment/novation/subcontracts; insurance is not a cap.
+- Electrical services: Valid 90 days after closing; R1 separates tax/base/options.
 - Hydraulic services: Engage under Project electrical agreement (attached), scope/fees/addenda, written acceptance and settled precedence. RFP authorises no work.
 - Hydraulic services: Preauthorise scope/quantity/ceiling/rate/program changes with reason and design/approval/cost/time effects.
 - Hydraulic services: Approved baseline includes normal coordination/design development.
 - Hydraulic services: Own-error correction included; reasonable skill/care within competence.
 - Hydraulic services: Pay 30 days from correct milestone invoice; declare prepayment/release/interest/recovery/suspension in R6.
-- Hydraulic services: Valid 90 days after closing; ex GST/GST/total for base/options.
-- Hydraulic services: Issue numbered addenda to all invited consultants; acknowledge them with the fee proposal.
 - Hydraulic services: Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; authorised/lawful disclosure allowed, marketing by consent.
 - Hydraulic services: Settle caps/indemnities/law/disputes/notices/cure/termination/suspension/novation/subcontracts; insurance not a cap; agree conflicts/staff changes.
+- Hydraulic services: Valid 90 days after closing; ex GST/GST/total for base/options.
+- Hydraulic services: Issue numbered addenda to all invited consultants; acknowledge them with the fee proposal.
 - Fire services: Attached Project electrical agreement (attached), scope/fees, addenda and written acceptance; settle precedence/conflicting inclusions first. RFP does not authorise work.
 - Fire services: Written authority before scope/quantity/ceiling/rate/program changes: reason, affected system/approval, fee/time consequence.
 - Fire services: State rate hold/escalation; preapprove extras/expenses and no duplicated package fees.

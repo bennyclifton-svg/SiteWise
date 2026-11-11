@@ -315,10 +315,13 @@ func readFirm(ctx context.Context, q querier, org, id string) (Firm, error) {
 	return f, err
 }
 
-// FirmCard is one firm under a package on the Procurement page.
+// FirmCard is one firm under a package on the Procurement page: a proposal,
+// or an invited firm with none yet (status "invited", no submission).
 type FirmCard struct {
 	SubmissionID string `json:"submission_id"`
+	FirmID       string `json:"firm_id,omitempty"`
 	FirmName     string `json:"firm_name"`
+	InvitedOn    string `json:"invited_on,omitempty"`
 	Filename     string `json:"filename"`
 	ReceivedOn   string `json:"received_on"`
 	Status       string `json:"status"`
@@ -340,7 +343,12 @@ type FirmCard struct {
 	// Combined marks an unplaced proposal filed as a combined discipline
 	// ("Services Engineer"): the PM combines rows for it or places it.
 	Combined bool `json:"combined,omitempty"`
+	// joined is when the card's firm took its place on the row.
+	joined time.Time
 }
+
+// CardInvited is an invited firm's card: named before its quote arrived.
+const CardInvited = "invited"
 
 // ProcurementBoard is every package's live firm cards, and the submissions
 // read but not yet tied to a package, in one snapshot.
@@ -364,6 +372,14 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 		pkgs = append(pkgs, p)
 	}
 	rows.Close()
+	invited, err := boardInvitations(ctx, tx, org, project)
+	if err != nil {
+		return nil, nil, err
+	}
+	joined, err := firmsJoined(ctx, tx, org, project)
+	if err != nil {
+		return nil, nil, err
+	}
 	out := map[string][]FirmCard{}
 	for _, pkg := range pkgs {
 		items, err := readSchedule(ctx, tx, org, pkg)
@@ -396,6 +412,16 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 			}
 			out[pkg] = append(out[pkg], cardOf(FirmColumn{Submission: sub, Firm: &f}))
 		}
+	}
+	// Invited firms take their cells, and every firm keeps the cell it first
+	// took (owner, 11 Nov 2026).
+	for pkg := range invited {
+		if _, ok := out[pkg]; !ok {
+			out[pkg] = nil
+		}
+	}
+	for pkg, cards := range out {
+		out[pkg] = placeFirms(pkg, cards, invited[pkg], joined)
 	}
 	loose := []FirmCard{}
 	// A proposal filed as the combined services discipline is marked, so
@@ -439,7 +465,7 @@ WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id IS NULL AND s
 }
 
 func cardOf(c FirmColumn) FirmCard {
-	card := FirmCard{SubmissionID: c.Submission.ID, Filename: c.Submission.Filename, ReceivedOn: c.Submission.ReceivedOn, Status: c.Submission.Status,
+	card := FirmCard{SubmissionID: c.Submission.ID, FirmID: c.Submission.FirmID, joined: c.Submission.CreatedAt, Filename: c.Submission.Filename, ReceivedOn: c.Submission.ReceivedOn, Status: c.Submission.Status,
 		BaseTotal: c.Totals.BaseTotal, KnownBase: c.Totals.KnownBase, StatedTotal: c.Submission.StatedTotal, NotPriced: c.Totals.NotPriced, Unread: c.Totals.Unread, Lowest: c.Totals.Lowest,
 		NeedsReview: c.NeedsReview, Flags: stringsOrEmpty(c.Submission.Flags),
 		PIExpiresOn: c.Submission.PIExpiresOn, PILimitCents: c.Submission.PILimitCents,

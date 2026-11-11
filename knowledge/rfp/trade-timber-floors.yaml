@@ -1,0 +1,103 @@
+# Timber floors and sanding RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-timber-floors
+version: 1
+status: draft
+kind: works
+title: Timber floors and sanding
+heading: "REQUEST FOR TENDER: TIMBER FLOORS AND SANDING"
+discipline_ids: [trade.timber_floors]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the timber flooring contractor. Your job is to lay, sand and coat the timber floors the documents show over a dry, sound substrate, so they stay flat and quiet without gapping or cupping."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Timber flooring (solid and engineered))"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Test the slab or subfloor for moisture and acclimatise the boards on site as the supplier directs before you lay.
+      - Protect finished floors from the trades that follow you.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Timber flooring (solid and engineered))"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Samples"
+    lines:
+      - {key: samples, text: "Board and coating samples for approval"}
+      - {key: system, text: "Laying method and coating system where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Timber flooring (solid and engineered))"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Substrate and preparation"
+    lines:
+      - {key: moisture, text: "Moisture testing of the slab or subfloor"}
+      - {key: barrier, text: "Moisture barrier, battens or underlay the documents show"}
+      - {key: acclimatise, text: "Delivery and acclimatisation of boards on site"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Timber flooring (solid and engineered))"}]
+  - key: laying
+    name: "Laying"
+    lines:
+      - {key: lay, text: "Laying solid or engineered boards, nailed, glued or floated as the documents show"}
+      - {key: expansion, text: "Expansion gaps, trims and thresholds"}
+      - {key: stairs, text: "Timber stair treads and nosings the documents give you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Timber flooring (solid and engineered))"}]
+  - key: finishing
+    name: "Sanding and coating"
+    lines:
+      - {key: sand, text: "Sanding and filling"}
+      - {key: coat, text: "Coating to the specification"}
+      - {key: existing, text: "Sanding and recoating of existing floors the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Timber flooring (solid and engineered))"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: protection, text: "Protection of finished floors until handover"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Product data, warranties and care instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Handover and Practical Completion)"}]
+
+positions:
+  - {key: subfloor, label: "Joists and sheet subfloor, by the framing carpenter", kind: technical, value: X, responsible: "framing carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md"}]}
+  - {key: skirtings, label: "Skirtings or scotia after the floor is laid, by the fix-out carpenter unless the documents give them to you", kind: technical, value: X, responsible: "fix-out carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]}
+  - {key: painting, label: "Final paint coat and its timing around sanding, by the painter as the program sets", kind: technical, value: X, responsible: "painter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]}
+  - {key: supply, label: "Supply of timber boards, by you unless the documents list them as a prime cost item or client supply", kind: technical, value: X, responsible: "as the documents state", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

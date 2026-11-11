@@ -74,12 +74,13 @@ Issued architecture, BCA departure register and fire records; solution IDs, meth
 - Written authority before scope/allowance/ceiling/rate/fee/program changes: reason, work, basis, time and solution/approval/occupation impacts.
 - Approved brief/revisions set baseline; normal coordination/development and defined rounds included.
 - Own-error correction included; reasonable professional skill/care within competence.
+- Hold professional indemnity cover of Project-selected $5m and public liability cover of Project-selected $20m throughout the appointment.
 - Payment 30 days from correct milestone invoices. R6 declares inspection prepayment, release restrictions, interest/recovery/suspension or shorter terms; verify statutory requirements.
 - State rates/hold period/escalation; extras/disbursements require prior authority.
-- Validity 90 days from closing; ex GST/GST/total, base/options separate.
-- Issue numbered addenda to all, acknowledged in R1.
 - Agree team/authority/operator project/maintenance/future-use rights, third-party reliance, native models/licences/retention/handover. Confidentiality permits authorised/lawful disclosure; marketing needs consent.
 - Settle caps/indemnities, law/disputes, notice/cure/suspension/termination, assignment/novation/subcontracts. Insurance is not a cap; disclose conflicts, agree team changes.
+- Validity 90 days from closing; ex GST/GST/total, base/options separate.
+- Issue numbered addenda to all, acknowledged in R1.
 
 ### Returnable schedules: reply using this structure only
 

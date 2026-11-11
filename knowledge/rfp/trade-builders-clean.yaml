@@ -1,0 +1,91 @@
+# Builder's clean RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml. A site-running trade: it builds no building system and its
+# Main Works line sits in preliminaries. Research: docs/research/2026-11-10-trades/completion-supplies.md.
+# Draft until the owner reviews it.
+id: trade-builders-clean
+version: 1
+status: draft
+kind: works
+title: Builder's clean
+heading: "REQUEST FOR TENDER: BUILDER'S CLEAN"
+discipline_ids: [trade.builders_clean]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the cleaning contractor. Your job is to clean the building and the site at the stages the head contractor calls, and to leave them clean, undamaged and ready for inspection and handover."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Clean the areas in this section when the head contractor calls them, and coordinate with the trades still working there.
+      - Use cleaning methods and products that suit each finish, and make good any damage your cleaning causes.
+      - Walk each area with the head contractor and hand it over clean.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+
+stage_intro: "A final-clean-only tender excludes the progressive clean lines."
+scope_by_stage: true
+
+boundary:
+  - {start: establishment, end: handover}
+
+stages:
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own equipment, materials and safe access to the surfaces you clean"}
+      - {key: clean, text: "Removal of your own waste and packaging"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: progressive
+    name: "Progressive cleans"
+    lines:
+      - {key: rough_clean, text: "Rough cleans at the stages the head contractor calls, before linings and before fit-out"}
+      - {key: rubbish, text: "Rubbish gathered from the work areas into the site bins"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+  - key: final
+    name: "Final builder's clean"
+    lines:
+      - {key: interior, text: "Final clean of all internal surfaces, fixtures, fittings, joinery and appliances"}
+      - {key: glazing, text: "Cleaning of glazing, frames and tracks, inside and outside where it can be reached safely"}
+      - {key: films, text: "Removal of protective films, labels, paint spots and construction residue"}
+      - {key: external, text: "Clean of balconies, paths, driveways and other external hard surfaces"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+  - key: reclean
+    name: "Touch-up clean"
+    lines:
+      - {key: touch_up, text: "Touch-up clean after defects are fixed and before the handover inspection"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+  - key: handover
+    name: Inspection and handover
+    lines:
+      - {key: inspection, text: "Joint inspection of each cleaned area with the head contractor"}
+      - {key: records, text: "Record of the products and methods used on special finishes, where the documents ask"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+
+positions:
+  - {key: bins, label: "Site skip bins and waste disposal, by the head contractor or the waste contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}]}
+  - {key: services, label: "Water and power for cleaning, from the site's temporary services, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md"}]}
+  - {key: height_access, label: "Scaffold or elevating work platforms for external glazing above safe reach, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md"}]}
+  - {key: sealing, label: "Sealing of stone, timber and other finishes that need it, by the trade that laid them", kind: technical, value: X, responsible: "the finishing trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

@@ -51,6 +51,8 @@ var builderSections = []struct {
 
 var builderSubtotal = regexp.MustCompile(`(?i)^\s*(?:sub\s*-?\s*total|exc(?:l)?\.?\s*gst)\s*:?\s*\$`)
 var builderTotal = regexp.MustCompile(`(?i)^\s*(?:(?:grand\s+)?total(?:\s+price)?(?:\s+(?:incl?\.?|including|excl?\.?|excluding)\s+gst)?|incl?\.?\s*gst)\s*:?\s*\$`)
+var builderQuoteTotal = regexp.MustCompile(`(?i)^\s*quote\s+total\s*:?\s*\$`)
+var builderTax = regexp.MustCompile(`(?i)^\s*(?:tax\s*\(gst\)|gst)\s*:?\s*\$`)
 var builderMargin = regexp.MustCompile(`(?i)^\s*plus\s+(\d{1,2})%\s+builder.?\s*margin\s*:?\s*\$`)
 var builderUnitPrice = regexp.MustCompile(`(?i)\bper\b|/\s*(?:m|hr|hour|item)|\bm[²2]\b|\bx\s*\d|\beach\b`)
 
@@ -66,6 +68,10 @@ func ReviewBuilderQuote(passages []Passage) BuilderReview {
 	}
 	var ex, inc, sub, tax *int64
 	var summarySubtotal *int64
+	// "Quote Total / Tax (GST) / Total": three printed lines that say their
+	// basis only together.
+	var quoteTotal, quoteTax, bareTotal *int64
+	var tripleLines []string
 	conflict, marginFound := false, false
 	set := func(dst **int64, n int64) {
 		if *dst != nil && **dst != n {
@@ -123,6 +129,14 @@ func ReviewBuilderQuote(passages []Passage) BuilderReview {
 				n, ok, err := invoices.ParseCents(matches[0])
 				if ok && err == nil && n >= 0 {
 					switch {
+					case builderQuoteTotal.MatchString(line):
+						set(&quoteTotal, n)
+						tripleLines = append(tripleLines, line)
+						rel = "Quoted total; not an extra"
+					case !summary && builderTax.MatchString(line):
+						set(&quoteTax, n)
+						tripleLines = append(tripleLines, line)
+						rel = "GST; not an extra"
 					case summary && strings.HasPrefix(lower, "gst:"):
 						set(&tax, n)
 					case builderSubtotal.MatchString(line):
@@ -156,7 +170,8 @@ func ReviewBuilderQuote(passages []Passage) BuilderReview {
 							set(&ex, n)
 							r.Sources = append(r.Sources, line)
 						} else {
-							r.Issues = append(r.Issues, "A total has no explicit GST basis; confirm it from the quote.")
+							set(&bareTotal, n)
+							tripleLines = append(tripleLines, line)
 						}
 						rel = "Quoted total; not an extra"
 					}
@@ -185,6 +200,15 @@ func ReviewBuilderQuote(passages []Passage) BuilderReview {
 	if summarySubtotal != nil && tax != nil && inc != nil && *inc >= *tax && *summarySubtotal == *inc-*tax {
 		set(&ex, *summarySubtotal)
 	}
+	reconciled := false
+	if bareTotal != nil {
+		if quoteTotal != nil && quoteTax != nil && *quoteTotal+*quoteTax == *bareTotal && ex == nil && inc == nil {
+			ex, inc, reconciled = quoteTotal, bareTotal, true
+			r.Sources = append(r.Sources, tripleLines...)
+		} else {
+			r.Issues = append(r.Issues, "A total has no explicit GST basis; confirm it from the quote.")
+		}
+	}
 	if conflict {
 		ex, inc = nil, nil
 		r.Issues = append(r.Issues, "Conflicting printed totals: review the source before setting a comparison price.")
@@ -199,6 +223,9 @@ func ReviewBuilderQuote(passages []Passage) BuilderReview {
 	if marginFound {
 		r.Basis = "Printed ex-GST total including builder margin. Margin is separate from GST."
 	}
+	if reconciled && ex != nil {
+		r.Basis = "Printed quote total; the printed GST and inclusive total add up to it."
+	}
 	if ex != nil {
 		s := decimalMoney(*ex)
 		r.ExGST = &s
@@ -207,7 +234,7 @@ func ReviewBuilderQuote(passages []Passage) BuilderReview {
 		s := decimalMoney(*inc)
 		r.IncGST = &s
 	}
-	if ex != nil && inc != nil && exGST(*inc) != *ex {
+	if ex != nil && inc != nil && exGST(*inc) != *ex && !reconciled {
 		diff := exGST(*inc) - *ex
 		if diff < 0 {
 			diff = -diff

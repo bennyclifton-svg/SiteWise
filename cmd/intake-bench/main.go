@@ -1046,7 +1046,13 @@ func (a *apiClient) drop(ctx context.Context, project string, c eval.Case, arriv
 func (a *apiClient) listDocuments(ctx context.Context, projects []string, n int) error {
 	for i := 0; i < n; i++ {
 		p := projects[i%len(projects)]
-		if _, err := a.timed(ctx, "project_document_list", http.MethodGet, "/projects/"+p+"/documents", nil, http.StatusOK); err != nil {
+		path := "/projects/" + p + "/documents"
+		// Every fourth read is the Projects page list, which shares this budget
+		// (counts, last filing and address per project in one query).
+		if i%4 == 3 {
+			path = "/projects"
+		}
+		if _, err := a.timed(ctx, "project_document_list", http.MethodGet, path, nil, http.StatusOK); err != nil {
 			return err
 		}
 	}
@@ -1135,6 +1141,15 @@ func (a *apiClient) profileReadEdit(ctx context.Context, st *store.Store, cat *k
 			return err
 		}
 		if _, err := a.timed(ctx, "project_profile_read", http.MethodGet, "/projects/"+doc.ProjectID+"/planning", nil, http.StatusOK); err != nil {
+			return err
+		}
+		// An Accommodation schedule edit: one write, then the table rebuilt
+		// in code from the profile and the stored edits (no Jev).
+		line, _ := json.Marshal([]map[string]any{
+			{"op": "set", "lines": []string{"offices#1", "bedroom#1"}, "field": "level", "value": fmt.Sprintf("Level %d", i%9+1)},
+			{"op": "reset", "lines": []string{"offices#1", "bedroom#1"}},
+		}[i%2])
+		if _, err := a.timed(ctx, "accommodation_edit", http.MethodPost, "/projects/"+doc.ProjectID+"/profile/accommodation", line, http.StatusOK); err != nil {
 			return err
 		}
 	}

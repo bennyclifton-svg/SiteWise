@@ -18,7 +18,7 @@
   padding: inherit;
   line-height: 1.25;
   border-radius: 0;
-  box-shadow: inset 0 0 0 1px var(--azure);
+  box-shadow: inset 0 0 0 1px var(--state-edit-ring);
   color: var(--ink);
   font: inherit;
 }
@@ -50,13 +50,14 @@
 .reg-notice:empty { display: none; }
 .reg-notice { margin: 0; padding: 6px 12px; border-bottom: 1px solid var(--line); font-size: var(--fs-xs, .75rem); }
 
-/* Selection reads like a file browser: a clear blue band, the focused row outlined. */
-.register { --reg-selected: color-mix(in oklab, var(--azure) 22%, var(--paper)); }
-:root[data-theme="dark"] .register { --reg-selected: color-mix(in oklab, var(--azure) 42%, var(--paper)); }
+/* Selection reads like a file browser, in the app's one selected look
+   (states.css): a grey band with the left edge line, the focused row outlined. */
 .project-side-panel .register .reg-doc[data-selected] .reg-line td,
-.project-side-panel .register .reg-doc[data-selected] .reg-line:hover td { background: var(--reg-selected); color: var(--ink); }
+.project-side-panel .register .reg-doc[data-selected] .reg-line:hover td { background: var(--state-selected); color: var(--ink); }
+.project-side-panel .register .reg-doc[data-selected] .reg-line td:first-child { box-shadow: inset var(--state-edge) 0 0 var(--state-selected-edge); }
 .project-side-panel .register .reg-doc[data-selected] + .reg-doc[data-selected] .reg-line td { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--paper) 70%, transparent); }
-.register .reg-line:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+.project-side-panel .register .reg-doc[data-selected] + .reg-doc[data-selected] .reg-line td:first-child { box-shadow: inset var(--state-edge) 0 0 var(--state-selected-edge), inset 0 1px 0 color-mix(in oklab, var(--paper) 70%, transparent); }
+.register .reg-line:focus-visible { outline: 2px solid var(--state-edit-ring); outline-offset: -2px; }
 
 /* Documents the profile does not read: quieter text and an eye struck through. */
 .project-side-panel .register .reg-doc[data-excluded]:not([data-selected]) .reg-line td { color: var(--ink-muted); }

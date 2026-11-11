@@ -1,0 +1,110 @@
+# Landscaping RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-landscaping
+version: 1
+status: draft
+kind: works
+title: Landscaping
+heading: "REQUEST FOR TENDER: LANDSCAPING"
+discipline_ids: [trade.landscaping]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the landscaping contractor. Your job is to build the soft and hard landscape the landscape documents show, graded so water runs away from the building, and to keep the planting alive and healthy through the establishment period."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Keep soil, mulch and garden beds clear of wall cladding, weep holes and the termite barrier.
+      - Book the landscape architect's inspections and the end of establishment inspection.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Samples and shop drawings"
+    lines:
+      - {key: samples, text: "Plant stock, soil and mulch samples for the landscape architect's review"}
+      - {key: irrigation_design, text: "Irrigation design where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Levels and soil"
+    lines:
+      - {key: levels, text: "Finished ground levels graded away from the building"}
+      - {key: soil, text: "Soil preparation, imported soil and mulch to the specification"}
+      - {key: edging, text: "Garden edging and bed preparation"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]
+  - key: planting
+    name: "Planting, turf and irrigation"
+    lines:
+      - {key: plant, text: "Supply and planting of the plant schedule"}
+      - {key: turf, text: "Turf and seeding the documents show"}
+      - {key: irrigation, text: "Irrigation the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}]
+  - key: structures
+    name: "Landscape structures"
+    lines:
+      - {key: garden_walls, text: "Low garden walls, edging and steps the landscape documents show"}
+      - {key: features, text: "Outdoor structures and features the landscape documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}]
+  - key: maintenance
+    name: "Establishment and maintenance"
+    lines:
+      - {key: maintain, text: "Watering, weeding and replacement of failed plants to the end of the establishment period the documents name"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Landscape architect's practical completion and end of establishment sign-off"}
+      - {key: records, text: "Plant schedule as planted, irrigation layout and maintenance instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}]
+
+positions:
+  - {key: trees, label: "Protection of retained trees and the project arborist's supervision, by the head contractor and the arborist", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/arborist-guide.md"}]}
+  - {key: retaining, label: "Retaining walls, by the civil works or main works contractor", kind: technical, value: X, responsible: "civil works or main works contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 4678 — Earth-Retaining Structures)"}]}
+  - {key: drainage, label: "Stormwater pits and pipes, by the stormwater drainage trade", kind: technical, value: X, responsible: "stormwater drainage trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]}
+  - {key: irrigation_supply, label: "Water supply point and power for irrigation controllers, by the plumbing and electrical trades", kind: technical, value: X, responsible: "the plumbing and electrical trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

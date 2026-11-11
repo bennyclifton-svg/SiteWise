@@ -92,7 +92,7 @@ func (c *Catalog) loadKeyScope(dir string) error {
 }
 
 // profileKeys lists every key the profile can store: header, scale,
-// condition, determinant, fact, system and scope keys.
+// condition, determinant, fact, system, scope and accommodation keys.
 func (c *Catalog) profileKeys() []string {
 	keys := []string{"hdr.building_class", "hdr.subclass", "hdr.work_type"}
 	for _, f := range c.profile.scaleFields {
@@ -121,6 +121,19 @@ func (c *Catalog) profileKeys() []string {
 	}
 	for _, d := range c.details.site {
 		keys = append(keys, SitePrefix+d.Key)
+	}
+	for _, s := range c.profile.spaces {
+		for _, a := range SpaceAttributes {
+			keys = append(keys, SpacePrefix+s.ID+"."+a)
+		}
+		for _, r := range c.profile.spaceNeeds {
+			keys = append(keys, SpacePrefix+s.ID+".need."+r.ID)
+		}
+		for _, o := range c.profile.spaces {
+			if o.ID != s.ID {
+				keys = append(keys, SpacePrefix+s.ID+".next_to."+o.ID)
+			}
+		}
 	}
 	return keys
 }

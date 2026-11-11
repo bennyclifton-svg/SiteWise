@@ -88,6 +88,13 @@ func SydneyDate(t time.Time) string {
 // set when the user dropped the file on a package row: that settles the
 // package as the user's act. The same document always has one submission.
 func (s *Store) OpenSubmission(ctx context.Context, org, project, documentID, packageID string, now time.Time) (string, error) {
+	return s.OpenSubmissionFor(ctx, org, project, documentID, packageID, "", now)
+}
+
+// OpenSubmissionFor is OpenSubmission for a proposal dropped on a firm's
+// cell (docs/plans/2026-11-11-procurement-invited-firms.md): with firmID it
+// is that directory firm's, by the user's word, so the read keeps the firm.
+func (s *Store) OpenSubmissionFor(ctx context.Context, org, project, documentID, packageID, firmID string, now time.Time) (string, error) {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return "", err
@@ -141,10 +148,32 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,NULLIF($4,'')::uuid,$5::uuid,$6,'reading',$7:
 			return "", err
 		}
 	}
+	if firmID != "" {
+		if err := presetSubmissionFirm(ctx, tx, org, project, id, firmID); err != nil {
+			return "", err
+		}
+	}
 	if err := procurementEvent(ctx, tx, s, org, project, id, "reading"); err != nil {
 		return "", err
 	}
 	return id, tx.Commit(ctx)
+}
+
+// presetSubmissionFirm makes a submission the user's chosen directory firm's,
+// as attaching a file to that firm's column does. A submission already read
+// then supersedes the firm's earlier one on the package, as a read would.
+func presetSubmissionFirm(ctx context.Context, tx pgx.Tx, org, project, id, firmID string) error {
+	f, err := readFirm(ctx, tx, org, firmID)
+	if err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `UPDATE submissions SET firm_id=$3::uuid WHERE org_id=$1::uuid AND id=$2::uuid`, org, id, f.ID); err != nil {
+		return err
+	}
+	if err := upsertSubmissionDecision(ctx, tx, org, project, id, proposals.Decision{Field: proposals.FieldFirmName, Value: f.Name, Band: proposals.BandGreen, DecidedBy: proposals.ByUser}, true); err != nil {
+		return err
+	}
+	return supersedeEarlier(ctx, tx, org, project, id)
 }
 
 // SubmissionForDocument is the submission opened for a document, or "".

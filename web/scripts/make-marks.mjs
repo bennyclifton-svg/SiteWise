@@ -206,6 +206,12 @@ pencil("pencil-azure.svg", "#2d5e9e", 2.1, true, 19, "2.6 -.25");
 // Dark theme: the same lines in the dark sheet's ember and azure.
 pencil("pencil-ember-dark.svg", "#d9935e", 1.9, false, 11, "2.6 -.25");
 pencil("pencil-azure-dark.svg", "#93cedd", 2.1, true, 19, "2.6 -.25");
+// The summary follows the origin rule (owner, 10 Nov 2026): green from the
+// documents, solid where they agree and dotted where Jev leans on them.
+pencil("pencil-green.svg", "#28593b", 1.9, false, 23, "2.6 -.25");
+pencil("pencil-green-dot.svg", "#28593b", 2.1, true, 29, "2.6 -.25");
+pencil("pencil-green-dark.svg", "#a6d7b6", 1.9, false, 23, "2.6 -.25");
+pencil("pencil-green-dot-dark.svg", "#a6d7b6", 2.1, true, 29, "2.6 -.25");
 
 // Grain: a barely-there sandstone for the navigation band.
 write("stone.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360"><filter id="s"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="3" seed="8" stitchTiles="stitch" result="fine"/><feColorMatrix in="fine" values="0 0 0 0 .42  0 0 0 0 .38  0 0 0 0 .32  0 0 0 .55 -.24" result="a"/><feTurbulence type="fractalNoise" baseFrequency=".012 .03" numOctaves="3" seed="2" stitchTiles="stitch" result="bed"/><feColorMatrix in="bed" values="0 0 0 0 .55  0 0 0 0 .5  0 0 0 0 .42  0 0 0 .16 -.05" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="a"/></feMerge></filter><rect width="100%" height="100%" filter="url(#s)"/></svg>`);

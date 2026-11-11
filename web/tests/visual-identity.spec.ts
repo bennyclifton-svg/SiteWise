@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { closeDocument, showFiling } from "./filing";
 
 test("visual suggestions need an explicit action and preserve edited fields", async ({ page }) => {
   const invite = await page.request.post("/__e2e/invite?org=a");
@@ -40,17 +41,17 @@ test("visual suggestions need an explicit action and preserve edited fields", as
   await expect(page.locator("tbody.reg-doc .reg-line .reg-title")).toContainText("Access assessment report");
   await expect(page.locator("tbody.reg-doc .reg-line .reg-title")).toContainText("Suggested · review");
   await page.locator("tbody.reg-doc td.reg-no").dblclick();
-  await page.getByRole("button", {name: "Filing details", exact: true}).click();
+  await showFiling(page);
   const panel = page.getByRole("region", {name: "Image-assisted filing review"});
   await expect(panel.getByText("Access assessment report", {exact: true})).toBeVisible();
   expect(writes).toBe(0);
   await expect(panel.getByRole("button", {name: "Use revision"})).toHaveCount(0);
-  await page.getByRole("button", {name: "Close document", exact: true}).click();
+  await closeDocument(page);
   await page.getByRole("button", {name: "Accept suggested title", exact: true}).click();
   await expect(page.getByRole("button", {name: "Accept suggested title", exact: true})).toHaveCount(0);
   await expect(page.locator("tbody.reg-doc")).not.toHaveAttribute("data-open", "true");
   await page.locator("tbody.reg-doc td.reg-no").dblclick();
-  await page.getByRole("button", {name: "Filing details", exact: true}).click();
+  await showFiling(page);
   await expect(panel.getByText("Matches saved value")).toBeVisible();
   expect(writes).toBe(1);
   await page.setViewportSize({width: 390,height: 844});

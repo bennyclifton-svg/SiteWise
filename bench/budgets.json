@@ -16,6 +16,8 @@
 	{"name":"submission_write","p50_us":100000,"p90_us":250000,"note":"cell correction, recomputed table returned (proposed)"},
 	{"name":"award_write","p50_us":200000,"p90_us":500000,"note":"award or undo: cost lines, sources and statuses in one transaction (proposed)"},
 	{"name":"procurement_report","p50_us":150000,"p90_us":300000,"note":"one-page comparison report read (proposed)"},
+	{"name":"procurement_invite","p50_us":100000,"p90_us":250000,"note":"name a firm on a row before its quote, correct its name, or remove it; no Jev (the submission_write budget)"},
+	{"name":"procurement_board","p50_us":150000,"p90_us":300000,"note":"Procurement board, eight rows of five firms and one invited firm (the price_table budget)"},
 	{"name":"packages_combine","p50_us":100000,"p90_us":250000,"note":"combine or uncombine two consultant rows, fee lines re-parented in the same transaction (the packages_write budget)"},
 	{"name":"report_assemble_group","p50_us":300000,"p90_us":1000000,"note":"a five-consultant combined engagement's RFP build, member drafts assembled in the same transaction (the report_assemble budget)"},
 	{"name":"price_table_group","p50_us":150000,"p90_us":300000,"note":"a five-consultant combined engagement's price table with five firms (the price_table budget)"},
@@ -116,6 +118,11 @@
     },
     {
       "name": "profile_edit",
+      "p50_us": 50000,
+      "p90_us": 150000
+    },
+    {
+      "name": "accommodation_edit",
       "p50_us": 50000,
       "p90_us": 150000
     },
@@ -283,6 +290,11 @@
     },
     {
       "name": "costs_delete",
+      "p50_us": 100000,
+      "p90_us": 250000
+    },
+    {
+      "name": "costs_bulk",
       "p50_us": 100000,
       "p90_us": 250000
     },

@@ -1,0 +1,104 @@
+# Solar PV and batteries RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3).
+# Same shape as trade-structural-steel.yaml. Research note:
+# docs/research/2026-11-10-trades/fire-services.md. Draft until the owner reviews it.
+id: trade-solar-pv
+version: 1
+status: draft
+kind: works
+title: Solar PV and batteries
+heading: "REQUEST FOR TENDER: SOLAR PV AND BATTERIES"
+discipline_ids: [trade.solar_pv]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the solar and battery installer. Your job is to install and connect the solar PV system and any battery the documents show, get the network operator's approval to connect, commission it to the settings that approval sets, and hand it over certified and registered."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/electrical-services-guide.md (Generation, storage and EV infrastructure)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Keep the roof weathertight where the array is fixed through it.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Array layout, string design and single-line diagram for the design team's review"}
+      - {key: design, text: "Design of the system where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays)"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, roof edge protection, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: approval
+    name: "Network approval"
+    lines:
+      - {key: application, text: "Connection application to the network operator and the export settings it approves"}
+      - {key: roof_capacity, text: "Fixing details checked against the roof's capacity, with the structural engineer where the documents require it"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters)"}, {kind: seed, ref: "data/reference/clerk/data/seed/electrical-services-guide.md (Generation, storage and EV infrastructure)"}]
+  - key: array
+    name: "Array and inverter"
+    lines:
+      - {key: array, text: "PV modules, mounting and fixings, with each roof penetration sealed watertight"}
+      - {key: dc, text: "DC cabling, isolators and their labels"}
+      - {key: inverter, text: "Inverter and its AC connection to the switchboard"}
+      - {key: monitoring, text: "Monitoring and its connection to the building network, where the documents show it"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters)"}]
+  - key: battery
+    name: "Battery storage"
+    lines:
+      - {key: battery, text: "Battery system, its enclosure and its location clear of openings and ignition sources, where the documents show a battery"}
+      - {key: shutdown, text: "Emergency shutdown that can be reached without opening the battery enclosure"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems)"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Testing and commissioning, including the battery management system and the settings the network operator requires"}
+      - {key: certificates, text: "Certificates your trade signs, and registration of the system with the network operator"}
+      - {key: signage, text: "PV and battery warning signs and shutdown instructions for emergency responders"}
+      - {key: records, text: "Manuals, warranties, settings and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/electrical-services-guide.md (Construction, commissioning and handover)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5139 — Electrical Installations — Safety of Battery Energy Storage Systems)"}]
+
+positions:
+  - {key: switchboard, label: "Space and a dedicated circuit at the main switchboard for the inverter, by the electrical contractor", kind: technical, value: X, responsible: "electrical contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4777 Series — Grid Connection of Energy Systems via Inverters)"}]}
+  - {key: roof, label: "Roof coverings and flashings, by the roofer; mounts through the roof and their seals, by you", kind: technical, value: X, responsible: "roofing contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5033 — Installation and Safety Requirements for Photovoltaic (PV) Arrays)"}]}
+  - {key: structure, label: "Roof structure able to carry the array, confirmed by the structural engineer", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/electrical-services-guide.md (Generation, storage and EV infrastructure)"}]}
+  - {key: network_fees, label: "Network operator fees and meter changes, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: builder, label: "Builder's work: penetrations, by the head contractor; fire sealing, by the head contractor or the passive fire contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

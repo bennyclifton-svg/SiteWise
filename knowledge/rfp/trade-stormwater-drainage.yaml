@@ -1,0 +1,104 @@
+# Stormwater drainage RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-stormwater-drainage
+version: 1
+status: draft
+kind: works
+title: Stormwater drainage
+heading: "REQUEST FOR TENDER: STORMWATER DRAINAGE"
+discipline_ids: [trade.stormwater_drainage]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the stormwater drainage contractor. Your job is to build the site stormwater system the documents show, from the downpipes to the legal point of discharge, with any detention and water quality devices, tested and ready for the engineer to certify."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Stormwater drainage)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hold the licence drainage work needs and book the council drainage inspection before the connection is buried.
+      - Give the hydraulic engineer what they need to certify the detention system before the occupation certificate.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Connection to council drainage)"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (On-site detention (OSD))"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Shop drawings and applications"
+    lines:
+      - {key: shop_drawings, text: "Pit, pipe and detention tank shop drawings for the engineer's review"}
+      - {key: connection_application, text: "Application for the council stormwater connection, where the documents give it to you"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Connection to council drainage)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: drainage
+    name: "Site drainage"
+    lines:
+      - {key: pits_pipes, text: "Pits, pipes and grates to the legal point of discharge"}
+      - {key: subsoil, text: "Subsoil drains the documents show"}
+      - {key: downpipes, text: "Connection of downpipes and paved-area drains to the site system"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Gravity drainage principles)"}]
+  - key: detention
+    name: "Detention and water quality"
+    lines:
+      - {key: osd, text: "On-site detention tank or basin with its orifice and overflow, where the documents show it"}
+      - {key: quality, text: "Water quality devices the documents show"}
+      - {key: tank_overflow, text: "Overflow from rainwater tanks into the site system"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (On-site detention (OSD))"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Rainwater tank)"}]
+  - key: connection
+    name: "Connection to the council system"
+    lines:
+      - {key: connect, text: "Connection to the council kerb or pit as the council approves"}
+      - {key: inspection, text: "Council drainage inspection before backfill"}
+      - {key: reinstate, text: "Reinstatement of footpath and kerb disturbed by the connection"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Connection to council drainage)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Tests and camera inspections the specification asks for"}
+      - {key: certificates, text: "Plumbing and drainage compliance certificate and the detention records the engineer needs to certify"}
+      - {key: records, text: "Works-as-executed drainage plan"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]
+
+positions:
+  - {key: roof_drainage, label: "Gutters, downpipes and roof drainage to the first site pit, by the roof plumber", kind: technical, value: X, responsible: "roof plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]}
+  - {key: engineer, label: "Detention design and the engineer's certificate, by the client's hydraulic or civil engineer", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (On-site detention (OSD))"}]}
+  - {key: levels, label: "Finished ground levels falling away from the building, by the landscaping or paving trade", kind: technical, value: X, responsible: "landscaping or paving trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]}
+  - {key: authority_fees, label: "Council application fees and contributions, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Connection to council drainage)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

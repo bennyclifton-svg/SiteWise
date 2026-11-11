@@ -1,0 +1,104 @@
+# Excavation and earthworks RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-earthworks
+version: 1
+status: draft
+kind: works
+title: Excavation and earthworks
+heading: "REQUEST FOR TENDER: EXCAVATION AND EARTHWORKS"
+discipline_ids: [trade.earthworks]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the excavation and earthworks contractor. Your job is to prepare the site and bring it to the levels the documents show: clearing, cut and fill, compaction, detailed excavation and spoil removal, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Site earthworks — cut and fill)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Work to the geotechnical report and stop where the ground differs from it.
+      - Hold the earthworks ready for the geotechnical engineer's compaction testing and inspections.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Geotechnical sign-off trigger)"}, {kind: seed, ref: "data/reference/clerk/data/seed/geotechnical-guide.md"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Earthworks method and controls"
+    lines:
+      - {key: esc_plan, text: "Erosion and sediment control plan to the consent, where the documents leave it to the contractor"}
+      - {key: method, text: "Earthworks method, haul routes and spoil classification for review"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Environmental Management Plans)"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Site earthworks — cut and fill)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Site preparation"
+    lines:
+      - {key: controls, text: "Erosion and sediment controls and a stabilised site access, kept in place"}
+      - {key: strip, text: "Clearing, topsoil stripping and stockpiling"}
+      - {key: trees, text: "Work near protected trees as the project arborist directs"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Environmental Management Plans)"}, {kind: seed, ref: "data/reference/clerk/data/seed/arborist-guide.md"}]
+  - key: bulk
+    name: "Bulk earthworks"
+    lines:
+      - {key: cut_fill, text: "Cut and fill to the design levels and batters"}
+      - {key: compaction, text: "Placing and compacting fill in layers to the specification"}
+      - {key: spoil, text: "Removal of surplus spoil, classified for lawful disposal"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Site earthworks — cut and fill)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments)"}]
+  - key: detailed
+    name: "Detailed excavation"
+    lines:
+      - {key: footings, text: "Excavation for footings, beams, pits and set-downs to the engineer's drawings"}
+      - {key: trenches, text: "Trenching and backfill for services the documents show"}
+      - {key: platforms, text: "Working platforms for piling rigs and cranes the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Compaction tests to the specification, with the results"}
+      - {key: certificates, text: "Earthworks records: fill sources, test results and the levels achieved"}
+      - {key: records, text: "Spoil disposal dockets and classification"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments)"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Compaction and fill quality)"}]
+
+positions:
+  - {key: geotech, label: "Geotechnical report, compaction testing authority and founding inspections, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Geotechnical sign-off trigger)"}]}
+  - {key: set_out, label: "Survey set-out, grid lines and levels from the survey control, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-owner-builder.md (Subcontractor and trade management)"}, {kind: seed, ref: "data/reference/clerk/data/seed/surveying-guide.md"}]}
+  - {key: basement, label: "Basement shoring, retention and dewatering, by the piling or retention contractor", kind: technical, value: X, responsible: "piling or retention contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Structural Systems for Commercial Buildings)"}]}
+  - {key: contamination, label: "Excavation and disposal of contaminated soil, under the remediation scope", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

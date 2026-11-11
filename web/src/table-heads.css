@@ -12,6 +12,8 @@
 body { --head-tone: var(--tone-blue); }
 
 :is(.cockpit-scroll, .project-side-panel) table thead th,
+/* The Projects page table, outside the project shell. */
+.trace-home table thead th,
 /* A head row inside the body, where one table changes its columns. */
 :is(.cockpit-scroll, .project-side-panel) table tr.table-subhead > th,
 .pf-tb-head,

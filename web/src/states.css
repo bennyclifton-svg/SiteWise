@@ -1,0 +1,76 @@
+/* Row and cell states: one look across the app (owner, 11 Nov 2026, option
+   A1 "Neutral grey"). Change a state's look here, not in a surface sheet.
+
+   - Hover: a faint grey lift.
+   - Selected: a plain grey lift and a mid-grey line on the row's left edge.
+     Never an origin colour: green, blue, rust and amber already say where a
+     value came from (trace.css).
+   - Editing: the whole cell, surface colour, a 1px focus line inside it.
+   - To check: an amber line on the cell's left edge, no fill.
+   - Error: the error colour, kept for errors only.
+
+   A table that marks rows aria-selected and edits with InlineCellEditor gets
+   all of this with no rules of its own. Fills are opaque so sticky cells
+   never show what scrolls beneath them. */
+
+:root {
+  --state-hover: color-mix(in srgb, #000 3%, var(--sw-surface, #FFF));
+  --state-selected: color-mix(in srgb, #000 5.5%, var(--sw-surface, #FFF));
+  --state-selected-edge: #8A8A8A;
+  --state-edge: 2px;
+  --state-edit-bg: var(--sw-surface, var(--paper));
+  --state-edit-ring: var(--sw-action-focus);
+  --state-check-edge: var(--origin-check);
+  --state-check-width: 3px;
+  --state-error-bg: var(--sw-error-bg);
+  --state-error-ring: var(--sw-error-text);
+  /* The older names every surface sheet already reads. */
+  --table-selection-bg: var(--state-selected);
+  --table-edit-bg: var(--state-edit-bg);
+}
+:root[data-theme="dark"] {
+  --state-hover: color-mix(in srgb, #FFF 4.5%, var(--sw-surface, #171717));
+  --state-selected: color-mix(in srgb, #FFF 7.5%, var(--sw-surface, #171717));
+  --state-selected-edge: #8C8C8C;
+}
+
+/* Selected table rows. Zero specificity: a surface may refine, not recolour. */
+:where(tr[aria-selected="true"]) > :where(td, th) { background: var(--state-selected); }
+:where(tr[aria-selected="true"]) > :where(td, th):first-child { box-shadow: inset var(--state-edge) 0 0 var(--state-selected-edge); }
+
+/* Open: the register row whose document is in the working view. The selected
+   lift, with an ink line on its left edge where a selected row has grey, so
+   "open" and "selected" read apart when both are on screen. */
+.reg-doc[data-open] .reg-line > td { background: var(--state-selected); }
+.reg-doc[data-open] .reg-line > td:first-child { box-shadow: inset var(--state-edge) 0 0 var(--sw-text-primary); }
+
+/* Editing: the shared double-click editor lies over its whole cell, text
+   where it was, and changes colour, never geometry. The cell's positioning is
+   a zero-specificity default: a frozen (sticky) cell keeps its own, since
+   relative would turn its sticky `left` into a sideways shove. */
+:where(td, th):where(:has(> .inline-cell-editor)) { position: relative; }
+:where(td, th) > .inline-cell-editor {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: inherit;
+}
+.inline-cell-editor,
+.inline-cell-editor:focus,
+.inline-cell-editor:focus-visible {
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: var(--state-edit-bg);
+  box-shadow: inset 0 0 0 1px var(--state-edit-ring);
+  color: var(--sw-text-primary, var(--ink));
+  font: inherit;
+}
+.inline-cell-editor[aria-invalid="true"] { background: var(--state-error-bg); box-shadow: inset 0 0 0 1px var(--state-error-ring); }
+
+/* To check: a value the documents disagree on, in any table cell. */
+:where(td[data-band="red"], th[data-band="red"]) { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }

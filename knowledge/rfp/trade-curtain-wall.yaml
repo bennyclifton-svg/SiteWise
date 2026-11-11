@@ -1,0 +1,103 @@
+# Facade and curtain wall RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-curtain-wall
+version: 1
+status: draft
+kind: works
+title: "Facade and curtain wall"
+heading: "REQUEST FOR TENDER: FACADE AND CURTAIN WALL"
+discipline_ids: [trade.curtain_wall]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package; usually let on a commercial or multi-storey building."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the facade contractor. Your job is to engineer, test, make and install the curtain wall and facade systems the documents show, weathertight, structurally adequate and of materials the external wall fire requirements allow, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Cladding Combustibility Requirements)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Build and test the mock-up the documents call for before production.
+      - Give the test evidence for every facade material before you order it.
+      - Agree slab-edge fire-stopping and movement joints with the passive fire contractor and the head contractor.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Spandrel and Slab Edge Fire Protection)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Facade shop drawings, brackets, anchors and movement joint details for the facade engineer's review"}
+      - {key: design, text: "Facade design and structural calculations where the documents leave it to the contractor"}
+      - {key: evidence, text: "Test evidence and product data for the facade materials against the documents' fire requirements"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Cladding Combustibility Requirements)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: mock_up
+    name: "Mock-up and testing"
+    lines:
+      - {key: mock_up, text: "Visual and performance mock-up the documents call for"}
+      - {key: testing, text: "Weather and structural testing of the mock-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}]
+  - key: fabrication
+    name: "Fabrication"
+    lines:
+      - {key: fabricate, text: "Frames, units and spandrel panels"}
+      - {key: glazing, text: "Glazing units and glass to the documents"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1288 — Glass in Buildings)"}]
+  - key: installation
+    name: "Installation"
+    lines:
+      - {key: anchors, text: "Facade brackets and anchors set at the slab edge"}
+      - {key: install, text: "Curtain wall units or stick system"}
+      - {key: seals, text: "Perimeter seals, movement joints and junctions with adjoining cladding and roof"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Weatherproofing and Facade Defects)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Site water testing of the installed facade where the documents call for it"}
+      - {key: certificates, text: "Certificates your trade signs and the facade test evidence"}
+      - {key: records, text: "Manuals, maintenance instructions, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Weatherproofing and Facade Defects)"}, {kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: cast_in, label: "Cast-in channels or embeds at slab edges, set to your layout, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}]}
+  - {key: slab_edge_fire, label: "Fire-stopping at the slab edge behind the facade, unless the documents give it to you, by the passive fire contractor", kind: technical, value: X, responsible: "passive fire contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Spandrel and Slab Edge Fire Protection)"}]}
+  - {key: hoisting, label: "Crane and hoist time on site, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Workplace Health and Safety in Commercial Construction)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

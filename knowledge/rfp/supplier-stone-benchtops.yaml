@@ -1,0 +1,106 @@
+# Stone benchtops RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml, with supply-oriented stages. Research:
+# docs/research/2026-11-10-trades/completion-supplies.md. Draft until the owner reviews it.
+id: supplier-stone-benchtops
+version: 1
+status: draft
+kind: works
+title: Stone benchtops
+heading: "REQUEST FOR TENDER: STONE BENCHTOPS"
+discipline_ids: [supplier.stone_benchtops]
+evidence_limit: "Seed guidance only; no historical tender for this supply has been encoded."
+
+scale:
+  text: "One supply package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the stone benchtop supplier. Your job is to template, fabricate, deliver and, where this tender includes it, install the benchtops and splashbacks the documents show, in the selected material and finish, fitted to the joinery."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Template on site once the joinery is installed and level, and take cut-outs from the appliance and tapware schedules.
+      - Cut and polish only under the dust controls workplace safety law requires; no dry cutting on site.
+      - Hand over care instructions and warranties.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/building-remediation-rectification-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Shop drawings
+    lines:
+      - {key: shop_drawings, text: "Shop drawings with joins, edge profiles and cut-outs for the design team's review"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own handling equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and off-cuts, and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: selection
+    name: "Samples and selection"
+    lines:
+      - {key: samples, text: "Samples of the selected material, colour and finish for approval"}
+      - {key: slabs, text: "Slab viewing and selection where the client asks"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]
+  - key: templating
+    name: "Site template"
+    lines:
+      - {key: template, text: "Site template after the joinery carcasses are installed and level"}
+      - {key: cut_outs, text: "Cut-out positions for sinks, cooktops and tapware from the appliance and tapware schedules"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]
+  - key: fabrication
+    name: "Fabrication and delivery"
+    lines:
+      - {key: fabricate, text: "Fabrication of tops and splashbacks, edges, joins and cut-outs"}
+      - {key: deliver, text: "Delivery to site and handling into the building"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md"}]
+  - key: install
+    name: "Installation"
+    lines:
+      - {key: install, text: "Installation, joins and fixing to the joinery"}
+      - {key: seal, text: "Sealing where the material needs it, and silicone to walls and sinks"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]
+  - key: handover
+    name: Warranties and handover
+    lines:
+      - {key: care, text: "Care and maintenance instructions"}
+      - {key: records, text: "Warranties for the material and the installation"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+
+positions:
+  - {key: cabinets, label: "Cabinets installed level and strong enough to carry the stone, by the joinery contractor", kind: technical, value: X, responsible: "joinery contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]}
+  - {key: schedules, label: "Appliance and tapware schedules with cut-out sizes before templating, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: sink_tapware, label: "Fitting and connection of sinks, tapware and cooktops, by the plumbing, gas and electrical trades", kind: technical, value: X, responsible: "the plumbing, gas and electrical trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: splashback, label: "Splashbacks in tile or glass rather than stone, by the tiling or glazing trades", kind: technical, value: X, responsible: "the tiling or glazing trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

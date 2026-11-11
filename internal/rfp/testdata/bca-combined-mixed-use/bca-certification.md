@@ -98,12 +98,13 @@ Price these quantities; identify insufficiency before engagement. Allowances nev
 - Agree extra scope/allowance/fee/time changes in writing before work; notify reason, baseline and cost. Required statutory action proceeds with prompt notice/cost records under the contingency basis.
 - Design sign-off sets the pricing baseline; normal agreed design development remains included. Regulatory assessment/determination is independent of client sign-off.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $5 million (client agreed) and public liability cover of $20 million (client agreed) throughout the appointment.
 - A: monthly itemised invoices, 30 days; no automatic final-report withholding. B: separate verified statutory payment milestones before issue/appointment. Agree advance-fee refunds/reconciliation.
 - Rates hold until 12 months after appointment; state how they are indexed after that.
-- Your proposal stays valid for 90 days.
-- Answers to scope questions go to every tenderer as numbered addenda.
 - Disclose fee dependencies, escalation and liability/time-bar/indemnity/insurance/transfer departures. Maintain eligibility; notify conflicts/substitutions. Agree notice/cure, fee reconciliation, records/replacement and disputes under the agreement; required duties continue.
 - Client supplies inputs/safe access; report gaps and reliance limits without blanket waiver. Agree project-team/authority/operator use licence, editable registers/native outputs, confidentiality with statutory disclosure, retention and handover.
+- Your proposal stays valid for 90 days.
+- Answers to scope questions go to every tenderer as numbered addenda.
 
 ### Returnable schedules: reply using this structure only
 

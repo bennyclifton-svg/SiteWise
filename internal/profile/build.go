@@ -28,7 +28,8 @@ type Reading struct {
 func IsProfileQuestion(id string) bool {
 	return strings.HasPrefix(id, "det.") || strings.HasPrefix(id, "fact.") ||
 		strings.HasPrefix(id, "hdr.") || strings.HasPrefix(id, "sys.") || strings.HasPrefix(id, "sig:") ||
-		strings.HasPrefix(id, knowledge.DetailPrefix) || strings.HasPrefix(id, knowledge.SitePrefix)
+		strings.HasPrefix(id, knowledge.DetailPrefix) || strings.HasPrefix(id, knowledge.SitePrefix) ||
+		strings.HasPrefix(id, knowledge.SpacePrefix)
 }
 
 // Readings turns one call's profile answers into readings. A pre-parsed pick

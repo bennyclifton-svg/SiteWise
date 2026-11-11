@@ -1,0 +1,94 @@
+# Roof plumbing RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-roof-plumbing
+version: 1
+status: draft
+kind: works
+title: "Roof plumbing"
+heading: "REQUEST FOR TENDER: ROOF PLUMBING"
+discipline_ids: [trade.roof_plumbing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the roof plumber. Your job is to install the gutters, box gutters, rainwater heads, downpipes and overflows the documents show, with the flashings at plumbing penetrations, so the roof drains to the stormwater system, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Stormwater and roof drainage)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Rough in downpipe brackets and vent and flue penetrations before the roof is covered.
+      - Provide the plumbing compliance certificate for the roof drainage you install.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (5. AS 3500 — Plumbing and drainage)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Gutter, box gutter and downpipe layout for the hydraulic engineer's review"}
+      - {key: design, text: "Roof drainage sizing where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Stormwater and roof drainage)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: rough_in
+    name: "Rough-in"
+    lines:
+      - {key: brackets, text: "Downpipe brackets and positions set before the roof is covered"}
+      - {key: penetrations, text: "Vent and flue penetrations and their flashings, agreed with the roofer"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}]
+  - key: drainage
+    name: "Gutters and downpipes"
+    lines:
+      - {key: gutters, text: "Eaves gutters, box gutters, sumps and rainwater heads"}
+      - {key: downpipes, text: "Downpipes to the stormwater connection points"}
+      - {key: overflows, text: "Overflows and overflow paths the documents show"}
+      - {key: guards, text: "Gutter guards or ember mesh where the documents or bushfire rating need them"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Stormwater and roof drainage)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Bushfire Construction Requirements)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Water test of gutters, box gutters and downpipes"}
+      - {key: certificates, text: "Plumbing compliance certificate for the roof drainage"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (5. AS 3500 — Plumbing and drainage)"}, {kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: covering, label: "Roof covering, ridges and roof flashings at walls and abutments, by the roofer", kind: technical, value: X, responsible: "roofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}]}
+  - {key: stormwater, label: "Stormwater drainage from the downpipe connection points to the site system, by the stormwater drainage contractor", kind: technical, value: X, responsible: "stormwater drainage contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Stormwater and roof drainage)"}]}
+  - {key: fascia, label: "Fascia ready to take the gutters, by the framing carpenter", kind: technical, value: X, responsible: "framing carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]}
+  - {key: tanks, label: "Rainwater tanks and their connections, by the hydraulic plumber", kind: technical, value: X, responsible: "hydraulic plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

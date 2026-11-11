@@ -104,7 +104,7 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
   await expect(dialog.getByText("Professional fee", { exact: true })).toBeVisible();
   await page.screenshot({ path: "../.tools/award-review.png" });
   await dialog.getByRole("button", { name: "Award and write to cost plan" }).click();
-  await expect(page.getByText(/Awarded to Gamma Planning/)).toBeVisible();
+  await expect(total.locator("td").nth(2).getByRole("button", { name: "Undo award", exact: true })).toBeVisible();
 
   // The one-page report: price, non-price with the PM's ratings, and a
   // recommendation drafted from the figures that the PM edits and signs off.
@@ -126,7 +126,8 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
   await page.getByRole("button", { name: "Back to Price table" }).click();
 
   // The cost plan shows only the confirmed appointment.
-  await page.getByRole("button", { name: "Open cost plan" }).click();
+  await page.getByRole("button", { name: "More actions", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Open cost plan", exact: true }).click();
   await expect(page.getByRole("cell", { name: /^Town Planner: Gamma Planning/ }).first()).toBeVisible();
   await expect(page.getByRole("cell", { name: "Professional fee", exact: true })).toBeVisible();
   await page.screenshot({ path: "../.tools/award-cost-plan.png", fullPage: true });

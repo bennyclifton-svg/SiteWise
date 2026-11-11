@@ -41,14 +41,18 @@ reads and writes stay at p50 ≤ 100 ms and p90 ≤ 250 ms unless that named pat
 is tighter.
 
 These paths do not call Jev: cost reads and writes, procurement row create,
-report create, and specification direct edit, review, schedule and issue.
+report create, specification direct edit, review, schedule and issue, the
+profile's run reads (progress, finds, next), and Accommodation schedule edits.
 Specification import is a background job in the existing worker: one fan-out
 per candidate, cached by source. A reading is a proposal. Navigation and
 typing do not call Jev. An uploaded invoice is read with one interactive
 fan-out for the fields rules leave open; invoice edits, splits, the ledger
 read and export do not call Jev. A proposal dropped on a procurement row is
 read with one fan-out after filing; the price table, cell corrections,
-award, undo, ratings and the comparison report do not call Jev. Award writes
+award, undo, ratings and the comparison report do not call Jev. Naming an
+invited firm on a row, and removing it, do not call Jev; a quote dropped on
+an invited firm's cell is that firm's
+(`docs/plans/2026-11-11-procurement-invited-firms.md`). Award writes
 contract values only from the firm's priced cells. When the package's budget
 is blank or unknown, award adopts that contract sum as the budget (undo
 restores it); a budget the PM set is never changed.
@@ -65,10 +69,16 @@ existing confirmation, and leaves frozen baselines and issued history intact.
 
 Before changing one of these surfaces, read its current note:
 
-- Profile: `docs/design/2026-10-03-project-profile.md`
+- Profile: `docs/design/2026-10-03-project-profile.md`; run-time feedback
+  (update strip, marks, receipt): `docs/design/2026-11-10-run-time-feedback.md`,
+  `docs/evidence/2026-11-10-run-time-feedback.md`; update speed (gzip
+  requests, sixteen passages in flight):
+  `docs/evidence/2026-11-11-profile-update-speed.md`
+  Accommodation schedule: `docs/plans/2026-11-11-accommodation-schedule-lines.md`
 - Cost plan: `docs/plans/2026-10-10-cost-plan-grid.md`,
   `docs/plans/2026-10-10-cost-plan-default-inclusion.md`,
-  `docs/plans/2026-10-11-cost-plan-direct-editing.md`
+  `docs/plans/2026-10-11-cost-plan-direct-editing.md`,
+  `docs/plans/2026-11-11-cost-plan-bulk-actions.md`
 - Procurement: `docs/plans/2026-10-10-procurement-table.md`,
   `docs/plans/2026-10-11-procurement-cost-removal.md`,
   `docs/plans/2026-10-11-procurement-default-disciplines.md`.

@@ -83,12 +83,13 @@ Current design and reconciled investigation schedule (locations, methods, depths
 - Written authority before extra scope/allowance/fee/program changes; state reason, baseline and effect. Immediate safety action: notify and record minimum action/cost. Agree standby/cancellation and handback.
 - Design sign-off sets the pricing baseline; normal agreed development remains included.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $5 million (client selected) and public liability cover of $20 million (client selected) throughout the appointment.
 - Monthly itemised invoices payable within 30 days; disclose deposits/report withholding/licence suspension departures.
 - Rates hold until 12 months after appointment; state how they are indexed after that.
-- Your proposal stays valid for 90 days.
-- Answers to scope questions go to every tenderer as numbered addenda.
 - Client supplies inputs/access; report gaps. Manage agreed work/subcontractors without blanket service waiver. Disclose caps/time bars/indemnities/transfer/IP departures; agree notice/cure, safe handback, records and disputes.
 - Dated PDFs, logs/lab certificates and editable data/registers; agree project use/reliance, confidentiality, sample retention/evidence preservation, instrument ownership and handover. State storage cost before disposal.
+- Your proposal stays valid for 90 days.
+- Answers to scope questions go to every tenderer as numbered addenda.
 
 ### Returnable schedules: reply using this structure only
 

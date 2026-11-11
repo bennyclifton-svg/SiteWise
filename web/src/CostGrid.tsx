@@ -1,9 +1,10 @@
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { RowHandle, startRowDrag } from "./table/RowHandle";
-import { IconBin, IconEye, IconEyeOff, IconOpen, IconSubdivide } from "./icons";
+import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
+import { IconBin, IconEye, IconEyeOff, IconOpen, IconPlus, IconSubdivide, IconTag } from "./icons";
 import { createContext, use, useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
-import type { CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue, PreliminaryEstimate } from "./costApi";
+import type { CostBulk, CostContent, CostItem, CostPlan, CostTotal, CostTotals, CostValue, PreliminaryEstimate } from "./costApi";
 import type { PackageRecord } from "./packageApi";
 import type { Ledger, LedgerLine } from "./invoiceApi";
 
@@ -54,7 +55,7 @@ function ClaimedCell({ line, onInvoices }: { line?: LedgerLine; onInvoices?: (id
   return <td className={`cost-num cost-ledger${over}`}>{onInvoices && line.invoices > 0 ? <button type="button" className="cost-open" title={`Show the ${line.invoices} invoice${line.invoices === 1 ? "" : "s"} on ${line.label}`} onClick={e => { e.stopPropagation(); onInvoices(line.id || "unallocated"); }}>{money(line.invoiced)}</button> : money(line.invoiced)}{line.over_budget && <span className="cost-tag">over budget</span>}</td>;
 }
 
-export function CostGrid({ projectId, reveal, plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onItem, quantities, ledger, onInvoices }: {
+export function CostGrid({ projectId, reveal, plan, totals, packages, editable, busy, onOpen, onSubdivide, onDetailedValue, onReorder, onValue, onDelete, onBulk, onItem, quantities, ledger, onInvoices }: {
   projectId: string; reveal?: { id: string };
   plan: CostPlan; totals: CostTotals | null; packages: PackageRecord[]; editable: boolean;
   ledger?: Ledger | null; onInvoices?: (lineId: string) => void;
@@ -63,12 +64,16 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   onDetailedValue: (item: CostItem, metric: string, value: CostValue) => Promise<boolean>;
   onReorder: (ids: string[]) => Promise<boolean>;
   onDelete: (item: CostItem) => Promise<boolean>;
+  /** One action on the selected lines, saved in one write. */
+  onBulk: (input: CostBulk) => Promise<boolean>;
   onItem: (content: CostContent, id?: string, calculate?: boolean, values?: Record<string, CostValue>) => Promise<boolean>;
   onOpen: (id: string) => void; onValue: (item: CostItem, metric: "budget" | "commitment", amount: string | null) => Promise<boolean>;
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
   const [selection, setSelection] = useState(emptySelection);
   const [drop, setDrop] = useState<{ id: string; after: boolean } | null>(null);
+  const [menu, setMenu] = useState<(RowMenuAt & { ids: string[] }) | null>(null);
+  const [assign, setAssign] = useState<{ ids: string[]; kind: string; x: number; y: number; value: string } | null>(null);
   const dragging = useRef(false);
   const scroll = useRef<HTMLDivElement>(null);
   const pendingReveal = useRef("");
@@ -116,6 +121,63 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
     setSelection(emptySelection);
   }
   const ledgerLine = new Map((ledger?.summary.lines ?? []).map(l => [l.id, l]));
+  const byId = new Map(items.map(i => [i.cost_item_id, i]));
+  // Deleting several lines, as one line is deleted today: a group line takes
+  // its lines with it. One confirmation says what goes and what it holds.
+  function removeMany(ids: string[]) {
+    if (!editable || busy || ids.length === 0) return;
+    const gone = new Set(ids);
+    for (let grew = true; grew;) { grew = false; for (const i of items) if (gone.has(i.parent_item_id) && !gone.has(i.cost_item_id)) { gone.add(i.cost_item_id); grew = true; } }
+    const lines = [...gone].map(id => byId.get(id)).filter((i): i is CostItem => !!i);
+    const contracts = lines.filter(i => i.values.commitment?.amount != null).length;
+    const claimed = lines.filter(i => (ledgerLine.get(i.cost_item_id)?.invoices ?? 0) > 0).length;
+    const extra = gone.size - ids.length;
+    if (ids.length > 1 || extra || contracts || claimed) {
+      const parts = [`Delete ${ids.length === 1 ? byId.get(ids[0])?.label ?? "this line" : `${ids.length} lines`}?`];
+      if (extra) parts.push(`Their group lines take ${extra} more ${extra === 1 ? "line" : "lines"} with them.`);
+      if (contracts) parts.push(`${contracts} ${contracts === 1 ? "holds" : "hold"} a contract amount.`);
+      if (claimed) parts.push(`${claimed} ${claimed === 1 ? "has" : "have"} invoices claimed against ${claimed === 1 ? "it" : "them"}.`);
+      if (!window.confirm(parts.join(" "))) return;
+    }
+    setSelection(emptySelection);
+    void onBulk({ op: "delete", ids });
+  }
+  // The category picker of a line: a category for project-wide lines, a
+  // package for fee and works lines.
+  const assignOptions = (kind: string) => kind === "project_wide" ? categories.map(id => ({ id, label: words(id) }))
+    : packages.filter(p => !p.retired_at && p.kind === (kind === "fee" ? "services" : "works")).map(p => ({ id: p.id, label: p.title }));
+  function menuItems(ids: string[], at: { x: number; y: number }): MenuItem[] {
+    const lines = ids.map(id => byId.get(id)).filter((i): i is CostItem => !!i);
+    const one = lines.length === 1 ? lines[0] : null;
+    const n = lines.length;
+    const out: MenuItem[] = [];
+    if (one) out.push({ label: "View line details", icon: <IconOpen />, onSelect: () => onOpen(one.cost_item_id) });
+    if (!editable) return out;
+    if (one) out.push({ label: "Subdivide allowance", icon: <IconSubdivide />, disabled: busy || !one.posting || one.excluded, onSelect: () => onSubdivide(one) });
+    const kinds = new Set(lines.map(i => i.line_kind));
+    if (kinds.size === 1) {
+      const kind = lines[0].line_kind;
+      const word = kind === "project_wide" ? "category" : "package";
+      out.push({ label: n === 1 ? `Set ${word}` : `Set ${word} for ${n} lines`, icon: <IconTag />, disabled: busy,
+        onSelect: () => setAssign({ ids, kind, x: at.x, y: at.y, value: kind === "project_wide" ? lines[0].category : lines[0].package_id }) });
+    }
+    const counted = lines.filter(i => !i.excluded), outOfTotals = lines.filter(i => i.excluded);
+    if (counted.length) out.push({ label: n === 1 ? "Exclude from totals" : `Exclude ${counted.length} from totals`, icon: <IconEyeOff />, disabled: busy, onSelect: () => void onBulk({ op: "set", ids: counted.map(i => i.cost_item_id), excluded: true }) });
+    if (outOfTotals.length) out.push({ label: n === 1 ? "Include in totals" : `Include ${outOfTotals.length} in totals`, icon: <IconEye />, disabled: busy, onSelect: () => void onBulk({ op: "set", ids: outOfTotals.map(i => i.cost_item_id), excluded: false }) });
+    if (lines.every(i => i.posting)) out.push({ label: n === 1 ? "Duplicate" : `Duplicate ${n} lines`, icon: <IconPlus />, disabled: busy, onSelect: () => void onBulk({ op: "duplicate", ids }) });
+    out.push("sep");
+    out.push({ label: n === 1 ? "Delete line" : `Delete ${n} lines`, icon: <IconBin />, danger: true, disabled: busy, onSelect: () => removeMany(ids) });
+    return out;
+  }
+  // Right-click acts on the selection when the line is in it; otherwise the
+  // line becomes the selection, as in the document register.
+  function openMenu(e: React.MouseEvent<HTMLElement>, id: string) {
+    if ((e.target as HTMLElement).closest("input,select,textarea,[popover]")) return;
+    e.preventDefault();
+    const inSelection = selection.ids.includes(id);
+    if (!inSelection) setSelection(clickRow(emptySelection, id, visible));
+    setMenu({ x: e.clientX, y: e.clientY, trigger: e.currentTarget, ids: inSelection ? visible.filter(x => selection.ids.includes(x)) : [id] });
+  }
   const width = 4 + COLUMNS.length + (quantities ? 3 : 0);
   // Display positions are not identities: links continue to use cost_item_id.
   let rowNumber = 0;
@@ -158,10 +220,17 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
     if ((e.target as HTMLElement).closest("input,select,textarea,button,[popover]")) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setSelection(selectAll(visible)); }
     if (e.key === "Escape") setSelection(emptySelection);
+    if ((e.key === "Delete" || e.key === "Backspace") && selection.ids.length) { e.preventDefault(); removeMany(visible.filter(x => selection.ids.includes(x))); }
+    if ((e.key === "ContextMenu" || (e.shiftKey && e.key === "F10")) && selection.ids.length) {
+      e.preventDefault();
+      const row = scroll.current?.querySelector<HTMLElement>(`tr[data-id="${CSS.escape(selection.ids[0])}"]`);
+      const r = row?.getBoundingClientRect();
+      setMenu({ x: r ? r.left + 40 : 0, y: r ? r.bottom : 0, trigger: row ?? null, ids: visible.filter(x => selection.ids.includes(x)) });
+    }
   }}>
     <thead><tr><th scope="col" className="cost-sticky" data-col="code">No.</th>{header("category", "Category")}{header("item", "Item", masterToggle)}
       {quantities && ["Qty", "Unit", "Rate"].map(c => <th key={c} scope="col">{c}</th>)}
-      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : LEDGER_COLUMNS.has(c) ? <th key={c} scope="col" className="cost-num cost-ledger" title={c === "Remaining" ? "Approved contract less invoices to date, ex GST" : "From the uploaded invoices, ex GST"}>{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions"><span className="sr-only">Actions</span></th></tr></thead>
+      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : LEDGER_COLUMNS.has(c) ? <th key={c} scope="col" className="cost-num cost-ledger" title={c === "Remaining" ? "Approved contract less invoices to date, ex GST" : "From the uploaded invoices, ex GST"}>{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions">{editable && selection.ids.length > 0 ? <button type="button" className="cost-bin-many" disabled={busy} title={`Delete ${selection.ids.length} selected`} aria-label={`Delete ${selection.ids.length} selected ${selection.ids.length === 1 ? "line" : "lines"}`} onClick={() => removeMany(visible.filter(x => selection.ids.includes(x)))}><IconBin /><span aria-hidden="true">{selection.ids.length}</span></button> : <span className="sr-only">Actions</span>}</th></tr></thead>
     {GROUPS.map(g => {
       const top = items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id)));
       const t = totals?.sections[g.bucket];
@@ -172,7 +241,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
           const group = !i.posting && children.has(i.cost_item_id);
           const expanded = group && !collapsed.has(i.cost_item_id);
           const summary = totals?.rollups?.[i.cost_item_id];
-          return <tr key={i.cost_item_id} tabIndex={-1} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} onClickCapture={e => { if ((e.ctrlKey || e.metaKey || e.shiftKey) && !(e.target as HTMLElement).closest("input,select,textarea,[popover]")) { e.stopPropagation(); setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); } }} data-id={i.cost_item_id} data-drop={drop?.id === i.cost_item_id ? (drop.after ? "after" : "before") : undefined} aria-selected={selection.ids.includes(i.cost_item_id)} onClick={e => { if (!dragging.current) setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); }}>
+          return <tr key={i.cost_item_id} tabIndex={-1} onMouseDown={e => { if ((e.shiftKey || e.ctrlKey || e.metaKey) && !(e.target as HTMLElement).closest("input,select,textarea,[popover]")) { e.preventDefault(); e.currentTarget.focus({ preventScroll: true }); } }} onContextMenu={e => openMenu(e, i.cost_item_id)} className={`cost-row${i.excluded ? " cost-excluded" : ""}${i.posting ? "" : " cost-parent"}`} onClickCapture={e => { if ((e.ctrlKey || e.metaKey || e.shiftKey) && !(e.target as HTMLElement).closest("input,select,textarea,[popover]")) { e.stopPropagation(); setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); } }} data-id={i.cost_item_id} data-drop={drop?.id === i.cost_item_id ? (drop.after ? "after" : "before") : undefined} aria-selected={selection.ids.includes(i.cost_item_id)} onClick={e => { if (!dragging.current) setSelection(s => clickRow(s, i.cost_item_id, visible, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); }}>
             <td className="cost-sticky" data-col="code">{editable && <RowHandle disabled={busy || !!sort} onPointerDown={e => handleDown(e, i)} />}{String(++rowNumber).padStart(2, "0")}</td>
             <td className="cost-sticky" data-col="category">{editable ? <CategoryCell item={i} plan={plan} packages={packages} label={category(i)} onSave={c => onItem(c, i.cost_item_id)} /> : category(i)}</td>
             <td className="cost-sticky" data-col="item" data-depth={depth}>{group && <button type="button" className="cost-disclosure-toggle" aria-label={`${expanded ? "Collapse" : "Expand"} ${i.label}`} aria-expanded={expanded} onClick={e => { e.stopPropagation(); toggleGroup(i.cost_item_id); }}><Chevron open={expanded} /></button>}{editable ? <TextCell label={i.label} value={i.label} selected={selection.ids.length === 1 && selection.ids.includes(i.cost_item_id)} onSave={label => label.trim() ? onItem(editContent(i, {label}), i.cost_item_id) : Promise.resolve(false)} /> : i.label}{i.excluded && <span className="cost-tag">excluded</span>}</td>
@@ -193,7 +262,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
               <ClaimedCell line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} />
               <td className="cost-num cost-placeholder">—</td>
               <td className="cost-num cost-ledger">{money(ledgerLine.get(i.cost_item_id)?.contract_remaining)}</td></>}
-            <td className="cost-actions" onClick={e => e.stopPropagation()}><RowActions item={i} editable={editable} busy={busy} onOpen={() => onOpen(i.cost_item_id)} onSubdivide={() => onSubdivide(i)} onToggle={() => void onItem(editContent(i, { excluded: !i.excluded }), i.cost_item_id)} onDelete={() => void onDelete(i)} /></td>
+            <td className="cost-actions" onClick={e => e.stopPropagation()}><RowActions item={i} editable={editable} busy={busy} onOpen={() => onOpen(i.cost_item_id)} onSubdivide={() => onSubdivide(i)} onToggle={() => void onItem(editContent(i, { excluded: !i.excluded }), i.cost_item_id)} onDuplicate={() => void onBulk({ op: "duplicate", ids: [i.cost_item_id] })} onDelete={() => void onDelete(i)} /></td>
           </tr>;
         })}
         {editable && <GhostRow key={g.bucket} group={g} plan={plan} packages={packages} quantities={!!quantities} onSave={(c, values) => onItem(c, undefined, false, values)} />}
@@ -217,7 +286,38 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
         <td className="cost-num">{plan.preliminary_estimate.low === plan.preliminary_estimate.high ? money(plan.preliminary_estimate.low) : `${money(plan.preliminary_estimate.low)} – ${money(plan.preliminary_estimate.high)}`}</td>
         <td colSpan={COLUMNS.length - 1} className="cost-note cost-budget-note"><span>{estimateNote(plan.preliminary_estimate)}</span></td><td /></tr>}
     </tbody>
-  </table></div></>;
+  </table></div>
+  {menu && <RowMenu at={menu} items={menuItems(menu.ids, menu)} label="Line actions" head={menu.ids.length > 1 ? `${menu.ids.length} lines` : byId.get(menu.ids[0])?.label}
+    onClose={restore => { setMenu(null); if (restore) menu.trigger?.focus({ preventScroll: true }); }} />}
+  {assign && <AssignPicker {...assign} options={assignOptions(assign.kind)} busy={busy} onCancel={() => setAssign(null)}
+    onApply={value => { setAssign(null); void onBulk({ op: "set", ids: assign.ids, assign: value }); }} />}
+  </>;
+}
+
+/** Sets one category or package on the selected lines, from the row menu. */
+function AssignPicker({ ids, kind, x, y, value, options, busy, onApply, onCancel }: { ids: string[]; kind: string; x: number; y: number; value: string; options: { id: string; label: string }[]; busy: boolean; onApply: (v: string) => void; onCancel: () => void }) {
+  const [choice, setChoice] = useState(value);
+  const word = kind === "project_wide" ? "Category" : "Package";
+  const ref = useRef<HTMLFormElement>(null);
+  const cancel = useRef(onCancel);
+  cancel.current = onCancel;
+  useEffect(() => {
+    const away = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) cancel.current(); };
+    document.addEventListener("pointerdown", away, true);
+    return () => document.removeEventListener("pointerdown", away, true);
+  }, []);
+  const left = Math.max(8, Math.min(x, window.innerWidth - 300)), top = Math.max(8, Math.min(y, window.innerHeight - 140));
+  return <form ref={ref} className="cost-assign" role="dialog" aria-label={`${word} for ${ids.length} ${ids.length === 1 ? "line" : "lines"}`} style={{ left, top }}
+    onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); onCancel(); } }}
+    onSubmit={e => { e.preventDefault(); if (kind === "works" || choice) onApply(choice); }}>
+    <label>{word} for {ids.length === 1 ? "this line" : `${ids.length} lines`}
+      <select className="select" autoFocus value={choice} onChange={e => setChoice(e.target.value)}>
+        <option value="">{kind === "works" ? "Use automatic assignment" : kind === "fee" ? "Choose package" : "Choose category"}</option>
+        {options.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
+      </select></label>
+    <span className="cost-assign-actions"><button type="button" className="btn btn-small" onClick={onCancel}>Cancel</button>
+      <button type="submit" className="btn btn-small btn-primary" disabled={busy || (kind !== "works" && !choice)}>Apply</button></span>
+  </form>;
 }
 
 // estimateNote says what the builder's figure is: advice read from a
@@ -374,7 +474,7 @@ function GhostRow({group:g,plan,packages,quantities,onSave}:{group:typeof GROUPS
  </tr>;
 }
 
-function RowActions({ item, editable, busy, onOpen, onSubdivide, onToggle, onDelete }: { item: CostItem; editable: boolean; busy: boolean; onOpen: () => void; onSubdivide: () => void; onToggle: () => void; onDelete: () => void }) {
+function RowActions({ item, editable, busy, onOpen, onSubdivide, onToggle, onDuplicate, onDelete }: { item: CostItem; editable: boolean; busy: boolean; onOpen: () => void; onSubdivide: () => void; onToggle: () => void; onDuplicate: () => void; onDelete: () => void }) {
   const id = useId(), menu = useRef<HTMLDivElement>(null), trigger = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [open, setOpen] = useState(false);
@@ -393,6 +493,7 @@ function RowActions({ item, editable, busy, onOpen, onSubdivide, onToggle, onDel
     <div ref={menu} id={id} popover="auto" onToggle={e => setOpen(e.newState === "open")} className="cost-row-menu" style={position} aria-label={`Actions for ${item.label}`}>
       <button type="button" onClick={() => act(onOpen)}><span className="more-menu-icon"><IconOpen /></span>View line details</button>
       {editable && <><button type="button" disabled={busy || !item.posting || item.excluded} onClick={() => act(onSubdivide)}><span className="more-menu-icon"><IconSubdivide /></span>Subdivide allowance</button><button type="button" disabled={busy} onClick={() => act(onToggle)}><span className="more-menu-icon">{item.excluded ? <IconEye /> : <IconEyeOff />}</span>{item.excluded ? "Include in totals" : "Exclude from totals"}</button>
+        <button type="button" disabled={busy || !item.posting} onClick={() => act(onDuplicate)}><span className="more-menu-icon"><IconPlus /></span>Duplicate</button>
         <button type="button" className="cost-menu-delete" disabled={busy} aria-label={`Delete ${item.label}`} onClick={() => act(onDelete)}><span className="more-menu-icon"><IconBin /></span>Delete line</button></>}
     </div></>;
 }

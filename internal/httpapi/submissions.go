@@ -410,8 +410,10 @@ func linkProposalDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	var body struct {
 		DocumentID string `json:"document_id"`
+		// FirmID is set when the document is dropped on an invited firm's cell.
+		FirmID string `json:"firm_id"`
 	}
-	if readProposalJSON(w, r, deps.MaxBodyBytes, &body) != nil || !uuidPattern.MatchString(body.DocumentID) {
+	if readProposalJSON(w, r, deps.MaxBodyBytes, &body) != nil || !uuidPattern.MatchString(body.DocumentID) || body.FirmID != "" && !uuidPattern.MatchString(body.FirmID) {
 		http.Error(w, "invalid document", http.StatusBadRequest)
 		return
 	}
@@ -428,7 +430,7 @@ func linkProposalDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "Wait for the document to finish filing.", http.StatusConflict)
 		return
 	}
-	id, err := deps.Store.OpenSubmission(r.Context(), session.OrgID, doc.ProjectID, doc.ID, r.PathValue("pkg"), time.Now())
+	id, err := deps.Store.OpenSubmissionFor(r.Context(), session.OrgID, doc.ProjectID, doc.ID, r.PathValue("pkg"), body.FirmID, time.Now())
 	if err != nil {
 		procurementError(w, deps, err)
 		return
@@ -455,9 +457,22 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "invalid submission_id", http.StatusBadRequest)
 		return
 	}
+	// A proposal dropped on an invited firm's cell names that firm; a file
+	// for an existing column already has its firm.
+	firm := r.URL.Query().Get("firm_id")
+	if firm != "" && (!uuidPattern.MatchString(firm) || target != "") {
+		http.Error(w, "invalid firm_id", http.StatusBadRequest)
+		return
+	}
 	if err := deps.Store.CheckSubmissionUpload(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), target); err != nil {
 		procurementError(w, deps, err)
 		return
+	}
+	if firm != "" {
+		if err := deps.Store.CheckSubmissionFirm(r.Context(), session.OrgID, firm); err != nil {
+			procurementError(w, deps, err)
+			return
+		}
 	}
 	if !uploadAllowed(w, r, deps, session) {
 		return
@@ -486,7 +501,7 @@ func uploadSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	var id string
 	if target == "" {
-		id, err = deps.Store.OpenSubmission(r.Context(), session.OrgID, r.PathValue("id"), filing.DocumentID, r.PathValue("pkg"), time.Now())
+		id, err = deps.Store.OpenSubmissionFor(r.Context(), session.OrgID, r.PathValue("id"), filing.DocumentID, r.PathValue("pkg"), firm, time.Now())
 	} else {
 		id, err = deps.Store.AttachSubmissionDocument(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("pkg"), target, filing.DocumentID, time.Now())
 	}

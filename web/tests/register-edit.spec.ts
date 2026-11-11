@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
+import { closeDocument } from './filing';
 
 const budgets = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../bench/budgets.json'), 'utf8'));
 
@@ -47,7 +48,7 @@ test('document rows: click selects, double-click opens, the row menu renames and
   await expect(page.getByRole('region', { name: 'Document viewer' })).toBeVisible();
   // As in a file browser, the double-click's first click selects the row it opens.
   await expect.poll(checked).toEqual([1]);
-  await page.getByRole('button', { name: 'Close document', exact: true }).click();
+  await closeDocument(page);
   await pick(0).click();
   await pick(3).click({ modifiers: ['Control'] });
   await pick(4).click({ modifiers: ['Control'] });

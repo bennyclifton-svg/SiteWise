@@ -176,6 +176,21 @@ func (a *apiClient) consultantRFP(ctx context.Context, project string, n int) er
 		}
 		version = view.Draft.Version
 	}
+	// A term reworded in the terms table is the same settings write, with
+	// its field kept as a slot (owner, 10 Nov 2026).
+	termKey := base + "/settings/" + url.PathEscape("wording:terms.validity")
+	for i := 0; i < max(n/2, 10); i++ {
+		body, _ := json.Marshal(map[string]any{"value": fmt.Sprintf("Your proposal stays valid for {field:validity_days} days, revision %d.", i), "version": version})
+		raw, err := a.timed(ctx, "report_setting", http.MethodPut, termKey, body, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		var view store.ReportView
+		if err := json.Unmarshal(raw, &view); err != nil || view.Draft == nil {
+			return fmt.Errorf("term setting returned no draft: %v", err)
+		}
+		version = view.Draft.Version
+	}
 	body, _ = json.Marshal(map[string]int64{"version": version})
 	raw, err = a.timed(ctx, "report_setting", http.MethodDelete, key, body, http.StatusOK)
 	if err != nil {

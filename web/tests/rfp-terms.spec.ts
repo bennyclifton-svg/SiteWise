@@ -11,11 +11,11 @@ async function signIn(page: Page, name: string) {
   return new URL(page.url()).pathname.split("/").pop()!;
 }
 
-// Terms (owner, 8 Nov 2026): no banner, no contact or questions date; one
-// table: the numbered terms first, then Item | Response led by the client
-// agreement, named by the titles of documents chosen in the repository (no
-// revision or date sub-table). Fields in the table are plain cells.
-test("terms table: numbered terms then answers, agreement chosen from the repository", async ({ page }) => {
+// Terms (owner, 10 Nov 2026): one table, No. | Term, ranked by importance
+// with the client agreement first. Each answer (agreement, insurance, days)
+// is edited inside the term that prints it. Rows select, edit and delete as
+// the stage table's do, without In/Excluded ticks.
+test("terms table: one numbered table, fields in their terms, rows edited in place", async ({ page }) => {
   const project = await signIn(page, "RFP terms table");
   await page.setViewportSize({ width: 1600, height: 1000 });
   await page.getByTestId("file-input").setInputFiles([0, 1].map(i => ({ name: `agreement-${i}.md`, mimeType: "text/markdown", buffer: Buffer.from(`# Agreement ${i}
@@ -31,57 +31,84 @@ test("terms table: numbered terms then answers, agreement chosen from the reposi
   await page.request.post(`/api/projects/${project}/packages`, { headers: origin, data: { kind: "services", title: "Architect", discipline_id: "consultant.architect" } });
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   await page.getByRole("button", { name: "Create RFP for Architect", exact: true }).click();
+  await expect(page.locator(".rfp-terms-table")).toHaveCount(1);
+  const report = ((await (await page.request.get(`/api/projects/${project}/reports`)).json()) as { id: string }[])[0].id;
+  const printed = async () => {
+    const view = await (await page.request.get(`/api/reports/${report}`)).json();
+    return view.draft.sections.flatMap((s: { blocks: { id: string; text: string }[] }) => s.blocks).find((b: { id: string }) => b.id === "rfp:terms").text as string;
+  };
 
   const terms = page.locator(".rfp-terms-table");
-  await expect(terms).toBeVisible();
-  await expect(page.locator(".rfp-terms-table")).toHaveCount(1);
-  await expect(page.locator(".rfp-numbered-terms, .rfp-terms-docs")).toHaveCount(0);
-  await expect(page.getByText("Terms not set", { exact: false })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /^(Edit|Done editing) [0-9]+[.] Terms$/ })).toHaveCount(0);
-  for (const label of ["Contact for questions", "Questions in writing by"]) await expect(page.getByText(label, { exact: true })).toHaveCount(0);
-  // Numbered terms come first, then the head row, then the answers.
-  const rows = terms.locator("tbody > tr");
-  await expect(rows.first()).toHaveClass(/rfp-terms-line/);
-  await expect(rows.first().locator("td").first()).toHaveText("1");
-  const sub = terms.locator("tbody > tr.table-subhead");
-  await expect(sub).toHaveText("ItemResponse");
-  const lineCount = await terms.locator("tbody > tr.rfp-terms-line").count();
-  expect(await sub.evaluate(r => (r as HTMLTableRowElement).rowIndex)).toBe(lineCount + 1);
-  await expect(terms.locator("tbody > tr:not(.rfp-terms-line):not(.table-subhead) > th")).toHaveText(["Client agreement", "Professional indemnity cover", "Public liability cover", "Proposal validity (days)", "Rates hold until", "Payment terms (days)"]);
-  await expect(terms.getByRole("textbox", { name: "Professional indemnity cover", exact: true })).toHaveValue("$20 million");
-  await expect(terms.getByRole("textbox", { name: "Public liability cover", exact: true })).toHaveValue("$20 million");
-  await expect(terms.getByRole("textbox", { name: "Rates hold until", exact: true })).toHaveValue("12 months after appointment");
-  await expect(terms.getByRole("textbox", { name: "Proposal validity (days)", exact: true })).toHaveValue("90");
-  // A field in a table cell is the cell: no border, no rounded box.
-  const pi = terms.getByRole("textbox", { name: "Professional indemnity cover", exact: true });
-  expect(await pi.evaluate(el => { const s = getComputedStyle(el); return [s.borderTopWidth, s.borderTopLeftRadius]; })).toEqual(["0px", "0px"]);
-  // Without an agreement the row is marked and issue stays blocked.
-  const agreement = terms.locator("tr.rfp-terms-agreement");
+  await expect(terms).toHaveCount(1);
+  await expect(terms.locator("thead th")).toHaveText(["No.", "Term"]);
+  await expect(terms.locator("tr.table-subhead")).toHaveCount(0);
+  await expect(page.getByText("Needed before issue", { exact: false })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Edit wording: Terms", exact: true })).toHaveCount(0);
+  const lines = terms.locator("tbody > tr.rfp-term");
+  await expect(lines.locator("td.rfp-terms-no")).toHaveText(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
+
+  // 1 is the client agreement: a blank field, marked, with Choose agreement.
+  const agreement = lines.nth(0);
+  await expect(agreement).toHaveClass(/rfp-terms-agreement/);
+  await expect(agreement).toContainText(/^1Engagement is under ___; your own terms do not apply/);
   await expect(agreement).toHaveAttribute("data-blocked", "true");
-  await expect(agreement.locator("input")).toHaveCount(0);
+  await expect(agreement.getByRole("button", { name: "Show in repository" })).toHaveCount(0);
+  // 5 is insurance, its two covers edited where they read; fields are plain.
+  const insurance = lines.nth(4);
+  await expect(insurance).toContainText("Hold professional indemnity cover of");
+  const pi = insurance.getByRole("textbox", { name: "Professional indemnity cover", exact: true });
+  await expect(pi).toHaveValue("$20 million");
+  await expect(insurance.getByRole("textbox", { name: "Public liability cover", exact: true })).toHaveValue("$20 million");
+  expect(await pi.evaluate(el => { const s = getComputedStyle(el); return [s.borderTopWidth, s.borderTopLeftRadius]; })).toEqual(["0px", "0px"]);
+  await expect(lines.nth(6).getByRole("textbox", { name: "Rates hold until", exact: true })).toHaveValue("12 months after appointment");
+  await expect(lines.nth(7).getByRole("textbox", { name: "Proposal validity (days)", exact: true })).toHaveValue("90");
 
-  // Select one document in the repository, then Update agreement: its title, no revision.
+  // Choose agreement takes the documents selected in the repository.
   const repoRows = page.locator("tbody.reg-doc");
-  await agreement.getByRole("button", { name: "Select agreement documents", exact: true }).click();
   await repoRows.nth(0).locator(".reg-title").click({ modifiers: ["Control"] });
-  await agreement.getByRole("button", { name: "Update agreement", exact: true }).click();
-  await expect(agreement.locator(".rfp-terms-agreement-name")).toHaveText(/^Consultant Agreement \d$/);
+  await agreement.getByRole("button", { name: "Choose agreement", exact: true }).click();
+  await expect(agreement.locator(".rfp-term-doc")).toHaveText(/^Consultant Agreement \d$/);
   await expect(agreement).not.toHaveAttribute("data-blocked", "true");
+  await expect(agreement.getByRole("button", { name: "Show in repository" })).toBeVisible();
+  // Dragging the other document onto the row adds it.
+  const chosen = (await agreement.locator(".rfp-term-doc").textContent())!;
+  await repoRows.filter({ hasNotText: chosen }).first().locator("tr.reg-line").dragTo(agreement);
+  await expect(agreement.locator(".rfp-term-doc")).toHaveText(/^Consultant Agreement \d and Consultant Agreement \d$/);
 
-  // Dragging the other repository document onto the row adds it.
-  await repoRows.nth(1).locator("tr.reg-line").dragTo(agreement);
-  await expect(agreement.locator(".rfp-terms-agreement-name")).toHaveText(/^Consultant Agreement \d and Consultant Agreement \d$/);
+  // A stepper nudges the payment days inside its term; the print follows.
+  await lines.nth(5).getByRole("button", { name: "Increase Payment terms (days)" }).click();
+  await expect.poll(printed).toContain("payment within 31 days");
 
-  // A stepper nudges the payment days; the numbered term follows.
-  await terms.getByRole("button", { name: "Increase Payment terms (days)" }).click();
-  await expect(terms.locator("tr.rfp-terms-line", { hasText: "payment within 31 days" })).toHaveCount(1);
-  await expect(rows.first()).toContainText(/^1Engagement is under Consultant Agreement \d and Consultant Agreement \d;/);
-  await expect(terms).toContainText("Rates hold until 12 months after appointment");
+  // Click selects a row; Enter edits its wording; the field stays in place.
+  const validity = lines.nth(7);
+  await validity.locator("td.rfp-term-text").click();
+  await expect(validity).toHaveAttribute("aria-selected", "true");
+  await validity.press("Enter");
+  const box = validity.getByRole("textbox", { name: /^Term: / });
+  await expect(box).toHaveValue("Your proposal stays valid for 90 days.");
+  await box.fill("Proposals stay open for 90 days from closing.");
+  await Promise.all([page.waitForResponse(r => r.request().method() === "PUT" && decodeURIComponent(r.url()).includes("/settings/wording:terms.validity")), box.press("Enter")]);
+  await expect(validity).toHaveAttribute("data-edited", "true");
+  await expect(validity.getByRole("textbox", { name: "Proposal validity (days)", exact: true })).toHaveValue("90");
+  await expect.poll(printed).toContain("Proposals stay open for 90 days from closing.");
+  // Right-click offers the standard wording back.
+  await validity.locator("td.rfp-term-text").click({ button: "right" });
+  await Promise.all([page.waitForResponse(r => r.request().method() === "DELETE" && decodeURIComponent(r.url()).includes("/settings/wording:terms.validity")), page.getByRole("menuitem", { name: "Reset to standard wording" }).click()]);
+  await expect(validity).toContainText("Your proposal stays valid for");
 
-  // Wording still edits, as one list.
-  await page.getByRole("button", { name: "Edit wording: Terms", exact: true }).click();
-  await expect(page.getByRole("textbox", { name: "Report wording" })).toBeVisible();
-  await page.getByRole("button", { name: "Cancel edit", exact: true }).click();
+  // Ctrl-click two rows, then the bin in the head deletes both; the rest renumber.
+  await lines.nth(2).locator("td.rfp-term-text").click();
+  await lines.nth(3).locator("td.rfp-term-text").click({ modifiers: ["Control"] });
+  await terms.getByRole("button", { name: "Delete 2 selected terms" }).click();
+  await expect(lines.locator("td.rfp-terms-no")).toHaveText(["1", "2", "3", "4", "5", "6", "7"]);
+  await expect.poll(printed).not.toContain("is not a variation");
+
+  // "Add term…" adds the user's own term at the end.
+  const ghost = terms.getByRole("textbox", { name: "New term" });
+  await ghost.fill("No mobilisation payment.");
+  await ghost.press("Enter");
+  await expect(lines.last()).toContainText(/^8No mobilisation payment\.$/);
+
   await page.locator("section.report-section", { has: terms }).screenshot({ path: "../.tools/rfp-terms-desktop.png" });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();

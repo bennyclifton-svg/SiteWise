@@ -20,12 +20,16 @@ export interface CostDerived { budget_variance: string | null; remaining: string
 export interface CostFigures extends CostDerived { forecast: CostValue; basis: string }
 export interface CostRollup extends CostDerived { values: Record<string, CostTotal>; line_ids: string[] }
 export interface CostTotals { rollups?: Record<string, CostRollup>; sections: Record<string, Record<string, CostTotal>>; section_items: Record<string, string>; section_figures: Record<string, CostDerived>; overall: Record<string, CostTotal>; works: Record<string, CostTotal>; fees: Record<string, CostTotal>; project_wide: Record<string, CostTotal>; groups: Record<string, Record<string, CostTotal>>; variance: string | null; items: Record<string, CostFigures>; buckets: Record<string, CostDerived>; construction_budget?: BudgetCheck }
+/** One action on selected lines, saved in one write: delete them, copy
+ * them, or set their category or package and whether they count in totals. */
+export type CostBulk = { op: "delete" | "duplicate"; ids: string[] } | { op: "set"; ids: string[]; assign?: string; excluded?: boolean };
 const path = (p: string) => `/projects/${p}/cost-plan`;
 const pin = (p: CostPlan) => ({ plan_version_id: p.id || "", version: p.version || 0 });
 export const costApi = {
   reorder: (p: string, plan: CostPlan, ids: string[]) => request<CostPlan>("PUT", `${path(p)}/order`, { ...pin(plan), ids }),
   prepare: (p: string) => request<{plan: CostPlan; totals: CostTotals}>("POST", `${path(p)}/prepare`, {}),
   remove: (p: string, plan: CostPlan, id: string) => request<CostPlan>("DELETE", `${path(p)}/items/${id}`, pin(plan)),
+  bulk: (p: string, plan: CostPlan, input: CostBulk) => request<CostPlan>("POST", `${path(p)}/items/bulk`, { ...pin(plan), ...input }),
   accept: (p: string, plan: CostPlan, key = "", budget?: string | null) => request<CostPlan>("POST", `${path(p)}/suggestions/${key ? `${encodeURIComponent(key)}/` : ""}accept`, {...pin(plan), budget}),
   dismiss: (p: string, plan: CostPlan, key: string, restore = false) => request<CostPlan>(restore ? "DELETE" : "POST", `${path(p)}/suggestions/${encodeURIComponent(key)}/dismiss`, pin(plan)),
   read: (p: string, v = "") => request<CostPlan>("GET", path(p) + (v ? `?version=${v}` : "")),

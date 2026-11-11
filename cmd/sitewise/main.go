@@ -170,7 +170,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		fmt.Fprintln(stderr, "invoice thresholds: "+err.Error())
 		return 1
 	}
-	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil))})
+	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil)), CompressRequests: true})
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
 		return 1

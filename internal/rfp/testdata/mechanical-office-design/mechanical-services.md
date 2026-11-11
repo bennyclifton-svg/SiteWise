@@ -82,12 +82,13 @@ Issued space/load/hour, system/extent and evidence registers; separately quantif
 - Written authority before scope/quantity/ceiling/rate/program changes; state reason/system/approval and cost/time.
 - Approved brief/revisions set baseline; ordinary coordination/development included.
 - Own-error correction included; reasonable professional skill/care within competence.
+- Hold professional indemnity cover of Project-selected $5m and public liability cover of Project-selected $20m throughout the appointment.
 - Payment 30 days from correct milestone invoices; R6 declares prepayment/release conditions, interest/recovery/suspension.
 - State rate hold/escalation; preapprove extras/expenses; no duplicate package fees.
-- Valid 90 days after closing; ex GST/GST/total, base/options separate.
-- Issue numbered addenda to all, acknowledged in R1.
 - Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; confidentiality permits authorised/lawful disclosure; marketing by consent.
 - Settle caps/indemnities, law/disputes, notices/cure/suspension/termination, assignment/novation/subcontracts; insurance is not a cap; conflicts/staff changes agreed.
+- Valid 90 days after closing; ex GST/GST/total, base/options separate.
+- Issue numbered addenda to all, acknowledged in R1.
 
 ### Returnable schedules: reply using this structure only
 

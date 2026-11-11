@@ -95,8 +95,9 @@ func (r *Runner) ExpandDrawing(ctx context.Context, orgID, documentID string) er
 			draft.Apply(result, nil, r.svc.thresholds)
 		}
 		kind := draft.by[FieldKind]
-		if !store.DrawingSetPageKind(kind.Value, kind.Band) {
-			return r.store.ReviewDrawingExpansion(ctx, orgID, documentID, fmt.Sprintf("Page %d was not confirmed as a drawing or schedule within this drawing set. The original is retained as one document.", page))
+		// A manual split files the page with Jev's reading, blank when unsure.
+		if !expansion.Manual && !store.DrawingSetPageKind(kind.Value, kind.Band) {
+			return r.store.ReviewDrawingExpansion(ctx, orgID, documentID, store.UnconfirmedPageReason(page))
 		}
 		draft.fillBlanks()
 		blob, err := r.blobs.Put(ctx, bytes.NewReader(pdf.Bytes()))

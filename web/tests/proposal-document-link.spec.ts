@@ -31,7 +31,7 @@ test("link a filed document by drag without another upload", async ({ page }) =>
   await page.screenshot({ path: "../.tools/procurement-detach.png", fullPage: true });
   await card.getByRole("button", { name: /^Detach proposal for / }).click();
   await expect(row("Hydraulic").locator(".firm-card")).toHaveCount(0);
-  await expect(page.getByText("1 proposal needs a package.", { exact: true })).toBeVisible();
+  await expect(page.locator("tr.row-unplaced")).toHaveCount(1);
   expect((await (await page.request.get(`${base}/documents`)).json()).documents).toHaveLength(1);
   await source.dragTo(row("Hydraulic"));
   await expect(row("Hydraulic").locator(".firm-card")).toHaveCount(1);

@@ -1,0 +1,103 @@
+# Painting RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-painting
+version: 1
+status: draft
+kind: works
+title: Painting
+heading: "REQUEST FOR TENDER: PAINTING"
+discipline_ids: [trade.painting]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the painting contractor. Your job is to prepare and paint the surfaces the documents and the colour schedule show, to an even finish that lasts, and to touch up at the end so the building hands over clean."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/defects-and-dlp-guide.md (2.5 Paint defects)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Do not paint new plaster until it is dry and cured enough to take paint.
+      - Finish painting before carpet and other floor finishes the program puts after you, and protect any floor already laid.
+      - In an existing building, treat old paint as possibly containing lead until it is tested.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}, {kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md"}]
+
+stage_intro: "An internal-only tender excludes the external painting lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Samples and colour schedule"
+    lines:
+      - {key: samples, text: "Sample panels in the scheduled colours for approval"}
+      - {key: schedule, text: "Paint system for each surface where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Preparation"
+    lines:
+      - {key: prep, text: "Final filling, light sanding and dusting of set plasterboard"}
+      - {key: caulk, text: "Gap filling and caulking of trims and junctions"}
+      - {key: prime, text: "Sealers and primers to new and repaired surfaces"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}, {kind: seed, ref: "data/reference/clerk/data/seed/defects-and-dlp-guide.md (2.5 Paint defects)"}]
+  - key: internal
+    name: "Internal painting"
+    lines:
+      - {key: ceilings, text: "Ceilings"}
+      - {key: walls, text: "Walls, including wet-area walls and ceilings above the tiles"}
+      - {key: trim, text: "Doors, frames, skirtings and architraves"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]
+  - key: external
+    name: "External painting"
+    lines:
+      - {key: external, text: "External walls, eaves, fascias and trim the documents show"}
+      - {key: stains, text: "Stains and clear finishes to external timber the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: touch_up, text: "Touch-up after the floor finishes and the final clean"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Colour and product schedule, and labelled spare paint for the owner"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Handover and Practical Completion)"}]
+
+positions:
+  - {key: set_sand, label: "Set and sand plasterboard ready for paint, by the plasterboard contractor", kind: technical, value: X, responsible: "plasterboard contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}]}
+  - {key: floors, label: "Carpet and timber floor finishing after the final coat, by the floor trades", kind: technical, value: X, responsible: "floor trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]}
+  - {key: factory_finish, label: "Factory-finished joinery, windows and metalwork, by their own trades", kind: technical, value: X, responsible: "their own trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Kitchen cabinetry)"}]}
+  - {key: lead, label: "Testing of old paint for lead before you disturb it, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

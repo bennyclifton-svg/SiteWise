@@ -24,6 +24,11 @@ import (
 const (
 	questionVersion = "knowledge.v2+" + profile.QuestionVersion
 	maxPassageRunes = 2000
+	// passageWorkers is the Jev client's background allowance: a read runs
+	// one job at a time, so this fills every slot background work may take
+	// and filing keeps its reserve. It pays only with compressed requests
+	// (docs/evidence/2026-11-11-profile-update-speed.md).
+	passageWorkers = jev.TotalSlots - jev.InteractiveReserve
 )
 
 // Asker is the background Jev client. Calls from this package use background
@@ -211,7 +216,7 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 	factSets := make([][]store.StoredFact, len(passages))
 	err = eachPassage(ctx, len(passages), func(ctx context.Context, i int) error {
 		passage := passages[i]
-		if Boilerplate(passage.Passage) {
+		if Boilerplate(passage.Passage) || passage.Repeated {
 			return nil
 		}
 		// The words a passage uses for the works imply scope suggestions;
@@ -243,7 +248,7 @@ func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {
 		facts = append(facts, set...)
 	}
 
-	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr.", knowledge.DetailPrefix, knowledge.SitePrefix, "implied."}, profile.QuestionVersion, facts); err != nil {
+	if err := w.profileStore().ReplaceDocumentFacts(ctx, job.OrgID, job.DocumentID, []string{"det.", "fact.", "hdr.", knowledge.DetailPrefix, knowledge.SitePrefix, knowledge.SpacePrefix, "implied."}, profile.QuestionVersion, facts); err != nil {
 		return err
 	}
 	if err := w.Store.SetReadRevision(ctx, job.OrgID, job.DocumentID, profile.ReadRevision); err != nil {
@@ -443,7 +448,8 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 		}
 		out[i] = storedPassage{
 			ID:           row.ID,
-			SkipEvidence: meta.Category == "reference" || meta.Category == "background",
+			SkipEvidence: meta.Category == "reference" || meta.Category == "background" || meta.Category == store.RepeatedFurniture,
+			Repeated:     meta.Category == store.RepeatedFurniture,
 			Passage: Passage{
 				Parts:   parts,
 				Ordinal: int(row.Ordinal),
@@ -462,6 +468,7 @@ func (w *Worker) passages(ctx context.Context, job store.ClaimedJob) ([]storedPa
 
 type storedPassage struct {
 	SkipEvidence bool
+	Repeated     bool // a page header or footer already read on an earlier page
 	ID           string
 	Passage
 }
@@ -905,7 +912,7 @@ func eachPassage(ctx context.Context, n int, fn func(context.Context, int) error
 	var wg sync.WaitGroup
 	var once sync.Once
 	var first error
-	for j := 0; j < 8; j++ {
+	for j := 0; j < passageWorkers; j++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

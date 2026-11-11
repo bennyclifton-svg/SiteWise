@@ -74,11 +74,12 @@ Survey DWG, tree IDs/ownership, current works drawings and conditions; access pe
 - Before extra scope/ceiling overrun or rate/fee/program change, obtain representative written authority with reason, scope, basis and time effect; agree delay/aborted-visit/remobilisation consequences.
 - Signed brief/revisions set baseline; agreed coordination, rounds, routine administration and normal development included. Distinguish clarification from changed design/evidence.
 - Correct own errors without extra fee; reasonable professional skill/care within competence. Evidence limits do not negate agreed duties.
+- Hold professional indemnity cover of Client-selected $5m and public liability cover of Client-selected $20m throughout the appointment.
 - Payment 30 days after correct invoice for agreed services; state milestones/GST. Declare deposits, report-release restrictions, interest, recovery, security and suspension departures.
 - State rates/fixed period and all third-party/travel/access costs; agree changes before work. Historical prices are not the budget.
+- Agree project/team/authority/operator use, third-party reliance, native files/retention/handover and confidentiality; marketing needs consent. Resolve IP, caps/indemnities, law/disputes, assignment/novation and notice/cure/suspension/termination in agreement.
 - Proposal valid 90 days from closing. Set project insurance and agreement choices before appointment.
 - Issue numbered addenda to all tenderers, acknowledged in proposal.
-- Agree project/team/authority/operator use, third-party reliance, native files/retention/handover and confidentiality; marketing needs consent. Resolve IP, caps/indemnities, law/disputes, assignment/novation and notice/cure/suspension/termination in agreement.
 
 ### Returnable schedules: reply using this structure only
 

@@ -13,7 +13,8 @@ an alternative direction for new screens. Preserve the Sitewise mark.
 ## Trace (owner-approved 3 November 2026)
 
 The workbench is a drawing sheet on a drafting table. `trace.css` holds the
-shell; `trace-profile.css`, `trace-procurement.css` and `trace-pages.css`
+shell; `trace-motion.css` the run-time motion and marks every surface shares
+(below); `trace-profile.css`, `trace-procurement.css` and `trace-pages.css`
 hold the surfaces. They load after the surface stylesheets.
 
 - **Table and sheet.** The page is the table: warm grey with a barely-there
@@ -25,21 +26,33 @@ hold the surfaces. They load after the surface stylesheets.
   scrolls up passes under it, blurred and faded, so it never competes with
   the title. Wide screens only; below 1101px the shell stacks as before.
 - **Four hand marks, used sparingly, one meaning each.**
-  Pencil: provenance underlines in the profile summary (ember from documents,
-  dotted blue for Jev, graphite for the user's word), the title-block rule,
+  Pencil: provenance underlines in the profile summary, by the origin rule
+  (owner, 10 Nov 2026: green from the documents, dotted where Jev leans on
+  them; dotted blue typical; rust the user's word), the title-block rule,
   the open Cost Plan tab and the awarded firm. Squared highlighter: a value
   that needs a decision (sources differ, a proposal without a package). Paint
   stroke: the selected navigation item, fainter on hover; a dry brush, solid
   to 68% of its length with streaks throughout, feathered out by 81%. Pen:
   the ground-line button (below).
+- **Revision triangle** (owner, 10 Nov 2026). A drawing's revision mark
+  beside a value or scope entry an update changed, until the user clears it;
+  its tooltip says what it was and what it is. One of the shared run-time
+  marks (Run-time motion and marks, below).
 - **Marks are static files** in `src/assets/marks`, made once by
   `scripts/make-marks.mjs` and applied by CSS (masks and backgrounds). No
   runtime drawing, no Jev, no layout cost. Marks turn off for
   `prefers-contrast: more` and print.
 - **Profile.** A one-sentence summary built in code, a Sources note beside
-  it, the Project as a five-column title block whose choices are dropdowns
-  ("Unknown" when unset), and scope as a matrix with one cell per system in
-  building order; the open entry's table sits beneath its row.
+  it, the Project as a title block whose choices are dropdowns ("Unknown"
+  when unset), one line per value (label, value, then how it was decided;
+  bedrooms, bathrooms and car parks share one Counts row, as on RFP page
+  one), and scope as a matrix with one cell per system in building order;
+  the open entry's table sits beneath its row. Update and its menu sit in the
+  title band; the strip at the foot rests as one line (owner, 10 Nov 2026).
+  Each row's source dot is solid: green from the documents whether they
+  agree or Jev leans on them (owner, 11 Nov 2026), blue typical, a rust
+  square yours, amber to check. The summary's pencil keeps its dotted green
+  where Jev leans.
 - **Logo.** The datum lockup in `Wordmark.tsx`, Section version (owner pick
   8 Nov 2026): the structure above the level line is solid, the slipped ground
   below it is drawn in 45° section hatch. In the current text colour. The
@@ -53,6 +66,66 @@ hold the surfaces. They load after the surface stylesheets.
   only. Busy work over 400 ms "sketches": the refresh circle is pencilled
   round while the hatch is shaded in, on a 2.4 s beat, and finishes its cycle
   before settling. Table, menu and inline buttons stay plain `.btn`.
+
+- **Projects and Account** (11 Nov 2026). Outside a project the same grammar
+  holds: `TracePage.tsx` and `trace-home.css` draw the table, one sheet and a
+  butter-paper band (`TraceBand`: title, one line, page actions) that the
+  content scrolls under. The account menu (initials) replaces the Account and
+  Sign out pills, opening downward. Projects names and creates in one step in
+  the band (ground-line "Create project"), then lists project | documents |
+  to check | last filing, sorted by the latest filing; rename, archive and
+  delete sit in one row menu. Archive keeps everything; delete stays
+  confirmed.
+
+## Run-time motion and marks (shared, 11 Nov 2026)
+
+Any surface shows work as it happens with one vocabulary: the classes and
+tokens in `trace-motion.css`, played by `play()` and `inkInOrder()` in
+`ink.ts`, and the marks in `RunMarks.tsx`. Profile's update is the first user
+(`docs/design/2026-11-10-run-time-feedback.md`).
+
+- **Only a real event moves anything:** a count the server made, a write that
+  saved, a passage read. Never a timer standing in for progress, never an
+  ETA, never decoration. The value is on the page before its motion plays;
+  motion never delays or hides it, and nothing waits for it to finish.
+- **One meaning per motion.**
+
+  | Meaning | Use | What it does |
+  | --- | --- | --- |
+  | Spotted: a passage just spoke to this | `ink-glint` | cyan wash that fades, 800 ms; a table row washes its cells |
+  | Inked: a value written | `ink-write` | wipes in left to right, 360 ms; also a text value now to check |
+  | Inked: words replaced | `data-ink-was="old words"` | the old words struck above the line, 1.2 s |
+  | Inked: a mark or count changed | `ink-pop` | pops in, 320 ms |
+  | Inked: a block in or out | `ink-on` / `ink-off` | section hatch, then `--ink-fill`; or rubbed out |
+  | Now needs a decision | `ink-check` | a small element (cell, dot) bumps once |
+  | Held: the user's word stands | `ink-held` | nothing moves; the row warms in rust, 900 ms |
+  | Pointing: a summary shows where | `ink-flash` | the check amber, outlined twice, 1.5 s |
+  | Reading now (a state) | `ink-reading`, `ink-ring` | the activity ring while the work runs |
+
+- **Marks stay until the user clears them.** The revision triangle
+  (`RevisionMark`, `.rev-mark`) beside what an update changed; "+n" in cyan
+  (`PendingCount`, `.pend-count`) for readings not yet applied; a count on a
+  nav item (`.nav-count`) for what a run left in another view, until it is
+  opened.
+- **Tokens:** `--ink-ease` (exponential ease-out), `--ink-spotted` (cyan is
+  work in progress), `--ink-fill`, `--rev-mark`. `ink.ts` holds the same
+  durations and takes each class off when its motion ends.
+- **Order and volume.** `inkInOrder()` plays a change's items in page order
+  within 900 ms (all at once over 40) and skips what is out of view, which
+  keeps its mark. Check `motionAllowed()`: no motion in a hidden tab or with
+  reduced motion.
+- **Fallbacks.** Reduced motion keeps every mark and value and gives a
+  pointed item a plain outline; `prefers-contrast: more` draws the triangle
+  in the text colour; print hides marks and rings.
+- **Specialise, don't redefine.** A surface may adapt a motion for its own
+  element in its own sheet, loaded after this one: Profile's filled scope
+  cells take a cyan ring instead of the wash.
+- **Where it fits next:** wherever a background reading lands while the user
+  watches it. A proposal read onto the price table, an invoice read into the
+  ledger, Program changes arriving for review, a specification import.
+  Filing's title-block landing (`styles.css`, `ink-in`) means the same as
+  Inked and predates this sheet; move it onto `ink-write` when filing is next
+  changed.
 
 ## Runtime source of truth
 
@@ -119,6 +192,15 @@ rounded box, no second frame inside the table's own lines. Hover shades the
 cell; focus draws one line. `sizing.css` sets this globally for every
 `td`/`th` field, so a new table needs no field styling of its own; never add a
 bordered input inside a table.
+
+Row and cell states look the same in every table (owner, 11 Nov 2026,
+"Neutral grey"), set once in `src/states.css`: hover a faint grey; selected a
+grey band with a mid-grey line on the row's left edge; editing the whole cell
+with a 1px focus line; to check an amber line on the cell's left edge, no
+fill; errors in the error colour only. Selection never uses an origin colour
+(green, blue, rust, amber). A row marked `aria-selected`, a cell marked
+`data-band="red"` and the shared `InlineCellEditor` get these looks with no
+rules of their own; change a state there, never in a surface sheet.
 
 Profile fields respond to the workspace container, not just the viewport.
 At 560px of pane width and below, identity, place and detail grids become one

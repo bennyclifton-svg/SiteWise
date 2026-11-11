@@ -66,19 +66,6 @@ type PendingIntake struct {
 	DocumentID string
 }
 
-// ListProjects lists orgID's projects, newest first.
-func (s *Store) ListProjects(ctx context.Context, orgID string) ([]Project, error) {
-	rows, err := s.q.ListOrgProjects(ctx, orgID)
-	if err != nil {
-		return nil, err
-	}
-	out := make([]Project, len(rows))
-	for i, row := range rows {
-		out[i] = Project{ID: row.ID, Name: row.Name}
-	}
-	return out, nil
-}
-
 // ProjectDocumentViews lists a project's filings with their fields in two
 // queries, newest first. Another org's project returns an empty list.
 func (s *Store) ProjectDocumentViews(ctx context.Context, orgID, projectID string) ([]DocumentView, error) {

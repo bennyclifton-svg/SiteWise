@@ -27,11 +27,14 @@ type keySystem struct {
 }
 
 type profileKey struct {
-	Header       map[string]keyEntry  `yaml:"header"`
-	Details      map[string]keyEntry  `yaml:"details"`
-	Determinants map[string]keyEntry  `yaml:"determinants"`
-	Signals      map[string]keyEntry  `yaml:"signals"`
-	Systems      map[string]keySystem `yaml:"systems"`
+	Header       map[string]keyEntry `yaml:"header"`
+	Details      map[string]keyEntry `yaml:"details"`
+	Determinants map[string]keyEntry `yaml:"determinants"`
+	Signals      map[string]keyEntry `yaml:"signals"`
+	// Spaces are Accommodation values, space.<id>.<attribute>
+	// (docs/plans/2026-11-11-accommodation-and-full-capture.md).
+	Spaces  map[string]keyEntry  `yaml:"spaces"`
+	Systems map[string]keySystem `yaml:"systems"`
 }
 
 // TestMeridianAnswerKey replays Meridian's stored Jev readings (a private
@@ -104,7 +107,7 @@ func TestMeridianAnswerKey(t *testing.T) {
 			wrong = append(wrong, k+"="+v)
 		}
 	}
-	for _, m := range []map[string]keyEntry{key.Header, key.Details, key.Determinants, key.Signals} {
+	for _, m := range []map[string]keyEntry{key.Header, key.Details, key.Determinants, key.Signals, key.Spaces} {
 		for k, e := range m {
 			score(k, e)
 		}
@@ -127,7 +130,14 @@ func TestMeridianAnswerKey(t *testing.T) {
 		t.Error("wrong value:", w)
 	}
 	// Ratchet: raise this when a fix lands; never lower it to pass.
-	const floor = 38 // 2026-10-24, profile-8 readings
+	// 2026-11-11: fixture re-exported from the profile-15 read of Fitout
+	// Meridian (the 2026-10-24 readings are kept beside it), key extended
+	// with the new details and the Accommodation table: 70/74.
+	// 2026-11-11: re-exported from the profile-16 read (the profile-15 one
+	// kept beside it); kitchenette, room sizes and requirement phrases added
+	// to the key: 73/78. The live-building condition went red on this read
+	// (Jev read "partially occupied building" as partial occupation once).
+	const floor = 73
 	if correct < floor {
 		t.Errorf("correct %d below floor %d", correct, floor)
 	}

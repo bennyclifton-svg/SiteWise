@@ -78,9 +78,11 @@ test("a combined proposal on a split project is combined for by the PM", async (
   expect((await page.request.put(`/api/documents/${document}/fields/discipline`, { headers: origin, data: { value: "consultant.services" } })).ok()).toBeTruthy();
 
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
-  const waiting = page.locator(".procurement-unassigned");
-  await expect(waiting).toContainText("1 proposal needs a package.");
-  await expect(waiting).toContainText("covers several disciplines");
+  // The proposal waits as the table's first row, its firm in Firm 1.
+  const waiting = page.locator(".procurement-unplaced");
+  await expect(waiting.locator("tr.row-unplaced")).toHaveCount(1);
+  await expect(page.locator(".procurement-table tbody tr").first()).toHaveClass(/row-unplaced/);
+  await expect(waiting.locator("tr.row-unplaced .firm-chip")).toBeVisible();
   await expect(waiting.getByLabel("Place Services fee proposal.pdf on one discipline")).toBeVisible();
   await waiting.getByRole("button", { name: "Combine for this proposal", exact: true }).click();
   // Nothing is ticked for the PM.

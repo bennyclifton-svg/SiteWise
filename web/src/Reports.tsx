@@ -220,8 +220,9 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
               const inline = <InlineText text={block.text} label="Report wording" editing={editing} value={editing ? editor.text : block.text} disabled={busy || !!editor || block.source_missing} busy={busy} saveDisabled={editConflict}
                 onStart={start} onChange={text => setEditor(current => current && { ...current, text })} onSave={() => void save()} onCancel={cancel} actions={allowanceTable(block) ? undefined : <button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>} />;
               // Tables edit as their wording; plain wording edits where it reads.
-              // Terms read numbered in the terms table above; their wording edits as one list.
-              if (!editing && controls && block.id === "rfp:terms") return <><button type="button" className="btn btn-small" aria-label={`Edit wording: Terms`} disabled={busy || !!editor || block.source_missing} onClick={start}>Edit wording</button></>;
+              // Terms read and edit row by row in the terms table above. Wording
+              // protected as one list before 10 Nov 2026 still shows, to restore.
+              if (!editing && controls && block.id === "rfp:terms" && !block.edited) return null;
               if (editing || !((controls && scopeTable(block)) || block.id === "rfp:positions")) return inline;
               return <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : <RfpScopePosition block={block} />}{<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>}</>;
             })()}
@@ -291,7 +292,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
             {view.rfp && editable.has(section.id) ? <div className="report-section-head section-band"><h3 id={`rs-${section.id}`}>{screenTitle(section.title)}</h3><button type="button" className="btn btn-small" aria-expanded={openEdits.has(section.id)} aria-controls={`rfp-edit-${section.id}`} aria-label={`${openEdits.has(section.id) ? "Done editing" : "Edit"} ${section.title}`} disabled={!!editor} onClick={() => toggleEdit(section.id)}>{openEdits.has(section.id) ? "Done" : "Edit"}</button></div> : view.rfp ? <div className="report-section-head section-band"><h3 id={`rs-${section.id}`}>{screenTitle(section.title)}</h3></div> : <h3>{section.title}</h3>}
             {view.rfp && <SectionMarkers controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} onJump={jump} />}
             {view.rfp && editable.has(section.id) && openEdits.has(section.id) && <div id={`rfp-edit-${section.id}`}><RfpSectionEditor controls={view.rfp} section={section.id} busyKey={busyKey} onWrite={writeSetting} /></div>}
-            {view.rfp && section.id === "terms" && <RfpTermsTable controls={view.rfp} block={section.blocks?.find(b => b.id === "rfp:terms")} selection={transmittal} busy={busy || !!busyKey || !!editor} onWrite={writeSetting} />}
+            {view.rfp && section.id === "terms" && <RfpTermsTable controls={view.rfp} block={section.blocks?.find(b => b.id === "rfp:terms")} selection={transmittal} busy={busy || !!busyKey || !!editor} onWrite={ownWrite} />}
             {(section.blocks ?? []).filter(b => !(view.rfp && (b.id === OLD_TEAM_BLOCK || b.id === AGREEMENT_BLOCK))).map(b => blockView(b))}</section>)}
           {view.rfp && <RfpIssue controls={view.rfp} busyKey={busyKey} onWrite={writeSetting} onJump={jump}>
             {draft.sections.find(s => s.id === "issue_dates")?.blocks.filter(b => b.edited || b.source_missing).map(b => blockView(b))}

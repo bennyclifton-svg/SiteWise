@@ -1,0 +1,97 @@
+# Lifts RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3).
+# Same shape as trade-structural-steel.yaml. Research note:
+# docs/research/2026-11-10-trades/fire-services.md. Draft until the owner reviews it.
+id: trade-lifts
+version: 1
+status: draft
+kind: works
+title: Lifts
+heading: "REQUEST FOR TENDER: LIFTS"
+discipline_ids: [trade.lifts]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the lift contractor. Your job is to supply, install, test and commission the lifts the documents show, have them inspected and registered where the authority requires it before anyone uses them, and hand them over with their records."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Vertical Transport — Lifts and Escalators)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Confirm the shaft, pit, headroom and machine space your equipment needs early, before the structure is built.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Vertical Transport — Lifts and Escalators)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1735 Series — Lifts, Escalators and Moving Walks)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Lift drawings with the shaft, pit, headroom, loads and machine space they need, for the design team's review"}
+      - {key: design, text: "Design of the lift installation where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1735 Series — Lifts, Escalators and Moving Walks)"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: supply
+    name: "Manufacture and delivery"
+    lines:
+      - {key: supply, text: "Manufacture and delivery of the lift equipment the documents show"}
+      - {key: hoisting, text: "Unloading and hoisting of your equipment into the shaft and machine space"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Vertical Transport — Lifts and Escalators)"}]
+  - key: installation
+    name: "Installation"
+    lines:
+      - {key: car, text: "Guide rails, car, car doors and landing entrances"}
+      - {key: drive, text: "Drive, controller and machine space equipment"}
+      - {key: controls, text: "Car and landing controls, indicators and the emergency communication system, including the accessible lift features"}
+      - {key: fire_service, text: "Fire-service recall and firefighter controls where the documents show them"}
+      - {key: platform, text: "Platform, stairway or home lifts where the documents show them"}
+      - {key: escalators, text: "Escalators and moving walks where the documents show them"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1735 Series — Lifts, Escalators and Moving Walks)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Vertical Transport — Lifts and Escalators)"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Testing and commissioning, including the fire-service and accessibility functions"}
+      - {key: certificates, text: "Certificates your trade signs, and the inspection and registration the authority requires before use"}
+      - {key: maintenance, text: "Maintenance through the defects liability period, where the contract asks for it"}
+      - {key: records, text: "Manuals, warranties, keys and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1735 Series — Lifts, Escalators and Moving Walks)"}]
+
+positions:
+  - {key: shaft, label: "Lift shaft, pit, pit waterproofing and drainage, lifting beams and fire rating of the shaft, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Vertical Transport — Lifts and Escalators)"}]}
+  - {key: power, label: "Power to the lift isolator, and lighting and power in the shaft and machine space, by the electrical contractor", kind: technical, value: X, responsible: "electrical contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/electrical-services-guide.md (Life-safety and specialist interfaces)"}]}
+  - {key: fire_signal, label: "Fire alarm signal for lift recall, by the fire services contractor", kind: technical, value: X, responsible: "fire services contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/electrical-services-guide.md (Life-safety and specialist interfaces)"}]}
+  - {key: comms, label: "Line or network connection for the emergency communication and lift access control, by the data, AV and security contractor", kind: technical, value: X, responsible: "data, AV and security contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Electronic security)"}]}
+  - {key: finishes, label: "Lift car finishes, by you to the documents; landing surrounds and floor finishes, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Base Building vs Fitout — Scope Delineation)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

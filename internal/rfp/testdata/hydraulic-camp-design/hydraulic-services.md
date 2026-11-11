@@ -90,12 +90,13 @@ Issued fixture/source/quality/level and evidence registers; separately quantifie
 - Preauthorise scope/quantity/ceiling/rate/program changes with reason and design/approval/cost/time effects.
 - Approved baseline includes normal coordination/design development.
 - Own-error correction included; reasonable skill/care within competence.
+- Hold professional indemnity cover of Project-selected $5m and public liability cover of Project-selected $20m throughout the appointment.
 - Pay 30 days from correct milestone invoice; declare prepayment/release/interest/recovery/suspension in R6.
 - State rate hold/escalation; preapprove extras/expenses; no duplicate fees.
-- Valid 90 days after closing; ex GST/GST/total for base/options.
-- Issue numbered addenda to all invited consultants; acknowledge them with the fee proposal.
 - Agree project copying/distribution/operation/alteration rights, native files/reliance/retention/termination handover; authorised/lawful disclosure allowed, marketing by consent.
 - Settle caps/indemnities/law/disputes/notices/cure/termination/suspension/novation/subcontracts; insurance not a cap; agree conflicts/staff changes.
+- Valid 90 days after closing; ex GST/GST/total for base/options.
+- Issue numbered addenda to all invited consultants; acknowledge them with the fee proposal.
 
 ### Returnable schedules: reply using this structure only
 

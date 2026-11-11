@@ -224,12 +224,13 @@ Fees exclude GST; state GST and the total in your proposal. Options are priced s
 - Only a written instruction from the client's representative authorises extra scope, work beyond an allowance or a fee change; work without one is not paid.
 - Each stage ends at client sign-off, which sets the baseline for later stages. Design development within the brief is not a variation; a client change after sign-off is assessed under the agreement.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $10 million and public liability cover of $20 million throughout the appointment.
 - Invoice monthly against stage progress; payment within 30 days, not dependent on any authority approval.
 - Rates hold until 12 months after appointment; state how they are indexed after that.
-- Your proposal stays valid for 90 days.
-- Answers to scope questions go to every tenderer as numbered addenda.
 - Structural engineering services: No automatic annual rate increase.
 - Structural engineering services: Set-outs and bulk excavation levels are the architect's.
+- Your proposal stays valid for 90 days.
+- Answers to scope questions go to every tenderer as numbered addenda.
 - Civil engineering services: Acceptance by conduct does not adopt your terms.
 - Civil engineering services: No provisional sums: price the allowances. Work that depends on an uninvestigated condition is priced as an option.
 

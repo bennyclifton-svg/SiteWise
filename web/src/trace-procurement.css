@@ -1,32 +1,12 @@
 /* Trace: Procurement. One ruled table of packages on the sheet. A firm is a
    name over its price, not a boxed card; the awarded firm is underlined in
-   graphite; a proposal waiting for a package is highlighted. */
+   graphite; a proposal waiting for a package is the table's first row. */
 
 .cockpit-scroll .procurement { padding: 0 0 40px; }
 
 .procurement-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 18px; }
 .procurement-head h1,
 .cockpit-scroll .procurement-head h1 { margin: 0; color: var(--sw-text-primary); font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
-
-.procurement-unassigned { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 22px; font-size: 14px; }
-.procurement-unassigned p { margin: 0; }
-.procurement-unassigned strong {
-  padding: 2px 6px;
-  background: url("./assets/marks/brush-check.svg") center 60% / 100% 86% no-repeat;
-  font-weight: 600;
-}
-.procurement-unassigned label { color: var(--sw-text-secondary); }
-.procurement-unassigned select {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 30px;
-  padding: 2px 26px 2px 10px;
-  border: 1px solid var(--sw-border-strong);
-  border-radius: 999px;
-  background: var(--sw-surface-elevated) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none' stroke='%239A9188' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 6l4 4 4-4'/></svg>") right 10px center no-repeat;
-  color: var(--sw-text-primary);
-  font-size: 13px;
-}
 
 /* ---------- The table ---------- */
 

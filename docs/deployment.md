@@ -23,29 +23,31 @@ Paths: releases unpack to `/opt/sitewise-releases/<name>`; `/opt/sitewise` is
 a symlink to the live one; files live in `/var/lib/sitewise/files`; logs via
 `journalctl -u sitewise` and `/var/log/caddy/sitewise.log`.
 
-## First deploy: what is left
+## State of the live server
 
-Done on 7 Nov 2026: operations.md section 1 steps 1–3 (base, packages,
-user and directories) and OCR.
+Live since 8 Nov 2026 with commit `79a8d5f`, fresh empty database (no local
+data was copied). Done: operations.md section 1 steps 1–5 and 8–10, OCR.
 
-Still to do, in order (operations.md section 1):
+- Settings: `/etc/sitewise/sitewise.env` holds production values. Mail is
+  Mailgun (`smtp.mailgun.org:587`, user `app@sitewise.au`, from
+  `no-reply@sitewise.au`). Stripe is in **test mode** (sandbox keys, GST
+  rate `txr_1UZSZEBMfqwV8iUmaIZnaEci`, its own dashboard webhook to
+  `https://sitewise.au/api/stripe/webhook`). Switching to live mode means
+  new live keys, prices, tax rate and webhook in that file.
+- Profile readings show under provisional thresholds, as on the dev server
+  (owner choice 8 Nov 2026): `/etc/systemd/system/sitewise.service.d/provisional.conf`
+  adds `-profile-provisional`. It lives in `/etc`, so redeploys keep it.
+  Delete it once the thresholds are owner-approved.
+- Caddy: `deploy/Caddyfile` minus its global `email` block (Let's Encrypt
+  no longer sends expiry mail). `/var/log/caddy` must be owned by `caddy`.
+- `sitewise-backup.timer` is **not enabled**, and
+  `/etc/postgresql/17/main/conf.d/zz-until-backups.conf` sets
+  `archive_mode = off`, because off-site storage does not exist yet. Delete
+  that file and enable the timer when step 6 is done.
 
-1. Step 4, first release (below).
-2. Step 5, database: socket only, `createuser` and `createdb`.
-3. Step 8, secrets: fill `/etc/sitewise/sitewise.env` on the server. The
-   session secret is new (`openssl rand -hex 32`); the Jev key and the Stripe
-   test keys are the owner's; the Mailgun SMTP login comes from Mailgun.
-   Stripe on the server needs its own webhook endpoint
-   `https://sitewise.au/api/stripe/webhook` made in the Stripe dashboard
-   (operations.md section 8 step 7), not `stripe listen`.
-4. Step 9, systemd units; step 10, Caddyfile with the owner's email for
-   certificate notices.
-5. Sign up as the owner and run the Stripe test (operations.md section 8
-   step 9).
-
-Can wait while only the owner tests, but not past the first client:
-off-site backups (step 6, a bucket in an Australian region), the move to
-Sydney, and the release gates in operations.md section 7.
+Before the first client: off-site backups (step 6, a bucket in an
+Australian region), the move to Sydney, Stripe live mode, and the release
+gates in operations.md section 7.
 
 ## Redeploy (every update)
 
@@ -56,17 +58,23 @@ themselves when the app starts.
    Uncommitted work is not deployed.
 2. **Check.** `tools/check.ps1` passes, or say which checks were skipped and
    why.
-3. **Build.**
+3. **Build** in a separate clean checkout. `package.sh` runs `npm ci`, which
+   deletes `web/node_modules` first and fails half-way (EPERM) if a dev or
+   Vite server is holding it, breaking the main checkout. A worktree avoids
+   that.
    ```sh
-   deploy/package.sh        # prints dist/sitewise-<commit>-linux-amd64.tar.gz
-   name=sitewise-<commit>-linux-amd64
+   git worktree add --detach ../sitewise-release HEAD   # or: git -C ../sitewise-release checkout --detach main
+   cd ../sitewise-release
+   PATH="/d/AI Projects/sitewise/.tools/go/bin:$PATH" GOTOOLCHAIN=local deploy/package.sh
+   cd dist; name=sitewise-<commit>-linux-amd64          # from the printed file name
    ```
 4. **Copy and switch.**
    ```sh
-   scp dist/$name.tar.gz dist/$name.tar.gz.sha256 root@103.100.36.246:/root/
+   scp $name.tar.gz $name.tar.gz.sha256 root@103.100.36.246:/root/
    ssh root@103.100.36.246 "set -e; cd /root; sha256sum -c $name.tar.gz.sha256;
      install -d /opt/sitewise-releases;
      tar -C /opt/sitewise-releases -xzf $name.tar.gz;
+     chmod 0755 /opt/sitewise-releases/$name/bin/sitewise /opt/sitewise-releases/$name/deploy/*.sh;
      readlink /opt/sitewise > /root/previous-release || true;
      ln -sfn /opt/sitewise-releases/$name /opt/sitewise;
      systemctl daemon-reload; systemctl restart sitewise"
@@ -92,7 +100,7 @@ ones; the disk is 60 GB.
 
 ## Known gaps
 
-- `deploy/package.sh` has not yet been run on the owner's Windows PC; the
-  first build may need Go and Node on the Git Bash path (`.tools/go/bin`).
+- A tarball built on Windows loses the executable bit, hence the `chmod`
+  in step 4. Without it the service fails with "Permission denied".
 - Speed measured from Singapore includes about 90 ms more network time per
   request from Australia than a Sydney server would.

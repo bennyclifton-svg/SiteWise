@@ -59,6 +59,10 @@ func TestBuilderQuoteTotalsAndRelationships(t *testing.T) {
 		{"bare subtotal", "Quote Summary\nSub Total: $100,000.00", ""},
 		{"empty", "", ""},
 		{"parentheses", "Total (excl. GST) $200,000.00", "200000.00"},
+		// An estimating tool's summary: the GST line makes the sum exact
+		// though it is 8 cents off 10% of the subtotal.
+		{"quote total", "Quote Total:  $3,224,995.38\nTax (GST):  $322,499.62\nTotal:  $3,547,495.00", "3224995.38"},
+		{"quote total that does not add", "Quote Total:  $3,224,995.38\nTax (GST):  $322,499.62\nTotal:  $3,600,000.00", ""},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			r := ReviewBuilderQuote([]Passage{{Body: tc.text, Page: 1}})

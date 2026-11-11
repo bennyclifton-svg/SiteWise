@@ -1,0 +1,106 @@
+# Fire stopping and passive fire RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3).
+# Same shape as trade-structural-steel.yaml. Research note:
+# docs/research/2026-11-10-trades/fire-services.md. Draft until the owner reviews it.
+id: trade-passive-fire
+version: 1
+status: draft
+kind: works
+title: Fire stopping and passive fire
+heading: "REQUEST FOR TENDER: FIRE STOPPING AND PASSIVE FIRE"
+discipline_ids: [trade.passive_fire]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the passive fire contractor. Your job is to seal every service penetration and joint in fire-rated construction with a system tested for that wall or floor and that service, to protect the elements the documents give you, and to hand over a register that shows each seal, where it is, what it is and the evidence it is right."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Keep a penetration register by location, with the product, its test evidence, a label and photographs for each seal.
+      - Do not seal a combination no test covers; refer it to the fire engineer and the certifier before you close it.
+      - Offer each area for inspection before it is lined or concealed.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}, {kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Construction verification and integrated testing)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Penetration and joint details, each matched to its tested system, for the design team's review"}
+      - {key: design, text: "Selection of tested systems where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: penetrations
+    name: "Service penetrations"
+    lines:
+      - {key: pipes, text: "Fire collars, wraps and sealants to pipes through fire-rated walls and floors"}
+      - {key: cables, text: "Sealing of cables, conduits and cable trays through fire-rated walls and floors"}
+      - {key: ducts, text: "Sealing around ducts that pass through without a fire damper"}
+      - {key: labels, text: "A label at each seal that matches the register"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (SOU Separation and Service Penetrations)"}, {kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}]
+  - key: joints
+    name: "Joints and junctions"
+    lines:
+      - {key: control_joints, text: "Control joints, perimeter gaps and wall heads in fire-rated construction"}
+      - {key: junctions, text: "Fire-rated junctions between walls, floors, shafts and the facade the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}]
+  - key: elements
+    name: "Protection of elements"
+    lines:
+      - {key: structural, text: "Fire protection applied on site to structural members, where the documents give it to this package"}
+      - {key: shafts, text: "Fire-rated shaft and riser linings, where the documents give them to this package"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1530 Series — Fire Testing)"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Inspection of each area with the certifier or fire engineer before it is closed"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "The penetration register, product data, test evidence, photographs and warranties"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Handover and operations)"}]
+
+positions:
+  - {key: openings, label: "Forming openings in fire-rated walls and floors to the size the tested system needs, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: services, label: "Pipes, cables and ducts run and fixed through the opening before you seal it, by each services contractor", kind: technical, value: X, responsible: "each services contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}]}
+  - {key: doors_dampers, label: "Fire doors, shutters and fire dampers, by the head contractor and the mechanical contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}]}
+  - {key: rated_walls, label: "Fire-rated walls and ceilings, by the head contractor or the plasterboard contractor unless the documents give them to you", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Passive fire protection)"}]}
+  - {key: shop_coating, label: "Fire protection coatings applied in the fabricator's shop, by the structural steel contractor", kind: technical, value: X, responsible: "structural steel contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]}
+  - {key: breaches, label: "Re-sealing of a seal another trade breaks after you finish, by that trade or the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md (Common failures and low-confidence flags)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

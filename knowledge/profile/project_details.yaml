@@ -21,10 +21,27 @@ details:
       - 'commissioned by\s'
       # A letter or proposal's addressee line: "To: X Pty Ltd".
       - '(?m)^[*_ \t]*to[*_ \t]*:'
+      # An address block sent care of the owners' designer: "A & B C/O Design".
+      - '\s(?:c/-|c/o|care\s+of)\s'
     asks: >-
       Using `excerpt` and `candidates`, which candidate does the passage state as this project's client:
       the principal, owner or proponent the works are for? Select none when absent, or when the candidate is
       a contractor, consultant, authority, neighbour or tenant.
+  # The landlord of a leased building whose consent, base building and
+  # incentives shape a tenant's works (Meridian, 2026-11-11).
+  - key: landlord
+    label: Landlord
+    value: text
+    scope: project
+    help: "The building owner a tenant's works need consent from. Empty when the client owns the building."
+    extraction: pre_parsed
+    triggers:
+      - '\blandlord\b'
+      - '\blessor\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the landlord or lessor of the
+      building this project's works are in? Select none when absent, or when the candidate is the tenant or client,
+      a managing agent, a consultant, a builder, or another building's owner.
   - key: lga
     label: Local government area
     value: text
@@ -76,9 +93,13 @@ details:
     triggers:
       - '\b(?:da|development application)\b[^.\n]{0,60}\blodg'
       - '\blodg\w*\b[^.\n]{0,60}\b(?:da|development application)\b'
+      # An SSD or CDC application is this project's planning application too
+      # ("SSD lodgement target: September 2026", Meridian 2026-11-11).
+      - '\b(?:ssd|cdc|state significant development|complying development)\b[^.\n]{0,60}\blodg'
+      - '\blodg\w*\b[^.\n]{0,60}\b(?:ssd|cdc|state significant development|complying development)\b'
     asks: >-
       Using `excerpt` and `candidates`, which candidate does the passage state as when this project's development
-      application is to be lodged (a target or aspiration)? Select none when absent, or when the candidate is a council
+      application (DA, SSD or CDC) is to be lodged (a target or aspiration)? Select none when absent, or when the candidate is a council
       assessment period, the date of a letter or report, a consultant's fee trigger, or another project's date.
   - key: target_construction_start
     label: Target construction start
@@ -89,10 +110,14 @@ details:
     triggers:
       - '\bconstruction\b[^.\n]{0,30}\b(?:start|commence)'
       - '\b(?:start|commence)\w*\b[^.\n]{0,30}\b(?:construction|on site|works)\b'
+      # A fit-out starts when the tenant takes possession of the floors
+      # ("Target possession for fit-out: 1 November 2026").
+      - '\bpossession\b'
     asks: >-
       Using `excerpt` and `candidates`, which candidate does the passage state as when construction of this project is
-      to start (a target or aspiration)? Select none when absent, or when the candidate is a lodgement or approval date,
-      a completion date, the date of a letter, or another project's date.
+      to start (a target or aspiration), including when the site or tenancy is handed over for the works (possession for fit-out)?
+      Select none when absent, or when the candidate is a lodgement or approval date,
+      a completion or occupation date, the date of a letter, or another project's date.
   - key: max_construction_months
     label: Maximum time on site (months)
     value: text
@@ -133,8 +158,25 @@ details:
       - 'preliminary (?:programme|program)'
     asks: >-
       Using `excerpt` and `candidates`, which candidate does the passage state as a builder's preliminary estimate of
-      the construction period on site for this project? Select none when absent, or when the candidate is the owner's
-      maximum, a consultant's service period, a defects period, or another project's figure.
+      the construction period on site for this project, in months or weeks? Select none when absent, or when the candidate is the owner's
+      maximum, a consultant's service period, an approval period, a defects period, or another project's figure.
+  # When the owner wants the works finished or the building occupied
+  # ("Firm occupation from 1 July 2027", Meridian 2026-11-11). Shown on the
+  # Profile beside the other targets; the Program does not read it yet.
+  - key: target_completion
+    label: Target completion or occupation
+    value: text
+    scope: project
+    help: "When the owner or the brief wants the works complete or the building occupied."
+    extraction: pre_parsed
+    triggers:
+      - '\b(?:practical completion|completion|complete[ds]?|handover|hand over)\b'
+      - '\b(?:occupation|occupy|occupancy|move[- ]in|opening)\b[^.\n]{0,40}\b(?:20\d{2}|from|by|before)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as when this project's works are to be
+      complete or the building occupied (a target, deadline or aspiration)? Select none when absent, or when the
+      candidate is a start or possession date, a lodgement or approval date, a consultant's own deadline, the end of
+      a rent-free or lease period that is not the completion, the date of a letter, or another project's date.
   - key: sustainability
     label: Sustainability target
     value: text
@@ -215,6 +257,106 @@ details:
       Using `excerpt` and `candidates`, which candidate states what this project's construction budget or
       construction cost excludes? Select none when absent, or when the candidate lists a consultant's or
       contractor's excluded services, or exclusions of a different project.
+  # An owner's feasibility allowance or budget aspiration that is not yet
+  # the construction budget ("Budget aspiration (not confirmed) ... $1.35M –
+  # $1.55M", Meridian 2026-11-11). Kept apart so the cost plan never spreads
+  # an unconfirmed figure; the answer key keeps budget_stated blank here.
+  - key: budget_aspiration
+    label: Feasibility allowance (not confirmed)
+    value: text
+    scope: project
+    help: "An owner's feasibility allowance or budget aspiration, as stated. Not the construction budget: the cost plan does not use it."
+    extraction: pre_parsed
+    triggers:
+      - '\bfeasibility\b'
+      - '\baspiration'
+      - '\b(?:not|un)\s*confirmed\b[^.\n]{0,60}\$'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the owner's feasibility allowance,
+      budget aspiration or unconfirmed budget range for this project's works? Select none when absent, or when the
+      candidate is a confirmed construction budget, a builder's estimate or price, a fee, a contribution from
+      another party, an allowance for one item, or another project's figure.
+  # Money another party puts towards the works: a landlord's incentive, a
+  # grant, a developer's contribution ("allowance $180,000 contributed (ex
+  # GST) subject to lease incentive deed", Meridian 2026-11-11).
+  - key: contributions_stated
+    label: Contributions from others (as stated)
+    value: text
+    scope: project
+    help: "Money a landlord, grant or other party contributes to the works, as a document states it, with its conditions."
+    extraction: pre_parsed
+    triggers:
+      - '\bcontribut(?:e|es|ed|ion|ions)\b'
+      - '\b(?:incentive|grant|subsidy|rebate)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate states money another party (a landlord, funder or authority)
+      contributes towards this project's works, with what it is for? Select none when absent, or when the candidate
+      is the owner's own budget, a fee, a developer contribution or levy the project pays, or another project's figure.
+  # Floors the works occupy in a larger building ("Levels 3 and partial
+  # Level 4", Meridian 2026-11-11). Text, as the documents write it.
+  - key: works_levels
+    label: Floors in the works
+    value: text
+    scope: project
+    help: "The floors or levels of the building the works occupy, as the documents write them."
+    extraction: pre_parsed
+    triggers:
+      - '\blevels?\s+\d'
+      - '\b(?:ground|first|second|third|upper|lower)\s+(?:floor|level)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the floors or levels of the building
+      this project's works occupy, in their most complete form? Select none when absent, or when the candidate is
+      one room's floor, a neighbouring tenancy's floors, another building's floors, or a storey count.
+  # When work may happen on site ("After-hours works: Permitted 10:00 pm –
+  # 6:00 am weekdays and Saturdays until 2:00 pm; no Sunday works").
+  - key: work_hours
+    label: Permitted work hours
+    value: text
+    scope: project
+    help: "When the works may be carried out on site, as a consent, landlord or brief states it."
+    extraction: pre_parsed
+    triggers:
+      - '\bafter[- ]hours\b'
+      - '\b(?:work(?:ing)?|construction)\s+hours\b'
+      - '\bhours\s+of\s+(?:work|construction)\b'
+      - '\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate states when this project's construction works may be carried
+      out on site (permitted days and hours)? Select none when absent, or when the candidate is the hours of one
+      activity only (such as core drilling), office or business hours, a meeting time, or another project's hours.
+  # Conditions that must be met before the works may start ("Tenant works
+  # must not commence until SSD consent and landlord fit-out consent deed
+  # are executed").
+  - key: start_conditions
+    label: Before works may start
+    value: text
+    scope: project
+    help: "What a document says must happen before the works may start on site."
+    extraction: pre_parsed
+    triggers:
+      - '\b(?:must|shall|will|may|can)\s*not\s+(?:commence|start|begin)\b'
+      - '\b(?:cannot|can''t)\s+(?:commence|start|begin)\b'
+      - '\b(?:prior to|before)\s+(?:the\s+)?(?:commencement|start)\s+of\s+(?:the\s+)?(?:works|construction)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate states what must happen before this project's construction
+      works may start on site? Select none when absent, or when the candidate is a condition on a consultant's
+      services, a payment term, or another project's condition.
+  # How many builders or tenderers are to be invited ("evaluation of two
+  # invited builders").
+  - key: tenderers
+    label: Tenderers to invite
+    value: text
+    scope: project
+    help: "How many builders or contractors are to be invited to tender for the works."
+    extraction: pre_parsed
+    triggers:
+      - '\binvit\w*\b[^.\n]{0,40}\b(?:builders?|tenderers?|contractors?)\b'
+      - '\b(?:builders?|tenderers?|contractors?)\b[^.\n]{0,20}\binvit'
+      - '\bshort-?list\w*\b[^.\n]{0,40}\b(?:builders?|tenderers?|contractors?)\b'
+    asks: >-
+      Using `excerpt` and `candidates`, which candidate does the passage state as the number of builders or contractors
+      to be invited to tender for this project's construction works? Select none when absent, or when the number
+      counts consultants, tender rounds, or another project's tenderers.
 
 # Stored on the site record (internal/store/sites.go). A reading is shown
 # only until the user types a value there.

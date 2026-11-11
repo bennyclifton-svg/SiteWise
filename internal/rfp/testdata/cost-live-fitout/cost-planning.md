@@ -69,12 +69,13 @@ Current drawings/specifications, cost boundary and quantity basis, named input o
 - Written authority before extra scope, ceilings/counts, later stages or fee/program change; give cause, alternatives and effects. Report material unpriced gaps/budget overruns promptly.
 - Facts, revisions, selected stages, counts, positions and addenda set baseline; purchased design development/review is included.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $5 million (client selected) and public liability cover of $20 million (client selected) throughout the appointment.
 - Correct invoices for completed work payable within 30 days, subject to agreement/applicable requirements. Disclose advance payment, interest, suspension, minimums and withholding.
 - Agree rate-validity date and escalation, unused allowances, cancellation/standby and remobilisation; no inherited annual increase.
-- Your proposal stays valid for 90 days.
-- Answers to scope questions go to every tenderer as numbered addenda.
 - Dated PDFs/editable quantity/rate/reconciliation workbooks; source cutoff, units, rate evidence, preliminaries/margin, PC/PS, gaps, risk/escalation/tax and confidence limits. Agree project distribution licence, separate lender reliance, proprietary-data limits, confidentiality/security/retention and handover.
 - Competent resources/independent review, substitutions/conflicts and selected insurance; disclose liability/indemnity/loss/novation/IP/contamination departures. Agree notice/cure, completed/committed costs, records transfer, negotiation/mediation and urgent relief.
+- Your proposal stays valid for 90 days.
+- Answers to scope questions go to every tenderer as numbered addenda.
 
 ### Returnable schedules: reply using this structure only
 

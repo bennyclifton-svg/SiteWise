@@ -6,8 +6,10 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
  * text, so nothing moves when editing starts. A click puts the cursor where
  * it landed; Save or Cancel sit underneath, and clicking away saves.
  */
-export function InlineText({ text, label, editing, value, disabled, busy, saveDisabled, compact, maxLength, onStart, onChange, onSave, onCancel, actions }: {
+export function InlineText({ text, display, label, editing, value, disabled, busy, saveDisabled, compact, maxLength, onStart, onChange, onSave, onCancel, actions }: {
   text: string;
+  /** Shown in place of the text while not editing: an RFP term with its fields in place. */
+  display?: ReactNode;
   label: string;
   editing: boolean;
   value: string;
@@ -46,6 +48,8 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   function start(e: React.MouseEvent<HTMLParagraphElement>) {
     if (disabled) return;
     if (compact && (e.ctrlKey || e.metaKey || e.shiftKey)) return;
+    // A field inside the wording edits itself.
+    if ((e.target as HTMLElement).closest("input,button,select,textarea")) return;
     // Selecting text to copy is not a request to edit it. A double-click
     // selects a word on its way; that selection is the edit's, not a copy.
     if (compact) window.getSelection()?.removeAllRanges();
@@ -55,7 +59,7 @@ export function InlineText({ text, label, editing, value, disabled, busy, saveDi
   }
 
   if (!editing) return <>
-    <p className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} data-editable={!disabled || undefined} onClick={compact ? undefined : start} onDoubleClick={compact ? start : undefined}>{text}</p>
+    <p className={`report-wording inline-text${compact ? " inline-text-cell" : ""}`} data-editable={!disabled || undefined} onClick={compact ? undefined : start} onDoubleClick={compact ? start : undefined}>{display ?? text}</p>
     {actions}
   </>;
 

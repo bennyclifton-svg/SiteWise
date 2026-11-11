@@ -42,6 +42,16 @@ type Row struct {
 	Key   string `json:"key"`
 	Label string `json:"label,omitempty"`
 	Text  string `json:"text"`
+	// A term also carries its wording with the {field:x} slots still in
+	// it, so the terms table edits each field where it reads.
+	Template string `json:"template,omitempty"`
+	// Edited is a term in the user's words (wording:terms.<key>); Custom is
+	// one the user added (custom:terms).
+	Edited bool `json:"edited,omitempty"`
+	Custom bool `json:"custom,omitempty"`
+	// Held is a term with an optional blank not yet filled: it shows in the
+	// table to be filled and does not print until it is.
+	Held bool `json:"held,omitempty"`
 }
 
 type StageResult struct {
@@ -1430,25 +1440,36 @@ func (r *resolver) resolveRows() {
 		}
 		return Row{Key: row.Key, Label: row.Label, Text: r.fill(row.Text, prefix+row.Key, label, row.Required)}
 	}
-	// Preserve the shared order when a discipline explicitly replaces a row.
+	// Preserve the shared order when a discipline explicitly replaces a row:
+	// the replacement keeps the shared row's place, its requirement and its
+	// closing mark. The discipline's own rows print before the shared
+	// closing rows (owner, 10 Nov 2026: terms rank by importance).
 	merge := func(shared, own []knowledge.RFPRow) []knowledge.RFPRow {
 		replacements := map[string]knowledge.RFPRow{}
+		extra := []knowledge.RFPRow{}
 		for _, row := range own {
-			if row.Replace && keep(row) {
+			switch {
+			case !row.Replace:
+				extra = append(extra, row)
+			case keep(row):
 				replacements[row.Key] = row
 			}
 		}
 		rows := make([]knowledge.RFPRow, 0, len(shared)+len(own))
+		placed := false
 		for _, row := range shared {
+			if row.Closing && !placed {
+				rows, placed = append(rows, extra...), true
+			}
 			if replacement, ok := replacements[row.Key]; ok {
+				replacement.Required = replacement.Required || row.Required
+				replacement.Closing = row.Closing
 				row = replacement
 			}
 			rows = append(rows, row)
 		}
-		for _, row := range own {
-			if !row.Replace {
-				rows = append(rows, row)
-			}
+		if !placed {
+			rows = append(rows, extra...)
 		}
 		return rows
 	}
@@ -1499,9 +1520,37 @@ func (r *resolver) resolveRows() {
 			r.out.ScopeSchedule = append(r.out.ScopeSchedule, fill("scope_schedule:", row))
 		}
 	}
+	// Terms are edited in the terms table as scope lines are (owner, 10 Nov
+	// 2026): deleted (term:<key>), reworded (wording:terms.<key>) or added
+	// (custom:terms). A term with an optional blank a terms field fills is
+	// held: shown to be filled, not printed until it is.
 	for _, row := range merge(r.sk.Terms, r.d.Terms) {
-		if keep(row) && (row.Required || r.complete(row.Text)) {
-			r.out.Terms = append(r.out.Terms, fill("terms:", row))
+		if !keep(row) {
+			continue
+		}
+		if raw, ok := r.setting("term:" + row.Key); ok && settingString(raw) == Deleted {
+			continue
+		}
+		edited := false
+		if raw, ok := r.setting("wording:terms." + row.Key); ok {
+			if text := settingString(raw); text != "" {
+				row.Text, edited = text, true
+			}
+		}
+		held := !row.Required && !r.complete(row.Text)
+		if held && !r.termFieldBlanks(row.Text) {
+			continue
+		}
+		t := fill("terms:", row)
+		t.Template, t.Edited, t.Held = row.Text, edited, held
+		r.out.Terms = append(r.out.Terms, t)
+	}
+	if raw, ok := r.setting("custom:terms"); ok {
+		var own []CustomLine
+		if json.Unmarshal(raw, &own) == nil {
+			for _, l := range own {
+				r.out.Terms = append(r.out.Terms, Row{Key: l.ID, Text: l.Text, Template: l.Text, Custom: true})
+			}
 		}
 	}
 	for _, ret := range r.sk.Returnables {
@@ -1597,6 +1646,30 @@ func (r *resolver) resolveRows() {
 }
 
 var slotRE = regexp.MustCompile(`\{([a-z_]+(?::[a-z_0-9.]+)?)\}`)
+
+// termFieldBlanks reports whether every unfilled slot in text is a terms
+// field, one the terms table can fill where the term reads.
+func (r *resolver) termFieldBlanks(text string) bool {
+	for _, m := range slotRE.FindAllStringSubmatch(text, -1) {
+		if _, ok := r.slot(m[1]); ok {
+			continue
+		}
+		key, ok := strings.CutPrefix(m[1], "field:")
+		if !ok || !termsField(r.sk, key) {
+			return false
+		}
+	}
+	return true
+}
+
+func termsField(sk knowledge.RFPSkeleton, key string) bool {
+	for _, f := range sk.Fields {
+		if f.Key == key {
+			return f.Group == "terms" && f.Profile == ""
+		}
+	}
+	return false
+}
 
 // complete reports whether every slot in text has a value.
 func (r *resolver) complete(text string) bool {
@@ -2101,8 +2174,10 @@ func (r *resolver) gridText(key string) (string, bool) {
 			lines = append(lines, line)
 		}
 		return strings.Join(lines, "; "), len(lines) > 0
-	case "storeys", "parking", "bedrooms", "bathrooms":
+	case "storeys":
 		return number(key, "")
+	case "counts":
+		return r.countsText()
 	case "quality":
 		f := r.fact("quality")
 		if f.State != Known {
@@ -2127,6 +2202,30 @@ func (r *resolver) gridText(key string) (string, bool) {
 	}
 	v := r.out.Fields[key].Value
 	return v, v != ""
+}
+
+// countsText is the Counts row: "4 bedrooms, 3 bathrooms, 1 car park". A
+// count the sources disagree on reads "to be confirmed"; the row is empty
+// when no count is known.
+func (r *resolver) countsText() (string, bool) {
+	var parts []string
+	for _, c := range []struct{ fact, one, many string }{
+		{"bedrooms", "bedroom", "bedrooms"},
+		{"bathrooms", "bathroom", "bathrooms"},
+		{"parking", "car park", "car parks"},
+	} {
+		switch f := r.fact(c.fact); f.State {
+		case Known:
+			n, word := formatNumber(f.Values[0]), c.many
+			if n == "1" {
+				word = c.one
+			}
+			parts = append(parts, n+" "+word)
+		case Conflict:
+			parts = append(parts, c.many+" to be confirmed")
+		}
+	}
+	return strings.Join(parts, ", "), len(parts) > 0
 }
 
 // resolveConditions lists every site condition the discipline tests, and

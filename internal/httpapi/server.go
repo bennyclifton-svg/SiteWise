@@ -206,6 +206,11 @@ func New(opts Options) (*Server, error) {
 	for _, d := range opts.Catalog.Disciplines {
 		preader.disciplines[d.ID] = d.Label
 	}
+	// A tender dropped on a row for a trade only the trades list holds
+	// still names its package.
+	for _, t := range procurementTrades(Deps{Catalog: opts.Catalog, Knowledge: opts.Knowledge}) {
+		preader.disciplines[t.ID] = t.Label
+	}
 	importer := &programImporter{
 		store:      opts.Store,
 		blobs:      opts.Blobs,

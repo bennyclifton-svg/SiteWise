@@ -35,6 +35,18 @@ func monthCountCandidates(text string) []Candidate {
 	return collect(text, spans)
 }
 
+// weeksRe is a builder's period in weeks: "22–26 weeks on site". Kept as
+// written; the Program compares months only and says so.
+var weeksRe = regexp.MustCompile(`(?i)\b(\d{1,3})(?:\s*(?:[–-]|to)\s*(\d{1,3}))?\s*weeks?\b`)
+
+func weekCountCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range weeksRe.FindAllStringIndex(text, -1) {
+		spans = append(spans, span{m[0], m[1], text[m[0]:m[1]]})
+	}
+	return collect(text, spans)
+}
+
 func moneyRangeCandidates(text string) []Candidate {
 	var spans []span
 	for _, m := range moneyRangeRe.FindAllStringIndex(text, -1) {

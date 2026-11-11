@@ -243,6 +243,9 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
 .consultant-comparison .comparison-total strong { font-variant-numeric: tabular-nums; }
 .consultant-comparison .comparison-total .prices-note { display: inline; margin: 0; }
 .consultant-comparison .prices-total .comparison-award { display: inline-flex; align-items: center; height: 24px; min-height: 0; margin: 0; padding: 0 10px; font-size: var(--fs-xs); white-space: nowrap; }
+/* Awarded fees and their total carry the award, in place of a banner (owner direction, 11 Nov 2026). */
+.consultant-comparison td.comparison-awarded { background: color-mix(in oklab, var(--ok) 12%, transparent); box-shadow: inset 3px 0 0 var(--ok); }
+.consultant-comparison td.comparison-awarded strong { color: var(--ok); }
 
 /* The firm name heads its column like any other header; it opens the proposal. */
 .consultant-comparison .comparison-firm { padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left; cursor: pointer; }

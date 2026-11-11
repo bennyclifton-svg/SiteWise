@@ -13,6 +13,7 @@ package jev
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -25,6 +26,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -52,7 +54,17 @@ type Options struct {
 	Backoff            time.Duration
 	Now                func() time.Time
 	Sleep              func(context.Context, time.Duration) error
+	// CompressRequests gzips request bodies of 1 KiB or more
+	// (https://docs.typesafe.ai/api/errors.md, Compression). The server sets
+	// it: a profile label call is ~23 KB of JSON and ~6.5 KB gzipped, and on
+	// a ~600 KB/s upload plain bodies capped a read at ~25 calls a second.
+	// Recording and replay tools leave it off; they hash the plain body.
+	CompressRequests bool
 }
+
+// compressFrom is the smallest body worth compressing, as in TypeSafe's own
+// clients (https://docs.typesafe.ai/sdk/python/usage/advanced).
+const compressFrom = 1024
 
 // Client talks to System One with a reused HTTP transport, a slot limit and
 // a circuit breaker. Interactive calls are not retried.
@@ -70,6 +82,7 @@ type Client struct {
 	backoff            time.Duration
 	now                func() time.Time
 	sleep              func(context.Context, time.Duration) error
+	compress           bool
 	// reached is the unix-nano time of the last HTTP response from the
 	// endpoint, whatever its status; zero means none yet.
 	reached atomic.Int64
@@ -231,6 +244,7 @@ func New(opts Options) (*Client, error) {
 		backoff:            backoff,
 		now:                now,
 		sleep:              sleep,
+		compress:           opts.CompressRequests,
 		http: &http.Client{
 			Transport: transport,
 			// Redirects would resend the bearer token on this host.
@@ -327,6 +341,14 @@ func (c *Client) Ask(ctx context.Context, call Call) (Result, error) {
 	if err != nil {
 		return Result{}, fmt.Errorf("%w: encode", ErrRequest)
 	}
+	encoding := ""
+	if c.compress && len(payload) >= compressFrom {
+		// Compressed once: a background retry resends the same bytes.
+		if payload, err = gzipBody(payload); err != nil {
+			return Result{}, fmt.Errorf("%w: compress", ErrRequest)
+		}
+		encoding = "gzip"
+	}
 	attempts := 1
 	if call.Priority == PriorityBackground {
 		attempts = c.backgroundAttempts
@@ -339,7 +361,7 @@ func (c *Client) Ask(ctx context.Context, call Call) (Result, error) {
 				return Result{}, err
 			}
 		}
-		result, err, retry := c.attempt(ctx, payload, call)
+		result, err, retry := c.attempt(ctx, payload, encoding, call)
 		if err == nil {
 			return result, nil
 		}
@@ -351,7 +373,7 @@ func (c *Client) Ask(ctx context.Context, call Call) (Result, error) {
 	return Result{}, last
 }
 
-func (c *Client) attempt(parent context.Context, payload []byte, call Call) (Result, error, bool) {
+func (c *Client) attempt(parent context.Context, payload []byte, encoding string, call Call) (Result, error, bool) {
 	start := c.now()
 	if err := c.breaker.Allow(start); err != nil {
 		c.logCall(slog.LevelWarn, call, 0, c.now().Sub(start), Usage{}, nil, nil, errorClass(err))
@@ -372,7 +394,7 @@ func (c *Client) attempt(parent context.Context, payload []byte, call Call) (Res
 	}
 	defer c.admission.Release(call.Priority)
 
-	status, body, err := c.post(ctx, payload, len(call.Images) > 0)
+	status, body, err := c.post(ctx, payload, encoding, len(call.Images) > 0)
 	latency := c.now().Sub(start)
 	if err != nil {
 		if errors.Is(err, ErrBodyLimit) {
@@ -403,12 +425,38 @@ func (c *Client) withDeadline(parent context.Context, call Call) (context.Contex
 	return context.WithTimeout(parent, d)
 }
 
-func (c *Client) post(ctx context.Context, payload []byte, images bool) (int, []byte, error) {
+// gzipWriters are reused: a profile read compresses dozens of bodies a
+// second, and each fresh writer allocates its own window.
+var gzipWriters = sync.Pool{New: func() any {
+	w, _ := gzip.NewWriterLevel(io.Discard, gzip.BestSpeed)
+	return w
+}}
+
+// gzipBody compresses at the fastest level, which already takes a label
+// call from ~23 KB to ~6.5 KB in well under a millisecond.
+func gzipBody(payload []byte) ([]byte, error) {
+	var buf bytes.Buffer
+	w := gzipWriters.Get().(*gzip.Writer)
+	defer gzipWriters.Put(w)
+	w.Reset(&buf)
+	if _, err := w.Write(payload); err != nil {
+		return nil, err
+	}
+	if err := w.Close(); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+func (c *Client) post(ctx context.Context, payload []byte, encoding string, images bool) (int, []byte, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL, bytes.NewReader(payload))
 	if err != nil {
 		return 0, nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	if encoding != "" {
+		req.Header.Set("Content-Encoding", encoding)
+	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "sitewise")
 	if images {

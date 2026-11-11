@@ -1,0 +1,107 @@
+# Plasterboard and ceilings RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-plasterboard
+version: 1
+status: draft
+kind: works
+title: Plasterboard and ceilings
+heading: "REQUEST FOR TENDER: PLASTERBOARD AND CEILINGS"
+discipline_ids: [trade.plasterboard]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the plasterboard contractor. Your job is to line the walls and ceilings the documents show with the board each room needs, set and finish them ready for paint, and leave wet-area walls a sound substrate for the waterproofer and tiler."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Do not start a room until its frame and services rough-in inspections are passed and you have seen the record.
+      - Use moisture-resistant board, or the wet-area sheet the documents name, in every wet area.
+      - Offer fire-rated and acoustic walls and ceilings for inspection before they are closed.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 3: Kitchen and bathroom services rough-in before wall lining)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Ceiling and partition shop drawings for the design team's review"}
+      - {key: design, text: "Design of suspended ceiling, bulkhead and partition framing where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: partitions
+    name: "Partitions and wall linings"
+    lines:
+      - {key: studs, text: "Steel stud partitions and furring the documents show"}
+      - {key: walls, text: "Wall linings, with moisture-resistant board in wet areas"}
+      - {key: wet_substrate, text: "Wet-area wall sheets as the substrate for the membrane and tiles"}
+      - {key: rated, text: "Fire-rated and acoustic wall systems the documents give you, built to the tested system"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (SOU Separation — Fire and Acoustic)"}]
+  - key: ceilings
+    name: "Ceilings and bulkheads"
+    lines:
+      - {key: ceilings, text: "Ceiling linings and suspended ceilings"}
+      - {key: bulkheads, text: "Bulkheads and access panels the documents show"}
+      - {key: cornices, text: "Cornices"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}]
+  - key: setting
+    name: "Setting and finishing"
+    lines:
+      - {key: set, text: "Set joints, internal and external corners, and fixings"}
+      - {key: control_joints, text: "Control joints where the documents or the board system need them"}
+      - {key: finish, text: "Sand to the finish level the specification names, ready for the painter"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Your inspection of linings and set work before painting starts"}
+      - {key: certificates, text: "Installer's statements for fire-rated and acoustic systems the documents give you"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: noggings, label: "Noggings and backing in the frame for fixtures, grab rails and screens, by the framing carpenter", kind: technical, value: X, responsible: "framing carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}]}
+  - {key: rough_in, label: "Services rough-in complete, tested and inspected before lining, by each services trade and the head contractor", kind: technical, value: X, responsible: "each services trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 3: Kitchen and bathroom services rough-in before wall lining)"}]}
+  - {key: insulation, label: "Insulation in walls and ceilings before lining, by the insulation contractor", kind: technical, value: X, responsible: "insulation contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 7: Roof framing to insulation and ceiling)"}]}
+  - {key: membrane, label: "Wet-area membranes over your sheets, by the waterproofer", kind: technical, value: X, responsible: "waterproofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Wet area waterproofing)"}]}
+  - {key: paint_prep, label: "Final filling, light sanding and sealer before paint, by the painter", kind: technical, value: X, responsible: "painter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]}
+  - {key: penetrations, label: "Sealing of service penetrations through fire-rated linings, by the passive fire contractor", kind: technical, value: X, responsible: "passive fire contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

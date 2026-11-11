@@ -322,12 +322,15 @@ func (b *builder) positions() { b.consultantServices() }
 // terms prints the numbered terms (owner, 8 Nov 2026): firms and the client
 // cite a term by its number. The agreement is named by its documents'
 // titles in term 1; the documents themselves travel in the transmittal, so
-// no document table prints here. The basis keeps the chosen ids so the
-// editor can show them selected in the repository.
+// no document table prints here. The basis keeps every row, held ones too,
+// for the terms table, and the chosen ids so the editor can show them
+// selected in the repository.
 func (b *builder) terms() {
 	lines := []string{}
 	for _, t := range b.r.Terms {
-		lines = append(lines, "- "+t.Text)
+		if !t.Held {
+			lines = append(lines, "- "+t.Text)
+		}
 	}
 	ids := []string{}
 	for _, d := range DocumentRows(b.r.Agreement) {

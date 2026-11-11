@@ -6,7 +6,7 @@ import { Pending } from "./Activity";
 // report full width. Each package shows the firms whose proposals arrived
 // (docs/plans/2026-10-16-procurement-to-award-implementation.md): a proposal
 // filed anywhere lands here, and one dropped on a row lands in that package.
-import { useCallback, useEffect, useState, type DragEvent } from "react";
+import { Fragment, useCallback, useEffect, useState, type DragEvent } from "react";
 import { api, ApiError, type Option } from "./api";
 import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -16,6 +16,7 @@ import { packageApi, type CombinePrompt, type PackageOverview, type PackageRecor
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
 import { STATUS_WORDS, submissionApi, uploadProposal, type Board, type FirmCard } from "./submissionApi";
+import { FirmNameEditor, type NamedFirm } from "./FirmNameEditor";
 import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
@@ -50,6 +51,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   const [error, setError] = useState("");
   const [busyRow, setBusyRow] = useState("");
   const [uploadingRow, setUploadingRow] = useState("");
+  // The invited firm whose cell a quote was dropped on, while it uploads.
+  const [uploadingFirm, setUploadingFirm] = useState("");
   const [draft, setDraft] = useState<string | null>(null);
   const [removing, setRemoving] = useState<{ pkg: PackageRecord; label: string; costPlan?: CostPlan; costLabels: string[] } | null>(null);
   const [dropRow, setDropRow] = useState("");
@@ -91,7 +94,12 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   // The discipline list is fixed for the session; fetch it once.
   useEffect(() => {
     let stopped = false;
-    api.catalog().then(c => { if (!stopped) setDisciplines(c.disciplines); }).catch(() => { /* Rows fall back to package titles. */ });
+    api.catalog().then(c => {
+      // Consultants come from the filing list; trades from the Procurement
+      // trades list, which is longer (docs/plans/2026-11-10-trades-catalogue.md).
+      const trades = c.trades?.length ? c.trades : c.disciplines.filter(d => !d.id.startsWith("consultant."));
+      if (!stopped) setDisciplines([...c.disciplines.filter(d => d.id.startsWith("consultant.")), ...trades]);
+    }).catch(() => { /* Rows fall back to package titles. */ });
     return () => { stopped = true; };
   }, []);
 
@@ -215,10 +223,50 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
     try { for (const f of files) await uploadProposal(projectId, pkg.id, f); setReload(n => n + 1); }
     catch (err) { fail(err); } finally { setBusyRow(""); setUploadingRow(""); }
   }
-  async function linkDocument(pkg: PackageRecord, document: string) {
+  async function linkDocument(pkg: PackageRecord, document: string, firm = "") {
     setBusyRow(pkg.id); setError("");
-    try { await submissionApi.linkDocument(projectId, pkg.id, document); setReload(n => n + 1); }
+    try { await submissionApi.linkDocument(projectId, pkg.id, document, firm); setReload(n => n + 1); }
     catch (err) { fail(err); } finally { setBusyRow(""); }
+  }
+  // A quote dropped on an invited firm's cell is that firm's quote. Only the
+  // first file is: any others dropped with it go on the row and are read.
+  async function dropOnFirm(pkg: PackageRecord, card: FirmCard, e: DragEvent) {
+    e.preventDefault(); e.stopPropagation(); setDropRow("");
+    const document = e.dataTransfer.getData(FILED_DOCUMENT_TYPE);
+    if (document) { await linkDocument(pkg, document, card.firm_id); return; }
+    const files = Array.from(e.dataTransfer.files);
+    if (!files.length) return;
+    setBusyRow(pkg.id); setUploadingFirm(card.firm_id ?? ""); setError("");
+    try { for (const [n, f] of files.entries()) await uploadProposal(projectId, pkg.id, f, "", n === 0 ? card.firm_id : ""); setReload(n => n + 1); }
+    catch (err) { fail(err); } finally { setBusyRow(""); setUploadingFirm(""); }
+  }
+  // Naming or removing an invited firm refreshes the board before it
+  // resolves, so the cell changes once, not empty and then filled.
+  async function refreshBoard() {
+    const board = await submissionApi.board(projectId);
+    setData(d => d && { ...d, board });
+  }
+  async function invite(pkg: PackageRecord, firm: NamedFirm): Promise<boolean> {
+    try { await submissionApi.invite(projectId, pkg.id, firm); await refreshBoard(); return true; }
+    catch (e) { if (e instanceof ApiError && e.status === 401) onSignedOut(); return false; }
+  }
+  // A correction keeps the cell: the server keeps the invitation's place.
+  async function correctInvitation(pkg: PackageRecord, card: FirmCard, firm: NamedFirm): Promise<string> {
+    try { await submissionApi.correctInvitation(projectId, pkg.id, card.firm_id!, firm); await refreshBoard(); return ""; }
+    catch (e) {
+      if (e instanceof ApiError && e.status === 401) onSignedOut();
+      if (e instanceof ApiError && e.status === 409) return "That firm is already on this row.";
+      if (e instanceof ApiError && e.status === 404) { void refreshBoard().catch(() => undefined); return "This invitation has changed. The row has been refreshed."; }
+      return "Could not save the firm. Try again.";
+    }
+  }
+  async function uninvite(pkg: PackageRecord, card: FirmCard) {
+    setBusyRow(pkg.id); setError("");
+    try { await submissionApi.uninvite(projectId, pkg.id, card.firm_id!); await refreshBoard(); }
+    catch (e) {
+      if (e instanceof ApiError && e.status === 401) onSignedOut();
+      else { setError("Could not remove the invitation. Try again."); setReload(n => n + 1); }
+    } finally { setBusyRow(""); }
   }
   async function detach(card: FirmCard) {
     setBusyRow(card.submission_id); setError("");
@@ -233,10 +281,19 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
       else setError("Could not detach the proposal. Try again.");
     } finally { setBusyRow(""); }
   }
-  async function assign(card: FirmCard, pkg: string) {
-    if (!pkg) return;
+  // A choice of "new:<discipline>" is a catalogue entry with no row yet: the
+  // row is added first (the New button's path), then the proposal placed on it.
+  async function assign(card: FirmCard, choice: string) {
+    if (!choice) return;
     setBusyRow(card.submission_id); setError("");
-    try { await submissionApi.edit(projectId, card.submission_id, { package_id: pkg }); setReload(n => n + 1); }
+    try {
+      let pkg = choice;
+      if (choice.startsWith("new:")) {
+        try { pkg = (await procurementApi.addRow(projectId, choice.slice(4))).id; }
+        catch (err) { fail(err, "row"); return; }
+      }
+      await submissionApi.edit(projectId, card.submission_id, { package_id: pkg }); setReload(n => n + 1);
+    }
     catch (err) { fail(err); } finally { setBusyRow(""); }
   }
 
@@ -294,14 +351,18 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         onKeyDown={selectable ? (e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(row, { ctrlKey: e.key === " ", metaKey: false, shiftKey: e.shiftKey, target: e.currentTarget }); } if (e.key === "Escape") setSelection(emptySelection); }) : undefined}>
         {row.group && row.pkg ? <GroupName group={row.pkg} onRename={title => rename(row.pkg!, title)} /> : row.label}
       </th>
-      <FirmSlots busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
-        onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })} />
+      <FirmSlots row={row.label} busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
+        uploadingFirm={uploadingFirm} onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })}
+        onInvite={firm => row.pkg ? invite(row.pkg, firm) : Promise.resolve(false)} onUninvite={card => row.pkg && void uninvite(row.pkg, card)}
+        onCorrect={(card, firm) => row.pkg ? correctInvitation(row.pkg, card, firm) : Promise.resolve("")}
+        onDropOnFirm={(card, e) => row.pkg && void dropOnFirm(row.pkg, card, e)} />
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
       {/* A group holds its members' proposals, so its prices open here. */}
       <td>{row.pkg && !row.member ? (() => {
-        const n = data?.board.packages[row.pkg.id]?.length ?? 0;
+        // Proposals only: an invited firm has nothing to price yet.
+        const n = (data?.board.packages[row.pkg.id] ?? []).filter(c => c.status !== "invited").length;
         return <button type="button" className="table-action" aria-label={`${n > 1 ? "Compare" : n === 1 ? "Review" : "Prices for"} ${row.label}`} onClick={() => setView({ at: "prices", pkg: row.pkg!.id, report: row.report?.id })}>{n > 1 ? `Compare ${n}` : n === 1 ? "Review" : "Prices"}</button>;
       })() : "—"}</td>
       <td className="row-bin-cell">{row.group && row.pkg ? <button type="button" className="table-action" aria-label={`Uncombine ${row.label}`} disabled={busy} onClick={() => void uncombine(row.pkg!)}>Uncombine</button>
@@ -310,6 +371,48 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         <button type="button" className="reg-del" aria-label={`Remove ${row.label}`} title={`Remove ${row.label}`} disabled={busy}
           onClick={() => void (row.pkg ? reviewRemoval(row.pkg, row.label) : dismiss(row))}><IconBin /></button>}</td>
     </tr>;
+  }
+
+  // A proposal waiting for a package: its firm in Firm 1, the package to
+  // choose where the discipline goes. A combined one is placed by ticking
+  // the disciplines it covers, in a row beneath it.
+  const byLabel = (a: PackageRecord, b: PackageRecord) => label(a).localeCompare(label(b));
+  // The open tab's list comes first and offers its whole catalogue: rows
+  // already on the table, then disciplines not yet added (owner, 12 Nov 2026).
+  type Choice = { value: string; label: string };
+  const saved = (services: boolean): Choice[] => live.filter(p => (p.kind === "services") === services).sort(byLabel).map(p => ({ value: p.id, label: label(p) }));
+  const fresh = (prefix: string): Choice[] => options(prefix).map(d => ({ value: `new:${d.id}`, label: d.label }));
+  const byName = (a: Choice, b: Choice) => a.label.localeCompare(b.label);
+  const choices: [string, Choice[]][] = tab === "consultants"
+    ? [["Consultants", [...saved(true), ...fresh("consultant.")].sort(byName)], ["Trades", saved(false)]]
+    : [["Trades", [...saved(false), ...fresh("trade.")].sort(byName)], ["Supply", fresh("supplier.")], ["Consultants", saved(true)]];
+  function unplacedRow(c: FirmCard) {
+    const ticking = forProposal?.card.submission_id === c.submission_id ? forProposal : null;
+    return <Fragment key={c.submission_id}>
+      <tr className="row-unplaced">
+        <th scope="row" className="discipline-cell">
+          <select aria-label={c.combined ? `Place ${c.filename} on one discipline` : `Package for ${c.filename}`} defaultValue="" disabled={busyRow === c.submission_id} onChange={e => void assign(c, e.target.value)}>
+            <option value="">{c.combined ? "Place on one discipline" : "Choose package"}</option>
+            {choices.map(([name, list]) => list.length > 0 && <optgroup key={name} label={name}>{list.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</optgroup>)}
+          </select>
+        </th>
+        <td className="firm-slot"><FirmChip card={c} busy={!!busyRow} /></td>
+        <td className="firm-slot" /><td className="firm-slot" />
+        <td>—</td>
+        {/* A combined proposal is never guessed onto rows: the PM ticks them. */}
+        <td>{c.combined && !ticking ? <button type="button" className="table-action" disabled={!!busyRow} title={`${c.firm_name || c.filename} covers several disciplines`} onClick={() => setForProposal({ card: c, ids: [] })}>Combine for this proposal</button> : "—"}</td>
+        <td className="row-bin-cell" />
+      </tr>
+      {ticking && <tr className="row-unplaced-combine"><td colSpan={COLUMNS}>
+        <fieldset className="procurement-combine-for"><legend>Tick the disciplines {c.firm_name || c.filename} covers</legend>
+          {live.filter(p => p.kind === "services" && p.role !== "group" && !p.group_id).sort(byLabel).map(p => <label key={p.id}>
+            <input type="checkbox" aria-label={`${label(p)} for ${c.filename}`} checked={ticking.ids.includes(p.id)} disabled={!!busyRow}
+              onChange={e => { const on = e.target.checked; setForProposal(f => f && ({ ...f, ids: on ? [...f.ids, p.id] : f.ids.filter(x => x !== p.id) })); }} /> {label(p)}</label>)}
+          {(() => { const chosen = live.filter(p => ticking.ids.includes(p.id)); return <button type="button" className="btn btn-small" disabled={!!busyRow || chosen.length < 2} onClick={() => void reviewCombine(chosen, chosen.map(label), c.submission_id)}>Combine {chosen.length}</button>; })()}
+          <button type="button" className="table-action" disabled={!!busyRow} onClick={() => setForProposal(null)}>Cancel</button>
+        </fieldset>
+      </td></tr>}
+    </Fragment>;
   }
 
   return <section className="procurement" aria-label="Procurement">
@@ -341,29 +444,12 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         <button type="button" className="table-action" disabled={!!busyRow} onClick={() => void dismissPrompt(prompt)}>Dismiss</button>
       </div>;
     })}
-    {data && data.board.unassigned.length > 0 && <div className="procurement-line procurement-unassigned" role="note">
-      <p><strong>{data.board.unassigned.length} proposal{data.board.unassigned.length === 1 ? " needs" : "s need"} a package.</strong></p>
-      {data.board.unassigned.map(c => <div key={c.submission_id}>
-        <label>{c.firm_name || c.filename}{c.combined && " covers several disciplines."}
-          <select aria-label={c.combined ? `Place ${c.filename} on one discipline` : `Package for ${c.filename}`} defaultValue="" disabled={busyRow === c.submission_id} onChange={e => void assign(c, e.target.value)}>
-            <option value="">{c.combined ? "Place on one discipline" : "Choose package"}</option>
-            {live.map(p => <option key={p.id} value={p.id}>{label(p)}</option>)}
-          </select></label>
-        {/* A combined proposal is never guessed onto rows: the PM ticks them. */}
-        {c.combined && (forProposal?.card.submission_id !== c.submission_id
-          ? <button type="button" className="table-action" disabled={!!busyRow} onClick={() => setForProposal({ card: c, ids: [] })}>Combine for this proposal</button>
-          : <fieldset className="procurement-combine-for"><legend>Tick the disciplines this proposal covers</legend>
-            {live.filter(p => p.kind === "services" && p.role !== "group" && !p.group_id).sort((a, b) => label(a).localeCompare(label(b))).map(p => <label key={p.id}>
-              <input type="checkbox" aria-label={`${label(p)} for ${c.filename}`} checked={forProposal.ids.includes(p.id)} disabled={!!busyRow}
-                onChange={e => { const on = e.target.checked; setForProposal(f => f && ({ ...f, ids: on ? [...f.ids, p.id] : f.ids.filter(x => x !== p.id) })); }} /> {label(p)}</label>)}
-            {(() => { const chosen = live.filter(p => forProposal.ids.includes(p.id)); return <button type="button" className="btn btn-small" disabled={!!busyRow || chosen.length < 2} onClick={() => void reviewCombine(chosen, chosen.map(label), c.submission_id)}>Combine {chosen.length}</button>; })()}
-            <button type="button" className="table-action" disabled={!!busyRow} onClick={() => setForProposal(null)}>Cancel</button>
-          </fieldset>)}
-      </div>)}
-    </div>}
     {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll" role="tabpanel" id="procurement-panel" aria-labelledby={`procurement-tab-${tab}`}>
       <table className="procurement-table">
         <thead><tr><th scope="col">{tab === "consultants" ? "Consultant" : "Trade"}</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">{doc}</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
+        {/* A proposal no row claims sits first, on both tabs, until the PM
+            chooses its package (owner, 11 Nov 2026). */}
+        {data.board.unassigned.length > 0 && <tbody className="procurement-unplaced">{data.board.unassigned.map(unplacedRow)}</tbody>}
         {shown.length > 0 && <tbody>{shown.map(rowView)}</tbody>}
         {draft !== null && <tbody><tr className="draft-row"><td colSpan={COLUMNS}>
           <form className="draft-form" onSubmit={e => { e.preventDefault(); void addRow(); }}>
@@ -414,20 +500,88 @@ const TAB_KEY = "sitewise.procurement.tab";
 /** FirmSlots fills Firm 1-3 with the package's firms in the board's order,
  * so every row reads as the place firms are compared (owner decision 5,
  * docs/plans/2026-10-21-source-to-cost-plan-design.md). A fourth firm and
- * later show as "+n more" in Firm 3. */
-function FirmSlots({ cards, droppable, uploading, onOpen, onDetach, busy }: { onDetach: (card: FirmCard) => void; busy: boolean; cards: FirmCard[]; droppable: boolean; uploading: boolean; onOpen: () => void }) {
+ * later show as "+n more" in Firm 3. An empty cell takes a firm's name
+ * before its quote arrives; that invited firm's cell takes its quote
+ * (docs/plans/2026-11-11-procurement-invited-firms.md). */
+function FirmSlots({ row, cards, droppable, uploading, uploadingFirm, onOpen, onDetach, onInvite, onUninvite, onCorrect, onDropOnFirm, busy }: {
+  row: string; cards: FirmCard[]; droppable: boolean; uploading: boolean; uploadingFirm: string; busy: boolean;
+  onOpen: () => void; onDetach: (card: FirmCard) => void; onInvite: (firm: NamedFirm) => Promise<boolean>;
+  onUninvite: (card: FirmCard) => void; onCorrect: (card: FirmCard, firm: NamedFirm) => Promise<string>;
+  onDropOnFirm: (card: FirmCard, e: DragEvent) => void;
+}) {
+  const [naming, setNaming] = useState<number | null>(null);
+  // The invited firm whose name is being corrected.
+  const [editing, setEditing] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [nameError, setNameError] = useState("");
+  const [over, setOver] = useState("");
   const extra = cards.length - 3;
+  async function save(firm: NamedFirm) {
+    setSaving(true); setNameError("");
+    const ok = await onInvite(firm);
+    setSaving(false);
+    if (ok) setNaming(null); else setNameError("Could not save the firm. Try again.");
+  }
+  async function correct(card: FirmCard, firm: NamedFirm) {
+    setSaving(true); setNameError("");
+    const failed = await onCorrect(card, firm);
+    setSaving(false);
+    if (failed) setNameError(failed); else setEditing("");
+  }
+  const stop = () => { setNaming(null); setEditing(""); setNameError(""); };
+  const named = cards.map(c => c.firm_id ?? "").filter(Boolean);
   return <>{[0, 1, 2].map(i => {
     const c = cards[i];
-    const empty = droppable ? <span className="firms-none">{uploading && i === cards.length ? <Pending>Uploading…</Pending> : <span className="proposal-drop-icon" role="img" aria-label="Drop a proposal" title="Drop a proposal from your computer or document repository"><IconUpload /></span>}</span> : <span className="firms-none">—</span>;
-    return <td key={i} className="firm-slot">{c ? <FirmChip card={c} onOpen={onOpen} onDetach={() => onDetach(c)} busy={busy} /> : empty}
+    const invited = c?.status === "invited";
+    let body;
+    if (invited && editing === c.firm_id) body = <FirmNameEditor label={`Firm ${i + 1} for ${row}`} initial={c.firm_name} exclude={named} busy={saving} error={nameError}
+      onCommit={firm => void correct(c, firm)} onCancel={stop} />;
+    else if (invited) body = <InvitedFirm card={c} busy={busy} uploading={uploadingFirm === c.firm_id} onRemove={() => onUninvite(c)}
+      onEdit={() => { setNaming(null); setEditing(c.firm_id!); setNameError(""); }} />;
+    else if (c) body = <FirmChip card={c} onOpen={onOpen} onDetach={() => onDetach(c)} busy={busy} />;
+    else if (naming === i) body = <FirmNameEditor label={`Firm ${i + 1} for ${row}`} exclude={named} busy={saving} error={nameError}
+      onCommit={firm => void save(firm)} onCancel={stop} />;
+    else if (!droppable) body = <span className="firms-none">—</span>;
+    else if (uploading && i === cards.length) body = <span className="firms-none"><Pending>Uploading…</Pending></span>;
+    else body = <span className="firms-none">
+      <span className="proposal-drop-icon" role="img" aria-label="Drop a proposal" title="Drop a proposal from your computer or document repository"><IconUpload /></span>
+      {/* The whole empty cell is this button: type the firm the RFP goes to. */}
+      <button type="button" className="firm-name-add" aria-label={`Name firm ${i + 1} for ${row}`} title="Type the firm's name before its quote arrives, or drop its proposal"
+        disabled={busy} onClick={() => { setEditing(""); setNaming(i); setNameError(""); }}>Add firm</button>
+    </span>;
+    return <td key={i} className="firm-slot" data-over={invited && over === c.firm_id ? "" : undefined}
+      onDragOver={invited ? (e => { if (e.dataTransfer.types.includes("Files") || e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE)) { e.preventDefault(); setOver(c.firm_id!); } }) : undefined}
+      onDragLeave={invited ? (() => setOver("")) : undefined}
+      onDrop={invited ? (e => { setOver(""); onDropOnFirm(c, e); }) : undefined}>
+      {body}
       {i === 2 && extra > 0 && <button type="button" className="table-action" onClick={onOpen}>+{extra} more</button>}</td>;
   })}</>;
 }
 
+/** InvitedFirm is a firm named before its quote arrived: its name over
+ * "Invited" in the user's colour (the origin rule), no figure, nothing to
+ * open in Prices. Its quote is dropped on this cell; a click corrects the
+ * name in place. */
+function InvitedFirm({ card: c, busy, uploading, onRemove, onEdit }: { card: FirmCard; busy: boolean; uploading: boolean; onRemove: () => void; onEdit: () => void }) {
+  const on = c.invited_on ? new Date(`${c.invited_on}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "";
+  // The name leads: a long one is cut short in the cell.
+  const description = `${c.firm_name}. Invited${on ? ` ${on}` : ""}. Click to correct the name; drop the firm's quote on this cell.`;
+  return <div className="firm-card">
+    <button type="button" className="firm-chip" data-status="invited" title={description} aria-label={`Change ${c.firm_name}`} aria-description={description}
+      disabled={busy} onClick={onEdit}>
+      <span className="firm-chip-name">{c.firm_name}</span>
+      <span className="firm-chip-status">{uploading ? <Pending>Uploading…</Pending> : STATUS_WORDS.invited}</span>
+    </button>
+    <button type="button" className="firm-detach" aria-label={`Remove invitation for ${c.firm_name}`} title="Remove the invitation; the firm stays in your directory"
+      disabled={busy} onClick={onRemove}>
+      <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="m4 4 8 8m0-8-8 8" /></svg>
+    </button>
+  </div>;
+}
+
 /** FirmChip shows one firm: its name, the base total the server computed,
  * with provenance and review status in its accessible description. */
-function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen: () => void; onDetach: () => void; busy: boolean }) {
+function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen?: () => void; onDetach?: () => void; busy: boolean }) {
   const description = [c.filename, `received ${c.received_on}`, STATUS_WORDS[c.status],
     c.needs_review ? "Check proposal" : "",
     c.not_priced ? `${c.not_priced} not priced` : "",
@@ -435,19 +589,22 @@ function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen:
     c.base_total == null && (!c.known_base || c.known_base === "0.00") && c.stated_total != null
       ? "Firm's stated total, ex GST; the fee schedule is not priced yet" : "",
   ].filter(Boolean).join(" · ");
-  return <div className="firm-card"><button type="button" className={`firm-chip${c.lowest ? " lowest" : ""}`} data-status={c.status} onClick={onOpen}
-    title={description} aria-description={description}>
+  const inside = <>
     <span className="firm-chip-name">{c.firm_name || c.filename}</span>
     {c.status === "not_proposal" && <span className="firm-chip-status">Named in a document</span>}
-    {c.pi_expired && <span className="firm-chip-status warn" title={`Professional indemnity expired ${c.pi_expires_on}: request a current certificate`}>PI expired</span>}
     {/* Shown, not spoken: the description already says the firm is awarded. */}
     {c.status === "awarded" && <span className="firm-awarded" aria-hidden="true" title="Awarded"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" focusable="false"><path d="m3.5 8.5 3 3 6-7" /></svg></span>}
     <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? `$${fmt(c.stated_total).replace(/\.00$/, "")}` : "—"}</span>
-  </button>
-    <button type="button" className="firm-detach" aria-label={`Detach proposal for ${c.firm_name || c.filename}`}
+  </>;
+  const className = `firm-chip${c.lowest ? " lowest" : ""}`;
+  // An unplaced proposal has no row to open yet: its card is only shown.
+  return <div className="firm-card">
+    {onOpen ? <button type="button" className={className} data-status={c.status} onClick={onOpen} title={description} aria-description={description}>{inside}</button>
+      : <div className={className} data-status={c.status} data-static="" title={description} aria-description={description}>{inside}</div>}
+    {onDetach && <button type="button" className="firm-detach" aria-label={`Detach proposal for ${c.firm_name || c.filename}`}
       title={c.status === "awarded" ? "Undo the award before detaching this proposal" : "Detach proposal from this row; keep the filed document"}
       disabled={busy || c.status === "awarded"} onClick={onDetach}>
       <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="m4 4 8 8m0-8-8 8" /></svg>
-    </button>
+    </button>}
   </div>;
 }

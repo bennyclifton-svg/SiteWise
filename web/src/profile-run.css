@@ -1,0 +1,286 @@
+/* Profile run-time feedback (docs/design/2026-11-10-run-time-feedback.md).
+   Loaded after the Trace surface sheets. Layout: the scope on the first
+   screen, the update strip, where the marks sit. The motion and marks
+   themselves are shared by every surface: trace-motion.css. */
+
+/* ---------- Header: Update in the title band (owner, 10 Nov 2026) ---------- */
+
+.header-page-actions { display: flex; align-items: center; gap: 12px; }
+.header-page-actions:empty { display: none; }
+.update-new {
+  position: absolute;
+  top: -10px;
+  right: -14px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: var(--sw-text-primary);
+  color: var(--sw-surface);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 17px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- Layout: the scope on the first screen ---------- */
+
+.pf-lede { margin-bottom: 16px; }
+.cockpit-scroll .profile .pf-section[aria-label="Project"] { margin-bottom: 22px; }
+
+/* Title block rows on one line: label, value, how it was decided. */
+.pf-titleblock.pf-paired .pf-row {
+  position: relative;
+  grid-template-columns: minmax(52px, 32%) minmax(0, 1fr) auto;
+  grid-template-rows: none;
+  align-items: center;
+  column-gap: 8px;
+  height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.pf-titleblock.pf-paired .pf-pair-head { display: contents; }
+.pf-titleblock.pf-paired .pf-pair-head > .pf-label { grid-column: 1; grid-row: 1; }
+.pf-titleblock.pf-paired .pf-value { grid-column: 2; grid-row: 1; }
+.pf-titleblock.pf-paired .pf-pair-why { grid-column: 3; grid-row: 1; justify-content: flex-end; min-height: 0; }
+.pf-titleblock.pf-paired .pf-value:has(.pf-control) {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  margin: 0 0 0 -6px;
+  padding: 0 6px;
+}
+.pf-titleblock.pf-paired .pf-col-more .pf-row { height: 30px; }
+/* A disagreement keeps its to-check edge and shows its mark as an icon; the words stay for screen readers. */
+.pf-titleblock.pf-paired .pf-mark[data-band="red"] svg { display: inline-block; width: 12px; height: 12px; }
+.pf-titleblock.pf-paired .pf-mark[data-band="red"] .pf-mark-text {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* A value the user set says so with its rust square; the pencil icon stays
+   for screen readers, so the value keeps the room. */
+.pf-titleblock.pf-paired .pf-pair-why:has(.pf-sources) .pf-mark[data-band="user"] {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Counts: "2 bed · 3 bath · 1 car", each number its own input, how it was
+   decided drawn under it with the summary's pencils. */
+/* A count is never hidden: on a narrow sheet the row takes a second line. */
+.pf-titleblock.pf-paired .pf-row.pf-counts { height: auto; min-height: 30px; padding-top: 3px; padding-bottom: 3px; }
+.pf-titleblock.pf-paired .pf-count-cells { display: flex; flex-wrap: wrap; align-items: center; row-gap: 2px; min-width: 0; white-space: nowrap; }
+.pf-count-item { display: inline-flex; align-items: center; }
+.pf-count-sep { padding: 0 5px; color: var(--sw-text-tertiary); }
+.pf-count { display: inline-flex; align-items: baseline; gap: 3px; margin: 0; }
+/* field-plain opts out of the global field box (sizing.css). */
+.pf-count-input {
+  min-width: 1.6ch;
+  height: 22px;
+  min-height: 0;
+  padding: 0 2px 2px;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  background-position: left bottom;
+  background-size: 480px 6px;
+  background-repeat: repeat-x;
+  color: var(--sw-text-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  field-sizing: content;
+}
+.pf-count-input:hover { background-color: var(--sw-hover-bg); }
+.pf-count-input:focus { outline: none; background-color: var(--paper, var(--sw-surface)); box-shadow: inset 0 0 0 1px var(--azure, var(--sw-action-focus)); }
+.pf-count-input::placeholder { color: var(--sw-text-tertiary); font-weight: 400; }
+.pf-count-word { color: var(--sw-text-tertiary); font-size: 12px; }
+.pf-count[data-band="green"] .pf-count-input { background-image: url("./assets/marks/pencil-green.svg"); }
+.pf-count[data-band="amber"] .pf-count-input { background-image: url("./assets/marks/pencil-green-dot.svg"); }
+.pf-count[data-band="suggested"] .pf-count-input { background-image: url("./assets/marks/pencil-azure.svg"); }
+.pf-count[data-band="user"] .pf-count-input { background-image: url("./assets/marks/pencil-ember.svg"); }
+.pf-count[data-band="red"] .pf-count-input { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+:root[data-theme="dark"] .pf-count[data-band="green"] .pf-count-input { background-image: url("./assets/marks/pencil-green-dark.svg"); }
+:root[data-theme="dark"] .pf-count[data-band="amber"] .pf-count-input { background-image: url("./assets/marks/pencil-green-dot-dark.svg"); }
+:root[data-theme="dark"] .pf-count[data-band="suggested"] .pf-count-input { background-image: url("./assets/marks/pencil-azure-dark.svg"); }
+:root[data-theme="dark"] .pf-count[data-band="user"] .pf-count-input { background-image: url("./assets/marks/pencil-ember-dark.svg"); }
+
+/* View more: a chevron tab on the card's foot rule. */
+.pf-card-toggle {
+  position: relative;
+  display: block;
+  width: 40px;
+  height: 16px;
+  margin: -1px auto 0;
+  padding: 0;
+  border: 1px solid var(--sw-border-strong);
+  border-top: 0;
+  border-radius: 0 0 9px 9px;
+  background: var(--trace-sheet, var(--sw-surface));
+  color: var(--sw-text-secondary);
+  font-size: 0;
+  cursor: pointer;
+}
+.pf-card-toggle::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 160ms ease, top 160ms ease;
+}
+.pf-card-toggle[aria-expanded="true"]::before { top: 6px; transform: rotate(-135deg); }
+.pf-card-toggle:hover { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.pf-card-toggle:focus-visible { outline: 2px solid var(--sw-action-focus); outline-offset: 2px; }
+
+/* Scope rows a little tighter: the matrix is the page's working table. */
+.sw-matrix .sw-entry { min-height: 34px; }
+.sw-matrix .sw-cell { position: relative; }
+
+/* ---------- Marks: where Profile places them (trace-motion.css) ---------- */
+
+/* The revision triangle stands in the gutter before a changed value. */
+.pf-row[data-changed="true"] { position: relative; }
+.pf-row .rev-mark { position: absolute; top: 50%; left: -12px; margin-top: -4px; cursor: help; }
+.pf-titleblock .pf-row .rev-mark { left: 2px; }
+/* A scope entry an update changed: the same triangle, before its row. */
+.sw-matrow[data-changed="true"] { position: relative; }
+.sw-matrow[data-changed="true"]::before {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: -14px;
+  width: 9px;
+  height: 8px;
+  background: var(--sw-text-secondary);
+  -webkit-mask: var(--rev-mark) center / contain no-repeat;
+  mask: var(--rev-mark) center / contain no-repeat;
+}
+/* A scope cell an update shaded in or out keeps a short rule beneath it. */
+.sw-matrix .sw-cell[data-new]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 1.5px;
+  background: var(--sw-text-secondary);
+}
+
+/* ---------- The strip at the foot of the view ---------- */
+
+.profile-feedback.ask-bar { padding-top: 6px; padding-bottom: 6px; container-type: inline-size; }
+.pf-strip { color: var(--sw-text-secondary); font-size: 12.5px; }
+.pf-strip .profile-progress { flex: none; gap: 6px; }
+.pf-strip .profile-reading-meter { width: 18px; height: 18px; }
+.pf-strip .profile-progress p { margin: 0; }
+
+.pf-strip-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; min-height: 22px; }
+.pf-strip-line .profile-reading { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; min-width: 0; margin: 0; }
+.pf-strip-marks { display: inline-flex; align-items: center; gap: 5px; }
+.pf-strip-next { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-left: auto; color: var(--sw-text-primary); }
+.pf-strip-next .pf-checks { margin: 0; }
+
+/* Sheets beside the live lines; the facts to state run along a row beneath. */
+.pf-strip-run { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 5px 18px; }
+.run-docs { display: flex; gap: 8px; max-width: 360px; margin: 0; padding: 2px 0; overflow-x: auto; list-style: none; }
+.run-doc { display: grid; flex: none; justify-items: center; gap: 2px; width: 50px; }
+.run-sheet {
+  position: relative;
+  width: 22px;
+  height: 28px;
+  overflow: hidden;
+  border: 1.2px solid var(--sw-border-strong);
+  border-radius: 1.5px;
+  background: var(--sw-surface);
+}
+.run-sheet::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
+  border-bottom: 1.2px solid var(--sw-border-strong);
+  border-left: 1.2px solid var(--sw-border-strong);
+  background: var(--sw-surface-inset);
+}
+.run-hatch, .run-ink { position: absolute; inset: 0; clip-path: inset(100% 0 0 0); transition: clip-path 320ms linear; }
+.run-hatch { background: repeating-linear-gradient(-45deg, var(--sw-text-tertiary) 0 1px, transparent 1px 3px); }
+.run-ink { background: var(--trace-in-scope, var(--sw-text-primary)); opacity: .85; }
+.run-doc[data-state="reading"] .run-sheet { border-color: var(--sw-info-icon); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sw-info-icon) 18%, transparent); }
+.run-doc[data-state="queued"] .run-sheet { border-style: dashed; }
+.run-doc[data-state="failed"] .run-sheet { border-color: var(--sw-error-text); }
+.run-doc-name { max-width: 50px; overflow: hidden; color: var(--sw-text-tertiary); font: 10px/1.2 "IBM Plex Mono", ui-monospace, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.run-ticks { display: flex; gap: 3px; height: 6px; }
+.run-ticks i { width: 6px; height: 3.5px; border-bottom: 1.4px solid var(--sw-text-secondary); border-left: 1.4px solid var(--sw-text-secondary); transform: rotate(-45deg); }
+.run-live { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; min-width: 0; overflow: hidden; }
+.run-live > * { min-width: 0; }
+.run-live p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.run-live .profile-reading { display: block; }
+.run-live .profile-reading > span + span { margin-left: 14px; }
+/* While reading on a desktop, the strip may take a little more room for the
+   facts to state; a phone keeps the 9rem cap. */
+@media (min-width: 1101px) {
+  .profile-feedback.ask-bar:has(.pf-strip[data-mode="run"]) { max-height: 12.5rem; }
+}
+.run-live .profile-progress { display: flex; align-items: center; }
+.run-now { color: var(--sw-text-secondary); }
+.run-now b, .run-find-what { color: var(--sw-text-primary); font-weight: 600; }
+.run-find q { font-style: italic; }
+.run-find-where { color: var(--sw-text-tertiary); font: 11px "IBM Plex Mono", ui-monospace, monospace; }
+.run-below { justify-self: start; color: var(--sw-info-text); font-weight: 600; }
+.run-note { color: var(--sw-warning-text); }
+.run-while { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding-top: 5px; border-top: 1px solid var(--trace-rule); }
+.run-while-head { margin: 0; color: var(--sw-text-tertiary); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.run-while-field { display: inline-flex; align-items: center; gap: 6px; }
+.run-while-field > span { color: var(--sw-text-secondary); font-size: 12px; }
+.run-while .input, .run-while .select { width: 150px; height: 24px; min-height: 0; padding: 0 8px; font-size: 12.5px; }
+
+.pf-strip-done { display: grid; gap: 6px; }
+.done-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.done-line { margin: 0; color: var(--sw-text-primary); }
+.done-actions { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; }
+.done-close { width: 24px; height: 24px; border: 0; border-radius: 6px; background: none; color: var(--sw-text-secondary); font-size: 16px; line-height: 1; cursor: pointer; }
+.done-close:hover { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.done-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.done-chip { height: 24px; padding: 0 10px; border: 1px solid var(--sw-border-default); border-radius: 12px; background: var(--sw-surface); color: var(--sw-text-primary); font: inherit; font-size: 12px; cursor: pointer; }
+.done-chip:hover { background: var(--sw-hover-bg); }
+.done-chip b { font-variant-numeric: tabular-nums; }
+.done-chip[data-kind="check"] { border-color: var(--origin-check); color: var(--sw-warning-text); }
+.done-elsewhere { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; padding-top: 6px; border-top: 1px solid var(--trace-rule); }
+.done-elsewhere-head { color: var(--sw-text-tertiary); font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.done-where { padding: 0; border: 0; background: none; color: var(--sw-text-secondary); font: inherit; text-align: left; cursor: pointer; }
+.done-where b { color: var(--sw-text-primary); font-weight: 600; }
+.done-where:hover b { text-decoration: underline; text-underline-offset: 2px; }
+
+@container (max-width: 520px) {
+  .pf-strip-run { grid-template-columns: minmax(0, 1fr); }
+  .pf-strip-next { margin-left: 0; }
+}
+
+/* ---------- Motion: Profile's own elements ---------- */
+
+/* The motions themselves are shared (trace-motion.css). A scope cell is
+   filled, so a spotted cell takes a cyan ring instead of the wash. */
+.sw-cell.ink-glint { animation: ink-cell-glint 800ms ease-out both; }
+@keyframes ink-cell-glint {
+  from { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ink-spotted) 55%, transparent), inset 0 0 0 1.5px var(--ink-spotted); }
+  to { box-shadow: 0 0 0 6px transparent, inset 0 0 0 1px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sw-cell.ink-glint { animation: none !important; }
+  .pf-card-toggle::before, .run-hatch, .run-ink { transition: none; }
+}
+@media (prefers-contrast: more) {
+  .sw-matrow[data-changed="true"]::before { background: currentColor; }
+}
+@media print {
+  .sw-matrow[data-changed="true"]::before, .sw-matrix .sw-cell[data-new]::after, .pf-card-toggle { display: none !important; }
+}

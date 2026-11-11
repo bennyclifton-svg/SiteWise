@@ -480,6 +480,25 @@ func (d *Draft) settleGST() {
 		d.rule(FieldGSTBasis, basis)
 		return
 	}
+	// A priced table states its basis in its column heading ("Total incl.
+	// GST"). When every such column agrees, that is the offer's basis; a
+	// note in the text about one item's GST does not unsettle it.
+	columns, tableBasis := 0, ""
+	for _, a := range d.ev.Amounts {
+		if a.IncTwin || a.GSTPart || a.Unit || a.RepeatOf != "" || !priceColumn(a.Column) {
+			continue
+		}
+		if tableBasis != "" && tableBasis != a.GST {
+			columns = 0
+			break
+		}
+		tableBasis = a.GST
+		columns++
+	}
+	if columns >= 3 {
+		d.rule(FieldGSTBasis, tableBasis)
+		return
+	}
 	switch {
 	case d.ev.GSTEx > 0 && d.ev.GSTInc == 0:
 		d.rule(FieldGSTBasis, "ex")
@@ -521,6 +540,12 @@ func (d *Draft) settleTotal() {
 	// total beside a larger certification fee is not the stated total. An
 	// optional fee sits outside the total, so it may be larger (F38).
 	if distinctCents(totals) == 1 && totals[0].Cents >= largest {
+		// A total printed ex GST beside inclusive prices keeps its own basis:
+		// naming the amount stops Finish taking GST off it a second time.
+		if t := totals[0]; t.GST == "ex" && incOK && t.ID != "" {
+			d.rule(FieldStatedTotal, t.ID)
+			return
+		}
 		d.rule(FieldStatedTotal, strconv.FormatInt(totals[0].Cents, 10))
 	}
 }

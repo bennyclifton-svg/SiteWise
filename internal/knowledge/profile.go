@@ -202,6 +202,9 @@ type profileData struct {
 	scope        scopeDefaults
 	live         []Determinant
 	keyScope     []keyScopeEntry
+	spaces       []Space
+	spaceNeeds   []SpaceRequirement
+	schedules    []spaceSchedule
 }
 
 // Preset is a named set of leaf systems the scope picker can apply at once.
@@ -353,6 +356,9 @@ func (c *Catalog) loadProfile(dir string) error {
 		return err
 	}
 	if err := c.loadProjectDetails(dir); err != nil {
+		return err
+	}
+	if err := c.loadSpaces(dir); err != nil {
 		return err
 	}
 	return c.loadKeyScope(dir)

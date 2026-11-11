@@ -1,0 +1,102 @@
+# Below-ground waterproofing RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-below-ground-waterproofing
+version: 1
+status: draft
+kind: works
+title: Below-ground waterproofing
+heading: "REQUEST FOR TENDER: BELOW-GROUND WATERPROOFING"
+discipline_ids: [trade.below_ground_waterproofing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the below-ground waterproofing contractor. Your job is to keep ground moisture and groundwater out of the building with the tanking, membranes, waterstops and drained cavities the documents show, continuous at every joint and penetration, inspected before it is covered."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hold the waterproofing licence the work needs where the law requires one.
+      - Hold each area for inspection before it is backfilled or covered.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "System submission and details"
+    lines:
+      - {key: submission, text: "System submission and details at joints, penetrations and terminations, for review"}
+      - {key: design, text: "Design of the system where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Substrate preparation"
+    lines:
+      - {key: substrate, text: "Substrate preparation and repair before the membrane"}
+      - {key: inspection, text: "Substrate inspection before the membrane is applied"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Quality Hold Points for Apartment Construction)"}]
+  - key: membranes
+    name: "Tanking and membranes"
+    lines:
+      - {key: tanking, text: "Tanking to basement walls and slabs the documents show"}
+      - {key: waterstops, text: "Waterstops at construction joints and the details at penetrations"}
+      - {key: dpm, text: "Damp-proof membrane under slabs on ground where the documents give it to you"}
+      - {key: protection, text: "Protection board and drainage layer before backfill"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 4678 — Earth-Retaining Structures)"}]
+  - key: drained
+    name: "Drained cavity"
+    lines:
+      - {key: cavity, text: "Drained cavity, channels and sump pits the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Tests the specification asks for, with records"}
+      - {key: certificates, text: "Waterproofing certificate for the system installed"}
+      - {key: records, text: "Warranty, photographs before concealment and as-built details"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]
+
+positions:
+  - {key: backfill, label: "Backfill against the walls after inspection, by the earthworks trade", kind: technical, value: X, responsible: "earthworks trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]}
+  - {key: pumps, label: "Sump pumps, their power and connection to the drainage system, by the hydraulic and electrical trades", kind: technical, value: X, responsible: "the hydraulic and electrical trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]}
+  - {key: dewatering, label: "Construction dewatering while the membrane is laid, by the excavation or retention contractor", kind: technical, value: X, responsible: "excavation or retention contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Structural Systems for Commercial Buildings)"}]}
+  - {key: wet_areas, label: "Wet area, balcony and roof waterproofing above ground, by the waterproofing trade", kind: technical, value: X, responsible: "waterproofing trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

@@ -21,6 +21,14 @@ func TestParseStatedBudget(t *testing.T) {
 		{"$1,250,000 with a fee allowance of $90,000", "", "not_stated", false},
 		{"to be confirmed", "", "not_stated", false},
 		{"$0", "", "not_stated", false},
+		// A bare figure, as a user types it in Profile, is dollars.
+		{"310,000", "310000.00", "not_stated", true},
+		{" 310000 ", "310000.00", "not_stated", true},
+		{"1.2m", "1200000.00", "not_stated", true},
+		{"850k ex GST", "850000.00", "ex", true},
+		// A number inside prose still needs its dollar sign.
+		{"Lot 310, 1,200 m2 site", "", "not_stated", false},
+		{"0", "", "not_stated", false},
 	}
 	for _, c := range cases {
 		got, ok := ParseStatedBudget(c.text)

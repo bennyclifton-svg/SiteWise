@@ -94,11 +94,11 @@ textarea {
 }
 
 :where(td, th) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]), select, textarea):not(.field-plain, .project-name-editor):focus {
-  outline: 1px solid var(--sw-selection-border, var(--line-strong));
+  outline: 1px solid var(--state-edit-ring);
   outline-offset: -1px;
   border: 0;
   box-shadow: none;
-  background: var(--table-edit-bg, transparent);
+  background: var(--state-edit-bg);
 }
 
 input[aria-invalid="true"],

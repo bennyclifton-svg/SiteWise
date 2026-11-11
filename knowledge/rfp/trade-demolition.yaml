@@ -1,0 +1,104 @@
+# Demolition RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-demolition
+version: 1
+status: draft
+kind: works
+title: Demolition
+heading: "REQUEST FOR TENDER: DEMOLITION"
+discipline_ids: [trade.demolition]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the demolition contractor. Your job is to take down and remove the structures the documents show, in a planned and safe sequence, protecting what is kept and the neighbouring property, and to leave the site clear for the works that follow."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hold the demolition licence the work needs and give the regulator any notice it requires before you start.
+      - Do not start in any area until the hazardous materials in the register have been removed and that area is cleared.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Demolition work plan"
+    lines:
+      - {key: work_plan, text: "Demolition work plan: method, sequence, exclusion zones and dust, noise and vibration controls"}
+      - {key: sequence, text: "Engineer's demolition sequence and temporary propping where the structure needs it"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: make_safe
+    name: "Make safe and protect"
+    lines:
+      - {key: disconnect_check, text: "Confirm services are disconnected and capped before work starts"}
+      - {key: protection, text: "Protection of retained structures, retained trees and neighbouring property"}
+      - {key: exclusion, text: "Exclusion zones, hoarding and traffic control for the demolition"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md (Dilapidation and neighbour management)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}]
+  - key: demolish
+    name: "Demolition and strip-out"
+    lines:
+      - {key: demolish, text: "Demolition and strip-out the documents show"}
+      - {key: retained, text: "Work around the elements to be kept, with temporary support where the work plan needs it"}
+      - {key: below_ground, text: "Removal of footings, slabs and buried structures the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]
+  - key: waste
+    name: "Waste, recycling and monitoring"
+    lines:
+      - {key: separate, text: "Separation of demolition waste for recycling to the waste management plan"}
+      - {key: disposal, text: "Lawful transport and disposal of demolished material, with disposal dockets"}
+      - {key: monitoring, text: "Dust, noise and vibration monitoring the consent requires"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: site_clear, text: "Site left clear and at the levels the documents show"}
+      - {key: certificates, text: "Waste disposal records and the recycling report"}
+      - {key: records, text: "Record of what was removed, and notice of any hazardous material found that was not in the register"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]
+
+positions:
+  - {key: hazmat_survey, label: "Hazardous materials and asbestos survey before demolition, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]}
+  - {key: asbestos, label: "Removal of asbestos in the register, by a licensed asbestos removalist", kind: technical, value: X, responsible: "licensed asbestos removalist", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}]}
+  - {key: disconnection, label: "Disconnection of electricity, gas, water and sewer, by the authorities and the licensed trades", kind: technical, value: X, responsible: "the authorities and the licensed trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-owner-builder.md (Subcontractor and trade management)"}]}
+  - {key: dilapidation, label: "Dilapidation surveys of neighbouring property before work starts, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md (Dilapidation and neighbour management)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

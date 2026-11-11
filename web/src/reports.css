@@ -231,13 +231,10 @@
 .firm-chip-name { white-space: nowrap; font-weight: 500; }
 .firm-chip-figure { font-variant-numeric: tabular-nums; color: var(--ink-body); white-space: nowrap; }
 .firm-chip-status { grid-column: 1 / -1; font-size: var(--fs-xs); color: var(--ink-muted); }
-.firm-chip-status.warn { color: var(--warn); }
 .firm-chip[data-status="awarded"] { border-color: var(--ok); }
 .firm-chip[data-status="awarded"] .firm-chip-status { color: var(--ok); font-weight: 600; }
 .firm-chip[data-status="unsuccessful"] { opacity: .7; }
 .procurement-table tr.row-drop td, .procurement-table tr.row-drop th { background: var(--azure-soft); box-shadow: inset 0 0 0 1px var(--azure); }
-.procurement-unassigned label { display: inline-flex; align-items: center; gap: 6px; }
-.procurement-unassigned select { padding: 3px 6px; font: inherit; font-size: var(--fs-sm); }
 /* Combined engagements slice 5: a prompt's members, and the rows ticked for
    a combined proposal, read as one line of choices. */
 .procurement-prompt label, .procurement-combine-for label { display: inline-flex; align-items: center; gap: 6px; }
@@ -493,9 +490,9 @@ p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
 .rfp-stage-scope p.inline-text.inline-text-cell[data-editable] { cursor: default; }
 .rfp-stage-scope p.inline-text.inline-text-cell[data-editable]:hover { background: transparent; }
 .report-block .rfp-stage-scope textarea.inline-text.inline-text-cell { cursor: text; }
-.rfp-stage-scope .rfp-line-text:has(textarea.inline-text-cell) { background: var(--table-edit-bg); outline: 1px solid var(--sw-selection-border, var(--line-strong)); outline-offset: -1px; }
+.rfp-stage-scope .rfp-line-text:has(textarea.inline-text-cell) { background: var(--state-edit-bg); outline: 1px solid var(--state-edit-ring); outline-offset: -1px; }
 .rfp-line[data-edited] .rfp-line-text { box-shadow: inset 2px 0 0 var(--sw-link, var(--azure)); }
-.rfp-line[data-selected] :is(.rfp-line-text, .rfp-inout) { background: var(--table-selection-bg); }
+.rfp-line[data-selected] :is(.rfp-line-text, .rfp-inout) { background: var(--state-selected); }
 .rfp-line { cursor: default; }
 .rfp-line:focus { outline: none; }
 /* The bin sits in the Scope heading while rows are selected. */
@@ -510,7 +507,7 @@ p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
 .report-block textarea.rfp-ghost, .rfp-ghost { box-sizing: border-box; display: block; width: calc(100% + 20px); min-height: 0; margin: -3px -10px; padding: 3px 10px; resize: none; overflow: hidden; border: 0; border-radius: 0; background: transparent; color: var(--sw-text-primary, var(--ink)); font: inherit; line-height: 1.4; }
 .rfp-ghost::placeholder { color: var(--sw-text-tertiary); opacity: .7; }
 .report-block textarea.rfp-ghost:hover, .rfp-ghost:hover { background: var(--sw-hover-bg); }
-.report-block textarea.rfp-ghost:focus, .rfp-ghost:focus { outline: 1px solid var(--sw-selection-border, var(--line-strong)); outline-offset: -1px; background: var(--table-edit-bg); box-shadow: none; }
+.report-block textarea.rfp-ghost:focus, .rfp-ghost:focus { outline: 1px solid var(--state-edit-ring); outline-offset: -1px; background: var(--state-edit-bg); box-shadow: none; }
 @media print {
   .rfp-stage-add, .rfp-scope-bin, .rfp-stage-caret, .rfp-stage-badge { display: none !important; }
   .rfp-line[data-edited] .rfp-line-text { box-shadow: none; }

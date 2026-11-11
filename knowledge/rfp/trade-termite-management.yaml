@@ -1,0 +1,91 @@
+# Termite management RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-termite-management
+version: 1
+status: draft
+kind: works
+title: Termite management
+heading: "REQUEST FOR TENDER: TERMITE MANAGEMENT"
+discipline_ids: [trade.termite_management]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the termite management contractor. Your job is to install the termite management system the documents show, at every penetration, joint and edge it needs, and to give the owner the certificate, durable notice and maintenance instructions that keep it working."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hold the pest management licence the work needs.
+      - Install each part of the system at the stage it must go in, before it is covered.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "System submission"
+    lines:
+      - {key: submission, text: "System submission: the parts of the system and where each goes, for review"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: pre_slab
+    name: "Before the slab"
+    lines:
+      - {key: penetrations, text: "Barriers at every service penetration through the slab"}
+      - {key: under_slab, text: "Under-slab and slab-edge barriers the system needs"}
+      - {key: joints, text: "Barriers at construction and control joints"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]
+  - key: perimeter
+    name: "Perimeter"
+    lines:
+      - {key: perimeter, text: "Perimeter barrier or reticulation once the finished external levels are set"}
+      - {key: bridging, text: "Notice to the head contractor of anything that bridges the barrier"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Certificate of installation for the termite management system"}
+      - {key: notice, text: "Durable notice fixed where the system's standard requires"}
+      - {key: records, text: "Inspection and maintenance instructions for the owner's building manual"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]
+
+positions:
+  - {key: penetration_set, label: "Service pipes and conduits set in their final position before barriers are fitted, by the plumbing and electrical trades", kind: technical, value: X, responsible: "the plumbing and electrical trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]}
+  - {key: landscaping, label: "Garden beds and paving kept clear of the barrier and inspection zone, by the landscaping and paving trades", kind: technical, value: X, responsible: "the landscaping and paving trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]}
+  - {key: timber, label: "Durable or treated timber where the documents require it, by the framing trade", kind: technical, value: X, responsible: "framing trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Termite Management)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

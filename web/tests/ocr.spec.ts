@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { showFiling } from "./filing";
 
 test("OCR stages stay clear in the register and on mobile", async ({ page }) => {
   const invite = await page.request.post("/__e2e/invite?org=a");
@@ -22,7 +23,7 @@ test("OCR stages stay clear in the register and on mobile", async ({ page }) => 
     const row = page.locator("tbody.reg-doc");
     await expect(row.locator(".ocr-summary")).toHaveText(title);
     await row.locator("td.reg-no").dblclick();
-  await page.getByRole("button", { name: "Filing details", exact: true }).click();
+  await showFiling(page);
     await expect(page.locator(".document-workspace").getByRole("status", { name: "Text recovery" })).toBeVisible();
     await expect(page.locator('.document-workspace [aria-current="step"]')).toHaveCount(1);
     await expect(page.locator(".document-workspace").getByRole("button", { name: "Retry filing" })).toHaveCount(0);
@@ -41,7 +42,7 @@ test("OCR stages stay clear in the register and on mobile", async ({ page }) => 
   status = "not_filed"; reason = "ocr_failed";
   await page.reload();
   await page.locator("tbody.reg-doc td.reg-no").dblclick();
-  await page.getByRole("button", { name: "Filing details", exact: true }).click();
+  await showFiling(page);
   await expect(page.getByRole("button", { name: "Retry OCR" })).toBeVisible();
   await expect(page.getByText(/OCR could not finish/)).toBeVisible();
 });

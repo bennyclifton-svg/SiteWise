@@ -1,0 +1,91 @@
+# Fencing and gates RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-fencing
+version: 1
+status: draft
+kind: works
+title: Fencing and gates
+heading: "REQUEST FOR TENDER: FENCING AND GATES"
+discipline_ids: [trade.fencing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the fencing contractor. Your job is to build the fences, gates and pool safety barriers the documents show, on the surveyed line, with gates that close and latch as they must, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Swimming Pools and Pool Safety)"}, {kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Build any pool safety barrier to the standard and state law the documents name and attend its inspection until it passes.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Swimming Pools and Pool Safety)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Fence, gate and barrier shop drawings for review"}
+      - {key: design, text: "Footing and post design where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: fences
+    name: "Fences and gates"
+    lines:
+      - {key: fences, text: "Boundary, dividing and internal fences the documents show"}
+      - {key: gates, text: "Gates and their hardware"}
+      - {key: footings, text: "Post footings on the line the surveyor marks"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/landscape-architecture-guide.md"}]
+  - key: pool_barrier
+    name: "Pool safety barriers"
+    lines:
+      - {key: barrier, text: "Pool safety barrier and gates the documents show"}
+      - {key: gate_check, text: "Self-closing and self-latching gates adjusted and checked"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Swimming Pools and Pool Safety)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1926 Series — Swimming Pool Safety)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Attendance at the pool barrier inspection and rectification until it passes"}
+      - {key: records, text: "Gate hardware and finish warranties"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Swimming Pools and Pool Safety)"}]
+
+positions:
+  - {key: boundary, label: "Boundary set-out by a registered surveyor, by the head contractor or client", kind: technical, value: X, responsible: "head contractor or client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/surveying-guide.md"}]}
+  - {key: automation, label: "Power and wiring to gate motors and intercoms, by the electrical trade", kind: technical, value: X, responsible: "electrical trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: compliance, label: "Pool barrier compliance certificate, by the certifier or council", kind: technical, value: X, responsible: "certifier or council", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Swimming Pools and Pool Safety)"}]}
+  - {key: temporary, label: "Temporary site fencing during the works, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

@@ -1,7 +1,9 @@
 package profile
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -105,14 +107,213 @@ func detailCandidates(key, text string) []Candidate {
 		return clauseCandidates(text, ownerSupplyRe)
 	case "proj.exclusions_stated":
 		return clauseCandidates(text, exclusionRe)
-	case "proj.target_da_lodgement", "proj.target_construction_start":
+	case "proj.target_da_lodgement", "proj.target_construction_start", "proj.target_completion":
 		return targetDateCandidates(text)
-	case "proj.max_construction_months", "proj.preliminary_construction_months":
+	case "proj.max_construction_months":
 		return monthCountCandidates(text)
-	case "proj.preliminary_estimate":
+	case "proj.preliminary_construction_months":
+		return append(monthCountCandidates(text), weekCountCandidates(text)...)
+	case "proj.preliminary_estimate", "proj.budget_aspiration":
 		return moneyRangeCandidates(text)
+	case "proj.landlord":
+		return verbatimSpans(text, orgNameRe)
+	case "proj.works_levels":
+		return worksLevelsCandidates(text)
+	case "proj.work_hours":
+		return clauseAroundCandidates(text, workTimeRe)
+	case "proj.start_conditions":
+		return clauseAroundCandidates(text, startConditionRe)
+	case "proj.contributions_stated":
+		return clauseAroundCandidates(text, contributionRe)
+	case "proj.tenderers":
+		return tendererCandidates(text)
 	}
 	return nil
+}
+
+var (
+	// orgNameRe is an organisation's name: capitalised words ending in a
+	// company or property word ("Westgate Properties", "Acme Pty Ltd").
+	orgNameRe = regexp.MustCompile(`\b(?:[A-Z][A-Za-z&'’-]*\s+){0,4}(?:Pty\.?\s+Ltd\.?|Limited|Ltd\.?|Properties|Property|Group|Holdings|Trust|REIT|Corporation|Partners)\b`)
+	// worksLevelsRe is a floor or run of floors: "Levels 3 and partial
+	// Level 4", "Levels 3–4", "Level 2", "Ground floor".
+	// After a comma only another "Level" continues the run, so "Levels 3 &
+	// partial Level 4, 88 Westgate Street" stops before the street number.
+	worksLevelsRe = regexp.MustCompile(`(?i)\blevels?\s+\d{1,2}\b(?:\s*(?:&|and|to|–|-)\s*(?:partial\s+|part\s+(?:of\s+)?)?(?:level\s+)?\d{1,2}\b|\s*,\s*(?:partial\s+|part\s+(?:of\s+)?)?level\s+\d{1,2}\b)*|\b(?:ground|first|second|third|upper\s+ground|lower\s+ground)\s+(?:floor|level)s?\b`)
+	// workTimeRe is a clock time: permitted hours state one.
+	workTimeRe = regexp.MustCompile(`(?i)\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b`)
+	// headerLine is an email or memo header ("Date: 4 February 2026 9:41 AM"),
+	// whose time is when it was sent, not when work may happen.
+	headerLine = regexp.MustCompile(`(?i)^\W*(?:date|sent|received)\s*:`)
+	// startConditionRe is a statement that the works may not start yet.
+	startConditionRe = regexp.MustCompile(`(?i)\b(?:must|shall|will|may|can)\s*not\s+(?:commence|start|begin)\b|\bcannot\s+(?:commence|start|begin)\b|\b(?:prior to|before)\s+(?:the\s+)?(?:commencement|start)\s+of\s+(?:the\s+)?(?:works|construction)\b`)
+	// contributionRe is money with a contribution word near it.
+	contributionRe = regexp.MustCompile(`(?i)\$\s?\d[\d,.]*\s*(?:k|m|million)?\b[^|\n]{0,80}\b(?:contribut|incentive|grant|subsidy|rebate)|\b(?:contribut|incentive|grant|subsidy|rebate)\w*\b[^|\n]{0,80}\$\s?\d`)
+	// tendererRe is a number of builders: "two invited builders", "invite
+	// **two** experienced commercial fit-out builders".
+	tendererRe = regexp.MustCompile(`(?i)\b\**(one|two|three|four|five|six|seven|eight|\d{1,2})\**\s+(?:[a-z-]+\s+){0,3}(?:builders?|tenderers?|contractors?)\b`)
+	// addedTo marks a number counted on top of others: "one other builder".
+	addedTo = regexp.MustCompile(`(?i)\b(?:other|more|additional|further|extra)\b`)
+	// markdownEmphasis is bold or italic marks, dropped from stored text.
+	markdownEmphasis = strings.NewReplacer("**", "", "__", "")
+)
+
+// verbatimSpans offers every match of re, as written.
+func verbatimSpans(text string, re *regexp.Regexp) []Candidate {
+	var spans []span
+	for _, m := range re.FindAllStringIndex(text, -1) {
+		spans = append(spans, span{m[0], m[1], markdownEmphasis.Replace(text[m[0]:m[1]])})
+	}
+	return collect(text, spans)
+}
+
+// clauseAroundCandidates offers the sentence, list item or table cell that
+// holds each match of re, as written. A table cell is prefixed with its row's
+// first cell, so "Permitted 10:00 pm – 6:00 am weekdays" keeps "After-hours
+// works". Semicolons stay inside: "...until 2:00 pm; no Sunday works".
+func clauseAroundCandidates(text string, re *regexp.Regexp) []Candidate {
+	var spans []span
+	for _, m := range re.FindAllStringIndex(text, -1) {
+		lo, hi := statementBounds(text, m[0], m[1])
+		clause := strings.Trim(markdownEmphasis.Replace(text[lo:hi]), " -*•\t")
+		if headerLine.MatchString(clause) {
+			continue
+		}
+		if head := rowHead(text, lo); head != "" && !strings.HasPrefix(clause, head) {
+			clause = head + ": " + clause
+		}
+		if clause != "" {
+			spans = append(spans, span{lo, hi, clause})
+		}
+	}
+	return collect(text, spans)
+}
+
+// statementBounds is the sentence or table cell holding [start, end): it
+// ends at a line break, a cell border, or a full stop that does not sit
+// inside a number or an abbreviation such as "am." or "e.g.".
+func statementBounds(text string, start, end int) (int, int) {
+	base := strings.LastIndexAny(text[:start], "\n|") + 1
+	lo := base
+	for _, m := range sentenceStop.FindAllStringIndex(text[base:start], -1) {
+		lo = base + m[1]
+	}
+	hi := len(text)
+	if i := strings.IndexAny(text[end:], "\n|"); i >= 0 {
+		hi = end + i
+	}
+	if m := sentenceStop.FindStringIndex(text[end:hi]); m != nil {
+		hi = end + m[0] + 2 // keep the full stop
+	}
+	return lo, hi
+}
+
+// sentenceStop is a full stop after a word or bracket, then a space: not
+// the point inside "4.5" or "10.00".
+var sentenceStop = regexp.MustCompile(`[A-Za-z)\]*]\.(?:\s|$)`)
+
+// rowHead is the first cell of the table row holding position at, when at
+// sits in a later cell.
+func rowHead(text string, at int) string {
+	lineStart := strings.LastIndex(text[:at], "\n") + 1
+	line := text[lineStart:]
+	if i := strings.Index(line, "\n"); i >= 0 {
+		line = line[:i]
+	}
+	t := strings.TrimSpace(line)
+	if !strings.HasPrefix(t, "|") {
+		return ""
+	}
+	cells := strings.Split(strings.Trim(t, "|"), "|")
+	first := strings.TrimSpace(markdownEmphasis.Replace(cells[0]))
+	if len(cells) < 2 || at < lineStart+strings.Index(line, "|")+1+len(cells[0]) {
+		return ""
+	}
+	return first
+}
+
+// worksLevelsCandidates offers each run of floors, written one way so that
+// documents spelling the same floors differently agree: "Levels 3 & partial
+// Level 4" and "Levels 3 and partial Level 4" are both "Level 3 and part of
+// Level 4"; "Levels 3–4" and "Levels 3 & 4" are both "Levels 3 and 4".
+func worksLevelsCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range worksLevelsRe.FindAllStringIndex(text, -1) {
+		spans = append(spans, span{m[0], m[1], levelRun(text[m[0]:m[1]])})
+	}
+	return collect(text, spans)
+}
+
+// levelRange is "3–6" or "3 to 6": every floor between.
+var levelRange = regexp.MustCompile(`\d\s*(?:–|-|to)\s*\d`)
+
+var levelPart = regexp.MustCompile(`(?i)(partial\s+|part\s+(?:of\s+)?)?(?:levels?\s+)?(\d{1,2})\b`)
+
+// levelRun writes a run of floors in one form. A named floor ("Ground
+// floor") is kept as written.
+func levelRun(s string) string {
+	parts := levelPart.FindAllStringSubmatch(s, -1)
+	if len(parts) == 0 {
+		return strings.Join(strings.Fields(s), " ")
+	}
+	type floor struct {
+		n    int
+		part bool
+	}
+	var floors []floor
+	for _, p := range parts {
+		n, _ := strconv.Atoi(p[2])
+		floors = append(floors, floor{n, p[1] != ""})
+	}
+	// "Levels 3–6" (or "to") is every floor between.
+	if len(floors) == 2 && levelRange.MatchString(s) && floors[1].n > floors[0].n+1 && !floors[0].part && !floors[1].part {
+		return fmt.Sprintf("Levels %d to %d", floors[0].n, floors[1].n)
+	}
+	name := func(f floor) string {
+		if f.part {
+			return fmt.Sprintf("part of Level %d", f.n)
+		}
+		return fmt.Sprintf("Level %d", f.n)
+	}
+	anyPart := false
+	for _, f := range floors {
+		anyPart = anyPart || f.part
+	}
+	if !anyPart && len(floors) > 1 {
+		var ns []string
+		for _, f := range floors {
+			ns = append(ns, strconv.Itoa(f.n))
+		}
+		return "Levels " + strings.Join(ns[:len(ns)-1], ", ") + " and " + ns[len(ns)-1]
+	}
+	var out []string
+	for _, f := range floors {
+		out = append(out, name(f))
+	}
+	text := out[0]
+	if len(out) > 1 {
+		text = strings.Join(out[:len(out)-1], ", ") + " and " + out[len(out)-1]
+	}
+	return strings.ToUpper(text[:1]) + text[1:]
+}
+
+// tendererCandidates offers the number before "builders", "tenderers" or
+// "contractors", as a numeral.
+func tendererCandidates(text string) []Candidate {
+	var spans []span
+	for _, m := range tendererRe.FindAllStringSubmatchIndex(text, -1) {
+		// "one other commercial fit-out builder" adds to a list; it does not
+		// say how many are invited.
+		if addedTo.MatchString(text[m[3]:m[1]]) {
+			continue
+		}
+		n := strings.ToLower(text[m[2]:m[3]])
+		if w, ok := countWords[n]; ok {
+			n = w
+		}
+		spans = append(spans, span{m[0], m[1], n})
+	}
+	return collect(text, spans)
 }
 
 var programTarget = regexp.MustCompile(`(?i)\b(?:target|aspiration|aspirational|planned)\b`)

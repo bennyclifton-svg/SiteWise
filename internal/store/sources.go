@@ -9,7 +9,11 @@ import (
 	"sitewise/internal/jev"
 )
 
-const SourceVersion = "source-3"
+const SourceVersion = "source-4"
+
+// RepeatedFurniture is the category of a page header or footer already read
+// on an earlier page. It is kept in the source and not sent to Jev again.
+const RepeatedFurniture = "repeated_header_or_footer"
 
 type SourcePage struct {
 	Regions  []SourceRegion `json:"regions,omitempty"`
@@ -71,7 +75,12 @@ func (s *Store) ReplaceSource(ctx context.Context, orgID, docID string, src Docu
 	for i, u := range src.Units {
 		id := newID()
 		batch.Queue(`INSERT INTO passages(org_id,id,document_id,ordinal,body) VALUES($1::uuid,$2::uuid,$3::uuid,$4,$5)`, orgID, id, docID, i+1, u.Body)
-		batch.Queue(`INSERT INTO passage_sources(org_id,passage_id,page,location,section,context,start_offset,end_offset) VALUES($1::uuid,$2::uuid,$3,$4,$5,$6,$7,$8)`, orgID, id, u.Page, u.Location, u.Section, u.Context, u.Start, u.End)
+		// Only repeated furniture is classified before any reading.
+		category, outcome := "unresolved", "pending"
+		if u.Category == RepeatedFurniture {
+			category, outcome = RepeatedFurniture, "background"
+		}
+		batch.Queue(`INSERT INTO passage_sources(org_id,passage_id,page,location,section,context,start_offset,end_offset,category,outcome) VALUES($1::uuid,$2::uuid,$3,$4,$5,$6,$7,$8,$9,$10)`, orgID, id, u.Page, u.Location, u.Section, u.Context, u.Start, u.End, category, outcome)
 	}
 	if batch.Len() > 0 {
 		if err = tx.SendBatch(ctx, batch).Close(); err != nil {

@@ -248,9 +248,13 @@
 
 /* ---------- Shared hand marks ---------- */
 
-/* Pencil underlines: ember for values read from documents, dotted blue for Jev. */
+/* Pencil underlines follow the origin rule (owner, 10 Nov 2026): green from the
+   documents, solid where they agree and dotted where Jev leans on them (the
+   card's ring); dotted blue typical for the building; rust your own word. */
 .pencil-doc,
-.pencil-jev {
+.pencil-jev,
+.pencil-typical,
+.pencil-user {
   padding-bottom: 3px;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
@@ -258,10 +262,14 @@
   background-position: left bottom;
   background-size: 480px 6px;
 }
-.pencil-doc { background-image: url("./assets/marks/pencil-ember.svg"); }
-.pencil-jev { background-image: url("./assets/marks/pencil-azure.svg"); }
-:root[data-theme="dark"] .pencil-doc { background-image: url("./assets/marks/pencil-ember-dark.svg"); }
-:root[data-theme="dark"] .pencil-jev { background-image: url("./assets/marks/pencil-azure-dark.svg"); }
+.pencil-doc { background-image: url("./assets/marks/pencil-green.svg"); }
+.pencil-jev { background-image: url("./assets/marks/pencil-green-dot.svg"); }
+.pencil-typical { background-image: url("./assets/marks/pencil-azure.svg"); }
+.pencil-user { background-image: url("./assets/marks/pencil-ember.svg"); }
+:root[data-theme="dark"] .pencil-doc { background-image: url("./assets/marks/pencil-green-dark.svg"); }
+:root[data-theme="dark"] .pencil-jev { background-image: url("./assets/marks/pencil-green-dot-dark.svg"); }
+:root[data-theme="dark"] .pencil-typical { background-image: url("./assets/marks/pencil-azure-dark.svg"); }
+:root[data-theme="dark"] .pencil-user { background-image: url("./assets/marks/pencil-ember-dark.svg"); }
 
 /* A graphite rule drawn by hand, overshooting both ends like a drafter's line. */
 .pencil-rule {
@@ -300,7 +308,7 @@
 @media (prefers-contrast: more), print {
   .mark-check::before { display: none; }
   .mark-check { text-decoration: underline 2px; }
-  .pencil-doc, .pencil-jev { background: none; text-decoration: underline; }
+  .pencil-doc, .pencil-jev, .pencil-typical, .pencil-user { background: none; text-decoration: underline; }
   .pencil-rule::before { background: currentColor; height: 1.5px; top: 0; }
   .trace-paper-sheet { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet); }
 }

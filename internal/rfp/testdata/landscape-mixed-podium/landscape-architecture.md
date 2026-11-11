@@ -88,11 +88,12 @@ Extent map, survey, architecture/civil revisions, soils/tree evidence and operat
 - Written representative approval before scope/allowance/fee/program change; submit reason, deliverables, fee/time and delay/access/remobilisation effect.
 - Agreed brief/sign-off is baseline; normal development remains included.
 - Correct own errors without extra fee.
+- Hold professional indemnity cover of $5 million (client selected) and public liability cover of $20 million (client selected) throughout the appointment.
 - Payment 30 days for correct agreed-service invoice, subject to law/settled agreement; disclose deposits, release/interest/suspension departures.
 - State rate fixed period, review/indexation dates and approved extra-work basis.
+- Reasonable skill/care; project-use/native/third-party rights, reliance, retention and confidentiality; marketing needs consent. Set liability/indemnities, law/disputes, novation and suspension/termination notice/cure.
 - Valid 90 days; base/options/disbursements and ex GST/GST/total separate.
 - Issue changes as numbered addenda to all.
-- Reasonable skill/care; project-use/native/third-party rights, reliance, retention and confidentiality; marketing needs consent. Set liability/indemnities, law/disputes, novation and suspension/termination notice/cure.
 
 ### Returnable schedules: reply using this structure only
 

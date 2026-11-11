@@ -76,6 +76,9 @@ type RFPRow struct {
 	When       RFPWhen         `yaml:"when" json:"when,omitempty"`
 	Module     string          `yaml:"module" json:"module,omitempty"`
 	Required   bool            `yaml:"required" json:"required,omitempty"`
+	// Closing marks a shared term about the tender itself (validity,
+	// addenda): a discipline's own terms print before it.
+	Closing    bool            `yaml:"closing" json:"closing,omitempty"`
 	Provenance []RFPProvenance `yaml:"provenance" json:"provenance,omitempty"`
 }
 
@@ -320,10 +323,10 @@ var ProjectGrid = []GridRow{
 	{"parts", "Building", "The building", true},
 	{"storeys", "Storeys", "The building", false},
 	{"gfa", "Gross floor area", "The building", false},
-	{"bedrooms", "Bedrooms", "The building", false},
+	// Bedrooms, bathrooms and car parks on one row, as on the Profile card
+	// (owner, 10 Nov 2026).
+	{"counts", "Counts", "The building", false},
 	{"unit_mix", "Unit mix", "The building", false},
-	{"bathrooms", "Bathrooms", "The building", false},
-	{"parking", "Car parks", "The building", false},
 	{"quality", "Quality level", "The building", false},
 	{"address", "Site address", "Site and planning", true},
 	{"lot_dp", "Lot and DP", "Site and planning", false},

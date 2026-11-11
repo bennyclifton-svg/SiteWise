@@ -19,7 +19,8 @@ fields:
     required: true
     group: terms
     help: "Name the contract and its special conditions, for example AS 4000-1997 with the client's special conditions. A missing contract is an open question, never acceptance of the tenderer's terms."
-  - {key: start_by, label: Site possession from, kind: date, required: false, group: issue}
+  # Site possession is a tender term: it is set in the terms table.
+  - {key: start_by, label: Site possession from, kind: date, required: false, group: terms}
   - {key: completion, label: Practical completion by, kind: date, required: false, group: terms}
   - {key: validity_days, label: Tender validity (days), kind: number, required: true, group: terms, default: "90"}
   - {key: pl, label: Public liability cover, kind: text, required: true, group: terms, default: "$20 million"}
@@ -32,6 +33,9 @@ thresholds:
   - {key: tender_validity, kind: client_default, text: "Tenders valid for 90 days", source: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Form of Tender: validity usually 60-90 days); client preference", verified: false}
   - {key: works_insurance, kind: client_default, text: "Public liability $20 million unless the RFT sets another amount", source: "Same client default as the consultant skeleton; client preference, not a statutory minimum", verified: false}
 
+# Terms print ranked by importance (owner, 10 Nov 2026): the contract, what
+# to price, variations, payment, time, security, insurance and defects; the
+# closing terms, about this tender rather than the contract, print last.
 terms:
   - key: agreement
     text: "The contract is {field:agreement}; your own terms do not apply. List any departure from the contract in R6."
@@ -43,32 +47,40 @@ terms:
   - key: site
     text: "Inspect the site before you tender. Site access, existing conditions and latent conditions are dealt with as the contract provides."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Risk allocation and baseline reports)"}]
-  - key: possession
-    text: "Site possession from {field:start_by}."
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs follow the RFP format; dates print only when the project manager sets them."}]
-  - key: completion
-    text: "Practical completion by {field:completion}."
-    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs follow the RFP format; dates print only when the project manager sets them."}]
   - key: authority
     text: "Only a written direction from the client's representative authorises a variation; work without one is not paid."
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/contract-administration-guide.md"}]
   - key: payment
     text: "Progress claims and payment follow the contract and the security of payment legislation of the state the site is in."
     provenance: [{kind: practice, ref: "Security of payment legislation applies in every Australian state; periods come from the contract and the Act, not this RFT"}]
-  - key: defects
-    text: "Defects liability period: {field:defects_period}."
-    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/defects-and-dlp-guide.md"}]
+  - key: possession
+    text: "Site possession from {field:start_by}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs follow the RFP format; dates print only when the project manager sets them."}]
+  - key: completion
+    text: "Practical completion by {field:completion}."
+    provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs follow the RFP format; dates print only when the project manager sets them."}]
   - key: damages
     text: "Liquidated damages: {field:liquidated_damages}."
     provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Printed only when the project manager sets it; no amount is assumed."}]
   - key: security
     text: "Security or retention: {field:security}."
     provenance: [{kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Printed only when the project manager sets it; no amount is assumed."}]
+  - key: insurance
+    text: "Hold public liability cover of {field:pl} throughout the works."
+    provenance: [{kind: client_decision, ref: "owner 2026-11-10: insurance limits print as a numbered term", why: "PL is the client's default (threshold works_insurance), not a statutory minimum; stating it as a term lets the terms table edit it where it reads."}]
+  - key: contract_works
+    text: "Contract works insurance: {field:contract_works}."
+    provenance: [{kind: client_decision, ref: "owner 2026-11-10: insurance limits print as a numbered term", why: "Printed only when the project manager names who insures the works and for what value, as the contract provides; nothing is assumed."}]
+  - key: defects
+    text: "Defects liability period: {field:defects_period}."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/defects-and-dlp-guide.md"}]
   - key: validity
     text: "Your tender stays valid for {field:validity_days} days."
+    closing: true
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Essential returnable schedules: Form of Tender)"}]
   - key: questions
     text: "Answers to scope questions go to every tenderer as numbered addenda."
+    closing: true
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-tendering-guide.md (Tender period administration and probity)"}]
 
 returnables:

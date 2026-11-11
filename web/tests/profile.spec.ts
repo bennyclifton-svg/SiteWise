@@ -116,7 +116,7 @@ test("thin brief: choose a building type, see typical systems, set one, switch p
   // Nothing read yet: a compliance input, under its system, says where it is usually stated.
   const scope = page.getByRole("region", { name: "Scope and works" });
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
-  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
+  await expect(page.getByTitle(/Usually in: Geotechnical or salinity report/).first()).toBeVisible();
 
   await page.getByRole("combobox", { name: "Building category", exact: true }).selectOption({ label: "Residential" });
   await page.getByRole("combobox", { name: "Building class", exact: true }).selectOption({ label: "House (Class 1a)" });
@@ -264,7 +264,7 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await expect(scope).toContainText("0 systems");
   // Nothing in scope yet: no basis to hide a compliance input.
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
-  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
+  await expect(page.getByTitle(/Usually in: Geotechnical or salinity report/).first()).toBeVisible();
 
   await scope.locator(".sw-entry", { hasText: "Active fire protection" }).click();
   await scope.getByRole("checkbox", { name: "Automatic fire sprinklers" }).check();
@@ -280,9 +280,10 @@ test("scope of works: a sprinkler pump replacement sees only what it needs", asy
   await expect(page.getByLabel("Top of storage height")).toBeVisible();
   await scope.locator(".sw-entry", { hasText: "Substructure" }).click();
   await expect(scope).toContainText(/\d+ not needed for this scope/);
-  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeHidden();
+  // Where a value is usually stated is the label's hover, not a column.
+  await expect(page.getByTitle(/Usually in: Geotechnical or salinity report/)).toHaveCount(0);
   await scope.getByRole("button", { name: "Show", exact: true }).click();
-  await expect(page.getByText("Usually in: Geotechnical or salinity report")).toBeVisible();
+  await expect(page.getByTitle(/Usually in: Geotechnical or salinity report/).first()).toBeVisible();
   await scope.getByRole("button", { name: "Hide unneeded", exact: true }).click();
 
   // Active only keeps just the entries and cells in scope: one system, one cell.
@@ -318,12 +319,15 @@ test("site and project details are answered once in Profile", async ({ browser }
   await expect(details.getByRole("button", { name: "Reset" })).toHaveCount(2);
   // A site risk sits under the system it affects.
   await page.locator(".sw-entry", { hasText: "Substructure" }).click();
-  await page.getByLabel("Basement or deep excavation").selectOption("yes");
+  // Yes/no answers are one click.
+  const basementYes = page.getByRole("group", { name: "Basement or deep excavation" }).getByRole("button", { name: "Yes" });
+  await basementYes.click();
+  await expect(basementYes).toHaveAttribute("aria-pressed", "true");
   await page.reload();
   await expect(page.locator(".pf-tiers").getByLabel("Zone")).toHaveValue("R2");
   await expect(page.getByLabel("Site address")).toHaveValue("1 Crystal Street, Petersham");
   await page.locator(".sw-entry", { hasText: "Substructure" }).click();
-  await expect(page.getByLabel("Basement or deep excavation")).toHaveValue("yes");
+  await expect(page.getByRole("group", { name: "Basement or deep excavation" }).getByRole("button", { name: "Yes" })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("a site address read from documents shows until the user types one", async ({ browser }) => {
@@ -420,7 +424,8 @@ test("card edit box fills its row exactly and the team table offers blank discip
   await page.getByLabel("New project").fill("Card geometry regression");
   await page.getByRole("button", { name: "Create project" }).click();
   await expect(page.getByRole("button", { name: "Update", exact: true })).toBeVisible();
-  // An edited field carries a pencil, a count and a reset beside its label.
+  // One line per value (owner, 10 Nov 2026): label, value, then how it was
+  // decided (the mark, the count, the reset) after the value, not under the label.
   const client = page.getByRole("textbox", { name: "Client", exact: true });
   await client.fill("Marko and Ana Kovac");
   await client.press("Enter");
@@ -431,16 +436,21 @@ test("card edit box fills its row exactly and the team table offers blank discip
     const row = value.closest(".pf-row")!;
     const r = row.getBoundingClientRect();
     const v = value.getBoundingClientRect();
+    const why = row.querySelector(".pf-pair-why")!.getBoundingClientRect();
+    const label = row.querySelector(".pf-label")!.getBoundingClientRect();
     const rule = parseFloat(getComputedStyle(row).borderBottomWidth);
     const col = row.closest(".pf-tb-col")!.getBoundingClientRect();
     const head = row.closest(".pf-tb-col")!.querySelector(".pf-tb-head")!.getBoundingClientRect();
     const heads = [...document.querySelectorAll(".pf-titleblock .pf-tb-head")].map((h) => h.getBoundingClientRect().height);
-    return { rowTop: r.top, rowBottom: r.bottom - rule, rowRight: r.right, valueTop: v.top, valueBottom: v.bottom, valueRight: v.right, colRight: col.right, headTop: head.top, colTop: col.top, heads };
+    return { rowTop: r.top, rowBottom: r.bottom - rule, rowHeight: r.height, valueTop: v.top, valueBottom: v.bottom, valueRight: v.right,
+      whyLeft: why.left, whyMiddle: why.top + why.height / 2, labelMiddle: label.top + label.height / 2, headTop: head.top, colTop: col.top, heads };
   });
   console.log(JSON.stringify(geometry));
   expect(geometry.valueTop).toBeCloseTo(geometry.rowTop, 0);
   expect(geometry.valueBottom).toBeCloseTo(geometry.rowBottom, 0);
-  expect(geometry.valueRight).toBeCloseTo(geometry.rowRight, 0);
+  expect(geometry.valueRight).toBeLessThanOrEqual(geometry.whyLeft + 0.5);
+  expect(Math.abs(geometry.whyMiddle - geometry.labelMiddle)).toBeLessThan(2);
+  expect(geometry.rowHeight).toBeLessThanOrEqual(31);
   expect(geometry.headTop).toBeCloseTo(geometry.colTop, 0);
   expect(new Set(geometry.heads.map((h) => Math.round(h))).size).toBe(1);
   const team = page.getByTestId("profile-appointed");

@@ -1,0 +1,101 @@
+# Asbestos removal RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-asbestos-removal
+version: 1
+status: draft
+kind: works
+title: Asbestos removal
+heading: "REQUEST FOR TENDER: ASBESTOS REMOVAL"
+discipline_ids: [trade.asbestos_removal]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the licensed asbestos removalist. Your job is to remove and dispose of the asbestos-containing materials in the register, under the licence class each material needs, so that each area is cleared for others to return to, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hold the asbestos removal licence for the class of material you remove: friable material needs the higher class.
+      - Give the regulator the notice it requires before licensed removal starts.
+      - Keep each area closed until the independent assessor clears it.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2601 — The Demolition of Structures)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Asbestos removal control plan"
+    lines:
+      - {key: control_plan, text: "Asbestos removal control plan for the materials in the register"}
+      - {key: notice, text: "Notice to the regulator before licensed removal starts"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: removal
+    name: "Removal"
+    lines:
+      - {key: enclosure, text: "Enclosures, signage and decontamination set-up the removal needs"}
+      - {key: remove, text: "Removal of the asbestos-containing materials in the register"}
+      - {key: unexpected, text: "Stop and notice when asbestos not in the register is found"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]
+  - key: disposal
+    name: "Transport and disposal"
+    lines:
+      - {key: package, text: "Wrapping, labelling and transport of asbestos waste as the law requires"}
+      - {key: disposal, text: "Disposal at a facility licensed to accept asbestos waste, with tracking records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Demolition and Strip-Out for Commercial Refurbishment)"}]
+  - key: clearance
+    name: "Air monitoring and clearance"
+    lines:
+      - {key: assessor_access, text: "Access for the independent assessor's air monitoring during removal"}
+      - {key: rework, text: "Further cleaning until the assessor gives clearance"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Clearance certificate from the independent assessor for each area, before other trades return"}
+      - {key: records, text: "Waste disposal records and the details the client needs to update the asbestos register"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]
+
+positions:
+  - {key: survey, label: "Asbestos survey and register before the works, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]}
+  - {key: assessor, label: "Air monitoring and clearance inspection by a licensed assessor independent of you, engaged by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]}
+  - {key: soil, label: "Asbestos found in soil or fill, under the remediation scope, unless the documents give it to you", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/remediation-due-diligence-guide.md (Asbestos Assessment and Management in Construction)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

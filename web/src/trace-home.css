@@ -1,0 +1,327 @@
+/* Trace outside a project: Projects and Account (web/DESIGN.md, Trace).
+   The page is the drafting table; one white sheet holds the work; a band of
+   butter paper at the top of the sheet holds the title, one line under it and
+   the page's ground-line action. The list scrolls under the band, blurred, so
+   it never competes with the title. Same tokens and marks as the workbench. */
+
+.trace-home {
+  min-height: 100vh;
+  background-color: var(--trace-table);
+}
+:root[data-theme="light"] .trace-home {
+  background-image: url("./assets/marks/stone.svg");
+  background-size: 360px 360px;
+}
+
+/* The bar sits on the table: no band, no rule. */
+.trace-home-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1088px;
+  height: 64px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- The sheet ---------- */
+
+.trace-home-sheet {
+  max-width: 1040px;
+  min-height: min(720px, calc(100vh - 64px - 32px));
+  margin: 0 auto 32px;
+  border-radius: 4px;
+  background: var(--trace-sheet);
+  box-shadow: 0 0 0 1px rgba(40, 32, 24, .05), 0 1px 1px rgba(40, 32, 24, .05), 0 14px 34px -16px rgba(40, 32, 24, .24);
+}
+:root[data-theme="dark"] .trace-home-sheet { box-shadow: 0 0 0 1px var(--sw-border-default); }
+
+/* ---------- Butter paper: the title band ---------- */
+
+.trace-band {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 28px 36px 22px;
+  border-radius: 4px 4px 0 0;
+  background:
+    linear-gradient(104deg, var(--trace-paper-sheen), transparent 38% 70%, color-mix(in srgb, var(--trace-paper-sheen) 40%, transparent)),
+    url("./assets/marks/perspex-wear.svg") top left / 1600px 260px repeat-x,
+    var(--trace-paper);
+  -webkit-backdrop-filter: blur(12px) saturate(.9);
+  backdrop-filter: blur(12px) saturate(.9);
+}
+/* The cut edge: one hairline that catches the light, as on the workbench. */
+.trace-band::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .25), #fff 18%, rgba(255, 255, 255, .35) 42%, rgba(255, 255, 255, .5) 64%, #fff 82%, rgba(255, 255, 255, .25));
+  box-shadow: 0 1px 0 rgba(40, 32, 24, .12), 0 10px 20px -12px rgba(40, 32, 24, .35);
+  pointer-events: none;
+}
+:root[data-theme="dark"] .trace-band::after { opacity: .15; box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 10px 20px -12px rgba(0, 0, 0, .5); }
+
+.trace-band-title { min-width: 0; }
+.trace-band h1 {
+  margin: 0;
+  color: var(--sw-text-primary);
+  font-size: clamp(1.6rem, 1.9vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+}
+.trace-band-meta {
+  margin: 6px 0 0;
+  color: var(--sw-text-secondary);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.trace-band-actions { display: flex; gap: 10px; align-items: center; }
+
+.trace-home-body { padding: 24px 36px 40px; }
+
+/* ---------- Account menu in the bar: opens downward, right-aligned ---------- */
+
+.account-menu.account-menu-bar { margin: 0; padding: 0; border: 0; }
+.account-menu-bar .account-popover {
+  left: auto;
+  right: 0;
+  top: calc(100% + 6px);
+  bottom: auto;
+  min-width: 200px;
+}
+
+/* ---------- Projects ---------- */
+
+/* Name and create, side by side in the band. */
+.pl-new {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pl-new .input { width: min(320px, 46vw); background: var(--sw-input-bg, var(--sw-surface)); }
+.pl-new-error {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.pl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+.pl-search { position: relative; flex: 0 1 360px; min-width: 0; }
+.pl-search .input { width: 100%; padding-right: 36px; }
+.pl-search kbd {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 20px;
+  padding: 1px 5px;
+  border: 1px solid var(--sw-border-default);
+  border-radius: 4px;
+  color: var(--sw-text-tertiary);
+  font: 500 11px/1.4 "IBM Plex Mono", ui-monospace, monospace;
+  text-align: center;
+  pointer-events: none;
+}
+.pl-search .input:focus + kbd,
+.pl-search .input:not(:placeholder-shown) + kbd { display: none; }
+
+.pl-filter { display: flex; gap: 6px; }
+.pl-filter .btn[aria-pressed="true"] { border-color: var(--sw-text-primary); font-weight: 600; }
+.pl-filter-n { margin-left: 4px; color: var(--sw-text-tertiary); font-variant-numeric: tabular-nums; }
+
+/* No scroll box: it would clip the row menu, and narrow screens fold the
+   figures under the name instead of scrolling. */
+.pl-scroll { overflow: visible; }
+
+.pl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-md, 14px);
+}
+.pl-table thead th {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--sw-border-strong);
+  text-align: left;
+  white-space: nowrap;
+}
+.pl-table thead th:first-child { padding-left: 14px; }
+.pl-table .pl-num { text-align: right; font-variant-numeric: tabular-nums; }
+.pl-table tbody :is(th, td) {
+  padding: 12px;
+  border-bottom: 1px solid var(--trace-rule);
+  color: var(--sw-text-secondary);
+  font-weight: 400;
+  text-align: left;
+  vertical-align: middle;
+}
+.pl-table tbody .pl-num { text-align: right; }
+.pl-table tbody th { padding-left: 14px; }
+
+.pl-row { cursor: pointer; transition: background-color 120ms ease-out; }
+/* A light wash on the sheet, in either theme. */
+.pl-row:hover { background: color-mix(in oklab, var(--sw-text-primary) 4%, transparent); }
+.pl-row[data-archived] .pl-open { color: var(--sw-text-secondary); }
+
+.pl-project { width: 56%; min-width: 0; }
+.pl-open {
+  display: block;
+  color: var(--sw-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.pl-open:focus-visible { outline: 2px solid var(--sw-action-focus, var(--sw-link)); outline-offset: 3px; border-radius: 2px; }
+.pl-row:hover .pl-open { text-decoration: underline; text-decoration-color: var(--sw-border-strong); text-underline-offset: 3px; }
+.pl-address {
+  display: block;
+  margin-top: 3px;
+  color: var(--sw-text-secondary);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.pl-address.is-unknown { color: var(--sw-text-tertiary); }
+.pl-compact { display: none; }
+
+.pl-rename {
+  width: 100%;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* A value to check uses the one origin colour for it (trace.css). */
+.pl-check,
+.pl-check-text { color: var(--origin-check); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pl-none { color: var(--sw-text-tertiary); }
+.pl-when { white-space: nowrap; }
+
+.pl-actions { width: 1%; text-align: right; }
+.pl-menu { position: relative; display: inline-block; }
+.pl-menu-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sw-text-tertiary);
+  fill: currentColor;
+  cursor: pointer;
+}
+.pl-row:hover .pl-menu-button,
+.pl-menu-button[aria-expanded="true"] { color: var(--sw-text-primary); }
+.pl-menu-button:hover,
+.pl-menu-button[aria-expanded="true"] { background: var(--sw-pressed-bg); }
+.pl-menu-button:focus-visible { outline: 2px solid var(--sw-action-focus, var(--sw-link)); outline-offset: 2px; }
+.pl-menu-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 8;
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 5px;
+  border: 1px solid var(--sw-border-strong);
+  border-radius: var(--radius-control, 10px);
+  background: var(--sw-surface-elevated, var(--sw-surface));
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--sw-p-neutral-950, #000) 22%, transparent);
+  text-align: left;
+}
+.pl-menu-pop .pl-danger { color: var(--sw-error-text); }
+
+.pl-note { padding: 20px 2px; color: var(--sw-text-secondary); }
+.pl-empty {
+  display: grid;
+  gap: 4px;
+  padding: 28px 0;
+  color: var(--sw-text-secondary);
+}
+.pl-empty strong { color: var(--sw-text-primary); }
+
+/* ---------- Account on the sheet: ruled sections, not framed cards ---------- */
+
+.trace-home .account { max-width: none; margin: 0; padding: 0; }
+.trace-home .account .trace-home-body { max-width: 860px; }
+.trace-home .account-section {
+  margin-top: 28px;
+  padding: 16px 0 0;
+  border: 0;
+  border-top: 1.5px solid var(--trace-rule-strong);
+  border-radius: 0;
+  background: transparent;
+}
+.trace-home .account-section:first-child,
+.trace-home .account-note + .account-section,
+.trace-home .account-banner + .account-section { margin-top: 0; }
+.trace-home .account h2 {
+  color: color-mix(in oklab, var(--head-tone, var(--sw-link)) 78%, var(--sw-text-primary));
+  font-size: var(--fs-xs, 12px);
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.trace-home .account-banner,
+.trace-home .account-note { margin: 0 0 24px; }
+.trace-home .account-plan-card { background: var(--sw-surface-elevated, var(--sw-surface)); }
+.trace-home .account-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--trace-rule);
+}
+
+/* ---------- Narrow screens: the sheet fills the width ---------- */
+
+@media (max-width: 720px) {
+  .trace-home-bar { height: 56px; padding: 0 16px; }
+  .trace-home-sheet { margin: 0; border-radius: 0; min-height: calc(100vh - 56px); }
+  .trace-band { padding: 20px 16px 16px; border-radius: 0; }
+  .trace-home-body { padding: 18px 16px 32px; }
+  .pl-search { flex-basis: 100%; }
+  .trace-band-actions, .pl-new { width: 100%; }
+  .pl-new .input { flex: 1; width: auto; min-width: 0; }
+  .pl-new-error { position: static; }
+  .pl-new { flex-wrap: wrap; }
+  .pl-table thead { display: none; }
+  .pl-table tbody td:not(.pl-actions) { display: none; }
+  .pl-table tbody th { width: auto; padding-left: 2px; }
+  .pl-compact { display: block; margin-top: 4px; color: var(--sw-text-tertiary); font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-row { transition: none; }
+}
+
+@media (prefers-contrast: more), print {
+  .trace-band { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet); }
+  .trace-band::after { display: none; }
+}
+
+@media print {
+  .trace-home { background: none; }
+  .trace-home-bar, .pl-toolbar, .pl-actions, .trace-band-actions { display: none; }
+  .trace-home-sheet { box-shadow: none; }
+  .trace-band { position: static; }
+}

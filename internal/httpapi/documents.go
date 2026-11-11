@@ -89,6 +89,10 @@ type catalogBody struct {
 	Kinds       []option `json:"kinds"`
 	Disciplines []option `json:"disciplines"`
 	Lifecycle   []option `json:"lifecycle"`
+	// Trades is the Procurement trades list (knowledge/works/trades.yaml),
+	// kept apart from Disciplines, which is what a document can be filed
+	// under.
+	Trades []option `json:"trades"`
 	// ProfileReadKinds are the kinds the profile reads when a document's
 	// setting is automatic, so the register can show the resolved state.
 	ProfileReadKinds []string `json:"profile_read_kinds"`
@@ -105,7 +109,7 @@ func listProjects(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
-	projects, err := deps.Store.ListProjects(r.Context(), session.OrgID)
+	projects, err := deps.Store.ProjectSummaries(r.Context(), session.OrgID)
 	if err != nil {
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
@@ -263,6 +267,38 @@ func retryFiling(w http.ResponseWriter, r *http.Request, deps Deps) {
 	writeJSON(w, http.StatusAccepted, view)
 }
 
+// splitDrawingSet is the user's override of a drawing set the automatic split
+// stopped on. It only queues the existing background split; no Jev call here.
+func splitDrawingSet(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !originOK(r, deps.PublicOrigin) {
+		http.Error(w, "origin rejected", http.StatusForbidden)
+		return
+	}
+	session, ok := memberSession(w, r, deps)
+	if !ok {
+		return
+	}
+	view, ok := visibleDocument(w, r, deps, session.OrgID)
+	if !ok {
+		return
+	}
+	switch err := deps.Store.SplitDrawingSet(r.Context(), session.OrgID, view.ID); {
+	case errors.Is(err, store.ErrNotSplittable):
+		http.Error(w, "this document cannot be split", http.StatusConflict)
+		return
+	case err != nil:
+		http.Error(w, "split failed", http.StatusInternalServerError)
+		return
+	}
+	deps.Filer.Start(session.OrgID, view.ID)
+	view, err := deps.Store.DocumentView(r.Context(), session.OrgID, view.ID)
+	if err != nil {
+		http.Error(w, "read failed", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, http.StatusAccepted, view)
+}
+
 func reprocessDetails(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !originOK(r, deps.PublicOrigin) {
 		http.Error(w, "origin rejected", http.StatusForbidden)
@@ -348,6 +384,9 @@ func getCatalog(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	for _, d := range deps.Catalog.Disciplines {
 		out.Disciplines = append(out.Disciplines, option{ID: d.ID, Label: d.Label})
+	}
+	for _, t := range procurementTrades(deps) {
+		out.Trades = append(out.Trades, option{ID: t.ID, Label: t.Label})
 	}
 	for _, a := range deps.Catalog.Lifecycle {
 		out.Lifecycle = append(out.Lifecycle, option{ID: a.ID, Label: a.Label})

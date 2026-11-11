@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { showFiling } from "./filing";
 
 test("Retry OCR shows completion without an SSE notification", async ({ page }) => {
   const invite = await page.request.post("/__e2e/invite?org=a");
@@ -25,7 +26,7 @@ test("Retry OCR shows completion without an SSE notification", async ({ page }) 
   await page.reload();
   const row = page.locator("tbody.reg-doc");
   await row.locator("td.reg-no").dblclick();
-  await page.getByRole("button", { name: "Filing details", exact: true }).click();
+  await showFiling(page);
   await page.locator(".document-workspace").getByRole("button", { name: "Retry OCR", exact: true }).click();
   await expect(row.locator(".ocr-summary")).toHaveText("OCR queued");
   // The worker finishes, but no event is delivered to this browser.

@@ -658,7 +658,7 @@ body {
 }
 
 .project-side-panel .reg-line:hover td {
-  background: color-mix(in oklch, var(--sw-selection-bg) 72%, transparent);
+  background: var(--state-hover);
   color: var(--sw-text-primary);
 }
 
@@ -1294,7 +1294,7 @@ body {
 /* Sticky identities must conceal the figures scrolling underneath. */
 .cockpit-scroll .cost-grid thead th { background: var(--canvas); }
 .cockpit-scroll .cost-grid .cost-group th { background: var(--ground); }
-.cockpit-scroll .cost-row[aria-selected="true"] td { background: color-mix(in oklab, var(--ember) 22%, var(--paper)); }
+.cockpit-scroll .cost-row[aria-selected="true"] td { background: var(--state-selected); }
 
 .cockpit-title-block:has(.project-name-editor) { flex: 1; }
 .project-name-editor {

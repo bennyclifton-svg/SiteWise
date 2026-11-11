@@ -1,0 +1,102 @@
+# Door hardware RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml, with supply-oriented stages. Research:
+# docs/research/2026-11-10-trades/completion-supplies.md. Draft until the owner reviews it.
+id: supplier-door-hardware
+version: 1
+status: draft
+kind: works
+title: Door hardware
+heading: "REQUEST FOR TENDER: DOOR HARDWARE"
+discipline_ids: [supplier.door_hardware]
+evidence_limit: "Seed guidance only; no historical tender for this supply has been encoded."
+
+scale:
+  text: "One supply package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the door hardware supplier. Your job is to schedule and supply the door hardware the documents show, keyed, packed and labelled door by door, so the fix-out carpenter can fit it and the fire and exit doors keep their compliance."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Prepare the hardware schedule door by door and the keying plan, and keep them current as doors change.
+      - Supply hardware on fire doors that belongs to the tested door assembly, and hardware on exit and accessible doors that suits their use.
+      - Hand over the keying schedule, keys, warranties and maintenance instructions.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/access-consultant-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Hardware schedule and keying
+    lines:
+      - {key: schedule, text: "Door hardware schedule, door by door, for the design team's review"}
+      - {key: keying, text: "Keying plan and master key system where the documents show one"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and coordination with the fix-out carpenter"}
+      - {key: access, text: "Secure storage of hardware until it is fitted"}
+      - {key: clean, text: "Removal of your packaging"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: selection
+    name: "Samples and compliance"
+    lines:
+      - {key: samples, text: "Samples of each item and finish for approval"}
+      - {key: fire_doors, text: "Confirmation that hardware on fire doors belongs to the tested door assembly"}
+      - {key: egress, text: "Confirmation that hardware on exit and accessible doors suits the fire and access reports"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md"}]
+  - key: supply
+    name: "Supply and delivery"
+    lines:
+      - {key: supply, text: "Supply of hardware packed and labelled door by door to the schedule"}
+      - {key: keys, text: "Cylinders, keys and master keying to the keying plan"}
+      - {key: deliver, text: "Delivery to site when the head contractor calls, checked against the schedule"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md"}]
+  - key: install
+    name: "Installation"
+    lines:
+      - {key: install, text: "Fitting of the hardware"}
+      - {key: adjust, text: "Adjustment of closers, locks and latches before handover"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+  - key: handover
+    name: Certificates and handover
+    lines:
+      - {key: certificates, text: "Compliance evidence for hardware on fire and exit doors"}
+      - {key: keys, text: "Keying schedule, key register and keys"}
+      - {key: records, text: "Warranties and maintenance instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+
+positions:
+  - {key: fitting, label: "Fitting of the hardware, by the fix-out carpenter unless this tender includes it", kind: technical, value: X, responsible: "fix-out carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]}
+  - {key: doors, label: "Door leaves and frames, by the door supplier or the fix-out carpenter", kind: technical, value: X, responsible: "the door supplier or fix-out carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]}
+  - {key: fire_doorsets, label: "Fire doorsets and their tested hardware set, coordinated with the fire door supplier", kind: technical, value: X, responsible: "fire door supplier", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md"}]}
+  - {key: electric_locks, label: "Power, cabling and access control for electric locks and door controls, by the electrical and security trades", kind: technical, value: X, responsible: "the electrical and security trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md"}]}
+  - {key: joinery_hardware, label: "Handles and hinges on cupboards and joinery, by the joinery contractor", kind: technical, value: X, responsible: "joinery contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

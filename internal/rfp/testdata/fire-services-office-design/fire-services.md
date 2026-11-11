@@ -82,12 +82,13 @@ Issued system/area allocation, strategy/BCA, hazard and supply/condition evidenc
 - Written authority before scope/quantity/ceiling/rate/program changes: reason, affected system/approval, fee/time consequence.
 - Approved brief/revisions set baseline; ordinary coordination/development included.
 - Own-error correction included; reasonable professional skill/care within competence.
+- Hold professional indemnity cover of Project-selected $5m and public liability cover of Project-selected $20m throughout the appointment.
 - Payment 30 days from correct milestone invoices; R6 declares prepayment/release conditions, interest/recovery/suspension.
 - State rate hold/escalation; preapprove extras/expenses and no duplicated package fees.
-- Valid 90 days after closing; ex GST/GST/total, base/options separate.
-- Issue numbered addenda to all, acknowledged in R1.
 - Agree project distribution/operation/future-use rights, native files/reliance/retention/termination handover; authorised/lawful disclosure permitted, marketing by consent.
 - Settle caps/indemnity, law/disputes, notice/cure/suspension/termination, assignment/novation/subcontracts; insurance is not a cap. Declare conflicts/agree team changes.
+- Valid 90 days after closing; ex GST/GST/total, base/options separate.
+- Issue numbered addenda to all, acknowledged in R1.
 
 ### Returnable schedules: reply using this structure only
 

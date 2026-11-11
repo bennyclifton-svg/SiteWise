@@ -193,6 +193,8 @@ type Catalog struct {
 	reportTemplates map[string]ReportTemplate
 	costBenchmarks  map[string]CostBenchmark
 	costElements    []CostElement
+	trades          []Trade
+	tradeBundles    []TradeBundle
 	costStarters    []CostStarter
 	budgetSplits    []BudgetSplit
 	program         programData
@@ -291,6 +293,10 @@ func Load(root string) (*Catalog, error) {
 		return nil, err
 	}
 	if err := c.loadReportTemplates(filepath.Join(root, "reports", "templates.yaml")); err != nil {
+		return nil, err
+	}
+	// Before cost elements: a cost element names the trade it falls under.
+	if err := c.loadTrades(root); err != nil {
 		return nil, err
 	}
 	if err := c.loadCostElements(root); err != nil {

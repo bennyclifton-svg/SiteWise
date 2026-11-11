@@ -45,7 +45,7 @@
 .inv-discipline:hover, .inv-discipline:focus-visible { border-color: var(--line-strong); background: var(--paper); }
 .inv-discipline:disabled { opacity: 0.6; }
 .inv-table tbody tr:hover td { background: var(--ground); }
-.inv-table tbody tr[aria-selected="true"] td { background: var(--azure-soft); }
+.inv-table tbody tr[aria-selected="true"] td { background: var(--state-selected); }
 .inv-table tbody tr[data-status="void"] td, .inv-table tbody tr[data-status="superseded"] td { color: var(--ink-muted); text-decoration: line-through; text-decoration-color: var(--line-strong); }
 .inv-open { padding: 0; border: 0; background: none; color: var(--azure); font: inherit; font-weight: 500; text-align: left; cursor: pointer; }
 .inv-open:hover { text-decoration: underline; }

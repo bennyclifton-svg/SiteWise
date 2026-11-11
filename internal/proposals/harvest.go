@@ -48,9 +48,14 @@ type Line struct {
 	Cols []int
 	// X and W are each cell's left edge and width in PDF points; nil for a
 	// workbook or Word table.
-	X, W  []float64
+	X, W []float64
+	// Y is the line's baseline and H its tallest run, in PDF points.
+	Y, H  float64
 	Sheet string
 	Row   int
+	// Title is a line set in clearly larger type than its page's body: the
+	// title of the table or part below it ("Quoted Categories").
+	Title bool
 }
 
 // Lines groups runs printed on one baseline, top to bottom. Runs without
@@ -105,21 +110,78 @@ func Lines(text identity.Text) []Line {
 			}
 			return runs[i].Source.X < runs[j].Source.X
 		})
+		first := len(out)
 		var cur *Line
 		var y float64
+		heights := make([]float64, 0, len(runs))
 		for _, r := range runs {
+			heights = append(heights, r.Source.Height)
 			if cur != nil && math.Abs(y-r.Source.Y) <= 3 {
 				cur.Cells = append(cur.Cells, r.Text)
 				cur.X = append(cur.X, r.Source.X)
 				cur.W = append(cur.W, r.Source.Width)
+				cur.H = math.Max(cur.H, r.Source.Height)
 				cur.Text += "  " + r.Text
 				continue
 			}
-			out = append(out, Line{Page: p, Text: r.Text, Cells: []string{r.Text}, X: []float64{r.Source.X}, W: []float64{r.Source.Width}})
+			out = append(out, Line{Page: p, Text: r.Text, Cells: []string{r.Text}, X: []float64{r.Source.X}, W: []float64{r.Source.Width}, Y: r.Source.Y, H: r.Source.Height})
 			cur, y = &out[len(out)-1], r.Source.Y
+		}
+		out = append(out[:first], joinWrappedRows(out[first:])...)
+		sort.Float64s(heights)
+		if body := heights[len(heights)/2]; len(heights) >= 5 && body > 0 {
+			for i := first; i < len(out); i++ {
+				l := &out[i]
+				t := l.Text
+				l.Title = len(l.Cells) == 1 && l.H >= 1.2*body && len(strings.Fields(t)) <= 12 && !moneyRe.MatchString(t) && !strings.ContainsAny(t[len(t)-1:], ".;:,")
+			}
 		}
 	}
 	return out
+}
+
+var rowNumber = regexp.MustCompile(`^\d{1,3}(?:\.\d{1,3})?$`)
+
+// joinWrappedRows rebuilds a table row whose description wraps onto two
+// lines. Its number and amount are centred on the row, half a line below the
+// description's first line and half a line above its second, so they read
+// as a line with no words: "1  $159,123.20".
+func joinWrappedRows(lines []Line) []Line {
+	out := make([]Line, 0, len(lines))
+	for i := 0; i < len(lines); i++ {
+		l := lines[i]
+		if n := len(out); n > 0 && i+1 < len(lines) && bareAmountRow(l) && wrapsAround(out[n-1], l) && wrapsAround(lines[i+1], l) {
+			above, below := out[n-1], lines[i+1]
+			words := above.Text + " " + below.Text
+			last := len(l.Cells) - 1
+			row := Line{Page: l.Page, Y: l.Y, H: l.H,
+				Cells: append(append(append([]string{}, l.Cells[:last]...), words), l.Cells[last]),
+				X:     append(append(append([]float64{}, l.X[:last]...), above.X[0]), l.X[last]),
+				W:     append(append(append([]float64{}, l.W[:last]...), math.Max(above.W[0], below.W[0])), l.W[last])}
+			row.Text = strings.Join(row.Cells, "  ")
+			out[n-1] = row
+			i++
+			continue
+		}
+		out = append(out, l)
+	}
+	return out
+}
+
+// bareAmountRow is a row number and an amount, or an amount alone.
+func bareAmountRow(l Line) bool {
+	last := len(l.Cells) - 1
+	if last < 0 || last > 1 || len(l.X) != len(l.Cells) || len(moneyIn(l.Cells[last])) != 1 || strings.TrimSpace(moneyRe.ReplaceAllString(l.Cells[last], "")) != "" {
+		return false
+	}
+	return last == 0 || rowNumber.MatchString(l.Cells[0])
+}
+
+// wrapsAround is one line of words printed within a line's height of the
+// row, to the left of its amount.
+func wrapsAround(words, row Line) bool {
+	dy := math.Abs(words.Y - row.Y)
+	return len(words.Cells) == 1 && len(words.X) == 1 && !moneyRe.MatchString(words.Text) && dy > 3 && dy <= 0.7*row.H && words.X[0] < row.X[len(row.X)-1]
 }
 
 // Amount is one money figure and the words around it. ID is stable within
@@ -150,8 +212,11 @@ type Amount struct {
 	GSTPart bool `json:"-"`
 	IncTwin bool `json:"-"`
 	// Percent is a fee stated as a percentage of a cost, in basis points.
-	PercentBP int      `json:"-"`
-	Section   int      `json:"section"`
+	PercentBP int `json:"-"`
+	Section   int `json:"section"`
+	// Title is the large-type title the figure sits under ("Allowances For
+	// Provisional Sums"), which outlasts the numbered headings below it.
+	Title     string   `json:"-"`
 	Line      int      `json:"-"`
 	Kind      string   `json:"-"` // "", "percent"
 	Breakdown []string `json:"printed_breakdown_headings,omitempty"`
@@ -231,7 +296,7 @@ var (
 	emailRe   = regexp.MustCompile(`(?i)\b[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}\b`)
 	phoneRe   = regexp.MustCompile(`(?:\+61\s?\(?0?\)?\s?[2-478]|\(0[2-478]\)|\b0[2-478])[\s\-]?\d{4}[\s\-]?\d{4}\b|\b04\d{2}[\s\-]?\d{3}[\s\-]?\d{3}\b|\b1[38]00[\s\-]?\d{3}[\s\-]?\d{3}\b`)
 	addressRe = regexp.MustCompile(`(?i)\b(?:(?:level|suite|unit|shop)\s+\d+[a-z]?,?\s+)?\d{1,5}[a-z]?(?:-\d{1,5})?\s+[a-z][a-z' ]{1,40}\s(?:street|st|road|rd|avenue|ave|parade|pde|drive|dr|lane|ln|place|pl|highway|hwy|terrace|tce|crescent|cres|boulevard|blvd|way|circuit|cct|close|court|ct)\b[.,]?[^|]{0,60}?\b(?:NSW|VIC|QLD|SA|WA|TAS|ACT|NT)\b,?\s*\d{4}\b`)
-	companyRe = regexp.MustCompile(`(?i)\b(?:pty\.?\s*ltd|pty\.?\s*limited|limited|ltd|group|consulting|consultants|partners|associates|architects?|architecture|engineers?|engineering|planning|planners|surveyors?|surveying|studio|design|geotechnic\w*|arbor\w*|landscape\w*)\b`)
+	companyRe = regexp.MustCompile(`(?i)\b(?:pty\.?\s*ltd|pty\.?\s*limited|limited|ltd|group|consulting|consultants|partners|associates|architects?|architecture|engineers?|engineering|planning|planners|surveyors?|surveying|studio|design|geotechnic\w*|arbor\w*|landscape\w*|builders?|constructions?)\b`)
 	signoffRe = regexp.MustCompile(`(?i)^(?:yours\s+(?:sincerely|faithfully)|kind\s+regards|regards|best\s+regards|warm\s+regards|sincerely)\b`)
 	headingRe = regexp.MustCompile(`(?i)^(?:\d{1,2}(?:\.\d{1,2}){0,2}\.?\s+\S|(?:task|stage|phase|part|section|item|schedule|appendix|option)\s+[0-9a-z]{1,3}\b)`)
 	abnGlued  = regexp.MustCompile(`(?i)ABN[:#]?\s?(\d)`)
@@ -248,6 +313,16 @@ var excludedContext = regexp.MustCompile(`(?i)services concerned|failure to exer
 // report" is a fee row (F39).
 var totalWords = regexp.MustCompile(`(?i)\b(?:cost|fee) estimate(?:\s*[:*|]*\s*(?:\$|$))|\btotal\b|\bsub-?total\b|\blump\s?sum\b|\bfixed\s+(?:professional\s+)?fee\b|\bfee\s+(?:total|summary)\b`)
 
+// sectionCap keeps one stored section under the passage limit.
+const sectionCap = 19000
+
+// priceColumn is a table column that states its GST basis: the figures
+// under it are prices, whatever words the rows use ("Preliminaries
+// including builder's warranty insurance").
+func priceColumn(column string) bool {
+	return exGSTRe.MatchString(column) != incGSTRe.MatchString(column)
+}
+
 // Harvest collects candidates from a proposal's text.
 func Harvest(filename string, text identity.Text) Evidence {
 	ev := Evidence{Filename: filename, TextLayer: text.TextLayer, OCR: text.OCR, Incomplete: text.Incomplete}
@@ -259,7 +334,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 	ev.Readable = readable(lines)
 	ev.Form, ev.FormFirm = formCells(lines)
 	running := runningLines(lines)
-	heading, before := "", ""
+	heading, before, title := "", "", ""
 	section := -1
 	newSection := func(h string, page int) {
 		section++
@@ -281,17 +356,23 @@ func Harvest(filename string, text identity.Text) Evidence {
 	for i, l := range lines {
 		t := l.Text
 		lower := strings.ToLower(t)
-		if (l.Heading || !markdown && isHeading(t)) && !running[runningKey(t)] {
+		if l.Title && !running[runningKey(t)] {
+			title = t
+		}
+		if (l.Heading || l.Title || !markdown && isHeading(t)) && !running[runningKey(t)] {
 			heading = t
 			if l.HeadingText != "" {
 				heading = l.HeadingText
 			}
 			newSection(heading, l.Page)
 		}
-		s := &ev.Sections[section]
-		if len(s.Body) < 20000 {
-			s.Body += t + "\n"
+		// A long section continues in a new one under the same heading, so
+		// no page of the offer is dropped from the stored text.
+		if s := ev.Sections[section]; len(s.Body)+len(t) >= sectionCap {
+			newSection(s.Heading, l.Page)
 		}
+		s := &ev.Sections[section]
+		s.Body += t + "\n"
 		if strings.Contains(lower, "hourly rate") || strings.Contains(lower, "schedule of rates") || strings.Contains(lower, "charge out rate") || strings.Contains(lower, "charge-out rate") {
 			ratesBlock = 12
 		} else if ratesBlock > 0 {
@@ -377,15 +458,16 @@ func Harvest(filename string, text identity.Text) Evidence {
 					}
 				}
 				above, localHeading := amountColumnContext(lines, i, j, m.before)
-				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
+				column := columnHeading(lines, i, l, j)
+				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) && !priceColumn(column) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
 					continue
 				}
-				a := Amount{Cents: m.cents, Display: m.display, Context: clip(ctx, 240), Under: clip(heading, 160), Before: clip(before, 160), Page: l.Page, Section: section, Line: i}
+				a := Amount{Cents: m.cents, Display: m.display, Context: clip(ctx, 240), Under: clip(heading, 160), Before: clip(before, 160), Page: l.Page, Section: section, Title: title, Line: i}
 				a.Label = label
 				if localHeading != "" {
 					a.Under = localHeading
 				}
-				a.Column = columnHeading(lines, i, l, j)
+				a.Column = column
 				after := strings.ToLower(m.after)
 				a.PerHour = perHourRe.MatchString(m.after) || strings.Contains(after, "per hour") || ((ratesBlock > 0 || strings.Contains(strings.ToLower(localHeading), "rate")) && !totalWords.MatchString(ctx) && m.cents < 100000)
 				// A total is printed as one: a short label or line, not a
@@ -510,7 +592,8 @@ func amountColumnContext(lines []Line, i, j int, prefix string) (string, string)
 			if c >= len(h.X) || math.Abs(h.X[c]-x) > 16 {
 				continue
 			}
-			if len(nearby) < 3 {
+			// A priced row above describes its own figure, not this one.
+			if len(nearby) < 3 && !moneyRe.MatchString(h.Text) {
 				nearby = append(nearby, cell)
 			}
 			if strings.Contains(strings.ToLower(h.Text), "role/title") && strings.Contains(strings.ToLower(h.Text), "rate") {
@@ -588,8 +671,17 @@ func dropGSTPairs(amounts []Amount, lines []Line) {
 			if i == j || t.Kind != "" || !near(*x, *t) {
 				continue
 			}
+			printed := false
 			if d := t.Cents - (x.Cents + invoices.GSTOf(x.Cents)); d < -1 || d > 1 {
-				continue
+				// GST summed row by row drifts from 10% of the subtotal by a
+				// few cents. The printed GST line still makes the sum exact.
+				for k := range amounts {
+					g := &amounts[k]
+					printed = printed || k != i && k != j && near(*x, *g) && g.Kind == "" && g.Cents == t.Cents-x.Cents && abs64(g.Cents-invoices.GSTOf(x.Cents)) <= 100 && strings.Contains(strings.ToLower(lines[g.Line].Text+" "+g.Column), "gst")
+				}
+				if !printed {
+					continue
+				}
 			}
 			// Across lines only a printed total can be the inclusive sum; in
 			// a rate table the next row's rate often equals this one plus GST.
@@ -599,7 +691,7 @@ func dropGSTPairs(amounts []Amount, lines []Line) {
 			// Arithmetic alone cannot distinguish GST from a genuinely
 			// different offer. In particular, never replace explicit ex-GST
 			// wording on a separate alternative.
-			taxEvidence := t.GST == "inc"
+			taxEvidence := t.GST == "inc" || printed
 			if t.Line == x.Line {
 				taxEvidence = taxEvidence || strings.Contains(strings.ToLower(x.Context), "gst")
 			} else if t.GST == "ex" {
@@ -621,7 +713,7 @@ func dropGSTPairs(amounts []Amount, lines []Line) {
 			t.GST, t.IncTwin = "inc", true
 			for k := range amounts {
 				g := &amounts[k]
-				if k != i && k != j && near(*x, *g) && g.Kind == "" && abs64(g.Cents-invoices.GSTOf(x.Cents)) <= 1 && strings.Contains(strings.ToLower(lines[g.Line].Text+" "+g.Column), "gst") {
+				if k != i && k != j && near(*x, *g) && g.Kind == "" && (abs64(g.Cents-invoices.GSTOf(x.Cents)) <= 1 || printed && g.Cents == t.Cents-x.Cents) && strings.Contains(strings.ToLower(lines[g.Line].Text+" "+g.Column), "gst") {
 					g.GSTPart = true
 				}
 			}
@@ -673,12 +765,15 @@ func rowLabel(cells []string, j int, prefix string) string {
 		if moneyRe.MatchString(c) {
 			continue
 		}
-		if len(c) >= 3 && !strings.EqualFold(unitWord.FindString(c), c) {
+		// "331.000 m2" is the row's quantity; its words are further left.
+		if len(c) >= 3 && !strings.EqualFold(unitWord.FindString(c), c) && !quantityCell.MatchString(c) {
 			return clip(c, 100)
 		}
 	}
 	return ""
 }
+
+var quantityCell = regexp.MustCompile(`^\d[\d,]*\.\d+(?:\s*[A-Za-z][A-Za-z0-9²³]{0,4})?$`)
 
 func firstFilled(cells []string) string {
 	for _, c := range cells {
@@ -708,7 +803,20 @@ func columnHeading(lines []Line, i int, l Line, j int) string {
 		return ""
 	}
 	x0, x1 := l.X[j], l.X[j]+l.W[j]
-	for k := i - 1; k >= 0 && k >= i-15; k-- {
+	over := func(h Line) string {
+		if len(h.X) != len(h.Cells) {
+			return ""
+		}
+		for c := range h.Cells {
+			if len(h.Cells[c]) <= 40 && h.X[c] <= x1+4 && x0 <= h.X[c]+h.W[c]+4 {
+				return h.Cells[c]
+			}
+		}
+		return ""
+	}
+	// Priced rows between a figure and its heading do not count: a table's
+	// thirtieth row is still under the heading at its top.
+	for k, plain := i-1, 0; k >= 0 && plain < 15; k-- {
 		h := lines[k]
 		if h.Page != l.Page {
 			return ""
@@ -716,14 +824,19 @@ func columnHeading(lines []Line, i int, l Line, j int) string {
 		if moneyRe.MatchString(h.Text) {
 			continue
 		}
-		if len(h.X) != len(h.Cells) {
+		plain++
+		cell := over(h)
+		if cell == "" {
 			continue
 		}
-		for c := range h.Cells {
-			if len(h.Cells[c]) <= 40 && h.X[c] <= x1+4 && x0 <= h.X[c]+h.W[c]+4 {
-				return clip(h.Cells[c], 60)
+		// A heading set on two lines ("Allowance incl." over "GST").
+		for u := k - 1; u >= 0 && u >= k-2 && lines[u].Page == h.Page && lines[u].Y-h.Y <= 14 && lines[u].Y > h.Y; u-- {
+			if top := over(lines[u]); top != "" && !moneyRe.MatchString(lines[u].Text) {
+				cell = top + " " + cell
+				break
 			}
 		}
+		return clip(cell, 60)
 	}
 	return ""
 }

@@ -1,0 +1,101 @@
+# Shower screens and mirrors RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-shower-screens
+version: 1
+status: draft
+kind: works
+title: Shower screens and mirrors
+heading: "REQUEST FOR TENDER: SHOWER SCREENS AND MIRRORS"
+discipline_ids: [trade.shower_screens]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the shower screen contractor. Your job is to measure, supply and fix the shower screens, mirrors and internal glazing the documents show, in safety glass where the location needs it, without breaching the waterproofing behind the tiles."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Safety glazing requirements)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Measure on site after the tiling is finished, not from the drawings.
+      - Use safety glass marked as such in every shower, bath and other location that needs it.
+      - Fix without damaging the membrane, and seal every fixing and junction.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Safety glazing requirements)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Wet Area Waterproofing)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Shop drawings for the design team's review"}
+      - {key: samples, text: "Glass, frame and hardware samples for approval"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: measure
+    name: "Site measure"
+    lines:
+      - {key: measure, text: "Site measure after the tiling is finished"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Safety glazing requirements)"}]
+  - key: screens
+    name: "Shower and bath screens"
+    lines:
+      - {key: screens, text: "Shower and bath screens in safety glass, with their frames, hinges and seals"}
+      - {key: fixing, text: "Fixing and sealing to the tiled walls and floors"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Safety glazing requirements)"}]
+  - key: mirrors
+    name: "Mirrors and internal glazing"
+    lines:
+      - {key: mirrors, text: "Mirrors the documents show"}
+      - {key: glazing, text: "Internal glazed panels and partitions the documents give you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Water test of each screen and its seals"}
+      - {key: certificates, text: "Your statement that the glass is safety glass where the location needs it"}
+      - {key: records, text: "Warranties and care instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1288 — Glass in Buildings)"}]
+
+positions:
+  - {key: backing, label: "Noggings or backing in the wall for screen and mirror fixings, by the framing carpenter", kind: technical, value: X, responsible: "framing carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}]}
+  - {key: tiling, label: "Tiling and silicone at tile junctions complete before you measure, by the tiler", kind: technical, value: X, responsible: "tiler", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: membrane, label: "Membrane behind and under the screen, by the waterproofer", kind: technical, value: X, responsible: "waterproofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Wet area waterproofing)"}]}
+  - {key: balustrades, label: "Glass balustrades, by the metalwork and balustrade contractor", kind: technical, value: X, responsible: "metalwork and balustrade contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1288 — Glass in Buildings)"}]}
+  - {key: windows, label: "Windows, external doors and their glass, by the windows and glazing supplier", kind: technical, value: X, responsible: "windows and glazing supplier", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Window and door joinery (aluminium and timber))"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

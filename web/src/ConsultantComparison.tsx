@@ -4,8 +4,8 @@ import { submissionApi, type AppointmentRow, type Column, type PriceTable, type 
 
 const money = (value: string | null | undefined) => value == null ? "Not priced" : `$${fmt(value)}`;
 
-export function ConsultantComparison({ table, projectId, busy, onOpen, onAward, onSave, onSelect, onAdd }: {
-  table: PriceTable; projectId: string; busy: boolean; onAdd: () => void;
+export function ConsultantComparison({ table, projectId, busy, onOpen, onAward, onUndoAward, onSave, onSelect, onAdd }: {
+  table: PriceTable; projectId: string; busy: boolean; onAdd: () => void; onUndoAward: () => void;
   onOpen: (sub: string) => void; onAward: (sub: string) => void;
   onSave: (sub: string, key: string, state: CellState, amount: string, note: string) => Promise<boolean>;
   onSelect: (col: Column, row: AppointmentRow, included: boolean, keys?: string[]) => Promise<boolean>;
@@ -14,6 +14,7 @@ export function ConsultantComparison({ table, projectId, busy, onOpen, onAward, 
   const columnCount = 1 + table.columns.length + slots.length;
   const emptyCells = () => slots.map(slot => <td key={slot} className="comparison-placeholder" />);
   const locked = busy || !!table.award;
+  const awarded = (c: Column) => table.award?.submission_id === c.submission.id;
   const arrows = useRef(new Map<string, HTMLButtonElement>());
   const moved = useRef("");
   useLayoutEffect(() => {
@@ -31,7 +32,7 @@ export function ConsultantComparison({ table, projectId, busy, onOpen, onAward, 
         <th scope="row">{row.label}</th>
         {table.columns.map((col, index) => {
           const r = matches[index];
-          return <td key={col.submission.id} className="appointment-cell">{r ? <>
+          return <td key={col.submission.id} className={`appointment-cell${included && r && awarded(col) ? " comparison-awarded" : ""}`}>{r ? <>
               <button ref={el => { const key = `${col.submission.id}:${r.id}`; if (el) arrows.current.set(key, el); else arrows.current.delete(key); }} className="price-icon appointment-move" disabled={locked} aria-label={`${included ? "Exclude" : "Include"} ${r.label}, ${col.firm?.name ?? col.submission.filename}`} title={included ? "Move below the line" : "Move into appointment"} onClick={async () => { moved.current = `${col.submission.id}:${r.id}`; if (!await onSelect(col, r, !included)) moved.current = ""; }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d={included ? "M12 4v16m-6-6 6 6 6-6" : "M12 20V4m-6 6 6-6 6 6"} /></svg>
               </button>
@@ -65,11 +66,12 @@ export function ConsultantComparison({ table, projectId, busy, onOpen, onAward, 
       <tbody>
         <tr className="prices-group"><th scope="rowgroup" colSpan={columnCount}>Included in appointment</th></tr>
         {schedule(true)}
-        <tr className="prices-total"><th scope="row">Total <span>excluding GST</span></th>{table.columns.map(c => <td key={c.submission.id}><span className="comparison-total">
+        <tr className="prices-total"><th scope="row">Total <span>excluding GST</span></th>{table.columns.map(c => <td key={c.submission.id} className={awarded(c) ? "comparison-awarded" : undefined}><span className="comparison-total">
           <strong>{c.appointment_total != null ? money(c.appointment_total) : "Not confirmed"}</strong>
           {/* A reconciled total needs no note; only the unprinted case is worth a word. */}
           {c.appointment_total != null && c.appointment_basis && c.appointment_basis !== "reconciled" && <small className="prices-note" title="No total printed; sum of the listed fees">Sum of listed fees</small>}
           {!table.award && <button className="btn btn-primary btn-small comparison-award" aria-label={`Award to ${c.firm?.name || "this consultant"}`} disabled={locked || c.appointment_total == null || !c.appointment_rows?.some(r => r.included && r.state === "priced" && r.amount != null)} onClick={() => onAward(c.submission.id)}>Award</button>}
+          {awarded(c) && <button className="btn btn-small comparison-award" disabled={busy || table.award!.locked} title={table.award!.locked ? "Undo is locked: an invoice is allocated to these lines." : "Remove the award and its cost plan lines"} onClick={onUndoAward}>Undo award</button>}
         </span></td>)}{emptyCells()}</tr>
         {schedule(false)}
       </tbody>

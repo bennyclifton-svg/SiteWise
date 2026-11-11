@@ -1,0 +1,95 @@
+# Cladding RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-cladding
+version: 1
+status: draft
+kind: works
+title: "Cladding"
+heading: "REQUEST FOR TENDER: CLADDING"
+discipline_ids: [trade.cladding]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the cladding contractor. Your job is to install the wall wrap, cavity and external cladding the documents show, with their flashings, joints and fixings, weathertight and of materials the documents' fire and bushfire requirements allow, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Cladding Combustibility Requirements)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Give the test evidence that the cladding, wrap and cavity materials meet the documents' fire requirements before you order them.
+      - Present the wrap and flashings for the head contractor's inspection before the cladding covers them.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Facade and External Wall Fire Safety)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Cladding set-out, joint, fixing and flashing details for the design team's review"}
+      - {key: design, text: "Fixing design where the documents leave it to the contractor"}
+      - {key: evidence, text: "Test evidence and product data for the cladding, wrap and cavity materials"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Facade and Curtain Wall Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Cladding Combustibility Requirements)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: wrap
+    name: "Wall wrap and cavity"
+    lines:
+      - {key: wrap, text: "Wall wrap behind the cladding, lapped and taped to the manufacturer's instructions"}
+      - {key: cavity, text: "Cavity battens and the drained, vented cavity the documents show"}
+      - {key: flashings, text: "Flashings at openings, junctions and the base of the cladding, lapped to shed water out"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Weatherproofing and Facade Defects)"}]
+  - key: cladding
+    name: "Cladding"
+    lines:
+      - {key: cladding, text: "External cladding and its fixings"}
+      - {key: joints, text: "Control, movement and sealant joints with backing rods"}
+      - {key: trims, text: "Trims, corners and finishes the cladding system includes"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Weatherproofing and Facade Defects)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Water testing of the cladding where the documents call for it"}
+      - {key: certificates, text: "Certificates your trade signs and the product test evidence"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Weatherproofing and Facade Defects)"}, {kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: windows, label: "Windows and external doors installed and flashed before the cladding, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 4: External cladding — windows and doors before render or brickwork)"}]}
+  - {key: frame, label: "Frame inspected and certified before the cladding covers it, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Frame inspection gate)"}]}
+  - {key: insulation, label: "Insulation in the wall frame, by the insulation contractor", kind: technical, value: X, responsible: "insulation contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 7: Roof framing to insulation and ceiling)"}]}
+  - {key: painting, label: "Site painting of the cladding, by the painter", kind: technical, value: X, responsible: "painter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

@@ -67,3 +67,28 @@ func TestAddresseeNameRoleCompanyOffersTheCompany(t *testing.T) {
 		}
 	}
 }
+
+// Merricks, 11 November 2026: a builder's quote is addressed to the owners
+// care of their designer, with no "To:" label, and no client was offered.
+func TestCareOfLineOffersTheAddressee(t *testing.T) {
+	cat, err := knowledge.Load("../../knowledge")
+	if err != nil {
+		t.Fatal(err)
+	}
+	passage := "Kind regards,\nSam Okoro\nSeaview Builders\nPriya Nair & Tom Whitlock C/O Harbour Lane Design\nOffice 15, 4 High St\nHastings"
+	var got []string
+	for _, c := range profile.Harvest(passage, cat).Candidates["proj.client"] {
+		got = append(got, c.Value)
+	}
+	if len(got) != 1 || got[0] != "Priya Nair & Tom Whitlock" {
+		t.Fatalf("client candidates %q", got)
+	}
+	// A "To:" line with a care-of party is still offered once.
+	got = nil
+	for _, c := range profile.Harvest("To: Avenor Capital Partners Pty Ltd, care of Larchmont Project Services Pty Ltd\n", cat).Candidates["proj.client"] {
+		got = append(got, c.Value)
+	}
+	if len(got) != 1 || got[0] != "Avenor Capital Partners Pty Ltd" {
+		t.Fatalf("labelled line %q", got)
+	}
+}

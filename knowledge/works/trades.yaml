@@ -1,0 +1,104 @@
+# Trades a project can let (docs/plans/2026-11-10-trades-catalogue.md).
+# This is the Procurement Trades list. It is NOT the filing vocabulary
+# (data/intake/disciplines.json): Jev never chooses from this list, so it
+# can grow without touching filing.
+#
+# Skeleton for owner review (agreed list, 10 November 2026). Each trade
+# names the building systems it builds (ids from knowledge/systems.yaml and
+# knowledge/clusters/*/systems.yaml) so the Main Works carve-out, the RFT
+# price rows and the Cost Plan can follow the building. `detail: draft`
+# means the trade has its own RFT in knowledge/rfp/ from the 10 November
+# research (notes in docs/research/2026-11-10-trades/), awaiting owner review.
+#
+# kind: trade (built on site) or supply (goods bought, still tendered
+# with an RFT, owner 8 November 2026).
+# used_on: house, commercial or both (which projects suggest it first).
+# existing: the id already has a row type and RFT file today; keep the id.
+version: 1
+status: draft
+sources:
+  - {design: docs/plans/2026-11-10-trades-catalogue.md, anchor: "## Owner decisions (10 November 2026)"}
+
+trades:
+  # Head contract
+  - {id: trade.main_works, label: Main Works, kind: trade, used_on: both, existing: true, builds: [all], detail: existing}
+
+  # Site
+  - {id: trade.demolition, label: Demolition, kind: trade, used_on: both, builds: [site.demolition, site.adjoining-structures], detail: draft}
+  - {id: trade.asbestos_removal, label: Asbestos removal, kind: trade, used_on: both, builds: [site.contamination, site.demolition], detail: draft}
+  - {id: trade.earthworks, label: Excavation and earthworks, kind: trade, used_on: both, builds: [site.earthworks, site.erosion-sediment-control], detail: draft}
+  - {id: trade.civil_works, label: Civil Works, kind: trade, used_on: both, existing: true, builds: [site.stormwater-detention, site.services-connections, site.retaining-walls, site.vehicle-access], detail: existing}
+  - {id: trade.stormwater_drainage, label: Stormwater drainage, kind: trade, used_on: both, builds: [site.stormwater-detention], detail: draft}
+  - {id: trade.landscaping, label: Landscaping, kind: trade, used_on: both, builds: [site.landscape, site.trees], detail: draft}
+  - {id: trade.fencing, label: Fencing and gates, kind: trade, used_on: both, builds: [site.landscape, access-egress.pool-barriers], detail: draft}
+  - {id: trade.paving, label: Driveways and paving, kind: trade, used_on: both, builds: [site.vehicle-access], detail: draft}
+
+  # Substructure
+  - {id: trade.piling, label: Piling, kind: trade, used_on: commercial, builds: [substructure.piles], detail: draft}
+  - {id: trade.concreting, label: Concreting, kind: trade, used_on: both, builds: [substructure.footings, substructure.slab-on-ground, structure.concrete], detail: draft}
+  - {id: trade.formwork, label: Formwork, kind: trade, used_on: both, builds: [substructure.footings, substructure.slab-on-ground, structure.concrete], detail: draft}
+  - {id: trade.steel_fixing, label: Steel fixing, kind: trade, used_on: both, builds: [substructure.footings, substructure.slab-on-ground, structure.concrete], detail: draft}
+  - {id: trade.termite_management, label: Termite management, kind: trade, used_on: both, builds: [substructure.termite-management], detail: draft}
+  - {id: trade.below_ground_waterproofing, label: Below-ground waterproofing, kind: trade, used_on: both, builds: [substructure.damp-waterproofing, substructure.basement-retention], detail: draft}
+
+  # Structure
+  - {id: trade.carpentry_framing, label: Carpentry (framing), kind: trade, used_on: both, builds: [structure.timber], detail: draft}
+  - {id: supplier.frames_trusses, label: Frames and trusses, kind: supply, used_on: both, builds: [structure.timber], detail: draft}
+  - {id: trade.structural_steel, label: Structural Steel, kind: trade, used_on: both, existing: true, builds: [structure.steel], detail: existing}
+  - {id: trade.masonry, label: Bricklaying and blocklaying, kind: trade, used_on: both, builds: [structure.masonry, envelope.external-walls], detail: draft}
+  - {id: trade.precast, label: Precast concrete, kind: trade, used_on: commercial, builds: [structure.precast], detail: draft}
+  - {id: trade.scaffolding, label: Scaffolding, kind: trade, used_on: both, builds: [structure.temporary-works], detail: draft}
+
+  # Envelope
+  - {id: trade.roofing, label: Roofing, kind: trade, used_on: both, builds: [envelope.roof-coverings, envelope.flashings-seals], detail: draft}
+  - {id: trade.roof_plumbing, label: Roof plumbing, kind: trade, used_on: both, builds: [hydraulic.roof-drainage, envelope.flashings-seals], detail: draft}
+  - {id: trade.cladding, label: Cladding, kind: trade, used_on: both, builds: [envelope.external-walls, envelope.pliable-membranes], detail: draft}
+  - {id: trade.rendering, label: Rendering, kind: trade, used_on: both, builds: [envelope.external-walls], detail: draft}
+  - {id: trade.insulation, label: Insulation, kind: trade, used_on: both, builds: [envelope.thermal-insulation, envelope.building-sealing], detail: draft}
+  - {id: supplier.windows_glazing, label: Windows and Glazing, kind: supply, used_on: both, existing: true, builds: [envelope.windows-doors], detail: existing}
+  - {id: trade.garage_doors, label: Garage doors, kind: trade, used_on: both, builds: [envelope.vehicle-doors], detail: draft}
+  - {id: trade.curtain_wall, label: Facade and curtain wall, kind: trade, used_on: commercial, builds: [envelope.curtain-wall], detail: draft}
+
+  # Interiors
+  - {id: trade.plasterboard, label: Plasterboard and ceilings, kind: trade, used_on: both, builds: [interiors.walls-linings, interiors.ceilings], detail: draft}
+  - {id: trade.carpentry_fixout, label: "Carpentry (fix-out)", kind: trade, used_on: both, builds: [interiors.internal-doors], detail: draft}
+  - {id: trade.joinery_kitchens, label: Joinery and Kitchens, kind: trade, used_on: both, existing: true, builds: [interiors.joinery], detail: existing}
+  - {id: supplier.stone_benchtops, label: Stone benchtops, kind: supply, used_on: both, builds: [interiors.joinery], detail: draft}
+  - {id: trade.waterproofing, label: Waterproofing (wet areas and balconies), kind: trade, used_on: both, builds: [interiors.wet-area-waterproofing, envelope.external-waterproofing], detail: draft}
+  - {id: trade.tiling, label: Tiling, kind: trade, used_on: both, builds: [interiors.tiling], detail: draft}
+  - {id: trade.painting, label: Painting, kind: trade, used_on: both, builds: [interiors.painting], detail: draft}
+  - {id: trade.floor_coverings, label: Floor coverings, kind: trade, used_on: both, builds: [interiors.floor-finishes], detail: draft}
+  - {id: trade.timber_floors, label: Timber floors and sanding, kind: trade, used_on: both, builds: [interiors.floor-finishes], detail: draft}
+  - {id: trade.shower_screens, label: Shower screens and mirrors, kind: trade, used_on: both, builds: [interiors.internal-glazing], detail: draft}
+  - {id: trade.metalwork, label: Metalwork and balustrades, kind: trade, used_on: both, builds: [access-egress.barriers, access-egress.stairs-and-ramps], detail: draft}
+  - {id: supplier.door_hardware, label: Door hardware, kind: supply, used_on: both, builds: [interiors.internal-doors, access-egress.egress-doors], detail: draft}
+  - {id: supplier.sanitaryware, label: Sanitaryware and tapware, kind: supply, used_on: both, builds: [hydraulic.sanitary], detail: draft}
+  - {id: supplier.appliances, label: Appliances, kind: supply, used_on: both, builds: [interiors.ffe], detail: draft}
+
+  # Fire
+  - {id: trade.passive_fire, label: Fire stopping and passive fire, kind: trade, used_on: commercial, builds: [fire-passive.penetrations, fire-passive.rated-elements, fire-passive.structural-fire-protection], detail: draft}
+  - {id: trade.fire_services, label: Fire Services Trade, kind: trade, used_on: both, existing: true, builds: [fire-active], detail: existing}
+
+  # Services
+  - {id: trade.mechanical, label: Mechanical Services, kind: trade, used_on: both, existing: true, builds: [mechanical], detail: existing}
+  - {id: trade.hydraulic_plumbing, label: Hydraulic and Plumbing Services, kind: trade, used_on: both, existing: true, builds: [hydraulic], detail: existing}
+  - {id: trade.gas_fitting, label: Gas fitting, kind: trade, used_on: both, builds: [hydraulic.gas], detail: draft}
+  - {id: trade.electrical, label: Electrical Services, kind: trade, used_on: both, existing: true, builds: [electrical], detail: existing}
+  - {id: trade.solar_pv, label: Solar PV and batteries, kind: trade, used_on: both, builds: [electrical.solar-pv, electrical.battery-storage], detail: draft}
+  - {id: trade.data_security, label: "Data, AV and security", kind: trade, used_on: both, builds: [comms-security], detail: draft}
+  - {id: trade.lifts, label: Lifts, kind: trade, used_on: commercial, builds: [vertical-transport], detail: draft}
+
+  # Completion and site running (no building system; priced as preliminaries)
+  - {id: trade.builders_clean, label: Builder's clean, kind: trade, used_on: both, builds: [], detail: draft}
+  - {id: trade.waste_bins, label: Waste and skip bins, kind: trade, used_on: both, builds: [], detail: draft}
+  - {id: trade.temporary_fencing, label: Temporary fencing and hoarding, kind: trade, used_on: both, builds: [], detail: draft}
+
+# Suggested bundles: shown as a Combine prompt when two or more of the
+# members are rows on the project. A suggestion only; the PM may combine
+# any trades they like or dismiss it.
+bundles:
+  - {id: concrete, label: "Formwork, steel fixing and concreting", members: [trade.formwork, trade.steel_fixing, trade.concreting]}
+  - {id: roof, label: Roofing and roof plumbing, members: [trade.roofing, trade.roof_plumbing]}
+  - {id: wet_areas, label: Waterproofing and tiling, members: [trade.waterproofing, trade.tiling]}
+  - {id: carpentry, label: Carpentry, members: [trade.carpentry_framing, trade.carpentry_fixout]}
+  - {id: excavation, label: Demolition and excavation, members: [trade.demolition, trade.earthworks]}

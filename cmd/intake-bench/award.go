@@ -257,6 +257,34 @@ func (a *apiClient) procurementAward(ctx context.Context, n int) error {
 		if _, err := a.timed(ctx, "award_write", http.MethodDelete, base+"/award", nil, http.StatusOK); err != nil {
 			return err
 		}
+		// A firm named on another row before its quote, the board read with
+		// it among eight rows of five firms, then the name removed
+		// (docs/plans/2026-11-11-procurement-invited-firms.md).
+		other := "/projects/" + project + "/procurement/packages/" + pkgs[1].id + "/invitations"
+		out, err := a.timed(ctx, "procurement_invite", http.MethodPost, other, []byte(`{"name":"Bench Invited Planning"}`), http.StatusCreated)
+		if err != nil {
+			return err
+		}
+		var inv struct {
+			FirmID string `json:"firm_id"`
+		}
+		if err := json.Unmarshal(out, &inv); err != nil {
+			return err
+		}
+		if _, err := a.timed(ctx, "procurement_board", http.MethodGet, "/projects/"+project+"/procurement/board", nil, http.StatusOK); err != nil {
+			return err
+		}
+		// A misspelt name corrected in its cell, then removed.
+		out, err = a.timed(ctx, "procurement_invite", http.MethodPut, other+"/"+inv.FirmID, []byte(`{"name":"Bench Invited Planning Pty Ltd"}`), http.StatusOK)
+		if err != nil {
+			return err
+		}
+		if err := json.Unmarshal(out, &inv); err != nil {
+			return err
+		}
+		if _, err := a.timed(ctx, "procurement_invite", http.MethodDelete, other+"/"+inv.FirmID, nil, http.StatusNoContent); err != nil {
+			return err
+		}
 	}
 	return nil
 }

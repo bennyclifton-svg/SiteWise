@@ -14,7 +14,7 @@ export function BackButton({ to, onClick, disabled, title, className }: { to: st
 }
 
 /** A menu item; one with `checked` is a switch that stays open when toggled. */
-export type MenuItem = { label: string; icon: ReactNode; onSelect?: () => void; href?: string; download?: boolean; checked?: boolean; disabled?: boolean };
+export type MenuItem = { label: string; icon: ReactNode; onSelect?: () => void; href?: string; download?: boolean; newTab?: boolean; checked?: boolean; disabled?: boolean };
 
 /** The page's other actions behind three dots; each item shows its icon. */
 export function MoreMenu({ label, items }: { label: string; items: MenuItem[] }) {
@@ -43,7 +43,7 @@ export function MoreMenu({ label, items }: { label: string; items: MenuItem[] })
     <button ref={trigger} type="button" className="more-menu-btn" aria-label={label} title={label} aria-haspopup="menu" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><IconMore /></button>
     {open && <div id={id} className="page-action-menu more-menu-list" role="menu" aria-label={label}>
       {items.map(item => item.href
-        ? <a key={item.label} role="menuitem" href={item.href} download={item.download || undefined} onClick={pick(item)}><span className="more-menu-icon" aria-hidden="true">{item.icon}</span>{item.label}</a>
+        ? <a key={item.label} role="menuitem" href={item.href} download={item.download || undefined} target={item.newTab ? "_blank" : undefined} rel={item.newTab ? "noreferrer" : undefined} onClick={pick(item)}><span className="more-menu-icon" aria-hidden="true">{item.icon}</span>{item.label}</a>
         : <button key={item.label} type="button" role={item.checked === undefined ? "menuitem" : "menuitemcheckbox"} aria-checked={item.checked} disabled={item.disabled} onClick={pick(item)}>
           <span className="more-menu-icon" aria-hidden="true">{item.icon}</span>{item.label}
           {item.checked && <span className="more-menu-tick" aria-hidden="true"><IconConfirmed /></span>}</button>)}
@@ -51,7 +51,13 @@ export function MoreMenu({ label, items }: { label: string; items: MenuItem[] })
   </div>;
 }
 
-export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null; sideTarget?: HTMLDivElement | null; openSide?: () => void }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
+export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null; headerTarget?: HTMLDivElement | null; sideTarget?: HTMLDivElement | null; openSide?: () => void }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
+
+/** A page action in the title band, beside the documents toggle (Profile's Update; owner, 10 Nov 2026). */
+export function PageHeaderAction({ surface, children }: { surface: string; children: ReactNode }) {
+  const { surface: active, headerTarget } = useContext(PageActionsContext);
+  return active === surface && headerTarget ? createPortal(children, headerTarget) : null;
+}
 
 /** Details about the thing in the working view (not a document) take the
  * right-hand column in place of the register while they are open. */

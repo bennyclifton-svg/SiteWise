@@ -146,14 +146,23 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 				}
 			}
 		}
+	case "term":
+		return termKnown(d, sk, name)
 	case "wording":
 		// A service's wording is wording:position.<key>; a stage line's is
-		// wording:<stage>.<line>. Both only where scope is by stage.
+		// wording:<stage>.<line>. Both only where scope is by stage. A
+		// term's is wording:terms.<key>.
+		if term, ok := strings.CutPrefix(name, "terms."); ok {
+			return termKnown(d, sk, term)
+		}
 		if service, ok := strings.CutPrefix(name, "position."); ok {
 			return d.ScopeByStage && validKey(d, sk, drivers, "position:"+service)
 		}
 		return validKey(d, sk, drivers, "line:"+name)
 	case "custom":
+		if name == "terms" {
+			return true
+		}
 		for _, s := range d.Stages {
 			if d.ScopeByStage && s.Key == name {
 				return true
@@ -164,7 +173,7 @@ func validKey(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, drivers Drive
 }
 
 var (
-	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight|line|wording|custom):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
+	settingKeyRE = regexp.MustCompile(`^((stage|element|allowance|position|responsible|field|weight|line|wording|custom|term):[a-z0-9_.]{1,100}|scale|boundary:range|parts:affected)$`)
 	customIDRE   = regexp.MustCompile(`^u[a-z0-9]{1,15}$`)
 	dateRE       = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`)
 	numberRE     = regexp.MustCompile(`^[0-9]{1,12}(\.[0-9]{1,2})?$`)
@@ -201,6 +210,9 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 	if strings.HasPrefix(key, "custom:") {
 		if !settingKeyRE.MatchString(key) || !validKey(d, sk, drivers, key) {
 			return ErrInvalidSetting
+		}
+		if key == CustomTerms {
+			return validCustomTerms(raw)
 		}
 		return validCustomLines(raw)
 	}
@@ -275,6 +287,14 @@ func ValidateSetting(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, driver
 		return oneOf("I", "O", "X", Ask)
 	case prefix == "line":
 		return oneOf("I", "X", Deleted)
+	case prefix == "term":
+		return oneOf(Deleted)
+	case prefix == "wording" && strings.HasPrefix(name, "terms."):
+		s, ok := str()
+		if !ok || !validTermText(s, termSlots(d, sk, strings.TrimPrefix(name, "terms."))) {
+			return ErrInvalidSetting
+		}
+		return nil
 	case prefix == "wording":
 		s, ok := str()
 		if !ok || !validLineText(s) {
@@ -334,6 +354,81 @@ func validCustomLines(raw json.RawMessage) error {
 			return ErrInvalidSetting
 		}
 		seen[l.ID] = true
+	}
+	return nil
+}
+
+// CustomTerms holds the terms the user adds to an RFP, as custom:<stage>
+// holds a stage's own lines.
+const CustomTerms = "custom:terms"
+
+// MaxCustomTerms bounds the terms a user adds to one RFP.
+const MaxCustomTerms = 20
+
+// TermSetting reports whether a setting edits the terms list itself: a
+// term deleted, reworded or added.
+func TermSetting(key string) bool {
+	return strings.HasPrefix(key, "term:") || strings.HasPrefix(key, "wording:terms.") || key == CustomTerms
+}
+
+// termKnown reports whether the discipline or skeleton has a term at key.
+func termKnown(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, key string) bool {
+	for _, rows := range [][]knowledge.RFPRow{sk.Terms, d.Terms} {
+		for _, t := range rows {
+			if t.Key == key {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// termSlots are the field slots a term's standard wording holds; a
+// reworded term may keep them and add no others.
+func termSlots(d knowledge.RFPDiscipline, sk knowledge.RFPSkeleton, key string) map[string]bool {
+	out := map[string]bool{}
+	for _, rows := range [][]knowledge.RFPRow{sk.Terms, d.Terms} {
+		for _, t := range rows {
+			if t.Key != key {
+				continue
+			}
+			for _, m := range slotRE.FindAllString(t.Text, -1) {
+				if strings.HasPrefix(m, "{field:") {
+					out[m] = true
+				}
+			}
+		}
+	}
+	return out
+}
+
+// validTermText is a term's wording: one trimmed line of up to 600
+// characters whose only braces are the allowed {field:x} slots.
+func validTermText(text string, slots map[string]bool) bool {
+	if text == "" || text != strings.TrimSpace(text) || utf8.RuneCountInString(text) > 600 || !printable(text) || strings.Contains(text, "\n") {
+		return false
+	}
+	ok := true
+	rest := slotRE.ReplaceAllStringFunc(text, func(m string) string {
+		ok = ok && slots[m]
+		return ""
+	})
+	return ok && !strings.ContainsAny(rest, "{}")
+}
+
+// validCustomTerms checks the user's own terms: each with a fresh id and
+// wording without slots.
+func validCustomTerms(raw json.RawMessage) error {
+	var terms []CustomLine
+	if len(raw) == 0 || len(raw) > 20000 || json.Unmarshal(raw, &terms) != nil || terms == nil || len(terms) > MaxCustomTerms {
+		return ErrInvalidSetting
+	}
+	seen := map[string]bool{}
+	for _, t := range terms {
+		if !customIDRE.MatchString(t.ID) || seen[t.ID] || !validTermText(t.Text, nil) || t.Value != "I" {
+			return ErrInvalidSetting
+		}
+		seen[t.ID] = true
 	}
 	return nil
 }

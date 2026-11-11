@@ -1,0 +1,104 @@
+# Metalwork and balustrades RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-metalwork
+version: 1
+status: draft
+kind: works
+title: Metalwork and balustrades
+heading: "REQUEST FOR TENDER: METALWORK AND BALUSTRADES"
+discipline_ids: [trade.metalwork]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the metalwork and balustrade contractor. Your job is to detail, make and fix the balustrades, handrails, stairs and metalwork the documents show, so every barrier stops a fall where one can happen and every handrail is safe to use, and to show they meet the loads."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Stairways, Ramps, and Barriers)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1288 — Glass in Buildings)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Make each barrier high enough, with openings small enough and nothing a child can climb, for its location.
+      - Make each barrier and its fixings strong enough for the loads its location carries, and give the engineer's or designer's evidence.
+      - Use glass made for barriers in any glass balustrade.
+      - Agree each fixing through a membrane with the waterproofer before you drill.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Stairways, Ramps, and Barriers)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1288 — Glass in Buildings)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Shop drawings and fixing details for the design team's review"}
+      - {key: design, text: "Design and engineering of balustrades, handrails and their fixings where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1288 — Glass in Buildings)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: fabrication
+    name: "Fabrication and finishes"
+    lines:
+      - {key: fabricate, text: "Fabrication of balustrades, handrails and metalwork"}
+      - {key: finishes, text: "Galvanising, powder coating or other finishes to the specification"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]
+  - key: balustrades
+    name: "Balustrades and handrails"
+    lines:
+      - {key: balustrades, text: "Balustrades to balconies, decks, stairs, landings and voids the documents show"}
+      - {key: glass, text: "Glass balustrades and infill panels the documents show"}
+      - {key: handrails, text: "Handrails to stairs and ramps"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Stairways, Ramps, and Barriers)"}]
+  - key: stairs
+    name: "Stairs and other metalwork"
+    lines:
+      - {key: stairs, text: "Steel stairs, stringers and landings the documents give you"}
+      - {key: misc, text: "Screens, grilles, gates and other metalwork the documents list"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Stairways, Ramps, and Barriers)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Inspection hold points the engineer sets"}
+      - {key: certificates, text: "Engineer's or designer's certificate that the barriers and fixings meet their loads"}
+      - {key: records, text: "Finish warranties, care instructions and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: structure, label: "Structure and blocking for the fixings, to your fixing details, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md"}]}
+  - {key: membrane, label: "Sealing the membrane around fixings through it, by the waterproofer", kind: technical, value: X, responsible: "waterproofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Balcony and External Waterproofing)"}]}
+  - {key: pool, label: "Pool safety barriers, by the fencing contractor", kind: technical, value: X, responsible: "fencing contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Pool Barriers and Construction in Flood Hazard Areas)"}]}
+  - {key: plant, label: "Plant platforms, ladders and guardrails for maintenance, by the trade the documents name", kind: technical, value: X, responsible: "as the documents state", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 1657 — Fixed Platforms, Walkways, Stairways and Ladders — Design, Construction and Installation)"}]}
+  - {key: structural, label: "Primary structural steel, by the structural steel contractor", kind: technical, value: X, responsible: "structural steel contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

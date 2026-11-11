@@ -17,13 +17,25 @@ test("project loading recovers, search is local and sign-out revokes access", as
   await expect(page.getByRole("status")).toContainText("No projects match");
   await page.getByRole("searchbox", { name: "Find a project" }).fill("Readiness recovery");
   await expect(page.getByRole("link", { name: /Readiness recovery/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Delete Readiness recovery", exact: true })).toBeHidden();
-  await page.getByText("Actions", { exact: true }).click();
-  await page.getByRole("button", { name: "Delete Readiness recovery", exact: true }).click();
+  // Row actions sit in one menu: rename, archive (kept, off the list) and delete (confirmed).
+  await expect(page.getByRole("menuitem", { name: "Delete project…" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Actions for Readiness recovery", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Delete project…" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
-  await page.getByRole("button", { name: "Sign out", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Sign in with your invite" })).toBeVisible();
+  await page.getByRole("button", { name: "Actions for Readiness recovery", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Archive" }).click();
+  await expect(page.getByRole("link", { name: /Readiness recovery/ })).toHaveCount(0);
+  await page.getByRole("button", { name: /^Archived/ }).click();
+  await page.getByRole("button", { name: "Actions for Readiness recovery", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Restore" }).click();
+  // With nothing left archived the filter goes and the active list returns.
+  await expect(page.getByRole("button", { name: /^Archived/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Readiness recovery/ })).toBeVisible();
+  // Sign out lives in the account menu, as inside a project.
+  await page.getByRole("button", { name: "Account menu", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Log out" }).click();
+  await expect(page.getByRole("heading", { name: "Sign in", exact: true })).toBeVisible();
   expect((await page.request.get("/api/session")).status()).toBe(401);
 });
 

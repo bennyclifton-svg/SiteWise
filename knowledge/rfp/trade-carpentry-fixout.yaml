@@ -1,0 +1,93 @@
+# Carpentry (fix-out) RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-carpentry-fixout
+version: 1
+status: draft
+kind: works
+title: Carpentry (fix-out)
+heading: "REQUEST FOR TENDER: CARPENTRY (FIX-OUT)"
+discipline_ids: [trade.carpentry_fixout]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the fix-out carpenter. Your job is to hang the internal doors, fit their hardware and fix the trims the documents show, plumb, square and ready for paint, without damage to the linings and finishes around them."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Check the finished floor each door must clear before you trim it.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md (7. Progress claim assessment against HIA stage-payment schedule)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: establishment, end: handover}
+
+stages:
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: doors
+    name: "Internal doors and hardware"
+    lines:
+      - {key: frames, text: "Door frames and jambs"}
+      - {key: hang, text: "Hanging internal doors, trimmed to clear the finished floor"}
+      - {key: hardware, text: "Fitting hinges, locks, handles, stops and closers"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]
+  - key: trims
+    name: "Skirtings, architraves and trims"
+    lines:
+      - {key: architraves, text: "Architraves to doors and windows"}
+      - {key: skirtings, text: "Skirtings, fixed before the floor finishes the documents sequence after them"}
+      - {key: reveals, text: "Window reveals and sills the documents give you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]
+  - key: fittings
+    name: "Fittings and fix-out"
+    lines:
+      - {key: shelving, text: "Shelving and hanging rails not in the joinery package"}
+      - {key: hatches, text: "Manholes and access hatches the documents show"}
+      - {key: accessories, text: "Fixing of bathroom accessories the documents give you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md (7. Progress claim assessment against HIA stage-payment schedule)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: adjust, text: "Adjustment of doors and hardware before handover"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: door_supply, label: "Supply of door hardware, by the door hardware supplier when that is let separately", kind: technical, value: X, responsible: "door hardware supplier", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: fire_doors, label: "Fire and smoke doors and their certification, by the head contractor unless the documents give them to you", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/fire-life-safety-guide.md"}]}
+  - {key: joinery, label: "Kitchen, vanity and wardrobe joinery, by the joinery contractor", kind: technical, value: X, responsible: "joinery contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Kitchen cabinetry)"}]}
+  - {key: paint, label: "Filling, caulking and painting of doors and trims, by the painter", kind: technical, value: X, responsible: "painter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

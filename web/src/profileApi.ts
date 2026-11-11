@@ -2,7 +2,7 @@
 // a write returns the whole profile so the page stays consistent.
 import { ApiError } from "./api";
 
-export type ProfileBand = "green" | "amber" | "red" | "blank" | "suggested" | "user" | "unchecked" | "";
+export type ProfileBand = "green" | "amber" | "red" | "blank" | "suggested" | "user" | "unchecked" | "typical" | "";
 
 export interface ProfileSource {
   document_id: string;
@@ -64,6 +64,46 @@ export interface SystemRow {
   scope_note?: string;
 }
 
+/**
+ * One value of an Accommodation schedule line
+ * (docs/plans/2026-11-11-accommodation-schedule-lines.md). keys are the
+ * readings behind it, for the update's marks.
+ */
+export interface LineCell extends Cell {
+  keys: string[];
+}
+
+/** One line of the schedule: a room, or a setting with its count in the comment. */
+export interface ScheduleLine {
+  /** "<space>#<n>" for a generated line; the row id for a line the user added. */
+  id: string;
+  space: string;
+  origin: "typical" | "document" | "card" | "user";
+  name: LineCell;
+  level: LineCell;
+  area: LineCell;
+  comment: LineCell;
+  /** Rooms this one line stands for until it is split. */
+  many?: number;
+  /** Why the line needs a look, in words. */
+  flag?: string;
+}
+
+export interface Accommodation {
+  lines: ScheduleLine[];
+  notices: string[];
+  /** The catalogue's line names, offered while typing a new line. */
+  names: string[];
+}
+
+export type LineField = "name" | "level" | "area" | "comment";
+
+export type AccommodationEdit =
+  | { op: "set"; lines: string[]; field: LineField; value: string }
+  | { op: "reset" | "delete" | "duplicate" | "split"; lines: string[] }
+  | { op: "order"; order: string[] }
+  | { op: "insert"; order: string[]; value: string };
+
 /** A scope choice: in, out, or null to hand it back to defaults and documents. */
 export type ScopeChoice = "in" | "out" | null;
 
@@ -96,6 +136,8 @@ export interface Profile {
  coverage?: SourceCoverage[];
   project_id: string;
   built_at: string | null;
+  /** Rises with every rebuild; the browser marks what changed between two. */
+  revision?: number;
   pending_documents: number;
   active_documents: number;
   /** Text split, not yet read by Jev; "Update project profile" reads them. */
@@ -121,6 +163,8 @@ export interface Profile {
   systems: { id: string; label: string; rows: SystemRow[] }[];
   compliance: { group: string; rows: ProfileField[] }[];
   presets: Preset[];
+  /** The Accommodation table: every catalogue space, in table order; shown says it is in the table. */
+  accommodation?: Accommodation;
   /** Packages awarded to a firm, with the firm's contact as the directory holds it. */
   appointed?: AppointedFirm[] | null;
 }
@@ -161,6 +205,9 @@ export const profileApi = {
     call<Part>("POST", `/projects/${projectId}/parts`, { label, kind, ncc_class }),
   renamePart: (projectId: string, partId: string, label: string) =>
     call<Part>("PATCH", `/projects/${projectId}/parts/${partId}`, { label }),
+  /** One edit to the Accommodation schedule; returns the table. No Jev. */
+  editAccommodation: (projectId: string, edit: AccommodationEdit) =>
+    call<Accommodation>("POST", `/projects/${projectId}/profile/accommodation`, edit),
   site: (projectId: string) => call<Site>("GET", `/projects/${projectId}/site`),
   setSite: (siteId: string, version: number, fields: { address?: string; lot?: string }) =>
     call<Site>("PATCH", `/sites/${siteId}`, { version, ...fields }),

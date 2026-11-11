@@ -74,11 +74,12 @@ Current drawings, access-chain boundary, measured routes, conditions and input o
 - Written authority before extra scope, overrun, rate/fee/time change: reason, output, price and program effect. Agree law/interpretation changes, delays and staged releases against baseline.
 - Sign-off records baseline; agreed design development/routine coordination remain included. Inputs need revisions/owners/dates; missing evidence/access promptly flagged.
 - Correct own errors without extra fee. Reasonable professional skill/care within competence; evidence limits do not waive agreed responsibilities.
+- Hold professional indemnity cover of $5 million (client selected) and public liability cover of $20 million (client selected) throughout the appointment.
 - Payment 30 days after correct invoice for agreed services; GST/stage milestones separate. Declare deposits, final-report release, interest and suspension departures.
 - State fixed rate period and proposed changes; disclose travel, portals/invoice formats, cancellation/remobilisation before appointment; no hidden uplift.
+- Agree project/team/authority/operator use and explicit third-party reliance, editable files/retention/handover and confidentiality. R6 declares caps/time bars, indemnities, IP limits, caveat/security and retrospective terms; agree law/disputes/cure/termination.
 - Valid 90 days; reconcile conflicting offered validity, program, meeting and liability terms. Missing agreement or revised attachment is not acceptance.
 - Issue scope answers as numbered addenda to all tenderers; acknowledge each.
-- Agree project/team/authority/operator use and explicit third-party reliance, editable files/retention/handover and confidentiality. R6 declares caps/time bars, indemnities, IP limits, caveat/security and retrospective terms; agree law/disputes/cure/termination.
 
 ### Returnable schedules: reply using this structure only
 

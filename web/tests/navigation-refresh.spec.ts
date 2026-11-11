@@ -40,9 +40,9 @@ test("panel actions align with the workspace and documents stay visible across t
   const download = page.getByRole("button", { name: "Download", exact: true });
   const docs = page.getByRole("complementary", { name: "Document register" });
   await expect(update).toBeVisible();
-  // Profile (owner, 7 Nov 2026): Update sits above the Project card with a
-  // three-dot menu holding Download and Add part; no top-right Download.
-  // The card has no "Project" title (owner, 8 Nov 2026).
+  // Profile: Update and the three-dot menu (Download and Add part) sit in the
+  // title band above the Project card (owner, 10 Nov 2026); no top-right
+  // Download. The card has no "Project" title (owner, 8 Nov 2026).
   const more = page.getByRole("button", { name: "Profile actions", exact: true });
   await expect(page.getByRole("heading", { name: "Project", exact: true })).toHaveCount(0);
   const cardHead = (await page.getByRole("heading", { name: "Site and planning", exact: true }).boundingBox())!;

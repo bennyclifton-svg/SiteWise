@@ -1,0 +1,101 @@
+# Insulation RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-insulation
+version: 1
+status: draft
+kind: works
+title: "Insulation"
+heading: "REQUEST FOR TENDER: INSULATION"
+discipline_ids: [trade.insulation]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the insulation contractor. Your job is to install the wall, ceiling, roof and floor insulation the documents and the energy commitments show, without gaps or compression, and to seal the envelope where the documents give it to you, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Energy Efficiency and Thermal Performance)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4859 Series — Thermal Insulation Materials)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Install ceiling insulation only once the head contractor confirms the roof is weathertight.
+      - Keep the clearances the documents require around downlights, flues and other heat sources.
+      - Give the evidence the energy assessor and certifier need that the installed insulation matches the energy commitments.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 7: Roof framing to insulation and ceiling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Energy Efficiency and Thermal Performance)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and product data"
+    lines:
+      - {key: shop_drawings, text: "Insulation layout and product data for the design team's review"}
+      - {key: design, text: "Product selection to the documents' ratings where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4859 Series — Thermal Insulation Materials)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: walls_floors
+    name: "Walls and floors"
+    lines:
+      - {key: walls, text: "Wall insulation in the frame before lining"}
+      - {key: floors, text: "Underfloor insulation where the documents show it"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Energy Efficiency and Thermal Performance)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4859 Series — Thermal Insulation Materials)"}]
+  - key: ceilings
+    name: "Ceilings and roof"
+    lines:
+      - {key: ceilings, text: "Ceiling insulation once the roof is weathertight"}
+      - {key: clearances, text: "Clearances around downlights, flues and heat sources"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 7: Roof framing to insulation and ceiling)"}]
+  - key: sealing
+    name: "Building sealing"
+    lines:
+      - {key: draught, text: "Draught sealing of gaps and penetrations the documents give to you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Energy Efficiency and Thermal Performance)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Inspection of coverage before lining, with photographs of concealed insulation"}
+      - {key: certificates, text: "Installation certificate and the evidence the energy assessor needs"}
+      - {key: records, text: "Product data and warranties"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 4859 Series — Thermal Insulation Materials)"}, {kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: membranes, label: "Roof sarking and wall wrap, by the roofer and the cladding contractor", kind: technical, value: X, responsible: "roofer and cladding contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}]}
+  - {key: roof_blanket, label: "Insulation blanket laid with metal roof sheeting, by the roofer", kind: technical, value: X, responsible: "roofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]}
+  - {key: linings, label: "Plasterboard walls and ceilings, by the plasterboard contractor", kind: technical, value: X, responsible: "plasterboard contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 7: Roof framing to insulation and ceiling)"}]}
+  - {key: window_seals, label: "Seals to windows and external doors, by the window supplier", kind: technical, value: X, responsible: "window supplier", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Energy Efficiency and Thermal Performance)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

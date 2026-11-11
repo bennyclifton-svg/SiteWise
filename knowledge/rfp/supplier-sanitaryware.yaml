@@ -1,0 +1,91 @@
+# Sanitaryware and tapware RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape
+# as trade-structural-steel.yaml, with supply-oriented stages. Research:
+# docs/research/2026-11-10-trades/completion-supplies.md. Draft until the owner reviews it.
+id: supplier-sanitaryware
+version: 1
+status: draft
+kind: works
+title: Sanitaryware and tapware
+heading: "REQUEST FOR TENDER: SANITARYWARE AND TAPWARE"
+discipline_ids: [supplier.sanitaryware]
+evidence_limit: "Seed guidance only; no historical tender for this supply has been encoded."
+
+scale:
+  text: "One supply package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the sanitaryware and tapware supplier. Your job is to supply the toilets, basins, baths, sinks, showers and tapware the fixture schedule shows, carrying the plumbing certification and water ratings the documents require, delivered in time for the plumber's rough-in and fit-off."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Check the fixture schedule against the documents and flag anything missing or unavailable.
+      - Give the plumber the rough-in set-outs and deliver concealed parts before rough-in.
+      - Hand over warranties, care instructions and spare parts.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: establishment, end: handover}
+
+stages:
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own coordination with the head contractor and the plumber"}
+      - {key: access, text: "Secure storage of fixtures until they are fitted"}
+      - {key: clean, text: "Removal of your packaging"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: selection
+    name: "Schedule and selection"
+    lines:
+      - {key: schedule, text: "Fixture and tapware schedule checked against the documents"}
+      - {key: samples, text: "Showroom selection or samples with the client where asked"}
+      - {key: certification, text: "Evidence of the plumbing product certification and water efficiency rating of each product"}
+      - {key: rough_in, text: "Rough-in set-outs and installation instructions to the plumber before rough-in"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md"}]
+  - key: supply
+    name: "Supply and delivery"
+    lines:
+      - {key: concealed, text: "Delivery of in-wall bodies, concealed cisterns and in-floor parts before rough-in"}
+      - {key: fixtures, text: "Delivery of fixtures and tapware before fit-off, checked for damage"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: install
+    name: "Installation"
+    lines:
+      - {key: install, text: "Fitting of fixtures and tapware by a licensed plumber"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md"}]
+  - key: handover
+    name: Warranties and handover
+    lines:
+      - {key: records, text: "Warranties, care instructions and product data"}
+      - {key: spares, text: "Spare parts the documents ask for"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+
+positions:
+  - {key: fitting, label: "Fitting and connection of fixtures and tapware, by the plumbing trade unless this tender includes it", kind: technical, value: X, responsible: "plumbing trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: waterproofing, label: "Waterproofing around baths, shower bases and floor wastes, by the waterproofing trade", kind: technical, value: X, responsible: "waterproofing trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: screens, label: "Shower screens and mirrors, by the shower screen trade", kind: technical, value: X, responsible: "shower screen trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/cost-management-principles.md"}]}
+  - {key: vanities, label: "Vanity cabinets and tops, by the joinery contractor or the stone supplier", kind: technical, value: X, responsible: "joinery contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md"}]}
+  - {key: accessible, label: "Accessible fixtures and grab rails to the access report, coordinated with the access consultant", kind: technical, value: X, responsible: "access consultant", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/access-consultant-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

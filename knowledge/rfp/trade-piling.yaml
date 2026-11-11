@@ -1,0 +1,103 @@
+# Piling RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-piling
+version: 1
+status: draft
+kind: works
+title: Piling
+heading: "REQUEST FOR TENDER: PILING"
+discipline_ids: [trade.piling]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the piling contractor. Your job is to install the piles the documents show to their founding level and position, test them as the specification requires, and give the engineer the records to accept them, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Structural Systems for Commercial Buildings)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Stop and tell the engineer when the ground or an obstruction differs from the geotechnical report.
+      - Hold each pile for the founding inspection the geotechnical or structural engineer sets.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/geotechnical-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and method"
+    lines:
+      - {key: design, text: "Pile design where the documents leave it to the contractor"}
+      - {key: method, text: "Piling method statement and the working platform you need, for review"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: rig
+    name: "Rig establishment"
+    lines:
+      - {key: mobilise, text: "Mobilisation and removal of the piling rig"}
+      - {key: position_check, text: "Check of the pile positions the surveyor marks before boring"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}]
+  - key: piles
+    name: "Piles"
+    lines:
+      - {key: install, text: "Piles, piers or screw piles the documents show, to the founding level"}
+      - {key: cages, text: "Reinforcement cages and concrete to bored piles"}
+      - {key: trim, text: "Trimming piles to cut-off level"}
+      - {key: spoil, text: "Removal of piling spoil"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Foundations and Footing Systems)"}]
+  - key: testing
+    name: "Testing"
+    lines:
+      - {key: integrity, text: "Integrity testing to the specification"}
+      - {key: load, text: "Load testing where the specification asks for it"}
+      - {key: founding, text: "Founding inspection hold points the engineer sets"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}, {kind: seed, ref: "data/reference/clerk/data/seed/geotechnical-guide.md"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Your certificate that the piles are installed to the design"}
+      - {key: records, text: "Pile records: founding levels, concrete and as-built positions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}]
+
+positions:
+  - {key: platform, label: "Working platform for the rig, by the earthworks trade", kind: technical, value: X, responsible: "earthworks trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 2159 — Piling — Design and Installation)"}]}
+  - {key: set_out, label: "Survey set-out, grid lines and levels from the survey control, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-owner-builder.md (Subcontractor and trade management)"}, {kind: seed, ref: "data/reference/clerk/data/seed/surveying-guide.md"}]}
+  - {key: inspection, label: "Founding inspections and pile acceptance, by the client's geotechnical and structural engineers", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/geotechnical-guide.md"}]}
+  - {key: caps, label: "Pile caps and ground beams over the piles, by the concreting, formwork and steel fixing trades", kind: technical, value: X, responsible: "the concreting, formwork and steel fixing trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-commercial-industrial-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

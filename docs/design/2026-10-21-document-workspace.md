@@ -31,6 +31,36 @@ is 50 / 150 ms and filing stays 1,000 / 2,000 ms. The browser regression measure
 20 document-list reads. Native PDF rendering depends on document size and the
 browser and is not represented by that list-read measurement.
 
+## Viewer frame and filing beside the page (owner, 12 Nov 2026)
+
+This replaces the Document / Filing details pair described above. It followed
+a design review (`.impeccable/critique/`, 20/40) and three owner choices: hide
+the browser's PDF toolbar, put filing beside the page, tidy the frame.
+
+- One header row: the ground-line Back button named for the view behind
+  (Escape does the same and leaves the register selection alone), the filed
+  title with number, revision, date, discipline and filename beneath (only
+  what is filed), then Filing with its to-check count, Download, and a
+  three-dot menu holding Open in new tab and Print.
+- The PDF opens with `#toolbar=0&navpanes=0`, so Chrome and Edge show the same
+  page and offer no markup SiteWise cannot keep. Scrolling and Ctrl+scroll
+  zoom still work. The frame fills the sheet below the title band; the panel
+  around it no longer scrolls.
+- Filing is a column beside the page when the pane is at least 860px wide, and
+  remembers being closed. Narrower, it takes the page's place and starts
+  closed for each document. The page is hidden, never removed, so it keeps its
+  place. A file with no preview shows filing outright.
+- Fields are rows in the Project card's form: label, how it was decided, value
+  beneath. To-check is the amber edge from `states.css`, not a fill. The open
+  register row has the selected lift and an ink edge.
+- A suggestion's page is a link. The browser's viewer only takes a page when
+  it loads, so the link loads the PDF again at that page.
+
+Lane B for the frame; the filing column keeps the existing field editors and
+their tests (lane A). No Jev call, no new dependency, no server change. Not
+done here: invoices still embed their PDF with the browser toolbar, and the
+file is still sent whole on every open.
+
 ## Inline editing and selection
 
 - Double-click, F2 or Enter on a field starts editing. Kind, Discipline and

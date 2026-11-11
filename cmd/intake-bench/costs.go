@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"sitewise/internal/costs"
+	"strings"
 
 	"sitewise/internal/store"
 )
@@ -115,6 +116,40 @@ func (a *apiClient) costAutofill(ctx context.Context, st *store.Store, n int) er
 		}
 		if len(plan.Suggestions) != 0 {
 			return fmt.Errorf("autofill benchmark left suggestions")
+		}
+		// Bulk actions on a selection of lines (the grid's right-click menu):
+		// take five out of totals and back, copy them, delete the copies.
+		var picked []string
+		for _, it := range plan.Items {
+			if it.Posting && len(picked) < 5 {
+				picked = append(picked, it.ID)
+			}
+		}
+		bulk := func(step map[string]any) error {
+			step["plan_version_id"], step["version"] = plan.ID, plan.Version
+			body, _ := json.Marshal(step)
+			raw, e := a.timed(ctx, "costs_bulk", http.MethodPost, base+"/items/bulk", body, 200)
+			if e != nil {
+				return e
+			}
+			return json.Unmarshal(raw, &plan)
+		}
+		for _, step := range []map[string]any{{"op": "set", "ids": picked, "excluded": true}, {"op": "set", "ids": picked, "excluded": false}, {"op": "duplicate", "ids": picked}} {
+			if e = bulk(step); e != nil {
+				return e
+			}
+		}
+		var copies []string
+		for _, it := range plan.Items {
+			if strings.HasSuffix(it.Label, " (copy)") {
+				copies = append(copies, it.ID)
+			}
+		}
+		if len(copies) != len(picked) {
+			return fmt.Errorf("bulk duplicate made %d copies of %d lines", len(copies), len(picked))
+		}
+		if e = bulk(map[string]any{"op": "delete", "ids": copies}); e != nil {
+			return e
 		}
 		// Remove and restore source keys outside the measured prepare path.
 		for len(plan.Items) > 0 {

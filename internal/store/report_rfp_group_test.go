@@ -278,6 +278,33 @@ func TestGroupRFPSettingsWriteToTheMemberAndTheGroup(t *testing.T) {
 	}
 }
 
+// Terms print once for the engagement, so their edits are the group's: a
+// term only one member carries (structural's set-outs; civil leads) can be
+// deleted, and a shared one reworded, on the group's report.
+func TestGroupRFPTermEditsAreTheEngagements(t *testing.T) {
+	ctx := context.Background()
+	s, b, part := workStore(t)
+	g := groupRFPFixture(t, s, b, part, "consultant.structural", "consultant.civil")
+	terms := func(d store.ReportDraft) string { return draftBlock(d, "rfp:terms").Text }
+	if !strings.Contains(terms(g.draft), "Set-outs and bulk excavation levels") {
+		t.Fatalf("fixture: structural's set-out term prints: %q", terms(g.draft))
+	}
+	d, _, err := s.SetReportSettingInGroup(ctx, orgA, g.report.ID, userA, "term:setouts", json.RawMessage(`"D"`), g.draft.Version)
+	if err != nil {
+		t.Fatalf("delete a member's term on the group: %v", err)
+	}
+	if strings.Contains(terms(d), "Set-outs") {
+		t.Fatalf("deleted term still prints: %q", terms(d))
+	}
+	d, _, err = s.SetReportSettingInGroup(ctx, orgA, g.report.ID, userA, "wording:terms.validity", json.RawMessage(`"Proposals stay open for {field:validity_days} days."`), d.Version)
+	if err != nil || !strings.Contains(terms(d), "- Proposals stay open for 90 days.") {
+		t.Fatalf("reword a shared term: %v %q", err, terms(d))
+	}
+	if _, _, err := s.SetReportSettingInGroup(ctx, orgA, g.report.ID, userA, "term:nope", json.RawMessage(`"D"`), d.Version); !errors.Is(err, store.ErrInvalidSetting) {
+		t.Fatalf("unknown term: %v", err)
+	}
+}
+
 func TestGroupRFPChecksAndResponseForm(t *testing.T) {
 	ctx := context.Background()
 	s, b, part := workStore(t)

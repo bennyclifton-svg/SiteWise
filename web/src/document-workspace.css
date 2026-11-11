@@ -1,47 +1,202 @@
+/* A document in the working view (owner, 12 Nov 2026): one header row in the
+   workbench's own parts, then the page to the bottom of the window with its
+   filing beside it. The browser's PDF toolbar is hidden; the page is the view. */
+
 .document-workspace {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 100%;
-  padding: 1rem;
-  gap: 0.75rem;
+  gap: 14px;
 }
-.document-workspace-head,
-.document-workspace-tools {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+
+/* On the wide shell the view fills the sheet below the title band exactly, so
+   only the page scrolls. The sheet's bottom padding is mostly given back. */
+@media (min-width: 1101px) {
+  .document-workspace:not([data-layout="alone"]) {
+    height: calc(100% + 30px);
+    margin-bottom: -30px;
+  }
 }
-.document-workspace-head h2 {
+
+/* ---------- Header: Back, what the document is, its actions ---------- */
+
+.document-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "back title actions";
+  align-items: start;
+  gap: 8px 18px;
+}
+.document-head > .ground-btn { grid-area: back; margin-top: 3px; }
+.document-title { grid-area: title; min-width: 0; }
+.document-actions { grid-area: actions; display: flex; align-items: center; gap: 2px; }
+
+/* The Profile's section-title size, in the words the document was filed under. */
+.document-title h2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   margin: 0;
-  font-size: 1rem;
-  overflow-wrap: anywhere;
-  flex: 1;
-}
-.document-workspace-tools [role="group"] { display: flex; gap: 0.25rem; }
-.document-workspace-tools button[aria-pressed="true"] {
-  background: var(--sw-selection-bg);
+  overflow: hidden;
   color: var(--sw-text-primary);
-}
-.document-preview { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-.document-preview iframe {
-  width: 100%;
-  flex: 1;
-  min-height: 65vh;
-  border: 1px solid var(--sw-border-default);
-  background: var(--sw-surface);
-}
-.document-preview-help { margin: 0; color: var(--sw-text-secondary); font-size: var(--fs-md); }
-.document-text {
-  margin: 0;
-  padding: 1rem;
-  white-space: pre-wrap;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.012em;
   overflow-wrap: anywhere;
+}
+.document-meta {
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: var(--sw-text-tertiary);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.document-meta span + span::before { content: "·"; margin: 0 .55em; }
+
+.document-filing-toggle svg { width: 18px; height: 18px; }
+/* The warning mark carries the amber; the count stays ink so it reads. */
+.document-tocheck { display: inline-flex; align-items: center; gap: 3px; margin-left: 2px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.document-tocheck svg { width: 15px; height: 15px; color: var(--origin-check); }
+
+/* A narrow pane: the title takes its own line under Back and the actions. */
+@container (max-width: 780px) {
+  .document-head { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "back actions" "title title"; }
+  .document-actions { justify-self: end; }
+}
+@container (max-width: 420px) {
+  .document-download span { display: none; }
+}
+
+/* ---------- The page and its filing ---------- */
+
+.document-body {
+  position: relative;
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+}
+.document-workspace[data-layout="beside"][data-filing] .document-body {
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 30%, 380px);
+  column-gap: 20px;
+}
+.document-workspace[data-layout="alone"] .document-body { display: block; max-width: 560px; }
+
+.document-page { position: relative; display: flex; min-width: 0; min-height: 0; }
+.document-frame { position: relative; flex: 1; min-height: 0; background: var(--sw-surface-inset); }
+.document-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.document-wait {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 16px;
+  color: var(--sw-text-secondary);
+  font-size: var(--fs-md);
+  text-align: center;
+}
+.document-wait p { margin: 0; }
+.document-text {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 20px 24px;
+  overflow: auto;
+  border-top: 1px solid var(--sw-border-strong);
+  background: transparent;
+  color: var(--sw-text-primary);
   font: inherit;
   line-height: 1.6;
-  background: var(--sw-surface);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
-.document-filing { min-width: 0; }
-.document-filing .reg-grid { margin: 1rem 0; }
+.document-text:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+
+/* Stacked under the title on a small screen the panel has no height of its
+   own, so the page takes most of the screen. */
+@media (max-width: 1100px) {
+  .document-workspace:not([data-layout="alone"]) .document-body { min-height: 76svh; }
+}
+
+.document-filing { min-width: 0; container-type: inline-size; }
+.document-workspace[data-layout="beside"] .document-filing { min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+/* Too narrow for both: filing takes the page's place. The page is only
+   hidden, never removed, so it is where it was left on the way back. */
+.document-workspace[data-layout="over"] .document-filing { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: thin; }
+.document-workspace[data-layout="over"][data-filing] .document-page { visibility: hidden; }
+
+.document-workspace:not([data-layout="alone"]) .document-filing .section-band { position: sticky; top: 0; z-index: 1; }
+.document-filing-state { display: inline-flex; align-items: center; gap: 8px; }
+.document-filing .section-band .tb-state { font-size: var(--fs-xs); }
+.document-filing .tb-note { margin: 0; padding: 10px 12px; border-bottom: 1px solid var(--trace-rule); font-size: var(--fs-sm); line-height: 1.5; }
+.document-filing .tb-note .btn { margin-left: 8px; }
+
+/* Each field is a row as on the Project card: its label, how it was decided
+   at the label's end, and the value beneath. A row is corrected in place. */
+.document-filing .reg-grid { display: block; margin: 0; border-bottom: 1px solid var(--sw-border-strong); }
+.document-filing .cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "label why" "value value";
+  gap: 3px 10px;
+  width: 100%;
+  min-height: 0;
+  padding: 9px 12px 8px;
+  border-bottom: 1px solid var(--trace-rule);
+  background: transparent;
+  color: var(--sw-text-primary);
+  font: inherit;
+}
+.document-filing .cell:last-child { border-bottom: 0; }
+.document-filing .cell-label {
+  grid-area: label;
+  overflow: hidden;
+  color: var(--sw-text-tertiary);
+  font-family: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+.document-filing .cell-value { grid-area: value; color: var(--sw-text-primary); font-size: var(--fs-md); font-weight: 500; line-height: 1.35; }
+.document-filing .cell-value[data-empty="true"] { color: var(--sw-text-tertiary); font-weight: 400; }
+.document-filing .cell-why { grid-area: why; align-self: center; color: var(--sw-text-tertiary); }
+
+/* States follow states.css and the origin rule: no fills, an amber edge to
+   check, green from the document, rust set by you. */
+.document-filing button.cell:hover { background: var(--state-hover); }
+.document-filing button.cell:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
+.document-filing .cell[data-state="check"] { background: transparent; box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+.document-filing button.cell[data-state="check"]:hover { background: var(--state-hover); }
+.document-filing .cell[data-state="check"] .cell-why { color: var(--warn); }
+.document-filing .cell[data-state="check"] .cell-why svg { color: var(--origin-check); }
+.document-filing .cell[data-state="confirmed"] .cell-why { color: var(--origin-doc); }
+.document-filing .cell[data-state="unchecked"] { background: repeating-linear-gradient(135deg, transparent 0 6px, var(--hatch) 6px 7px); }
+.document-filing .cell[data-state="user"]::before { display: none; }
+.document-filing .cell[data-state="user"] .cell-why { color: var(--origin-user); }
+.document-filing .cell-edit { background: var(--state-edit-bg); box-shadow: inset 0 0 0 1px var(--state-edit-ring); }
+.document-filing .cell-edit .input,
+.document-filing .cell-edit .select { grid-area: value; height: 32px; font-size: var(--fs-md); }
+.document-filing .cell-hint { grid-area: why; align-self: center; }
+
+/* Suggestions read from the page images, under their own band. */
+.document-filing .visual-review { margin: 0; padding: 0; border-top: 0; }
+.document-filing .visual-review > :is(p, .visual-review-layout) { margin: 0; padding: 10px 12px 0; }
+.document-filing .visual-review > p { font-size: var(--fs-sm); line-height: 1.5; }
+.document-filing .visual-review-field { padding-block: 8px; border-bottom: 1px solid var(--trace-rule); }
+.document-filing .visual-review-field strong { color: var(--sw-text-tertiary); font-size: var(--fs-xs); font-weight: 400; }
+.document-filing .visual-review-field p { margin-block: 2px; font-size: var(--fs-md); font-weight: 500; }
+.document-filing .visual-review-field span { color: var(--sw-text-secondary); font-size: var(--fs-xs); }
+.document-filing .visual-review-evidence { padding-bottom: 16px; font-size: var(--fs-sm); }
+@container (max-width: 560px) {
+  .document-filing .visual-review-layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+}

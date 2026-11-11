@@ -1465,6 +1465,50 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             seen.add(b.get("id"))
 
 
+def check_trades(report: Report, known: dict) -> None:
+    """knowledge/works/trades.yaml, the Procurement trades list
+    (docs/plans/2026-11-10-trades-catalogue.md). The Go loader enforces the
+    same rules; this keeps the gate an agent runs in step with it."""
+    path = KNOWLEDGE / WORKS_DIR / "trades.yaml"
+    if not path.is_file():
+        return
+    rel = path.relative_to(ROOT).as_posix()
+    try:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as e:
+        report.error(rel, f"invalid YAML: {e}")
+        return
+    if doc.get("version") != 1 or doc.get("status") not in {"draft", "reviewed"}:
+        report.error(rel, "needs version 1 and status draft or reviewed")
+    filing = {d["id"]: d["label"] for d in json.loads((INTAKE / "disciplines.json").read_text(encoding="utf-8"))["disciplines"]
+              if d["id"].startswith(("trade.", "supplier."))}
+    seen: set = set()
+    for t in doc.get("trades") or []:
+        tid = t.get("id", "") if isinstance(t, dict) else ""
+        where = f"{rel} [{tid or '?'}]"
+        if not tid or not t.get("label"):
+            report.error(where, "needs id and label")
+            continue
+        if tid in seen:
+            report.error(where, "duplicate trade id")
+        seen.add(tid)
+        if not ((t.get("kind") == "trade" and tid.startswith("trade.")) or (t.get("kind") == "supply" and tid.startswith("supplier."))):
+            report.error(where, "kind trade needs trade.*, kind supply needs supplier.*")
+        if t.get("used_on") not in {"house", "commercial", "both"}:
+            report.error(where, "used_on must be house, commercial or both")
+        for s in t.get("builds") or []:
+            if not (s == "all" and tid == "trade.main_works") and s not in known["system"]:
+                report.error(where, f"builds unknown system {s}")
+        if tid in filing and filing[tid] != t.get("label"):
+            report.error(where, f"label must match the filing label {filing[tid]!r}")
+    for tid in sorted(set(filing) - seen):
+        report.error(rel, f"filing trade {tid} is missing")
+    for b in doc.get("bundles") or []:
+        members = b.get("members") or [] if isinstance(b, dict) else []
+        if len(members) < 2 or any(m not in seen or m == "trade.main_works" for m in members):
+            report.error(f"{rel} [bundle {b.get('id', '?') if isinstance(b, dict) else '?'}]", "needs two or more listed trades, never Main Works")
+
+
 def check_cost_structure(report: Report, seed_dir: Path, cache: dict) -> None:
     systems = {}
     for _, kind, items in load_files(Report()):
@@ -2058,6 +2102,7 @@ def main() -> int:
     pending = check_works(report, args.seed_dir, refs, cache, actions_doc, known)
     check_catalogues(report, args.seed_dir, cache, determinants)
     check_rfp(report)
+    check_trades(report, known)
     check_cost_structure(report, args.seed_dir, cache)
     check_program(report, args.seed_dir, cache, refs)
     check_replacements(deprecated, known, report)

@@ -153,7 +153,8 @@ Payment within 30 days.
   await expect(award.locator(".award-preview li")).toHaveCount(1);
   await award.getByRole("button", { name: "Award and write to cost plan", exact: true }).click();
   await expect(award).toHaveCount(0);
-  await page.getByRole("button", { name: "Open cost plan", exact: true }).click();
+  await page.getByRole("button", { name: "More actions", exact: true }).click();
+  await page.getByRole("menuitem", { name: "Open cost plan", exact: true }).click();
   await expect(page.getByRole("cell", { name: "Design services", exact: true })).toBeVisible();
   const plan = await (await page.request.get(`${base}/cost-plan`)).json();
   const line = plan.items.find((i: {label: string}) => i.label === "Design services");

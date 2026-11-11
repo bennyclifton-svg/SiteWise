@@ -1,11 +1,9 @@
 package knowledge
 
 import (
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"regexp"
-	intakevocab "sitewise/data/intake"
 	"strings"
 )
 
@@ -55,16 +53,12 @@ func (c *Catalog) loadCostElements(root string) error {
 	if file.Version != 1 || (file.Status != "draft" && file.Status != "reviewed") || len(file.Sources) == 0 {
 		return fmt.Errorf("invalid cost elements metadata")
 	}
-	// Use the existing intake vocabulary, not a second list of trade names.
-	raw := intakevocab.Disciplines
+	// Trades come from the Procurement trades list (knowledge/works/trades.yaml),
+	// which holds every trade the filing vocabulary does.
 	var e error
-	var vocab struct{ Disciplines []struct{ ID string } }
-	if e = json.Unmarshal(raw, &vocab); e != nil {
-		return e
-	}
 	trades := map[string]bool{}
-	for _, d := range vocab.Disciplines {
-		trades[d.ID] = strings.HasPrefix(d.ID, "trade.")
+	for _, t := range c.trades {
+		trades[t.ID] = strings.HasPrefix(t.ID, "trade.")
 	}
 	seen, codes := map[string]bool{}, map[string]bool{}
 	for n, el := range file.Elements {

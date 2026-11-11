@@ -1,0 +1,108 @@
+# Floor coverings RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-floor-coverings
+version: 1
+status: draft
+kind: works
+title: Floor coverings
+heading: "REQUEST FOR TENDER: FLOOR COVERINGS"
+discipline_ids: [trade.floor_coverings]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the floor coverings contractor. Your job is to lay the carpet and resilient floors the documents show over a substrate fit for them, with level transitions between finishes, after the painting is done."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Flooring)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Test slabs and subfloors for moisture before you lay, and tell the head contractor in writing if they are not ready.
+      - Lay carpet only after painting and the wet trades have finished.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Carpet)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Samples and set-out"
+    lines:
+      - {key: samples, text: "Samples of each floor covering, underlay and trim for approval"}
+      - {key: set_out, text: "Seam and set-out plan where the documents call for one"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Flooring)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Substrate and preparation"
+    lines:
+      - {key: moisture, text: "Moisture testing of slabs and subfloors"}
+      - {key: prep, text: "Floor preparation and levelling compound the documents give you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Flooring)"}]
+  - key: resilient
+    name: "Vinyl and resilient floors"
+    lines:
+      - {key: vinyl, text: "Sheet vinyl, vinyl plank and tile the documents show"}
+      - {key: wet_zones, text: "Glue-down laying in wet zones and at floor penetrations"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Luxury vinyl plank / tile (LVP / LVT))"}]
+  - key: carpet
+    name: "Carpet"
+    lines:
+      - {key: carpet, text: "Carpet, underlay and grippers the documents show"}
+      - {key: stairs, text: "Carpet to stairs the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Carpet)"}]
+  - key: transitions
+    name: "Transitions and trims"
+    lines:
+      - {key: trims, text: "Trims and transitions between finishes and at door thresholds"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Luxury vinyl plank / tile (LVP / LVT))"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: protection, text: "Protection of finished floors until handover"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Product data, warranties and care instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Handover and Practical Completion)"}]
+
+positions:
+  - {key: slab, label: "Slab flatness to the documents, and correction of an out-of-tolerance slab, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Polished concrete)"}]}
+  - {key: painting, label: "Painting complete before carpet is laid, by the painter", kind: technical, value: X, responsible: "painter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 6: Internal painting before flooring)"}]}
+  - {key: doors, label: "Doors trimmed to clear the finished floor, by the fix-out carpenter", kind: technical, value: X, responsible: "fix-out carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: supply, label: "Supply of floor coverings, by you unless the documents list them as a prime cost item or client supply", kind: technical, value: X, responsible: "as the documents state", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

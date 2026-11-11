@@ -1014,14 +1014,23 @@ determinants:
     anchor: '### Trade waste'
 - id: occupant_load
   label: Design occupant load
+  # On the Project card since 2026-11-11: a brief or planning advice states
+  # the occupancy the works are designed for ("from 98 persons (existing) to
+  # 142 persons proposed"), and exits, sanitary facilities and air rates
+  # follow from it (docs/plans/2026-11-11-accommodation-and-full-capture.md).
+  profile_group: classification
   value: integer
   unit: persons
   derived: false
   extraction: pre_parsed
+  triggers:
+  - '\boccupan(?:t|cy)\s+(?:load|numbers?|capacity)\b'
+  - '\bdesign\s+occupancy\b'
   question:
     type: choice
     instructions: Using `text` and code-parsed `candidates`, choose the candidate explicitly stated as
-      the design occupant load, or none.
+      the design occupant load of this project's building or works after the works, or none. An existing
+      load the works replace, a room's seats or another building's figure is not it.
     criteria: {}
     runs_on:
     - hydraulic.sanitary
@@ -1568,6 +1577,9 @@ determinants:
   triggers:
   - '\byear (?:built|of construction|constructed)\b'
   - '\b(?:built|constructed) in \d{4}\b'
+  # "building constructed 1984" names the year without "in" (Meridian,
+  # 2026-11-11).
+  - '\b(?:built|constructed|erected)\s+(?:circa\s+|c\.\s?|around\s+)?(?:18|19|20)\d{2}\b'
   notes: Code compares it with the asbestos (2003) and lead paint (1970) thresholds; Jev never compares
     years. Also read by works consequences (cq.*) and unforeseen conditions (uc.*). Absorbed the K0
     construction_year determinant (owner decision, 4 October 2026).

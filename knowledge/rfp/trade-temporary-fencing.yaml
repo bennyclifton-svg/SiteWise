@@ -1,0 +1,103 @@
+# Temporary fencing and hoarding RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same
+# shape as trade-structural-steel.yaml. A site-running trade: it builds no building system and its
+# Main Works line sits in preliminaries. Research: docs/research/2026-11-10-trades/completion-supplies.md.
+# Draft until the owner reviews it.
+id: trade-temporary-fencing
+version: 1
+status: draft
+kind: works
+title: Temporary fencing and hoarding
+heading: "REQUEST FOR TENDER: TEMPORARY FENCING AND HOARDING"
+discipline_ids: [trade.temporary_fencing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the temporary fencing contractor. Your job is to supply, install, keep in good order and remove the site fencing and hoarding the documents and the construction management plan show, so the site stays secure and the public stays out of the works."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Install the fencing and hoarding on the agreed line and coordinate moves with the head contractor as the works progress.
+      - Inspect and repair the fencing after storms and damage.
+      - Provide the engineer's certification for hoardings and gantries that need it.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+stage_intro: "A fence-only tender excludes the hoarding lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and layout
+    lines:
+      - {key: layout, text: "Layout drawing of fence lines, gates and hoarding for the head contractor's review"}
+      - {key: design, text: "Design of hoardings, gantries and screened fencing for wind, where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own delivery, lifting and installation equipment"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: fencing
+    name: "Temporary fencing"
+    lines:
+      - {key: panels, text: "Fence panels, bases, clamps and bracing on the agreed line"}
+      - {key: gates, text: "Vehicle and pedestrian gates with locks"}
+      - {key: screening, text: "Shade cloth or screening the documents or the council approval ask for"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+  - key: hoarding
+    name: "Hoarding and overhead protection"
+    lines:
+      - {key: hoarding, text: "Hoarding on street frontages where the documents show it"}
+      - {key: gantry, text: "Overhead protection over the footpath where the documents show it"}
+      - {key: lighting, text: "Lighting and signage on the hoarding where the council approval asks"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md"}]
+  - key: maintain
+    name: "Maintenance, moves and removal"
+    lines:
+      - {key: maintain, text: "Inspection and repair after storms and damage"}
+      - {key: relocate, text: "Moves of the fence line when the head contractor asks"}
+      - {key: remove, text: "Removal of all fencing and hoarding, and making good, at completion"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]
+  - key: handover
+    name: Certificates and records
+    lines:
+      - {key: certificates, text: "Engineer's certification of hoardings and gantries that need it"}
+      - {key: records, text: "Inspection and repair records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: permits, label: "Council approval for hoarding, gantries or fencing on the footpath or road, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]}
+  - {key: traffic, label: "Traffic and pedestrian management, by the head contractor under the traffic management plan", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/traffic-transport-guide.md"}]}
+  - {key: signage, label: "Statutory site signage and the builder's details, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-builder.md"}]}
+  - {key: erosion, label: "Erosion and sediment controls on the fence line, by the head contractor or the civil contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md"}]}
+  - {key: permanent, label: "Permanent fencing, gates and pool barriers, by the landscape or civil works trades", kind: technical, value: X, responsible: "the external works trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

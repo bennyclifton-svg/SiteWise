@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { api, type Doc, type VisualReview } from "./api";
 import "./visual-identity.css";
 
-export function VisualIdentityReview({ doc, onCorrect }: {doc: Doc; onCorrect: (id: string, field: string, value: string) => Promise<void>}) {
+/** onShowPage turns a suggestion's page into a link to that page of the document beside it. */
+export function VisualIdentityReview({ doc, onCorrect, onShowPage }: {doc: Doc; onCorrect: (id: string, field: string, value: string) => Promise<void>; onShowPage?: (page: number) => void}) {
   const [review, setReview] = useState<VisualReview | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState("");
@@ -37,7 +38,7 @@ export function VisualIdentityReview({ doc, onCorrect }: {doc: Doc; onCorrect: (
   };
   const selected = review?.result.images?.[image];
   return <section className="visual-review" aria-label="Image-assisted filing review">
-    <h3>Check against the document</h3>
+    <div className="section-band"><h3>Check against the document</h3></div>
     {error && <p role="alert">{error}</p>}
     {!review && !error && <p role="status"><Pending delayed>Loading image review…</Pending></p>}
     {review?.status === "reading" && <p role="status"><Pending>Reading document images…</Pending> You can keep working.</p>}
@@ -57,7 +58,7 @@ export function VisualIdentityReview({ doc, onCorrect }: {doc: Doc; onCorrect: (
             return <div className="visual-review-field" key={field}>
               <strong>{field === "title" ? "Title" : field === "number" ? "Document number" : "Revision"}</strong>
               <p>{suggestion?.value || "No clear suggestion"}</p>
-              {suggestion && <span>Page {suggestion.page || 1} · {equal ? "Matches saved value" : current?.decided_by === "user" ? "You have already edited this field" : <button className="cell-link" disabled={!!busy} onClick={() => void use(field, suggestion.value)}>{busy === field ? <Pending delayed>Saving…</Pending> : `Use ${field}`}</button>}</span>}
+              {suggestion && <span>{onShowPage ? <button className="cell-link" title="Show this page" onClick={() => onShowPage(suggestion.page || 1)}>Page {suggestion.page || 1}</button> : `Page ${suggestion.page || 1}`} · {equal ? "Matches saved value" : current?.decided_by === "user" ? "You have already edited this field" : <button className="cell-link" disabled={!!busy} onClick={() => void use(field, suggestion.value)}>{busy === field ? <Pending delayed>Saving…</Pending> : `Use ${field}`}</button>}</span>}
             </div>;
           })}
         </div>
@@ -67,7 +68,6 @@ export function VisualIdentityReview({ doc, onCorrect }: {doc: Doc; onCorrect: (
             <button className="cell-link" aria-pressed={enlarged} onClick={() => setEnlarged(!enlarged)}>{enlarged ? "Fit image" : "Enlarge image"}</button>
             <div className="visual-review-image" data-enlarged={enlarged || undefined} tabIndex={enlarged ? 0 : undefined} aria-label="Source image; scroll to inspect when enlarged"><img src={`data:image/jpeg;base64,${selected.data}`} alt={`Page ${selected.page}: ${selected.label}`} /></div>
           </>}
-          <a href={`/api/documents/${doc.id}/file?view=1`} target="_blank" rel="noreferrer">Open original PDF</a>
         </div>
       </div>
     </>}

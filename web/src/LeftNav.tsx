@@ -2,7 +2,7 @@
 // Accessible names stay the short labels the tests and existing calls use
 // ("Profile", "Costs"); the visible labels match the Clerk shell.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AccountMenu } from "./AccountMenu";
 import { requestCostSettings } from "./costSettingsRequest";
 import { Wordmark } from "./Wordmark";
@@ -10,11 +10,13 @@ import { Wordmark } from "./Wordmark";
 export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program";
 
 interface Props {
-  projects: { id: string; name: string }[] | null;
+  projects: { id: string; name: string; archived?: boolean }[] | null;
   currentId: string;
   navigate: (path: string) => void;
   view: WorkbenchView;
   onView: (view: WorkbenchView) => void;
+  /** A small mark after a view's name: the profile reading, or a count it left for that view. */
+  marks?: Partial<Record<WorkbenchView, ReactNode>>;
 }
 
 // Each view is drawn as a small architectural line drawing in one of two
@@ -36,7 +38,10 @@ const VIEWS: { id: WorkbenchView | "plan"; label: string; name?: string; icon: N
   { id: "plan", label: "Report", tone: "report", icon: { line: "M6 3h12v18H6zM9 3v18M12.5 16v-2M15 16v-5" }, idle: true },
 ];
 
-export function LeftNav({ projects, currentId, navigate, view, onView }: Props) {
+/** A view's name as the nav shows it, for a Back button that returns to it. */
+export const viewLabel = (view: WorkbenchView): string => VIEWS.find(v => v.id === view)?.label ?? "";
+
+export function LeftNav({ projects, currentId, navigate, view, onView, marks }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -96,7 +101,8 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
           <div id="project-switcher" className="switcher-list" aria-label="Switch project">
             <input className="input" aria-label="Find project" placeholder="Find project" value={query} onChange={e => setQuery(e.target.value)} />
             <ul className="switcher-results">
-              {(projects ?? []).filter(p => p.name.toLowerCase().includes(query.toLowerCase())).map(p => (
+              {/* Archived projects stay off the switcher unless open. */}
+              {(projects ?? []).filter(p => (!p.archived || p.id === currentId) && p.name.toLowerCase().includes(query.toLowerCase())).map(p => (
                 <li key={p.id}>
                   <button type="button" onClick={() => go(`/projects/${p.id}`)} aria-current={p.id === currentId ? "true" : undefined} data-active={p.id === currentId || undefined} title={p.name}>{p.name}</button>
                 </li>
@@ -110,13 +116,16 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
       <div className="nav-views" role="group" aria-label="Project views">
         {VIEWS.map((item) => {
           const active = !item.idle && item.id === view;
+          // A mark never changes the item's name; it describes it.
+          const mark = item.idle ? undefined : marks?.[item.id as WorkbenchView];
           return (
             <button
               key={item.id}
               type="button"
               className="nav-item"
               aria-current={active ? "page" : undefined}
-              aria-label={item.name}
+              aria-label={item.name ?? (mark ? item.label : undefined)}
+              aria-describedby={mark ? `nav-mark-${item.id}` : undefined}
               aria-disabled={item.idle || undefined}
               disabled={item.idle}
               title={item.idle ? "Not in this build yet" : undefined}
@@ -132,6 +141,7 @@ export function LeftNav({ projects, currentId, navigate, view, onView }: Props) 
                 <path d={item.icon.line} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>{item.label}{item.idle && <small className="nav-planned">Planned</small>}</span>
+              {mark && <span id={`nav-mark-${item.id}`} className="nav-mark">{mark}</span>}
             </button>
           );
         })}

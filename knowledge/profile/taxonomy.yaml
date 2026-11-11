@@ -63,7 +63,12 @@ building_classes:
       type: number
       unit: m2
       basis_required: true
-      triggers: *id003
+      # A mezzanine inserted by the works is added floor area (Meridian,
+      # 2026-11-11); code still sorts existing from added by the nearest cue.
+      triggers: &id016
+      - \bgfa\b
+      - gross floor area
+      - \bmezzanines?\b
     - key: storeys
       label: Storeys
       type: integer
@@ -469,6 +474,12 @@ building_classes:
       type: number
       unit: m2
       typical: 500-2,500 sqm
+    - key: added_gfa_sqm
+      label: Added GFA sqm
+      type: number
+      unit: m2
+      basis_required: true
+      triggers: *id016
     - key: tenancies
       label: Tenancies
       type: integer
@@ -2010,6 +2021,10 @@ conditions:
     label: Government Client
   - id: multiple_agencies
     label: Multiple Agencies
+  # A tenant's fit-out: the landlord's consent, base building and lease
+  # incentives shape the works (Meridian, 2026-11-11).
+  - id: landlord_tenant
+    label: Tenant and landlord
 - key: environmental_sensitivity
   label: Environmental sensitivity
   options:

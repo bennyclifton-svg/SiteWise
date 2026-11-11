@@ -149,7 +149,7 @@
 .pg-rows { will-change: transform; }
 .pg-row { box-sizing: border-box; border-bottom: 1px solid var(--line); cursor: default; user-select: none; }
 .pg-row:hover { background: var(--ground); }
-.pg-row.is-selected { background: var(--table-selection-bg); box-shadow: inset 2px 0 0 var(--ember); }
+.pg-row.is-selected { background: var(--state-selected); box-shadow: inset var(--state-edge) 0 0 var(--state-selected-edge); }
 
 /* A bin at the end of each row, shown on hover or selection (as the document
    register's); the header's appears once rows are selected. Laid over the

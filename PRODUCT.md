@@ -29,7 +29,7 @@ path is already tighter. Success is a project a manager can read and decide
 from, and a filing they can trust at a glance and correct in one move.
 
 PDF filing also queues an image-assisted identity review. The document
-workspace's Filing details view shows literal suggestions for title, number
+workspace's Filing column shows literal suggestions for title, number
 and revision beside source
 images, with enlargement and explicit Use actions. Drawings use overlapping
 bottom/right regions; reports use the first three pages. Existing PDFs can
@@ -39,9 +39,11 @@ one Jev fan-out and does not delay filing. Box is not used.
 
 The repository's Open button shows the document in the centre workbench, without
 expanding the table. PDFs use the browser's full-document viewer; Markdown is
-shown as literal text. Word and Excel currently offer download access. Filing
-fields, OCR recovery and image suggestions are in a separate Filing details
-view. Closing returns to the previous workbench surface.
+shown as literal text. Word and Excel currently offer download access. The
+browser's PDF toolbar is hidden; Download, Open in new tab and Print are the
+viewer's own. Filing fields, OCR recovery and image suggestions sit in a
+Filing column beside the page, or in the page's place on a narrow pane. Back
+or Escape returns to the previous workbench surface.
 
 Repository rows share Program's selection and inline editor: click selects,
 Ctrl/Cmd toggles, Shift extends a range, and Ctrl/Cmd+Shift adds one. Double-click
@@ -51,7 +53,17 @@ provenance and a failed save leaves the draft available to retry.
 
 The workbench, in navigation order:
 
-- **Project Profile.** The determinants and project facts.
+- **Project Profile.** The determinants and project facts. An update shows
+  its reading as it happens (each document's passes, the passage just read,
+  the values it fills), marks what it changed until cleared, and says what it
+  changes elsewhere. No Jev call is added for this; every number shown is
+  counted by the server. Below the Consultant team, an Accommodation
+  schedule lists the spaces the building provides after the works, one
+  line per room (space, level, area, comment), for any building type:
+  typical spaces for the building type as placeholders, spaces the briefs
+  name with their levels, areas, capacities and requirements, and the
+  card's counts. It is edited like the document register (select, right-
+  click, add, copy, split, delete, drag) and the user's word is final.
 - **Project Plan.** A navigation placeholder.
 - **Cost Plan.** Four sections: fees and charges, consultants, construction,
   contingency. Budget is the planning figure. The user enters the approved
@@ -63,7 +75,9 @@ The workbench, in navigation order:
   activity line, and checked in code (duplicates, arithmetic, GST, ABN,
   splits). The plan's invoiced to date, budget remaining and % spent come
   from that ledger, with an Unallocated row so the totals always add up.
-  Both views export to Excel and CSV and print. Variations is a placeholder.
+  Both views export to Excel and CSV and print. Lines are selected as in the
+  document register; right-click sets a category or package, excludes,
+  copies or deletes the selection in one save. Variations is a placeholder.
 - **Program.** One program per project: stages and their activities, built
   from the Profile, included work items, Procurement packages and the
   reviewed library, shown collapsed or expanded as a grid beside a Gantt
@@ -83,7 +97,12 @@ The workbench, in navigation order:
   as a separate trade. The table proposes the disciplines the profile and scope
   imply. Removing a package can remove its draft cost lines in the same
   confirmation. Each RFP carries a returnable schedule (stages, options,
-  rates, criteria) and a response form workbook. A proposal dropped on a
+  rates, criteria) and a response form workbook. Before quotes arrive, the
+  PM types the firms the RFP goes to into a row's empty Firm cells; each
+  shows as Invited until its quote, dropped on its cell, takes the cell.
+  A click on an invited name corrects it in place. A proposal no row
+  claims waits as the table's first row, its firm in Firm 1, until the PM
+  chooses its package there. A proposal dropped on a
   row is filed and read in a few seconds: firm, prices against the schedule,
   rates, exclusions and departures. The price table compares firms line by
   line on the RFP's own rows, flags what needs a look, and takes a
@@ -162,9 +181,11 @@ spreadsheets. Scanned PDFs without a text layer are stored but not filed.
   govern light and dark appearance. The earlier warm-paper/IBM Plex register
   in `../clerk/DESIGN.md` records the product's origin, not a separate identity
   for new workbench surfaces.
-- Evidence vs inference: on filing and profile, ember marks evidenced or
-  user-owned values, azure marks model inference. Keep those meanings. Cost
-  and specification status is written in words as well as colour.
+- Evidence vs inference: on filing, ember marks evidenced or user-owned
+  values and azure marks model inference. On the profile the origin rule
+  holds (owner, 8 and 10 Nov 2026): green from the documents, blue typical,
+  rust set by the user, amber to check. Keep those meanings. Cost and
+  specification status is written in words as well as colour.
 - Voice: ordinary Australian built-environment professional; plain, specific,
   no AI theatre.
 

@@ -1,0 +1,94 @@
+# Rendering RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-rendering
+version: 1
+status: draft
+kind: works
+title: "Rendering"
+heading: "REQUEST FOR TENDER: RENDERING"
+discipline_ids: [trade.rendering]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the renderer. Your job is to apply the render and texture coat systems the documents show to masonry, sheet or panel substrates, with their control joints and junction seals, sound and weathertight, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Check the substrate is ready, and do not render at an opening until its flashings are in place.
+      - Use a render system whose parts suit the substrate and, where the documents require it, give the test evidence that it meets the external wall fire requirements.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 4: External cladding — windows and doors before render or brickwork)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Facade Selection for Multi-Residential Buildings)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and samples"
+    lines:
+      - {key: shop_drawings, text: "Control joint layout and sample panels for the design team's approval"}
+      - {key: design, text: "Render system design where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: prepare
+    name: "Substrate preparation"
+    lines:
+      - {key: prepare, text: "Preparation of the substrate, beads and trims"}
+      - {key: joints, text: "Control joints carried through the render where the substrate has them"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}]
+  - key: render
+    name: "Render and finish"
+    lines:
+      - {key: render, text: "Render coats to the documents' system"}
+      - {key: panels, text: "Rendered insulation panel systems where the documents show them"}
+      - {key: finish, text: "Texture or finish coat and colour"}
+      - {key: sealant, text: "Backing rod and sealant joints at window and door frames"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 4: External cladding — windows and doors before render or brickwork)"}, {kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Facade Selection for Multi-Residential Buildings)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Inspection of the finished render for cracking and junction seals"}
+      - {key: certificates, text: "Certificates your trade signs and the system test evidence"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: substrate, label: "Masonry or sheet substrate built to the tolerance the render system needs, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}]}
+  - {key: flashings, label: "Window and door flashings in place before render reaches them, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 4: External cladding — windows and doors before render or brickwork)"}]}
+  - {key: painting, label: "Painting over the render where the documents show it, by the painter", kind: technical, value: X, responsible: "painter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]}
+  - {key: scaffold, label: "Scaffold for rendering at height, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

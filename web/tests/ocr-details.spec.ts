@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { showFiling } from "./filing";
 
 test("missing details recover in place, with progress and a missed-event fallback", async ({ page }) => {
   const invite = await page.request.post("/__e2e/invite?org=a");
@@ -26,7 +27,7 @@ test("missing details recover in place, with progress and a missed-event fallbac
   await page.reload();
   const row = page.locator("tbody.reg-doc");
   await row.locator("td.reg-no").dblclick();
-  await page.getByRole("button", { name: "Filing details", exact: true }).click();
+  await showFiling(page);
   const panel = page.locator(".document-workspace").getByRole("status", { name: "Text recovery" });
   await expect(panel.locator("p").filter({ hasText: "Still missing:" })).toContainText("drawing title, drawing number, discipline");
   await panel.getByRole("button", { name: "Reprocess missing details" }).click();

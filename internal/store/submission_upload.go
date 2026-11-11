@@ -24,6 +24,13 @@ func (s *Store) CheckSubmissionUpload(ctx context.Context, org, project, pkg, su
 	return uploadTarget(v, project, pkg)
 }
 
+// CheckSubmissionFirm rejects a firm outside the org before storing bytes:
+// a proposal dropped on an invited firm's cell is that firm's.
+func (s *Store) CheckSubmissionFirm(ctx context.Context, org, firm string) error {
+	_, err := readFirm(ctx, s.pool, org, firm)
+	return err
+}
+
 func uploadTarget(v Submission, project, pkg string) error {
 	if v.ProjectID != project || v.PackageID != pkg {
 		return ErrNotFound

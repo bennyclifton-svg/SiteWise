@@ -19,8 +19,10 @@ export function initialsOf(email: string): string {
 
 const THEMES: { id: ColorTheme; label: string; icon: typeof SunIcon }[] = [{ id: "light", label: "Light", icon: SunIcon }, { id: "dark", label: "Dark", icon: MoonIcon }];
 
-/** onCostSettings is present only inside a project, where a cost plan exists. */
-export function AccountMenu({ onCostSettings }: { onCostSettings?: () => void }) {
+/** onCostSettings is present only inside a project, where a cost plan exists.
+    "bar" places the menu in the top bar of the Projects and Account pages,
+    opening downward; the default sits at the foot of the left nav. */
+export function AccountMenu({ onCostSettings, placement = "nav" }: { onCostSettings?: () => void; placement?: "nav" | "bar" }) {
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -67,7 +69,7 @@ export function AccountMenu({ onCostSettings }: { onCostSettings?: () => void })
     if (failed) { setError(failed); setBusy(false); }
   }
 
-  return <div className="account-menu" ref={root} onKeyDown={onKeyDown}>
+  return <div className={placement === "bar" ? "account-menu account-menu-bar" : "account-menu"} ref={root} onKeyDown={onKeyDown}>
     <button ref={trigger} type="button" className="account-trigger" aria-label="Account menu" title={email || "Account menu"} aria-haspopup="menu" aria-expanded={open} aria-controls={menuId} onClick={() => setOpen(value => !value)}>
       <span className="account-initials" aria-hidden="true">{initialsOf(email) || "?"}</span>
     </button>

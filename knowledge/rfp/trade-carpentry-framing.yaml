@@ -1,0 +1,103 @@
+# Carpentry (framing) RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-carpentry-framing
+version: 1
+status: draft
+kind: works
+title: "Carpentry (framing)"
+heading: "REQUEST FOR TENDER: CARPENTRY (FRAMING)"
+discipline_ids: [trade.carpentry_framing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the framing carpenter. Your job is to erect, brace and tie down the floor, wall and roof framing the documents show, square, plumb and ready for the frame inspection, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Structural Framing Systems)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Present the frame for the certifier's frame inspection before any lining or cladding covers it, and fix what the inspection finds.
+      - Keep notches and holes in framing members within the limits the documents allow, and report any cut another trade makes.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Frame inspection gate)"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Notching, drilling, and modification rules)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Framing set-out and details for the design team's review"}
+      - {key: design, text: "Design of framing the documents leave to the contractor, within the framing standard or by the engineer"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: floor
+    name: "Floor framing"
+    lines:
+      - {key: subfloor, text: "Bearers, joists and floor sheeting where the floor is framed"}
+      - {key: decks, text: "Timber deck framing the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Structural Framing Systems)"}]
+  - key: walls_roof
+    name: "Wall and roof framing"
+    lines:
+      - {key: walls, text: "Erection of wall frames, lintels and engineered beams"}
+      - {key: roof, text: "Erection of roof trusses or a rafter roof, with roof bracing"}
+      - {key: bracing, text: "Bracing, tie-down straps and connectors the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Structural Framing Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Connection and tie-down requirements)"}]
+  - key: external
+    name: "Fascia, eaves and openings"
+    lines:
+      - {key: fascia, text: "Fascia, barge boards and eaves linings"}
+      - {key: openings, text: "Installation of windows and external door frames where the documents give it to you"}
+      - {key: flashings, text: "Head, sill and jamb flashings to the windows you install, before cladding or brickwork reaches them"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 4: External cladding — windows and doors before render or brickwork)"}, {kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Frame presented for the certifier's frame inspection, and defects fixed"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Bracing and tie-down records, and warranties"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Frame inspection gate)"}, {kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: frame_supply, label: "Prefabricated wall frames and roof trusses where let as a separate supply, by the frame and truss supplier", kind: technical, value: X, responsible: "frame and truss supplier", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Structural Framing Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]}
+  - {key: slab, label: "Slab or footings level and set out for the frame, with any cast-in hold-downs, by the concreter", kind: technical, value: X, responsible: "concreter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]}
+  - {key: sarking_battens, label: "Roof sarking and battens, by the roofer", kind: technical, value: X, responsible: "roofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}]}
+  - {key: termite, label: "Termite management at the slab and its penetrations, by the termite management contractor", kind: technical, value: X, responsible: "termite management contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Structural Framing Systems)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

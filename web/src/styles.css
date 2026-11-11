@@ -1161,7 +1161,7 @@ button.cell[data-state="check"]:hover {
   background: var(--ember);
 }
 .reg-doc[data-selected] .reg-line td {
-  background: var(--azure-soft);
+  background: var(--state-selected);
 }
 .reg-bulk {
   position: sticky;
@@ -1489,12 +1489,21 @@ button.cell[data-state="check"]:hover {
   cursor: pointer;
 }
 
+/* A fixed width, opening leftward from the row's right edge: left to
+   shrink-to-fit, the list took only the sliver right of the dot and ran
+   long and slender down the page. */
 .pf-sources ul {
   position: absolute;
+  right: 0;
   z-index: 10;
-  max-width: 420px;
+  width: min(440px, calc(100vw - 32px));
+  max-height: 60vh;
+  overflow-y: auto;
   margin: 4px 0 0;
-  padding: 8px 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
   list-style: none;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-control);

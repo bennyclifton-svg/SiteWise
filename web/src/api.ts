@@ -37,12 +37,23 @@ export interface Doc {
   source_filename?: string;
   sheet_page?: number;
   sheet_total?: number;
-  expansion?: { source_id: string; page_count: number; status: "pending" | "complete" | "review"; reason?: string };
+  /** can_split: the automatic split stopped on a page it could not confirm, so the user may split the set by hand. */
+  expansion?: { source_id: string; page_count: number; status: "pending" | "complete" | "review"; reason?: string; manual?: boolean; can_split?: boolean };
 }
 
 export interface Project {
   id: string;
   name: string;
+  /** Typed site address, else the profile's reading; "" when unknown. */
+  address?: string;
+  /** Filings in the register (not void, superseded or split). */
+  documents?: number;
+  /** Profile values whose sources differ. */
+  sources_differ?: number;
+  created_at?: string;
+  /** Newest filing; absent before the first. */
+  last_filed?: string;
+  archived?: boolean;
 }
 
 export interface DocumentList {
@@ -60,6 +71,8 @@ export interface Catalog {
   kinds: Option[];
   disciplines: Option[];
   lifecycle: Option[];
+  /** Procurement trades and supplies; filing keeps `disciplines`. */
+  trades?: Option[];
   /** Kinds the profile reads when a document's setting is automatic. */
   profile_read_kinds?: string[];
 }
@@ -133,6 +146,9 @@ export const api = {
   resetPassword: (token: string, password: string) => request<void>("POST", "/password/reset", { token, password }),
   projects: () => request<Project[]>("GET", "/projects"),
   createProject: (name: string) => request<{ id: string }>("POST", "/projects", { name }),
+  renameProject: (id: string, name: string) => request<void>("PATCH", `/projects/${id}`, { name }),
+  /** Puts a project away (or back); nothing in it changes. */
+  archiveProject: (id: string, archived: boolean) => request<void>("PUT", `/projects/${id}/archived`, { archived }),
   /** Permanent. Removes the project, its rows and its files. */
   deleteProject: (id: string) => request<void>("DELETE", `/projects/${id}`),
   documents: (projectId: string) => request<DocumentList>("GET", `/projects/${projectId}/documents`),
@@ -140,6 +156,8 @@ export const api = {
   correct: (docId: string, field: string, value: string) =>
     request<Doc>("PUT", `/documents/${docId}/fields/${field}`, { value }),
   retry: (docId: string, missingOnly = false) => request<Doc>("POST", `/documents/${docId}/${missingOnly ? "details/reprocess" : "filing"}`),
+  /** Splits a drawing set the automatic split stopped on; the pages are read in the background. */
+  split: (docId: string) => request<Doc>("POST", `/documents/${docId}/split`),
   document: (docId: string) => request<Doc>("GET", `/documents/${docId}`),
   /** Returns the rebuilt profile; the server applies a set's setting to its sheets. */
   setProfileReading: (projectId: string, ids: string[], setting: ReadSetting) =>

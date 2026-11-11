@@ -167,9 +167,10 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
   const [besideTarget, setBesideTarget] = useState<HTMLDivElement | null>(null);
   const [primaryTarget, setPrimaryTarget] = useState<HTMLDivElement | null>(null);
   const [sideTarget, setSideTarget] = useState<HTMLDivElement | null>(null);
+  const [headerTarget, setHeaderTarget] = useState<HTMLDivElement | null>(null);
   const openSide = useCallback(() => setShowDocuments(true), []);
   return (
-    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget, besideTarget, sideTarget, openSide }}>
+    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget, besideTarget, headerTarget, sideTarget, openSide }}>
     <div className={`cockpit-page${wideWorkspace?" specification-page":""}`}>
       <div
         ref={shell}
@@ -194,6 +195,8 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
             <p className="cockpit-address">{subtitle}</p>
           </div>
           <div className="cockpit-header-actions">
+            {/* A page's own action in the title band; Profile's Update (owner, 10 Nov 2026). */}
+            <div className="header-page-actions" ref={setHeaderTarget} />
             <button
               type="button"
               className="documents-toggle"

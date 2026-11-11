@@ -34,6 +34,36 @@ func TestProcurementRowsAndCreate(t *testing.T) {
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"supplier.facade"}`), http.StatusUnprocessableEntity, nil)
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"consultant.nope"}`), http.StatusUnprocessableEntity, nil)
 	m.call(t, http.MethodPost, rows, []byte(`{}`), http.StatusBadRequest, nil)
+	// A trade only the trades list holds (not the filing vocabulary) makes a
+	// trade row with its label (docs/plans/2026-11-10-trades-catalogue.md).
+	var concrete procurement.Package
+	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"trade.concreting"}`), http.StatusCreated, &concrete)
+	if concrete.Kind != "works" || concrete.WorksScope != "trade" || concrete.Title != "Concreting" {
+		t.Fatalf("%+v", concrete)
+	}
+	var catalog struct {
+		Disciplines []struct{ ID string }        `json:"disciplines"`
+		Trades      []struct{ ID, Label string } `json:"trades"`
+	}
+	m.getJSON(t, "/api/catalog", &catalog)
+	has := func(list []string, id string) bool {
+		for _, x := range list {
+			if x == id {
+				return true
+			}
+		}
+		return false
+	}
+	var filed, trades []string
+	for _, d := range catalog.Disciplines {
+		filed = append(filed, d.ID)
+	}
+	for _, d := range catalog.Trades {
+		trades = append(trades, d.ID)
+	}
+	if !has(trades, "trade.concreting") || !has(trades, "trade.main_works") || has(filed, "trade.concreting") {
+		t.Fatalf("catalog trades %v, filing %d entries", trades, len(filed))
+	}
 	var trade procurement.Package
 	m.call(t, http.MethodPost, rows, []byte(`{"discipline_id":"trade.electrical"}`), http.StatusCreated, &trade)
 	if trade.Kind != "works" || trade.WorksScope != "trade" {

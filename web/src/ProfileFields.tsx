@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { IconCheck, IconConfirmed, IconNotChecked, IconYou } from "./icons";
 import type { Cell, Profile, ProfileField } from "./profileApi";
+import { PendingCount, RevisionMark } from "./RunMarks";
 
 export type Setter = (key: string, body: { part_id?: string; value?: string | null; note?: string; reset?: boolean }) => void;
 
@@ -171,6 +172,8 @@ export function FieldRow({
   compact,
   stacked,
   paired,
+  changed,
+  pending,
 }: {
   field: ProfileField;
   onSet: Setter;
@@ -180,8 +183,12 @@ export function FieldRow({
   compact?: boolean;
   /** Label above the value, how it was decided at the label's end. */
   stacked?: boolean;
-  /** Label | value, as RFP page one: how it was decided sits under the label. */
+  /** Label | value | how it was decided, on one line as RFP page one reads. */
   paired?: boolean;
+  /** What the last update changed here: the revision mark's tooltip. */
+  changed?: string;
+  /** Passages read for this field during an update, not yet committed. */
+  pending?: number;
 }) {
   const [draft, setDraft] = useState(field.value);
   const dirty = useRef(false);
@@ -249,14 +256,21 @@ export function FieldRow({
       )}
       <Mark cell={field} />
       <Sources cell={field} onJump={onJump} />
+      {pending ? <PendingCount n={pending} /> : null}
       {field.band === "user" && <ResetButton onClick={() => onSet(field.key, { part_id: field.part_id, reset: true })} />}
     </span>
   );
   const pick = (v: string) => onSet(field.key, { part_id: field.part_id, value: v });
+  // Every row variant: found by its key for the update's marks and motion.
+  const tag = { "data-key": field.key, "data-part": field.part_id, "data-changed": changed ? "true" : undefined };
+  const rev = changed ? <RevisionMark text={changed} /> : null;
 
   if (paired) {
+    // A value cut short on one line reads in full on hover.
+    const shown = field.value ? `${field.options?.find((o) => o.id === field.value)?.label ?? field.value}${field.unit ? ` ${field.unit === "m2" ? "m²" : field.unit}` : ""}` : undefined;
     return (
-      <div className="pf-row pf-pair" data-band={field.band || undefined}>
+      <div className="pf-row pf-pair" data-band={field.band || undefined} {...tag}>
+        {rev}
         <div className="pf-pair-head">
           <label htmlFor={derived ? undefined : id} className="pf-label" title={label}>
             {label}
@@ -266,7 +280,7 @@ export function FieldRow({
             <ConflictPop cell={field} onPick={pick} />
           </span>
         </div>
-        <div className="pf-value">
+        <div className="pf-value" title={shown}>
           {control}
         </div>
       </div>
@@ -275,7 +289,8 @@ export function FieldRow({
 
   if (stacked) {
     return (
-      <div className="pf-row pf-stack" data-band={field.band || undefined}>
+      <div className="pf-row pf-stack" data-band={field.band || undefined} {...tag}>
+        {rev}
         <div className="pf-stack-head">
           <label htmlFor={derived ? undefined : id} className="pf-label">
             {label}
@@ -289,7 +304,8 @@ export function FieldRow({
   }
 
   return (
-    <div className="pf-row" data-band={field.band || undefined}>
+    <div className="pf-row" data-band={field.band || undefined} {...tag}>
+      {rev}
       <label htmlFor={derived ? undefined : id} className="pf-label">
         {label}
       </label>

@@ -123,6 +123,7 @@ Price exactly these. Work beyond an allowance needs a written instruction (secti
 - Only a written instruction from the client's representative authorises extra scope, work beyond an allowance or a fee change; work without one is not paid.
 - Each stage ends at client sign-off, which sets the baseline for later stages. Design development within the brief is not a variation; a client change after sign-off is assessed under the agreement.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $20 million and public liability cover of $20 million throughout the appointment.
 - Invoice monthly against stage progress; payment within 30 days, not dependent on any authority approval.
 - Rates hold until 12 months after appointment; state how they are indexed after that.
 - Your proposal stays valid for 90 days.

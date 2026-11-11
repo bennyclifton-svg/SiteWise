@@ -26,3 +26,6 @@ families:
   - {match: "site.*", scope: site}
   # RFP flags with no determinant (knowledge/rfp/skeleton.yaml flags).
   - {match: "proj.flag.*", scope: project}
+  # The Accommodation table: the spaces the works provide
+  # (docs/plans/2026-11-11-accommodation-and-full-capture.md).
+  - {match: "space.*", scope: project}

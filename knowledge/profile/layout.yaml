@@ -38,6 +38,7 @@ homes:
     - det.effective_height
     - det.existing_building
     - det.existing_building_year
+    - det.occupant_load
     - det.ncc_edition
     - det.state
     - det.heritage_status

@@ -1,0 +1,104 @@
+# Gas fitting RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3).
+# Same shape as trade-structural-steel.yaml. Research note:
+# docs/research/2026-11-10-trades/fire-services.md. Draft until the owner reviews it.
+id: trade-gas-fitting
+version: 1
+status: draft
+kind: works
+title: Gas fitting
+heading: "REQUEST FOR TENDER: GAS FITTING"
+discipline_ids: [trade.gas_fitting]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the gas fitter. Your job is to install the gas installation from the meter to each appliance the documents show, prove it sound before it is concealed, connect and commission each appliance, and hand it over certified."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Gas)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Pressure test the pipework and give the result before the linings close.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Key compliance)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Pipe routes and meter location for the design team's review"}
+      - {key: design, text: "Gas pipe sizing and layout where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Sizing and pressure)"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: supply
+    name: "Supply and meter"
+    lines:
+      - {key: connection, text: "Application to the gas network for the connection and meter, on the client's behalf"}
+      - {key: lpg, text: "LPG cylinders or tank, regulators and their set-out where the documents show LPG"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (System overview)"}, {kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (LPG specific)"}]
+  - key: pipework
+    name: "Pipework"
+    lines:
+      - {key: pipework, text: "Gas pipework from the meter to each appliance point the documents show"}
+      - {key: isolation, text: "An accessible isolation valve at each appliance"}
+      - {key: soundness, text: "Pressure test of the pipework before it is concealed"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Key compliance)"}]
+  - key: appliances
+    name: "Appliances and flues"
+    lines:
+      - {key: connect, text: "Connection and commissioning of each gas appliance the documents show"}
+      - {key: flues, text: "Flues and combustion air for flued appliances, where the documents give them to you"}
+      - {key: type_b, text: "Engineered design, installation and acceptance of commercial-scale (Type B) appliances, where the documents show them"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Type A vs Type B appliances)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 5601.1 — Gas Installations — General Installations)"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Testing and commissioning"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Construction, testing and handover)"}]
+
+positions:
+  - {key: network_fees, label: "Gas network connection and meter fees, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (System overview)"}]}
+  - {key: appliance_supply, label: "Supply of the gas appliances, by the client unless the documents give it to you", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (System overview)"}]}
+  - {key: hot_water, label: "Hot water units and their water connections, by the hydraulic and plumbing contractor; the gas connection to them, by you", kind: technical, value: X, responsible: "hydraulic and plumbing contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Gas)"}]}
+  - {key: heating_plant, label: "Gas-fired heating and boiler plant, by the mechanical contractor; gas to its isolation valve, by you", kind: technical, value: X, responsible: "mechanical contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Gas)"}]}
+  - {key: power, label: "Power to appliances that need it, by the electrical contractor", kind: technical, value: X, responsible: "electrical contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]}
+  - {key: builder, label: "Builder's work: penetrations, by the head contractor; fire sealing, by the head contractor or the passive fire contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/hydraulic-services-guide.md (Hydraulic trade tender)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

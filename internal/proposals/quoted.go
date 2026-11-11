@@ -36,7 +36,12 @@ var feeCondition = regexp.MustCompile(`(?i)\b(?:disbursements?|reimbursables?)\b
 const (
 	RoleTotal     = "Package / total — do not add to its breakdown"
 	RoleComponent = "Breakdown component — not additional to package"
+	RoleAllowance = "Allowance inside the quoted price — do not add"
 )
+
+// allowanceTitle heads a schedule of prime cost items or provisional sums:
+// allowances the quoted price already carries.
+var allowanceTitle = regexp.MustCompile(`(?i)^allowances?\b|\bprime\s+cost\b|\bprovisional\s+sums?\b`)
 
 type QuotedFee struct {
 	ID         string  `json:"id"`
@@ -56,7 +61,7 @@ type QuoteCoverage struct {
 }
 
 var quoteSummaryWords = regexp.MustCompile(`(?i)lump\s*sum|total|sub\s*total|fee estimate|cost estimate|quotation|fixed fee`)
-var quoteConditionalWords = regexp.MustCompile(`(?i)optional|if (?:needed|required)|additional cost|surcharge|cancellation|less than .*business days`)
+var quoteConditionalWords = regexp.MustCompile(`(?i)optional|if (?:needed|required)|additional cost|surcharge|cancellation|less than .*business days|price increase`)
 var nonName = regexp.MustCompile(`[^a-z0-9]`)
 
 func compactName(s string) string { return nonName.ReplaceAllString(strings.ToLower(s), "") }
@@ -81,7 +86,10 @@ func quoteAmounts(ev Evidence) []Amount {
 	var out []Amount
 	seen := map[string]bool{}
 	for _, a := range ev.Amounts {
-		if a.Unit || a.GSTPart || a.IncTwin || a.PerHour || a.Kind != "" || unitPrice(a.Context) || strings.Contains(strings.ToLower(a.Context), "rate only") {
+		// A schedule of allowances prints a quantity and its extended amount
+		// ("6.000 Ea  $3,960.00"): the amount is the allowance, not a rate.
+		rate := unitPrice(a.Context) && !allowanceTitle.MatchString(a.Title)
+		if a.Unit || a.GSTPart || a.IncTwin || a.PerHour || a.Kind != "" || rate || strings.Contains(strings.ToLower(a.Context), "rate only") {
 			continue
 		}
 		key := strconv.Itoa(a.Page) + "|" + strconv.Itoa(a.Line) + "|" + strconv.FormatInt(a.Cents, 10) + "|" + a.Context
@@ -195,16 +203,22 @@ func (d *Draft) quotedReview() *QuoteReview {
 			}
 		}
 	}
+	d.titledComponents(components, r)
 	for _, a := range quoteAmounts(d.ev) {
 		role := "Package / fee — scope awaiting alignment"
 		if unitWord.MatchString(a.Context) && len(moneyIn(a.Context)) > 1 {
 			role = RoleComponent
 		}
-		if quoteSummaryWords.MatchString(a.Label + " " + a.Context) {
+		// A sentence that prices one trade ("Total price for demolition
+		// services listed above is $46,100") is not the package total.
+		if quoteSummaryWords.MatchString(a.Label+" "+a.Context) && len(strings.Fields(a.Context)) <= 10 {
 			role = RoleTotal
 		}
 		if a.Total {
 			role = RoleTotal
+		}
+		if allowanceTitle.MatchString(a.Title) {
+			role = RoleAllowance
 		}
 		if components[a.ID] {
 			role = RoleComponent
@@ -269,6 +283,63 @@ func (d *Draft) quotedReview() *QuoteReview {
 		r.Issues = append(r.Issues, "The source contains alternatives. Select one scope before confirming a comparison amount.")
 	}
 	return r
+}
+
+// titledComponents checks each titled table of prices against the printed
+// totals. Rows that add up to one are its breakdown. The largest table of
+// five rows or more that adds up to none is reported: a misread row, or a
+// quote whose categories are not its whole price.
+func (d *Draft) titledComponents(components map[string]bool, r *QuoteReview) {
+	type table struct {
+		ids []string
+		sum int64
+	}
+	tables := map[string]*table{}
+	var titles []string
+	var totals []Amount
+	for _, a := range d.ev.Amounts {
+		if a.Kind != "" || a.GSTPart || a.Unit || a.PerHour {
+			continue
+		}
+		if a.Total {
+			totals = append(totals, a)
+			continue
+		}
+		if a.Title == "" || a.RepeatOf != "" || allowanceTitle.MatchString(a.Title) || !priceColumn(a.Column) {
+			continue
+		}
+		key := a.Title + "|" + a.GST
+		if tables[key] == nil {
+			tables[key] = &table{}
+			titles = append(titles, key)
+		}
+		tables[key].ids = append(tables[key].ids, a.ID)
+		tables[key].sum += a.Cents
+	}
+	var largest string
+	for _, key := range titles {
+		t := tables[key]
+		_, gst, _ := strings.Cut(key, "|")
+		matched, comparable := false, false
+		for _, total := range totals {
+			if total.GST != gst {
+				continue
+			}
+			comparable = true
+			matched = matched || total.Cents == t.sum
+		}
+		if matched && len(t.ids) > 1 {
+			for _, id := range t.ids {
+				components[id] = true
+			}
+		} else if comparable && len(t.ids) >= 5 && (largest == "" || len(t.ids) > len(tables[largest].ids)) {
+			largest = key
+		}
+	}
+	if largest != "" {
+		title, _, _ := strings.Cut(largest, "|")
+		r.Issues = append(r.Issues, "The priced rows under “"+title+"” add to $"+decimalMoney(tables[largest].sum)+", which is not a printed total. Check the rows against the source.")
+	}
 }
 
 func (d *Draft) captureCoverage(f string, q question, a jev.Answer) {

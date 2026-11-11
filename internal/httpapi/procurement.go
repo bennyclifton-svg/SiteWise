@@ -20,6 +20,36 @@ func disciplines(deps Deps) []procurement.Discipline {
 	return out
 }
 
+// procurementTrades is what the Trades tab offers: the knowledge trades
+// list, or the filing vocabulary's trades when no knowledge is loaded.
+func procurementTrades(deps Deps) []procurement.Discipline {
+	var out []procurement.Discipline
+	if deps.Knowledge != nil && len(deps.Knowledge.Trades()) > 0 {
+		for _, t := range deps.Knowledge.Trades() {
+			out = append(out, procurement.Discipline{ID: t.ID, Label: t.Label})
+		}
+		return out
+	}
+	for _, d := range deps.Catalog.Disciplines {
+		if strings.HasPrefix(d.ID, "trade.") || strings.HasPrefix(d.ID, "supplier.") {
+			out = append(out, procurement.Discipline{ID: d.ID, Label: d.Label})
+		}
+	}
+	return out
+}
+
+// rowDisciplines is every id a Procurement row may be created for:
+// consultants from the filing vocabulary, trades from the trades list.
+func rowDisciplines(deps Deps) []procurement.Discipline {
+	out := procurementTrades(deps)
+	for _, d := range deps.Catalog.Disciplines {
+		if strings.HasPrefix(d.ID, "consultant.") {
+			out = append(out, procurement.Discipline{ID: d.ID, Label: d.Label})
+		}
+	}
+	return out
+}
+
 // postProcurementRow saves the package for a discipline chosen in the
 // Procurement table. Only the id is trusted; title and kind come from the
 // discipline list.
@@ -46,7 +76,7 @@ func postProcurementRow(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	var p procurement.Package
 	found := false
-	for _, d := range deps.Catalog.Disciplines {
+	for _, d := range rowDisciplines(deps) {
 		if d.ID == body.DisciplineID {
 			p, found = procurement.DisciplinePackage(d.ID, d.Label)
 			break

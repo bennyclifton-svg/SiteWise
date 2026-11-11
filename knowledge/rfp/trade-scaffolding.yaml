@@ -1,0 +1,102 @@
+# Scaffolding RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-scaffolding
+version: 1
+status: draft
+kind: works
+title: "Scaffolding"
+heading: "REQUEST FOR TENDER: SCAFFOLDING"
+discipline_ids: [trade.scaffolding]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the scaffolding contractor. Your job is to design where left to you, erect, alter, inspect and dismantle the scaffold, edge protection and access the works need, safe for the trades who use it, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Workplace Health and Safety in Commercial Construction)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Let only licensed scaffolders do work that needs a high-risk work licence.
+      - Inspect and tag the scaffold before first use, after any alteration or severe weather, and at the intervals the regulations require.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Scaffold design"
+    lines:
+      - {key: design, text: "Scaffold design, tie layout and load rating for the duty the trades need"}
+      - {key: engineer, text: "Engineer's design where the scaffold's height or configuration needs it"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: erection
+    name: "Erection"
+    lines:
+      - {key: erect, text: "Scaffold, working platforms and access stairs or ladders"}
+      - {key: edge, text: "Guardrails, toeboards and edge protection"}
+      - {key: sheeting, text: "Sheeting, mesh or catch protection the documents or neighbours need"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]
+  - key: hire
+    name: "Hire, alterations and inspections"
+    lines:
+      - {key: hire, text: "Hire for the period the program holds each section"}
+      - {key: alter, text: "Alterations and lifts as the trades move through"}
+      - {key: inspect, text: "Inspection and tagging before use, after alteration or severe weather, and at the required intervals"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]
+  - key: dismantle
+    name: "Dismantling and removal"
+    lines:
+      - {key: dismantle, text: "Dismantling each section when the head contractor releases it"}
+      - {key: remove, text: "Removal of the scaffold and its ties from site"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: handover, text: "Handover of each section to the head contractor before use"}
+      - {key: certificates, text: "Handover certificates your trade signs"}
+      - {key: records, text: "Design, inspection and tag records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]
+
+positions:
+  - {key: ground, label: "Ground prepared to bear the scaffold base, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]}
+  - {key: permits, label: "Permits to stand scaffold on a footpath or road, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Workplace Health and Safety in Commercial Construction)"}]}
+  - {key: make_good, label: "Patching of finished surfaces at tie points, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

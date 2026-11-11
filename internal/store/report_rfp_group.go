@@ -472,7 +472,7 @@ func (s *Store) writeGroupSetting(ctx context.Context, tx pgx.Tx, org string, r 
 				return err
 			}
 		}
-		if err := rfp.ValidateSetting(lead.Disc, lead.Sk, lead.Drivers, key, value); err != nil {
+		if err := validGroupSetting(lead, parts, key, value); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO report_settings(org_id,report_version_id,key,value,basis,user_id) VALUES($1::uuid,$2::uuid,$3,$4::jsonb,'{}'::jsonb,$5::uuid) ON CONFLICT(org_id,report_version_id,key) DO UPDATE SET value=EXCLUDED.value,basis=EXCLUDED.basis,user_id=EXCLUDED.user_id,version=report_settings.version+1,updated_at=now()`, org, d.ID, key, []byte(value), actor); err != nil {
@@ -481,6 +481,22 @@ func (s *Store) writeGroupSetting(ctx context.Context, tx pgx.Tx, org string, r 
 		settings[key] = rfp.Setting{Value: value}
 	}
 	return nil
+}
+
+// validGroupSetting checks a shared setting against the lead's rules. The
+// engagement prints every member's terms, so a term edit is valid when any
+// member with an RFP carries that term.
+func validGroupSetting(lead memberPart, parts []memberPart, key string, value json.RawMessage) error {
+	err := rfp.ValidateSetting(lead.Disc, lead.Sk, lead.Drivers, key, value)
+	if err == nil || !rfp.TermSetting(key) {
+		return err
+	}
+	for _, p := range parts {
+		if p.templated() && rfp.ValidateSetting(p.Disc, p.Sk, p.Drivers, key, value) == nil {
+			return nil
+		}
+	}
+	return err
 }
 
 // RFPGroupView is the editor's view of a combined engagement: each member

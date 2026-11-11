@@ -1,0 +1,101 @@
+# Driveways and paving RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-paving
+version: 1
+status: draft
+kind: works
+title: Driveways and paving
+heading: "REQUEST FOR TENDER: DRIVEWAYS AND PAVING"
+discipline_ids: [trade.paving]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the driveways and paving contractor. Your job is to build the driveway, crossover, paths and paved areas the documents show, on a sound base, to the levels and falls that carry water away from the building, and to the council's requirements at the street."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Driveway crossover)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Start only once the services, conduits and drainage below the paving are in place.
+      - Book the council inspections the crossover approval names.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Approvals)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Shop drawings and samples"
+    lines:
+      - {key: layout, text: "Set-out, levels and joint layout drawings for review"}
+      - {key: samples, text: "Finish and paver samples for selection"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: base
+    name: "Subgrade and base"
+    lines:
+      - {key: subgrade, text: "Subgrade preparation and base course to the specification"}
+      - {key: edges, text: "Edge restraints, set to the documents' levels and falls"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3798 — Guidelines on Earthworks for Commercial and Residential Developments)"}]
+  - key: paving
+    name: "Driveways, paths and paving"
+    lines:
+      - {key: driveway, text: "Driveway the documents show"}
+      - {key: paths, text: "Paths, patios and paved areas"}
+      - {key: joints, text: "Control joints, sealing and finishes"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]
+  - key: crossover
+    name: "Driveway crossover"
+    lines:
+      - {key: crossover, text: "Crossover from the boundary to the kerb, to the council's specification"}
+      - {key: kerb, text: "Kerb and gutter reinstatement the council requires"}
+      - {key: inspection, text: "Council inspections at the stages the crossover approval names"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Driveway crossover)"}, {kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Kerb and gutter reinstatement)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Council sign-off of the crossover"}
+      - {key: records, text: "Finish details, warranties and care instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Approvals)"}]
+
+positions:
+  - {key: approval, label: "Council crossover approval and its fee, by the client", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Approvals)"}]}
+  - {key: services, label: "Services, conduits and drainage under the paving, by those trades", kind: technical, value: X, responsible: "those trades", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 8: External landscaping, paths, and drainage before occupation)"}]}
+  - {key: drains, label: "Grated drains and pits in the paving, by the stormwater drainage trade", kind: technical, value: X, responsible: "stormwater drainage trade", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/civil-residential.md (Gravity drainage principles)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

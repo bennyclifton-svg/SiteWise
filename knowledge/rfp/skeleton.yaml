@@ -188,9 +188,9 @@ fields:
   - {key: ref, label: RFP reference, kind: text, required: true, group: issue}
   - {key: issued, label: Issue date, kind: date, required: true, group: issue}
   - {key: closes, label: Proposals close, kind: date, required: true, group: issue}
-  # Terms print in this order in the RFP's terms table (owner, 8 Nov 2026).
-  # The agreement is met by attaching its documents (setting agreement_docs)
-  # or by naming it here.
+  # Each terms field is edited inside the term that prints it (see terms
+  # below). The agreement is met by attaching its documents (setting
+  # agreement_docs) or by naming it here.
   - {key: agreement, label: Client agreement, kind: text, required: true, group: terms, help: "Attach the agreement from the document repository, or name it. A missing agreement is an open question, never acceptance of the consultant's terms."}
   - {key: start_by, label: Start by, kind: date, required: false, group: issue}
   - {key: pi, label: Professional indemnity cover, kind: text, required: true, group: terms, default: "$10 million"}
@@ -234,6 +234,11 @@ project_rows:
     required: true
   - {key: information, label: Information provided, text: "{information}"}
 
+# Terms print ranked by importance (owner, 10 Nov 2026): the agreement, the
+# terms that control fees and variations, insurance, payment and rates. A
+# discipline's own terms follow those; the closing terms, about this tender
+# rather than the appointment, print last. Every terms field sits inside a
+# term, so the terms table edits it where it reads.
 terms:
   - key: agreement
     text: "Engagement is under {field:agreement}; your own terms do not apply. List any change you propose to the agreement in R6."
@@ -248,6 +253,9 @@ terms:
   - key: errors
     text: "Correcting your own errors, or coordinating with information you were given, is not a variation."
     provenance: [{kind: practice, ref: "peer-review-2026-10-09 corrections: consultant error is not a paid variation"}]
+  - key: insurance
+    text: "Hold professional indemnity cover of {field:pi} and public liability cover of {field:pl} throughout the appointment."
+    provenance: [{kind: client_decision, ref: "owner 2026-11-10: insurance limits print as a numbered term", why: "PI and PL are the client's defaults (threshold insurance_limits), not statutory minimums; stating them as a term lets the terms table edit them where they read."}]
   - key: payment
     text: "Invoice monthly against stage progress; payment within {field:payment_days} days, not dependent on any authority approval."
     provenance: [{kind: evidence, ref: "architecture#153"}, {kind: evidence, ref: "architecture#159"}]
@@ -256,9 +264,11 @@ terms:
     provenance: [{kind: evidence, ref: "architecture#154"}]
   - key: validity
     text: "Your proposal stays valid for {field:validity_days} days."
+    closing: true
     provenance: [{kind: evidence, ref: "architecture#155"}]
   - key: questions
     text: "Answers to scope questions go to every tenderer as numbered addenda."
+    closing: true
     provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-guide.md (numbered addenda and acknowledgement)"}]
 
 returnables:

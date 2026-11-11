@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { api, ApiError, type Account as AccountData, type Plan, type Team } from "./api";
 import { LegalLinks } from "./LegalLinks";
+import { TraceBand } from "./TracePage";
 
 const aud = (cents: number) =>
   (cents / 100).toLocaleString("en-AU", { style: "currency", currency: "AUD", maximumFractionDigits: 0 });
@@ -52,28 +53,32 @@ export function Account({ onSignedOut }: { onSignedOut: () => void }) {
   if (loadError) {
     return (
       <div className="account">
-        <p className="error-text" role="alert">{loadError}</p>
-        <button className="btn" onClick={load}>Retry</button>
+        <TraceBand title="Account" />
+        <div className="trace-home-body">
+          <p className="error-text" role="alert">{loadError}</p>
+          <button className="btn" onClick={load}>Retry</button>
+        </div>
       </div>
     );
   }
-  if (!account) return <div className="account" aria-busy="true" />;
+  if (!account) return <div className="account" aria-busy="true"><TraceBand title="Account" meta="Loading…" /></div>;
 
   const owner = account.role === "owner";
   return (
     <div className="account">
-      <h1>Account</h1>
-      <p className="muted">{account.email}{owner ? " · Account owner" : " · Team member"}</p>
-      {returned && <p className="account-note" role="status">Thank you. Your plan updates here as soon as Stripe confirms the payment.</p>}
-      {!account.email_verified && <VerifyBanner />}
-      <PlanSummary account={account} />
-      <Usage account={account} />
-      {account.billing_enabled && owner && <Plans account={account} />}
-      {!account.billing_enabled && <p className="muted">Billing is not set up on this server, so plan limits do not apply.</p>}
-      <TeamSection account={account} />
-      <footer className="account-footer">
-        <LegalLinks />
-      </footer>
+      <TraceBand title="Account" meta={`${account.email} · ${owner ? "Account owner" : "Team member"}`} />
+      <div className="trace-home-body">
+        {returned && <p className="account-note" role="status">Thank you. Your plan updates here as soon as Stripe confirms the payment.</p>}
+        {!account.email_verified && <VerifyBanner />}
+        <PlanSummary account={account} />
+        <Usage account={account} />
+        {account.billing_enabled && owner && <Plans account={account} />}
+        {!account.billing_enabled && <p className="muted">Billing is not set up on this server, so plan limits do not apply.</p>}
+        <TeamSection account={account} />
+        <footer className="account-footer">
+          <LegalLinks />
+        </footer>
+      </div>
     </div>
   );
 }

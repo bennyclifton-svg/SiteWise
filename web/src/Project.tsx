@@ -1,13 +1,13 @@
 import { PageActions } from "./PageActions";
 import { specificationApi } from "./specificationApi";
 import { emptySelection, selectAll as selectDocumentRows, type Selection } from "./table/selection";
-import { Pending } from "./Activity";
+import { Activity, Pending } from "./Activity";
 import { readLocationChoice, writeLocationChoice } from "./workbenchLocation";
 // A chosen project: drop files anywhere on the page, watch each become a title
 // block, correct any box. Live updates come from the durable event stream and
 // never move focus.
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type DragEvent, type ReactNode } from "react";
 import {
   api,
   request,
@@ -22,8 +22,8 @@ import {
 } from "./api";
 import { type RowModel } from "./DocumentRow";
 import { CockpitFrame } from "./CockpitFrame";
-import { LeftNav, type WorkbenchView } from "./LeftNav";
-import { Profile } from "./Profile";
+import { LeftNav, viewLabel, type WorkbenchView } from "./LeftNav";
+import { Profile, type ProfileRunState } from "./Profile";
 import { Register } from "./Register";
 import { DocumentWorkspace } from "./DocumentWorkspace";
 import { Procurement } from "./Procurement";
@@ -250,6 +250,9 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [openDocument, setOpenDocument] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [profileTick, setProfileTick] = useState(0);
+  // The profile's update as the nav and tab title show it; views opened since it finished.
+  const [profileRun, setProfileRun] = useState<ProfileRunState | null>(null);
+  const [visitedSinceRun, setVisitedSinceRun] = useState<Partial<Record<WorkbenchView, boolean>>>({});
   const [profileFeedbackTarget, setProfileFeedbackTarget] = useState<HTMLDivElement | null>(null);
   const [initialView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program"], "profile"));
   const [repositoryOpenRequest, setRepositoryOpenRequest] = useState(0);
@@ -550,6 +553,19 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     [onSignedOut],
   );
 
+  const split = useCallback(
+    (docId: string) =>
+      api.split(docId).then(
+        (doc) => { dispatch({ type: "doc", doc }); setAnnouncement("Splitting into pages. Each page is listed as it is read."); return true; },
+        (e: unknown) => {
+          if (e instanceof ApiError && e.status === 401) onSignedOut();
+          setAnnouncement(e instanceof ApiError && e.status === 409 ? "This document can't be split into pages." : "The split didn't start. Check your connection and try again.");
+          return false;
+        },
+      ),
+    [onSignedOut],
+  );
+
   const setReading = useCallback(
     async (ids: string[], setting: ReadSetting) => {
       try {
@@ -643,6 +659,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         : "profile";
 
   const showView = (next: WorkbenchView) => {
+    setVisitedSinceRun((seen) => ({ ...seen, [next]: true }));
     writeLocationChoice("view", next);
     setOpenDocument(null);
     setShowProgram(next === "program");
@@ -677,8 +694,37 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     setShowReports(false);
   };
 
+  // The profile's update on the nav (docs/design/2026-11-10-run-time-feedback.md):
+  // a ring on Project Profile while it reads and you are elsewhere, then its
+  // count of changes; and on the views it affects, their own counts until opened.
+  const runNext = profileRun?.next ?? null;
+  useEffect(() => setVisitedSinceRun({}), [runNext]);
+  const navMarks: Partial<Record<WorkbenchView, ReactNode>> = {};
+  const count = (n: number, words: string) => <><span className="nav-count" title={`${n} ${words}`} aria-hidden="true">{n}</span><span className="sr-only">{n} {words}</span></>;
+  if (profileRun && view !== "profile") {
+    if (profileRun.reading) navMarks.profile = <span title="Reading documents for the profile"><Activity /><span className="sr-only">Reading documents for the profile</span></span>;
+    else if (profileRun.changes > 0) navMarks.profile = count(profileRun.changes, "changes marked on the profile");
+  }
+  if (runNext) {
+    const mark = (v: WorkbenchView, n: number, words: string) => {
+      if (n > 0 && view !== v && !visitedSinceRun[v]) navMarks[v] = count(n, words);
+    };
+    mark("procurement", runNext.procurement + runNext.drafts, "proposed since the profile update");
+    mark("costs", runNext.costs, "cost lines proposed since the profile update");
+    mark("program", runNext.program, "program changes waiting for review");
+  }
+  // While the profile reads, the tab says so, for a user working in another tab.
+  const reading = !!profileRun?.reading, readDocs = profileRun?.read ?? 0, runDocs = profileRun?.total ?? 0;
+  useEffect(() => {
+    if (!reading || !state.projectName) return;
+    const before = document.title;
+    document.title = `Reading ${runDocs > 0 ? `${Math.min(readDocs + 1, runDocs)} of ${runDocs}` : "documents"} · ${state.projectName}`;
+    return () => { document.title = before; };
+  }, [reading, readDocs, runDocs, state.projectName]);
+  const documentLabel = useCallback((id: string) => docsRef.current[id]?.number || docsRef.current[id]?.filename || "", []);
+
   const nav = (
-    <LeftNav projects={projects} currentId={projectId} navigate={navigate} view={view} onView={showView} />
+    <LeftNav projects={projects} currentId={projectId} navigate={navigate} view={view} onView={showView} marks={navMarks} />
   );
   const repository = (
     <Register
@@ -693,6 +739,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       notReadOnly={notReadOnly}
       onClearFilter={() => setNotReadOnly(false)}
       onDelete={remove}
+      onSplit={split}
       fileOver={over}
       openKey={openDocument}
       onOpen={setOpenDocument}
@@ -756,13 +803,14 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     >
       <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
       <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram}>
-        <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget} />
+        <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget}
+          documentLabel={documentLabel} onRunState={setProfileRun} onOpenView={showView} />
       </section>
       {costsOpened && <div className="project-reports" hidden={!!viewingRow || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!!viewingRow || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
-      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
+      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={viewLabel(view)} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
       }} />}

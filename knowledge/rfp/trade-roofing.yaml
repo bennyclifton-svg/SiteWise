@@ -1,0 +1,95 @@
+# Roofing RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; research note docs/research/2026-11-10-trades/structure-envelope.md.
+# Seed guidance only; every standard named there is verified: false. Draft until the owner reviews it.
+id: trade-roofing
+version: 1
+status: draft
+kind: works
+title: "Roofing"
+heading: "REQUEST FOR TENDER: ROOFING"
+discipline_ids: [trade.roofing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the roofer. Your job is to lay the sarking, battens and roof covering the documents show, with their ridges, hips, valleys and roof flashings, weathertight and to the manufacturer's instructions, on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}, {kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Start only once the frame inspection certificate has been sighted.
+      - Agree penetrations and flashings with the roof plumber before the roof is covered.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: shop_drawings, text: "Roof set-out and flashing details for the design team's review"}
+      - {key: design, text: "Fixing design for the site's wind classification where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: underlay
+    name: "Sarking and battens"
+    lines:
+      - {key: sarking, text: "Roof sarking laid before the battens"}
+      - {key: battens, text: "Roof battens fixed for the covering and wind classification"}
+      - {key: blanket, text: "Insulation blanket under metal sheeting where the documents show it"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}, {kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]
+  - key: covering
+    name: "Roof covering"
+    lines:
+      - {key: covering, text: "Tile or metal sheet roof covering and its fixings"}
+      - {key: ridges, text: "Ridges, hips, valleys and cappings, dry-fixed or mechanically fixed"}
+      - {key: flashings, text: "Roof flashings at walls, abutments and chimneys"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Building Envelope and Weatherproofing)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Check of the finished roof for weathertightness, and removal of swarf and debris"}
+      - {key: certificates, text: "Certificates your trade signs and the manufacturer's warranty"}
+      - {key: records, text: "Manuals, warranties and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+
+positions:
+  - {key: frame, label: "Roof frame inspected and certified before the roof is covered, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}]}
+  - {key: roof_drainage, label: "Gutters, box gutters, rainwater heads and downpipes, by the roof plumber", kind: technical, value: X, responsible: "roof plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}]}
+  - {key: penetrations, label: "Flashings at plumbing vents and flue penetrations, by the roof plumber", kind: technical, value: X, responsible: "roof plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 1: Frame to roof)"}]}
+  - {key: fascia, label: "Fascia, barge boards and eaves linings, by the framing carpenter", kind: technical, value: X, responsible: "framing carpenter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Construction Sequence and Programming for Residential Projects)"}, {kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md (4. Residential-typical trade scopes and scope traps)"}]}
+  - {key: edge_protection, label: "Scaffold and roof edge protection, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/NZS 1576 Series — Scaffolding)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

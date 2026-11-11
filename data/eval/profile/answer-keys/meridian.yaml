@@ -35,9 +35,12 @@ header:
     accept: [partial_occupation, live_environment]
     evidence: 01 Building remains partially occupied on Levels 2 and 5
   hdr.cond.stakeholder_complexity:
-    accept: [single_owner]
-    evidence: one landlord; no option for tenant plus landlord exists, so single_owner is the nearest
+    accept: [landlord_tenant]
+    evidence: tenant fit-out needing the landlord's consent and base building (01, 05); the tenant-and-landlord option was added 2026-11-11, replacing single_owner as the nearest
     blank_ok: true
+  hdr.scale.added_gfa_sqm:
+    accept: ['185']
+    evidence: 02 Mezzanine insert on Level 4 (~185 m2); 04 scope summary
   hdr.cond.hazardous_process:
     accept: [none]
     evidence: no hazardous process in an office fitout
@@ -80,6 +83,50 @@ details:
   proj.flag.sustainability_target:
     accept: ['yes']
     evidence: 02 NABERS commitment
+  # Added 2026-11-11 with the details that had no field before
+  # (docs/plans/2026-11-11-accommodation-and-full-capture.md).
+  proj.landlord:
+    accept: [Westgate Properties, Westgate Properties Pty Ltd]
+    evidence: 03 landlord design review (Westgate Properties / CBRE); 05 signature
+  proj.works_levels:
+    accept: [Level 3 and part of Level 4]
+    evidence: Levels 3 and partial Level 4 in 01, 02, 03 and 04
+  proj.target_da_lodgement:
+    accept: [September 2026]
+    evidence: 02 SSD lodgement target; 03 Programme
+  proj.target_construction_start:
+    accept: [1 November 2026]
+    evidence: 01 target possession for fit-out; 03 tenant possession for fit-out
+  proj.target_completion:
+    accept: [1 July 2027]
+    evidence: 01 firm occupation from 1 July 2027; 03 practical completion before 1 July 2027 occupation
+  proj.preliminary_estimate:
+    accept: ['$1,280,000 – $1,520,000']
+    evidence: 05 builder's ROM tenant works range
+  proj.preliminary_construction_months:
+    accept: [22–26 weeks]
+    evidence: 05 Programme ROM 22–26 weeks on site
+  proj.budget_aspiration:
+    accept: ['$1.35M – $1.55M']
+    evidence: 01 Budget aspiration (not confirmed), internal feasibility allowance
+  proj.contributions_stated:
+    accept:
+    - 'HVAC plant upgrade: Landlord will upgrade central plant capacity on Level 3 riser — allowance $180,000 contributed (ex GST) subject to lease incentive deed'
+    evidence: 05 landlord scope, HVAC plant upgrade row
+    blank_ok: true
+  proj.work_hours:
+    accept:
+    - 'After-hours works: Permitted 10:00 pm – 6:00 am weekdays and Saturdays until 2:00 pm; no Sunday works'
+    evidence: 05 landlord scope, after-hours works row
+    blank_ok: true
+  proj.start_conditions:
+    accept:
+    - Tenant works must not commence until SSD consent and landlord fit-out consent deed are executed.
+    evidence: 05 landlord schedule
+    blank_ok: true
+  proj.tenderers:
+    accept: ['2']
+    evidence: 03 two invited builders; 04 invite two builders
 determinants:
   det.ncc_class:
     accept: ['5']
@@ -93,6 +140,31 @@ determinants:
   det.sprinklered:
     accept: [stated_true]
     evidence: 05 base building sprinklers to corridor and open office shell
+  det.existing_building_year:
+    accept: ['1984']
+    evidence: 02 building constructed 1984
+  det.occupant_load:
+    accept: ['142']
+    evidence: 02 occupancy load from 98 persons (existing) to 142 persons proposed
+# The Accommodation table (01 functional requirements, 04 scope summary).
+spaces:
+  space.workstations.count: {accept: ['42'], evidence: '01 and 04, 42 workstations'}
+  space.library.area_sqm: {accept: ['180'], evidence: '01 and 04, ~180 m2 open-plan legal library'}
+  space.offices.count: {accept: ['8'], evidence: '01 and 04, 8 partner offices'}
+  space.offices.level: {accept: ['Level 3, Level 4'], evidence: '01 3 on Level 3, 5 on Level 4', blank_ok: true}
+  space.meeting_rooms.count: {accept: ['6'], evidence: '01 4 x 8-person and 2 x 16-person; 04 6 meeting rooms'}
+  space.breakout.capacity: {accept: ['60'], evidence: '01 60-seat breakout'}
+  space.kitchenette.provided: {accept: ['yes'], evidence: '01 commercial-grade kitchenette; 04'}
+  space.meeting_rooms.mix: {accept: ['4x8,2x16'], evidence: '01 4 x 8-person, 2 x 16-person'}
+  space.meeting_rooms.need.av_ready: {accept: ['yes'], evidence: '01 (AV-ready); 04 6 meeting rooms (AV-ready)'}
+  space.records_room.need.secure: {accept: ['yes'], evidence: '01 1 x secure records room'}
+  space.reception.need.secure: {accept: ['yes'], evidence: '01 Level 3 entry suite with secure reception', blank_ok: true}
+  space.records_room.count: {accept: ['1'], evidence: '01 1 x secure records room'}
+  space.comms_room.count: {accept: ['1'], evidence: '01 1 x comms room'}
+  space.reception.level: {accept: ['Level 3'], evidence: '01 Level 3 entry suite with secure reception', blank_ok: true}
+  space.toilets.count: {accept: ['4'], evidence: '01 2 x male and 2 x female', blank_ok: true}
+  space.accessible_toilets.count: {accept: ['1'], evidence: '01 1 x accessible WC'}
+  space.showers.level: {accept: ['Level 4'], evidence: '01 shower on Level 4', blank_ok: true}
 signals:
   sig.occupied-works-stated:
     accept: ['true']

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEve
 import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, notFiledReason, type RowModel } from "./DocumentRow";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { IconBin, IconEye, IconEyeOff, IconMore, IconOpen, IconRename, IconRetry, IconStored, IconTag, IconUndo, IconUpload } from "./icons";
+import { IconBin, IconEye, IconEyeOff, IconMore, IconOpen, IconRename, IconRetry, IconStored, IconSubdivide, IconTag, IconUndo, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
 import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
@@ -32,6 +32,8 @@ interface Props {
   onClearFilter: () => void;
   /** Permanently deletes documents after the user confirmed; resolves true when done. */
   onDelete: (ids: string[]) => Promise<boolean>;
+  /** Splits a drawing set the automatic split stopped on; resolves true when queued. */
+  onSplit: (id: string) => Promise<boolean>;
   /** A file is being dragged onto the page. Highlights this panel with the shared drop treatment. */
   fileOver?: boolean;
   openKey: string | null;
@@ -168,6 +170,7 @@ export function Register({
   notReadOnly,
   onClearFilter,
   onDelete,
+  onSplit,
   fileOver = false,
   openKey,
   onOpen,
@@ -305,6 +308,8 @@ export function Register({
     if (one) items.push({ label: "Open", icon: <IconOpen />, onSelect: () => onOpen(m.rowKey) });
     if (!docs.length) return items;
     if (one) items.push({ label: "Rename", icon: <IconRename />, disabled: !filed, onSelect: () => setRename(r => ({ id: docs[0].id, n: (r?.n ?? 0) + 1 })) });
+    // Offered only where the automatic split stopped on an unconfirmed page.
+    if (one && docs[0].expansion?.can_split) items.push({ label: "Split into pages", icon: <IconSubdivide />, onSelect: () => void onSplit(docs[0].id) });
     items.push("sep", {
       label: "Set discipline…", icon: <IconTag />, disabled: !filed || !catalog,
       onSelect: () => { setFieldChoice(null); setFieldEdit({ field: "discipline", ids: m.ids }); },

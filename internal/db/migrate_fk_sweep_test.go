@@ -178,6 +178,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["invoice_decisions"] = row{"org_id": org, "project_id": p, "invoice_id": invoice, "field": "kind", "band": "green", "decided_by": "rule"}
 		firm, submission, award := id(3300+n), id(3400+n), id(3500+n)
 		f["firms"] = row{"org_id": org, "id": firm, "name": "Firm", "name_key": "firm", "status": "draft"}
+		f["package_invitations"] = row{"org_id": org, "project_id": p, "package_id": pkg, "firm_id": firm}
+		f["accommodation_lines"] = row{"org_id": org, "project_id": p, "id": id(3600 + n), "line_key": "offices#1", "name": "Office 1"}
 		f["schedule_items"] = row{"org_id": org, "project_id": p, "package_id": pkg, "key": "stage:design", "kind": "stage", "label": "Design", "base": true, "ordinal": 0, "source": "rfp"}
 		f["submissions"] = row{"org_id": org, "id": submission, "project_id": p, "package_id": pkg, "firm_id": firm, "filename": "proposal.pdf", "status": "received", "received_on": "2026-10-16"}
 		f["submission_decisions"] = row{"org_id": org, "project_id": p, "submission_id": submission, "field": "firm", "band": "green", "decided_by": "rule"}

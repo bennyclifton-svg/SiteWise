@@ -1,0 +1,106 @@
+# Data, AV and security RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3).
+# Same shape as trade-structural-steel.yaml. Research note:
+# docs/research/2026-11-10-trades/fire-services.md. Draft until the owner reviews it.
+id: trade-data-security
+version: 1
+status: draft
+kind: works
+title: Data, AV and security
+heading: "REQUEST FOR TENDER: DATA, AV AND SECURITY"
+discipline_ids: [trade.data_security]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the communications and security contractor. Your job is to install, configure and test the cabling, audiovisual and electronic security systems the documents show, prove they work with each other and with the fire and lift systems, and hand them over with their records."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Construction, commissioning and handover)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Offer concealed pathways, cable separation, outlets and fire stopping for inspection before the linings close.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records; put passwords and credentials in the client's secure system, not in the manuals.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Construction, commissioning and handover)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: Design and shop drawings
+    lines:
+      - {key: shop_drawings, text: "Rack layouts, outlet and device schedules and system schematics for the design team's review"}
+      - {key: design, text: "Design of the package where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Documentation and tender [documentation_tender])"}]
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of installed equipment from dust and moisture"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Construction, commissioning and handover)"}]
+  - key: cabling
+    name: "Lead-in and cabling"
+    lines:
+      - {key: lead_in, text: "Carrier lead-in conduit, pit and pipe from the boundary to the communications room or cupboard"}
+      - {key: racks, text: "Communications room or cupboard fit-out, racks and patching"}
+      - {key: cabling, text: "Backbone and horizontal cabling to each outlet the documents show, labelled"}
+      - {key: wireless, text: "Wireless access points and network equipment the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (ICT rooms, pathways and cabling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Pit-and-pipe (conduit infrastructure))"}]
+  - key: av
+    name: "Audiovisual"
+    lines:
+      - {key: av, text: "Audiovisual systems and their controls the documents show"}
+      - {key: hearing, text: "Hearing augmentation where the documents show it"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Audiovisual systems)"}]
+  - key: security
+    name: "Electronic security"
+    lines:
+      - {key: intruder, text: "Intruder and duress alarms and their monitoring connection"}
+      - {key: cctv, text: "CCTV cameras, recording and viewing the documents show"}
+      - {key: access_control, text: "Access control, electric locks and intercoms the documents show"}
+      - {key: release, text: "Release of secured doors on fire alarm, tested with the fire services contractor"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Electronic security)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Security Systems and Access Control)"}]
+  - key: handover
+    name: Testing and handover
+    lines:
+      - {key: testing, text: "Cable tests, device checks and functional tests of each system and its interfaces"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Manuals, warranties, test results, configurations, licence registers, training and as-built records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Construction, commissioning and handover)"}]
+
+positions:
+  - {key: power, label: "Power to racks, devices and electric locks, by the electrical contractor", kind: technical, value: X, responsible: "electrical contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (ICT rooms, pathways and cabling)"}]}
+  - {key: pathways, label: "Cable trays and conduits for communications, by the electrical contractor unless the documents give them to you", kind: technical, value: X, responsible: "electrical contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/mep-residential.md (Pit-and-pipe (conduit infrastructure))"}]}
+  - {key: carrier, label: "Carrier network connection, carrier equipment and service activation, by the carrier on the client's application", kind: technical, value: X, responsible: "client", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS/CA S009 and AS/NZS 3080 — Telecommunications Cabling)"}]}
+  - {key: fire_signal, label: "Fire alarm signal for door release, by the fire services contractor", kind: technical, value: X, responsible: "fire services contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Electronic security)"}]}
+  - {key: doors, label: "Doors, frames and door hardware prepared for electric locks, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (Electronic security)"}]}
+  - {key: builder, label: "Builder's work: penetrations, by the head contractor; fire sealing, by the head contractor or the passive fire contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/ict-av-security-guide.md (ICT rooms, pathways and cabling)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

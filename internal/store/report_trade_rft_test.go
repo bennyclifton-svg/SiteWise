@@ -151,8 +151,13 @@ func TestTradeRFTUsesTheRFPFormat(t *testing.T) {
 	}
 
 	// A supply and a consultant without a file use the general files.
-	if _, sv := open(create("supplier.windows_glazing", "Windows and Glazing")); sv.RFP.Discipline != "trade-general" || !strings.Contains(text(sv), "Trade package: Windows and Glazing.") {
+	// Every listed trade has its own file (docs/plans/2026-11-10-trades-catalogue.md),
+	// so the fallback is shown with an id no file names.
+	if _, sv := open(create("supplier.unlisted", "Unlisted supply")); sv.RFP.Discipline != "trade-general" || !strings.Contains(text(sv), "Trade package: Unlisted supply.") {
 		t.Fatalf("supply RFT %q", sv.RFP.Discipline)
+	}
+	if _, wv := open(create("supplier.windows_glazing", "Windows and Glazing")); wv.RFP.Discipline != "supplier-windows-glazing" {
+		t.Fatalf("windows RFT %q", wv.RFP.Discipline)
 	}
 	acoustic := create("consultant.acoustic", "Acoustic")
 	if _, av := open(acoustic); av.RFP.Discipline != "consultant-general" || !strings.Contains(text(av), "Your job is to give the project") || !strings.Contains(text(av), "2. Scope of services") {

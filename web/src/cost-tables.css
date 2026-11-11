@@ -6,7 +6,7 @@
 :root {
   --ct-row-h: 32px;
   --ct-line: var(--sw-border-subtle);
-  --ct-selected: color-mix(in oklab, var(--sw-text-primary) 7%, var(--paper));
+  --ct-selected: var(--state-selected);
 }
 
 /* ---------- shared: rows, rules and the header band ---------- */
@@ -240,6 +240,46 @@
 .cockpit-scroll .procurement-table .proposal-drop-icon { width: 30px; height: 26px; margin-left: -6px; border-radius: 4px; color: var(--sw-text-tertiary); opacity: .4; }
 .cockpit-scroll .procurement-table .proposal-drop-icon svg { width: 20px; height: 20px; }
 .cockpit-scroll .procurement-table tr:hover .proposal-drop-icon { opacity: .8; }
+
+/* Naming a firm before its quote arrives (owner, 11 Nov 2026;
+   docs/plans/2026-11-11-procurement-invited-firms.md). The empty cell is the
+   button: "Add firm" shows beside the ghosted drop icon on row hover or
+   focus. Then the cell is the field, at the row's height. */
+.cockpit-scroll .procurement-table td.firm-slot { position: relative; }
+.cockpit-scroll .procurement-table .firm-slot .firms-none { display: flex; align-items: center; gap: 2px; }
+.cockpit-scroll .procurement-table .firm-name-add {
+  height: auto; min-height: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  color: var(--sw-text-tertiary); font: inherit; font-size: var(--fs-sm); opacity: 0; cursor: text;
+}
+.cockpit-scroll .procurement-table .firm-name-add::after { content: ""; position: absolute; inset: 0; }
+.cockpit-scroll .procurement-table tr:hover .firm-name-add:not(:disabled),
+.cockpit-scroll .procurement-table .firm-name-add:focus-visible { opacity: 1; }
+.cockpit-scroll .procurement-table .firm-name-add:focus-visible { outline: none; }
+.cockpit-scroll .procurement-table td.firm-slot:has(.firm-name-add:focus-visible) { box-shadow: inset 0 0 0 1px var(--sw-text-tertiary); }
+.cockpit-scroll .procurement-table .firm-name-editor { display: block; box-sizing: border-box; width: 100%; height: 44px; padding: 0 10px; font-size: var(--fs-md); }
+.cockpit-scroll .procurement-table .firm-name-editor::placeholder { color: var(--sw-text-tertiary); opacity: .7; }
+/* Directory firms under the field: the raised menu every page uses, fixed
+   to the cell because the table clips what overflows a cell. */
+.firm-suggest { position: fixed; right: auto; z-index: 40; max-width: 360px; }
+.firm-suggest button { display: flex; align-items: baseline; gap: 10px; }
+.firm-suggest-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.firm-suggest-abn { flex: none; color: var(--sw-text-tertiary); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+/* An invited firm: its name over "Invited" in the user's colour, no
+   figure. A click corrects the name, so it reads as text to edit. */
+.cockpit-scroll .procurement-table .firm-card .firm-chip[data-status="invited"] { box-sizing: border-box; cursor: text; }
+.cockpit-scroll .procurement-table .firm-chip[data-status="invited"] .firm-chip-status { color: var(--origin-user); }
+/* A proposal no row claims sits first: "Choose package" in the to-check
+   colour where the discipline goes, its firm in Firm 1, shown only. */
+.cockpit-scroll .procurement-table tr.row-unplaced .discipline-cell select { width: 100%; margin: 0; padding-left: 0; text-indent: 0; color: var(--origin-check); font-weight: 500; cursor: pointer; }
+.cockpit-scroll .procurement-table tr.row-unplaced .discipline-cell select option { color: var(--sw-text-primary); font-weight: 400; }
+.cockpit-scroll .procurement-table .firm-chip[data-static] { cursor: default; }
+.cockpit-scroll .procurement-table .firm-chip[data-static]:hover { background: transparent; }
+.cockpit-scroll .procurement-table tr.row-unplaced-combine > td { padding: 8px 10px; }
+/* A quote dragged over an invited firm's cell: the dashed drop outline. */
+.cockpit-scroll .procurement-table td.firm-slot[data-over] { outline: 1.5px dashed var(--sw-text-tertiary); outline-offset: -3px; }
+@media print {
+  .firm-name-add, .firm-suggest { display: none !important; }
+}
 
 /* View, Create, Prices, Review, Uncombine: words, not pills. */
 .cockpit-scroll .procurement-table .table-action {

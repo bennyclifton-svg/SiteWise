@@ -24,7 +24,7 @@
 .rfp-al-step:disabled { opacity: .3; cursor: default; }
 :is(.rfp-allowance-pairs, .rfp-terms-table) input.rfp-al-value { box-sizing: border-box; width: 3.2em; height: 22px; min-height: 0; line-height: 22px; padding: 0; border: 0; border-radius: 0; background: transparent; color: var(--ink); font: inherit; text-align: center; font-variant-numeric: tabular-nums; }
 :is(.rfp-allowance-pairs, .rfp-terms-table) input.rfp-al-value:hover { background: var(--sw-hover-bg); }
-:is(.rfp-allowance-pairs, .rfp-terms-table) input.rfp-al-value:focus { outline: 1px solid var(--sw-selection-border, var(--line-strong)); outline-offset: -1px; background: var(--table-edit-bg); }
+:is(.rfp-allowance-pairs, .rfp-terms-table) input.rfp-al-value:focus { outline: 1px solid var(--state-edit-ring); outline-offset: -1px; background: var(--state-edit-bg); }
 .rfp-al-value::placeholder { color: var(--sw-text-tertiary); }
 
 /* Transmittal: its buttons sit in the section's blue band, and the table's
@@ -37,36 +37,56 @@
 .rfp-transmittal > .report-table-scroll > .rfp-transmittal-table { margin-top: 0; border-top: 0; }
 .rfp-transmittal > .report-wording { margin-top: 8px; }
 
-/* Terms (owner, 8 Nov 2026): one table. The numbered terms first (No. |
-   Term), then a head row and the answers they draw on (Item | Response).
-   Fields are plain cells (sizing.css); rows are the allowance height. */
+/* Terms (owner, 10 Nov 2026): one table, No. | Term, each answer edited
+   inside the term that prints it. Rows select and edit as stage lines do
+   (reports.css .rfp-line); fields are plain (sizing.css). */
 .rfp-terms-table { table-layout: fixed; font-size: var(--fs-md); }
 .rfp-terms-table .rfp-terms-no-col { width: 56px; }
-.rfp-terms-table .rfp-terms-item-col { width: 28%; }
 .report-table.rfp-terms-table :is(td, th) { padding: 3px 10px; vertical-align: middle; }
 .report-table.rfp-terms-table tbody tr { height: var(--rfp-row-h); }
-.report-table.rfp-terms-table tr.rfp-terms-line > td { padding-top: 6px; padding-bottom: 6px; vertical-align: top; }
 .report-table.rfp-terms-table .rfp-terms-no { text-align: center; font-variant-numeric: tabular-nums; }
-.rfp-terms-table tbody th { font-weight: 400; text-align: left; color: var(--ink); }
-.rfp-terms-table tbody tr.table-subhead > th { text-align: left; }
-.rfp-terms-table tbody th label { cursor: pointer; }
-.rfp-terms-table tr[data-blocked] > :is(th, td) { background: color-mix(in oklab, var(--alert) 8%, transparent); }
-.rfp-terms-table tr[data-drop] > :is(th, td) { background: var(--table-edit-bg); outline: 1px dashed var(--sw-selection-border, var(--line-strong)); outline-offset: -2px; }
-.rfp-terms-inline { margin: 0; }
-.rfp-terms-input { box-sizing: border-box; width: 100%; height: 26px; }
-.rfp-terms-number { display: inline-flex; align-items: center; gap: 6px; }
-.rfp-terms-unit { color: var(--sw-text-secondary, var(--ink-muted)); }
-/* The agreement: its document titles on one line, the repository buttons at the end. */
-.rfp-terms-agreement-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
-.rfp-terms-agreement-name { flex: 1 1 200px; min-width: 0; padding-left: 6px; }
-.rfp-terms-empty { flex: 1 1 200px; padding-left: 6px; color: var(--sw-text-secondary, var(--ink-muted)); }
+.rfp-terms-table tr[data-blocked] > td { background: color-mix(in oklab, var(--alert) 8%, transparent); }
+.rfp-terms-table tr[data-drop] > td { background: var(--table-edit-bg); outline: 1px dashed var(--sw-selection-border, var(--line-strong)); outline-offset: -2px; }
+/* A term's wording and its edit box share every metric, as a stage line's. */
+.rfp-terms-table .inline-text.inline-text-cell,
+.report-section .rfp-terms-table textarea.inline-text.inline-text-cell {
+  display: block; box-sizing: border-box; width: 100%; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0;
+  box-shadow: none; outline: none; background: transparent; font: inherit; line-height: inherit; color: inherit; resize: none; overflow: hidden;
+}
+.rfp-terms-table p.inline-text.inline-text-cell[data-editable] { cursor: default; }
+.rfp-terms-table p.inline-text.inline-text-cell[data-editable]:hover { background: transparent; }
+.report-section .rfp-terms-table textarea.inline-text.inline-text-cell { cursor: text; }
+.rfp-terms-table .rfp-term-text:has(textarea.inline-text-cell) { background: var(--state-edit-bg); outline: 1px solid var(--state-edit-ring); outline-offset: -1px; }
+.rfp-terms-table tr[data-held] .rfp-term-text { color: var(--sw-text-secondary, var(--ink-muted)); }
+/* The text takes the line; the agreement's buttons sit at its end. */
+.rfp-term-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.rfp-term-line > .inline-text, .rfp-term-line > form { flex: 1 1 280px; min-width: 0; }
+.rfp-term-owners { color: var(--sw-text-secondary, var(--ink-muted)); white-space: nowrap; }
+/* A field in a term: no box. Text grows with its value (the hidden copy
+   sizes it); days sit between their arrows; a date keeps its picker. */
+.rfp-term-field { display: inline-grid; vertical-align: baseline; max-width: 100%; }
+.rfp-term-field::after { content: attr(data-value); grid-area: 1 / 1; visibility: hidden; white-space: pre; padding: 0 2px; font: inherit; }
+.rfp-terms-table .rfp-term-field > input { grid-area: 1 / 1; box-sizing: border-box; width: 100%; min-width: 3ch; height: auto; padding: 0 2px; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; line-height: inherit; }
+.rfp-term-field.rfp-term-date::after { content: none; }
+.rfp-terms-table .rfp-term-date > input { width: auto; min-width: 9.5em; }
+.rfp-term-field > input::placeholder { color: var(--sw-text-tertiary); }
+.rfp-term-number { display: inline-flex; vertical-align: baseline; }
+.rfp-term-number .rfp-al-stepper { vertical-align: middle; }
+.rfp-terms-table .rfp-term-number input.rfp-al-value { width: 2.6em; color: inherit; }
+.rfp-term-doc:not([data-origin]) { color: var(--sw-text-secondary, var(--ink-muted)); }
+/* Where each value came from (trace.css): blue typical, green from a
+   document, rust set by you. */
+.rfp-terms-table [data-origin="typical"] { color: var(--origin-typical); }
+.rfp-terms-table [data-origin="doc"] { color: var(--origin-doc); }
+.rfp-terms-table [data-origin="user"] { color: var(--origin-user); }
 .rfp-terms-agreement-actions { display: inline-flex; gap: 6px; margin-left: auto; }
 .rfp-terms-agreement-actions .btn { height: 24px; font-size: var(--fs-xs); }
-.rfp-terms-table + .btn { margin-top: 8px; }
+.rfp-terms-table .rfp-terms-add > td { padding: 3px 10px; }
 
 @media print {
   .rfp-al-step { display: none !important; }
   .rfp-al-value { width: auto; }
   .rfp-transmittal .rfp-transmittal-heading { display: none; }
-  .rfp-terms-agreement-actions { display: none; }
+  .rfp-terms-agreement-actions, .rfp-terms-add, .rfp-terms-loose, .rfp-terms-table tr[data-held] { display: none; }
+  .rfp-terms-table [data-origin] { color: inherit; }
 }

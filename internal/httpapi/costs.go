@@ -179,6 +179,28 @@ func deleteCostItem(w http.ResponseWriter, r *http.Request, d Deps) {
 	p, e := d.Store.RemoveCostItem(r.Context(), s.OrgID, r.PathValue("id"), r.PathValue("item"), s.UserID, in)
 	costResult(w, d, s.OrgID, p, e)
 }
+
+// postCostBulk applies one action to the selected lines in one write:
+// delete, duplicate, or set their category or package and exclusion. No Jev.
+func postCostBulk(w http.ResponseWriter, r *http.Request, d Deps) {
+	s, ok := deliverySession(w, r, d, true)
+	if !ok {
+		return
+	}
+	var in store.CostBulkInput
+	if readProposalJSON(w, r, d.MaxBodyBytes, &in) != nil {
+		http.Error(w, "invalid body", 400)
+		return
+	}
+	for _, id := range in.IDs {
+		if !uuidPattern.MatchString(id) {
+			http.Error(w, "invalid line", 422)
+			return
+		}
+	}
+	p, e := d.Store.BulkCostItems(r.Context(), s.OrgID, r.PathValue("id"), s.UserID, in)
+	costResult(w, d, s.OrgID, p, e)
+}
 func getCostBenchmarks(w http.ResponseWriter, r *http.Request, d Deps) {
 	s, ok := deliverySession(w, r, d, false)
 	if !ok {

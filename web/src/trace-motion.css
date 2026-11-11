@@ -1,0 +1,180 @@
+/* Trace run-time motion and marks: the shared way any surface shows work as
+   it happens (web/DESIGN.md, "Run-time motion and marks"). Each motion means
+   one thing and is caused by a real event: a count the server made, a write
+   that saved, a passage read. Never a timer standing in for progress. The
+   value is already on the page when its motion plays; motion never delays
+   or hides it. Play a motion with play() or inkInOrder() from ink.ts, which
+   take the class off when it ends. Surface sheets load after this one and may
+   specialise a motion for their own elements. */
+
+:root {
+  /* Arrives fast and settles. */
+  --ink-ease: cubic-bezier(.16, 1, .3, 1);
+  /* Cyan is work in progress: spotted, read but not applied, reading now. */
+  --ink-spotted: var(--sw-info-icon);
+  --ink-spotted-text: var(--sw-info-text);
+  /* What ink-on shades a block to. A surface may set its own. */
+  --ink-fill: var(--trace-in-scope);
+  /* A drawing's revision triangle, as a mask so it takes a colour. */
+  --rev-mark: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 9'><path d='M5 1.2 9 8H1z' fill='none' stroke='black' stroke-width='1.3' stroke-linejoin='round'/></svg>");
+}
+
+/* ---------- Inked: a change written where it already is ---------- */
+
+/* A value written in, left to right. Any element. */
+.ink-write { animation: ink-write 360ms var(--ink-ease) both; animation-delay: var(--ink-delay, 0ms); }
+@keyframes ink-write {
+  from { clip-path: inset(-6px 100% -10px -6px); }
+  to { clip-path: inset(-6px -6px -10px -6px); }
+}
+
+/* A replaced word, struck above the line as a drafter corrects, then gone.
+   Set data-ink-was to the old words for 1.2 s while the new ones write in. */
+[data-ink-was] { position: relative; }
+[data-ink-was]::after {
+  content: attr(data-ink-was);
+  position: absolute;
+  bottom: 82%;
+  left: 0;
+  color: var(--sw-text-tertiary);
+  font-size: .7em;
+  font-weight: 400;
+  white-space: nowrap;
+  text-decoration: line-through 1.5px;
+  pointer-events: none;
+  animation: ink-was 1200ms ease both;
+}
+@keyframes ink-was {
+  0% { opacity: 0; transform: translateY(4px); }
+  15%, 70% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-3px); }
+}
+
+/* A small mark or count that changed: it pops in. */
+.ink-pop { animation: ink-pop 320ms var(--ink-ease) both; animation-delay: var(--ink-delay, 0ms); }
+@keyframes ink-pop {
+  0% { opacity: 0; transform: scale(.4); }
+  60% { opacity: 1; transform: scale(1.25); }
+  100% { transform: none; }
+}
+
+/* A block shaded in, section hatch first and then its fill, or rubbed out.
+   The element must be positioned; it arrives at --ink-fill. */
+.ink-on { animation: ink-on 360ms var(--ink-ease) both; animation-delay: var(--ink-delay, 0ms); }
+.ink-on::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-linear-gradient(-45deg, var(--ink-fill) 0 1.1px, transparent 1.1px 2.7px);
+  pointer-events: none;
+  animation: ink-hatch 200ms var(--ink-ease) both;
+  animation-delay: var(--ink-delay, 0ms);
+}
+@keyframes ink-on { 0%, 55% { background-color: transparent; } 100% { background-color: var(--ink-fill); } }
+@keyframes ink-hatch { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
+.ink-off { animation: ink-off 380ms ease both; animation-delay: var(--ink-delay, 0ms); }
+@keyframes ink-off {
+  0% { background-color: var(--ink-fill); filter: none; opacity: 1; }
+  55% { background-color: var(--ink-fill); filter: blur(1px); opacity: .35; }
+  100% { background-color: transparent; filter: none; opacity: 1; }
+}
+
+/* Now needs a decision: a small element (a cell, a dot) bumps once. A text
+   value takes ink-write instead; its own check styling says the rest. */
+.ink-check { animation: ink-check 420ms var(--ink-ease) both; animation-delay: var(--ink-delay, 0ms); }
+@keyframes ink-check { 0% { transform: none; } 40% { transform: scale(1.35); } 100% { transform: none; } }
+
+/* ---------- Held: the user's word, read again, stands ---------- */
+
+/* It does not move; its row warms for a moment in the user's rust. */
+.ink-held { animation: ink-held 900ms ease both; }
+@keyframes ink-held { 0%, 100% { background-color: transparent; } 30% { background-color: color-mix(in oklab, var(--origin-user) 14%, transparent); } }
+
+/* ---------- Spotted: a passage just spoke to this ---------- */
+
+/* A cyan wash that fades. A table row washes its cells. */
+.ink-glint, tr.ink-glint > :is(td, th) { animation: ink-glint 800ms ease-out both; }
+tr.ink-glint { animation: none; }
+@keyframes ink-glint { from { background-color: color-mix(in oklab, var(--ink-spotted) 16%, transparent); } to { background-color: transparent; } }
+
+/* ---------- Reading now: the activity ring ---------- */
+
+/* A state, shown while the work runs, as activity.css's ring. Put .ink-ring
+   on an empty inline element, or ink-reading on a container whose
+   [data-ink-ring] child the ring stands before. */
+.ink-ring,
+.ink-reading [data-ink-ring]::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid color-mix(in oklab, var(--ink-spotted) 28%, transparent);
+  border-top-color: var(--ink-spotted);
+  border-radius: 50%;
+  vertical-align: -1px;
+  animation: ink-turn 900ms linear infinite;
+}
+.ink-reading [data-ink-ring]::before { margin-right: 6px; }
+@keyframes ink-turn { to { transform: rotate(360deg); } }
+
+/* ---------- Pointing: a summary showing where ---------- */
+
+/* The amber of a check, outlined twice, so the eye lands on the item. */
+.ink-flash { animation: ink-flash 1500ms ease both; animation-delay: var(--ink-delay, 0ms); }
+@keyframes ink-flash {
+  0%, 100% { box-shadow: none; }
+  18%, 62% { box-shadow: inset 0 0 0 2px var(--origin-check); background-color: color-mix(in oklab, var(--origin-check) 12%, transparent); }
+}
+
+/* ---------- Marks: what a run left, until it is seen ---------- */
+
+/* Revision triangle: this changed in an update and has not been cleared. Its
+   tooltip says what it was and what it is (RevisionMark, RunMarks.tsx). The
+   surface places it beside the value. */
+.rev-mark {
+  display: inline-block;
+  width: 9px;
+  height: 8px;
+  background: var(--sw-text-secondary);
+  -webkit-mask: var(--rev-mark) center / contain no-repeat;
+  mask: var(--rev-mark) center / contain no-repeat;
+}
+
+/* Read, not yet applied: "+n" in cyan beside the sources it will join
+   (PendingCount, RunMarks.tsx). */
+.pend-count { margin-left: 1px; color: var(--ink-spotted-text); font: 600 9.5px/1 "IBM Plex Mono", ui-monospace, monospace; }
+
+/* What a run left for another view: a count on its nav item until the view
+   is opened. */
+.nav-item .nav-mark { display: inline-flex; align-items: center; margin-left: auto; }
+.nav-count {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: var(--sw-surface-inset);
+  box-shadow: inset 0 0 0 1px var(--sw-border-default);
+  color: var(--sw-text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Fallbacks ---------- */
+
+/* Without motion every change still shows: the marks stay, the values are
+   there, a pointed item keeps a plain outline. */
+@media (prefers-reduced-motion: reduce) {
+  .ink-write, .ink-pop, .ink-on, .ink-on::before, .ink-off, .ink-check, .ink-held,
+  .ink-glint, tr.ink-glint > :is(td, th), [data-ink-was]::after { animation: none !important; }
+  .ink-flash { animation: none; outline: 2px solid var(--origin-check); outline-offset: 1px; }
+  .ink-ring, .ink-reading [data-ink-ring]::before { animation: none; }
+}
+@media (prefers-contrast: more) {
+  .rev-mark { background: currentColor; }
+}
+@media print {
+  .rev-mark, .pend-count, .ink-ring, .ink-reading [data-ink-ring]::before { display: none !important; }
+}

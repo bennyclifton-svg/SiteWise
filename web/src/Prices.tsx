@@ -153,6 +153,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
           {cols.length > 0 && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
           <button type="button" role="menuitem" onClick={() => window.print()}>Download (print)</button>
           {cols.length > 0 && <button type="button" role="menuitem" onClick={() => setShowReport(true)}>Report</button>}
+          {quoted && table?.award && onOpenCostPlan && <button type="button" role="menuitem" onClick={onOpenCostPlan}>Open cost plan</button>}
         </ActionMenu>
       </div>
     </header>
@@ -166,8 +167,9 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <button className="table-action" disabled={locked} onClick={() => void finishMove(true)}>Set aside</button>
       <button className="table-action" disabled={busy} onClick={() => setMoving(null)}>Cancel</button>
     </div>}
-    {table?.award && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
-    {table && quoted && <ConsultantComparison onAdd={() => setAdding(true)} onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onSelect={(col, row, included, keys) => run(() => submissionApi.appointmentRow(projectId, col.submission.id, col.submission.version, row.id, included, keys))} />}
+    {/* The consultant table shows the award in its own cells and total, so the banner is only for the trade table. */}
+    {table?.award && !quoted && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
+    {table && quoted && <ConsultantComparison onUndoAward={() => void run(() => submissionApi.undoAward(projectId, pkg))} onAdd={() => setAdding(true)} onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onSelect={(col, row, included, keys) => run(() => submissionApi.appointmentRow(projectId, col.submission.id, col.submission.version, row.id, included, keys))} />}
     {!quoted && <details open><summary>Fee schedule</summary>
     {!table ? !error && <p role="status"><Pending delayed>Loading prices…</Pending></p> : cols.length === 0 ? <div className="prices-empty">
       <p><strong>No proposals yet.</strong> Drop a fee proposal on this package's row in Procurement, or drop it anywhere in the document register: proposals are recognised when they are filed.</p>

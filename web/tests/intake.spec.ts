@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test, type Browser, type Locator, type Page } from "@playwright/test";
+import { closeDocument, showFiling } from "./filing";
 
 // Full Chromium includes the native PDF viewer; headless-shell does not.
 test.use({ channel: "chromium" });
@@ -29,7 +30,7 @@ function block(page: Page, filename: string): Locator {
 async function open(b: Locator) {
   if ((await b.getAttribute("data-open")) !== "true") await b.locator("td.reg-no").dblclick();
   await expect(b).toHaveAttribute("data-open", "true");
-  await b.page().getByRole("button", { name: "Filing details", exact: true }).click();
+  await showFiling(b.page());
 }
 
 function cell(b: Locator, field: string): Locator {
@@ -201,7 +202,7 @@ test("document columns keep their width when details open and the repository res
       (panel as HTMLElement).style.maxWidth = "none";
     }, width);
     if (await row.getAttribute("data-open") === "true") {
-      await page.getByRole("button", { name: "Close document", exact: true }).click();
+      await closeDocument(page);
     }
     const closed = await dimensions();
     await open(row);
@@ -245,21 +246,46 @@ test("centre viewer opens full PDFs and Markdown, with separate filing details a
   await expect(page.getByRole("region", { name: "Document viewer" })).toHaveCount(0);
   await row.locator("td.reg-no").dblclick();
   const viewer = page.getByRole("region", { name: "Document viewer" });
-  await expect(viewer.locator("iframe")).toHaveAttribute("src", `${file}?view=1#view=FitH`);
+  // The page is the view: the browser's own PDF toolbar and thumbnails are off.
+  await expect(viewer.locator("iframe")).toHaveAttribute("src", `${file}?view=1#toolbar=0&navpanes=0&view=FitH`);
+  await expect(viewer.getByRole("button", { name: "Back to Project Profile" })).toBeVisible();
+  // Beside the register the pane is too narrow for both, so filing waits to be asked for.
   await expect(viewer.getByRole("region", { name: "Image-assisted filing review" })).toHaveCount(0);
   await expect(page.locator(".profile-col")).toBeHidden();
   await expect(row).toHaveAttribute("data-selected", "true");
   await expect.poll(() => page.frames().some(frame => frame.url().startsWith("chrome-extension://"))).toBe(true);
   const pdfFrame = page.frames().find(frame => frame.url().startsWith("chrome-extension://"))!;
-  await expect(pdfFrame.locator("viewer-toolbar")).toBeVisible();
+  await expect(pdfFrame.locator("viewer-toolbar")).toBeHidden();
   await page.screenshot({ path: "test-results/document-workspace-desktop.png", fullPage: true });
+  // Filing takes the page's place and gives it back without loading the PDF again.
+  await viewer.locator("iframe").evaluate(frame => { frame.dataset.kept = "yes"; });
+  await showFiling(page);
+  await expect(viewer.locator('.cell[data-field="title"]')).toBeVisible();
+  await viewer.getByRole("button", { name: /^Filing/ }).click();
+  await expect(viewer.locator(".document-filing")).toHaveCount(0);
+  await expect(viewer.locator("iframe")).toHaveAttribute("data-kept", "yes");
+  // With the register put away there is room for both, side by side, and only the page scrolls.
+  await page.getByRole("button", { name: "Hide documents" }).click();
+  await expect(viewer).toHaveAttribute("data-layout", "beside");
+  await expect(viewer.locator(".document-filing")).toBeVisible();
+  await expect(viewer.locator("iframe")).toBeVisible();
+  await expect(viewer.locator("iframe")).toHaveAttribute("data-kept", "yes");
+  expect(await page.locator(".cockpit-scroll").evaluate(panel => panel.scrollHeight - panel.clientHeight)).toBe(0);
+  await page.getByRole("button", { name: "Show documents" }).click();
+  // Escape goes back, as the Back button does, and leaves the selection alone.
+  await row.locator(".reg-line").focus();
+  await page.keyboard.press("Escape");
+  await expect(viewer).toHaveCount(0);
+  await expect(row).toHaveAttribute("data-selected", "true");
+  await expect(row.locator(".reg-line")).toBeFocused();
+  await row.locator("td.reg-no").dblclick();
   await page.setViewportSize({ width: 390, height: 844 });
   const bounds = await viewer.boundingBox();
   expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(391);
   await viewer.scrollIntoViewIfNeeded();
   await page.screenshot({ path: "test-results/document-workspace-mobile.png", fullPage: true });
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await viewer.getByRole("button", { name: "Close document" }).click();
+  await closeDocument(page);
   await expect(page.locator(".profile-col")).toBeVisible();
   await expect(row.locator(".reg-line")).toBeFocused();
 
@@ -270,7 +296,7 @@ test("centre viewer opens full PDFs and Markdown, with separate filing details a
   await expect(viewer.locator(".document-text")).toContainText('<script>alert("untrusted")</script>');
   await expect(viewer.locator("script")).toHaveCount(0);
   await expect(viewer.locator("iframe")).toHaveCount(0);
-  await viewer.getByRole("button", { name: "Close document" }).click();
+  await closeDocument(page);
   await page.route('**/api/documents/*/file', route => route.fulfill({ status: 404, body: 'File unavailable' }));
   await notes.locator("td.reg-no").dblclick();
   await expect(viewer.getByRole("alert")).toContainText("Could not load this document");

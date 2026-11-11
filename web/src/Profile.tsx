@@ -1,22 +1,46 @@
 import { Pending } from "./Activity";
 import { IconDownload, IconPlus } from "./icons";
-import { MoreMenu, UpdateButton } from "./PageActions";
+import { MoreMenu, PageHeaderAction, UpdateButton } from "./PageActions";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
 //
-// Reading feedback lives in the bottom ribbon. The page starts with the Project card (who and
+// Reading feedback lives in the strip at the foot of the view
+// (ProfileStrip). The page starts with the Project card (who and
 // where, class, work, then subclass, scale and complexity, approvals and
 // delivery); then scope and works, system by system in build order, each
 // with the risks and compliance inputs that belong to it.
+//
+// An update shows what the reading does, when it does it
+// (docs/design/2026-11-10-run-time-feedback.md): a passage that speaks to a
+// field glints it, a committed pass inks the values it changed, and each
+// change keeps a revision mark until the user clears it.
 
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ProfileSources } from "./ProfileSources";
+import { Accommodation } from "./Accommodation";
 import { FieldRow, NotYetKnown, unanswered, type Setter } from "./ProfileFields";
-import { PLANNING, ScopeWorks, entryInputs } from "./ScopeWorks";
+import { CountsRow, COUNT_KEYS } from "./ProfileCounts";
+import { ProfileStrip, type ChipKind, type ElsewhereView, type LatestFind } from "./ProfileStrip";
+import { PLANNING, ScopeWorks, entryInputs, type ScopeMarks } from "./ScopeWorks";
 import { ApiError } from "./api";
 import { profileApi, type Profile as ProfileData, type ProfileField, type ScopeChoice, type Site } from "./profileApi";
+import { diffSnapshots, profileFields, receiptOf, snapshotOf, type Change, type Snapshot } from "./profileDiff";
+import { inkInOrder, inView, motionAllowed, play, viewBox, type InkItem, type Motion } from "./ink";
+import { findTargets, runApi, useProfileRun, type Find, type Next, type RunDoc } from "./profileRun";
+
+/** What the nav needs to know about the profile's update. */
+export interface ProfileRunState {
+  reading: boolean;
+  /** Changes marked since the user last cleared them. */
+  changes: number;
+  /** Counts elsewhere, fetched when an update finishes here. */
+  next: Next | null;
+  /** Documents read and to read in the update, for the tab title. */
+  read: number;
+  total: number;
+}
 
 interface Props {
   projectId: string;
@@ -31,6 +55,10 @@ interface Props {
   /** Address line for the project banner. Empty when the site address is blank. */
   onIdentity?: (line: string) => void;
   feedbackTarget?: HTMLDivElement | null;
+  /** The register's name for a document (its number), falling back to the filename. */
+  documentLabel?: (id: string) => string;
+  onRunState?: (state: ProfileRunState) => void;
+  onOpenView?: (view: ElsewhereView) => void;
 }
 
 const KIND_LABELS: Record<string, string> = {
@@ -39,6 +67,96 @@ const KIND_LABELS: Record<string, string> = {
   correspondence: "correspondence",
   unknown: "unclassified documents",
 };
+
+/** What Update will read, said before it is pressed. */
+function updateTitle(p: ProfileData): string | undefined {
+  if (p.unread_documents === 0) return undefined;
+  const kind = p.skipped_kind ? `, mostly ${KIND_LABELS[p.skipped_kind] ?? p.skipped_kind.replace(/_/g, " ")}` : "";
+  const others = p.skipped_documents > 0
+    ? ` ${p.skipped_documents} other${p.skipped_documents === 1 ? " is" : "s are"} filed but not read for the profile${kind}.`
+    : "";
+  return `Reads ${p.unread_documents} new document${p.unread_documents === 1 ? "" : "s"} for the profile.${others}`;
+}
+
+// What the user has seen, per project, in this browser (owner, 10 Nov 2026):
+// the marks are what changed since. Storage can be refused (a private
+// window); the marks then last for the visit.
+const seenKey = (projectId: string) => `sitewise.profile.seen.v1.${projectId}`;
+function readSeen(projectId: string): Snapshot | null {
+  try {
+    const raw = localStorage.getItem(seenKey(projectId));
+    return raw ? (JSON.parse(raw) as Snapshot) : null;
+  } catch {
+    return null;
+  }
+}
+function writeSeen(projectId: string, snap: Snapshot) {
+  try {
+    localStorage.setItem(seenKey(projectId), JSON.stringify(snap));
+  } catch {
+    // Refused storage: the marks stay for this visit only.
+  }
+}
+
+/** A new source on an unchanged value is shown while it happens, not kept as a mark. */
+const markable = (c: Change) => c.kind === "scope" || c.how !== "sources";
+
+/** The revision mark's words: what it was, what it is, or what needs a decision. */
+function markText(c: Change, value: (key: string, v: string) => string): string {
+  if (c.kind === "scope") {
+    return c.how === "in" ? "Added to scope by an update" : c.how === "out" ? "Taken out of scope by an update" : "A document says this ticked system is not included";
+  }
+  const passages = `${c.added} passage${c.added === 1 ? "" : "s"}`;
+  switch (c.how) {
+    case "filled": return `Read in an update: ${value(c.key, c.now)}`;
+    case "changed": return `Changed in an update: was ${value(c.key, c.was)}, now ${value(c.key, c.now)}`;
+    case "cleared": return `Cleared in an update: was ${value(c.key, c.was)}`;
+    case "conflict": return "The documents now disagree on this value";
+    case "held": return `Read again in an update (${passages}); your value stands`;
+    default: return `${passages} more read for this value`;
+  }
+}
+
+function chipOf(c: Change): ChipKind {
+  if (c.kind === "scope") return c.how === "in" ? "added" : c.how === "out" ? "removed" : "check";
+  return c.how === "filled" ? "filled" : c.how === "conflict" ? "check" : c.how === "held" ? "held" : "changed";
+}
+
+/** The elements that show each change, and the one motion each plays. */
+function inkItems(root: HTMLElement, changes: Change[]): InkItem[] {
+  const items: InkItem[] = [];
+  const entries = new Set<string>();
+  for (const c of changes) {
+    if (c.kind === "scope") {
+      const motion: Motion = c.how === "in" ? "ink-on" : c.how === "out" ? "ink-off" : "ink-check";
+      root.querySelectorAll(`.sw-cell[data-leaf="${CSS.escape(c.leaf)}"]`).forEach((el) => items.push({ el, motion }));
+      entries.add(c.entry);
+      continue;
+    }
+    const key = CSS.escape(c.key);
+    // A text value to check writes in like any other; its rose says the rest.
+    const value: Motion | null = c.how === "held" ? "ink-held" : c.how === "sources" ? null : "ink-write";
+    root.querySelectorAll(`.pf-row[data-key="${key}"][data-part="${CSS.escape(c.part)}"]`).forEach((row) => {
+      if (value === "ink-held") items.push({ el: row, motion: value });
+      else if (value) items.push({ el: row.querySelector(".pf-value") ?? row, motion: value });
+      const dot = row.querySelector(".pf-sources summary");
+      if (dot && c.added > 0) items.push({ el: dot, motion: "ink-pop" });
+    });
+    root.querySelectorAll(`.pf-count[data-key="${key}"]`).forEach((el) => items.push({ el, motion: value ?? "ink-pop" }));
+    if (value && value !== "ink-held") root.querySelectorAll(`.pf-t[data-key="${key}"]`).forEach((el) => items.push({ el, motion: value }));
+  }
+  for (const e of entries) {
+    const count = root.querySelector(`.sw-matrow[data-entry="${CSS.escape(e)}"] .sw-count`);
+    if (count) items.push({ el: count, motion: "ink-pop" });
+  }
+  return items;
+}
+
+/** A passage's opening words for the strip's latest-find line. */
+function excerptOf(text: string): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  return t.length > 90 ? `${t.slice(0, 88).trimEnd()}…` : t;
+}
 
 // The Project card reads top down, as a brief does: who and where, the class
 // of building, the work, then that kind of building's subclass, size and
@@ -54,11 +172,11 @@ const UNIT_MIX_WORDS: Record<string, string> = {
 type Tier = "identity" | "place" | "class" | "work" | "budget" | "subclass" | "scale" | "complexity" | "approvals" | "delivery";
 
 const TIERS: Record<Tier, string[]> = {
-  identity: ["site.address", "proj.client", "det.state"],
+  identity: ["site.address", "proj.client", "proj.landlord", "det.state"],
   place: ["site.lot", "proj.lga", "proj.zone"],
   class: ["hdr.building_class"],
   work: ["hdr.work_type"],
-  budget: ["proj.budget_stated"],
+  budget: ["proj.budget_stated", "proj.budget_aspiration", "proj.contributions_stated"],
   subclass: ["hdr.subclass", "det.ncc_class"],
   // Pairs that look alike but follow different definitions sit together.
   scale: [
@@ -66,18 +184,20 @@ const TIERS: Record<Tier, string[]> = {
     "hdr.scale.existing_gfa_sqm", "hdr.scale.added_gfa_sqm", "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm", "det.floor_area", "det.effective_height",
     "hdr.scale.units", "hdr.scale.dwellings", "hdr.scale.residential_units", ...UNIT_MIX,
     "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces",
-    "det.existing_building", "det.existing_building_year",
+    "proj.works_levels", "det.occupant_load", "det.existing_building", "det.existing_building_year",
   ],
   complexity: [
     "hdr.cond.planning", "hdr.cond.procurement_route", "hdr.cond.quality_level",
-    "hdr.cond.access_constraints", "hdr.cond.operational_constraints",
+    "hdr.cond.access_constraints", "proj.work_hours", "hdr.cond.operational_constraints",
     "hdr.cond.stakeholder_complexity", "hdr.cond.environmental_sensitivity",
     "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status",
   ],
   approvals: ["fact.consent_number", "fact.consent_date", "fact.consent_lapse_date", "det.ncc_edition"],
   delivery: [
     "fact.contract_form", "fact.contract_basis", "fact.defects_liability_period", "fact.design_life",
-    "proj.program", "proj.sustainability", "proj.flag.sustainability_target", "proj.regulated_design", "proj.flag.contract_admin",
+    "proj.program", "proj.target_da_lodgement", "proj.target_construction_start", "proj.target_completion",
+    "proj.start_conditions", "proj.tenderers",
+    "proj.sustainability", "proj.flag.sustainability_target", "proj.regulated_design", "proj.flag.contract_admin",
   ],
 };
 
@@ -128,7 +248,7 @@ function arrangeCard(fields: ProfileField[]): Arranged {
   return out;
 }
 
-export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity, feedbackTarget }: Props) {
+export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, onShowNotRead, onIdentity, feedbackTarget, documentLabel, onRunState, onOpenView }: Props) {
   const [sourceSystem, setSourceSystem] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [data, setData] = useState<ProfileData | null>(null);
@@ -137,6 +257,9 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
   const [requestNote, setRequestNote] = useState("");
   const [entry, setEntry] = useState("");
   const [addingPart, setAddingPart] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const dataRef = useRef(data);
+  dataRef.current = data;
 
   const fail = useCallback(
     (e: unknown) => {
@@ -154,31 +277,170 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
     };
   }, [projectId, tick, fail]);
 
-  // Completion can follow the profile event, or an SSE event can be missed.
-  // Poll only while work is outstanding so the last "updating" state clears.
+  // The update in progress. Progress is polled each second while anything is
+  // pending (it replaces the old 2 s profile poll); the profile is fetched
+  // when its revision moves, or when the profile still says pending after
+  // the work is done (a missed completion event).
   const pending = (data?.pending_documents ?? 0) > 0;
-  useEffect(() => {
-    if (!pending) return;
-    let live = true;
-    let timer: ReturnType<typeof setTimeout>;
-    const refresh = async () => {
-      try {
-        const p = await profileApi.get(projectId);
-        if (live) setData(p);
-      } catch (e) {
-        if (live) fail(e);
-      }
-      if (live) timer = setTimeout(refresh, 2000);
+  const refresh = useCallback(() => {
+    profileApi.get(projectId).then((p) => { setData(p); setError(""); }, fail);
+  }, [projectId, fail]);
+  const [pendingFinds, setPendingFinds] = useState<Record<string, number>>({});
+  const [latestFind, setLatestFind] = useState<LatestFind | null>(null);
+  const glintAt = useRef<Record<string, number>>({});
+  const runDocs = useRef<RunDoc[]>([]);
+  const docLabel = useCallback((id: string) => documentLabel?.(id) || runDocs.current.find((d) => d.id === id)?.filename || "document", [documentLabel]);
+  // A passage just read: glint what it spoke to and count it, until its pass is committed.
+  const onFinds = useCallback((finds: Find[]) => {
+    const p = dataRef.current, el = root.current;
+    if (!p || !el) return;
+    const allowed = motionAllowed() && el.offsetParent !== null;
+    const box = viewBox(el);
+    const now = performance.now();
+    const glint = (target: Element | null | undefined, key: string) => {
+      if (!allowed || !target || !inView(target, box) || now - (glintAt.current[key] ?? 0) < 600) return;
+      glintAt.current[key] = now;
+      play(target, "ink-glint");
     };
-    timer = setTimeout(refresh, 2000);
-    return () => { live = false; clearTimeout(timer); };
-  }, [projectId, pending, fail]);
+    const add: Record<string, number> = {};
+    let latest: LatestFind | null = null;
+    for (const f of finds) {
+      const t = findTargets(f);
+      for (const k of t.fields) {
+        add[k] = (add[k] ?? 0) + 1;
+        el.querySelectorAll(`.pf-row[data-key="${CSS.escape(k)}"], .pf-count[data-key="${CSS.escape(k)}"]`).forEach((row) => glint(row, k));
+      }
+      for (const leaf of t.leaves) glint(el.querySelector(`.sw-cell[data-leaf="${CSS.escape(leaf)}"]`), leaf);
+      // Which systems are being read is state, not decoration: the ring shows even without motion.
+      for (const e of t.entries) play(el.querySelector(`.sw-matrow[data-entry="${CSS.escape(e)}"]`), "ink-reading");
+      if (allowed) play(document.querySelector(`#doc-${CSS.escape(f.document_id)} .reg-line`), "ink-glint");
+      const what = t.fields.map((k) => profileFields(p).find((x) => x.key === k)?.label).find(Boolean)
+        ?? t.leaves.map((l) => p.systems.flatMap((g) => g.rows).find((r) => r.leaf === l)?.label).find(Boolean);
+      if (what) latest = { what, excerpt: excerptOf(f.excerpt), where: `${docLabel(f.document_id)}${f.page ? ` p. ${f.page}` : ""}` };
+    }
+    if (Object.keys(add).length > 0) setPendingFinds((old) => {
+      const merged = { ...old };
+      for (const [k, n] of Object.entries(add)) merged[k] = (merged[k] ?? 0) + n;
+      return merged;
+    });
+    if (latest) setLatestFind(latest);
+  }, [docLabel]);
+  const { run, start, dismiss } = useProfileRun({ projectId, pending, revision: data?.revision ?? 0, onRevision: refresh, onFinds, onSignedOut });
+  runDocs.current = run.docs;
+
+  // What changed since the user last looked, remembered in this browser; and
+  // between two revisions, the changes to ink as they arrive.
+  const [marks, setMarks] = useState<Change[]>([]);
+  const [receiptOpen, setReceiptOpen] = useState(false);
+  const [next, setNext] = useState<Next | null>(null);
+  const previous = useRef<{ project: string; snap: Snapshot } | null>(null);
+  const tokenText = useRef<Record<string, string>>({});
+  useLayoutEffect(() => {
+    if (!data || data.project_id !== projectId) return;
+    const now = snapshotOf(data);
+    const before = previous.current?.project === projectId ? previous.current.snap : null;
+    previous.current = { project: projectId, snap: now };
+    let seen = readSeen(projectId);
+    if (!seen) {
+      seen = now;
+      writeSeen(projectId, now);
+    }
+    setMarks(diffSnapshots(seen, now).filter(markable));
+    const el = root.current;
+    if (el && before && now.revision > before.revision) {
+      // A pass was committed: its passages now count as sources.
+      setPendingFinds({});
+      const changes = diffSnapshots(before, now);
+      if (changes.length > 0 && el.offsetParent !== null && motionAllowed()) {
+        // A rewritten word is struck through as the new one writes in.
+        for (const c of changes) {
+          const old = c.kind === "field" && c.how === "changed" ? tokenText.current[c.key] : "";
+          const token = old ? el.querySelector(`.pf-t[data-key="${CSS.escape((c as { key: string }).key)}"]`) : null;
+          if (token && old !== token.textContent) {
+            token.setAttribute("data-ink-was", old);
+            window.setTimeout(() => token.removeAttribute("data-ink-was"), 1200);
+          }
+        }
+        inkInOrder(inkItems(el, changes), viewBox(el));
+      }
+    }
+    el?.querySelectorAll<HTMLElement>(".pf-t[data-key]").forEach((t) => { tokenText.current[t.dataset.key ?? ""] = t.textContent ?? ""; });
+  }, [data, projectId]);
+
+  // An update that finished here opens its summary and asks what it changes
+  // elsewhere. Text being prepared after an upload is not an update: it ends quietly.
+  const followed = useRef(false);
+  useEffect(() => {
+    if (run.phase === "running") followed.current = true;
+    if (run.phase !== "done" || !followed.current) return;
+    followed.current = false;
+    setLatestFind(null);
+    if (!run.started && run.docs.length === 0) return;
+    setReceiptOpen(true);
+    runApi.next(projectId).then(setNext, () => setNext(null));
+  }, [run.phase, run.started, run.docs.length, projectId]);
+  useEffect(() => {
+    setReceiptOpen(false);
+    setNext(null);
+    setLatestFind(null);
+    setPendingFinds({});
+  }, [projectId]);
+
+  const markSeen = useCallback(() => {
+    const p = dataRef.current;
+    if (p) writeSeen(projectId, snapshotOf(p));
+    setMarks([]);
+  }, [projectId]);
+  const closeReceipt = useCallback(() => {
+    setReceiptOpen(false);
+    dismiss();
+  }, [dismiss]);
+
+  // Changed rows below the visible part of the page, offered as one jump.
+  const [below, setBelow] = useState(0);
+  useEffect(() => {
+    const el = root.current, scroller = el?.closest(".cockpit-scroll");
+    if (!el || !scroller) return;
+    const count = () => {
+      const box = viewBox(el);
+      setBelow(Array.from(el.querySelectorAll("[data-changed='true']")).filter((n) => n.getBoundingClientRect().top > box.bottom).length);
+    };
+    count();
+    scroller.addEventListener("scroll", count, { passive: true });
+    return () => scroller.removeEventListener("scroll", count);
+  }, [marks]);
+
+  useEffect(() => {
+    const done = run.docs.filter((d) => d.state === "done").length;
+    // Reading means documents being read for the profile, not text being prepared.
+    const reading = run.phase === "running" && run.docs.some((d) => d.state === "queued" || d.state === "reading");
+    onRunState?.({ reading, changes: marks.length, next, read: done, total: run.docs.length });
+  }, [run.phase, run.docs, marks.length, next, onRunState]);
 
   const set = useCallback(
     async (key: string, body: { part_id?: string; value?: string | null; note?: string; reset?: boolean }) => {
       try {
         setData(await profileApi.set(projectId, key, body));
         setError("");
+      } catch (e) {
+        fail(e);
+      }
+    },
+    [projectId, fail],
+  );
+
+  // Several values at once (a bulk change from the scope rows). The writes
+  // are independent rows, so they go together; one read then settles the
+  // profile, since each write's reply may predate the others.
+  const setMany = useCallback(
+    async (writes: { key: string; body: { part_id?: string; value?: string | null; reset?: boolean } }[]) => {
+      if (writes.length === 0) return;
+      const results = await Promise.allSettled(writes.map((w) => profileApi.set(projectId, w.key, w.body)));
+      const failed = results.find((r): r is PromiseRejectedResult => r.status === "rejected");
+      try {
+        setData(await profileApi.get(projectId));
+        if (failed) fail(failed.reason);
+        else setError("");
       } catch (e) {
         fail(e);
       }
@@ -202,15 +464,24 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
     setRequesting(true);
     try {
       const p = await profileApi.read(projectId);
+      const queued = p.pending_documents > 0;
+      if (queued) {
+        // This update's marks start from here.
+        writeSeen(projectId, snapshotOf(p));
+        setMarks([]);
+        setNext(null);
+        setReceiptOpen(false);
+        start();
+      }
       setData(p);
       setError("");
-      setRequestNote(p.pending_documents > 0 || p.failed_documents > 0 ? "" : "No new reading queued. Check source coverage and unresolved passages.");
+      setRequestNote(queued || p.failed_documents > 0 ? "" : "No new reading queued. Check source coverage and unresolved passages.");
     } catch (e) {
       fail(e);
     } finally {
       setRequesting(false);
     }
-  }, [projectId, fail]);
+  }, [projectId, fail, start]);
 
   const site = useSiteFields(projectId, tick, data?.site_details ?? [], fail);
   const addressLine = site.fields.find((f) => f.key === "site.address")?.value ?? "";
@@ -273,71 +544,83 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
     }
   };
 
-  const builtAt = data.built_at ? new Date(data.built_at) : null;
-  const coverage = data.coverage ?? [];
-  const unresolved = coverage.reduce((n, d) => n + d.needs_mapping, 0);
-  const completed = data.completed_documents ?? 0;
-  const total = data.read_documents;
-  const note = data.failed_documents > 0
-    ? `${data.failed_documents} document${data.failed_documents === 1 ? "" : "s"} could not be processed${data.active_documents > 0 ? ` · ${data.active_documents} still processing` : ""}`
-    : data.unread_documents > 0
-      ? `${data.unread_documents} document${data.unread_documents === 1 ? "" : "s"} ready to read. Select Update to start.`
-      : data.pending_documents > 0
-        ? data.active_documents > 0 ? "Documents are being processed; fields appear as reading finishes" : "Waiting for document processing to start or resume"
-        : requestNote || (total + data.skipped_documents === 0 ? "Upload documents to start" : coverage.some((d) => !d.current) ? "Update needed to check complete source coverage" : "");
+  // The update's marks, by field and by scope cell.
+  const valueText = (key: string, v: string) => {
+    if (!v) return "not known";
+    const f = profileFields(data).find((x) => x.key === key);
+    const label = f?.options?.find((o) => o.id === v)?.label ?? v;
+    return f?.unit ? `${label} ${f.unit === "m2" ? "m²" : f.unit}` : label;
+  };
+  const fieldMarks = new Map<string, string>();
+  const scopeMarks: ScopeMarks = { cells: {}, entries: {} };
+  for (const c of marks) {
+    if (c.kind === "field") fieldMarks.set(c.id, markText(c, valueText));
+    else {
+      scopeMarks.cells[c.leaf] = markText(c, valueText);
+      scopeMarks.entries[c.entry] = (scopeMarks.entries[c.entry] ?? 0) + 1;
+    }
+  }
+  const markOf = (f: ProfileField) => fieldMarks.get(`${f.key}|${f.part_id}`);
+  const wholePart = data.parts.find((p) => p.kind === "whole")?.id ?? "";
+  const pendingOf = (f: ProfileField) => pendingFinds[f.key] ?? 0;
+  const focusField = (f: ProfileField) => {
+    const control = document.getElementById(`pf-${f.key}-${f.part_id}`);
+    control?.scrollIntoView({ block: "center", behavior: motionAllowed() ? "smooth" : "auto" });
+    control?.focus({ preventScroll: true });
+  };
+  // A receipt chip brings its items into view and marks them for a moment.
+  const onChip = (kind: ChipKind) => {
+    const el = root.current;
+    if (!el) return;
+    const targets = marks.filter((c) => chipOf(c) === kind).flatMap((c) => c.kind === "field"
+      ? Array.from(el.querySelectorAll(`.pf-row[data-key="${CSS.escape(c.key)}"], .pf-count[data-key="${CSS.escape(c.key)}"]`))
+      : Array.from(el.querySelectorAll(`.sw-cell[data-leaf="${CSS.escape(c.leaf)}"]`)));
+    if (targets.length === 0) return;
+    targets[0].scrollIntoView({ block: "center", behavior: motionAllowed() ? "smooth" : "auto" });
+    targets.forEach((t, i) => play(t, "ink-flash", motionAllowed() ? 250 + i * 30 : 0));
+  };
+  const onBelow = () => {
+    const el = root.current;
+    if (!el) return;
+    const box = viewBox(el);
+    Array.from(el.querySelectorAll("[data-changed='true']")).find((n) => n.getBoundingClientRect().top > box.bottom)
+      ?.scrollIntoView({ block: "center", behavior: motionAllowed() ? "smooth" : "auto" });
+  };
+  // Facts every RFP's page one asks for, and facts documents seldom settle.
+  const unknown = (keys: string[]) => keys.map((k) => cardFields.find((f) => f.key === k)).filter((f): f is ProfileField => !!f && !f.value && f.band !== "user");
+  const rfpUnknown = unknown(["proj.zone", "site.lot"]);
+  const whileFields = unknown(["proj.budget_stated", "hdr.cond.procurement_route", "proj.program"]);
 
   return (
-    <div className="profile">
+    <div className="profile" ref={root}>
       <ProfileFeedback target={feedbackTarget}>
-      <div className="pf-header">
-        <p className="profile-reading">
-          {data.read_documents + data.skipped_documents > 0 && (
-            <span>
-              Included for profile: {data.read_documents} of {data.read_documents + data.skipped_documents} document
-              {data.read_documents + data.skipped_documents === 1 ? "" : "s"}
-              {data.skipped_documents > 0 && (
-                <>
-                  {" "}({data.skipped_documents} excluded
-                  {data.skipped_kind ? `, mostly ${KIND_LABELS[data.skipped_kind] ?? data.skipped_kind.replace(/_/g, " ")}` : ""}{" "}
-                  <button type="button" className="cell-link" onClick={onShowNotRead}>
-                    Show
-                  </button>
-                  )
-                </>
-              )}
-            </span>
-          )}
-          <span>
-            {unresolved > 0 && `${unresolved} passages need review `}
-            <button type="button" className="cell-link" aria-expanded={sourcesOpen} onClick={() => setSourcesOpen(!sourcesOpen)}>
-              Source requirements
-            </button>
-          </span>
-          <span>
-            {builtAt ? `Updated ${builtAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not built yet"}
-          </span>
-          {!data.thresholds.applied
-            ? <span>Readings are stored but not shown until the thresholds are approved</span>
-            : data.thresholds.provisional && <span>Provisional thresholds</span>}
-          {note && <span className="profile-actions-note">{note}</span>}
-          {checks > 0 && (
-            <button type="button" className="pf-checks" onClick={goToCheck}>
-              ⚠ {checks} to check
-            </button>
-          )}
-        </p>
-        {total > 0 && (
-          <div className="profile-progress">
-            <svg className="profile-reading-meter" viewBox="0 0 24 24" role="progressbar" aria-label="Documents read for profile" aria-valuemin={0} aria-valuemax={total} aria-valuenow={completed}>
-              <circle className="profile-reading-track" cx="12" cy="12" r="9" />
-              {completed === total
-                ? <path className="profile-reading-check" d="m7.5 12 3 3 6-6" />
-                : <circle className="profile-reading-fill" cx="12" cy="12" r="9" pathLength="100" strokeDasharray={`${Math.min(100, Math.max(0, completed / total * 100))} 100`} />}
-            </svg>
-            <p role="status" aria-atomic="true">{completed === total ? "Reading complete" : data.failed_documents > 0 ? "Reading needs attention" : data.pending_documents > 0 ? data.active_documents > 0 ? "Reading documents" : "Reading queued" : "Ready to read"} · {data.active_documents > 0 && `${data.active_documents} processing · `}{Math.max(0, data.pending_documents - data.active_documents) > 0 && `${Math.max(0, data.pending_documents - data.active_documents)} queued · `}{completed} of {total} document{total === 1 ? "" : "s"} read</p>
-          </div>
-        )}
-      </div>
+      <ProfileStrip
+        data={data}
+        run={run}
+        marks={receiptOf(marks)}
+        marksTotal={marks.length}
+        receiptOpen={receiptOpen}
+        next={next}
+        checks={checks}
+        requestNote={requestNote}
+        sourcesOpen={sourcesOpen}
+        latestFind={run.phase === "running" ? latestFind : null}
+        below={run.phase === "running" ? below : 0}
+        rfpUnknown={rfpUnknown}
+        whileFields={whileFields}
+        docName={(d) => documentLabel?.(d.id) || d.filename}
+        kindLabel={(k) => KIND_LABELS[k] ?? k.replace(/_/g, " ")}
+        onSet={setField}
+        onCheck={goToCheck}
+        onShowNotRead={onShowNotRead}
+        onSources={() => setSourcesOpen(!sourcesOpen)}
+        onBelow={onBelow}
+        onChip={onChip}
+        onMarkSeen={markSeen}
+        onCloseReceipt={closeReceipt}
+        onOpenView={onOpenView}
+        onFocusField={focusField}
+      />
       {data.failed_documents > 0 && (
         <p className="banner" role="alert">
           {data.payment_required
@@ -358,22 +641,29 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         <ProjectSummary fields={cardFields} />
       </section>
 
+      {/* Update sits in the title band (owner, 10 Nov 2026); the button's own
+          refresh mark turns while busy, so no second spinner in the label. */}
+      <PageHeaderAction surface="profile">
+        <UpdateButton onClick={update} disabled={requesting} title={updateTitle(data)} busy={requesting || (data.failed_documents === 0 && data.unread_documents === 0 && data.active_documents > 0)}>
+          {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update"}
+          {!requesting && data.failed_documents === 0 && data.unread_documents > 0 && <span className="update-new" aria-hidden="true">{data.unread_documents} new</span>}
+        </UpdateButton>
+        <MoreMenu label="Profile actions" items={[
+          { label: "Download project profile", icon: <IconDownload />, onSelect: () => window.print() },
+          { label: "Add part", icon: <IconPlus />, onSelect: () => setAddingPart(true) },
+        ]} />
+      </PageHeaderAction>
+
       {/* No "Project" title (owner, 8 Nov 2026): the card's blue head row says it. */}
       <section className="pf-section" aria-label="Project">
-        <div className="pf-head pf-head-bare">
-          <div className="pf-head-actions">
-            {addingPart && <AddPart projectId={projectId} onDone={() => { setAddingPart(false); profileApi.get(projectId).then(setData, fail); }} onCancel={() => setAddingPart(false)} onError={fail} />}
-            {/* The button's own refresh mark turns while busy; no second spinner in the label. */}
-            <UpdateButton onClick={update} disabled={requesting} busy={requesting || (data.failed_documents === 0 && data.unread_documents === 0 && data.active_documents > 0)}>
-              {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update"}
-            </UpdateButton>
-            <MoreMenu label="Profile actions" items={[
-              { label: "Download project profile", icon: <IconDownload />, onSelect: () => window.print() },
-              { label: "Add part", icon: <IconPlus />, onSelect: () => setAddingPart(true) },
-            ]} />
+        {addingPart && (
+          <div className="pf-head pf-head-bare">
+            <div className="pf-head-actions">
+              <AddPart projectId={projectId} onDone={() => { setAddingPart(false); profileApi.get(projectId).then(setData, fail); }} onCancel={() => setAddingPart(false)} onError={fail} />
+            </div>
           </div>
-        </div>
-        <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} />
+        )}
+        <ProjectCard card={card} parts={data.parts} onSet={setField} onJump={onJump} markOf={markOf} pendingOf={pendingOf} />
       </section>
 
       <ScopeWorks
@@ -384,12 +674,22 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
         onSelect={setEntry}
         onScope={setScope}
         onSet={set}
+        onSetMany={setMany}
         onJump={onJump}
         onSources={openSources}
         onSignedOut={onSignedOut}
+        changes={scopeMarks}
       />
 
       <ConsultantTeam appointed={data.appointed ?? []} />
+
+      {/* The spaces the building provides, below the consultant team (owner,
+          11 Nov 2026; docs/plans/2026-11-11-accommodation-schedule-lines.md). */}
+      {data.accommodation && (
+        <Accommodation projectId={projectId} table={data.accommodation} onJump={onJump} onError={fail}
+          markOf={(keys) => keys.map((k) => fieldMarks.get(`${k}|${wholePart}`)).find(Boolean)}
+          onChange={(next) => setData((d) => (d ? { ...d, accommodation: next } : d))} />
+      )}
     </div>
   );
 }
@@ -425,7 +725,7 @@ const COLUMNS: { title: string; key: string[]; keys: string[]; tiers: Tier[] }[]
     key: ["site.address", "site.lot", "proj.lga", "proj.zone", "hdr.scale.site_sqm", "hdr.cond.planning"],
     keys: [
       "det.state", "fact.consent_number", "fact.consent_date", "fact.consent_lapse_date",
-      "hdr.cond.access_constraints", "hdr.cond.environmental_sensitivity", "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status",
+      "hdr.cond.access_constraints", "proj.work_hours", "hdr.cond.environmental_sensitivity", "det.flood_hazard", "det.bushfire_prone_land", "det.heritage_status",
     ],
     tiers: ["place"],
   },
@@ -436,13 +736,18 @@ const COLUMNS: { title: string; key: string[]; keys: string[]; tiers: Tier[] }[]
       "hdr.scale.storeys", "hdr.scale.total_storeys", "hdr.scale.levels", "hdr.scale.gfa_sqm", "hdr.scale.total_gfa_sqm",
       ...UNIT_MIX, "hdr.scale.bedrooms", "hdr.scale.bathrooms", "hdr.scale.car_parks", "hdr.scale.garage_spaces", "hdr.cond.quality_level",
     ],
-    keys: ["det.ncc_class", "det.ncc_edition"],
+    keys: ["proj.works_levels", "hdr.scale.added_gfa_sqm", "det.occupant_load", "det.ncc_class", "det.ncc_edition"],
     tiers: ["class", "work", "subclass", "scale"],
   },
   {
     title: "Delivery",
     key: ["proj.client", "hdr.cond.procurement_route", "proj.program", "proj.sustainability", "proj.regulated_design", "proj.budget_stated"],
-    keys: ["hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints"],
+    keys: [
+      "proj.landlord", "hdr.cond.stakeholder_complexity", "hdr.cond.operational_constraints",
+      "proj.budget_aspiration", "proj.contributions_stated", "proj.preliminary_estimate",
+      "proj.target_da_lodgement", "proj.target_construction_start", "proj.target_completion", "proj.preliminary_construction_months",
+      "proj.start_conditions", "proj.tenderers",
+    ],
     tiers: ["identity", "budget", "approvals", "complexity", "delivery"],
   },
 ];
@@ -465,20 +770,29 @@ function inColumn(fields: ProfileField[], i: number): ProfileField[] {
   return mine.map((f, n) => ({ f, n })).sort((a, b) => at(a.f) - at(b.f) || a.n - b.n).map(({ f }) => f);
 }
 
-function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void }) {
+function ProjectCard({ card, parts, onSet, onJump, markOf, pendingOf }: {
+  card: Arranged; parts: ProfileData["parts"]; onSet: Setter; onJump: (id: string) => void;
+  markOf: (f: ProfileField) => string | undefined; pendingOf: (f: ProfileField) => number;
+}) {
   const [open, setOpen] = useState(false);
-  const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact paired />;
+  const row = (f: ProfileField) => <FieldRow key={f.key + f.part_id} field={f} onSet={onSet} onJump={onJump} parts={parts} compact paired changed={markOf(f)} pending={pendingOf(f)} />;
   const all = (Object.keys(card) as Tier[]).flatMap((t) => [...card[t].shown, ...card[t].more]);
   // A conflict always shows, so "to check" can reach it with the card closed.
   // A mix count shows up front once known; the empty ones fold away.
   const always = (f: ProfileField) => (KEY_FIELDS.has(f.key) && !(UNIT_MIX.includes(f.key) && unanswered(f))) || f.band === "red";
   const rest = all.filter((f) => !always(f));
-  // Parts sit in The building, after the class they divide.
+  // Parts sit in The building, after the class they divide. Bedrooms,
+  // bathrooms and car parks share one Counts row where the first of them sat.
   const withParts = (fields: ProfileField[], col: number) => {
     if (COLUMNS[col].title !== "The building") return fields.map(row);
-    const at = fields.findIndex((f) => f.key === "hdr.building_class");
-    const out: ReactNode[] = fields.map(row);
-    out.splice(at < 0 ? out.length : at + 1, 0, <PartsRow key="parts" parts={parts} />);
+    const counts = fields.filter((f) => COUNT_KEYS.includes(f.key));
+    const out: ReactNode[] = [];
+    for (const f of fields) {
+      if (!COUNT_KEYS.includes(f.key)) out.push(row(f));
+      else if (f === counts[0]) out.push(<CountsRow key="counts" fields={counts} onSet={onSet} onJump={onJump} changed={markOf} pending={pendingOf} />);
+      if (f.key === "hdr.building_class") out.push(<PartsRow key="parts" parts={parts} />);
+    }
+    if (!fields.some((f) => f.key === "hdr.building_class")) out.push(<PartsRow key="parts" parts={parts} />);
     return out;
   };
   return (
@@ -497,18 +811,18 @@ function ProjectCard({ card, parts, onSet, onJump }: { card: Arranged; parts: Pr
           );
         })}
       </div>
+      {/* A chevron tab on the card's foot rule, not a line of its own (owner, 10 Nov 2026). */}
       {rest.length > 0 && (
-        <button type="button" className="cell-link pf-card-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
-          {open ? "View less" : "View more"}
-        </button>
+        <button type="button" className="pf-card-toggle" aria-expanded={open} aria-label={open ? "View less" : "View more"} title={open ? "View less" : "View more"} onClick={() => setOpen(!open)} />
       )}
     </>
   );
 }
 
 // The project in one sentence, built in code from the card's values. Each
-// value is underlined the way it was decided: ember pencil from documents,
-// dotted blue for a Jev reading, graphite for the user's own word.
+// value is underlined the way it was decided, by the origin rule (owner,
+// 10 Nov 2026): green from the documents (dotted where Jev leans on them),
+// dotted blue typical for the building, rust the user's own word.
 const WORDS = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 
 function ProjectSummary({ fields }: { fields: ProfileField[] }) {
@@ -518,10 +832,10 @@ function ProjectSummary({ fields }: { fields: ProfileField[] }) {
   const an = (t: string) => (/^[aeiou]/i.test(t) && !/^[A-Z]{2}/.test(t) ? "an" : "a");
   const token = (f: ProfileField | undefined, show: (t: string) => string = (t) => t) => {
     if (!f) return null;
-    const how = f.band === "user" ? "pencil-user" : f.band === "amber" ? "pencil-jev" : f.band === "red" ? "mark-check" : "pencil-doc";
-    const said = f.band === "user" ? "Set by you" : f.band === "amber" ? "Picked by Jev" : f.band === "red" ? "Sources differ" : "From documents";
+    const how = f.band === "user" ? "pencil-user" : f.band === "amber" ? "pencil-jev" : f.band === "red" ? "mark-check" : f.band === "suggested" ? "pencil-typical" : "pencil-doc";
+    const said = f.band === "user" ? "Set by you" : f.band === "amber" ? "Picked by Jev from the documents" : f.band === "red" ? "Sources differ" : f.band === "suggested" ? "Typical for this building" : "From the documents";
     return (
-      <button type="button" className={`pf-t ${how}`} title={`${f.label}: ${said}`}
+      <button type="button" className={`pf-t ${how}`} data-key={f.key} title={`${f.label}: ${said}`}
         onClick={() => document.getElementById(`pf-${f.key}-${f.part_id}`)?.focus()}>
         {show(text(f))}
       </button>

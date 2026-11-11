@@ -89,6 +89,10 @@ type systemRowJSON struct {
 	ScopeNote   string `json:"scope_note,omitempty"`
 }
 
+// spaceRowJSON is one row of the Accommodation table
+// (docs/plans/2026-11-11-accommodation-and-full-capture.md). Every catalogue
+// space is listed so the page can offer the ones not shown; Shown says
+// whether the row is in the table.
 type presetJSON struct {
 	ID      string   `json:"id"`
 	Label   string   `json:"label"`
@@ -146,6 +150,8 @@ type profileJSON struct {
 	Systems     []systemGroupJSON     `json:"systems"`
 	Compliance  []complianceGroupJSON `json:"compliance"`
 	Presets     []presetJSON          `json:"presets"`
+	// Spaces is the Accommodation table, in catalogue order.
+	Accommodation accommodationJSON `json:"accommodation"`
 	// Appointed are the packages awarded to a firm, with the firm's contact.
 	Appointed []store.AppointedFirm `json:"appointed"`
 }
@@ -225,6 +231,12 @@ func writeProfileQueued(w http.ResponseWriter, r *http.Request, deps Deps, orgID
 	}
 	body := profileBody(projectID, view, deps)
 	body.Queued = queued
+	stored, err := deps.Store.AccommodationLines(r.Context(), orgID, projectID)
+	if err != nil {
+		http.Error(w, "read failed", http.StatusInternalServerError)
+		return
+	}
+	body.Accommodation = accommodationBody(deps.Knowledge, view, stored)
 	if body.Appointed, err = deps.Store.AppointedFirms(r.Context(), orgID, projectID); err != nil {
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
@@ -801,6 +813,27 @@ func validProfileValue(cat *knowledge.Catalog, key string, value *string, note s
 			return oneOf(ids...)
 		case "number":
 			return number()
+		}
+		return ""
+	case strings.HasPrefix(key, knowledge.SpacePrefix):
+		_, attr, ok := cat.SpaceKey(key)
+		if !ok {
+			break
+		}
+		if value == nil || v == "" {
+			return ""
+		}
+		switch {
+		case attr == "provided", strings.HasPrefix(attr, "need."), strings.HasPrefix(attr, "next_to."):
+			return oneOf("yes", "no")
+		case attr == "count", attr == "capacity":
+			if n, err := strconv.Atoi(v); err != nil || n < 0 {
+				return "value must be a whole number"
+			}
+		case attr == "area_sqm", attr == "area_each_sqm":
+			if n, err := strconv.ParseFloat(v, 64); err != nil || n < 0 {
+				return "value must be a number"
+			}
 		}
 		return ""
 	case strings.HasPrefix(key, "sys."):

@@ -39,9 +39,13 @@ test("a proposal can move, detach and reattach without losing its firm or fee", 
   await page.getByRole("button", { name: "Synthetic Flow Consultant", exact: true }).click();
   await panel.getByLabel("Package", { exact: true }).selectOption("");
   await panel.getByRole("button", { name: "Detach proposal", exact: true }).click();
-  await expect(page.getByText("1 proposal needs a package.", { exact: true })).toBeVisible();
-  await page.locator(".procurement-unassigned select").selectOption(civil.id);
-  await expect(page.getByText("1 proposal needs a package.", { exact: true })).toHaveCount(0);
+  const waiting = page.locator("tr.row-unplaced");
+  await expect(waiting).toHaveCount(1);
+  await expect(waiting.locator(".firm-chip-name")).toHaveText("Synthetic Flow Consultant");
+  await expect(waiting.getByRole("combobox")).toContainText("Choose package");
+  await page.screenshot({ path: "../.tools/procurement-unplaced.png" });
+  await waiting.getByRole("combobox").selectOption(civil.id);
+  await expect(waiting).toHaveCount(0);
   const final = await (await page.request.get(`${base}/procurement/packages/${civil.id}/prices`)).json();
   const col = final.columns.find((c: { submission: { id: string } }) => c.submission.id === sub.id);
   expect(col.firm.name).toBe("Synthetic Flow Consultant");

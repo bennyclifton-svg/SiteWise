@@ -4,7 +4,7 @@ import "../register-edit.css";
 
 // A row's actions menu, opened by a ⋮ button, right-click or the menu key.
 // Shared by the document register and the RFP scope table.
-export type MenuItem = { label: string; icon: ReactNode; onSelect: () => void; disabled?: boolean; danger?: boolean } | "sep";
+export type MenuItem = { label: string; icon: ReactNode; onSelect: () => void; disabled?: boolean; danger?: boolean } | { heading: string } | "sep";
 /** Where the menu opens, and the control focus returns to. */
 export interface RowMenuAt { x: number; y: number; trigger: HTMLElement | null }
 
@@ -62,6 +62,8 @@ export function RowMenu({ at: menu, items, label, head, onClose }: { at: RowMenu
       {head && <p className="reg-menu-head" aria-hidden>{head}</p>}
       {items.map((item, i) => item === "sep"
         ? (i > 0 && items[i - 1] !== "sep" && i < items.length - 1 ? <div key={`sep-${i}`} role="separator" className="reg-menu-sep" /> : null)
+        : "heading" in item
+        ? <p key={`head-${i}`} className="reg-menu-head reg-menu-group" aria-hidden>{item.heading}</p>
         : <button key={item.label} type="button" role="menuitem" className="reg-menu-item" data-danger={item.danger || undefined} disabled={item.disabled}
             onClick={() => { onClose(true); item.onSelect(); }}>
             <span className="reg-menu-icon" aria-hidden>{item.icon}</span>

@@ -17,6 +17,11 @@ var trusteeRe = regexp.MustCompile(`(?i)\s+(?:as\s+trustee\s+for|atf)\s+`)
 // Management".
 var careOfRe = regexp.MustCompile(`(?i)[,;]?\s+(?:c/-|c/o|care\s+of)\s`)
 
+// careOfLineRe is an address block's first line with no "To:" label: the
+// party a quote is addressed to, care of their designer ("Priya Nair &
+// Tom Whitlock C/O Harbour Lane Design").
+var careOfLineRe = regexp.MustCompile(`(?im)^[*_ \t]*([A-Z][^\n:@]{2,80}?)[,;]?[ \t]+(?:c/-|c/o|care[ \t]+of)[ \t]+\S`)
+
 // actingForRe starts the party an agent is addressed for: "Ines Hart,
 // Marlowe Hart Architects, for Hamish and Rosa Delaney". The comma keeps
 // "X Pty Ltd as trustee for" out.
@@ -74,6 +79,11 @@ func addresseeCandidates(text string) []Candidate {
 		spans = append(spans, span{start, end, line})
 		if at := trusteeRe.FindStringIndex(line); at != nil {
 			spans = append(spans, span{start, start + at[0], line[:at[0]]})
+		}
+	}
+	for _, m := range careOfLineRe.FindAllStringSubmatchIndex(text, -1) {
+		if name := strings.TrimRight(text[m[2]:m[3]], " \t*_.,;"); name != "" && !addresseeRe.MatchString(text[m[0]:m[1]]) {
+			spans = append(spans, span{m[2], m[2] + len(name), name})
 		}
 	}
 	return collect(text, spans)

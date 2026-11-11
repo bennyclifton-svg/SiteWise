@@ -1,0 +1,85 @@
+# Waste and skip bins RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml. A site-running trade: it builds no building system and its
+# Main Works line sits in preliminaries. Research: docs/research/2026-11-10-trades/completion-supplies.md.
+# Draft until the owner reviews it.
+id: trade-waste-bins
+version: 1
+status: draft
+kind: works
+title: Waste and skip bins
+heading: "REQUEST FOR TENDER: WASTE AND SKIP BINS"
+discipline_ids: [trade.waste_bins]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the waste contractor. Your job is to supply, exchange and remove the skip bins the site needs, and to take the waste to lawful facilities with the records the construction waste management plan asks for."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Supply and exchange bins when the head contractor calls, placed where the head contractor directs.
+      - Take each load to a facility licensed to receive it, and keep the dockets.
+      - Report waste and recycling against the waste management plan.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}]
+
+stage_intro: "Asbestos and other hazardous waste are excluded; a licensed removalist takes them."
+scope_by_stage: true
+
+boundary:
+  - {start: establishment, end: handover}
+
+stages:
+  - key: establishment
+    name: Preliminaries and attendance
+    lines:
+      - {key: supervision, text: "Your own supervision, driver inductions and safe work method statements"}
+      - {key: access, text: "Bin placement where the head contractor directs, without damage to paving, kerbs or services"}
+      - {key: clean, text: "Clean-up of spillage at bin positions and on the road"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]
+  - key: supply
+    name: "Bin supply"
+    lines:
+      - {key: bins, text: "Skip bins of the sizes and types the head contractor orders"}
+      - {key: streams, text: "Separate bins for the waste streams the waste management plan separates"}
+      - {key: covers, text: "Covers or nets on bins where the site or the council asks"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}]
+  - key: exchange
+    name: "Exchange and disposal"
+    lines:
+      - {key: exchange, text: "Exchange and removal of full bins on call"}
+      - {key: disposal, text: "Transport to facilities licensed to receive each waste stream"}
+      - {key: recycling, text: "Recycling or reuse of separated streams the waste management plan targets"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}]
+  - key: handover
+    name: Records and removal
+    lines:
+      - {key: dockets, text: "Disposal dockets and weights for each load"}
+      - {key: reports, text: "Waste and recycling reports the waste management plan asks for"}
+      - {key: removal, text: "Removal of all bins at completion"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}]
+
+positions:
+  - {key: road_permit, label: "Council permit for bins on the road or footpath, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/setup-and-commission-guide.md"}]}
+  - {key: loading, label: "Loading waste into the bins, by the head contractor and the trades", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-builder.md"}]}
+  - {key: hazardous, label: "Asbestos and hazardous materials in the register, by a licensed removalist", kind: technical, value: X, responsible: "licensed removalist", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md"}]}
+  - {key: demolition, label: "Demolition waste, by the demolition contractor where demolition is let separately", kind: technical, value: X, responsible: "demolition contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/renovation-guide.md"}]}
+  - {key: plan, label: "The construction waste management plan, by the head contractor or the waste consultant", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/waste-management-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

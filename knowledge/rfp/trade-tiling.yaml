@@ -1,0 +1,112 @@
+# Tiling RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-tiling
+version: 1
+status: draft
+kind: works
+title: Tiling
+heading: "REQUEST FOR TENDER: TILING"
+discipline_ids: [trade.tiling]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the tiling contractor. Your job is to tile the walls and floors the documents show, flat, bonded and falling to the wastes, over a membrane you did not damage, with the movement joints the tiles need."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Tiling)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Do not tile over a membrane until you have seen its waterproofing certificate and inspection record and it has cured.
+      - Check each substrate is flat enough for the tile format before you start, and tell the head contractor in writing if it is not.
+      - Lay floor tiles to fall to the wastes, with no ponding.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 2: Wet area waterproofing to tiling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 5: Wet area floor waste and tile falls)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Set-out and samples"
+    lines:
+      - {key: set_out, text: "Tile set-out drawings for the design team's review where the documents call for them"}
+      - {key: samples, text: "Tile, grout and trim samples for approval"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Tiling)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Substrate and preparation"
+    lines:
+      - {key: check, text: "Check of substrate flatness and of the waterproofing certificate before tiling"}
+      - {key: screed, text: "Screeds and levelling the documents give you"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Substrate preparation)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 2: Wet area waterproofing to tiling)"}]
+  - key: walls
+    name: "Wall tiling"
+    lines:
+      - {key: walls, text: "Wall tiling in wet areas, kitchens and laundries the documents show"}
+      - {key: trims, text: "Tile trims, edges and niches"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Tiling)"}]
+  - key: floors
+    name: "Floor tiling"
+    lines:
+      - {key: floors, text: "Floor tiling, falling to the floor wastes in wet areas"}
+      - {key: external, text: "External tiling over the balcony membrane the documents show"}
+      - {key: grates, text: "Setting floor waste grates flush with the tiles"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Tiling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 5: Wet area floor waste and tile falls)"}]
+  - key: joints
+    name: "Grout and movement joints"
+    lines:
+      - {key: grout, text: "Grout to the specification"}
+      - {key: movement, text: "Movement joints at perimeters, changes of plane and substrate joints, sealed not grouted"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Expansion and movement joints)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: inspection, text: "Check for hollow, cracked or uneven tiles before handover"}
+      - {key: certificates, text: "Certificates your trade signs"}
+      - {key: records, text: "Spare tiles the documents ask for, product data and care instructions"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/defects-and-dlp-guide.md (2.4 Tile drumming (debonded tiles))"}]
+
+positions:
+  - {key: membrane, label: "Waterproofing membrane and its certificate, by the waterproofer", kind: technical, value: X, responsible: "waterproofer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 2: Wet area waterproofing to tiling)"}]}
+  - {key: wastes, label: "Floor wastes and grates supplied and set to level, by the plumber", kind: technical, value: X, responsible: "plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 5: Wet area floor waste and tile falls)"}]}
+  - {key: tile_supply, label: "Supply of tiles, by you unless the documents list them as a prime cost item or client supply", kind: technical, value: X, responsible: "as the documents state", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: screens, label: "Shower screens fixed after tiling, by the shower screen contractor", kind: technical, value: X, responsible: "shower screen contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+  - {key: fixtures, label: "Tapware and sanitary fixtures fitted after tiling, by the plumber", kind: technical, value: X, responsible: "plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/procurement-quoting-guide.md"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

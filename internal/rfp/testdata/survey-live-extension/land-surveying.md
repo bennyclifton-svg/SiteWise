@@ -80,12 +80,13 @@ Marked survey extent/features; title/DP/easements, current design revisions, agr
 - Written authority before extra scope/quantities/ceilings/fees/program changes; state cause, alternatives and effects. Site dockets alone do not authorise variations. Stop unsafe affected work, notify; agree handback/standby/remobilisation.
 - Information, extent/feature/method/allowance schedules, stages and addenda set the baseline; agreed development/review is included.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $5 million (client selected) and public liability cover of $20 million (client selected) throughout the appointment.
 - Correct invoices for completed work payable within 30 days, subject to agreement/applicable requirements. Disclose advance payment, withholding, interest, suspension/cancellation departures.
 - Disclose minimums/standby/after-hours and agreed escalation mechanism; no automatic annual increase.
-- Your proposal stays valid for 90 days.
-- Answers to scope questions go to every tenderer as numbered addenda.
 - Dated/revisioned PDFs and agreed editable CAD/data; datum/units/methods/accuracy, measured versus inferred and missing features. Agree project distribution licence, separate reliance, confidentiality/security, retention and handover.
 - Manage resources/subcontractors; notify substitutions/conflicts/insurance changes. Disclose caps/indemnities/time bars/loss exclusions/novation/IP. Agree notice/cure, completed-work costs, handback/records, dispute negotiation/mediation and urgent relief.
+- Your proposal stays valid for 90 days.
+- Answers to scope questions go to every tenderer as numbered addenda.
 
 ### Returnable schedules: reply using this structure only
 

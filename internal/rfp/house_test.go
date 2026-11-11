@@ -103,8 +103,15 @@ func TestHouseRFPReadsTheBrief(t *testing.T) {
 			grid[cell.Key] = cell.Text
 		}
 	}
-	if grid["bedrooms"] != "4" || grid["bathrooms"] != "3" || grid["parking"] != "1" || grid["quality"] != qualityLabels["mid"] {
+	// Bedrooms, bathrooms and car parks share one Counts row, as on the
+	// Profile card (owner, 10 Nov 2026); a single car park is singular.
+	if grid["counts"] != "4 bedrooms, 3 bathrooms, 1 car park" || grid["quality"] != qualityLabels["mid"] {
 		t.Fatalf("the grid prints the house: %+v", grid)
+	}
+	for _, gone := range []string{"bedrooms", "bathrooms", "parking"} {
+		if _, ok := grid[gone]; ok {
+			t.Fatalf("%s has its own row beside Counts: %+v", gone, grid)
+		}
 	}
 	if r.Fields["pi"].Value != "$10 million" {
 		t.Fatalf("a house falls back to the shared PI default: %+v", r.Fields["pi"])

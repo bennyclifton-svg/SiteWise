@@ -1,0 +1,627 @@
+# The spaces a building provides after the works: the Accommodation
+# schedule on the Profile (docs/plans/2026-11-11-accommodation-schedule-lines.md).
+# One catalogue for every building type. Draft; owner review pending.
+#
+# Each space:
+#   label    the space type, as the add menu and a capped line name it
+#   line     one line's name; rooms are numbered when there are several
+#            ("Office 1", "Office 2")
+#   kind     room: one line each. setting: one line, its count in the
+#            comment (workstations, WCs, showers, car spaces)
+#   unit     the plural a comment uses ("42 workstations", "200 guest rooms")
+#   pattern  finds the space's name in a passage (case-insensitive). Code
+#            offers the counts, areas, capacities and levels beside it; Jev
+#            only says whether the project provides the space and picks a
+#            candidate or none. A space with no pattern is never read from
+#            documents: it comes from a typical list or a card count.
+#   count_from  the card's counts that give the number of lines (the first
+#            stated wins). The card stays the count RFPs use; a difference
+#            shows in words under the table.
+#
+# Apartments, townhouses and tenancies stay on the card (unit mix, tenancies):
+# a dwelling is not a space here.
+version: 2
+status: draft
+spaces:
+  # Arrival
+  - id: entry
+    label: Entry
+    line: Entry
+    kind: room
+    unit: entries
+    # Not "entry suite": Meridian's "Level 3 entry suite with secure
+    # reception" is its reception.
+    pattern: \b(?:entry|entrance)\s+(?:halls?|foyers?|vestibules?)\b|\bvestibules?\b
+  - id: lobby
+    label: Lobby or foyer
+    line: Lobby
+    kind: room
+    unit: lobbies
+    pattern: \blobb(?:y|ies)\b|\bfoyers?\b
+  - id: reception
+    label: Reception and waiting
+    line: Reception
+    kind: room
+    unit: reception areas
+    pattern: \breception(?:\s+(?:areas?|desks?|counters?))?\b|\b(?:client\s+)?waiting(?:\s+(?:areas?|rooms?))?\b
+  # Workplace
+  - id: workstations
+    label: Workstations
+    line: Open-plan workspace
+    kind: setting
+    unit: workstations
+    pattern: \b(?:work\s*stations?|desks?|work\s*points?|hot[- ]desks?)\b
+    count_from: [hdr.scale.desks]
+  - id: offices
+    label: Enclosed offices
+    line: Office
+    kind: room
+    unit: offices
+    pattern: \b(?:enclosed|private|partners?'?|executive|directors?'?s?|managers?'?s?|individual|cellular)\s+offices?\b|\b\d+\s+offices\b
+    count_from: [hdr.scale.private_offices]
+  - id: meeting_rooms
+    label: Meeting rooms
+    line: Meeting room
+    kind: room
+    unit: meeting rooms
+    pattern: \b(?:meeting|conference|interview|seminar)\s+(?:rooms?|suites?)\b|\bmeeting\s+(?:spaces?|pods?)\b
+    count_from: [hdr.scale.meeting_rooms]
+  - id: boardroom
+    label: Boardroom
+    line: Boardroom
+    kind: room
+    unit: boardrooms
+    pattern: \bboard\s*rooms?\b
+  - id: quiet_rooms
+    label: Quiet rooms and booths
+    line: Quiet room
+    kind: room
+    unit: quiet rooms
+    pattern: \b(?:quiet|focus|phone|wellness|parents'?|mothers'?)\s+(?:rooms?|booths?|pods?)\b
+  - id: library
+    label: Library
+    line: Library
+    kind: room
+    unit: libraries
+    pattern: \blibrar(?:y|ies)\b
+  - id: print_copy
+    label: Print and copy
+    line: Print and copy
+    kind: room
+    unit: print rooms
+    pattern: \bprint(?:ing)?\s*(?:/|and|&)?\s*(?:copy(?:ing)?\s+)?(?:rooms?|areas?|bays?|hubs?|stations?)\b|\bcopy\s+rooms?\b
+  - id: records_room
+    label: Records or file room
+    line: Records room
+    kind: room
+    unit: records rooms
+    pattern: \brecords\b(?:\s+(?:rooms?|stores?|storage))?|\brecord\s+(?:rooms?|stores?)\b|\bfil(?:e|ing)\s+(?:rooms?|stores?)\b|\barchive\s+rooms?\b
+  - id: breakout
+    label: Breakout or staff room
+    line: Breakout
+    kind: room
+    unit: breakout spaces
+    pattern: \bbreak[- ]?out(?:\s+(?:areas?|spaces?|rooms?))?\b|\b(?:staff|lunch|tea)\s*rooms?\b
+  - id: kitchen
+    label: Kitchen
+    line: Kitchen
+    kind: room
+    unit: kitchens
+    pattern: \bkitchens?\b
+  - id: kitchenette
+    label: Kitchenette
+    line: Kitchenette
+    kind: room
+    unit: kitchenettes
+    pattern: \bkitchenettes?\b|\btea\s+points?\b
+  - id: pantry
+    label: Pantry
+    line: Pantry
+    kind: room
+    unit: pantries
+    pattern: \b(?:butler'?s'?\s+|walk[- ]in\s+)?pantr(?:y|ies)\b
+  # Dwellings
+  - id: living
+    label: Living areas
+    line: Living
+    kind: room
+    unit: living areas
+    pattern: \bliving(?:\s+(?:rooms?|areas?|spaces?))?\b|\b(?:lounge|family|media)\s+rooms?\b|\brumpus(?:\s+rooms?)?\b
+  - id: dining
+    label: Dining
+    line: Dining
+    kind: room
+    unit: dining areas
+    pattern: \bdining(?:\s+(?:rooms?|areas?))?\b
+  - id: bedroom
+    label: Bedrooms
+    line: Bedroom
+    kind: room
+    unit: bedrooms
+    count_from: [hdr.scale.bedrooms]
+  - id: bathroom
+    label: Bathrooms
+    line: Bathroom
+    kind: room
+    unit: bathrooms
+    count_from: [hdr.scale.bathrooms]
+  - id: study
+    label: Study
+    line: Study
+    kind: room
+    unit: studies
+    pattern: \bstudy(?:\s+(?:rooms?|nook))?\b|\bhome\s+office\b
+  - id: laundry
+    label: Laundry
+    line: Laundry
+    kind: room
+    unit: laundries
+    pattern: \blaundr(?:y|ies)\b
+  - id: garage
+    label: Garage
+    line: Garage
+    kind: setting
+    unit: car spaces
+    count_from: [hdr.scale.garage_spaces]
+  - id: outdoor_living
+    label: Alfresco, deck or balcony
+    line: Alfresco
+    kind: room
+    unit: outdoor areas
+    pattern: \balfresco\b|\bdecks?\b|\bbalcon(?:y|ies)\b|\bterraces?\b
+  # Shared residential
+  - id: guest_rooms
+    label: Guest rooms
+    line: Guest room
+    kind: room
+    unit: guest rooms
+    count_from: [hdr.scale.rooms, hdr.scale.hotel_rooms]
+  - id: student_rooms
+    label: Student rooms
+    line: Student room
+    kind: room
+    unit: student rooms
+    count_from: [hdr.scale.beds]
+  - id: resident_rooms
+    label: Resident rooms
+    line: Resident room
+    kind: room
+    unit: resident rooms
+    count_from: [hdr.scale.beds, hdr.scale.aged_care_beds]
+  - id: communal_room
+    label: Communal rooms
+    line: Communal room
+    kind: room
+    unit: communal rooms
+    pattern: \bcommunal\s+(?:rooms?|lounges?|dining|kitchens?|spaces?)\b|\bresidents'?\s+(?:lounges?|rooms?)\b|\bcommon\s+rooms?\b
+  - id: communal_open_space
+    label: Communal open space
+    line: Communal open space
+    kind: room
+    unit: communal open spaces
+    pattern: \bcommunal\s+open\s+spaces?\b|\bcommunal\s+(?:gardens?|terraces?|courtyards?)\b|\brooftop\s+(?:gardens?|terraces?)\b
+  - id: mail_room
+    label: Mail and parcel room
+    line: Mail room
+    kind: room
+    unit: mail rooms
+    pattern: \bmail\s*rooms?\b|\bparcel\s+(?:rooms?|lockers?)\b
+  - id: gym
+    label: Gym
+    line: Gym
+    kind: room
+    unit: gyms
+    pattern: \bgyms?\b|\bfitness\s+(?:rooms?|centres?|studios?)\b
+  - id: nurse_station
+    label: Nurse stations
+    line: Nurse station
+    kind: room
+    unit: nurse stations
+    pattern: \bnurses?'?\s+stations?\b|\bstaff\s+bases?\b
+  # Education
+  - id: classrooms
+    label: Classrooms and teaching spaces
+    line: Classroom
+    kind: room
+    unit: classrooms
+    pattern: \bclassrooms?\b|\b(?:learning|teaching)\s+(?:spaces?|areas?|rooms?)\b
+    count_from: [hdr.scale.classrooms]
+  - id: lecture_theatre
+    label: Lecture theatres
+    line: Lecture theatre
+    kind: room
+    unit: lecture theatres
+    pattern: \blecture\s+(?:theatres?|halls?|rooms?)\b|\bauditori(?:um|ums|a)\b
+    count_from: [hdr.scale.lecture_theatres]
+  - id: laboratories
+    label: Laboratories
+    line: Laboratory
+    kind: room
+    unit: laboratories
+    pattern: \blaborator(?:y|ies)\b|\bscience\s+labs?\b
+    count_from: [hdr.scale.labs]
+  - id: hall
+    label: Hall or gymnasium
+    line: Hall
+    kind: room
+    unit: halls
+    pattern: \b(?:multi-?purpose|assembly|school|community|sports?)\s+halls?\b|\bgymnasium\b
+    count_from: [hdr.scale.halls_gyms]
+  - id: playrooms
+    label: Playrooms
+    line: Playroom
+    kind: room
+    unit: playrooms
+    pattern: \bplay\s*rooms?\b|\b(?:children'?s'?\s+)?activity\s+rooms?\b|\b(?:babies|baby|toddlers?|preschool|nursery)\s+rooms?\b
+  - id: sleep_room
+    label: Sleep rooms
+    line: Sleep room
+    kind: room
+    unit: sleep rooms
+    pattern: \b(?:sleep|cot|rest)\s*rooms?\b
+  - id: nappy_change
+    label: Nappy change
+    line: Nappy change
+    kind: room
+    unit: nappy change areas
+    pattern: \bnappy[- ]chang(?:e|ing)\b
+  - id: bottle_prep
+    label: Bottle preparation
+    line: Bottle preparation
+    kind: room
+    unit: bottle preparation areas
+    pattern: \bbottle[- ]prep(?:aration)?\b
+  - id: sick_bay
+    label: Sick bay or first aid
+    line: Sick bay
+    kind: room
+    unit: sick bays
+    pattern: \bsick\s*bays?\b|\bfirst[- ]aid\s+rooms?\b
+  - id: canteen
+    label: Canteen
+    line: Canteen
+    kind: room
+    unit: canteens
+    pattern: \bcanteens?\b|\btuck\s*shops?\b
+  - id: cola
+    label: Covered outdoor learning area
+    line: COLA
+    kind: room
+    unit: COLAs
+    pattern: \bCOLAs?\b|\bcovered\s+outdoor\s+(?:learning\s+)?areas?\b
+  - id: outdoor_play
+    label: Outdoor play space
+    line: Outdoor play
+    kind: room
+    unit: outdoor play spaces
+    pattern: \boutdoor\s+play(?:\s*(?:areas?|spaces?|grounds?))?\b|\bplaygrounds?\b
+  # Health
+  - id: consult_rooms
+    label: Consulting and treatment rooms
+    line: Consult room
+    kind: room
+    unit: consult rooms
+    pattern: \b(?:consult(?:ing|ation)?|treatment|examination|exam)\s+rooms?\b
+    count_from: [hdr.scale.consulting_rooms, hdr.scale.treatment_rooms]
+  - id: procedure_rooms
+    label: Procedure rooms
+    line: Procedure room
+    kind: room
+    unit: procedure rooms
+    pattern: \bprocedure\s+rooms?\b
+    count_from: [hdr.scale.procedure_rooms]
+  - id: inpatient_unit
+    label: Inpatient units
+    line: Inpatient unit
+    kind: room
+    unit: inpatient units
+    pattern: \b(?:inpatient|medical|surgical)\s+(?:units?|wards?)\b
+  - id: emergency_department
+    label: Emergency department
+    line: Emergency department
+    kind: room
+    unit: emergency departments
+    pattern: \bemergency\s+(?:departments?|units?)\b
+  - id: operating_suite
+    label: Operating theatres
+    line: Operating theatre
+    kind: room
+    unit: operating theatres
+    pattern: \boperating\s+(?:theatres?|suites?|rooms?)\b|\bday\s+surgery\s+(?:units?|suites?)\b
+    count_from: [hdr.scale.operating_theatres]
+  - id: imaging
+    label: Medical imaging
+    line: Medical imaging
+    kind: room
+    unit: imaging suites
+    pattern: \bmedical\s+imaging\b|\bradiology\b|\bimaging\s+(?:suites?|rooms?|departments?)\b|\bx-?ray\s+rooms?\b
+    count_from: [hdr.scale.imaging_suites]
+  - id: outpatients
+    label: Outpatients
+    line: Outpatients
+    kind: room
+    unit: outpatient clinics
+    pattern: \boutpatients?(?:\s+(?:clinics?|departments?|units?))?\b
+  - id: pharmacy
+    label: Pharmacy
+    line: Pharmacy
+    kind: room
+    unit: pharmacies
+    pattern: \bpharmac(?:y|ies)\b|\bdispensar(?:y|ies)\b
+  - id: utility_rooms
+    label: Clean and dirty utility
+    line: Utility room
+    kind: room
+    unit: utility rooms
+    pattern: \b(?:clean|dirty)\s+utility(?:\s+rooms?)?\b|\bsluice\s+rooms?\b
+  - id: sterilisation
+    label: Sterilisation room
+    line: Sterilisation room
+    kind: room
+    unit: sterilisation rooms
+    pattern: \bsteril(?:is|iz)(?:ation|ing)\s+(?:rooms?|bays?|areas?|departments?)\b|\breprocessing\s+rooms?\b
+  # Hospitality, retail and assembly
+  - id: sales_floor
+    label: Sales floor
+    line: Sales floor
+    kind: room
+    unit: sales floors
+    pattern: \b(?:sales|retail|shop|trading)\s+(?:floor|areas?)\b
+  - id: restaurant
+    label: Restaurant or cafe
+    line: Restaurant
+    kind: room
+    unit: restaurants
+    pattern: \brestaurants?\b|\bbistros?\b|\bcaf[eé]s?\b
+  - id: bar
+    label: Bar
+    line: Bar
+    kind: room
+    unit: bars
+    pattern: \b(?:cocktail|lobby|wine|public|sports)\s+bars?\b|\bbar\s+(?:areas?|counters?|lounges?)\b
+  - id: function_room
+    label: Function rooms
+    line: Function room
+    kind: room
+    unit: function rooms
+    pattern: \bfunction\s+(?:rooms?|spaces?|halls?|centres?)\b|\bballrooms?\b
+  - id: worship_space
+    label: Worship space
+    line: Worship space
+    kind: room
+    unit: worship spaces
+    pattern: \b(?:worship|prayer)\s+(?:halls?|spaces?|rooms?)\b|\bsanctuary\b|\bnave\b|\bchapels?\b
+  - id: cool_room
+    label: Cool rooms
+    line: Cool room
+    kind: room
+    unit: cool rooms
+    pattern: \b(?:cool|cold|freezer)\s*rooms?\b|\bwalk[- ]in\s+(?:coolers?|freezers?|fridges?)\b
+  # Industrial and technical
+  - id: warehouse_floor
+    label: Warehouse floor
+    line: Warehouse
+    kind: room
+    unit: warehouse areas
+    pattern: \bwarehouse\s+(?:floor|areas?|space|component)\b
+  - id: production_floor
+    label: Production floor
+    line: Production area
+    kind: room
+    unit: production areas
+    pattern: \b(?:production|manufacturing|factory|processing)\s+(?:floor|areas?|halls?|space)\b
+  - id: data_hall
+    label: Data halls
+    line: Data hall
+    kind: room
+    unit: data halls
+    pattern: \bdata\s+halls?\b|\bwhite\s+space\b
+  - id: electrical_room
+    label: Electrical rooms
+    line: Electrical room
+    kind: room
+    unit: electrical rooms
+    pattern: \b(?:electrical|UPS|battery)\s+rooms?\b|\bswitch\s*rooms?\b|\bsubstations?\b
+  - id: security_room
+    label: Security room
+    line: Security room
+    kind: room
+    unit: security rooms
+    pattern: \bsecurity\s+(?:rooms?|offices?)\b|\bcontrol\s+rooms?\b|\bgatehouses?\b
+  - id: loading_dock
+    label: Loading dock
+    line: Loading dock
+    kind: room
+    unit: loading docks
+    pattern: \bloading\s+(?:docks?|bays?|areas?|zones?)\b
+  - id: hardstand
+    label: Hardstand
+    line: Hardstand
+    kind: room
+    unit: hardstands
+    pattern: \bhardstands?\b
+  # Amenities
+  - id: toilets
+    label: Toilets
+    line: Toilets
+    kind: setting
+    unit: WCs
+    pattern: \btoilets?\b|\bWCs?\b|\bwater\s+closets?\b|\bamenities\b
+  - id: accessible_toilets
+    label: Accessible toilets
+    line: Accessible WC
+    kind: room
+    unit: accessible WCs
+    pattern: \b(?:accessible|disabled|ambulant)\s+(?:WCs?|toilets?|amenities|bathrooms?)\b
+  - id: showers
+    label: Showers
+    line: Showers
+    kind: setting
+    unit: showers
+    pattern: \bshowers?\b
+  - id: change_rooms
+    label: Change rooms
+    line: Change room
+    kind: room
+    unit: change rooms
+    pattern: \b(?:change|changing|locker)\s*rooms?\b
+  - id: end_of_trip
+    label: End-of-trip facilities
+    line: End-of-trip facility
+    kind: room
+    unit: end-of-trip facilities
+    pattern: \bend[- ]of[- ]trip\b|\bbicycle\s+parking\b|\bbike\s+(?:parking|storage|racks?)\b
+  # Back of house
+  - id: storage
+    label: Store rooms
+    line: Store room
+    kind: room
+    unit: store rooms
+    pattern: \bstore\s*rooms?\b|\bstorage\s+(?:rooms?|areas?|cages?)\b
+  - id: comms_room
+    label: Comms or server room
+    line: Comms room
+    kind: room
+    unit: comms rooms
+    pattern: \b(?:comms|communications?|server|MDF|IDF)\s+(?:rooms?|cupboards?)\b|\bcomms\b
+  - id: plant_room
+    label: Plant rooms
+    line: Plant room
+    kind: room
+    unit: plant rooms
+    pattern: \bplant\s*(?:rooms?|areas?|decks?)\b
+  - id: waste_room
+    label: Waste or bin room
+    line: Waste room
+    kind: room
+    unit: waste rooms
+    pattern: \b(?:waste|bin|garbage|refuse)\s+(?:rooms?|stores?|storage|areas?|enclosures?)\b
+  - id: cleaners
+    label: Cleaner's room
+    line: Cleaner's room
+    kind: room
+    unit: cleaner's rooms
+    pattern: \bcleaner'?s'?\s+(?:rooms?|cupboards?|stores?)\b
+
+# Requirement phrases a line's comment may carry. Code finds the words on a
+# space's clause; Jev says whether the passage requires them of that space.
+requirements:
+  - id: av_ready
+    label: AV-ready
+    pattern: (?-i:\bAV\b)|\baudio[- ]?visual\b|\bvideo[- ]?conferenc(?:e|ing)\b
+  - id: acoustic
+    label: acoustic separation
+    pattern: \bacoustic(?:ally)?\s+(?:separat|rat|treat|privacy|isolat|seal)\w*|\bsound[- ]?proof\w*|\bspeech\s+privacy\b
+  - id: secure
+    label: secure
+    pattern: \bsecure(?:d)?\b|\b(?:swipe|access)[- ]control(?:led)?\b|\blockable\b
+  - id: natural_light
+    label: natural light
+    pattern: \bnatural\s+(?:light|daylight)\b|\bdaylit\b|\bdaylighting\b
+  - id: sink
+    label: sink
+    pattern: \bsinks?\b|\bwater\s+points?\b|\bhand\s*basins?\b
+  - id: operable_wall
+    label: operable wall
+    pattern: \boperable\s+(?:walls?|partitions?)\b|\bfolding\s+(?:walls?|partitions?)\b
+  - id: dedicated_cooling
+    label: dedicated cooling
+    pattern: \bdedicated\s+(?:cooling|air[- ]?con\w*|HVAC)\b|\b24/7\s+(?:cooling|air[- ]?con\w*)\b|\bsupplementary\s+cooling\b
+  - id: compactus
+    label: compactus shelving
+    pattern: \bcompactus\b|\bmobile\s+shelving\b
+  - id: fire_rated
+    label: fire-rated
+    pattern: \bfire[- ]rated\b|\bfire[- ]isolated\b
+  - id: glazed
+    label: glazed front
+    pattern: \bglazed\s+(?:fronts?|walls?|partitions?|screens?)\b|\bfull[- ]height\s+glaz\w*
+
+# Typical spaces per building type: the schedule's placeholders, names only.
+# `subclasses` are the card's building types; `classes` are the fallback when
+# the type is unknown or Other. `new_build` is added for new buildings: a
+# fit-out, refurbishment or extension gets the tenancy spaces only. An entry
+# is a space id, or {space, line} to name its line for this building type.
+# basis: guide (a published guide lists these spaces) or practice.
+schedules:
+  - id: workplace
+    subclasses: [office, serviced_office_coworking, government_civic]
+    classes: [commercial]
+    basis: practice
+    spaces: [reception, workstations, offices, meeting_rooms, boardroom, quiet_rooms, print_copy, breakout, kitchenette, storage, comms_room]
+    new_build: [lobby, toilets, accessible_toilets, showers, end_of_trip, plant_room, waste_room, cleaners, loading_dock]
+  - id: house
+    subclasses: [house]
+    classes: [residential]
+    basis: practice
+    spaces: [entry, living, dining, kitchen, pantry, bedroom, bathroom, study, laundry, garage, outdoor_living]
+  - id: apartment_common
+    subclasses: [apartments, btr, social_affordable_housing, residential_retail, residential_commercial, hotel_residential, btr_retail, townhouses]
+    basis: guide
+    source: NSW Apartment Design Guide, Part 4 (common circulation, communal open space, storage, waste, bicycle parking); dwellings are the card's unit mix
+    spaces: [lobby, mail_room, communal_room, communal_open_space, gym, storage, end_of_trip, waste_room, plant_room, comms_room]
+  - id: student_housing
+    subclasses: [student_housing]
+    basis: practice
+    spaces: [reception, student_rooms, communal_room, kitchen, {space: classrooms, line: Study room}, laundry, gym, end_of_trip, waste_room, plant_room]
+  - id: aged_care
+    subclasses: [residential_aged_care, retirement_living, vertical_village]
+    basis: guide
+    source: National Aged Care Design Principles and Guidelines (households with private bedrooms and bathrooms, a kitchen beside the dining area, living and outdoor space), https://www.health.gov.au/sites/default/files/2025-03/national_aged_care_design_principles_and_guidelines_summary.pdf
+    spaces: [reception, resident_rooms, living, dining, kitchen, {space: communal_room, line: Activity room}, nurse_station, utility_rooms, laundry, {space: breakout, line: Staff room}, offices, accessible_toilets, storage, {space: outdoor_living, line: Garden}]
+  - id: retail
+    subclasses: [retail_shopping_centre, retail_standalone, retail_office, residential_retail, btr_retail]
+    basis: practice
+    spaces: [sales_floor, storage, {space: breakout, line: Staff room}, offices, toilets, loading_dock, waste_room]
+  - id: food_beverage
+    subclasses: [food_beverage]
+    basis: practice
+    spaces: [dining, bar, kitchen, cool_room, storage, toilets, accessible_toilets, {space: breakout, line: Staff room}, waste_room]
+  - id: hotel
+    subclasses: [hotel, hotel_residential]
+    basis: practice
+    spaces: [lobby, reception, guest_rooms, restaurant, bar, kitchen, function_room, meeting_rooms, gym, laundry, {space: breakout, line: Staff room}, storage, loading_dock, plant_room, waste_room]
+  - id: industrial
+    subclasses: [warehouse, logistics_ecommerce, cold_storage, dangerous_goods]
+    classes: [industrial]
+    basis: practice
+    spaces: [warehouse_floor, {space: offices, line: Office}, {space: breakout, line: Lunch room}, toilets, accessible_toilets, loading_dock, hardstand]
+    new_build: [plant_room, waste_room]
+  - id: manufacturing
+    subclasses: [manufacturing, heavy_manufacturing, food_processing, pharmaceutical_gmp, cleanroom, battery_manufacturing, waste_to_energy]
+    basis: practice
+    spaces: [production_floor, storage, {space: offices, line: Office}, {space: breakout, line: Lunch room}, change_rooms, toilets, loading_dock]
+    new_build: [plant_room, electrical_room, waste_room]
+  - id: data_centre
+    subclasses: [data_centre]
+    basis: practice
+    spaces: [data_hall, electrical_room, plant_room, security_room, {space: offices, line: Office}, loading_dock, storage, toilets]
+  - id: early_learning
+    subclasses: [education_early_childhood]
+    basis: guide
+    source: Education and Care Services National Regulations, regs 106 to 115 by heading (laundry and hygiene, toilets, administrative space, nappy change); Education Standards Board (SA) "Creating safe facilities", https://www.esb.sa.gov.au/creating-safe-facilities-guide-building-and-renovating-education-and-care-services
+    spaces: [entry, reception, playrooms, sleep_room, nappy_change, bottle_prep, toilets, kitchen, laundry, {space: offices, line: Office}, {space: breakout, line: Staff room}, storage, outdoor_play]
+  - id: school
+    subclasses: [education_primary_secondary]
+    classes: [institution]
+    basis: guide
+    source: NSW Educational Facilities Standards and Guidelines, primary accommodation summary, https://efsg.det.nsw.edu.au/primary/acc.html
+    spaces: [classrooms, library, hall, cola, {space: offices, line: Office}, {space: breakout, line: Staff room}, sick_bay, canteen, toilets, accessible_toilets, storage, comms_room, outdoor_play]
+  - id: tertiary
+    subclasses: [education_tertiary]
+    basis: practice
+    spaces: [lecture_theatre, {space: classrooms, line: Teaching space}, laboratories, library, {space: breakout, line: Student hub}, offices, meeting_rooms, toilets, accessible_toilets, storage]
+  - id: hospital
+    subclasses: [healthcare_hospital]
+    basis: guide
+    source: Australasian Health Facility Guidelines, health planning units (each with its own schedule of accommodation), https://aushfg.com.au
+    spaces: [reception, emergency_department, inpatient_unit, operating_suite, imaging, outpatients, pharmacy, sterilisation, {space: breakout, line: Staff room}, loading_dock, plant_room, waste_room]
+  - id: clinic
+    subclasses: [healthcare_medical_centre, healthcare_clinic_allied]
+    basis: guide
+    source: Australasian Health Facility Guidelines, health planning units for ambulatory care (reception and waiting, consult and treatment rooms, clean and dirty utility, staff room), https://aushfg.com.au
+    spaces: [reception, consult_rooms, procedure_rooms, imaging, utility_rooms, sterilisation, {space: breakout, line: Staff room}, records_room, toilets, accessible_toilets, storage, cleaners]
+  - id: religious
+    subclasses: [religious]
+    basis: practice
+    spaces: [entry, worship_space, hall, kitchen, offices, meeting_rooms, toilets, accessible_toilets, storage]

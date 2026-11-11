@@ -2,7 +2,7 @@ import { Pending } from "./Activity";
 import { readLocationChoice, writeLocationChoice } from "./workbenchLocation";
 import { useEffect, useRef, useState, type DragEvent } from "react";
 import { ApiError } from "./api";
-import { costApi, type CostPlan, type CostItem, type CostSettings, type CostValue, type CostTotals } from "./costApi";
+import { costApi, type CostPlan, type CostItem, type CostSettings, type CostValue, type CostTotals, type CostBulk } from "./costApi";
 import { packageApi, type PackageRecord } from "./packageApi";
 import { CentsContext, CostGrid, editContent } from "./CostGrid";
 import { onCostSettingsRequest, takeCostSettingsRequest } from "./costSettingsRequest";
@@ -152,6 +152,14 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
     if (ok && ids.has(selected)) close();
     return ok;
   }
+  // One action on the selected lines, in one write; the drawer closes when
+  // its line goes.
+  async function bulk(input: CostBulk) {
+    if (!plan) return false;
+    const ok = await save(() => costApi.bulk(projectId, plan, input), false);
+    if (ok && input.op === "delete" && selected && input.ids.includes(selected)) close();
+    return ok;
+  }
   const stale = (p: CostPlan) => p.id !== plan?.id || p.version !== plan?.version;
   function close() { setSelected(""); setSettings(null); setSplit(null); }
   function choose(id: string) { setSelected(id); setSettings(null); setSplit(null); }
@@ -192,7 +200,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
         onSubdivide={item => { choose(item.cost_item_id); setSplit({ base: plan, item, names: ["", ""], amounts: ["", ""], metric: "budget", residual: "explicit" }); }}
         onDetailedValue={(item, name, value) => save(() => costApi.value(projectId, plan, item.cost_item_id, name, value), false)}
         onReorder={ids => save(() => costApi.reorder(projectId, plan, ids), false)}
-        onDelete={remove} ledger={history ? null : ledger} onInvoices={showInvoices}
+        onDelete={remove} onBulk={bulk} ledger={history ? null : ledger} onInvoices={showInvoices}
         onItem={(c, id, calculate, values) => save(() => costApi.item(projectId, plan, c, id, calculate, values), false)} /></CentsContext>}
     </div>
     {open && tab === "plan" && <aside className="cost-drawer" aria-label="Cost line">

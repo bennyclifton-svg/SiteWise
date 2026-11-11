@@ -51,7 +51,7 @@ type Engagement struct {
 // engagement rather than one discipline: the issue details, terms and the
 // transmittal print once, so they are stored once, on the group's report.
 func SharedSetting(sk knowledge.RFPSkeleton, key string) bool {
-	if DocumentListSetting(key) {
+	if DocumentListSetting(key) || TermSetting(key) {
 		return true
 	}
 	name, ok := strings.CutPrefix(key, "field:")
@@ -228,7 +228,10 @@ func (e Engagement) sharedResolved(lead int) Resolved {
 	for _, t := range terms {
 		row := t.row
 		if len(t.owners) < len(templated) {
-			row.Text = strings.Join(t.owners, ", ") + ": " + row.Text
+			// The owners lead the printed term; the label keeps them apart
+			// from the wording, which the terms table edits.
+			row.Label = strings.Join(t.owners, ", ")
+			row.Text = row.Label + ": " + row.Text
 		}
 		r.Terms = append(r.Terms, row)
 	}

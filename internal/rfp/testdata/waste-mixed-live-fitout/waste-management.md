@@ -80,11 +80,12 @@ Dated use/occupancy and stream schedule, plans/sections, contractor quantities a
 - Obtain written authority before extras, ceiling/allowance overruns or fee/time changes; give cause, deliverable, price/basis and program effect.
 - Sign-off sets baseline; normal development and own-error correction included. Distinguish included clarification from changed design/process/evidence; agree delay/remobilisation.
 - Correcting your own errors, or coordinating with information you were given, is not a variation.
+- Hold professional indemnity cover of $5 million (client selected) and public liability cover of $20 million (client selected) throughout the appointment.
 - Payment 30 days against agreed milestones. R6 declares deposits/prepayment, release restrictions, surcharges, recovery and suspension terms.
 - Rates fixed to 12 months after appointment; disclose GST, travel/forms/data/platform and cancellation costs; no historical fees as benchmarks.
+- Reasonable professional skill/care; agree project-use/editable-file rights, reliance, retention/handover and confidential disclosure; marketing needs consent. Agreement resolves IP, liability/caps/indemnities, law/disputes and suspension/termination notice/cure.
 - Proposal valid 90 days; base/options, ex GST/GST/total and third-party costs separate.
 - Issue changed answers issued to all as numbered addenda.
-- Reasonable professional skill/care; agree project-use/editable-file rights, reliance, retention/handover and confidential disclosure; marketing needs consent. Agreement resolves IP, liability/caps/indemnities, law/disputes and suspension/termination notice/cure.
 
 ### Returnable schedules: reply using this structure only
 

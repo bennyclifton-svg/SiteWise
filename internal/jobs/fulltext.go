@@ -68,7 +68,7 @@ var headingRe = regexp.MustCompile(`^(\d+(\.\d+)*\.?\s+[A-Za-z]|[A-Z][A-Z0-9 &/,
 // looksLikeHeading is a numbered heading ("7.13. Garbage Systems") or a short
 // upper-case line ("FIRE SERVICES").
 func looksLikeHeading(line string) bool {
-	return len(line) <= 80 && headingRe.MatchString(line) && !quantityHeading.MatchString(line) && !tableCodeHeading.MatchString(line) && line != "TOTAL"
+	return len(line) <= 80 && headingRe.MatchString(line) && !quantityHeading.MatchString(line) && !quantityLine.MatchString(line) && !tableCodeHeading.MatchString(line) && line != "TOTAL"
 }
 
 // PDF table cells can resemble numbered or all-caps headings.

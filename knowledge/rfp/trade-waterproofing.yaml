@@ -1,0 +1,109 @@
+# Waterproofing (wet areas and balconies) RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Researched from the
+# seed guides (docs/research/2026-11-10-trades/interiors.md); edit it as knowledge. Draft until the owner reviews it.
+id: trade-waterproofing
+version: 1
+status: draft
+kind: works
+title: Waterproofing (wet areas and balconies)
+heading: "REQUEST FOR TENDER: WATERPROOFING (WET AREAS AND BALCONIES)"
+discipline_ids: [trade.waterproofing]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the waterproofing contractor. Your job is to make every wet area, balcony and deck the documents show watertight with a membrane system suited to it, prove it before it is covered, and certify the work you did."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Wet area waterproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Wet Area Construction and Waterproofing)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Inspect and accept each substrate, its falls and its penetrations before you apply a membrane.
+      - Let each membrane cure for the period its manufacturer sets; never shorten it.
+      - Offer each area for inspection, and flood test where the documents call for it, before any tiler covers it.
+      - Photograph each completed area before it is covered.
+      - Sign a certificate for each area you waterproof.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 2: Wet area waterproofing to tiling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]
+
+stage_intro: "A supply-only tender excludes the installation lines."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Design and shop drawings"
+    lines:
+      - {key: system, text: "Membrane system and details for the design team's review, internal and external"}
+      - {key: design, text: "Design of terminations, upstands and outlet details where the documents leave it to the contractor"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: preparation
+    name: "Substrate and preparation"
+    lines:
+      - {key: substrate, text: "Inspection and acceptance of each substrate, its falls and its penetrations"}
+      - {key: prime, text: "Priming, bond breakers and corner reinforcement"}
+      - {key: penetrations, text: "Sealing the membrane to each floor waste flange and penetration"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 2: Wet area waterproofing to tiling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 5: Wet area floor waste and tile falls)"}]
+  - key: wet_areas
+    name: "Wet areas"
+    lines:
+      - {key: showers, text: "Shower floors and walls to the required height"}
+      - {key: floors, text: "Bathroom, ensuite, laundry and toilet floors with their wall upturns"}
+      - {key: baths, text: "Bath surrounds and hobs or hobless shower details the documents show"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Wet area waterproofing)"}, {kind: seed, ref: "data/reference/clerk/data/seed/ncc-reference-guide.md (Wet Area Waterproofing (AS 3740))"}]
+  - key: external
+    name: "Balconies and decks"
+    lines:
+      - {key: balconies, text: "Balconies, decks, terraces and planter boxes the documents show"}
+      - {key: upstands, text: "Upstands at thresholds and walls, and the junction with the wall waterproofing"}
+      - {key: outlets, text: "Membrane connection to outlets and overflows"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Balcony and External Waterproofing)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: testing, text: "Flood testing of horizontal membranes where the documents call for it, before tiling"}
+      - {key: inspection, text: "Each area offered for the builder's and certifier's inspection before it is covered"}
+      - {key: certificates, text: "Your waterproofing certificate for each area, with photographs"}
+      - {key: records, text: "Membrane product data and warranties"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Handover and Practical Completion)"}]
+
+positions:
+  - {key: substrate, label: "Wet-area wall sheets, by the plasterboard contractor", kind: technical, value: X, responsible: "plasterboard contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/finishes-residential.md (Plasterboard (gypsum board))"}]}
+  - {key: wastes, label: "Floor wastes, puddle flanges and pipe penetrations set in final position and level before the membrane, by the plumber", kind: technical, value: X, responsible: "plumber", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 5: Wet area floor waste and tile falls)"}]}
+  - {key: falls, label: "Falls to floor wastes in the slab or a screed under the membrane, by the concreter or the tiler as the documents show", kind: technical, value: X, responsible: "concreter or tiler", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 5: Wet area floor waste and tile falls)"}]}
+  - {key: inspection, label: "Booking the certifier's waterproofing inspection, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md (Interface 2: Wet area waterproofing to tiling)"}]}
+  - {key: protection, label: "Protection of the cured membrane from later trades, by the head contractor and each trade working over it", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Wet Area Waterproofing)"}]}
+  - {key: below_ground, label: "Basement tanking and below-ground waterproofing, by the below-ground waterproofing contractor", kind: technical, value: X, responsible: "below-ground waterproofing contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/commercial-construction-guide.md (Waterproofing in Commercial Buildings)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."

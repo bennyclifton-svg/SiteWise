@@ -49,7 +49,7 @@ const MAX = 999; // the server accepts one to three digits
 // Arrow clicks change the number at once and save after a short pause, so
 // five quick clicks are one write, not five.
 // Terms reuse it for day counts; an id ties it to a visible label there.
-export function Stepper({ id, label, value, placeholder, busy, onCommit }: { id?: string; label: string; value: string; placeholder: string; busy: boolean; onCommit: (v: string) => void }) {
+export function Stepper({ id, label, name, value, placeholder, busy, onCommit }: { id?: string; label: string; /** The number's accessible name, when not "<label> quantity". */ name?: string; value: string; placeholder: string; busy: boolean; onCommit: (v: string) => void }) {
   const [draft, setDraft] = useState(value);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => setDraft(value), [value]);
@@ -67,7 +67,7 @@ export function Stepper({ id, label, value, placeholder, busy, onCommit }: { id?
   };
   return <span className="rfp-al-stepper">
     <button type="button" className="rfp-al-step" aria-label={`Decrease ${label}`} disabled={busy || (Number(draft) || 0) <= 0} onClick={() => step(-1)}><Chevron down /></button>
-    <input id={id} className="rfp-al-value" inputMode="numeric" pattern="[0-9]*" maxLength={3} aria-label={id ? undefined : `${label} quantity`} placeholder={placeholder} value={draft} disabled={busy}
+    <input id={id} className="rfp-al-value" inputMode="numeric" pattern="[0-9]*" maxLength={3} aria-label={name ?? (id ? undefined : `${label} quantity`)} placeholder={placeholder} value={draft} disabled={busy}
       onChange={e => setDraft(e.target.value.replace(/[^0-9]/g, "").slice(0, 3))} onBlur={() => commit(draft)} onKeyDown={keys} onFocus={e => e.currentTarget.select()} />
     <button type="button" className="rfp-al-step" aria-label={`Increase ${label}`} disabled={busy || (Number(draft) || 0) >= MAX} onClick={() => step(1)}><Chevron /></button>
   </span>;

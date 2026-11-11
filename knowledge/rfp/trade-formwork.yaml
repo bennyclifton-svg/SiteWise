@@ -1,0 +1,103 @@
+# Formwork RFT (docs/plans/2026-11-10-trades-catalogue.md, slice T3). Same shape as
+# trade-structural-steel.yaml; edit it as knowledge. Research and open questions:
+# docs/research/2026-11-10-trades/site-substructure.md. Draft until the owner reviews it.
+id: trade-formwork
+version: 1
+status: draft
+kind: works
+title: Formwork
+heading: "REQUEST FOR TENDER: FORMWORK"
+discipline_ids: [trade.formwork]
+evidence_limit: "Seed guidance only; no historical tender for this trade has been encoded."
+
+scale:
+  text: "One trade package."
+  complex: []
+
+role:
+  - key: contractor
+    text: "You are the formwork contractor. Your job is to design where required, build, prop and strip the formwork the concrete needs, true to the set-out, levels and surface finish the documents show, strong enough for the pour, safely and on program."
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}, {kind: client_decision, ref: "docs/plans/2026-11-08-trade-rft.md", why: "Owner 2026-11-08: trade RFTs open like the consultant RFPs, with what the firm is engaged to achieve."}]
+  - key: duties
+    text: |-
+      To do this you:
+      - Build the works in this section and coordinate them with the head contractor and the other trades.
+      - Arrange the inspections and tests your trade needs, and provide the certificates your trade signs.
+      - Check form dimensions, levels and alignment before the steel fixer starts.
+      - Strip only when the engineer or specification allows.
+      - Hand over manuals, warranties and as-built records.
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}]
+
+stage_intro: "Price each stage of your works; a line marked Excluded is by others or not part of this tender."
+scope_by_stage: true
+
+boundary:
+  - {start: design, end: handover}
+
+stages:
+  - key: design
+    name: "Formwork design"
+    lines:
+      - {key: design, text: "Formwork and propping design and certification where the documents leave it to the contractor"}
+      - {key: shop_drawings, text: "Formwork and propping drawings for review"}
+    fee_basis: fixed
+    delivery_stage: design_finalisation
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}]
+  - key: establishment
+    name: "Preliminaries and attendance"
+    lines:
+      - {key: supervision, text: "Your own supervision and safe work method statements"}
+      - {key: access, text: "Your own access equipment, storage and protection of your work"}
+      - {key: clean, text: "Removal of your waste and clean-up"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/trade-interfaces-coordination-guide.md"}]
+  - key: ground
+    name: "Footings and ground slab"
+    lines:
+      - {key: edge_forms, text: "Edge forms, rebates and set-downs to the set-out and levels"}
+      - {key: void_formers, text: "Void formers and the vapour barrier under the slab the documents show"}
+      - {key: check, text: "Your check of dimensions, levels and alignment before reinforcement is fixed"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/residential-construction-guide.md (Foundations and Footing Systems)"}, {kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}]
+  - key: suspended
+    name: "Suspended structure"
+    lines:
+      - {key: deck, text: "Formwork to suspended slabs, beams, columns and walls to the specified surface finish"}
+      - {key: props, text: "Propping and back-propping to the design"}
+      - {key: certify, text: "Formwork certification before the pour where the formwork is your design"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}]
+  - key: strip
+    name: "Stripping"
+    lines:
+      - {key: strip, text: "Stripping at the times the engineer or specification allows"}
+      - {key: remove, text: "Cleaning and removal of formwork from site"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}]
+  - key: handover
+    name: "Testing and handover"
+    lines:
+      - {key: certificates, text: "Formwork certificates for the formwork you designed"}
+      - {key: records, text: "Stripping and back-propping records"}
+    fee_basis: fixed
+    delivery_stage: delivery
+    shown_when: Always
+    provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/as-standards-reference.md (AS 3610 Series — Formwork for Concrete)"}]
+
+positions:
+  - {key: set_out, label: "Survey set-out, grid lines and levels from the survey control, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-owner-builder.md (Subcontractor and trade management)"}, {kind: seed, ref: "data/reference/clerk/data/seed/surveying-guide.md"}]}
+  - {key: reinforcement, label: "Reinforcement, bar chairs and tie wire, by the steel fixer", kind: technical, value: X, responsible: "steel fixer", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: concrete, label: "Concrete supply, placing and finishing, by the concreter", kind: technical, value: X, responsible: "concreter", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/multi-residential-apartments-guide.md (Trade Package Structure)"}]}
+  - {key: edge_protection, label: "Scaffold and edge protection at slab edges, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/role-builder.md"}]}
+  - {key: pre_pour_booking, label: "Booking the engineer's and certifier's reinforcement inspection before each pour, by the head contractor", kind: technical, value: X, responsible: "head contractor", provenance: [{kind: seed, ref: "data/reference/clerk/data/seed/new-dwelling-guide.md (Structural inspection gates — Class 1a new dwelling)"}, {kind: seed, ref: "data/reference/clerk/data/seed/structural-residential.md (Inspection and evidence gates)"}]}
+
+durations: "From the SiteWise program when it holds the delivery stage; otherwise the tenderer states weeks in R7."
