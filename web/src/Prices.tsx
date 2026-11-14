@@ -194,6 +194,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
         <ActionMenu label="More actions" trigger={<IconMore />} triggerClass="prices-more-btn">
           {reportId && <a role="menuitem" href={submissionApi.responseFormURL(reportId)} download>Response form</a>}
           {cols.length > 0 && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
+          {tenderMode && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg, "csv")} download>Export to CSV</a>}
           <button type="button" role="menuitem" onClick={() => window.print()}>Download (print)</button>
           {cols.length > 0 && <button type="button" role="menuitem" onClick={() => setShowReport(true)}>Report</button>}
           {quoted && table?.award && onOpenCostPlan && <button type="button" role="menuitem" onClick={onOpenCostPlan}>Open cost plan</button>}

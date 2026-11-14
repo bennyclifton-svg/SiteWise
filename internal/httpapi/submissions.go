@@ -59,6 +59,10 @@ type proposalReader struct {
 	// disciplines names each filing discipline as Procurement shows it, so
 	// a proposal's package can be made before it is read.
 	disciplines map[string]string
+	// skipPrices is set when this server runs the tender pass and has been
+	// told to stop asking Jev the prices that pass reads (slice 8). It
+	// applies only to an org that has switched the model on.
+	skipPrices bool
 }
 
 // Filed is the filing hook: a proposal-like document gets a submission and
@@ -142,6 +146,12 @@ func (r *proposalReader) read(ctx context.Context, orgID, id string, recheck boo
 	}
 	if !recheck && in.Status != store.SubmissionReading {
 		return false, nil
+	}
+	if r.skipPrices && in.PackageID != "" {
+		// The rows are known, so the tender pass will read the prices.
+		if on, err := r.store.ModelEnabled(ctx, orgID); err == nil && on {
+			in.Context.SkipPrices = true
+		}
 	}
 	out, err := r.outcome(ctx, orgID, in)
 	if err != nil {
@@ -783,8 +793,26 @@ func exportPriceTable(w http.ResponseWriter, r *http.Request, deps Deps) {
 		procurementError(w, deps, err)
 		return
 	}
+	// A package in tender mode exports its two tables and every line; any
+	// other package exports exactly as it always has.
+	sheets := []xlsx.Sheet{priceSheet(t)}
+	if tenderMode(t) {
+		sheets = tenderSheets(t)
+		if r.URL.Query().Get("format") == "csv" {
+			// CSV gives the two tables, one after the other.
+			out, err := sheetsCSV(sheets[:2])
+			if err != nil {
+				procurementError(w, deps, err)
+				return
+			}
+			w.Header().Set("Content-Type", "text/csv; charset=utf-8")
+			w.Header().Set("Content-Disposition", mime.FormatMediaType("attachment", map[string]string{"filename": safeFileName(t.Title) + " tender comparison " + store.SydneyDate(time.Now()) + ".csv"}))
+			_, _ = w.Write(out)
+			return
+		}
+	}
 	var buf bytes.Buffer
-	if err := xlsx.WriteXLSX(&buf, []xlsx.Sheet{priceSheet(t)}); err != nil {
+	if err := xlsx.WriteXLSX(&buf, sheets); err != nil {
 		procurementError(w, deps, err)
 		return
 	}

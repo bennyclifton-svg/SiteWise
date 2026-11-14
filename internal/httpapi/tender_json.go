@@ -56,15 +56,19 @@ type tenderLineJSON struct {
 }
 
 type tenderColumnJSON struct {
-	SubmissionID string                    `json:"submission_id"`
-	State        string                    `json:"state"`
-	Error        string                    `json:"error"`
-	Basis        string                    `json:"basis"`
-	TenderSum    moneyField                `json:"tender_sum"`
-	TenderSumHow string                    `json:"tender_sum_how"`
-	TenderSumBy  string                    `json:"tender_sum_by"`
-	RemainderWhy string                    `json:"remainder_why"`
-	LikeForLike  moneyField                `json:"like_for_like"`
+	SubmissionID string     `json:"submission_id"`
+	State        string     `json:"state"`
+	Error        string     `json:"error"`
+	Basis        string     `json:"basis"`
+	TenderSum    moneyField `json:"tender_sum"`
+	TenderSumHow string     `json:"tender_sum_how"`
+	TenderSumBy  string     `json:"tender_sum_by"`
+	RemainderWhy string     `json:"remainder_why"`
+	LikeForLike  moneyField `json:"like_for_like"`
+	// AppliedTotal is the firm's applied adds and subs as one signed
+	// figure, over AppliedRows rows: what takes the tender sum to like for like.
+	AppliedTotal moneyField                `json:"applied_total"`
+	AppliedRows  int                       `json:"applied_rows"`
 	Lowest       bool                      `json:"lowest"`
 	Checked      bool                      `json:"checked"`
 	CheckedAt    *time.Time                `json:"checked_at"`
@@ -113,7 +117,7 @@ func tenderBody(t *store.TenderTable, available bool) *tenderJSON {
 	}
 	for _, c := range t.Columns {
 		col := tenderColumnJSON{SubmissionID: c.SubmissionID, State: c.State, Error: c.Error, Basis: c.Basis, TenderSum: cents(c.Sum), TenderSumHow: c.SumHow, TenderSumBy: c.SumBy,
-			RemainderWhy: c.Why, LikeForLike: cents(c.LikeForLike), Lowest: c.Lowest, Checked: c.Checked, CheckedAt: c.CheckedAt, Flags: c.Flags, Notes: c.Notes, Exclusions: c.Exclusions,
+			RemainderWhy: c.Why, LikeForLike: cents(c.LikeForLike), AppliedTotal: centsValue(c.AppliedCents), AppliedRows: c.AppliedRows, Lowest: c.Lowest, Checked: c.Checked, CheckedAt: c.CheckedAt, Flags: c.Flags, Notes: c.Notes, Exclusions: c.Exclusions,
 			Cells: map[string]tenderCellJSON{}, Lines: []tenderLineJSON{}}
 		for key, cell := range c.Cells {
 			col.Cells[key] = tenderCellJSON{State: cell.State, Amount: cents(cell.Cents), Lines: cell.Lines, Mark: cell.Mark, ToCheck: cell.ToCheck, Note: cell.Note}

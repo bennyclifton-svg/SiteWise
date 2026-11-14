@@ -419,6 +419,10 @@ type FirmCard struct {
 	// Combined marks an unplaced proposal filed as a combined discipline
 	// ("Services Engineer"): the PM combines rows for it or places it.
 	Combined bool `json:"combined,omitempty"`
+	// LikeForLike marks a tender-read firm: its figure is the tender sum
+	// plus the applied adds and subs. ToCheck is true until its column is checked.
+	LikeForLike bool `json:"like_for_like,omitempty"`
+	ToCheck     bool `json:"to_check,omitempty"`
 	// joined is when the card's firm took its place on the row.
 	joined time.Time
 }
@@ -548,6 +552,14 @@ func cardOf(c FirmColumn) FirmCard {
 		PIExpired: c.Submission.PIExpiresOn != "" && c.Submission.PIExpiresOn < SydneyDate(time.Now())}
 	if c.Firm != nil {
 		card.FirmName = c.Firm.Name
+	}
+	if t := c.Tender; t != nil && t.State == TenderRead {
+		// A tender-read firm's card shows its like-for-like total, and says
+		// "To check" until the manager has checked its column.
+		card.BaseTotal, card.LikeForLike, card.ToCheck = t.LikeForLike, true, !t.Checked
+		if t.LikeForLike != nil {
+			card.KnownBase = *t.LikeForLike
+		}
 	}
 	return card
 }

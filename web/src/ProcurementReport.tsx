@@ -7,6 +7,7 @@ import { ApiError } from "./api";
 import { BackButton } from "./PageActions";
 import { fmt } from "./CostGrid";
 import { submissionApi, type ReportData, type PriceTable } from "./submissionApi";
+import { signed } from "./tender/words";
 
 const money = (m: string | null | undefined) => (m == null ? "—" : `$${fmt(m)}`);
 const RATING: Record<string, string> = { strong: "Strong", acceptable: "Acceptable", concern: "Concern" };
@@ -17,7 +18,11 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
   const [text, setText] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const fail = useCallback((e: unknown) => { if (e instanceof ApiError && e.status === 401) onSignedOut(); else setError("Could not save. Try again."); }, [onSignedOut]);
+  const fail = useCallback((e: unknown) => {
+    if (e instanceof ApiError && e.status === 401) onSignedOut();
+    // A refusal in words (an unchecked column, say) is shown as it was sent.
+    else setError(e instanceof ApiError && e.status === 422 && e.message ? e.message : "Could not save. Try again.");
+  }, [onSignedOut]);
   useEffect(() => {
     submissionApi.report(projectId, pkg).then(d => { setData(d); setText(d.report.recommendation || d.report.draft); }).catch(fail);
   }, [projectId, pkg, fail]);
@@ -33,7 +38,10 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
   const name = (i: number) => cols[i].firm?.name ?? cols[i].submission.filename;
   const departures = report.criteria.find(c => c.key === "criterion:r6");
   const criteria = report.criteria.filter(c => c.key !== "criterion:r6");
-  const signed = report.signed_off_by && report.recommendation === text;
+  const signedOff = report.signed_off_by && report.recommendation === text;
+  // The tender pass's column for each firm, where it was read.
+  const tenderCols = cols.map(c => table.tender?.columns.find(t => t.submission_id === c.submission.id && t.state === "read"));
+  const applied = (table.tender?.adjustments ?? []).filter(a => Object.values(a.amounts).some(m => m.state === "applied"));
 
   return <section className="prices procurement-report" aria-label="Comparison report">
     <header className="prices-head no-print">
@@ -56,6 +64,21 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
           {!quoted && <tr><th scope="row">Options priced</th>{cols.map(c => <td key={c.submission.id}>{money(c.totals.options_total)}</td>)}</tr>}
         </tbody>
       </table>
+      {/* A tender-read firm: its tender sum, what the manager applied, and the like-for-like total. Every figure is the server's. */}
+      {tenderCols.some(Boolean) && <>
+        <h2>Like for like <span>tender sum plus applied adds and subs, ex GST</span></h2>
+        <table className="report-grid report-like-for-like">
+          <thead><tr><th scope="col">Item</th>{cols.map((c, i) => <th scope="col" key={c.submission.id} className={tenderCols[i]?.lowest ? "lowest" : undefined}>{name(i)}</th>)}</tr></thead>
+          <tbody>
+            <tr><th scope="row">Tender sum</th>{cols.map((c, i) => <td key={c.submission.id}>{tenderCols[i] ? money(tenderCols[i]!.tender_sum) : "—"}</td>)}</tr>
+            <tr><th scope="row">Applied adds and subs</th>{cols.map((c, i) => { const t = tenderCols[i]; return <td key={c.submission.id}>{!t ? "—" : t.applied_rows === 0 ? "None" : `${signed(t.applied_total)} (${t.applied_rows} row${t.applied_rows === 1 ? "" : "s"})`}</td>; })}</tr>
+            {applied.map(a => <tr key={a.id} className="report-applied"><th scope="row">{a.label}</th>{cols.map(c => { const m = a.amounts[c.submission.id]; return <td key={c.submission.id}>{m?.state === "applied" ? signed(m.amount) : ""}</td>; })}</tr>)}
+            <tr className="report-total"><th scope="row">Like for like</th>{cols.map((c, i) => <td key={c.submission.id} className={tenderCols[i]?.lowest ? "lowest" : undefined}>{tenderCols[i] ? money(tenderCols[i]!.like_for_like) : "—"}</td>)}</tr>
+            {tenderCols.some(t => t && t.flags.length > 0) && <tr><th scope="row">To look at</th>{cols.map((c, i) => <td key={c.submission.id}>{tenderCols[i]?.flags.map(f => <p key={f.code + f.text} className="report-passage">{f.text}</p>)}</td>)}</tr>}
+            {tenderCols.some(t => t && !t.checked) && <tr><th scope="row">Checked by the manager</th>{cols.map((c, i) => <td key={c.submission.id}>{tenderCols[i] ? (tenderCols[i]!.checked ? "Checked" : "To check") : "—"}</td>)}</tr>}
+          </tbody>
+        </table>
+      </>}
       <h2>Non-price <span>passages as the firms wrote them; ratings are the PM's</span></h2>
       <table className="report-grid report-nonprice">
         <thead><tr><th scope="col">Criterion</th>{cols.map((c, i) => <th scope="col" key={c.submission.id}>{name(i)}</th>)}</tr></thead>
@@ -82,7 +105,7 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
       <p className="report-signoff">{report.recommendation ? `Drafted from the price table, edited by ${report.edited_by || "the PM"}` : "Drafted from the price table; not yet edited."}{report.signed_off_by && report.signed_off_at ? ` · Signed off by ${report.signed_off_by} on ${new Date(report.signed_off_at).toLocaleDateString("en-AU")}` : ""}</p>
       <div className="no-print prices-actions">
         <button type="button" className="btn btn-small" disabled={busy || text === report.recommendation} onClick={() => void run(() => submissionApi.recommend(projectId, pkg, text, false))}>Save</button>
-        <button type="button" className="btn btn-small btn-primary" disabled={busy || !text.trim() || text.includes("[state the firm") || !!signed} onClick={() => void run(() => submissionApi.recommend(projectId, pkg, text, true))}>{signed ? "Signed off" : "Save and sign off"}</button>
+        <button type="button" className="btn btn-small btn-primary" disabled={busy || !text.trim() || text.includes("[state the firm") || !!signedOff} onClick={() => void run(() => submissionApi.recommend(projectId, pkg, text, true))}>{signedOff ? "Signed off" : "Save and sign off"}</button>
       </div>
     </div>
   </section>;

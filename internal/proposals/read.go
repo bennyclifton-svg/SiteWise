@@ -133,6 +133,10 @@ type Context struct {
 	// Groups lays out each combined engagement among the candidates, so
 	// code can place a group bid's amounts by discipline (group.go).
 	Groups map[string]GroupLayout
+	// SkipPrices leaves the fee-row and stated-total questions out of the
+	// call: the tender pass reads those for this submission. Firm, package,
+	// kind, GST basis, rates and criteria are still asked.
+	SkipPrices bool
 }
 
 // Asker is the one System One call a proposal read may make.
@@ -685,12 +689,14 @@ func (d *Draft) ask() {
 	d.askCoverage(add)
 	fees, rates, totals := d.candidates()
 	lump := lumpSum(fees, d.items)
-	if _, ok := d.by[FieldStatedTotal]; !ok && len(totals) > 0 {
+	if _, ok := d.by[FieldStatedTotal]; !ok && len(totals) > 0 && !d.ctx.SkipPrices {
 		add(question{Field: FieldStatedTotal, Family: FieldStatedTotal, Instructions: instructions[FieldStatedTotal], Options: append(amountOptions(totals), choice{ID: choiceNone, Describe: noneDescribe})})
 	}
 	for _, it := range d.items {
 		field := PricePrefix + it.Key
 		switch {
+		case it.Price() && d.ctx.SkipPrices:
+			// The tender pass lists this row's lines; Jev is not asked.
 		case it.Price() && len(fees) > 0:
 			opts := append(amountOptions(d.memberFees(it.Key, fees)),
 				choice{ID: choiceNotPrice, Value: choiceNotPrice, Describe: map[string]string{"what": "The proposal gives no fee for this item."}},

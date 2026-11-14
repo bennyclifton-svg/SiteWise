@@ -155,6 +155,16 @@ func (s *Store) SaveRecommendation(ctx context.Context, org, project, pkg, text,
 	var signer *string
 	if signOff {
 		signer = &user
+		// A tender-read column is a proposal until the manager has checked it,
+		// so a report resting on one cannot be signed off (AGENTS.md rule 1).
+		var unchecked bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3
+AND tender_state='read' AND tender_checked_at IS NULL AND status IN ('received','needs_review','awarded','unsuccessful'))`, org, project, pkg).Scan(&unchecked); err != nil {
+			return err
+		}
+		if unchecked {
+			return tenderInvalid("Check every firm's column before signing off.")
+		}
 	}
 	if _, err := tx.Exec(ctx, `INSERT INTO comparison_reports (org_id,project_id,package_id,recommendation,recommendation_by,signed_off_by,signed_off_at)
 VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5::uuid,$6::uuid,CASE WHEN $6::uuid IS NULL THEN NULL ELSE now() END)

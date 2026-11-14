@@ -259,6 +259,8 @@ func withAdjustments(ctx context.Context, q querier, org, pkg string, cols []Ten
 				if col.LikeForLike != nil {
 					*col.LikeForLike += *m.Cents
 				}
+				col.AppliedCents += *m.Cents
+				col.AppliedRows++
 				if a.Reason == tender.ReasonGap && col.Gaps > 0 {
 					col.Gaps-- // answered: it no longer bars the firm from "lowest"
 				}

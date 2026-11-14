@@ -47,6 +47,10 @@ type TenderColumn struct {
 	SumBy        string
 	Why          string
 	LikeForLike  *int64
+	// AppliedCents is the firm's applied adds and subs added up, over
+	// AppliedRows rows.
+	AppliedCents int64
+	AppliedRows  int
 	Lowest       bool
 	Checked      bool
 	CheckedAt    *time.Time

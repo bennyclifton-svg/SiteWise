@@ -583,7 +583,8 @@ function InvitedFirm({ card: c, busy, uploading, onRemove, onEdit }: { card: Fir
  * with provenance and review status in its accessible description. */
 function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen?: () => void; onDetach?: () => void; busy: boolean }) {
   const description = [c.filename, `received ${c.received_on}`, STATUS_WORDS[c.status],
-    c.needs_review ? "Check proposal" : "",
+    c.to_check ? "To check" : c.needs_review ? "Check proposal" : "",
+    c.like_for_like ? "Like-for-like total, ex GST" : "",
     c.not_priced ? `${c.not_priced} not priced` : "",
     c.pi_expires_on ? `Professional indemnity${c.pi_limit_cents ? ` $${(c.pi_limit_cents / 100).toLocaleString("en-AU")}` : ""} ${c.pi_expired ? "expired" : "to"} ${c.pi_expires_on}${c.pi_expired ? ": request a current certificate" : ""}` : "",
     c.base_total == null && (!c.known_base || c.known_base === "0.00") && c.stated_total != null
@@ -592,6 +593,7 @@ function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen?
   const inside = <>
     <span className="firm-chip-name">{c.firm_name || c.filename}</span>
     {c.status === "not_proposal" && <span className="firm-chip-status">Named in a document</span>}
+    {c.to_check && c.status !== "reading" && <span className="firm-chip-status">To check</span>}
     {/* Shown, not spoken: the description already says the firm is awarded. */}
     {c.status === "awarded" && <span className="firm-awarded" aria-hidden="true" title="Awarded"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" focusable="false"><path d="m3.5 8.5 3 3 6-7" /></svg></span>}
     <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? `$${fmt(c.stated_total).replace(/\.00$/, "")}` : "—"}</span>

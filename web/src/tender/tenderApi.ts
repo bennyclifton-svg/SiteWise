@@ -17,7 +17,7 @@ export interface TenderCell { state: "" | "priced" | "included" | "excluded" | "
 export interface TenderColumn {
   submission_id: string; state: "pending" | "reading" | "read" | "failed"; error: string; basis: string;
   tender_sum: Money; tender_sum_how: string; tender_sum_by: "" | "rule" | "user"; remainder_why: string;
-  like_for_like: Money; lowest: boolean; checked: boolean; checked_at: string | null;
+  like_for_like: Money; applied_total: Money; applied_rows: number; lowest: boolean; checked: boolean; checked_at: string | null;
   flags: TenderFlag[]; notes: string[]; exclusions: { p: number; text: string }[];
   cells: Record<string, TenderCell>; lines: TenderLine[];
 }
