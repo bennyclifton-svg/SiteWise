@@ -382,3 +382,11 @@ func TestPassPassesRefusalThrough(t *testing.T) {
 		t.Fatalf("err %v", err)
 	}
 }
+
+func TestPassRefusesAnEmptyAnswerForPricePages(t *testing.T) {
+	ask := &fakeAsker{res: llm.Response{Text: answer(), StopReason: "end_turn"}}
+	renders := 0
+	if _, _, err := Pass(context.Background(), ask, renderAll(&renders), "m", "file.pdf", true, passPages, nil); !errors.Is(err, ErrEmpty) {
+		t.Fatalf("err %v", err)
+	}
+}

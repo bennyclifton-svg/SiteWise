@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -166,7 +167,7 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 	}
 	rd := newReader(getenv)
 	var results []caseResult
-	silent := 0
+	silent, empties := 0, 0
 	for _, c := range key.Cases {
 		if o.dump != "" && c.ID != o.dump {
 			continue
@@ -189,6 +190,12 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 		}
 		rep.caseID = c.ID
 		raw, info, err := tender.Pass(ctx, rep, rd.render(), o.model, path, paged, pages, rows)
+		// The product asks again when the model lists nothing; so does this.
+		for try := 0; errors.Is(err, tender.ErrEmpty) && live != nil && try < 3; try++ {
+			rep.forgetLast()
+			empties++
+			raw, info, err = tender.Pass(ctx, rep, rd.render(), o.model, path, paged, pages, rows)
+		}
 		if err != nil {
 			return fmt.Errorf("case %s: %w", c.ID, err)
 		}
@@ -224,6 +231,7 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 		return fmt.Errorf("no case %q in the key", o.dump)
 	}
 	out := summarize(results, key.Reviewed, o)
+	out.EmptyAnswers = empties
 	printReport(w, out)
 	if err := writeReport(o.out, out); err != nil {
 		return err
@@ -283,6 +291,7 @@ type report struct {
 	OutTokens       int64     `json:"out_tokens"`
 	TokensPerLine   float64   `json:"out_tokens_per_line"`
 	CostUSD         float64   `json:"cost_usd"`
+	EmptyAnswers    int       `json:"empty_answers_asked_again"`
 }
 
 // Claude Haiku 5.5, US dollars per million tokens, prompts up to 100,000

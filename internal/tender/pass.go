@@ -12,6 +12,11 @@ import (
 // showed the pass is not good enough without them.
 var ErrNoRenderer = errors.New("tender: page rendering is not set up")
 
+// ErrEmpty: the model listed nothing though pages with prices were sent.
+// It happens now and then on a first try (seen in the corpus survey, 14
+// November 2026), so the caller asks again instead of storing an empty read.
+var ErrEmpty = errors.New("tender: the model listed no prices")
+
 // Renderer makes JPEGs (base64) of the listed pages of the file at path.
 type Renderer func(ctx context.Context, path string, pages []int) (map[int]string, error)
 
@@ -57,5 +62,8 @@ func Pass(ctx context.Context, ask llm.Asker, render Renderer, model, path strin
 	info.Cut = res.StopReason == "max_tokens"
 	raw, dropped, err := ParseAnswer(res.Text, info.Cut)
 	info.Dropped = dropped
+	if err == nil && len(raw.Lines) == 0 && len(in.Sel.Images) > 0 && !info.Cut {
+		return raw, info, ErrEmpty
+	}
 	return raw, info, err
 }

@@ -78,6 +78,15 @@ type replayer struct {
 	fresh   bool
 	caseID  string
 	asked   int
+	lastKey string
+}
+
+// forgetLast drops the answer just replayed, so the same request is asked
+// again: used when the model listed nothing.
+func (r *replayer) forgetLast() {
+	r.mu.Lock()
+	delete(r.records, r.lastKey)
+	r.mu.Unlock()
 }
 
 func newReplayer(path string, live llm.Asker, fresh bool) (*replayer, error) {
@@ -93,6 +102,7 @@ func (r *replayer) Ask(ctx context.Context, req llm.Request) (llm.Response, erro
 	r.mu.Lock()
 	rec, ok := r.records[key]
 	id := r.caseID
+	r.lastKey = key
 	r.mu.Unlock()
 	if ok && !(r.fresh && r.live != nil) {
 		return llm.Response{Text: rec.Text, StopReason: rec.Stop, InTokens: rec.InTokens, OutTokens: rec.OutTokens, Latency: time.Duration(rec.LatencyMS) * time.Millisecond}, nil
