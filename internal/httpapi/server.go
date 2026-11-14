@@ -95,6 +95,10 @@ type Options struct {
 	// TenderOCR reads the pages of a tender that have no text layer, up to
 	// the pages the pass may send; nil falls back to ProposalOCR.
 	TenderOCR func(context.Context, string, identity.Text) (identity.Text, error)
+	// TenderSkipJevPrices stops asking Jev the fee and total questions for a
+	// submission the tender pass will read (an org with the switch on and a
+	// package known). Off by default: the old reading stays as a fallback.
+	TenderSkipJevPrices bool
 	// TenderTimeout bounds one pass; zero is 150 seconds.
 	TenderTimeout time.Duration
 }
@@ -269,6 +273,7 @@ func New(opts Options) (*Server, error) {
 		if opts.TenderOCR != nil {
 			tenders.ocr = opts.TenderOCR
 		}
+		preader.skipPrices = opts.TenderSkipJevPrices
 	}
 	preader.after = func(orgID, submissionID string, began time.Time) {
 		stages.Queue(orgID, submissionID)

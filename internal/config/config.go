@@ -32,6 +32,9 @@ type Config struct {
 	TenderKey string
 	// TenderModel is the pinned model id for the tender pass.
 	TenderModel string
+	// TenderSkipJevPrices stops asking Jev the prices the tender pass reads.
+	// Off until the owner has used the new tables on a live package.
+	TenderSkipJevPrices bool
 }
 
 // DefaultTenderModel reads tenders unless SITEWISE_TENDER_MODEL names another.
@@ -148,6 +151,13 @@ func Load(getenv func(string) string) (Config, error) {
 	}
 	if !tenderModelID.MatchString(cfg.TenderModel) {
 		return Config{}, fmt.Errorf("SITEWISE_TENDER_MODEL must be a pinned Claude model id")
+	}
+	switch v := strings.TrimSpace(getenv("SITEWISE_TENDER_SKIP_JEV_PRICES")); v {
+	case "", "0", "false":
+	case "1", "true":
+		cfg.TenderSkipJevPrices = true
+	default:
+		return Config{}, fmt.Errorf("SITEWISE_TENDER_SKIP_JEV_PRICES must be 1 or 0")
 	}
 	if env == "production" {
 		var missing []string

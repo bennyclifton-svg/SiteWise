@@ -229,9 +229,10 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		logger.Printf("tender pass: on, model %s", cfg.TenderModel)
 	}
 	srv, err := httpapi.New(httpapi.Options{
-		TenderLLM:    tenderLLM,
-		TenderModel:  cfg.TenderModel,
-		TenderRender: tenderRender,
+		TenderLLM:           tenderLLM,
+		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
+		TenderModel:         cfg.TenderModel,
+		TenderRender:        tenderRender,
 		TenderOCR: func(ctx context.Context, path string, text identity.Text) (identity.Text, error) {
 			if ocrErr != nil {
 				return text, identity.ErrOCRUnavailable
