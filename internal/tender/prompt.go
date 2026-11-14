@@ -4,7 +4,7 @@ import _ "embed"
 
 // PromptVersion changes whenever prompt.txt or Schema changes. A reading
 // stores the version that produced it.
-const PromptVersion = "t1"
+const PromptVersion = "t2"
 
 //go:embed prompt.txt
 var Prompt string

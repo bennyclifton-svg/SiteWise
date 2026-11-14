@@ -12,7 +12,7 @@ EACH LINE.
 - p: the number N from the "=== Page N of M ===" label placed before the page. Never use a page number printed on the page itself.
 - label: the firm's own wording for the line, 80 characters at most.
 - amt: the amount exactly as printed, with its $ sign, commas and decimals. Empty when the line has no amount.
-- g: the GST basis of this amount as printed: ex, inc, or unknown when the page does not say.
+- g: the GST basis of this amount as printed: ex, inc, or unknown when the page does not say. A margin or percentage a builder adds at the foot of its price is not GST: a total that includes it keeps the basis of the lines above it.
 - st: priced, included (the firm says it is included elsewhere or in its price), excluded, na (not applicable, nil, n/a) or tbc (to be confirmed, not yet priced).
 - kind:
   base: ordinary priced scope, including preliminaries, margin and fees.
