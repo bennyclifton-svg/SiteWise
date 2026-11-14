@@ -48,9 +48,12 @@ export async function tenderPackage(page: Page, name: string, discipline = "cons
 
 /** Files a synthetic tender on the package: each line is a label and an
  * amount in dollars; the PDF prints a total of them. Returns the submission. */
-export async function dropTender(page: Page, p: TenderPackage, firm: string, abn: number, lines: [string, number][]): Promise<string> {
-  const spec = lines.map(([label, dollars]) => `${label}~${dollars * 100}`).join(",");
-  const pdf = await (await page.request.get(`/__e2e/proposal.pdf?firm=${encodeURIComponent(firm)}&abn=${abn}&lines=${encodeURIComponent(spec)}`)).body();
+export async function dropTender(page: Page, p: TenderPackage, firm: string, abn: number, lines: [string, number][], extra?: [string, number]): Promise<string> {
+  // A negative amount prints the line with no price ("Not priced").
+  const spec = lines.map(([label, dollars]) => `${label}~${dollars < 0 ? -1 : dollars * 100}`).join(",");
+  // The extra is printed with its price but left out of the printed total.
+  const more = extra ? `&extra=${encodeURIComponent(`${extra[0]}~${extra[1] * 100}`)}` : "";
+  const pdf = await (await page.request.get(`/__e2e/proposal.pdf?firm=${encodeURIComponent(firm)}&abn=${abn}&lines=${encodeURIComponent(spec)}${more}`)).body();
   const up = await page.request.post(`${p.base}/submissions?name=${encodeURIComponent(`Tender (${firm}).pdf`)}`, { headers: { ...headers, "Content-Type": "application/pdf" }, data: pdf });
   expect(up.status()).toBe(201);
   return (await up.json()).submission_id as string;

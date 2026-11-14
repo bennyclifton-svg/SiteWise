@@ -97,10 +97,10 @@ export function AsTendered({ table, tender, edits, head, onOpenPage }: Props) {
             {!t && <span className="prices-firm-meta">Read the old way
               {tender.on && c.submission.document_id && (c.submission.status === "received" || c.submission.status === "needs_review") &&
                 <button type="button" className="table-action" disabled={busy} onClick={() => void edits.readAgain(c.submission.id)}>Read prices</button>}</span>}
-            {t && <span className="tender-state" data-state={t.state === "read" ? (t.checked ? "checked" : "to-check") : t.state}>{t.state === "failed" ? "Prices not read" : columnState(t)}</span>}
+            {t && !(t.state === "read" && t.checked && editable(c)) && <span className="tender-state" data-state={t.state === "read" ? (t.checked ? "checked" : "to-check") : t.state}>{t.state === "failed" ? "Prices not read" : columnState(t)}</span>}
             {t?.state === "read" && editable(c) && <button type="button" className="btn btn-small tender-check" disabled={busy} aria-pressed={t.checked}
               aria-label={t.checked ? `Checked: ${firm(c)}. Un-check` : `Mark ${firm(c)} checked`}
-              onClick={() => void edits.run([{ op: "check_column", submission: c.submission.id, checked: !t.checked }])}>{t.checked ? "Checked" : "Mark checked"}</button>}
+              onClick={() => void edits.run([{ op: "check_column", submission: c.submission.id, checked: !t.checked }])}>{t.checked ? "Checked ✓" : "Mark checked"}</button>}
             {t?.state === "read" && tender.on && editable(c) && <button type="button" className="table-action" disabled={busy} onClick={() => void edits.readAgain(c.submission.id)}>Read again</button>}
             {t?.state === "failed" && tender.on && <button type="button" className="btn btn-small" disabled={busy} onClick={() => void edits.readAgain(c.submission.id)}>Try again</button>}
             {t && basisWords(t.basis) && <span className="prices-note warn">{basisWords(t.basis)}</span>}

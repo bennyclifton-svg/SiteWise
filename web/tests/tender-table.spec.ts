@@ -23,8 +23,8 @@ test("as tendered: columns equal the tender sum, lines sit behind cells, and a c
   await openPrices(page, p);
   const table = page.getByRole("table", { name: "As tendered, ex GST" });
   await expect(table).toBeVisible();
-  await expect(table.getByLabel("Tender sum, Alder Planning")).toHaveText(money(6000));
-  await expect(table.getByLabel("Tender sum, Birch Planning")).toHaveText(money(4500));
+  await expect(table.getByLabel("Tender sum, Alder Planning", { exact: true })).toHaveText(money(6000));
+  await expect(table.getByLabel("Tender sum, Birch Planning", { exact: true })).toHaveText(money(4500));
   // The line that matches no row is "Not broken down" for the second firm.
   await expect(table.getByRole("button", { name: `Not broken down, Birch Planning: ${money(500)}. Show lines` })).toBeVisible();
 
@@ -41,7 +41,7 @@ test("as tendered: columns equal the tender sum, lines sit behind cells, and a c
   await table.getByRole("button", { name: "Mark Alder Planning checked" }).click();
   await expect(table.getByRole("button", { name: "Checked: Alder Planning. Un-check" })).toBeVisible();
   await expect(award).toBeEnabled();
-  await page.reload();
+  await openPrices(page, p);
   await expect(page.getByRole("button", { name: "Checked: Alder Planning. Un-check" })).toBeVisible();
   expect((await tenderTable(page, p)).columns.find(c => c.submission_id === a)?.checked).toBe(true);
 

@@ -175,6 +175,15 @@ func (s *Store) CommitTenderRead(ctx context.Context, org, id string, r tender.R
 		return err
 	}
 	kept := []tender.Line{}
+	// A line read again keeps the id it had: suggestions, applied adds and
+	// subs and a dismissed suggestion all point at a line by its id.
+	sameLine := func(l tender.Line) string { return strconv.Itoa(l.Page) + "|" + l.Label + "|" + l.Printed }
+	oldIDs := map[string][]string{}
+	for _, l := range existing[id] {
+		if l.DecidedBy != proposals.ByUser {
+			oldIDs[sameLine(l)] = append(oldIDs[sameLine(l)], l.ID)
+		}
+	}
 	if len(existing[id]) == 0 {
 		// The first reading: a figure the manager typed into a cell of the
 		// old table becomes their line, so a later reading never overwrites it.
@@ -217,6 +226,9 @@ func (s *Store) CommitTenderRead(ctx context.Context, org, id string, r tender.R
 			continue
 		}
 		l.ID, l.Ordinal = newID(), i
+		if ids := oldIDs[sameLine(l)]; len(ids) > 0 {
+			l.ID, oldIDs[sameLine(l)] = ids[0], ids[1:]
+		}
 		if l.DecidedBy == "" {
 			l.DecidedBy = "model"
 		}

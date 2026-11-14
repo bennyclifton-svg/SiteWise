@@ -47,7 +47,7 @@ test("move, correct, split, add and undo lines; the tender sum never moves by it
   const { p, a, table } = await setup(page, "tender-edit");
   const [r1, r2, r3] = p.rows;
   const cell = (row: string, amount: number) => table.getByRole("button", { name: `${row}, Alder Planning: ${money(amount)}. Show lines` });
-  const sum = table.getByLabel("Tender sum, Alder Planning");
+  const sum = table.getByLabel("Tender sum, Alder Planning", { exact: true });
   const undo = page.getByRole("button", { name: "Undo", exact: true });
   await expect(undo).toBeDisabled();
 
@@ -140,6 +140,9 @@ test("move, correct, split, add and undo lines; the tender sum never moves by it
 });
 
 test("an edit made elsewhere reloads the table and says so", async ({ page }) => {
+  // Without the event stream this screen does not hear of the other edit,
+  // as when the two land within the same moment.
+  await page.route(/\/api\/events/, route => route.abort());
   const { p, a, table } = await setup(page, "tender-stale");
   const [r1, r2] = p.rows;
   const lines = await showLines(page, table, r1.label);
