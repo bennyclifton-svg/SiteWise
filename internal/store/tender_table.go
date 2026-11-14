@@ -211,6 +211,9 @@ func applyTender(cols []FirmColumn, totals []proposals.Column, tcols []TenderCol
 			continue
 		}
 		cols[i].NeedsReview = !t.Checked
+		// The old reading's source quote and builder review gave way to the
+		// tender lines: the award and the screen work from the cells alone.
+		cols[i].Quote, cols[i].AppointmentRows, cols[i].AwardStages, cols[i].AppointmentTotal, cols[i].AppointmentBasis, cols[i].Builder = nil, nil, nil, nil, "", nil
 		totals[i] = proposals.Column{NotPriced: t.Gaps}
 		if t.Sum != nil {
 			v := *t.Sum

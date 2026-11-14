@@ -186,6 +186,10 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["submission_passages"] = row{"org_id": org, "project_id": p, "submission_id": submission, "ordinal": 0, "body": "Fee"}
 		f["submission_prices"] = row{"org_id": org, "id": id(3600 + n), "project_id": p, "submission_id": submission, "item_key": "stage:design", "state": "not_priced", "band": "green", "decided_by": "rule"}
 		f["tender_lines"] = row{"org_id": org, "id": id(4400 + n), "project_id": p, "submission_id": submission, "ordinal": 0, "label": "Fee", "state": "included", "kind": "base", "placed": "sum", "decided_by": "model"}
+		f["tender_adjustments"] = row{"org_id": org, "id": id(4500 + n), "project_id": p, "package_id": pkg, "ordinal": 0, "label": "Add", "origin": "user", "reason": "other"}
+		f["tender_adjustment_amounts"] = row{"org_id": org, "adjustment_id": id(4500 + n), "submission_id": submission, "project_id": p, "amount_cents": 100, "state": "applied", "source": "typed"}
+		f["project_changes"] = row{"org_id": org, "project_id": p, "id": id(4600 + n), "actor": u, "via": "screen", "area": "procurement"}
+		f["project_change_rows"] = row{"org_id": org, "change_id": id(4600 + n), "tbl": "tender_lines", "op": "INSERT", "new": row{}}
 		f["submission_responses"] = row{"org_id": org, "project_id": p, "submission_id": submission, "item_key": "criterion:r2", "rating": "strong", "rated_by": u}
 		f["comparison_reports"] = row{"org_id": org, "project_id": p, "package_id": pkg, "recommendation_by": u, "signed_off_by": u, "signed_off_at": "2026-10-16T00:00:00Z"}
 		f["awards"] = row{"org_id": org, "id": award, "project_id": p, "package_id": pkg, "submission_id": submission, "parent_item_id": costID, "parent_created": false, "created_by": u}
@@ -202,7 +206,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["program_imports"] = row{"org_id": org, "id": id(4400 + n), "program_id": program, "document_id": id(1900 + n), "filename": "program.xlsx"}
 		f["comparison_alignment"] = row{"org_id": org, "submission_id": submission, "prices": []any{}, "decisions": row{}, "version": 1}
 		f["visual_identity"] = row{"org_id": org, "document_id": id(1900 + n)}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards"} {
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards", "tender_adjustments", "project_changes"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}

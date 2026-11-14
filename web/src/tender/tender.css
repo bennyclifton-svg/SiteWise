@@ -1,0 +1,89 @@
+/* The two tender tables. They sit on the price table's own classes
+   (prices.css) and the shared row states (states.css); only what those do
+   not already say is here. No new colours: tokens only. */
+
+.tender-table caption {
+  padding: 10px 10px 6px;
+  caption-side: top;
+  text-align: left;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.tender-table td { vertical-align: top; }
+.tender-adds { margin-top: 22px; }
+
+/* A cell is a button that opens the firm's lines behind it. */
+.tender-cell { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; text-align: left; cursor: pointer; }
+.tender-cell[draggable="true"] { cursor: grab; }
+.tender-cell-open { background: var(--state-selected); }
+.tender-mark {
+  padding: 0 5px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.tender-mark[data-mark="high"], .tender-mark[data-mark="gap"] { border-color: var(--warn); color: var(--warn); }
+/* The amber dot: a figure to check. The cell's left edge says the same (states.css). */
+.tender-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--origin-check, var(--warn)); }
+.tender-waiting { color: var(--ink-muted); }
+.tender-system th, .tender-system td { border-top: 1px solid var(--line-strong); }
+
+/* The column's state under the firm's name. */
+.tender-state { display: block; margin-top: 4px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
+.tender-state[data-state="to-check"], .tender-state[data-state="failed"] { color: var(--warn); }
+.tender-state[data-state="checked"] { color: var(--ok); }
+.tender-check { display: block; margin-top: 4px; }
+.tender-tag {
+  margin-left: 6px;
+  font-size: var(--fs-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+/* The lines behind a cell, as a row beneath it. */
+.tender-lines-row > td { padding: 0; background: var(--canvas); }
+.tender-lines { padding: 8px 10px 12px; }
+.tender-lines-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.tender-lines-table th { padding: 4px 8px; text-align: left; font-size: var(--fs-xs); font-weight: 600; color: var(--ink-muted); border-bottom: 1px solid var(--line); }
+.tender-lines-table td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tender-lines-table tbody tr { cursor: default; }
+.tender-lines-table tbody tr:hover > td { background: var(--state-hover); }
+.tender-lines-table tbody tr:focus-visible { outline: 1px solid var(--sw-action-focus, var(--azure)); outline-offset: -1px; }
+.tender-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tender-uncounted > td { color: var(--ink-muted); }
+.tender-heading { color: var(--ink-muted); font-size: var(--fs-xs); }
+.tender-line-actions { position: relative; width: 1%; white-space: nowrap; }
+.tender-menu { position: absolute; right: 0; top: 100%; z-index: 5; min-width: 240px; max-height: 320px; overflow-y: auto; }
+.tender-menu button { display: block; width: 100%; text-align: left; }
+
+/* Small inline editors: an amount, a GST basis, Save and Cancel. */
+.tender-editor, .tender-add, .tender-split, .tender-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tender-editor input, .tender-add input, .tender-split input, .tender-ghost input { padding: 4px 6px; font: inherit; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); color: var(--ink); }
+.tender-editor select, .tender-add select, .tender-split select { padding: 4px 6px; font: inherit; }
+.tender-add { margin-top: 8px; }
+.tender-add input:first-child, .tender-editor input:first-child { flex: 1 1 220px; }
+.tender-split { margin-top: 8px; padding: 8px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+.tender-split p { flex: 1 1 100%; margin: 0; }
+.tender-split-part { display: flex; gap: 6px; }
+
+/* Adds and subs: a suggested amount is grey until the manager applies it. */
+.tender-suggested .prices-word { color: var(--ink-muted); }
+.tender-suggested .btn, .tender-applied .table-action, .tender-suggested .tender-choices { margin-top: 4px; }
+.tender-suggested-count { margin: 0 0 6px; font-size: var(--fs-sm); color: var(--warn); }
+.tender-row-actions { display: block; margin-top: 2px; }
+.tender-row-actions .table-action { margin-right: 10px; }
+.tender-ghost th { font-weight: 400; }
+.tender-ghost input { width: min(360px, 60%); margin-right: 8px; }
+
+@media print {
+  /* Both tables print with the firms in columns; the lines panels, the
+     editors and every button stay on screen. The flags row is kept. */
+  .tender-lines-row, .tender-ghost, .tender-row-actions, .tender-choices, .tender-check, .tender-suggested-count,
+  .tender-table button:not(.prices-firm-name):not(.tender-cell) { display: none !important; }
+  .tender-adds { break-inside: avoid; }
+}

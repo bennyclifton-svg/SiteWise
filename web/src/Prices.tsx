@@ -15,7 +15,12 @@ import { Chip } from "./Invoices";
 import { ProcurementReport } from "./ProcurementReport";
 import { packageApi, type PackageRecord } from "./packageApi";
 import { FLAG_WORDS, STATUS_WORDS, submissionApi, uploadProposal, type Cell, type CellState, type Column, type FirmFields, type PriceTable, type ScheduleItem } from "./submissionApi";
+import { AddsSubs } from "./tender/AddsSubs";
+import { AsTendered } from "./tender/AsTendered";
+import type { TenderColumn } from "./tender/tenderApi";
+import { useTenderEdits } from "./tender/useTenderEdits";
 import "./prices.css";
+import "./tender/tender.css";
 
 const money = (m: string | null | undefined) => (m == null ? "—" : `$${fmt(m)}`);
 const day = (iso: string) => (iso ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "—");
@@ -94,6 +99,11 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   const compare = cols.length > 1;
   const quoted = !table?.builder && cols.some(c => c.quote);
   const selected = cols.find(c => c.submission.id === panel);
+  // Tender mode: at least one firm of this package went to the tender pass.
+  // The two tender tables then stand in for the old grid.
+  const tender = table?.tender;
+  const tenderMode = !!tender && tender.columns.some(c => c.state);
+  const edits = useTenderEdits(projectId, pkg, tender, setTable, onSignedOut);
 
   const moveColumn = cols.find(c => c.submission.id === moving?.sub);
   const destination = items.find(i => i.key === moving?.target);
@@ -134,13 +144,43 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     return out;
   }
 
+  // The firm's head: name, date, status, upload and Award. Both the old
+  // table and the tender table render it, so it behaves the same in each.
+  function firmHead(c: Column, t?: TenderColumn) {
+    if (!table) return null;
+    const builderUnconfirmed = table.builder && (c.cells["stage:lump_sum"]?.decided_by !== "user" || c.cells["stage:lump_sum"]?.state !== "priced");
+    const unchecked = !!t && !(t.state === "read" && t.checked);
+    const awardable = (t?.state === "read" || !quoted) && !table.award && (c.submission.status === "received" || c.submission.status === "needs_review");
+    return <>
+      <button type="button" className="prices-firm-name" onClick={() => setPanel(panel === c.submission.id ? "" : c.submission.id)} aria-expanded={panel === c.submission.id}>
+        {c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "")}{!table.builder && c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
+      </button>
+      <details className={table.builder ? "builder-firm-actions" : "prices-firm-actions"} open={table.builder ? undefined : true}>
+      <summary hidden={!table.builder} aria-label={`Options for ${c.firm?.name ?? c.submission.filename}`}>⋯</summary>
+      <span className="prices-firm-meta">{day(c.submission.received_on)} · <span className="prices-status" data-status={c.submission.status}>{c.submission.status === "reading" ? <Pending>Reading proposal…</Pending> : STATUS_WORDS[c.submission.status]}</span></span>
+      {!c.submission.document_id && c.submission.status !== "awarded" && <label className="prices-upload">
+        <span>{uploading === c.submission.id ? <Pending>Uploading proposal…</Pending> : "Upload proposal"}</span>
+        <input type="file" aria-label={`Upload proposal for ${c.firm?.name ?? c.submission.filename}`} accept=".pdf,.docx,.xlsx" disabled={busy} onChange={e => { void attach(c.submission.id, e.target.files?.[0]); e.target.value = ""; }} />
+        <small>Or drop here. Also saved in Documents.</small>
+      </label>}
+      {awardable && <button type="button" className="btn btn-small prices-award" disabled={busy || edits.busy || (t ? unchecked : builderUnconfirmed)} title={unchecked ? "Check this column first" : undefined} onClick={() => setAwardFor(c.submission.id)}>Award</button>}
+      {!t && c.undo_alignment && !table.award && <button className="table-action prices-undo" disabled={busy} onClick={() => void run(() => submissionApi.align(projectId, c.submission.id, c.submission.version, "", [], true)).then(ok => { if (ok) setMoving(null); })}>Undo last alignment</button>}
+      </details>
+    </>;
+  }
+  function openPage(c: Column, page: number) {
+    const docId = c.submission.document_id;
+    if (docId && !onOpenDocument?.(docId)) window.open(submissionApi.fileURL(projectId, c.submission.id, page), "_blank", "noopener");
+  }
+
   if (showReport && table) return <ProcurementReport projectId={projectId} table={table} onBack={() => setShowReport(false)} onSignedOut={onSignedOut} />;
 
-  return <section className="prices" aria-label="Price table" aria-busy={busy}>
+  return <section className="prices" aria-label="Price table" aria-busy={busy || edits.busy}>
     <header className="prices-head">
       <BackButton to="Procurement" onClick={onBack} />
       <h1>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></h1>
-      <div className="prices-actions"><span role="status">{busy && !uploading && <Pending delayed>Saving…</Pending>}</span>
+      <div className="prices-actions"><span role="status">{(busy || edits.busy) && !uploading && <Pending delayed>Saving…</Pending>}</span>
+        {tenderMode && <button type="button" className="btn btn-small" disabled={!edits.canUndo || edits.busy} onClick={() => void edits.undo()}>Undo</button>}
         {/* One "+ New" pill and one ⋮ menu keep the head clean (owner direction, 7 Nov 2026). */}
         {cols.length > 0
           ? <ActionMenu label="New" trigger={<span>+ New</span>} triggerClass="btn btn-small">
@@ -158,6 +198,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       </div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => setError("")}>Dismiss</button></div>}
+    {edits.note && <div className="banner" role="status"><p>{edits.note}</p><button type="button" className="btn btn-small" onClick={edits.clearNote}>Dismiss</button></div>}
     {adding && <AddFirm projectId={projectId} pkg={pkg} onDone={t => { setTable(t); setAdding(false); }} onFail={fail} onCancel={() => setAdding(false)} />}
     {rowEditor && <ComparisonRowEditor key={rowEditor === "new" ? "new" : rowEditor.key} item={rowEditor === "new" ? undefined : rowEditor} busy={locked} onCancel={() => setRowEditor(null)} onSave={async (key, label, section, unit) => { if (await run(() => submissionApi.row(projectId, pkg, key, label, section, unit))) setRowEditor(null); }} />}
     {moving && <div className="prices-move-bar" role="region" aria-label="Move or combine fee">
@@ -168,9 +209,13 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <button className="table-action" disabled={busy} onClick={() => setMoving(null)}>Cancel</button>
     </div>}
     {/* The consultant table shows the award in its own cells and total, so the banner is only for the trade table. */}
-    {table?.award && !quoted && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
-    {table && quoted && <ConsultantComparison onUndoAward={() => void run(() => submissionApi.undoAward(projectId, pkg))} onAdd={() => setAdding(true)} onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onSelect={(col, row, included, keys) => run(() => submissionApi.appointmentRow(projectId, col.submission.id, col.submission.version, row.id, included, keys))} />}
-    {!quoted && <details open><summary>Fee schedule</summary>
+    {table?.award && (!quoted || tenderMode) && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
+    {table && tenderMode && tender && <>
+      <AsTendered table={table} tender={tender} edits={edits} head={firmHead} onOpenPage={openPage} />
+      <AddsSubs table={table} tender={tender} edits={edits} />
+    </>}
+    {table && quoted && !tenderMode && <ConsultantComparison onUndoAward={() => void run(() => submissionApi.undoAward(projectId, pkg))} onAdd={() => setAdding(true)} onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onSelect={(col, row, included, keys) => run(() => submissionApi.appointmentRow(projectId, col.submission.id, col.submission.version, row.id, included, keys))} />}
+    {!quoted && !tenderMode && <details open><summary>Fee schedule</summary>
     {!table ? !error && <p role="status"><Pending delayed>Loading prices…</Pending></p> : cols.length === 0 ? <div className="prices-empty">
       <p><strong>No proposals yet.</strong> Drop a fee proposal on this package's row in Procurement, or drop it anywhere in the document register: proposals are recognised when they are filed.</p>
       <p>The table will list the {base.length + options.length} fee rows of this package's schedule{rates.length ? ` and ${rates.length} hourly rates` : ""}.</p>
@@ -182,20 +227,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
           {cols.map(c => <th scope="col" key={c.submission.id} className={c.totals.lowest ? "prices-firm lowest" : "prices-firm"}
             onDragOver={e => { if (!c.submission.document_id) { e.preventDefault(); e.stopPropagation(); } }}
             onDrop={e => { if (!c.submission.document_id) { e.preventDefault(); e.stopPropagation(); void attach(c.submission.id, e.dataTransfer.files[0]); } }}>
-            <button type="button" className="prices-firm-name" onClick={() => setPanel(panel === c.submission.id ? "" : c.submission.id)} aria-expanded={panel === c.submission.id}>
-              {c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "")}{!table.builder && c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
-            </button>
-            <details className={table.builder ? "builder-firm-actions" : "prices-firm-actions"} open={table.builder ? undefined : true}>
-            <summary hidden={!table.builder} aria-label={`Options for ${c.firm?.name ?? c.submission.filename}`}>⋯</summary>
-            <span className="prices-firm-meta">{day(c.submission.received_on)} · <span className="prices-status" data-status={c.submission.status}>{c.submission.status === "reading" ? <Pending>Reading proposal…</Pending> : STATUS_WORDS[c.submission.status]}</span></span>
-            {!c.submission.document_id && c.submission.status !== "awarded" && <label className="prices-upload">
-              <span>{uploading === c.submission.id ? <Pending>Uploading proposal…</Pending> : "Upload proposal"}</span>
-              <input type="file" aria-label={`Upload proposal for ${c.firm?.name ?? c.submission.filename}`} accept=".pdf,.docx,.xlsx" disabled={busy} onChange={e => { void attach(c.submission.id, e.target.files?.[0]); e.target.value = ""; }} />
-              <small>Or drop here. Also saved in Documents.</small>
-            </label>}
-            {!quoted && !table.award && (c.submission.status === "received" || c.submission.status === "needs_review") && <button type="button" className="btn btn-small prices-award" disabled={busy || (table.builder && (c.cells["stage:lump_sum"]?.decided_by !== "user" || c.cells["stage:lump_sum"]?.state !== "priced"))} onClick={() => setAwardFor(c.submission.id)}>Award</button>}
-            {c.undo_alignment && !table.award && <button className="table-action prices-undo" disabled={busy} onClick={() => void run(() => submissionApi.align(projectId, c.submission.id, c.submission.version, "", [], true)).then(ok => { if (ok) setMoving(null); })}>Undo last alignment</button>}
-            </details>
+            {firmHead(c)}
           </th>)}
           <th scope="col"><span className="prices-sr-only">Row placement</span></th>
         </tr></thead>
@@ -238,8 +270,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       </table>
     </div>}
     </details>}
-    {quoted && rates.length > 0 && <section aria-label="Rates" className="appointment-rates"><h2>Rates</h2><div className="prices-scroll"><table className="prices-table"><thead><tr><th scope="col">Rate</th>{cols.map(c => <th scope="col" key={c.submission.id}>{c.firm?.name ?? c.submission.filename}</th>)}<th scope="col"><span className="prices-sr-only">Row actions</span></th></tr></thead><tbody>{rates.map(renderRow)}</tbody></table></div></section>}
-    {cols.length > 0 && !quoted && <p className="prices-legend">{table?.builder ? "Review the quoted total, then use it or enter your confirmed comparison amount. Expand a work section to check the source wording. Allowances, options and components are not added to the quoted total. Your corrections are preserved." : "Figures are read from each proposal and are ex GST. The warning triangle means review needed. Click a fee for its source and notes. Use row arrows to change base/option placement, or the button beside a fee to move or combine it. Your corrections are final."}</p>}
+    {(quoted || tenderMode) && rates.length > 0 && <section aria-label="Rates" className="appointment-rates"><h2>Rates</h2><div className="prices-scroll"><table className="prices-table"><thead><tr><th scope="col">Rate</th>{cols.map(c => <th scope="col" key={c.submission.id}>{c.firm?.name ?? c.submission.filename}</th>)}<th scope="col"><span className="prices-sr-only">Row actions</span></th></tr></thead><tbody>{rates.map(renderRow)}</tbody></table></div></section>}
+    {cols.length > 0 && !quoted && !tenderMode && <p className="prices-legend">{table?.builder ? "Review the quoted total, then use it or enter your confirmed comparison amount. Expand a work section to check the source wording. Allowances, options and components are not added to the quoted total. Your corrections are preserved." : "Figures are read from each proposal and are ex GST. The warning triangle means review needed. Click a fee for its source and notes. Use row arrows to change base/option placement, or the button beside a fee to move or combine it. Your corrections are final."}</p>}
     {table && table.earlier.length > 0 && <details className="prices-earlier"><summary>{table.earlier.length} earlier or set-aside proposal{table.earlier.length === 1 ? "" : "s"}</summary>
       <ul>{table.earlier.map(s => <li key={s.id}>{s.filename} · {day(s.received_on)} · {STATUS_WORDS[s.status]}
         {(s.status === "withdrawn" || s.status === "not_proposal") && <button type="button" className="table-action" onClick={() => void run(() => submissionApi.edit(projectId, s.id, { status: "received" }))}>Restore</button>}</li>)}</ul>

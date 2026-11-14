@@ -1,4 +1,5 @@
 import { ApiError, request } from "./api";
+import type { TenderTable } from "./tender/tenderApi";
 
 // Money is an exact decimal string from the server; null is unknown. The
 // browser never sums it: every total arrives computed.
@@ -24,7 +25,9 @@ export interface Award { id?: string; submission_id: string; firm_name: string; 
 // A combined engagement's table: its disciplines in Procurement order (each
 // row key starts with the member's key) and the rows of members who left.
 export interface GroupTable { members: { package_id: string; key: string; title: string }[]; left: ScheduleItem[] }
-export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null; group?: GroupTable }
+export interface PriceTable { builder?: boolean; package_id: string; title: string; discipline_id: string; lifecycle_status: string; items: ScheduleItem[]; columns: Column[]; earlier: Submission[]; award: Award | null; group?: GroupTable;
+  /** The two tender tables (as tendered; adds and subs). */
+  tender?: TenderTable }
 /** A firm on a Procurement row: a proposal, or a firm the PM invited before
  * its quote arrived (status "invited": no submission, nothing to price). */
 export interface FirmCard { submission_id: string; firm_id?: string; invited_on?: string; firm_name: string; filename: string; received_on: string; status: SubmissionStatus | "invited"; base_total: Money; known_base: Money; stated_total: Money; not_priced: number; unread: number; lowest: boolean; needs_review: boolean; flags: string[]; pi_expires_on?: string; pi_expired?: boolean; pi_limit_cents?: number; /** Unplaced and filed as a combined discipline ("Services Engineer"). */ combined?: boolean }
