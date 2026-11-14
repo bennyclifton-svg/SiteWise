@@ -167,7 +167,7 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 	}
 	rd := newReader(getenv)
 	var results []caseResult
-	silent, empties := 0, 0
+	silent, empties, failed := 0, 0, 0
 	for _, c := range key.Cases {
 		if o.dump != "" && c.ID != o.dump {
 			continue
@@ -180,24 +180,15 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 			return fmt.Errorf("case %s: %w", c.ID, err)
 		}
 		path := filepath.Join(key.CorpusRoot, filepath.FromSlash(c.Path))
-		b, err := readFile(path)
-		if err != nil {
-			return fmt.Errorf("case %s: its file cannot be read", c.ID)
-		}
-		pages, paged, err := rd.pages(ctx, path, b)
-		if err != nil {
-			return fmt.Errorf("case %s: its text cannot be extracted", c.ID)
-		}
-		rep.caseID = c.ID
-		raw, info, err := tender.Pass(ctx, rep, rd.render(), o.model, path, paged, pages, rows)
-		// The product asks again when the model lists nothing; so does this.
-		for try := 0; errors.Is(err, tender.ErrEmpty) && live != nil && try < 3; try++ {
-			rep.forgetLast()
-			empties++
-			raw, info, err = tender.Pass(ctx, rep, rd.render(), o.model, path, paged, pages, rows)
+		raw, info, pages, err := runCase(ctx, rep, rd, o.model, path, c.ID, rows, live != nil, &empties)
+		if errors.Is(err, errReplayMiss) {
+			return fmt.Errorf("case %s: %w (run with -live)", c.ID, err)
 		}
 		if err != nil {
-			return fmt.Errorf("case %s: %w", c.ID, err)
+			// One case that cannot be read does not hide the rest.
+			failed++
+			fmt.Fprintf(w, "%-16s NOT READ: %v\n", c.ID, err)
+			continue
 		}
 		reading := tender.Reconcile(raw, pages, rows, nil)
 		if info.Cut || info.Dropped > 0 {
@@ -231,7 +222,7 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 		return fmt.Errorf("no case %q in the key", o.dump)
 	}
 	out := summarize(results, key.Reviewed, o)
-	out.EmptyAnswers = empties
+	out.EmptyAnswers, out.NotRead = empties, failed
 	printReport(w, out)
 	if err := writeReport(o.out, out); err != nil {
 		return err
@@ -240,6 +231,29 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 		return fmt.Errorf("%d tender sums are shown wrong with no flag", silent)
 	}
 	return nil
+}
+
+// runCase reads one file and runs the pass, within four minutes. An empty
+// answer is asked again, as the product does.
+func runCase(ctx context.Context, rep *replayer, rd reader, model, path, id string, rows []tender.Row, live bool, empties *int) (tender.RawReading, tender.PassInfo, []tender.Page, error) {
+	ctx, cancel := context.WithTimeout(ctx, 4*time.Minute)
+	defer cancel()
+	b, err := readFile(path)
+	if err != nil {
+		return tender.RawReading{}, tender.PassInfo{}, nil, errors.New("its file cannot be read")
+	}
+	pages, paged, err := rd.pages(ctx, path, b)
+	if err != nil {
+		return tender.RawReading{}, tender.PassInfo{}, nil, errors.New("its text cannot be extracted")
+	}
+	rep.caseID = id
+	raw, info, err := tender.Pass(ctx, rep, rd.render(), model, path, paged, pages, rows)
+	for try := 0; errors.Is(err, tender.ErrEmpty) && live && try < 3; try++ {
+		rep.forgetLast()
+		*empties++
+		raw, info, err = tender.Pass(ctx, rep, rd.render(), model, path, paged, pages, rows)
+	}
+	return raw, info, pages, err
 }
 
 // dumpKey prints a draft key for one case: a labelling aid, nothing else.
@@ -292,6 +306,7 @@ type report struct {
 	TokensPerLine   float64   `json:"out_tokens_per_line"`
 	CostUSD         float64   `json:"cost_usd"`
 	EmptyAnswers    int       `json:"empty_answers_asked_again"`
+	NotRead         int       `json:"cases_not_read"`
 }
 
 // Claude Haiku 5.5, US dollars per million tokens, prompts up to 100,000
