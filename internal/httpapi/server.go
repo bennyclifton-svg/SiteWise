@@ -21,10 +21,12 @@ import (
 	"sitewise/internal/invoices"
 	"sitewise/internal/jev"
 	"sitewise/internal/knowledge"
+	"sitewise/internal/llm"
 	"sitewise/internal/profile"
 	"sitewise/internal/programread"
 	"sitewise/internal/proposals"
 	"sitewise/internal/store"
+	"sitewise/internal/tender"
 )
 
 const (
@@ -84,6 +86,14 @@ type Options struct {
 	// ProgramReviewDelay is the program review's debounce; zero is the
 	// plan's 2 seconds (7.4). Tests shorten it.
 	ProgramReviewDelay time.Duration
+	// TenderLLM is the model that lists a tender's prices; nil switches the
+	// tender pass off for every org. TenderModel is its pinned id and
+	// TenderRender makes page images (nil: a paged tender fails to read).
+	TenderLLM    llm.Asker
+	TenderModel  string
+	TenderRender tender.Renderer
+	// TenderTimeout bounds one pass; zero is 150 seconds.
+	TenderTimeout time.Duration
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -96,9 +106,11 @@ type Server struct {
 	imports   *programImporter
 	// proposalPrograms reads each read proposal's R7 programme (plan 10.3).
 	proposalPrograms *proposalProgramReader
-	review           *programReviewer
-	closing          chan struct{}
-	closeOnce        sync.Once
+	// tenders runs the tender pass; nil when the server has no model key.
+	tenders   *tenderReader
+	review    *programReviewer
+	closing   chan struct{}
+	closeOnce sync.Once
 }
 
 // New composes the upload, filing and event path. Nothing here starts a
@@ -244,7 +256,18 @@ func New(opts Options) (*Server, error) {
 		now:        time.Now,
 		inflight:   map[string]struct{}{},
 	}
-	preader.after = stages.Queue
+	var tenders *tenderReader
+	if opts.TenderLLM != nil {
+		tenders = &tenderReader{store: opts.Store, blobs: opts.Blobs, ask: opts.TenderLLM, render: opts.TenderRender, model: opts.TenderModel, ocr: opts.ProposalOCR,
+			broker: broker, log: opts.Log, observe: speed.Observe, timeout: opts.TenderTimeout, slots: make(chan struct{}, 2), now: time.Now, inflight: map[string]struct{}{}}
+		if tenders.timeout <= 0 {
+			tenders.timeout = 150 * time.Second
+		}
+	}
+	preader.after = func(orgID, submissionID string, began time.Time) {
+		stages.Queue(orgID, submissionID)
+		tenders.Queue(orgID, submissionID, began)
+	}
 	// Both readers return at once; filing itself is unchanged.
 	runner.AfterFile = func(orgID, documentID string, text identity.Text) {
 		preader.Filed(orgID, documentID, text)
@@ -269,6 +292,7 @@ func New(opts Options) (*Server, error) {
 		Filer:           f,
 		InvoiceReader:   reader,
 		ProposalReader:  preader,
+		TenderReader:    tenders,
 		ProgramImporter: importer,
 		ProgramReview:   review,
 		Closing:         closing,
@@ -294,7 +318,7 @@ func New(opts Options) (*Server, error) {
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, proposalPrograms: stages, review: review, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, proposalPrograms: stages, tenders: tenders, review: review, closing: closing}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -343,6 +367,15 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 	for _, p := range reading {
 		s.proposals.Start(p.OrgID, p.SubmissionID, time.Time{}, false)
 	}
+	if s.tenders != nil {
+		passes, err := s.store.PendingTenderReads(ctx)
+		if err != nil {
+			return len(pending) + len(expansions) + len(unread) + len(reading), err
+		}
+		for _, p := range passes {
+			s.tenders.Start(p.OrgID, p.SubmissionID, time.Time{})
+		}
+	}
 	programs, err := s.store.PendingProposalPrograms(ctx)
 	if err != nil {
 		return len(pending) + len(expansions) + len(unread) + len(reading), err
@@ -375,6 +408,9 @@ func (s *Server) Wait(ctx context.Context) error {
 		s.proposals.wg.Wait()
 		s.imports.wg.Wait()
 		s.proposalPrograms.wg.Wait()
+		if s.tenders != nil {
+			s.tenders.wg.Wait()
+		}
 		s.review.Stop()
 		close(done)
 	}()

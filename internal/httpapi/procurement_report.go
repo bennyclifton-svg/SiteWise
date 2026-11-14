@@ -97,7 +97,7 @@ func writeProcurementReport(w http.ResponseWriter, r *http.Request, deps Deps, s
 	writeJSON(w, http.StatusOK, struct {
 		Table  tableJSON              `json:"table"`
 		Report store.ComparisonReport `json:"report"`
-	}{tableBody(t, award), rep})
+	}{tableBody(t, award, deps.TenderReader != nil), rep})
 }
 
 func putResponseRating(w http.ResponseWriter, r *http.Request, deps Deps) {

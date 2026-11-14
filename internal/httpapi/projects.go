@@ -41,6 +41,9 @@ type Deps struct {
 	// ProposalReader reads a proposal dropped on a package row whose bytes
 	// were already filed. Nil leaves it to the filing hook.
 	ProposalReader ProposalReader
+	// TenderReader runs the tender pass. Nil means this server has no model
+	// key: no tender page leaves it and tenders are read the old way.
+	TenderReader *tenderReader
 	// ProgramReview runs the program's ask-first review after its inputs
 	// change. Nil runs no review.
 	ProgramReview *programReviewer
@@ -142,6 +145,7 @@ func Handler(deps Deps) http.Handler {
 		"POST /projects/{id}/submissions/{sub}/alignment":                  postSubmissionAlignment,
 		"PUT /projects/{id}/submissions/{sub}/appointment-row":             putAppointmentRow,
 		"PATCH /projects/{id}/submissions/{sub}":                           patchSubmission,
+		"POST /projects/{id}/submissions/{sub}/tender-read":                postTenderRead,
 		"GET /projects/{id}/submissions/{sub}/file":                        downloadSubmission,
 		"GET /firms": getFirms,
 		"GET /projects/{id}/procurement/packages/{pkg}/report":                          getProcurementReport,
@@ -334,6 +338,7 @@ var routePaths = map[string]string{
 	"POST /projects/{id}/submissions/{sub}/alignment":                  pathSubmissionWrite,
 	"PUT /projects/{id}/submissions/{sub}/appointment-row":             pathSubmissionWrite,
 	"PATCH /projects/{id}/submissions/{sub}":                           pathSubmissionWrite,
+	"POST /projects/{id}/submissions/{sub}/tender-read":                pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/documents":         pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/firms":             pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/award":             pathAwardWrite,

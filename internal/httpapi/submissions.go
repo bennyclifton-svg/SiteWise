@@ -55,7 +55,7 @@ type proposalReader struct {
 	inflight map[string]struct{}
 	// after runs once a read commits: the proposal_program read queued
 	// after this read finishes (plan 10.3). Nil runs nothing.
-	after func(orgID, submissionID string)
+	after func(orgID, submissionID string, began time.Time)
 	// disciplines names each filing discipline as Procurement shows it, so
 	// a proposal's package can be made before it is read.
 	disciplines map[string]string
@@ -130,7 +130,7 @@ func (r *proposalReader) Start(orgID, id string, began time.Time, recheck bool) 
 			r.observe(pathProposalRead, time.Since(began))
 		}
 		if committed && r.after != nil {
-			r.after(orgID, id)
+			r.after(orgID, id, began)
 		}
 	}()
 }
@@ -300,12 +300,16 @@ type tableJSON struct {
 	store.PriceTable
 	Columns []columnJSON `json:"columns"`
 	Award   *awardJSON   `json:"award"`
+	// Tender is the two tender tables (contract C5).
+	Tender *tenderJSON `json:"tender"`
+	// Change is the id of the change an edit made, for Undo.
+	Change string `json:"change,omitempty"`
 }
 
 func cellOf(c proposals.Cell) priceCellJSON { return priceCellJSON{Cell: c, Amount: cents(c.Cents)} }
 
-func tableBody(t store.PriceTable, award *store.AwardView) tableJSON {
-	out := tableJSON{PriceTable: t, Columns: []columnJSON{}}
+func tableBody(t store.PriceTable, award *store.AwardView, modelAvailable bool) tableJSON {
+	out := tableJSON{PriceTable: t, Columns: []columnJSON{}, Tender: tenderBody(t.Tender, modelAvailable)}
 	for _, c := range t.Columns {
 		col := columnJSON{Submission: c.Submission, Firm: c.Firm, Cells: map[string]priceCellJSON{}, Others: []priceCellJSON{}, NeedsReview: c.NeedsReview, Fields: map[string]proposals.Decision{}}
 		col.UndoAlignment = c.UndoAlignment
@@ -360,7 +364,7 @@ func writePriceTable(w http.ResponseWriter, r *http.Request, deps Deps, session 
 		procurementError(w, deps, err)
 		return
 	}
-	writeJSON(w, status, tableBody(t, award))
+	writeJSON(w, status, tableBody(t, award, deps.TenderReader != nil))
 }
 
 type cardJSON struct {
@@ -666,6 +670,10 @@ func patchSubmission(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if err := deps.Store.EditSubmission(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("sub"), e); err != nil {
 		procurementError(w, deps, err)
 		return
+	}
+	if e.PackageID != nil && *e.PackageID != "" {
+		// Placed in a package: its rows are now known, so its prices can be read.
+		deps.TenderReader.Queue(session.OrgID, r.PathValue("sub"), time.Now())
 	}
 	submissionWritten(w, r, deps, session)
 }

@@ -65,6 +65,7 @@ func (b *Billing) planForPrice(price string) string {
 
 var billingRoutes = map[string]func(http.ResponseWriter, *http.Request, Deps){
 	"GET /account":              getAccount,
+	"PUT /account/model":        putAccountModel,
 	"POST /billing/checkout":    postCheckout,
 	"POST /billing/portal":      postPortal,
 	"POST /stripe/webhook":      stripeWebhook,
@@ -87,6 +88,7 @@ const (
 func init() {
 	for pattern, path := range map[string]string{
 		"GET /account":              pathBillingRead,
+		"PUT /account/model":        pathBillingSession,
 		"POST /billing/checkout":    pathBillingSession,
 		"POST /billing/portal":      pathBillingSession,
 		"POST /stripe/webhook":      pathStripeWebhook,
@@ -114,6 +116,8 @@ type accountView struct {
 	HasCustomer       bool           `json:"has_customer"`
 	Usage             store.Usage    `json:"usage"`
 	Plans             []billing.Plan `json:"plans"`
+	// Model is the org's switch for sending project text to the model.
+	Model modelJSON `json:"model"`
 }
 
 func getAccount(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -137,7 +141,13 @@ func getAccount(w http.ResponseWriter, r *http.Request, deps Deps) {
 		readFailed(w, deps, "account", err)
 		return
 	}
+	model, err := modelView(ctx, deps, session.OrgID)
+	if err != nil {
+		readFailed(w, deps, "account", err)
+		return
+	}
 	writeJSON(w, http.StatusOK, accountView{
+		Model:   model,
 		Profile: profile, BillingEnabled: deps.Billing != nil, Plan: b.Effective(),
 		SubscribedPlan: b.Plan, Status: b.Status, Interval: b.Interval, PaidUntil: b.PaidUntil,
 		CancelAtPeriodEnd: b.CancelAtPeriodEnd, HasCustomer: b.CustomerID != "",
