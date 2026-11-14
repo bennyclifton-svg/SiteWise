@@ -135,6 +135,7 @@ export const api = {
   verifyEmail: (token: string) => request<void>("POST", "/email/verify", { token }),
   resendVerify: () => request<void>("POST", "/email/verify/resend"),
   account: () => request<Account>("GET", "/account"),
+  setModel: (enabled: boolean) => request<ModelSwitch>("PUT", "/account/model", { enabled }),
   checkout: (plan: "starter" | "team", interval: "month" | "year") =>
     request<{ url: string }>("POST", "/billing/checkout", { plan, interval }),
   billingPortal: () => request<{ url: string }>("POST", "/billing/portal"),
@@ -180,7 +181,16 @@ export interface Plan {
   users: number;
 }
 
+/** The org's one switch for sending project text to the model provider. */
+export interface ModelSwitch {
+  /** False when this server has no model key: nothing can be sent. */
+  available: boolean;
+  enabled: boolean;
+  enabled_at: string | null;
+}
+
 export interface Account {
+  model: ModelSwitch;
   email: string;
   email_verified: boolean;
   role: string;

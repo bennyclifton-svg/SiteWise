@@ -206,3 +206,11 @@
   border-bottom: 1px solid var(--line);
   color: var(--ink);
 }
+
+/* The model switch: one labelled control, as the Procurement menus' switches. */
+.account-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}

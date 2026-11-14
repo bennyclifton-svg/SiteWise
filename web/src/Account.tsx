@@ -2,7 +2,7 @@
 // Stripe's own pages; this page only links to them (design 2026-11-07-billing).
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { api, ApiError, type Account as AccountData, type Plan, type Team } from "./api";
+import { api, ApiError, type Account as AccountData, type ModelSwitch, type Plan, type Team } from "./api";
 import { LegalLinks } from "./LegalLinks";
 import { TraceBand } from "./TracePage";
 
@@ -74,12 +74,51 @@ export function Account({ onSignedOut }: { onSignedOut: () => void }) {
         <Usage account={account} />
         {account.billing_enabled && owner && <Plans account={account} />}
         {!account.billing_enabled && <p className="muted">Billing is not set up on this server, so plan limits do not apply.</p>}
+        {owner && account.model.available && <ModelSection initial={account.model} />}
         <TeamSection account={account} />
         <footer className="account-footer">
           <LegalLinks />
         </footer>
       </div>
     </div>
+  );
+}
+
+// The owner's agreement that tender pages may be sent to the model
+// provider. Off until they turn it on; nothing is sent while it is off.
+function ModelSection({ initial }: { initial: ModelSwitch }) {
+  const [model, setModel] = useState(initial);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function toggle(enabled: boolean) {
+    const before = model;
+    setBusy(true);
+    setError("");
+    // Show the choice at once; the answer confirms it or puts it back.
+    setModel({ ...model, enabled });
+    try {
+      setModel(await api.setModel(enabled));
+    } catch (e) {
+      setModel(before);
+      setError(message(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <section className="account-section" aria-labelledby="model-heading">
+      <h2 id="model-heading">Reading tenders with a model</h2>
+      <p className="muted">
+        SiteWise can send the pages of a tender you file to Claude, a model made by Anthropic, so it can list the prices for you to check.
+        Nothing is sent while this is off, and tenders are read as they are now.
+      </p>
+      <label className="account-switch">
+        <input type="checkbox" role="switch" checked={model.enabled} disabled={busy} onChange={e => void toggle(e.target.checked)} />
+        <span>Send tender pages to the model</span>
+      </label>
+      {model.enabled && model.enabled_at && <p className="muted small">On since {date(model.enabled_at)}</p>}
+      {error && <p className="error-text" role="alert">{error}</p>}
+    </section>
   );
 }
 

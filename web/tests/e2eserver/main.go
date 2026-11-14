@@ -41,6 +41,7 @@ import (
 	"sitewise/internal/proposals"
 	sample2 "sitewise/internal/proposals/sample"
 	"sitewise/internal/store"
+	tendersample "sitewise/internal/tender/sample"
 	"sitewise/internal/works"
 	"sitewise/internal/xlsx"
 	"sitewise/web"
@@ -163,10 +164,21 @@ func run(addr, data string, programFixture bool) error {
 		// beside each row's own label, with every band applied.
 		ProposalJev:        sample2.Jev{Delay: 150 * time.Millisecond},
 		ProposalThresholds: proposalThresholds(),
-		Static:             web.Dist(),
-		PublicOrigin:       "http://" + addr,
-		MaxUploadBytes:     50 << 20,
-		Log:                log.New(os.Stderr, "e2e ", log.LstdFlags),
+		// The tender pass is answered by a stand-in that lists each line of
+		// page text ending in a dollar amount. No page leaves this process.
+		TenderLLM:   tendersample.Model{Delay: 150 * time.Millisecond},
+		TenderModel: "claude-haiku-5-5",
+		TenderRender: func(_ context.Context, _ string, pages []int) (map[int]string, error) {
+			out := map[int]string{}
+			for _, p := range pages {
+				out[p] = "/9j/4AAQSkZJRg=="
+			}
+			return out, nil
+		},
+		Static:         web.Dist(),
+		PublicOrigin:   "http://" + addr,
+		MaxUploadBytes: 50 << 20,
+		Log:            log.New(os.Stderr, "e2e ", log.LstdFlags),
 	})
 	if err != nil {
 		return err

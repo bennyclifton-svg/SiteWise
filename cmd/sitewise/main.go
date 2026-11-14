@@ -29,10 +29,12 @@ import (
 	"sitewise/internal/jobs"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/latency"
+	"sitewise/internal/llm"
 	"sitewise/internal/profile"
 	"sitewise/internal/programread"
 	feeproposals "sitewise/internal/proposals"
 	"sitewise/internal/store"
+	"sitewise/internal/tender"
 	"sitewise/internal/works"
 	"sitewise/web"
 )
@@ -203,7 +205,39 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	if ocrErr != nil {
 		logger.Printf("OCR unavailable: %v; text PDFs still file normally", ocrErr)
 	}
+	// The tender pass: one model, behind each org's own switch. With no key
+	// it is off for every org and tenders are read as before.
+	var tenderLLM llm.Asker
+	var tenderRender tender.Renderer
+	if model := llm.New(llm.Options{APIKey: cfg.TenderKey, Logger: slog.New(slog.NewJSONHandler(stderr, nil))}); model.On() {
+		tenderLLM = model
+		if ocrErr != nil {
+			logger.Printf("tender pass: page images need the OCR helper's Python (pypdfium2, Pillow); until it is installed PDF tenders are not read by the model")
+		} else {
+			tenderRender = func(ctx context.Context, path string, pages []int) (map[int]string, error) {
+				images, err := ocr.Pages(ctx, path, pages)
+				if err != nil {
+					return nil, err
+				}
+				out := make(map[int]string, len(images))
+				for _, img := range images {
+					out[img.Page] = img.JPEG
+				}
+				return out, nil
+			}
+		}
+		logger.Printf("tender pass: on, model %s", cfg.TenderModel)
+	}
 	srv, err := httpapi.New(httpapi.Options{
+		TenderLLM:    tenderLLM,
+		TenderModel:  cfg.TenderModel,
+		TenderRender: tenderRender,
+		TenderOCR: func(ctx context.Context, path string, text identity.Text) (identity.Text, error) {
+			if ocrErr != nil {
+				return text, identity.ErrOCRUnavailable
+			}
+			return ocr.ReadMissing(ctx, path, text, tender.MaxImagePages)
+		},
 		ProposalOCR: func(ctx context.Context, path string, text identity.Text) (identity.Text, error) {
 			if ocrErr != nil {
 				text.Incomplete = true
@@ -261,6 +295,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	go jobs.RunBackground(ctx, worker, 2*time.Second, logger.Printf)
 	go srv.RunInvoiceRechecks(ctx, 10*time.Second)
 	go srv.RunProposalRechecks(ctx, 15*time.Second)
+	go srv.RunTenderRetries(ctx, 15*time.Second)
 	go srv.RunProgramImportRechecks(ctx, 15*time.Second)
 	go srv.RunProposalProgramRechecks(ctx, 15*time.Second)
 	if n, err := srv.Resume(ctx); err != nil {
