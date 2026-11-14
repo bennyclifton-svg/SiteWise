@@ -186,7 +186,16 @@ func (s *Store) costTxMode(ctx context.Context, org, project, actor string, w Co
 	}
 	return tx, p, nil
 }
-func (s *Store) finishCost(ctx context.Context, tx pgx.Tx, org, project, id string) (costs.Plan, error) {
+
+// touchCost is what every cost write does before it commits, and what an
+// undo does after it restores cost rows: bump the plan's version and the
+// costs revision, and tell open screens.
+func (s *Store) touchCost(ctx context.Context, tx pgx.Tx, org, project, id string) error {
+	_, err := s.touchCostPlan(ctx, tx, org, project, id)
+	return err
+}
+
+func (s *Store) touchCostPlan(ctx context.Context, tx pgx.Tx, org, project, id string) (costs.Plan, error) {
 	if _, e := tx.Exec(ctx, `UPDATE cost_plan_versions SET version=version+1 WHERE org_id=$1::uuid AND id=$2::uuid`, org, id); e != nil {
 		return costs.Plan{}, e
 	}
@@ -199,6 +208,14 @@ func (s *Store) finishCost(ctx context.Context, tx pgx.Tx, org, project, id stri
 	}
 	raw, _ := json.Marshal(map[string]any{"project_id": project, "plan_version_id": id, "revision": p.Version})
 	if _, e = appendEvent(ctx, s.q.WithTx(tx), org, "costs", "", string(raw)); e != nil {
+		return p, e
+	}
+	return p, nil
+}
+
+func (s *Store) finishCost(ctx context.Context, tx pgx.Tx, org, project, id string) (costs.Plan, error) {
+	p, e := s.touchCostPlan(ctx, tx, org, project, id)
+	if e != nil {
 		return p, e
 	}
 	if e = s.decorateCostPlan(ctx, tx, org, project, &p); e != nil {

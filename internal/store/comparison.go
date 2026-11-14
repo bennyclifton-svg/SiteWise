@@ -119,12 +119,15 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 			t.Group.Left = append(t.Group.Left, it)
 		}
 	}
-	cols, earlier, err := s.packageColumns(ctx, tx, org, project, pkg, live)
+	cols, earlier, extras, err := s.packageColumnsTender(ctx, tx, org, project, pkg, live)
 	if err != nil {
 		return t, err
 	}
 	t.Columns, t.Earlier = cols, earlier
-	t.Tender = &TenderTable{Rows: tenderRowsOf(t.Items), Columns: []TenderColumn{}, Adjustments: []TenderAdjustment{}}
+	t.Tender = &TenderTable{Rows: tenderRowsOf(t.Items), Columns: []TenderColumn{}, Adjustments: extras.Adjustments, Suggested: extras.Suggested}
+	if t.Tender.Adjustments == nil {
+		t.Tender.Adjustments = []TenderAdjustment{}
+	}
 	if t.Tender.Version, t.Tender.On, err = tenderVersion(ctx, tx, org, pkg); err != nil {
 		return t, err
 	}
@@ -139,6 +142,18 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 // packageColumns loads every submission of one package with its firm, cells
 // and decisions, and computes each live column's totals.
 func (s *Store) packageColumns(ctx context.Context, tx pgx.Tx, org, project, pkg string, all []rfp.ScheduleItem) ([]FirmColumn, []Submission, error) {
+	cols, earlier, _, err := s.packageColumnsTender(ctx, tx, org, project, pkg, all)
+	return cols, earlier, err
+}
+
+// packageColumnsTender is packageColumns with the package's adds and subs.
+func (s *Store) packageColumnsTender(ctx context.Context, tx pgx.Tx, org, project, pkg string, all []rfp.ScheduleItem) ([]FirmColumn, []Submission, tenderExtras, error) {
+	var extras tenderExtras
+	cols, earlier, err := s.packageColumnsInner(ctx, tx, org, project, pkg, all, &extras)
+	return cols, earlier, extras, err
+}
+
+func (s *Store) packageColumnsInner(ctx context.Context, tx pgx.Tx, org, project, pkg string, all []rfp.ScheduleItem, extras *tenderExtras) ([]FirmColumn, []Submission, error) {
 	// The "Not broken down" row belongs to tender-read columns only: an
 	// old-style column's totals and review must not see it.
 	var items []rfp.ScheduleItem
@@ -302,10 +317,11 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 	for i := range cols {
 		live[i] = cols[i].Submission.ID
 	}
-	tcols, _, err := packageTender(ctx, tx, org, stored, live)
+	tcols, more, err := packageTender(ctx, tx, org, pkg, stored, live)
 	if err != nil {
 		return nil, nil, err
 	}
+	*extras = more
 	applyTender(cols, totals, tcols)
 	for i := range cols {
 		cols[i].Totals = totals[i]

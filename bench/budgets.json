@@ -14,6 +14,7 @@
 	{"name":"proposal_read","p50_us":3000000,"p90_us":6000000,"note":"proposal dropped on a package row, upload to its column read: filing plus one proposal fan-out (proposed, owner sign-off pending)"},
 	{"name":"price_table_tender","p50_us":150000,"p90_us":300000,"note":"price table for one package with five tender-read firms of 330 lines each (the price_table budget); held by TestTenderTableFiveFirmsBudget and sampled by the bench"},
 	{"name":"tender_edit","p50_us":100000,"p90_us":250000,"note":"one move, split or correction, or its undo, on a package of five firms with 330 lines each, recomputed table returned; no model"},
+	{"name":"change_undo","p50_us":100000,"p90_us":250000,"note":"undo one applied change: rows restored and the area's derived figures refreshed in one transaction; no Jev and no model. Sampled by the tender bench (a line move undone)"},
 	{"name":"tender_reconcile","p50_us":100000,"p90_us":250000,"note":"Go work on one tender pass of 330 lines: checks, reconciling and cells; no model. Held by TestReconcileBudget in internal/tender and sampled by the bench"},
 	{"name":"price_table","p50_us":150000,"p90_us":300000,"note":"price table for one package with five firms (proposed)"},
 	{"name":"submission_write","p50_us":100000,"p90_us":250000,"note":"cell correction, recomputed table returned (proposed)"},

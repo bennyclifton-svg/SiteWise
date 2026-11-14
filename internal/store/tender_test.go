@@ -562,3 +562,25 @@ VALUES ($1,gen_random_uuid(),$2,$3,0,'Line',$4,$5,'base',$6,$7,$8,'model')`, org
 		t.Fatalf("%d lines outlived their submission", n)
 	}
 }
+
+// secondPackage is a civil package in the same project, and its base rows.
+func secondPackage(t *testing.T, s *store.Store) (string, []string) {
+	t.Helper()
+	ctx := context.Background()
+	row, _ := procurement.DisciplinePackage("consultant.civil", "Civil Engineer")
+	pkg, err := s.CreateDisciplinePackage(ctx, orgA, projectA, userA, row)
+	if err != nil {
+		t.Fatal(err)
+	}
+	table, err := s.ReadPriceTable(ctx, orgA, projectA, pkg.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var keys []string
+	for _, it := range table.Items {
+		if it.Price() && it.Base {
+			keys = append(keys, it.Key)
+		}
+	}
+	return pkg.ID, keys
+}

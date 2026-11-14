@@ -88,6 +88,24 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	if sub.Status != SubmissionReceived && sub.Status != SubmissionNeedsReview {
 		return v, sub, nil, "", ErrInvalidInput
 	}
+	// A tender-read column is a proposal until the manager has checked it
+	// (AGENTS.md rule 1). Once checked it is awarded on its priced rows,
+	// whatever the package kind: its cells come from its own lines.
+	var tenderState string
+	var tenderChecked *time.Time
+	if err := tx.QueryRow(ctx, `SELECT tender_state, tender_checked_at FROM submissions WHERE org_id=$1::uuid AND id::text=$2`, org, sub.ID).Scan(&tenderState, &tenderChecked); err != nil {
+		return v, sub, nil, "", err
+	}
+	tenderRead := tenderState == TenderRead
+	if tenderRead && tenderChecked == nil {
+		return v, sub, nil, "", tenderInvalid("Check this firm's column before awarding.")
+	}
+	if tenderRead {
+		if in.Appointment {
+			return v, sub, nil, "", ErrConflict
+		}
+		isBuilder = false
+	}
 	var firm *Firm
 	if sub.FirmID == "" {
 		// The award appoints a firm and invoices find it by ABN.
@@ -137,6 +155,9 @@ func awardPlan(ctx context.Context, tx pgx.Tx, org, project, pkg string, in Awar
 	quote, err := quotedReview(ctx, tx, org, sub.ID)
 	if err != nil {
 		return v, sub, nil, "", err
+	}
+	if tenderRead {
+		quote = nil // the source quote's stages gave way to the tender lines
 	}
 	if in.Appointment {
 		if isBuilder || quote == nil || in.Version != sub.Version {

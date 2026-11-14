@@ -161,7 +161,7 @@ func (a *apiClient) tenderTables(ctx context.Context, st *store.Store, n int) er
 		if err := json.Unmarshal(raw, &t); err != nil || t.Change == "" {
 			return fmt.Errorf("tender benchmark: the move returned no change to undo: %v", err)
 		}
-		if _, err := a.timed(ctx, "tender_edit", http.MethodPost, base+"/changes/"+t.Change+"/undo", nil, http.StatusOK); err != nil {
+		if _, err := a.timed(ctx, "change_undo", http.MethodPost, base+"/changes/"+t.Change+"/undo", nil, http.StatusOK); err != nil {
 			return err
 		}
 	}

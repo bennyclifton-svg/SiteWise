@@ -135,8 +135,10 @@ type Job struct {
 // authenticated session, and every query predicates on that org.
 type Store struct {
 	profileBuild *ProfileBuild
-	pool         *pgxpool.Pool
-	q            *db.Queries
+	// pool marks the transactions of a change (change.go); pool.Pool is the
+	// raw pool for the few callers that need it.
+	pool markedPool
+	q    *db.Queries
 }
 
 // Open connects to PostgreSQL. It does not migrate.
@@ -149,7 +151,7 @@ func Open(ctx context.Context, databaseURL string) (*Store, error) {
 		pool.Close()
 		return nil, err
 	}
-	return &Store{pool: pool, q: db.New(pool)}, nil
+	return &Store{pool: markedPool{pool}, q: db.New(pool)}, nil
 }
 
 // Close releases the connection pool.
@@ -159,7 +161,7 @@ func (s *Store) Close() {
 
 // Migrate applies schema migrations.
 func (s *Store) Migrate(ctx context.Context) error {
-	return db.Migrate(ctx, s.pool)
+	return db.Migrate(ctx, s.pool.Pool)
 }
 
 // CreateOrg inserts an organisation.

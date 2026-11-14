@@ -95,9 +95,27 @@ func tenderRowsOf(items []ScheduleItem) []TenderRow {
 	return rows
 }
 
-// packageTender is every tender column of a package's live submissions,
-// with marks. It is shared by the table read, the board and suggestions.
-func packageTender(ctx context.Context, tx pgx.Tx, org string, items []ScheduleItem, subs []string) ([]TenderColumn, map[string]tender.Reading, error) {
+// tenderExtras is what the second table adds to a package's columns.
+type tenderExtras struct {
+	Adjustments []TenderAdjustment
+	Suggested   int
+}
+
+// packageTender is every tender column of a package's live submissions with
+// its marks, its like-for-like total and the package's adds and subs. It is
+// shared by the table read and the board.
+func packageTender(ctx context.Context, tx pgx.Tx, org, pkg string, items []ScheduleItem, subs []string) ([]TenderColumn, tenderExtras, error) {
+	cols, _, err := packageTenderColumns(ctx, tx, org, items, subs)
+	if err != nil {
+		return nil, tenderExtras{}, err
+	}
+	adjustments, suggested, err := withAdjustments(ctx, tx, org, pkg, cols)
+	return cols, tenderExtras{Adjustments: adjustments, Suggested: suggested}, err
+}
+
+// packageTenderColumns is the first table's columns: state, sum, cells,
+// lines and marks, before any add or sub.
+func packageTenderColumns(ctx context.Context, tx pgx.Tx, org string, items []ScheduleItem, subs []string) ([]TenderColumn, map[string]tender.Reading, error) {
 	stored, err := readTenderStored(ctx, tx, org, subs)
 	if err != nil {
 		return nil, nil, err

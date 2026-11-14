@@ -13,10 +13,6 @@ import (
 	"sitewise/internal/tender"
 )
 
-// rowFigureNote marks a line made from a figure the manager typed into a
-// cell before the tender pass ran. It stands for its whole row.
-const rowFigureNote = "Your figure for this row"
-
 const tenderLineColumns = `id::text, ordinal, page, label, printed, amount_cents, gst, state, kind, placed, heading, COALESCE(row_key,''), note, counted, flags, decided_by, COALESCE(split_of::text,'')`
 
 func scanTenderLine(row pgx.Rows, sub *string) (tender.Line, error) {
@@ -202,7 +198,7 @@ func (s *Store) CommitTenderRead(ctx context.Context, org, id string, r tender.R
 	maxOrdinal := len(r.Lines)
 	for _, k := range kept {
 		maxOrdinal = max(maxOrdinal, k.Ordinal+1)
-		if k.Note == rowFigureNote && k.Counted {
+		if k.Note == tender.RowFigureNote && k.Counted {
 			rowFigure[k.Row] = true
 			continue
 		}
@@ -258,6 +254,11 @@ WHERE org_id=$1::uuid AND id::text=$2`, org, id, clipText(prompt, 40), basis, r.
 	if err := refreshTender(ctx, tx, org, project, pkg, id, items); err != nil {
 		return err
 	}
+	// Suggestions are rebuilt from the new lines; applied amounts and the
+	// manager's own rows are left alone.
+	if err := syncSuggestions(ctx, tx, org, project, pkg); err != nil {
+		return err
+	}
 	if _, err := tx.Exec(ctx, `DELETE FROM comparison_alignment WHERE org_id=$1::uuid AND submission_id::text=$2`, org, id); err != nil {
 		return err
 	}
@@ -287,7 +288,7 @@ WHERE org_id=$1::uuid AND submission_id::text=$2 AND decided_by='user' AND amoun
 		if !baseRow[l.Row] {
 			continue
 		}
-		l.ID, l.Page, l.Cents, l.GST, l.State, l.Kind, l.Placed, l.Counted, l.DecidedBy, l.Note = newID(), int(page), &cents, "ex", tender.StatePriced, "base", "sum", true, proposals.ByUser, rowFigureNote
+		l.ID, l.Page, l.Cents, l.GST, l.State, l.Kind, l.Placed, l.Counted, l.DecidedBy, l.Note = newID(), int(page), &cents, "ex", tender.StatePriced, "base", "sum", true, proposals.ByUser, tender.RowFigureNote
 		l.Ordinal = 100000 + len(out)
 		if l.Label == "" {
 			l.Label = "Your figure"

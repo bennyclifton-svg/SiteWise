@@ -207,6 +207,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"program_import":            {3_000_000, 6_000_000},
 		"stage_sync_write":          {100_000, 250_000},
 		"tender_reconcile":          {100_000, 250_000},
+		"change_undo":               {100_000, 250_000},
 		"price_table_tender":        {150_000, 300_000},
 		"tender_edit":               {100_000, 250_000},
 	}

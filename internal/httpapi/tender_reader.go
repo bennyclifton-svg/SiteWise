@@ -22,6 +22,7 @@ const (
 	pathTenderRead     = "tender_read"
 	pathTenderReadLong = "tender_read_long"
 	pathTenderEdit     = "tender_edit"
+	pathChangeUndo     = "change_undo"
 )
 
 // Words the screen shows when a pass fails. Never a library's own error.
