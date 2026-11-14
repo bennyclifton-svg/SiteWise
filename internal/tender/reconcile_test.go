@@ -1,8 +1,10 @@
 package tender
 
 import (
+	"sort"
 	"strings"
 	"testing"
+	"time"
 )
 
 // Every figure in these tests is invented.
@@ -443,7 +445,8 @@ func TestNormGroup(t *testing.T) {
 	}
 }
 
-func BenchmarkReconcile330Lines(b *testing.B) {
+// bigReading is a 330-line tender: six packs of 54 lines and a subtotal each.
+func bigReading() (RawReading, []Page) {
 	var lines []RawLine
 	var text []string
 	for pack := 0; pack < 6; pack++ {
@@ -459,10 +462,31 @@ func BenchmarkReconcile330Lines(b *testing.B) {
 		lines = append(lines, ln("Sub total", dollars(sub), "subtotal", "inside", group, ""))
 		text = append(text, dollars(sub))
 	}
-	pages := []Page{{Number: 1, Text: strings.Join(text, "\n")}}
-	raw := RawReading{GST: "ex", Lines: lines}
+	return RawReading{GST: "ex", Lines: lines}, []Page{{Number: 1, Text: strings.Join(text, "\n")}}
+}
+
+func BenchmarkReconcile330Lines(b *testing.B) {
+	raw, pages := bigReading()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		Reconcile(raw, pages, testRows, nil)
 	}
+}
+
+// TestReconcileBudget holds the tender_reconcile row of bench/budgets.json:
+// checks, reconciling and cells for 330 lines, with no model.
+func TestReconcileBudget(t *testing.T) {
+	raw, pages := bigReading()
+	times := make([]time.Duration, 20)
+	for i := range times {
+		began := time.Now()
+		Cells(Reconcile(raw, pages, testRows, nil), testRows)
+		times[i] = time.Since(began)
+	}
+	sort.Slice(times, func(i, j int) bool { return times[i] < times[j] })
+	p50, p90 := times[9], times[17]
+	if p50 > 100*time.Millisecond || p90 > 250*time.Millisecond {
+		t.Fatalf("tender_reconcile p50 %s (budget 100ms), p90 %s (budget 250ms)", p50, p90)
+	}
+	t.Logf("tender_reconcile p50 %s, p90 %s", p50, p90)
 }
