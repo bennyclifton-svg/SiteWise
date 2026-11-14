@@ -160,3 +160,21 @@ func TestLoadDevelopmentWithoutStripe(t *testing.T) {
 		t.Fatalf("err = %v", err)
 	}
 }
+
+func TestTenderSettings(t *testing.T) {
+	cfg, err := Load(getenvFrom(fullEnv()))
+	if err != nil || cfg.TenderKey != "" || cfg.TenderModel != "claude-haiku-5-5" {
+		t.Fatalf("defaults: key %q model %q err %v", cfg.TenderKey, cfg.TenderModel, err)
+	}
+	vals := fullEnv()
+	vals["SITEWISE_ANTHROPIC_HAIKU_KEY"] = "sk-ant-test"
+	vals["SITEWISE_TENDER_MODEL"] = "claude-sonnet-5-5"
+	cfg, err = Load(getenvFrom(vals))
+	if err != nil || cfg.TenderKey != "sk-ant-test" || cfg.TenderModel != "claude-sonnet-5-5" {
+		t.Fatalf("set: key %q model %q err %v", cfg.TenderKey, cfg.TenderModel, err)
+	}
+	vals["SITEWISE_TENDER_MODEL"] = "latest"
+	if _, err = Load(getenvFrom(vals)); err == nil || strings.Contains(err.Error(), "sk-ant-test") {
+		t.Fatalf("a moving model id must be refused without printing the key: %v", err)
+	}
+}

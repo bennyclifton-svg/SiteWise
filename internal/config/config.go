@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -26,7 +27,17 @@ type Config struct {
 	SMTPPassword string
 	PublicOrigin string
 	Stripe       Stripe
+	// TenderKey is the model provider's key for the tender pass. Blank
+	// means the pass is off for every org.
+	TenderKey string
+	// TenderModel is the pinned model id for the tender pass.
+	TenderModel string
 }
+
+// DefaultTenderModel reads tenders unless SITEWISE_TENDER_MODEL names another.
+const DefaultTenderModel = "claude-haiku-5-5"
+
+var tenderModelID = regexp.MustCompile(`^claude-[a-z]+-[0-9]+(-[0-9]+)?$`)
 
 // Stripe is the billing setup. Without a secret key billing is off: plan
 // limits still apply, and upgrading reports that billing is not set up.
@@ -128,6 +139,15 @@ func Load(getenv func(string) string) (Config, error) {
 		PublicOrigin:  strings.TrimSpace(getenv("SITEWISE_PUBLIC_ORIGIN")),
 		SMTPUser:      strings.TrimSpace(getenv("SITEWISE_SMTP_USER")),
 		SMTPPassword:  getenv("SITEWISE_SMTP_PASSWORD"),
+	}
+	// A missing key is not an error: the tender pass is simply off.
+	cfg.TenderKey = strings.TrimSpace(getenv("SITEWISE_ANTHROPIC_HAIKU_KEY"))
+	cfg.TenderModel = strings.TrimSpace(getenv("SITEWISE_TENDER_MODEL"))
+	if cfg.TenderModel == "" {
+		cfg.TenderModel = DefaultTenderModel
+	}
+	if !tenderModelID.MatchString(cfg.TenderModel) {
+		return Config{}, fmt.Errorf("SITEWISE_TENDER_MODEL must be a pinned Claude model id")
 	}
 	if env == "production" {
 		var missing []string
