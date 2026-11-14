@@ -32,6 +32,8 @@ export function AsTendered({ table, tender, edits, head, onOpenPage }: Props) {
   const firm = (c: Column) => c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "");
   const editable = (c: Column) => !table.award && c.submission.status !== "awarded" && c.submission.status !== "unsuccessful";
   const busy = edits.busy;
+  // A combined engagement's rows are headed by discipline, as in the old table.
+  const groupHead = (key: string) => !table.group ? "" : key.startsWith("combined:") ? "Combined stages" : table.group.members.find(m => key.startsWith(`${m.key}:`))?.title ?? "";
 
   // A line, or every counted line of a cell, dropped on another row of the
   // same firm moves there as one batch. Another firm's column refuses it.
@@ -94,9 +96,7 @@ export function AsTendered({ table, tender, edits, head, onOpenPage }: Props) {
           const t = tcol(c);
           return <th scope="col" key={c.submission.id} className={t?.lowest ? "prices-firm lowest" : "prices-firm"}>
             {head(c, t)}
-            {!t && <span className="prices-firm-meta">Read the old way
-              {tender.on && c.submission.document_id && (c.submission.status === "received" || c.submission.status === "needs_review") &&
-                <button type="button" className="table-action" disabled={busy} onClick={() => void edits.readAgain(c.submission.id)}>Read prices</button>}</span>}
+            {!t && <span className="prices-firm-meta">Read the old way</span>}
             {t && !(t.state === "read" && t.checked && editable(c)) && <span className="tender-state" data-state={t.state === "read" ? (t.checked ? "checked" : "to-check") : t.state}>{t.state === "failed" ? "Prices not read" : columnState(t)}</span>}
             {t?.state === "read" && editable(c) && <button type="button" className="btn btn-small tender-check" disabled={busy} aria-pressed={t.checked}
               aria-label={t.checked ? `Checked: ${firm(c)}. Un-check` : `Mark ${firm(c)} checked`}
@@ -109,6 +109,7 @@ export function AsTendered({ table, tender, edits, head, onOpenPage }: Props) {
       </tr></thead>
       <tbody>
         {body.map((row, i) => <Fragment key={row.key}>
+          {groupHead(row.key) && groupHead(row.key) !== (i > 0 ? groupHead(body[i - 1].key) : "") && <tr className="prices-group"><th colSpan={cols.length + 1} scope="rowgroup">{groupHead(row.key)}</th></tr>}
           <tr><th scope="row" className="prices-item">{row.label}</th>{cols.map(c => cell(c, tcol(c), row, i === 0))}</tr>
           {panel(row)}
         </Fragment>)}

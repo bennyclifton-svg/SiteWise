@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"sitewise/internal/invoices"
 	"sitewise/internal/procurement"
 	"sitewise/internal/proposals"
@@ -69,6 +70,25 @@ func liveColumn(status string) bool {
 
 // ReadPriceTable is one package's price table in one read-only snapshot.
 func (s *Store) ReadPriceTable(ctx context.Context, org, project, pkg string) (PriceTable, error) {
+	// The read keeps the package's rows in step with its RFP as it goes, so
+	// it can meet a writer doing the same (a reading that has just landed).
+	// The snapshot then refuses to serialize; the read simply starts again.
+	var t PriceTable
+	var err error
+	for attempt := 0; attempt < 4; attempt++ {
+		if t, err = s.readPriceTableOnce(ctx, org, project, pkg); !serializationFailure(err) {
+			return t, err
+		}
+	}
+	return t, err
+}
+
+func serializationFailure(err error) bool {
+	var pg *pgconn.PgError
+	return errors.As(err, &pg) && pg.Code == "40001"
+}
+
+func (s *Store) readPriceTableOnce(ctx context.Context, org, project, pkg string) (PriceTable, error) {
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead})
 	if err != nil {
 		return PriceTable{}, err
@@ -158,9 +178,17 @@ func (s *Store) packageColumnsInner(ctx context.Context, tx pgx.Tx, org, project
 	// old-style column's totals and review must not see it.
 	var items []rfp.ScheduleItem
 	var stored []ScheduleItem
+	lumpSum := false
+	for _, it := range all {
+		lumpSum = lumpSum || it.Key == "stage:lump_sum"
+	}
 	for _, it := range all {
 		stored = append(stored, ScheduleItem{ScheduleItem: it})
-		if !isTenderKey(it.Key) {
+		// A head contract that still has its single quoted-price row is
+		// judged on that row alone when read the old way: the Main Works
+		// rows beside it belong to tender-read columns.
+		works := lumpSum && it.Base && it.Key != "stage:lump_sum" && !strings.HasPrefix(it.Key, "comparison:")
+		if !isTenderKey(it.Key) && !works {
 			items = append(items, it)
 		}
 	}

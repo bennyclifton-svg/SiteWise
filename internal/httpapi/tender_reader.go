@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -152,13 +153,14 @@ func (r *tenderReader) pass(ctx context.Context, orgID, id string) (tender.RawRe
 	if format == "" {
 		return none, tender.PassInfo{}, nil, nil, nil, errTenderKind
 	}
+	// The cause goes to the log; the screen is told "This file could not be opened."
 	path, err := r.blobs.Path(in.SHA256)
 	if err != nil {
-		return none, tender.PassInfo{}, nil, nil, nil, errTenderFile
+		return none, tender.PassInfo{}, nil, nil, nil, fmt.Errorf("%w: no stored file: %v", errTenderFile, err)
 	}
 	f, err := os.Open(path)
 	if err != nil {
-		return none, tender.PassInfo{}, nil, nil, nil, errTenderFile
+		return none, tender.PassInfo{}, nil, nil, nil, fmt.Errorf("%w: open: %v", errTenderFile, err)
 	}
 	text, err := identity.Extract(ctx, format, f, in.Size, tender.ExtractLimits())
 	f.Close()
@@ -166,7 +168,7 @@ func (r *tenderReader) pass(ctx context.Context, orgID, id string) (tender.RawRe
 		if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
 			return none, tender.PassInfo{}, nil, nil, nil, err
 		}
-		return none, tender.PassInfo{}, nil, nil, nil, errTenderFile
+		return none, tender.PassInfo{}, nil, nil, nil, fmt.Errorf("%w: extract: %v", errTenderFile, err)
 	}
 	var missing []int
 	if format == "pdf" {

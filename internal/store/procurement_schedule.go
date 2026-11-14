@@ -124,7 +124,20 @@ func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg
 	if builder, err := builderPackage(ctx, tx, org, pkg); err != nil {
 		return err
 	} else if builder {
-		return ensureBuilderSchedule(ctx, tx, org, project, pkg)
+		// A head contract is compared on the Main Works rows once the org has
+		// switched the model on (design section 8). With the switch off it
+		// keeps the single quoted-price row, exactly as before.
+		var on bool
+		if err := tx.QueryRow(ctx, `SELECT model_enabled_at IS NOT NULL FROM orgs WHERE id = $1::uuid`, org).Scan(&on); err != nil {
+			return err
+		}
+		if !on {
+			return ensureBuilderSchedule(ctx, tx, org, project, pkg)
+		}
+		if err := s.ensureRows(ctx, tx, org, project, pkg, true); err != nil {
+			return err
+		}
+		return keepOrRetireLumpSum(ctx, tx, org, project, pkg)
 	}
 	if group, err := groupPackage(ctx, tx, org, project, pkg); err != nil {
 		return err
@@ -132,11 +145,44 @@ func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg
 		_, err := s.ensureGroupSchedule(ctx, tx, org, project, pkg)
 		return err
 	}
+	return s.ensureRows(ctx, tx, org, project, pkg, false)
+}
+
+// keepOrRetireLumpSum keeps a head contract's single "Quoted construction
+// price" row only while something still rests on it: a submission read the
+// old way, a figure the manager confirmed there, or a live award.
+func keepOrRetireLumpSum(ctx context.Context, tx pgx.Tx, org, project, pkg string) error {
+	var used bool
+	if err := tx.QueryRow(ctx, `SELECT
+ EXISTS(SELECT 1 FROM submissions s WHERE s.org_id=$1::uuid AND s.package_id=$2::uuid AND s.tender_state <> 'read'
+  AND s.status IN ('reading','received','needs_review','awarded','unsuccessful'))
+ OR EXISTS(SELECT 1 FROM submission_prices p JOIN submissions s ON s.org_id=p.org_id AND s.id=p.submission_id
+  WHERE p.org_id=$1::uuid AND s.package_id=$2::uuid AND p.item_key='stage:lump_sum' AND p.decided_by='user' AND s.tender_state <> 'read')
+ OR EXISTS(SELECT 1 FROM awards a JOIN submissions s ON s.org_id=a.org_id AND s.id=a.submission_id
+  WHERE a.org_id=$1::uuid AND a.package_id=$2::uuid AND a.undone_at IS NULL AND s.tender_state <> 'read')`, org, pkg).Scan(&used); err != nil {
+		return err
+	}
+	if !used {
+		_, err := tx.Exec(ctx, `UPDATE schedule_items SET retired_at=now(), updated_at=now() WHERE org_id=$1::uuid AND package_id=$2::uuid AND key='stage:lump_sum' AND retired_at IS NULL`, org, pkg)
+		return err
+	}
+	_, err := tx.Exec(ctx, `INSERT INTO schedule_items(org_id,project_id,package_id,key,kind,label,detail,base,ordinal,source)
+VALUES($1::uuid,$2::uuid,$3::uuid,'stage:lump_sum','stage','Quoted construction price','Whole quoted scope; allowances and breakdowns are not additional prices',true,0,'generic')
+ON CONFLICT(org_id,package_id,key) DO UPDATE SET retired_at=NULL, updated_at=now() WHERE schedule_items.retired_at IS NOT NULL`, org, project, pkg)
+	return err
+}
+
+// ensureRows gives a package its RFP or RFT rows: the current draft's
+// schedule, or the discipline's default. headContract is a head contract
+// with the model switched on: its old single row does not count as "has
+// rows", so the Main Works rows are made beside it.
+func (s *Store) ensureRows(ctx context.Context, tx pgx.Tx, org, project, pkg string, headContract bool) error {
 	if synced, err := s.syncRFPSchedule(ctx, tx, org, project, pkg); err != nil || synced {
 		return err
 	}
 	var have bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL)`, org, pkg).Scan(&have); err != nil || have {
+	if err := tx.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM schedule_items WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL
+ AND ($3 = false OR (key <> 'stage:lump_sum' AND key NOT LIKE 'tender:%' AND key NOT LIKE 'comparison:%' AND base)))`, org, pkg, headContract).Scan(&have); err != nil || have {
 		return err
 	}
 	cat := s.workCatalog()
@@ -177,6 +223,10 @@ func (s *Store) ensureSchedule(ctx context.Context, tx pgx.Tx, org, project, pkg
 			items = rfp.Schedule(rfp.Resolve(d, sk, rfp.Drivers(snap, sk), rfp.Settings{}))
 			source = ScheduleFromDefault
 		}
+	}
+	if headContract && source == ScheduleGeneric {
+		// No Main Works knowledge is loaded: keep the single quoted-price row.
+		return ensureBuilderSchedule(ctx, tx, org, project, pkg)
 	}
 	return upsertSchedule(ctx, tx, org, project, pkg, items, source)
 }

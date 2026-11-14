@@ -83,9 +83,10 @@ export async function waitRead(page: Page, p: TenderPackage, subs: string[]): Pr
 }
 
 /** Opens the package's price table in the browser. */
-export async function openPrices(page: Page, p: TenderPackage, rowName = "Town Planner"): Promise<void> {
+export async function openPrices(page: Page, p: TenderPackage, rowName = "Town Planner", tab = ""): Promise<void> {
   await page.goto(`/projects/${p.project}`);
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
+  if (tab) await page.getByRole("tab", { name: new RegExp(`^${tab}`) }).click();
   await page.getByRole("row", { name: new RegExp(`^${rowName}`) }).getByRole("button", { name: new RegExp(`(?:Compare|Review) ${rowName}`) }).click();
 }
 

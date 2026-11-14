@@ -54,6 +54,14 @@ func (s *Store) planGroupAward(ctx context.Context, tx pgx.Tx, org, project, gro
 	if sub.Status != SubmissionReceived && sub.Status != SubmissionNeedsReview {
 		return g, ErrInvalidInput
 	}
+	// A tender-read column is a proposal until the manager has checked it.
+	var unchecked bool
+	if err := tx.QueryRow(ctx, `SELECT tender_state = 'read' AND tender_checked_at IS NULL FROM submissions WHERE org_id=$1::uuid AND id::text=$2`, org, sub.ID).Scan(&unchecked); err != nil {
+		return g, err
+	}
+	if unchecked {
+		return g, tenderInvalid("Check this firm's column before awarding.")
+	}
 	if sub.FirmID == "" {
 		return g, fmt.Errorf("%w: name the appointed firm on this proposal before awarding", ErrInvalidInput)
 	}
@@ -85,7 +93,9 @@ func (s *Store) planGroupAward(ctx context.Context, tx pgx.Tx, org, project, gro
 	live := map[string]ScheduleItem{}
 	for _, it := range schedule {
 		member, _, combined := proposals.SplitItemKey(it.Key)
-		if !it.Retired && it.Price() && (combined || owner[member] != "") {
+		// "Not broken down" belongs to no discipline: it is a line under the
+		// engagement itself.
+		if !it.Retired && it.Price() && (combined || owner[member] != "" || isTenderKey(it.Key)) {
 			live[it.Key] = it
 		}
 	}
@@ -107,7 +117,7 @@ func (s *Store) planGroupAward(ctx context.Context, tx pgx.Tx, org, project, gro
 			}
 			member, _, combined := proposals.SplitItemKey(k)
 			parent := ""
-			if !combined {
+			if !combined && !isTenderKey(k) {
 				parent = owner[member]
 			}
 			if i > 0 && parent != line.Member {

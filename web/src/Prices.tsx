@@ -155,14 +155,17 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       <button type="button" className="prices-firm-name" onClick={() => setPanel(panel === c.submission.id ? "" : c.submission.id)} aria-expanded={panel === c.submission.id}>
         {c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "")}{!table.builder && c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
       </button>
-      <details className={table.builder ? "builder-firm-actions" : "prices-firm-actions"} open={table.builder ? undefined : true}>
-      <summary hidden={!table.builder} aria-label={`Options for ${c.firm?.name ?? c.submission.filename}`}>⋯</summary>
+      {/* The old builder table tucks these behind "⋯"; a tender column shows them. */}
+      <details className={table.builder && !t ? "builder-firm-actions" : "prices-firm-actions"} open={table.builder && !t ? undefined : true}>
+      <summary hidden={!table.builder || !!t} aria-label={`Options for ${c.firm?.name ?? c.submission.filename}`}>⋯</summary>
       <span className="prices-firm-meta">{day(c.submission.received_on)} · <span className="prices-status" data-status={c.submission.status}>{c.submission.status === "reading" ? <Pending>Reading proposal…</Pending> : STATUS_WORDS[c.submission.status]}</span></span>
       {!c.submission.document_id && c.submission.status !== "awarded" && <label className="prices-upload">
         <span>{uploading === c.submission.id ? <Pending>Uploading proposal…</Pending> : "Upload proposal"}</span>
         <input type="file" aria-label={`Upload proposal for ${c.firm?.name ?? c.submission.filename}`} accept=".pdf,.docx,.xlsx" disabled={busy} onChange={e => { void attach(c.submission.id, e.target.files?.[0]); e.target.value = ""; }} />
         <small>Or drop here. Also saved in Documents.</small>
       </label>}
+      {!t && tender?.on && c.submission.document_id && (c.submission.status === "received" || c.submission.status === "needs_review") && !table.award &&
+        <button type="button" className="table-action" disabled={busy || edits.busy} title="List this tender's prices with the model, for you to check" onClick={() => void edits.readAgain(c.submission.id)}>Read prices</button>}
       {awardable && <button type="button" className="btn btn-small prices-award" disabled={busy || edits.busy || (t ? unchecked : builderUnconfirmed)} title={unchecked ? "Check this column first" : undefined} onClick={() => setAwardFor(c.submission.id)}>Award</button>}
       {!t && c.undo_alignment && !table.award && <button className="table-action prices-undo" disabled={busy} onClick={() => void run(() => submissionApi.align(projectId, c.submission.id, c.submission.version, "", [], true)).then(ok => { if (ok) setMoving(null); })}>Undo last alignment</button>}
       </details>

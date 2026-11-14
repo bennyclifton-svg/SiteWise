@@ -54,7 +54,9 @@ func (s *Store) tenderRows(ctx context.Context, tx pgx.Tx, org, project, pkg str
 	}
 	var rows []tender.Row
 	for _, it := range items {
-		if it.Retired || !it.Price() || strings.HasPrefix(it.Key, tenderPrefix) {
+		// Neither the system row nor a head contract's old single row is
+		// offered to the model: a line belongs on a row of the works.
+		if it.Retired || !it.Price() || strings.HasPrefix(it.Key, tenderPrefix) || it.Key == "stage:lump_sum" {
 			continue
 		}
 		rows = append(rows, tender.Row{Key: it.Key, Label: it.Label, Detail: it.Detail})
