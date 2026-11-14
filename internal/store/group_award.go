@@ -174,7 +174,7 @@ func (s *Store) previewGroupAward(ctx context.Context, tx pgx.Tx, org, project, 
 	if err != nil {
 		return g.View, err
 	}
-	if parent, err := packageFeeLine(ctx, tx, org, project, group); err != nil {
+	if parent, err := packageFeeLine(ctx, tx, org, project, group, "fee"); err != nil {
 		return g.View, err
 	} else if parent != nil {
 		g.View.Budget = budgetCents(*parent)

@@ -176,4 +176,43 @@ func TestAwardATenderReadHeadContract(t *testing.T) {
 	if !hasSystem {
 		t.Fatal("Not broken down is not among the award lines")
 	}
+	// The award itself: a works package takes contract lines in the cost
+	// plan (works lines under the package, naming no system), the contract
+	// counts under construction, and the award can be undone.
+	awarded, err := s.Award(ctx, orgA, projectA, pkg, userA, award)
+	if err != nil || awarded.Total != 55000000 {
+		t.Fatalf("award: total %d: %v", awarded.Total, err)
+	}
+	plan, err := s.ReadCostPlan(ctx, orgA, projectA, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	contract := 0
+	for _, it := range plan.Items {
+		if it.PackageID == pkg && it.Posting {
+			if it.LineKind != "works" || it.SystemID != "" || it.WorkItemID != "" {
+				t.Fatalf("award line %+v", it.Content)
+			}
+			contract++
+		}
+	}
+	if contract != 3 {
+		t.Fatalf("%d contract lines", contract)
+	}
+	live, err := s.ReadAward(ctx, orgA, projectA, pkg)
+	if err != nil || live == nil || live.Total != 55000000 || len(live.Lines) != 3 {
+		t.Fatalf("read award %+v: %v", live, err)
+	}
+	if err := s.UndoAward(ctx, orgA, projectA, pkg, userA); err != nil {
+		t.Fatalf("undo award: %v", err)
+	}
+	if live, err := s.ReadAward(ctx, orgA, projectA, pkg); err != nil || live != nil {
+		t.Fatalf("after undo %+v: %v", live, err)
+	}
+	plan, _ = s.ReadCostPlan(ctx, orgA, projectA, "")
+	for _, it := range plan.Items {
+		if it.PackageID == pkg && it.LineKind == "works" && it.SystemID == "" && it.WorkItemID == "" {
+			t.Fatalf("a contract line outlived the undo: %+v", it.Content)
+		}
+	}
 }

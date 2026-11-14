@@ -113,7 +113,11 @@ func ValidateContent(c Content) error {
 	}
 	switch c.LineKind {
 	case "works":
-		if (c.WorkItemID == "") == (c.SystemID == "") || c.PackageStageID != "" || c.Category != "" {
+		// A works line belongs to one work item or one system. The one
+		// exception is a contract line: an awarded builder's or trade's
+		// price sits under its package and names neither.
+		contract := c.WorkItemID == "" && c.SystemID == "" && c.PackageID != ""
+		if ((c.WorkItemID == "") == (c.SystemID == "") && !contract) || c.PackageStageID != "" || c.Category != "" {
 			return ErrInvalid
 		}
 	case "fee":

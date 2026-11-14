@@ -369,7 +369,11 @@ func (s *Store) PreviewAward(ctx context.Context, org, project, pkg string, in A
 	if err != nil {
 		return v, err
 	}
-	parent, err := packageFeeLine(ctx, tx, org, project, pkg)
+	lineKind, err := awardLineKind(ctx, tx, org, pkg)
+	if err != nil {
+		return v, err
+	}
+	parent, err := packageFeeLine(ctx, tx, org, project, pkg, lineKind)
 	if err != nil {
 		return v, err
 	}
@@ -381,14 +385,50 @@ func (s *Store) PreviewAward(ctx context.Context, org, project, pkg string, in A
 
 // packageFeeLine is the package's top-level fee line in the draft, the
 // generated one first. Nil when there is none.
-func packageFeeLine(ctx context.Context, tx pgx.Tx, org, project, pkg string) (*costs.Item, error) {
+// awardLineKind is the cost line kind an award writes under a package: a
+// works package (a trade, the head contract) holds works lines, a services
+// package holds fee lines. The cost plan refuses a line of the other kind.
+func awardLineKind(ctx context.Context, tx pgx.Tx, org, pkg string) (string, error) {
+	var kind string
+	if err := tx.QueryRow(ctx, `SELECT kind FROM packages WHERE org_id=$1::uuid AND id::text=$2`, org, pkg).Scan(&kind); err != nil {
+		return "", err
+	}
+	if kind == "works" {
+		return "works", nil
+	}
+	return "fee", nil
+}
+
+// packageEstimated reports whether the draft already holds a budget on a
+// line of this package other than the award's own parent: the works
+// estimate, system by system. An award then leaves the budget alone, so
+// the estimate and the contract are not both counted as budget.
+func packageEstimated(ctx context.Context, tx pgx.Tx, org, project, pkg, parentID string) (bool, error) {
+	p, err := readCostPlan(ctx, tx, org, project, "")
+	if err != nil {
+		return false, err
+	}
+	for _, it := range p.Items {
+		if it.ID == parentID || it.ParentItemID == parentID || it.Excluded {
+			continue
+		}
+		if (it.PackageID == pkg || it.ResolvedPackageID == pkg) && !blankBudget(it.Values["budget"]) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func packageFeeLine(ctx context.Context, tx pgx.Tx, org, project, pkg, lineKind string) (*costs.Item, error) {
 	p, err := readCostPlan(ctx, tx, org, project, "")
 	if err != nil || p.Status != "draft" {
 		return nil, err
 	}
 	var found []costs.Item
 	for _, it := range p.Items {
-		if it.LineKind == "fee" && it.PackageID == pkg && it.ParentItemID == "" {
+		// A works package's own line names no work item and no system;
+		// its estimate lines, which do, are never the award's parent.
+		if it.LineKind == lineKind && it.WorkItemID == "" && it.SystemID == "" && it.PackageID == pkg && it.ParentItemID == "" {
 			found = append(found, it)
 		}
 	}
@@ -470,7 +510,11 @@ func (s *Store) Award(ctx context.Context, org, project, pkg, actor string, in A
 	if err != nil {
 		return v, err
 	}
-	parent, err := packageFeeLine(ctx, tx, org, project, pkg)
+	lineKind, err := awardLineKind(ctx, tx, org, pkg)
+	if err != nil {
+		return v, err
+	}
+	parent, err := packageFeeLine(ctx, tx, org, project, pkg, lineKind)
 	if err != nil {
 		return v, err
 	}
@@ -482,7 +526,7 @@ func (s *Store) Award(ctx context.Context, org, project, pkg, actor string, in A
 	parentID := ""
 	if created {
 		parentID = newID()
-		c := costs.Content{Label: v.ParentLabel, LineKind: "fee", PackageID: pkg, Posting: false, Origin: "user", Meaning: "stated"}
+		c := costs.Content{Label: v.ParentLabel, LineKind: lineKind, PackageID: pkg, Posting: false, Origin: "user", Meaning: "stated"}
 		if err := s.insertCostItem(ctx, tx, org, project, p.ID, actor, parentID, c); err != nil {
 			return v, err
 		}
@@ -507,7 +551,15 @@ WHERE org_id=$1::uuid AND plan_version_id=$2::uuid AND cost_item_id=$3::uuid`, o
 	// A group with no budget adopts the approved contract sum (owner
 	// direction, 7 Nov 2026). The sum is the firm's priced lines, so no
 	// figure is invented; a budget the PM set is never touched.
-	if parent == nil || blankBudget(parent.Values["budget"]) {
+	adopt := parent == nil || blankBudget(parent.Values["budget"])
+	if adopt && lineKind == "works" {
+		estimated, err := packageEstimated(ctx, tx, org, project, pkg, parentID)
+		if err != nil {
+			return v, err
+		}
+		adopt = !estimated
+	}
+	if adopt {
 		amount := costs.Money(invoices.FormatCents(v.Total))
 		adopted := costs.Value{ValueState: "known", Amount: &amount, Origin: "user", Meaning: "stated", Rationale: clipText(adoptedBudget+" awarded to "+firm.Name, 1000)}
 		if err := writeCostValue(ctx, tx, org, project, p.ID, parentID, actor, "budget", adopted); err != nil {
@@ -551,7 +603,7 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6::uuid,$7,$8::jsonb,$9::u
 		}
 		rationale = clipText(rationale, 1000)
 		// Codes keep the PM's order under the group: F01.1, F01.2, ...
-		c := costs.Content{ParentItemID: parentID, Code: clipText(code+"."+strconv.Itoa(i+1), 100), Label: l.Label, LineKind: "fee", PackageID: pkg, Posting: true, Origin: "user", Meaning: "stated", Rationale: rationale}
+		c := costs.Content{ParentItemID: parentID, Code: clipText(code+"."+strconv.Itoa(i+1), 100), Label: l.Label, LineKind: lineKind, PackageID: pkg, Posting: true, Origin: "user", Meaning: "stated", Rationale: rationale}
 		if err := s.insertCostItem(ctx, tx, org, project, p.ID, actor, id, c); err != nil {
 			return v, err
 		}
