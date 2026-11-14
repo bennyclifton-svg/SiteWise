@@ -83,7 +83,7 @@ WHERE (schedule_items.kind, schedule_items.label, schedule_items.detail, schedul
 		return err
 	}
 	_, err := tx.Exec(ctx, `UPDATE schedule_items SET retired_at = now(), updated_at = now()
-WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL AND NOT comparison_custom AND comparison_label IS NULL AND comparison_kind IS NULL AND NOT (key = ANY($3::text[]))`, org, pkg, keys)
+WHERE org_id = $1::uuid AND package_id = $2::uuid AND retired_at IS NULL AND NOT comparison_custom AND comparison_label IS NULL AND comparison_kind IS NULL AND NOT (key = ANY($3::text[])) AND key NOT LIKE 'tender:%'`, org, pkg, keys)
 	return err
 }
 

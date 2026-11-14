@@ -741,11 +741,24 @@ func replaceMachinePrices(ctx context.Context, tx pgx.Tx, org, project, id strin
 	if aligned {
 		return nil
 	}
-	if _, err := tx.Exec(ctx, `DELETE FROM submission_prices WHERE org_id=$1::uuid AND submission_id=$2::uuid AND decided_by <> 'user'`, org, id); err != nil {
+	// Once the tender pass has read a submission its fee cells are written
+	// from its lines. The old reader keeps only the hourly rates.
+	var tenderRead bool
+	if err := tx.QueryRow(ctx, `SELECT tender_state = 'read' FROM submissions WHERE org_id=$1::uuid AND id=$2::uuid`, org, id).Scan(&tenderRead); err != nil {
+		return err
+	}
+	del := `DELETE FROM submission_prices WHERE org_id=$1::uuid AND submission_id=$2::uuid AND decided_by <> 'user'`
+	if tenderRead {
+		del += ` AND item_key LIKE 'rate:%'`
+	}
+	if _, err := tx.Exec(ctx, del, org, id); err != nil {
 		return err
 	}
 	for n, p := range prices {
 		if p.State == "" && p.Key == "" {
+			continue
+		}
+		if tenderRead && !strings.HasPrefix(p.Key, "rate:") {
 			continue
 		}
 		state := p.State

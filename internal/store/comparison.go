@@ -35,6 +35,8 @@ type FirmColumn struct {
 	NeedsReview   bool                          `json:"needs_review"`
 	Decisions     map[string]proposals.Decision `json:"decisions"`
 	UndoAlignment bool                          `json:"undo_alignment"`
+	// Tender is the firm's tender pass, when one was asked for.
+	Tender *TenderColumn `json:"-"`
 }
 
 // PriceTable is a package's schedule down the side and its firms across.
@@ -52,6 +54,8 @@ type PriceTable struct {
 	// Earlier is superseded, withdrawn and not-a-proposal submissions,
 	// kept and shown below the table.
 	Earlier []Submission `json:"earlier"`
+	// Tender is the two tender tables (contract C5).
+	Tender *TenderTable `json:"-"`
 }
 
 // liveColumn is a submission that appears in the table.
@@ -120,12 +124,31 @@ func (s *Store) priceTable(ctx context.Context, tx pgx.Tx, org, project, pkg str
 		return t, err
 	}
 	t.Columns, t.Earlier = cols, earlier
+	t.Tender = &TenderTable{Rows: tenderRowsOf(t.Items), Columns: []TenderColumn{}, Adjustments: []TenderAdjustment{}}
+	if t.Tender.Version, t.Tender.On, err = tenderVersion(ctx, tx, org, pkg); err != nil {
+		return t, err
+	}
+	for i := range cols {
+		if cols[i].Tender != nil {
+			t.Tender.Columns = append(t.Tender.Columns, *cols[i].Tender)
+		}
+	}
 	return t, nil
 }
 
 // packageColumns loads every submission of one package with its firm, cells
 // and decisions, and computes each live column's totals.
-func (s *Store) packageColumns(ctx context.Context, tx pgx.Tx, org, project, pkg string, items []rfp.ScheduleItem) ([]FirmColumn, []Submission, error) {
+func (s *Store) packageColumns(ctx context.Context, tx pgx.Tx, org, project, pkg string, all []rfp.ScheduleItem) ([]FirmColumn, []Submission, error) {
+	// The "Not broken down" row belongs to tender-read columns only: an
+	// old-style column's totals and review must not see it.
+	var items []rfp.ScheduleItem
+	var stored []ScheduleItem
+	for _, it := range all {
+		stored = append(stored, ScheduleItem{ScheduleItem: it})
+		if !isTenderKey(it.Key) {
+			items = append(items, it)
+		}
+	}
 	isBuilder, err := builderPackage(ctx, tx, org, pkg)
 	if err != nil {
 		return nil, nil, err
@@ -275,6 +298,15 @@ FROM submission_prices WHERE org_id=$1::uuid AND submission_id::text=$2 ORDER BY
 	if !isBuilder && !hasQuoted {
 		proposals.MarkLowest(totals)
 	}
+	live := make([]string, len(cols))
+	for i := range cols {
+		live[i] = cols[i].Submission.ID
+	}
+	tcols, _, err := packageTender(ctx, tx, org, stored, live)
+	if err != nil {
+		return nil, nil, err
+	}
+	applyTender(cols, totals, tcols)
 	for i := range cols {
 		cols[i].Totals = totals[i]
 	}
