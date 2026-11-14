@@ -33,6 +33,10 @@ data/reference/classifications/*.pdf
 data/eval/invoice/private/
 # Real fee proposals and their recorded Jev answers.
 data/eval/proposal/private/
+# Real tender submissions (prices, names, phone numbers). Never published.
+testing/rft/
+# Tender read trial and answer key: real firms and prices.
+data/eval/tender/private/
 
 # tsc -b emits stale .js beside the .ts sources; the .ts files are the source.
 web/tests/*.js
