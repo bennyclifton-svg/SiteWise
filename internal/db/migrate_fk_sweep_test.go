@@ -185,6 +185,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["submission_decisions"] = row{"org_id": org, "project_id": p, "submission_id": submission, "field": "firm", "band": "green", "decided_by": "rule"}
 		f["submission_passages"] = row{"org_id": org, "project_id": p, "submission_id": submission, "ordinal": 0, "body": "Fee"}
 		f["submission_prices"] = row{"org_id": org, "id": id(3600 + n), "project_id": p, "submission_id": submission, "item_key": "stage:design", "state": "not_priced", "band": "green", "decided_by": "rule"}
+		f["tender_lines"] = row{"org_id": org, "id": id(4400 + n), "project_id": p, "submission_id": submission, "ordinal": 0, "label": "Fee", "state": "included", "kind": "base", "placed": "sum", "decided_by": "model"}
 		f["submission_responses"] = row{"org_id": org, "project_id": p, "submission_id": submission, "item_key": "criterion:r2", "rating": "strong", "rated_by": u}
 		f["comparison_reports"] = row{"org_id": org, "project_id": p, "package_id": pkg, "recommendation_by": u, "signed_off_by": u, "signed_off_at": "2026-10-16T00:00:00Z"}
 		f["awards"] = row{"org_id": org, "id": award, "project_id": p, "package_id": pkg, "submission_id": submission, "parent_item_id": costID, "parent_created": false, "created_by": u}

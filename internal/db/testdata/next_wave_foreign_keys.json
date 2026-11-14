@@ -141,6 +141,7 @@
   "submissions_org_id_project_id_fkey": "FOREIGN KEY (org_id, project_id) REFERENCES projects(org_id, id) ON DELETE CASCADE",
   "submissions_org_id_project_id_package_id_fkey": "FOREIGN KEY (org_id, project_id, package_id) REFERENCES packages(org_id, project_id, id)",
   "submissions_org_id_project_id_superseded_by_fkey": "FOREIGN KEY (org_id, project_id, superseded_by) REFERENCES submissions(org_id, project_id, id)",
+  "tender_lines_org_id_project_id_submission_id_fkey": "FOREIGN KEY (org_id, project_id, submission_id) REFERENCES submissions(org_id, project_id, id) ON DELETE CASCADE",
   "visual_identity_org_id_document_id_fkey": "FOREIGN KEY (org_id, document_id) REFERENCES documents(org_id, id) ON DELETE CASCADE",
   "work_items_org_id_project_id_parent_id_fkey": "FOREIGN KEY (org_id, project_id, parent_id) REFERENCES work_items(org_id, project_id, id)",
   "work_items_org_id_project_id_site_id_fkey": "FOREIGN KEY (org_id, project_id, site_id) REFERENCES projects(org_id, id, site_id) ON DELETE CASCADE",
