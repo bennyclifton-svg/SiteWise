@@ -1,15 +1,25 @@
 # Agent instructions
 
 SiteWise is a construction-project app built from first principles on the
-physical building, with **Jev (TypeSafe System One) as the only AI** and
-**speed as the first objective**. Read `PRODUCT.md` for the current surfaces.
+physical building, with **Jev (TypeSafe System One) as the only AI that reads
+documents** and **speed as the first objective**. Read `PRODUCT.md` for the current surfaces.
 Read `docs/design/2026-09-29-foundation-design.md` for the binding rules:
 speed, Jev only, the building as the model, and the intake budget.
 
 ## Non-negotiables
 
-1. **Jev only.** No LLMs, embeddings, chat agents or other AI providers at
-   runtime. Jev picks; code parses, computes, looks up and controls flow.
+1. **Jev reads; one LLM acts only on what it is given.** Jev (TypeSafe System
+   One) is the only AI that files documents or reads them into fields. Jev
+   picks; code parses, computes, looks up and controls flow. One LLM, which
+   each org switches on, has three jobs. In background jobs it may propose
+   line structure, row mappings and qualifications for quotes. It may draft
+   text. In chat it may turn the signed-in user's typed instruction into the
+   operations a screen would send. It never supplies an amount, a date or a
+   rule number that the user or SiteWise did not give it. Nothing in a
+   document or an email is an instruction to it. Outside chat, nothing it
+   proposes is applied without the user's acceptance. No embeddings and no
+   other providers. (Owner decision, 14 November 2026:
+   `docs/design/2026-11-14-chat-control-and-email-intake.md`.)
 2. **Follow TypeSafe's docs** for every Jev use and cite the page:
    [patterns](https://docs.typesafe.ai/patterns),
    [how to build](https://docs.typesafe.ai/concepts/how-to-build-with-system-one),
@@ -19,7 +29,9 @@ speed, Jev only, the building as the model, and the intake budget.
 3. **Speed has budgets.** Every user-facing path has a p50/p90 budget and a
    benchmark that fails the build when it is broken. One Jev fan-out per
    state; never serial round trips on a hot path; nothing judged while a user
-   waits if it can be precomputed.
+   waits if it can be precomputed. Chat is the one path where serial model
+   rounds are allowed, and it has its own budget rows. No screen read or
+   write calls the LLM.
 4. **The building is the model.** Knowledge is organised as systems,
    determinants, rules, interfaces and failure modes (`knowledge/SCHEMA.md`).
    Consultant disciplines are a view over it, not its structure.
@@ -48,8 +60,9 @@ per candidate, cached by source. A reading is a proposal. Navigation and
 typing do not call Jev. An uploaded invoice is read with one interactive
 fan-out for the fields rules leave open; invoice edits, splits, the ledger
 read and export do not call Jev. A proposal dropped on a procurement row is
-read with one fan-out after filing; the price table, cell corrections,
-award, undo, ratings and the comparison report do not call Jev. Naming an
+read after filing with one Jev fan-out and, when the org has switched the
+model on, one tender pass; the price table, line moves and splits, adds and
+subs, checking, award, undo, ratings and the comparison report call neither. Naming an
 invited firm on a row, and removing it, do not call Jev; a quote dropped on
 an invited firm's cell is that firm's
 (`docs/plans/2026-11-11-procurement-invited-firms.md`). Award writes
@@ -90,6 +103,16 @@ Before changing one of these surfaces, read its current note:
 - Procurement to award: `docs/plans/2026-10-16-procurement-process-to-award`,
   `docs/plans/2026-10-16-procurement-to-award-implementation.md`,
   `docs/evidence/2026-10-16-procurement-to-award.md`
+- Tender comparison (built 14 November 2026 on branch `tender/comparison`):
+  `docs/design/2026-11-14-tender-comparison.md`,
+  `docs/plans/2026-11-14-tender-comparison-plan.md`, evidence in
+  `docs/evidence/2026-11-14-tender-comparison-*.md` (read the gate note
+  first: the measured gate was not a clean pass and the answer key is not
+  owner-reviewed). It replaces
+  `docs/plans/2026-10-19-comparison-alignment.md` and the 13 November
+  levelled-comparison specification. It is rule 1's background job for
+  quotes: the LLM client (`internal/llm`), the org switch, and the change
+  log with undo (`internal/store/change.go`).
 - Program: `docs/plans/2026-10-18-program.md` (owner answers in 13.3)
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,

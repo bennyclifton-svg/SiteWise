@@ -106,7 +106,16 @@ The workbench, in navigation order:
   row is filed and read in a few seconds: firm, prices against the schedule,
   rates, exclusions and departures. The price table compares firms line by
   line on the RFP's own rows, flags what needs a look, and takes a
-  correction in one click. Award writes the chosen firm's lines under the
+  correction in one click. When the org has switched the tender model on
+  in Account, the tender is also read in the background, and within about
+  a minute the price screen shows two tables instead. "As tendered" sits
+  on the RFP or RFT rows, and each firm's column adds to that firm's
+  tender sum; what the firm did not break down is shown on a row of its
+  own. "Adds and subs" lists what one firm priced and another left out,
+  and gives a like-for-like total. The manager moves, splits and corrects
+  lines, applies or types adds and subs, marks each column checked, and
+  awards; an edit can be undone. No edit calls a model. Without the
+  switch, tenders are read the old way. Award writes the chosen firm's lines under the
   package in the cost plan as the contract, and can be undone until an
   invoice is allocated. A one-page comparison report holds price, non-price
   ratings the user sets, a recommendation and sign-off, and prints A4.
@@ -127,10 +136,14 @@ in the left nav. Consultant suggestions still appear on Procurement.
 
 ## Positioning
 
-Jev (TypeSafe System One) is the only AI, and it only picks. It is used where
+Jev (TypeSafe System One) is the only AI that files documents or reads them
+into fields, and it only picks. It is used where
 a document must be read: filing, profile evidence, invoices, proposals (one
 fan-out after filing), and the background specification import (one fan-out
-per candidate). Code parses, harvests
+per candidate). One model, which each org switches on, lists the lines of a
+tender in the background. It supplies no amount of its own: every figure is
+checked in Go against the words on the page, and nothing it proposes counts
+until the manager has checked the column. Code parses, harvests
 candidates, computes, orders revisions and controls flow. Cost arithmetic,
 package suggestions, procurement creates and specification acceptance are code
 and user acts. Typing and navigation do not call Jev.
@@ -142,7 +155,12 @@ value is never overwritten.
 ## Operating Context
 
 A Go single binary serves the API, event stream (SSE) and embedded React SPA
-from one host with PostgreSQL 17 and content-addressed files. Anyone can
+from one host with PostgreSQL 17 and content-addressed files. A signed-out
+visitor at `/` sees the landing page (`web/src/landing`): what SiteWise
+builds from a project's folder, in five notes beside screens of a sample
+project, with one action that opens the create-account panel at `/signup`.
+Sign-in is at `/signin`; `/welcome` shows the landing page to anyone. It
+reads nothing from the server and calls no model. Anyone can
 sign up with email and password; each account is its own org with one owner
 and many projects, and every project belongs to one org. No sharing yet. Documents are
 the working material: consultant drawings with title blocks, reports, specs,

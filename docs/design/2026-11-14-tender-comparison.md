@@ -1,6 +1,11 @@
 # Tender comparison: as tendered, adds and subs, like for like
 
-Date: 14 November 2026. Status: proposed, nothing built. Lane A (product core).
+Date: 14 November 2026. Status: built on branch `tender/comparison` (slices 0
+to 8), not merged, not deployed. The measured gate was not a clean pass and
+the answer key is not owner-reviewed: see
+`docs/evidence/2026-11-14-tender-comparison-gate.md`. What differs from this
+note is listed in `docs/evidence/2026-11-14-tender-comparison-slice8.md`.
+Lane A (product core).
 
 This note replaces every earlier comparison plan, including
 `docs/plans/2026-11-13-Levelled-tender-comparison-specification.md` and

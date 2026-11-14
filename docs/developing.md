@@ -124,7 +124,7 @@ Lane: [A core / B edge / C security]
 
 Out of scope:
 - Do not add a new service, database, AI provider, or dependency unless you stop and say why the current stack cannot do it.
-- Jev is the only model. Code parses, computes, looks up, and controls flow. One Jev fan-out for this state. No serial Jev calls on a click.
+- Jev is the only AI that files documents or reads them into fields. The one LLM (AGENTS.md rule 1) works only in a background job or in chat, never on a screen read or write, and supplies no amount. Code parses, computes, looks up, and controls flow. One Jev fan-out for this state. No serial Jev calls on a click.
 - Do not invent rule numbers. Unverified rules stay verified: false.
 
 Speed (this is a gate, not a wish):

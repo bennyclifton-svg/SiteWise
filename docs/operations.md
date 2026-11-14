@@ -150,6 +150,9 @@ moves: no database, no Supabase backup, no old files.
 | `SITEWISE_SESSION_SECRET` | yes | fresh random |
 | `SITEWISE_JEV_API_KEY` | yes | authorized TypeSafe key |
 | `SITEWISE_JEV_MODEL` | yes | must be `jev-1.13.0`; aliases are refused |
+| `SITEWISE_ANTHROPIC_HAIKU_KEY` | optional | the model provider's key for the tender pass. Blank: the pass is off for every org and tenders are read the old way |
+| `SITEWISE_TENDER_MODEL` | optional | a pinned Claude model id; default `claude-haiku-5-5`. Aliases are refused |
+| `SITEWISE_TENDER_SKIP_JEV_PRICES` | optional | `1` stops asking Jev the fee and total questions for a tender the pass will read. Leave unset until the owner has used the new tables on a live package: unset, the old reading stays underneath as a fallback |
 | `SITEWISE_ENV` | production | `production` sets secure cookies and requires the three below |
 | `SITEWISE_PUBLIC_ORIGIN` | in production | `https://sitewise.au`; mutating requests must carry this Origin |
 | `SITEWISE_SMTP_ADDR` | in production | local relay, `127.0.0.1:25` |

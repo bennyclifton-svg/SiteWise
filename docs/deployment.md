@@ -98,6 +98,31 @@ themselves when the app starts.
 Keep the last three releases in `/opt/sitewise-releases` and delete older
 ones; the disk is 60 GB.
 
+## Tender pass (optional)
+
+The tender pass lists the lines of a tender with one model call in the
+background. It needs two things on the server, and is off without them.
+
+- Settings in `/etc/sitewise/sitewise.env`: `SITEWISE_ANTHROPIC_HAIKU_KEY`
+  (the provider's key) and, only to change the model, `SITEWISE_TENDER_MODEL`
+  (default `claude-haiku-5-5`). Without the key, tenders are read the old way.
+- Page images: the pass sends pictures of the pages it chose. They are made
+  by the same Python the OCR helper uses (`/opt/sitewise-ocr`, pypdfium2,
+  Pillow). Without that Python the pass cannot run and tenders are read the
+  old way.
+
+Having the key is not enough: each org switches the model on for itself in
+Account. Nobody but an org's owner switches it on for that org.
+
+To confirm the model is reachable: switch it on for the owner's org, drop a
+tender on a package, and look for the line `llm call` in
+`journalctl -u sitewise`. It gives the model, the time taken and the token
+counts, never the key or the document.
+
+`SITEWISE_TENDER_SKIP_JEV_PRICES=1` stops the old reading asking Jev for
+the prices the pass reads. Leave it unset until the going-live checklist in
+`docs/evidence/2026-11-14-tender-comparison-slice8.md` has been run.
+
 ## Known gaps
 
 - A tarball built on Windows loses the executable bit, hence the `chmod`
