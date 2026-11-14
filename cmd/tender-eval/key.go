@@ -36,6 +36,9 @@ type keyLine struct {
 	Row     string `json:"row"`     // schedule key; "" for not broken down
 	Counted bool   `json:"counted"` // true: part of the tender sum
 	Kind    string `json:"kind"`    // base | ps | pc | option | saving
+	// Ord is the line's place in the reading a draft was seeded from. It
+	// is a labelling aid only and is not scored.
+	Ord *int `json:"ord,omitempty"`
 }
 
 // loadKey reads the key and checks every file against its hash. An error

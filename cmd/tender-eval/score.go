@@ -125,19 +125,29 @@ func scoreCase(k keyCase, r tender.Reading) caseScore {
 			}
 			continue
 		}
-		// 4. Outside money that was counted with no flag saying so.
-		if best >= 0 && r.Lines[best].Counted && !hasFlag(r.Lines[best].Flags, tender.FlagCountedToMatch) {
+		// 4. Outside money that was counted with no flag saying so: neither
+		// on the line, nor on the column as lines adding to more than the sum.
+		if best >= 0 && r.Lines[best].Counted && !hasFlag(r.Lines[best].Flags, tender.FlagCountedToMatch) && !hasFlag(r.Flags, tender.FlagLinesOver) {
 			s.OutsideCounted++
 			s.Misses = append(s.Misses, "outside but counted: "+kl.line.Label+" "+kl.line.Amount)
 		}
 	}
 	// 5. Amounts the model gave and R3 kept.
+	// A line with wording where an amount should be ("at cost", "hourly
+	// rates") was never an amount, so R3 did not throw one away.
 	for _, l := range r.Lines {
 		if l.State != tender.StatePriced {
 			continue
 		}
+		thrown := false
+		for _, f := range l.Flags {
+			thrown = thrown || (f.Code == tender.FlagAmountNotFound && strings.HasPrefix(f.Text, "This amount is not in the text"))
+		}
+		if l.Cents == nil && !thrown {
+			continue
+		}
 		s.AmountsAsked++
-		if !hasFlag(l.Flags, tender.FlagAmountNotFound) {
+		if !thrown {
 			s.AmountsKept++
 		}
 	}

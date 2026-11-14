@@ -140,6 +140,7 @@ type agg struct {
 	target  string // normalised group it adds; "" for the whole document
 	doc     bool   // a total of the whole document (a tender sum candidate)
 	matched bool   // the lines it adds were found and add up to it
+	summary bool   // it adds up lines listed under other headings
 }
 
 // Reconcile turns the model's answer into a checked reading (rules R1 to
@@ -153,7 +154,9 @@ func Reconcile(raw RawReading, pages []Page, rows []Row, stated *int64) Reading 
 		return l.Cents != nil && l.State == StatePriced && l.Placed == "sum" && scope(l.Kind)
 	}
 	isAgg := func(i int) bool {
-		return L[i].Cents != nil && (L[i].Kind == "subtotal" || L[i].Kind == "total")
+		// A subtotal of options or other money outside the price adds up
+		// nothing that is in the price, so it takes no part.
+		return L[i].Cents != nil && (L[i].Kind == "subtotal" || L[i].Kind == "total") && L[i].Placed != "outside"
 	}
 	group := func(i int) string { return normGroup(L[i].Heading) }
 
@@ -224,8 +227,18 @@ func Reconcile(raw RawReading, pages []Page, rows []Row, stated *int64) Reading 
 				a.doc = true
 			case h != "":
 				a.target = h // a part priced only as a total
+				// Unless it is the total of lines listed just before it under
+				// other headings (stages down, a discipline total at the foot).
+				if idx := trailing("", *c, 2); idx != nil {
+					a.matched, a.summary = true, true
+					collapse(idx, *c, a.target)
+				}
 			default:
 				a.target = "label:" + lb
+			}
+			if a.summary {
+				aggs = append(aggs, a)
+				continue
 			}
 			if a.doc {
 				if idx := trailing("", *c, 1); idx != nil {
@@ -292,7 +305,7 @@ func Reconcile(raw RawReading, pages []Page, rows []Row, stated *int64) Reading 
 	for g, a := range top {
 		// A part priced only as a subtotal. A named subtotal with no heading
 		// (a column total of a grid, say) is one only when nothing else is priced.
-		part := scopeLines[g] == 0 && (!strings.HasPrefix(g, "label:") || len(detail) == 0)
+		part := scopeLines[g] == 0 && !a.summary && (!strings.HasPrefix(g, "label:") || len(detail) == 0)
 		switch {
 		case leaves[g] > 0:
 			level3 = append(level3, a.i)
@@ -310,6 +323,12 @@ func Reconcile(raw RawReading, pages []Page, rows []Row, stated *int64) Reading 
 	r.TenderSum, r.SumHow = tender, how
 	if flagged != "" {
 		r.Flags = append(r.Flags, Flag{FlagCheckTenderSum, flagged})
+	} else if tender != nil {
+		if text := unlistedFigure(L, pages, *tender); text != "" {
+			r.Flags = append(r.Flags, Flag{FlagCheckTenderSum, text})
+		} else if text := unsaidGST(L, *tender); text != "" {
+			r.Flags = append(r.Flags, Flag{FlagCheckTenderSum, text})
+		}
 	}
 	if tender == nil {
 		for _, i := range level1 {
@@ -384,6 +403,59 @@ func Reconcile(raw RawReading, pages []Page, rows []Row, stated *int64) Reading 
 	}
 	finish(&r)
 	return r
+}
+
+// unlistedFigure looks on the pages for a figure the model did not list
+// that is the tender sum plus a round percentage: a margin or GST printed
+// at the foot whose line the model missed or copied wrongly. Go does not
+// act on it; it asks the manager to look.
+func unlistedFigure(L []Line, pages []Page, tender int64) string {
+	if tender <= 0 {
+		return ""
+	}
+	listed := map[int64]bool{}
+	for i := range L {
+		if c, ok, _ := parsePrinted(L[i].Printed); ok {
+			listed[abs64(c)] = true
+		}
+		if L[i].Cents != nil {
+			listed[abs64(*L[i].Cents)] = true
+		}
+	}
+	for _, rate := range marginRates {
+		v := int64(float64(tender)*(1+rate/100) + 0.5)
+		if listed[v] {
+			continue
+		}
+		for _, p := range pages {
+			if pageFigures(p.Text)[v] {
+				return "The document also prints " + dollars(v) + ", which is " + trimRate(rate) + "% above the tender sum shown. Check whether that is GST, a margin or the price."
+			}
+		}
+	}
+	return ""
+}
+
+// unsaidGST finds a printed total that was taken to include GST, and so
+// came down to the tender sum, though its own label does not mention GST:
+// "Plus 10% builder margin" read as GST hides a tenth of the price.
+func unsaidGST(L []Line, tender int64) string {
+	for i := range L {
+		l := &L[i]
+		if l.Kind != "total" || l.GST != "inc" || l.Cents == nil || !near(*l.Cents, tender) {
+			continue
+		}
+		label := strings.ToLower(l.Label)
+		if strings.Contains(label, "gst") || strings.Contains(label, "tax") || strings.Contains(label, "inc") {
+			continue
+		}
+		printed, ok, _ := parsePrinted(l.Printed)
+		if !ok || near(printed, tender) {
+			continue
+		}
+		return "The printed total " + dollars(abs64(printed)) + " was read as including GST, but its line does not say so. Check whether the extra tenth is GST or a margin."
+	}
+	return ""
 }
 
 // uncounted reports whether a repair took this line out of the count.

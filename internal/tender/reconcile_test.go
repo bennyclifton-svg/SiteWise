@@ -490,3 +490,98 @@ func TestReconcileBudget(t *testing.T) {
 	}
 	t.Logf("tender_reconcile p50 %s, p90 %s", p50, p90)
 }
+
+// The three tests below pin gaps the corpus survey of 14 November 2026
+// found. Their figures are invented.
+
+func TestAnUnlistedFigureAboveTheLinesIsFlagged(t *testing.T) {
+	// The page prints the lines plus 10% as the price, but the model gave
+	// the foot line the wrong amount, so no listed total says so.
+	lines := []RawLine{
+		ln("Stage 1", "$60,000.00", "base", "sum", "", "stage:structure"),
+		ln("Stage 2", "$40,000.00", "base", "sum", "", "stage:services"),
+		ln("Total exc GST", "$100,000.00", "total", "inside", "", ""),
+		ln("Plus 10% builder margin", "$100,000.00", "total", "inside", "", ""),
+	}
+	page := []Page{{Number: 1, Text: "Stage 1 $60,000.00\nStage 2 $40,000.00\nTotal $100,000.00\nPlus 10% builder margin $110,000.00"}}
+	r := Reconcile(RawReading{Basis: "fixed", GST: "ex", Lines: lines}, page, testRows, nil)
+	if !hasFlag(r.Flags, FlagCheckTenderSum) {
+		t.Fatalf("a printed figure 10%% above the lines went unremarked: sum %v flags %v", r.TenderSum, r.Flags)
+	}
+	// When the model lists that figure, nothing more is said.
+	lines[3].Amt = "$110,000.00"
+	lines[3].G = "ex"
+	r = Reconcile(RawReading{Basis: "fixed", GST: "ex", Lines: lines}, page, testRows, nil)
+	sumIs(t, r, 11000000)
+	if hasFlag(r.Flags, FlagCheckTenderSum) {
+		t.Fatalf("flags %v", r.Flags)
+	}
+}
+
+func TestATotalOfOtherGroupsIsNotAPart(t *testing.T) {
+	services := ln("Total services", "$30,000.00", "total", "sum", "Services total", "")
+	structural := ln("Total structural", "$5,000.00", "total", "sum", "Structural", "")
+	r := read(t, "ex",
+		ln("Electrical: concept", "$10,000.00", "base", "sum", "Stage 1", "stage:services"),
+		ln("Electrical: detail", "$20,000.00", "base", "sum", "Stage 2", "stage:services"),
+		services,
+		ln("Structural: concept", "$5,000.00", "base", "sum", "Structural", "stage:structure"),
+		structural)
+	sumIs(t, r, 3500000)
+	if n, c := counted(r); n != 3 || c != 3500000 {
+		t.Fatalf("counted %d lines, %d cents; a total of other groups was counted with its detail", n, c)
+	}
+}
+
+func TestAnOutsideSubtotalOfAPartPricedInPartsIsNeverCounted(t *testing.T) {
+	r := read(t, "ex",
+		ln("Services: concept", "$10,000.00", "base", "sum", "Services", "stage:services"),
+		ln("Total services", "$10,000.00", "total", "inside", "Services", ""),
+		ln("Structural: concept", "$5,000.00", "base", "sum", "Structural", "stage:structure"),
+		ln("Total structural", "$5,000.00", "total", "inside", "Structural", ""),
+		ln("Option: design", "$3,000.00", "option", "outside", "Optional extras", ""),
+		ln("Option: tender", "$8,000.00", "option", "outside", "Optional extras", ""),
+		ln("Total optional extras", "$11,000.00", "subtotal", "outside", "Optional extras", ""))
+	sumIs(t, r, 1500000)
+	if n, c := counted(r); n != 2 || c != 1500000 {
+		t.Fatalf("counted %d lines, %d cents", n, c)
+	}
+}
+
+func TestAnOutsideSubtotalIsNeverCounted(t *testing.T) {
+	r := read(t, "ex",
+		ln("Works", "$100,000.00", "base", "sum", "", "stage:structure"),
+		ln("Total", "$100,000.00", "total", "inside", "", ""),
+		ln("Option: design", "$3,000.00", "option", "outside", "Optional extras", ""),
+		ln("Option: tender", "$8,000.00", "option", "outside", "Optional extras", ""),
+		ln("Total optional extras", "$11,000.00", "subtotal", "outside", "Optional extras", ""))
+	sumIs(t, r, 10000000)
+	if n, c := counted(r); n != 1 || c != 10000000 {
+		t.Fatalf("counted %d lines, %d cents", n, c)
+	}
+}
+
+func TestATotalReadAsIncludingGSTWithoutSayingSoIsFlagged(t *testing.T) {
+	margin := ln("Plus 10% builder margin", "$110,000.00", "total", "inside", "", "")
+	margin.G = "inc" // the model took the extra tenth for GST
+	r := read(t, "ex",
+		ln("Stage 1", "$60,000.00", "base", "sum", "", "stage:structure"),
+		ln("Stage 2", "$40,000.00", "base", "sum", "", "stage:services"),
+		ln("Total exc GST", "$100,000.00", "total", "inside", "", ""),
+		margin)
+	if !hasFlag(r.Flags, FlagCheckTenderSum) {
+		t.Fatalf("sum %v flags %v", r.TenderSum, r.Flags)
+	}
+	// A total that says it includes GST is what it says.
+	inc := ln("Total including GST", "$110,000.00", "total", "inside", "", "")
+	inc.G = "inc"
+	r = read(t, "ex",
+		ln("Stage 1", "$60,000.00", "base", "sum", "", "stage:structure"),
+		ln("Stage 2", "$40,000.00", "base", "sum", "", "stage:services"),
+		ln("Total exc GST", "$100,000.00", "total", "inside", "", ""),
+		inc)
+	sumIs(t, r, 10000000)
+	if hasFlag(r.Flags, FlagCheckTenderSum) {
+		t.Fatalf("flags %v", r.Flags)
+	}
+}

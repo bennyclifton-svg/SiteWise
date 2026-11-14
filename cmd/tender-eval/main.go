@@ -41,8 +41,8 @@ func main() {
 }
 
 type options struct {
-	one, schedule, key, recording, out, corpusRoot, knowledge, split, dump, model string
-	live, fresh, show                                                             bool
+	one, schedule, key, recording, out, corpusRoot, knowledge, split, dump, audit, model string
+	live, fresh, show                                                                    bool
 }
 
 func run(args []string, getenv func(string) string, stdout, stderr io.Writer) int {
@@ -58,6 +58,7 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 	fs.StringVar(&o.knowledge, "knowledge", "knowledge", "knowledge directory")
 	fs.StringVar(&o.split, "split", "tune", "tune, hold or all")
 	fs.StringVar(&o.dump, "dump", "", "print a draft key for this case id from its reading")
+	fs.StringVar(&o.audit, "audit", "", "print every line of this case's reading, for checking a key against the document (private; terminal only)")
 	fs.StringVar(&o.model, "model", "", "model id (default: SITEWISE_TENDER_MODEL, else "+config.DefaultTenderModel+")")
 	fs.BoolVar(&o.live, "live", false, "call the model where no answer is recorded")
 	fs.BoolVar(&o.fresh, "fresh", false, "with -live: call the model for every case")
@@ -169,6 +170,9 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 	var results []caseResult
 	silent, empties, failed := 0, 0, 0
 	for _, c := range key.Cases {
+		if o.audit != "" {
+			o.dump = o.audit
+		}
 		if o.dump != "" && c.ID != o.dump {
 			continue
 		}
@@ -193,6 +197,9 @@ func evaluate(ctx context.Context, o options, getenv func(string) string, w io.W
 		reading := tender.Reconcile(raw, pages, rows, nil)
 		if info.Cut || info.Dropped > 0 {
 			reading.Flags = append(reading.Flags, tender.Flag{Code: tender.FlagIncomplete, Text: "The reading was cut off. Some lines may be missing."})
+		}
+		if o.audit != "" {
+			return auditCase(w, reading)
 		}
 		if o.dump != "" {
 			return dumpKey(w, c, reading)
@@ -256,6 +263,41 @@ func runCase(ctx context.Context, rep *replayer, rd reader, model, path, id stri
 	return raw, info, pages, err
 }
 
+// auditCase prints a reading line by line: a labelling aid.
+func auditCase(w io.Writer, r tender.Reading) error {
+	sum := "none"
+	if r.TenderSum != nil {
+		sum = invoices.FormatCents(*r.TenderSum)
+	}
+	fmt.Fprintf(w, "firm %q basis %s gst %s sum %s (%s) gap %s why %q\n", r.Firm, r.Basis, r.GST, sum, r.SumHow, invoices.FormatCents(r.Gap), r.Why)
+	for _, f := range r.Flags {
+		fmt.Fprintln(w, "  flag:", f.Text)
+	}
+	heading := "\x00"
+	for _, l := range r.Lines {
+		if l.Heading != heading {
+			heading = l.Heading
+			fmt.Fprintf(w, "== %s\n", heading)
+		}
+		amount, counted := "-", " "
+		if l.Cents != nil {
+			amount = invoices.FormatCents(*l.Cents)
+		}
+		if l.Counted {
+			counted = "C"
+		}
+		flags := ""
+		for _, f := range l.Flags {
+			flags += " [" + f.Code + "]"
+		}
+		fmt.Fprintf(w, "%3d p%-3d %s %-8s %-7s %-12s %14s  %-24s %.60s%s\n", l.Ordinal, l.Page, counted, l.Kind, l.Placed, l.State, amount, l.Row, l.Label, flags)
+	}
+	for _, n := range r.Notes {
+		fmt.Fprintln(w, "  note:", n)
+	}
+	return nil
+}
+
 // dumpKey prints a draft key for one case: a labelling aid, nothing else.
 func dumpKey(w io.Writer, c keyCase, r tender.Reading) error {
 	c.TenderSum, c.Lines = "", nil
@@ -266,7 +308,8 @@ func dumpKey(w io.Writer, c keyCase, r tender.Reading) error {
 		switch l.Kind {
 		case "base", "ps", "pc", "option", "saving":
 			if l.Cents != nil {
-				c.Lines = append(c.Lines, keyLine{Label: l.Label, Amount: invoices.FormatCents(*l.Cents), Row: l.Row, Counted: l.Counted, Kind: l.Kind})
+				ord := l.Ordinal
+				c.Lines = append(c.Lines, keyLine{Label: l.Label, Amount: invoices.FormatCents(*l.Cents), Row: l.Row, Counted: l.Counted, Kind: l.Kind, Ord: &ord})
 			}
 		}
 	}

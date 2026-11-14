@@ -113,7 +113,8 @@ func TestScoreAmountsKept(t *testing.T) {
 	for i := 0; i < 9; i++ {
 		r.Lines = append(r.Lines, line("Line", 100, "A", true))
 	}
-	lost := tender.Line{Label: "Lost", State: tender.StatePriced, Flags: []tender.Flag{{Code: tender.FlagAmountNotFound}}}
+	lost := tender.Line{Label: "Lost", State: tender.StatePriced, Flags: []tender.Flag{{Code: tender.FlagAmountNotFound, Text: "This amount is not in the text of the page. Type it from the document."}}}
+	r.Lines = append(r.Lines, tender.Line{Label: "At cost", State: tender.StatePriced, Flags: []tender.Flag{{Code: tender.FlagAmountNotFound, Text: "No amount could be read for this line. Type it from the document."}}})
 	r.Lines = append(r.Lines, lost)
 	if s := scoreCase(keyCase{}, r); s.AmountsKept != 9 || s.AmountsAsked != 10 {
 		t.Fatalf("%+v", s)
