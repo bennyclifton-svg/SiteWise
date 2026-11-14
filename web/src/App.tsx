@@ -1,7 +1,7 @@
-// Shell: sign in, choose or create a project, then file.
-// Routing is two paths, so it is done with the History API directly.
+// Shell: the landing page or sign in, choose or create a project, then file.
+// Routing is a handful of paths, so it is done with the History API directly.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError, type Catalog, type Project as ProjectRow } from "./api";
 import { Account } from "./Account";
 import { Project } from "./Project";
@@ -9,6 +9,9 @@ import { ProjectsPage } from "./ProjectsPage";
 import { ShellPreview } from "./ShellPreview";
 import { SignIn } from "./SignIn";
 import { TracePage } from "./TracePage";
+
+// The landing page is its own chunk: a signed-in user never loads it.
+const Landing = lazy(() => import("./landing/Landing"));
 
 type Route = { name: "home" } | { name: "account" } | { name: "project"; id: string };
 
@@ -29,6 +32,10 @@ function takeVerifyToken(): string {
 
 type Auth = "checking" | "in" | "out";
 
+// A link from an email (reset, invite, confirm, one-time sign-in) carries its
+// token in the fragment and belongs to the sign-in panel, not the landing page.
+const emailLink = /(reset|invite|verify|token)=/;
+
 export function App() {
   const [auth, setAuth] = useState<Auth>("checking");
   const [authError, setAuthError] = useState("");
@@ -39,6 +46,8 @@ export function App() {
   const [projects, setProjects] = useState<ProjectRow[] | null>(null);
   const [notice, setNotice] = useState("");
   const sessionGeneration = useRef(0);
+  // Read once: the panels that use a token remove it from the address bar.
+  const [arrivedByLink] = useState(() => emailLink.test(location.hash));
 
   const navigate = useCallback((path: string) => {
     history.pushState(null, "", path);
@@ -120,7 +129,9 @@ export function App() {
       setCatalogError(false);
       setAuthError("");
       setAuth("out");
-      navigate("/");
+      // Someone who has just signed out has an account: the sign-in panel,
+      // not the landing page.
+      navigate("/signin");
     };
     window.addEventListener("sitewise:signed-out", done);
     return () => window.removeEventListener("sitewise:signed-out", done);
@@ -149,8 +160,21 @@ export function App() {
   }, [auth, loadProjects, loadCatalog]);
 
   if (location.hash === "#shell-preview") return <ShellPreview />;
-  if (auth === "checking") return null;
-  if (auth === "out") return <SignIn initialError={authError} onSignedIn={() => setAuth("in")} />;
+  // "/welcome" shows the landing page to anyone, so it can be seen signed in.
+  const path = location.pathname;
+  const welcome = path === "/welcome";
+  if (auth === "checking" && !welcome) return null;
+  if (auth !== "in" || welcome) {
+    if (welcome || (path === "/" && !authError && !arrivedByLink)) {
+      const start = () => navigate(auth === "in" ? "/" : "/signup");
+      return <Suspense fallback={null}><Landing onStart={start} onSignIn={() => navigate(auth === "in" ? "/" : "/signin")} /></Suspense>;
+    }
+    const signedIn = () => {
+      if (/^\/sign(in|up)\/?$/.test(location.pathname)) history.replaceState(null, "", "/");
+      setAuth("in");
+    };
+    return <SignIn key={path} initialMode={path === "/signup" ? "signup" : "signin"} initialError={authError} onSignedIn={signedIn} />;
+  }
 
   return (
     <>

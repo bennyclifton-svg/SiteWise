@@ -6,16 +6,17 @@ test("sign up, then sign in again from a fresh browser", async ({ browser }) => 
   const password = "e2e password 1";
 
   const first = await (await browser.newContext()).newPage();
-  await first.goto("/");
+  await first.goto("/signin");
   await expect(first.getByRole("heading", { name: "Sign in" })).toBeVisible();
   await first.getByRole("button", { name: "Create an account" }).click();
   await first.getByLabel("Email").fill(email);
   await first.getByLabel("New password").fill(password);
+  await first.getByRole("checkbox", { name: /I agree to the Terms of Service/ }).check();
   await first.getByRole("button", { name: "Create account" }).click();
   await expect(first.getByRole("heading", { name: "Projects" })).toBeVisible();
 
   const second = await (await browser.newContext()).newPage();
-  await second.goto("/");
+  await second.goto("/signin");
   await second.getByLabel("Email").fill(email);
   await second.getByLabel("Password").fill("wrong password");
   await second.getByRole("button", { name: "Sign in" }).click();
@@ -26,7 +27,7 @@ test("sign up, then sign in again from a fresh browser", async ({ browser }) => 
 });
 
 test("forgot password never says whether an account exists", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/signin");
   await page.getByRole("button", { name: "Forgot password?" }).click();
   await page.getByLabel("Email").fill(`nobody-${Date.now()}@example.com`);
   await page.getByRole("button", { name: "Send reset link" }).click();

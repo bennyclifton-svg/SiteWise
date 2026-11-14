@@ -77,6 +77,31 @@ hold the surfaces. They load after the surface stylesheets.
   delete sit in one row menu. Archive keeps everything; delete stays
   confirmed.
 
+## Landing page (14 Nov 2026)
+
+The public front door (`src/landing`) wears Trace, not a marketing theme:
+the table with its stone grain, one sheet, a butter-paper band for the
+opening, blue table-head bands, and the ground-line button a size up as the
+page's single action ("Start a project free"). The opening lists what
+SiteWise builds as an app table whose rows link to five notes in job order
+(files, profile, cost plan, program, tenders), each beside a real screen of
+a sample project. Copy says what the visitor gets, in plain words; it does
+not explain provenance (owner, 14 Nov 2026).
+
+- **Screens that fill themselves in.** Profile, Cost Plan and Program play
+  once as they scroll into view, with "Play again" beneath: covers over the
+  picture come off in the workbench's own motions (glint where a passage is
+  read, a wipe where a value is written, a fade where a scope cell shades
+  in). `shotMotion.ts` plays them; the pictures and `shots.json` (each
+  cover's box, colour, time and motion) come from
+  `scripts/make-landing-shots.mjs`, which measures the live DOM as it takes
+  the picture. It is a replay over a still, not a recording. Reduced motion
+  lays no covers.
+- **Light only.** The screens were captured in light, so the page pins the
+  light palette whatever theme the browser last chose.
+- **Sample data only.** The page is public: every screen is a synthetic
+  project (T05 from `testing/synthetic`), never a client job.
+
 ## Run-time motion and marks (shared, 11 Nov 2026)
 
 Any surface shows work as it happens with one vocabulary: the classes and

@@ -26,10 +26,10 @@ const titles: Record<Mode, string> = {
   invite: "Join your team",
 };
 
-export function SignIn({ initialError, onSignedIn }: { initialError: string; onSignedIn: () => void }) {
+export function SignIn({ initialError, initialMode = "signin", onSignedIn }: { initialError: string; initialMode?: "signin" | "signup"; onSignedIn: () => void }) {
   const [resetToken] = useState(() => takeToken("reset"));
   const [inviteToken] = useState(() => takeToken("invite"));
-  const [mode, setMode] = useState<Mode>(resetToken ? "reset" : inviteToken ? "invite" : "signin");
+  const [mode, setMode] = useState<Mode>(resetToken ? "reset" : inviteToken ? "invite" : initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [terms, setTerms] = useState(false);
