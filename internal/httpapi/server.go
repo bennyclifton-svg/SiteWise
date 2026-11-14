@@ -92,6 +92,9 @@ type Options struct {
 	TenderLLM    llm.Asker
 	TenderModel  string
 	TenderRender tender.Renderer
+	// TenderOCR reads the pages of a tender that have no text layer, up to
+	// the pages the pass may send; nil falls back to ProposalOCR.
+	TenderOCR func(context.Context, string, identity.Text) (identity.Text, error)
 	// TenderTimeout bounds one pass; zero is 150 seconds.
 	TenderTimeout time.Duration
 }
@@ -262,6 +265,9 @@ func New(opts Options) (*Server, error) {
 			broker: broker, log: opts.Log, observe: speed.Observe, timeout: opts.TenderTimeout, slots: make(chan struct{}, 2), now: time.Now, inflight: map[string]struct{}{}}
 		if tenders.timeout <= 0 {
 			tenders.timeout = 150 * time.Second
+		}
+		if opts.TenderOCR != nil {
+			tenders.ocr = opts.TenderOCR
 		}
 	}
 	preader.after = func(orgID, submissionID string, began time.Time) {

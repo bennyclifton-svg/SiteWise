@@ -45,7 +45,7 @@ func (r reader) pages(ctx context.Context, path string, b []byte) ([]tender.Page
 	if format == "pdf" {
 		missing = identity.MissingTextPages(text)
 		if len(missing) > 0 && r.ocr != nil {
-			if read, err := r.ocr.ReadMissingPages(ctx, path, text); err == nil || len(read.Runs) > len(text.Runs) {
+			if read, err := r.ocr.ReadMissing(ctx, path, text, tender.MaxImagePages); err == nil || len(read.Runs) > len(text.Runs) {
 				text = read
 			}
 		}

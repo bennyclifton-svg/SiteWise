@@ -42,14 +42,62 @@ type proposalOCRPage struct {
 // Cache only successful extraction beside the content-addressed source. No model
 // is involved and no PDF is rewritten. Limits leave explicit incomplete coverage.
 func (o *OCR) ReadMissingPages(ctx context.Context, path string, native Text) (Text, error) {
+	return o.ReadMissing(ctx, path, native, ocrBatch)
+}
+
+// ocrBatch is how many pages one run of the helper reads: its output is
+// capped, so a long scan is read a batch at a time.
+const ocrBatch = 4
+
+// ReadMissing is ReadMissingPages with its own page limit. The tender pass
+// runs in the background and checks every amount against page text, so it
+// reads up to the pages it may send, where a proposal read stops at four.
+// A batch that fails leaves its pages without text and marks the result
+// incomplete; the batches before it are kept.
+func (o *OCR) ReadMissing(ctx context.Context, path string, native Text, limit int) (Text, error) {
 	pages := MissingTextPages(native)
 	if len(pages) == 0 {
 		return native, nil
 	}
-	native.Incomplete = len(pages) > 4
-	pages = pages[:min(len(pages), 4)]
+	native.Incomplete = len(pages) > limit
+	pages = pages[:min(len(pages), limit)]
+	var runs []Run
+	read := map[int]bool{}
+	var failed error
+	for start := 0; start < len(pages); start += ocrBatch {
+		batch := pages[start:min(start+ocrBatch, len(pages))]
+		// The first batch keeps the cache name a four-page read always had.
+		cache := path + ".proposal-ocr-v2-" + strconv.Itoa(len(batch)) + ".json"
+		if start > 0 {
+			cache = path + ".proposal-ocr-v2-p" + strconv.Itoa(batch[0]) + "-" + strconv.Itoa(len(batch)) + ".json"
+		}
+		got, err := o.readBatch(ctx, path, batch, cache)
+		if err != nil {
+			failed = err
+			native.Incomplete = true
+			break
+		}
+		runs = append(runs, got...)
+		for _, p := range batch {
+			read[p] = true
+		}
+	}
+	if len(read) == 0 {
+		return native, failed
+	}
+	for _, run := range native.Runs {
+		if !read[run.Source.Page] {
+			runs = append(runs, run)
+		}
+	}
+	native.Runs = runs
+	native.OCR = true
+	return native, failed
+}
+
+// readBatch reads a few pages through the helper, or from its cache.
+func (o *OCR) readBatch(ctx context.Context, path string, pages []int, cache string) ([]Run, error) {
 	requested, _ := json.Marshal(pages)
-	cache := path + ".proposal-ocr-v2-" + strconv.Itoa(len(pages)) + ".json"
 	var data []byte
 	file, err := os.Open(cache)
 	cached := err == nil
@@ -63,33 +111,27 @@ func (o *OCR) ReadMissingPages(ctx context.Context, path string, native Text) (T
 		var output limitedOCRBuffer
 		cmd.Stdout = &output
 		if err = cmd.Run(); err != nil {
-			native.Incomplete = true
-			return native, err
+			return nil, err
 		}
 		data = output.Bytes()
 	}
 	var recovered []proposalOCRPage
 	if len(data) > 4<<20 || json.Unmarshal(data, &recovered) != nil || len(recovered) != len(pages) {
-		native.Incomplete = true
-		return native, errors.New("invalid proposal OCR output")
+		return nil, errors.New("invalid proposal OCR output")
 	}
 	var runs []Run
-	read := map[int]bool{}
 	for i, p := range recovered {
 		if p.Page != pages[i] {
-			native.Incomplete = true
-			return native, errors.New("invalid proposal OCR page")
+			return nil, errors.New("invalid proposal OCR page")
 		}
 		got, err := parseOCRPage([]byte(p.TSV), p.Width, p.Height, 200.0/72)
 		if err != nil {
-			native.Incomplete = true
-			return native, err
+			return nil, err
 		}
 		for j := range got {
 			got[j].Source.Page = p.Page
 		}
 		runs = append(runs, got...)
-		read[p.Page] = true
 	}
 	if !cached {
 		// A stopped worker must not leave a truncated cache for the next read.
@@ -103,12 +145,5 @@ func (o *OCR) ReadMissingPages(ctx context.Context, path string, native Text) (T
 			_ = os.Remove(name)
 		}
 	}
-	for _, run := range native.Runs {
-		if !read[run.Source.Page] {
-			runs = append(runs, run)
-		}
-	}
-	native.Runs = runs
-	native.OCR = true
-	return native, nil
+	return runs, nil
 }
