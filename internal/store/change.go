@@ -54,3 +54,14 @@ func (p markedPool) BeginTx(ctx context.Context, o pgx.TxOptions) (pgx.Tx, error
 	}
 	return tx, nil
 }
+
+// SetChangeOps stores the batch a change applied, as it was sent, beside
+// the rows the triggers captured. ErrNotFound means the change captured
+// nothing and so does not exist.
+func (s *Store) SetChangeOps(ctx context.Context, org, id string, ops []byte) error {
+	tag, err := s.pool.Pool.Exec(ctx, `UPDATE project_changes SET ops=$3::jsonb WHERE org_id=$1::uuid AND id=$2::uuid`, org, id, string(ops))
+	if err == nil && tag.RowsAffected() == 0 {
+		return ErrNotFound
+	}
+	return err
+}

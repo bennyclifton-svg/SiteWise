@@ -125,7 +125,13 @@ func (s *Store) UndoChange(ctx context.Context, org, project, actor, id string) 
 			ok := !exists
 			same = &ok
 		} else {
-			args = append(args, string(r.New), t.Ignore)
+			// A table with nothing to ignore must send an empty list: a
+			// NULL list makes the whole comparison NULL.
+			ignore := t.Ignore
+			if ignore == nil {
+				ignore = []string{}
+			}
+			args = append(args, string(r.New), ignore)
 			n := len(args)
 			var ok bool
 			err := tx.QueryRow(ctx, `SELECT (to_jsonb(t) - $`+itoa(n)+`::text[]) = ($`+itoa(n-1)+`::jsonb - $`+itoa(n)+`::text[]) FROM `+r.Table+` t WHERE `+where, args...).Scan(&ok)

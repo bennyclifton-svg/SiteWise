@@ -208,6 +208,11 @@ func TestCommittedBudgets(t *testing.T) {
 		"stage_sync_write":          {100_000, 250_000},
 		"tender_reconcile":          {100_000, 250_000},
 		"change_undo":               {100_000, 250_000},
+		"ops_apply":                 {100_000, 250_000},
+		"chat_first_response":       {1_500_000, 3_000_000},
+		"chat_simple_command":       {1_500_000, 3_000_000},
+		"chat_document_answer":      {8_000_000, 20_000_000},
+		"chat_tool_read":            {100_000, 250_000},
 		"price_table_tender":        {150_000, 300_000},
 		"tender_edit":               {100_000, 250_000},
 	}

@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -567,86 +568,18 @@ func putProfileValue(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}
-	var body struct {
-		PartID  string  `json:"part_id"`
-		Value   *string `json:"value"`
-		Note    string  `json:"note"`
-		Reset   bool    `json:"reset"`
-		Version *int64  `json:"version"`
-		Origin  string  `json:"origin"`
-		Meaning string  `json:"meaning"`
-		Unknown bool    `json:"unknown"`
-	}
+	var body profileValueInput
 	if err := readJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
-	if body.Value != nil {
-		v := strings.TrimSpace(*body.Value)
-		body.Value = &v
-	}
-	if msg := validProfileValue(deps.Knowledge, key, body.Value, body.Note); msg != "" {
-		http.Error(w, msg, http.StatusUnprocessableEntity)
-		return
-	}
-	if msg := validProvenance(body.Origin, body.Meaning, body.Unknown, body.Value); msg != "" {
-		http.Error(w, msg, http.StatusUnprocessableEntity)
-		return
-	}
-	// L276: a favourable value on a planning key is the user's stated word
-	// or nothing. An edit that omits origin keeps the stored one, which may
-	// be an assumption, so the origin must be sent as user.
-	if pk, ok := deps.Knowledge.PlanningKey(strings.TrimPrefix(key, knowledge.PlanningPrefix)); ok &&
-		strings.HasPrefix(key, knowledge.PlanningPrefix) && body.Origin != "user" && body.Value != nil && pk.IsFavourable(*body.Value) {
-		http.Error(w, favourableRefused(pk)+` (send origin "user")`, http.StatusUnprocessableEntity)
-		return
-	}
-	scope := deps.Knowledge.KeyScope(key)
-	if scope == "" {
-		scope = "project"
-	}
-	ctx := r.Context()
-	part := body.PartID
-	if part == "" {
-		whole, err := deps.Store.EnsureWholePart(ctx, session.OrgID, projectID)
-		if errors.Is(err, store.ErrNotFound) {
-			http.Error(w, "not found", http.StatusNotFound)
-			return
-		} else if err != nil {
-			http.Error(w, "write failed", http.StatusInternalServerError)
-			return
-		}
-		part = whole.ID
-	} else if !uuidPattern.MatchString(part) {
-		http.Error(w, "unknown part", http.StatusUnprocessableEntity)
-		return
-	}
-	var err error
-	var current int64
-	if body.Reset {
-		current, err = deps.Store.DeleteUserValue(ctx, session.OrgID, projectID, part, key, scope, body.Version)
-	} else {
-		state := "set"
-		switch {
-		case body.Unknown:
-			state = "unknown"
-		case body.Value == nil:
-			state = "cleared"
-		}
-		current, err = deps.Store.SetUserValue(ctx, session.OrgID, projectID, part, session.UserID, key, store.UserWrite{
-			Value: body.Value, State: state, Note: body.Note, Origin: body.Origin, Meaning: body.Meaning,
-			Scope: scope, Version: body.Version})
-	}
-	if errors.Is(err, store.ErrNotFound) {
-		http.Error(w, "not found", http.StatusNotFound)
-		return
-	}
-	if errors.Is(err, store.ErrVersionConflict) {
+	current, status, msg := setProfileValue(r.Context(), deps, opActor{session.OrgID, session.UserID}, projectID, key, body)
+	switch {
+	case status == http.StatusConflict:
 		writeJSON(w, http.StatusConflict, map[string]any{"error": "version_conflict", "current_version": current})
 		return
-	}
-	if err != nil {
-		http.Error(w, "write failed", http.StatusInternalServerError)
+	case status != http.StatusOK:
+		http.Error(w, msg, status)
 		return
 	}
 	writeProfile(w, r, deps, session.OrgID, projectID)
@@ -657,6 +590,84 @@ func profileBuild(deps Deps) store.ProfileBuild {
 		ThresholdsVersion: deps.ProfileThresholds.Version, ReadKinds: deps.ProfileReading.Kinds(), Compute: func(s store.ProfileSnapshot) []profile.Row {
 			return profile.Build(profile.Input{Parts: s.Parts, Facts: s.Facts, User: s.User, Planning: s.Planning, Thresholds: deps.ProfileThresholds, Read: deps.ProfileReading}, deps.Knowledge)
 		}}
+}
+
+// profileValueInput is the body of a profile value write.
+type profileValueInput struct {
+	PartID  string  `json:"part_id"`
+	Value   *string `json:"value"`
+	Note    string  `json:"note"`
+	Reset   bool    `json:"reset"`
+	Version *int64  `json:"version"`
+	Origin  string  `json:"origin"`
+	Meaning string  `json:"meaning"`
+	Unknown bool    `json:"unknown"`
+}
+
+// setProfileValue is the one writer of a typed profile value: the screen's
+// route and the profile.set_value operation both call it. It returns the
+// row's current version on a conflict, an HTTP status and, when the status
+// is not 200, the plain message.
+func setProfileValue(ctx context.Context, deps Deps, who opActor, projectID, key string, body profileValueInput) (int64, int, string) {
+	if body.Value != nil {
+		v := strings.TrimSpace(*body.Value)
+		body.Value = &v
+	}
+	if msg := validProfileValue(deps.Knowledge, key, body.Value, body.Note); msg != "" {
+		return 0, http.StatusUnprocessableEntity, msg
+	}
+	if msg := validProvenance(body.Origin, body.Meaning, body.Unknown, body.Value); msg != "" {
+		return 0, http.StatusUnprocessableEntity, msg
+	}
+	// L276: a favourable value on a planning key is the user's stated word
+	// or nothing. An edit that omits origin keeps the stored one, which may
+	// be an assumption, so the origin must be sent as user.
+	if pk, ok := deps.Knowledge.PlanningKey(strings.TrimPrefix(key, knowledge.PlanningPrefix)); ok &&
+		strings.HasPrefix(key, knowledge.PlanningPrefix) && body.Origin != "user" && body.Value != nil && pk.IsFavourable(*body.Value) {
+		return 0, http.StatusUnprocessableEntity, favourableRefused(pk) + ` (send origin "user")`
+	}
+	scope := deps.Knowledge.KeyScope(key)
+	if scope == "" {
+		scope = "project"
+	}
+	part := body.PartID
+	if part == "" {
+		whole, err := deps.Store.EnsureWholePart(ctx, who.OrgID, projectID)
+		if errors.Is(err, store.ErrNotFound) {
+			return 0, http.StatusNotFound, "not found"
+		} else if err != nil {
+			return 0, http.StatusInternalServerError, "write failed"
+		}
+		part = whole.ID
+	} else if !uuidPattern.MatchString(part) {
+		return 0, http.StatusUnprocessableEntity, "unknown part"
+	}
+	var err error
+	var current int64
+	if body.Reset {
+		current, err = deps.Store.DeleteUserValue(ctx, who.OrgID, projectID, part, key, scope, body.Version)
+	} else {
+		state := "set"
+		switch {
+		case body.Unknown:
+			state = "unknown"
+		case body.Value == nil:
+			state = "cleared"
+		}
+		current, err = deps.Store.SetUserValue(ctx, who.OrgID, projectID, part, who.UserID, key, store.UserWrite{
+			Value: body.Value, State: state, Note: body.Note, Origin: body.Origin, Meaning: body.Meaning,
+			Scope: scope, Version: body.Version})
+	}
+	if errors.Is(err, store.ErrNotFound) {
+		return 0, http.StatusNotFound, "not found"
+	}
+	if errors.Is(err, store.ErrVersionConflict) {
+		return current, http.StatusConflict, "version conflict"
+	}
+	if err != nil {
+		return 0, http.StatusInternalServerError, "write failed"
+	}
+	return current, http.StatusOK, ""
 }
 
 // validProvenance checks the optional provenance of a user edit.

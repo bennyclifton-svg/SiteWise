@@ -111,6 +111,27 @@ func Handler(deps Deps) http.Handler {
 		}
 	}
 	mux := http.NewServeMux()
+	routes := apiRoutes()
+	for pattern, h := range routes {
+		h = reviewHook(pattern, h)
+		path, timed := routePaths[pattern]
+		if !timed || deps.Speed == nil {
+			mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
+			continue
+		}
+		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			h(w, r, deps)
+			deps.Speed.Observe(path, time.Since(start))
+		})
+	}
+	return mux
+}
+
+// apiRoutes is every API route. It is a function so the operations
+// coverage test can walk the same table the server serves
+// (docs/plans/2026-11-14-change-log-undo-operations.md, task 5).
+func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 	routes := map[string]func(http.ResponseWriter, *http.Request, Deps){
 		"POST /projects/{id}/specifications/cells":                         writeSpecification,
 		"POST /projects/{id}/specifications/types/{type}/link":             writeSpecification,
@@ -293,20 +314,10 @@ func Handler(deps Deps) http.Handler {
 	for pattern, h := range billingRoutes {
 		routes[pattern] = h
 	}
-	for pattern, h := range routes {
-		h = reviewHook(pattern, h)
-		path, timed := routePaths[pattern]
-		if !timed || deps.Speed == nil {
-			mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
-			continue
-		}
-		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
-			h(w, r, deps)
-			deps.Speed.Observe(path, time.Since(start))
-		})
+	for pattern, h := range chatRoutes {
+		routes[pattern] = h
 	}
-	return mux
+	return routes
 }
 
 // routePaths names the budget path each timed route reports to the speed
@@ -344,6 +355,7 @@ var routePaths = map[string]string{
 	"POST /projects/{id}/submissions/{sub}/tender-read":                pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/tender/ops":        pathTenderEdit,
 	"POST /projects/{id}/changes/{change}/undo":                        pathChangeUndo,
+	"POST /projects/{id}/ops":                                          "ops_apply",
 	"POST /projects/{id}/procurement/packages/{pkg}/documents":         pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/firms":             pathSubmissionWrite,
 	"POST /projects/{id}/procurement/packages/{pkg}/award":             pathAwardWrite,
