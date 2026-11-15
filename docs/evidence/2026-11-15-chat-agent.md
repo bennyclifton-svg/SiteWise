@@ -313,8 +313,16 @@ questions 3.9 s. The full key was not re-run on Sonnet.
 
 `TestChatGoWorkBudgets` still passes. The chat rows are now also sampled
 by `cmd/intake-bench` with a stand-in model (`cmd/intake-bench/chat.go`).
-The result of running the bench and the rest of `tools/check.ps1` is in
-the plan's Progress section.
+The bench ran on this machine with every sampled path inside its budget:
+`ops_apply` 72 / 83 ms, `change_undo` 21 / 29 ms, `chat_tool_read` 8.5 /
+10 ms, `chat_simple_command` 29 / 33 ms, `chat_first_response` 14 / 17 ms,
+`chat_document_answer` 21 / 26 ms (p50 / p90, Go's share only). No
+existing row was over budget: for example `invoice_write` 42 / 47 ms
+against 50 / 100, `tender_edit` 59 / 61 ms, `specification_issue` 79 /
+140 ms. There is no bench run from before this work to compare against,
+so "did any existing path get slower" is answered only as "none is over
+its budget". The rest of `tools/check.ps1` is in the plan's Progress
+section.
 
 ### 7.5 Cost of this leg
 

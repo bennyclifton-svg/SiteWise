@@ -879,3 +879,136 @@ Against the budget: `chat_simple_command` (p50 1,500 ms, p90 3,000 ms) is
 met by case 3 and missed at p50 by about 100 ms on cases 1 and 2 with
 thinking off. The p90 is met by all three.
 
+## Progress, second leg (15 November 2026)
+
+From `11fdbe6`, same branch and worktree. Order of work as the coordinator
+set it; each item is one commit or more.
+
+1. **Outline trim, done.** The outline holds names and ids only. Fresh
+   input per call on the house fixture fell from about 6,100 tokens to
+   about 2,650. Worked cases, ten runs each, all one round: five Program
+   rows 1,296 ms p50 / 1,638 p90; three cost lines 1,532 / 1,944; two
+   profile values 1,374 / 1,574. The three-cost-lines case is about 30 ms
+   over the 1,500 ms target. Program `add` takes `label` with `count`.
+2. **Remaining operations, done as far as listed here.** 54 more write
+   routes are operations, through `ops_forward.go`: an operation runs the
+   screen's own handler in process with the caller's session. Pending
+   routes: 32 (was 94), named below.
+   - Applies at once with Undo: invited firms (name, remove), accommodation
+     schedule edits and `profile.add_room`, and the Cost Plan writes left
+     out before (order, subdivide, settings, suggestions, links,
+     benchmarks, prepare). Migration `063` captures `package_invitations`
+     and `accommodation_lines`.
+   - Prepared for a click because the change log does not cover their
+     tables yet: a new package, a package edit, scope, the planning route,
+     parts, work items, invoice edits and splits, delivery records, a
+     report draft, a document's filing fields, specification edits.
+   - Vouching, always prepared: removing a package, undoing an award,
+     comparison sign-off, accepting or dismissing an implication, accepting
+     Program readings and changes, confirming an invoice supplier,
+     verifying a delivery record, adopting or reviewing a specification
+     value, issuing a specification; and, from the first leg, freezing the
+     cost plan, releasing a hold point and checking a tender column.
+   - Award is prepared, but its click does not award: it tells the PM to
+     use the award dialog, because the award's lines are the PM's choice
+     there and chat does not choose them.
+   - A package's budget is the budget of its cost line, so it is set with
+     `cost_plan.set_amount` or `cost_plan.add_line` (section consultants).
+   - Excluded with the reason in `ops_routes.go`: every route that starts a
+     Jev read or takes an upload (re-filing, drawing split, reprocess,
+     visual review, profile read and its setting, specification update,
+     tender read, linking a filed proposal to a row).
+   - Still pending (32), by name and why:
+     - Report wording, settings and facts (8 routes under `/reports/{r}/…`):
+       they are keyed by report, not project; the forwarder checks project
+       only. Not done.
+     - Package scope items and stages (4), combine, uncombine, ungroup (3),
+       stage sync for a package (1), proposed-package accept and
+       procurement adopt and dismiss (3), free-form package create (1): not
+       reached.
+     - The older price-table corrections: a submission's cells, comparison
+       row, alignment, appointment row, submission patch, typed firm (6),
+       and response ratings (1): not reached.
+     - Program prepare, question and update (3); the site record (1); a
+       work-item split (1): not reached.
+3. **Building-model route, done.** It now adds the system's scope status,
+   work items and Program rows to the labelled passages and implications.
+4. **The four Haiku misses, done.** A typed figure that equals exactly one
+   figure returned this turn is tied to its row by Go, with no extra
+   round; the cost read gives budget less claimed. A question that names a
+   document or a firm is searched in that document only, and a superseded
+   revision is left out unless asked for. Every search result says only
+   the matching passages were read. The prompt says to do the clear half
+   of a request first.
+5. **Fixtures and key, done.** Read tenders on two fixtures, a hold point
+   on one, 20 new cases (115 in all). The key is still draft.
+6. **Live re-run, done.** Haiku, 115 cases, five runs each: 548 of 575
+   passed. Four real wrong changes were found, read and fixed in Go (a
+   doubled apply; a partial "clear the plan"), and the affected cases were
+   re-run clean; the whole key was not re-run after those fixes. Sonnet on
+   20 cases: 90 of 100. Sheets and reading in
+   `docs/evidence/2026-11-15-chat-agent.md` section 7.
+7. **Housekeeping.** See "Check results" below.
+
+### Deviations and decisions, second leg
+
+- **Operations run the screen's handler, not the store function
+  directly.** The plan says each operation calls the store write the
+  screen calls. A forwarded operation calls the handler that calls it, so
+  the screen's own validation is reused rather than copied. The first
+  slice's hand-written operations are unchanged.
+- **No Undo means a click.** An operation whose tables the change log does
+  not cover is prepared, not applied at once. This is stricter than "apply
+  at once with Undo" and safer for the owner's data.
+- **Capture triggers were added for two tables only.** Each new captured
+  table needs its own undo finisher and an apply-then-undo test; the rest
+  are left prepared rather than given an Undo that was not tested.
+- **Award from chat does not award.** See item 2.
+- **The delete rule is lower than the plan's.** Four or more lines, or
+  half the plan, or every line, or a line with a contract or claimed
+  amount, waits for a click. The plan says more than ten.
+- **A doubled write runs once.** The loop answers a write identical to an
+  earlier one in the same step instead of running it.
+- **Named-document rule.** Go decides which documents a question names: a
+  title's own words, or a firm's first name. It can miss a paraphrase
+  ("the tree report") and then searches everything, as before.
+- **Account switch wording** is draft and flagged for the owner in
+  `web/src/Account.tsx`.
+
+### Check results (`tools/check.ps1`, each step run by hand)
+
+The script hard-codes the shared database on port 5433, which this work
+must not touch, so each of its steps was run by hand in its order against
+the private database on port 5435. Small private inputs (the invoice
+answer key, the profile cases, the intake recordings) were copied from the
+main checkout into this worktree's git-ignored paths; the 2.9 GB corpus
+was read in place through the manifest's own roots.
+
+| Step | Result |
+|---|---|
+| `check_knowledge.py --strict` | Pass: 0 errors, 1 warning that was already there. |
+| `npm ci`, `npm run build` | Pass. |
+| `npm run test` (vitest) | **3 fail of 271**, all in `src/program/engine.test.ts` (Go golden outputs random-03, -14, -44). Nothing in this work touches the Program engine or its goldens. Not checked at the baseline commit. |
+| `go test -p 1 ./...` | One failure, caused by this work and fixed: `internal/db` `TestNextWaveCompositeForeignKeys` did not know the chat tables' foreign keys (missed in the first leg, which did not run that package). After the fix every package passes, `internal/latency` included. |
+| `check-ocr.ps1` (OCR filing speed gate) | Pass. |
+| `check-visual.ps1` (visual identity speed gate) | Pass: p50 817 ms, p90 822 ms against 10 s and 20 s. |
+| `npm run test:e2e` (153 browser tests ran) | **91 pass, 62 fail.** The chat and Account specs pass. To see what the strip caused, the five files holding 33 of the failures were re-run with the strip not mounted: 31 fail the same way without it. One is caused by the strip (below). One passed on a re-run with the strip. Of the other 29, two (`navigation-refresh`) were shown in the first leg to fail without the strip; the remaining 27, in files not re-run without the strip, were not attributed. Their errors are missing headings, stale screenshots and missing elements on Program, RFP and Procurement pages. |
+| `intake-eval -replay` | Fails: "no recorded jev response for this request: 129 requests; re-record with -live". The recordings in the main checkout do not match the current questions. Not caused by this work as far as can be seen (no intake question changed); not checked at the baseline commit. |
+| `profile-eval` | Fails: "bankstown-page9: recording is stale". Same reading. |
+| `profile-eval` (Hale cases) | Could not run: it opens files under `.tools/dev-files`, the main checkout's document store. |
+| `invoice-eval` | Pass: 90 cases, 0 wrong values marked green. |
+| `proposal-eval` | Could not run: `data/eval/proposal/private/answer-key.json` is not on this machine's main checkout either. |
+| `intake-bench` | Every sampled path is within its budget, the six chat rows included (stand-in model): `ops_apply` 72 / 83 ms, `change_undo` 21 / 29 ms, `chat_tool_read` 8.5 / 10 ms, `chat_simple_command` 29 / 33 ms, `chat_first_response` 14 / 17 ms, `chat_document_answer` 21 / 26 ms. The gate still exits non-zero because four budget rows have no samples at all (`billing_read`, `billing_session`, `stripe_webhook`, `team`): the bench has never sampled them. Left as found. |
+
+So `tools/check.ps1` as a whole does not pass on this branch, and by the
+evidence above it did not pass before this work either (the vitest
+goldens, most of the browser suite, the stale replays, the unsampled
+budget rows). One failure is this work's:
+
+- **`profile-run.spec.ts:120`, "the scope's first rows are on the first
+  screen of a laptop".** At 1536 by 864 the test wants five scope rows on
+  the first screen; with the strip there are four. The strip is 40 pixels
+  high (it was 52; 36 was tried and still shows four). The strip at the
+  foot of the middle panel is the owner's decision and the test is an
+  earlier layout rule; the two cannot both hold as written. The test is
+  left failing and unchanged for the owner to settle.
