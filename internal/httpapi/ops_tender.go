@@ -20,7 +20,8 @@ func procurementOperations() []operation {
 		{Name: "procurement.tender", About: "One edit to a package's tender comparison. Edits of a batch are for one package and apply together.",
 			Fields: `package (id); op (add_adjustment|set_adjustment|remove_adjustment|set_adjustment_amount|apply_adjustment|move_line|take_out_line|edit_line); ` +
 				`add_adjustment: label, note; set_adjustment_amount: adjustment (id), submission (the firm's column id), amount; ` +
-				`apply_adjustment: adjustment, submission, applied (true|false); move_line: line (id), row (a row key); take_out_line: line`,
+				`apply_adjustment: adjustment, submission, applied (true|false); move_line: line (id), row (a row key); take_out_line: line; ` +
+				`check_column: submission, checked (true) — the PM vouches for the column, so SiteWise prepares it for their click`,
 			Figures: map[string]string{"amount": "money"},
 			Routes:  []string{"POST /projects/{id}/procurement/packages/{pkg}/tender/ops"}, Hold: tenderHold, Batch: tenderBatch},
 	}

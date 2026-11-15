@@ -45,6 +45,17 @@ func TestCountedLines(t *testing.T) {
 	}
 }
 
+func TestLineStillThereIsAMissUnlessTheAreaChanged(t *testing.T) {
+	c := Case{ID: "l", Fixture: "house", Group: "procurement", Message: "remove it",
+		Expect: []Expectation{{Kind: "state", Area: "procurement", Lacks: []string{"Hartwell | invited"}}}}
+	if v := Score(c, Outcome{After: map[string]string{"procurement": "Hartwell | invited"}}); v.Class != Failed {
+		t.Fatalf("nothing done is a miss, got %+v", v)
+	}
+	if v := Score(c, Outcome{Changed: []string{"procurement"}, After: map[string]string{"procurement": "Hartwell | invited"}}); v.Class != WrongChange {
+		t.Fatalf("a change that left it is a wrong change, got %+v", v)
+	}
+}
+
 func TestMissingQuestionFails(t *testing.T) {
 	c := Case{ID: "t2", Fixture: "house", Group: "ambiguous", Message: "Set PC to 30 June", Expect: []Expectation{{Kind: "asks"}}}
 	if v := Score(c, Outcome{Text: "Done."}); v.Pass || v.Class != MissedQuestion {

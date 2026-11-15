@@ -27,6 +27,7 @@ import (
 	"sitewise/internal/auth"
 	"sitewise/internal/chateval"
 	"sitewise/internal/chatfix"
+	"sitewise/internal/config"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
 	"sitewise/internal/intake"
@@ -34,7 +35,10 @@ import (
 	"sitewise/internal/knowledge"
 	"sitewise/internal/llm"
 	"sitewise/internal/profile"
+	"sitewise/internal/proposals"
+	psample "sitewise/internal/proposals/sample"
 	"sitewise/internal/store"
+	tsample "sitewise/internal/tender/sample"
 )
 
 // pick keeps the cases whose id or group is named; an empty list keeps all.
@@ -52,7 +56,7 @@ func pick(cases []chateval.Case, only string) []chateval.Case {
 	return out
 }
 
-var areas = []string{"cost_plan", "profile", "program", "procurement"}
+var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement"}
 
 // live runs each case through the real server: a fresh org and project, the
 // fixture seeded through the same routes and store a PM's work goes
@@ -112,7 +116,10 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 		return nil, nil, err
 	}
 	// Nothing in a chat turn calls Jev; the client points nowhere.
-	jevClient, err := jev.New(jev.Options{BaseURL: "http://127.0.0.1:9", APIKey: "unused", Logger: slog.New(slog.DiscardHandler)})
+	// Filing a fixture's tender asks Jev its filing questions. A stand-in
+	// answers them here, as in the test suites; no chat turn calls Jev.
+	fake := httptest.NewServer(http.HandlerFunc(standInJev))
+	jevClient, err := jev.New(jev.Options{BaseURL: fake.URL, APIKey: "unused", Logger: slog.New(slog.DiscardHandler)})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -138,6 +145,16 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 		Static:       fstest.MapFS{"index.html": {Data: []byte("<!doctype html><title>chat-eval</title>")}},
 		PublicOrigin: "http://" + ts.Listener.Addr().String(), MaxUploadBytes: 10 << 20, Log: log.New(io.Discard, "", 0),
 		Knowledge: building, ProfileReading: reading,
+		// A fixture's tenders are read by stand-ins, in this process.
+		ProposalJev: psample.Jev{}, ProposalThresholds: greenProposals(),
+		TenderLLM: tsample.Model{}, TenderModel: "claude-haiku-5-5", TenderTimeout: 20 * time.Second,
+		TenderRender: func(_ context.Context, _ string, pages []int) (map[int]string, error) {
+			out := map[int]string{}
+			for _, p := range pages {
+				out[p] = "/9j/4AAQSkZJRg=="
+			}
+			return out, nil
+		},
 		ProfileThresholds: profile.Thresholds{Version: "eval", Amber: map[string]float64{}, Green: map[string]*float64{}},
 		Chat:              chat,
 	})
@@ -242,7 +259,121 @@ func (l *live) open(ctx context.Context, name string) (*session, error) {
 }
 
 // seed builds a fixture in the session's project.
-func (s *session) seed(ctx context.Context, f fixture) error {
+func greenProposals() proposals.Thresholds {
+	lo, hi, g := 2, 255, 0.5
+	th := proposals.Thresholds{QuestionVersion: proposals.QuestionVersion, Questions: map[string][]proposals.Threshold{}}
+	for _, q := range []string{"price", "rate", "criterion", "firm", "kind", "package", "gst_basis", "stated_total"} {
+		th.Questions[q] = []proposals.Threshold{{Options: &lo, MaxOptions: &hi, Green: &g, Amber: &g}}
+	}
+	return th
+}
+
+// standInJev answers every choice question with its first option.
+func standInJev(w http.ResponseWriter, r *http.Request) {
+	var call struct {
+		Questions map[string]struct {
+			Criteria map[string]json.RawMessage `json:"criteria"`
+		} `json:"questions"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&call); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	answers := map[string]any{}
+	for id, q := range call.Questions {
+		first := ""
+		probs := map[string]float64{}
+		for opt := range q.Criteria {
+			if first == "" || opt < first {
+				first = opt
+			}
+			probs[opt] = 0
+		}
+		probs[first] = 1
+		answers[id] = map[string]any{"type": "choice", "choice": first, "probabilities": probs, "confidence": 0.5}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(map[string]any{"model": config.PinnedJevModel, "answers": answers, "usage": map[string]int{"input_tokens": 10, "output_tokens": 2}})
+}
+
+// seedTenders drops each firm's synthetic tender on the package, waits for
+// the stand-in tender pass, and checks the columns the fixture says the PM
+// has checked.
+func (s *session) seedTenders(base string, tenders []tenderFix) error {
+	var table struct {
+		Items []struct {
+			Label string `json:"label"`
+			Base  bool   `json:"base"`
+		} `json:"items"`
+		Tender struct {
+			Version int64 `json:"version"`
+			Columns []struct {
+				SubmissionID string `json:"submission_id"`
+				State        string `json:"state"`
+			} `json:"columns"`
+		} `json:"tender"`
+	}
+	if err := s.must(http.MethodGet, base+"/prices", nil, &table); err != nil {
+		return err
+	}
+	var labels []string
+	for _, it := range table.Items {
+		if it.Base {
+			labels = append(labels, it.Label)
+		}
+	}
+	if len(labels) == 0 {
+		labels = []string{"The works"}
+	}
+	subs := map[string]bool{}
+	checked := []string{}
+	for n, t := range tenders {
+		var lines []psample.Line
+		for _, label := range labels {
+			lines = append(lines, psample.Line{Label: label, Cents: t.Total * 100 / int64(len(labels))})
+		}
+		pdf := psample.PDF(psample.Proposal{Firm: t.Firm, ABN: abn(n), Email: fmt.Sprintf("office%d@invented.test", n), Lines: lines})
+		var up struct {
+			SubmissionID string `json:"submission_id"`
+		}
+		if err := s.must(http.MethodPost, base+"/submissions?name="+url.QueryEscape("Tender ("+t.Firm+").pdf"), pdf, &up); err != nil {
+			return err
+		}
+		subs[up.SubmissionID] = true
+		if t.Checked {
+			checked = append(checked, up.SubmissionID)
+		}
+	}
+	for deadline := time.Now().Add(40 * time.Second); ; time.Sleep(100 * time.Millisecond) {
+		if err := s.must(http.MethodGet, base+"/prices", nil, &table); err != nil {
+			return err
+		}
+		read := 0
+		for _, c := range table.Tender.Columns {
+			if subs[c.SubmissionID] && c.State == "read" {
+				read++
+			}
+		}
+		if read == len(subs) {
+			break
+		}
+		if time.Now().After(deadline) {
+			return fmt.Errorf("%d of %d tenders were read in time", read, len(subs))
+		}
+	}
+	for _, sub := range checked {
+		if err := s.must(http.MethodGet, base+"/prices", nil, &table); err != nil {
+			return err
+		}
+		body := map[string]any{"version": table.Tender.Version, "ops": []map[string]any{{"op": "check_column", "submission": sub, "checked": true}}}
+		if err := s.must(http.MethodPost, base+"/tender/ops", body, nil); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *session) seed(ctx context.Context, f fixture, needs []string) error {
 	base := "/api/projects/" + s.project
 	for _, c := range f.Cost {
 		fields := map[string]any{"label": c.Label, "section": c.Section}
@@ -337,7 +468,11 @@ func (s *session) seed(ctx context.Context, f fixture) error {
 		return first
 	}
 	for _, a := range f.Activities {
-		if err := s.ops("program", op("program.edit", map[string]any{"op": "add", "parent_id": stage(a.Stage), "kind": "activity", "label": a.Label, "duration": a.Duration})); err != nil {
+		add := map[string]any{"op": "add", "parent_id": stage(a.Stage), "kind": kindOf(a), "label": a.Label}
+		if a.Kind == "" {
+			add["duration"] = a.Duration // a hold point, like a milestone, has no length
+		}
+		if err := s.ops("program", op("program.edit", add)); err != nil {
 			return err
 		}
 	}
@@ -347,6 +482,11 @@ func (s *session) seed(ctx context.Context, f fixture) error {
 		}
 		if err := s.must(http.MethodPost, base+"/procurement/rows", map[string]string{"discipline_id": p.Discipline}, &row); err != nil {
 			return err
+		}
+		if slices.Contains(needs, "tenders") && len(p.Tenders) > 0 {
+			if err := s.seedTenders(base+"/procurement/packages/"+row.ID, p.Tenders); err != nil {
+				return fmt.Errorf("tenders: %w", err)
+			}
 		}
 		for _, firm := range p.Invited {
 			if err := s.must(http.MethodPost, base+"/procurement/packages/"+row.ID+"/invitations", map[string]string{"name": firm}, nil); err != nil {
@@ -358,6 +498,35 @@ func (s *session) seed(ctx context.Context, f fixture) error {
 		return err
 	}
 	return nil
+}
+
+// abn is the n-th invented, checksum-valid ABN, so each fixture firm is a
+// different firm to the reader.
+func abn(n int) string {
+	weights := []int{10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19}
+	for v, found := 51000000000, -1; ; v++ {
+		digits := fmt.Sprint(v)
+		sum := 0
+		for i, w := range weights {
+			d := int(digits[i] - '0')
+			if i == 0 {
+				d--
+			}
+			sum += d * w
+		}
+		if sum%89 == 0 {
+			if found++; found == n {
+				return digits
+			}
+		}
+	}
+}
+
+func kindOf(a activity) string {
+	if a.Kind != "" {
+		return a.Kind
+	}
+	return "activity"
 }
 
 func (s *session) reads() (map[string]string, error) {
@@ -380,7 +549,7 @@ func (l *live) Run(ctx context.Context, c chateval.Case) (chateval.Outcome, erro
 		return out, err
 	}
 	defer func() { _ = l.st.DeleteOrg(context.Background(), s.org) }()
-	if err := s.seed(ctx, fixtures[c.Fixture]); err != nil {
+	if err := s.seed(ctx, fixtures[c.Fixture], c.Needs); err != nil {
 		return out, fmt.Errorf("fixture %s: %w", c.Fixture, err)
 	}
 	before, err := s.reads()

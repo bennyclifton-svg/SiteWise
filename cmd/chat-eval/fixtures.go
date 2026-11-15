@@ -12,11 +12,21 @@ type costLine struct {
 
 type activity struct {
 	Stage, Label, Duration string
+	Kind                   string // "" is an activity; "hold_point" is one
 }
 
 type pkg struct {
 	Discipline string
 	Invited    []string
+	Tenders    []tenderFix
+}
+
+// tenderFix is one firm's synthetic tender, read by the stand-in tender
+// pass. Total is spread evenly over the package's schedule rows.
+type tenderFix struct {
+	Firm    string
+	Total   int64 // dollars, ex GST
+	Checked bool  // the PM has checked the firm's column
 }
 
 type fixture struct {
@@ -44,11 +54,13 @@ var fixtures = map[string]fixture{
 			{Label: "DA fees", Section: "authority", Budget: "8400"},
 		},
 		Activities: []activity{
-			{"Schematic design", "Concept design", "3 weeks"}, {"Schematic design", "Soil report", "1 week"},
-			{"Planning", "DA lodgement", "1 day"}, {"Planning", "DA determination", "8 weeks"},
-			{"Delivery", "Slab pour", "1 week"},
+			{Stage: "Schematic design", Label: "Concept design", Duration: "3 weeks"}, {Stage: "Schematic design", Label: "Soil report", Duration: "1 week"},
+			{Stage: "Planning", Label: "DA lodgement", Duration: "1 day"}, {Stage: "Planning", Label: "DA determination", Duration: "8 weeks"},
+			{Stage: "Delivery", Label: "Slab pour", Duration: "1 week"},
+			{Stage: "Delivery", Label: "Slab inspection", Duration: "1 day", Kind: "hold_point"},
 		},
-		Packages: []pkg{{Discipline: "consultant.structural", Invited: []string{"Hartwell Consulting"}}},
+		Packages: []pkg{{Discipline: "consultant.structural", Invited: []string{"Hartwell Consulting"}, Tenders: []tenderFix{
+			{Firm: "Northline Structural", Total: 84000}, {Firm: "Brightwater Engineers", Total: 91500}, {Firm: "Corex Engineering", Total: 88000}}}},
 		Documents: []chatfix.Document{
 			{Title: "Arborist report", Kind: "report", Discipline: "arborist", Pages: []string{
 				"Arboricultural impact assessment, 14 Wattle Street.\n\nEight trees were assessed on and next to the site.",
@@ -80,7 +92,7 @@ var fixtures = map[string]fixture{
 			{Label: "Landscaping", Section: "construction", System: "site", Budget: "240000"},
 			{Label: "Contingency", Section: "contingency", Budget: "600000"},
 		},
-		Activities: []activity{{"Schematic design", "Sketch plans", "6 weeks"}, {"Delivery", "Site establishment", "3 weeks"}},
+		Activities: []activity{{Stage: "Schematic design", Label: "Sketch plans", Duration: "6 weeks"}, {Stage: "Delivery", Label: "Site establishment", Duration: "3 weeks"}},
 		Packages:   []pkg{{Discipline: "consultant.structural"}, {Discipline: "consultant.civil", Invited: []string{"Tideline Civil"}}},
 		Documents: []chatfix.Document{
 			{Title: "Mechanical specification rev A", Kind: "specification", Discipline: "mechanical", Number: "M-SPEC", Revision: "A", Pages: []string{
@@ -104,8 +116,9 @@ var fixtures = map[string]fixture{
 			{Label: "Contingency", Section: "contingency", Budget: "75000"},
 			{Label: "Make good", Section: "contingency", Category: "other", Budget: "40000"},
 		},
-		Activities:  []activity{{"Design development", "Tenancy design", "4 weeks"}, {"Delivery", "Strip out", "2 weeks"}},
-		Packages:    []pkg{{Discipline: "trade.mechanical", Invited: []string{"Polar Air", "Venturi Mechanical"}}},
+		Activities: []activity{{Stage: "Design development", Label: "Tenancy design", Duration: "4 weeks"}, {Stage: "Delivery", Label: "Strip out", Duration: "2 weeks"}},
+		Packages: []pkg{{Discipline: "trade.mechanical", Invited: []string{"Coldstream Services"}, Tenders: []tenderFix{
+			{Firm: "Polar Air", Total: 286000, Checked: true}, {Firm: "Venturi Mechanical", Total: 271000}}}},
 		Implication: true,
 		Documents: []chatfix.Document{
 			{Title: "Base building rules", Kind: "report", Pages: []string{

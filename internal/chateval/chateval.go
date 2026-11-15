@@ -25,8 +25,11 @@ type Case struct {
 	Message string `json:"message"`
 	// Money marks a case that writes an amount, a date or a duration: one
 	// wrong change in any run fails the case whatever the floor.
-	Money  bool          `json:"money_or_date,omitempty"`
-	Note   string        `json:"note,omitempty"`
+	Money bool   `json:"money_or_date,omitempty"`
+	Note  string `json:"note,omitempty"`
+	// Needs names slower parts of the fixture a case depends on, so only
+	// those cases pay for them: "tenders" reads the fixture's tenders.
+	Needs  []string      `json:"needs,omitempty"`
 	Expect []Expectation `json:"expect"`
 }
 
@@ -139,7 +142,9 @@ func Score(c Case, o Outcome) Verdict {
 			}
 			for _, line := range e.Lacks {
 				if strings.Contains(read, line) {
-					fail(WrongChange, e.Area+" still has: "+line)
+					// Still there because nothing was done is a miss; still
+					// there after a change to the area is a wrong change.
+					fail(missing, e.Area+" still has: "+line)
 				}
 			}
 		case "asks":
