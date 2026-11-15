@@ -41,14 +41,14 @@ ended prepared (review change 7).
 
 ## The three fixtures
 
-Built by `cmd/chat-eval` from `fixtures.json` (added with the live runner).
+Built by `cmd/chat-eval` from `cmd/chat-eval/fixtures.go`. Stage names are the seven common stages (Brief and concept, Schematic design, Planning, Design development, Tender documentation, Design finalisation, Delivery); "Design" alone names three of them, so a case that means one says which.
 
 **house: Wattle Street house.** A new Class 1a house on a domestic building
 contract. Five-day calendar.
 
 - Profile: site area and zone blank; swimming pool in scope.
-- Cost plan, ex GST at 10%: Main works 1,850,000; a Fitout group holding
-  Stone (no amount); Landscaping 60,000; Mechanical services budget
+- Cost plan, ex GST at 10%: Main works 1,850,000; Benchtops (no
+  amount); Landscaping 60,000; Mechanical services budget
   120,000, contract 110,000, claimed 45,000; two lines both called
   Contingency at 90,000; Escalation 20,000; DA fees 8,400.
 - Program: the seven stages; under Design: Concept design, Soil report, DA

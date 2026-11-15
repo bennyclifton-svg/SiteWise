@@ -34,6 +34,9 @@ type Conversation struct {
 	History   []json.RawMessage
 	MaxTokens int64
 	Timeout   time.Duration // zero means one minute
+	// Think lets the model reason in hidden thinking blocks (adaptive, at
+	// low effort) instead of with thinking off. Chat measures both.
+	Think bool
 	// Warm sends the prefix with max_tokens 0 so the next real call reads
 	// it from the cache. Nothing is generated.
 	Warm bool
@@ -254,6 +257,13 @@ func thinkingOff(model string) anthropic.ThinkingConfigParamUnion {
 	return anthropic.ThinkingConfigParamUnion{OfDisabled: &anthropic.ThinkingConfigDisabledParam{}}
 }
 
+func thinking(conv Conversation) anthropic.ThinkingConfigParamUnion {
+	if conv.Think {
+		return anthropic.ThinkingConfigParamUnion{OfAdaptive: &anthropic.ThinkingConfigAdaptiveParam{}}
+	}
+	return thinkingOff(conv.Model)
+}
+
 func conversationParams(conv Conversation) anthropic.MessageNewParams {
 	tools := make([]anthropic.ToolUnionParam, 0, len(conv.Tools))
 	for _, t := range conv.Tools {
@@ -292,7 +302,7 @@ func conversationParams(conv Conversation) anthropic.MessageNewParams {
 		Tools:    tools,
 		Messages: messages,
 		// Thinking off and low effort: the fastest set-up (plan, speed rule 5).
-		Thinking:     thinkingOff(conv.Model),
+		Thinking:     thinking(conv),
 		OutputConfig: anthropic.OutputConfigParam{Effort: anthropic.OutputConfigEffortLow},
 	}
 }

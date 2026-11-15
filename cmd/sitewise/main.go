@@ -235,7 +235,10 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		if err != nil {
 			logger.Printf("chat: off, the prompt could not be read: %v", err)
 		} else {
-			chat = &httpapi.Chat{Model: model, On: model.On, Name: cfg.ChatModel, Prompt: prompt}
+			chat = &httpapi.Chat{Model: model, On: model.On, Name: cfg.ChatModel, Prompt: prompt, Think: cfg.ChatThinking}
+			if chat.Synonyms, chat.SystemTerms, err = httpapi.LoadChatWords(*knowledgeDir); err != nil {
+				logger.Printf("chat: search vocabulary not loaded: %v", err)
+			}
 			logger.Printf("chat: on, model %s", cfg.ChatModel)
 		}
 	}

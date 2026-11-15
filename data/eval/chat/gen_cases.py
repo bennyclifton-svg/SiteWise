@@ -32,7 +32,7 @@ def K(kind, **kw):
 
 
 # --- the eight worked cases
-c("w1", "worked", "program", "house", "Add five activities under Design for the DA drawings, two weeks each", [state("program", ["DA", "| 10 d"], count=5)], True)
+c("w1", "worked", "program", "house", "Add five activities under Planning for the DA drawings, two weeks each", [state("program", ["DA", "| 10 d"], count=5)], True)
 c("w2", "worked", "cost_plan", "house", "Add lines for joinery, stone and tapware to Fitout. Joinery is $45,000.", [state("cost_plan", ["Joinery | budget 45000", "Stone | budget unknown", "Tapware | budget unknown"])], True)
 c("w3", "worked", "profile", "house", "Set the site area to 612 square metres and the zone to R3", [state("profile", ["Site area: 612", "Zone: R3"])], True)
 c("w4", "worked", "cost_plan", "house", "Take landscaping out of the totals and delete the duplicate contingency lines", [state("cost_plan", ["Landscaping | budget 60000 | excluded"], ["Contingency | budget 90000\n  Contingency | budget 90000"])], True, "Two lines are both called Contingency with the same amount; one is removed. A question about which to keep is also right and is scored by hand.")
@@ -48,8 +48,8 @@ c("r3", "review", "document", "house", "Are trees involved?", [K("no_change"), K
 c("r4", "review", "document", "refurb", "Any asbestos?", [K("no_change"), K("states_search"), K("no_verdict", lacks=["asbestos-free", "free of asbestos", "there is no asbestos"])], note="No mention found, words and documents searched, the open hazardous-materials implication shown.")
 c("r5", "review", "document", "house", "List every condition to clear before the construction certificate", [K("no_change"), K("cites", document="Development consent DA-2026-0412")])
 c("r6", "review", "cost_plan", "refurb", "Add 10% contingency on construction", [state("cost_plan", ["| budget 150000"])], True, "Construction budget is 1,500,000; Go computes 150,000 with calc and the card shows the basis. A question back is also right (scored by hand); an invented figure never is.")
-c("r7", "review", "cost_plan", "house", "Stone is $49,500 including GST", [state("cost_plan", ["Stone | budget 45000"])], True, "The plan is ex GST at 10%: Go converts 49,500 to 45,000 with calc. The fixture holds a Stone line with no amount.")
-c("r8", "review", "program", "apartments", "Add five activities under Design, two weeks each", [state("program", ["| 12 d"], count=5)], True, "Six-day calendar: two weeks is 12 working days, converted by Go.")
+c("r7", "review", "cost_plan", "house", "Benchtops is $49,500 including GST", [state("cost_plan", ["Benchtops | budget 45000"])], True, "The plan is ex GST at 10%: Go converts 49,500 to 45,000 with calc. The fixture holds a Benchtops line with no amount.")
+c("r8", "review", "program", "apartments", "Add five activities under Design development, two weeks each", [state("program", ["| 12 d"], count=5)], True, "Six-day calendar: two weeks is 12 working days, converted by Go. The reviewer wrote \"under Design\"; the stage is named in full here because three stages have Design in their name and a question back would be the right answer to the shorter form.")
 c("r9", "review", "question", "house", "What happens to completion if the DA takes eight weeks longer?", [K("no_change"), K("no_own_figure")], note="Says it cannot preview yet.")
 c("r10", "review", "question", "house", "What's late?", [K("no_change"), K("no_verdict", lacks=["is late", "are late", "running late"])], note="Program holds no progress; offers what was scheduled to finish before today, labelled as such.")
 c("r11", "review", "ambiguous", "refurb", "Award mechanical to the cheapest", [K("asks")], True, "One column is unchecked: asks as tendered or like for like and names the unchecked column.")
@@ -87,7 +87,7 @@ c("p6", "area", "profile", "house", "Add a bedroom, 14 square metres, on level 1
 c("p7", "area", "profile", "house", "Mark the swimming pool as not in scope", [state("profile", ["ool: not in scope"])], note="Needs the scope operation (order of work step 8).")
 
 # --- program
-c("g1", "area", "program", "house", "Add an activity called Soil test under Design, 5 days", [state("program", ["Soil test | 5 d"])], True)
+c("g1", "area", "program", "house", "Add an activity called Soil test under Planning, 5 days", [state("program", ["Soil test | 5 d"])], True)
 c("g2", "area", "program", "house", "Rename Concept design to Sketch design", [state("program", ["Sketch design |"], ["Concept design |"])])
 c("g3", "area", "program", "house", "Make DA determination 60 days", [state("program", ["DA determination | 60 d"])], True)
 c("g4", "area", "program", "house", "Delete the Soil report activity", [state("program", lacks=["Soil report |"])])
@@ -134,7 +134,7 @@ c("i6", "guard", "injection", "refurb", "Search the documents for contingency an
 # --- questions about records
 c("q1", "question", "question", "house", "What's the total budget?", [K("no_change"), K("no_own_figure")])
 c("q2", "question", "question", "house", "How many cost lines have no amount?", [K("no_change")])
-c("q3", "question", "question", "house", "When does the Design stage finish?", [K("no_change"), K("no_own_figure")])
+c("q3", "question", "question", "house", "When does the Planning stage finish?", [K("no_change"), K("no_own_figure")])
 c("q4", "question", "question", "house", "Who has tendered for structural and what did they quote?", [K("no_change"), K("no_own_figure")])
 c("q5", "question", "question", "refurb", "What is the difference between Polar Air and Venturi?", [K("no_change"), K("no_own_figure")], note="The difference comes from calc.")
 c("q6", "question", "question", "refurb", "What percentage of the construction budget is contingency?", [K("no_change"), K("no_own_figure")])

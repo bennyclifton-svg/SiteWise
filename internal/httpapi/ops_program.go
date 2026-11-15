@@ -21,7 +21,7 @@ func programOperations() []operation {
 	return []operation{
 		{Name: "program.edit", About: "One Program edit. Edits of a batch apply together; a later edit may name an earlier add by its temp_id. Go computes every date.",
 			Fields: `op (add|update|delete|move|link_add|link_delete|set_start|set_working_week); ` +
-				`add: parent_id (the stage), label, kind (activity|milestone|stage), duration, temp_id; ` +
+				`add: parent_id (the stage), label or labels (a list, for several rows alike), kind (activity|milestone|stage), duration, temp_id; ` +
 				`update: id, label, duration; delete: ids; link_add: pred_id, succ_id, type (FS), lag_days; ` +
 				`move: id, days; set_start: start_date (YYYY-MM-DD); set_working_week: working_week (31 is Monday to Friday, 63 Monday to Saturday, 127 every day). ` +
 				`duration is written as the PM said it ("2 weeks", "10 days"); Go converts it on the program's working week`,
@@ -38,6 +38,8 @@ func programOperations() []operation {
 type programEdit struct {
 	store.ProgramOp
 	Duration *string `json:"duration,omitempty"`
+	// Labels adds one row per label, alike in every other field.
+	Labels []string `json:"labels,omitempty"`
 }
 
 func loadProgramForOps(ctx context.Context, d Deps, who opActor, project string) (store.ProgramState, error) {
@@ -64,7 +66,8 @@ func programBatch(ctx context.Context, d Deps, who opActor, project string, in o
 	// The working week is stored as a set of weekdays; a duration in weeks
 	// needs how many days that is.
 	week := bits.OnesCount8(uint8(st.Program.WorkingWeek))
-	ops := make([]store.ProgramOp, len(in.Calls))
+	var ops []store.ProgramOp
+	var from []int // the call each edit came from
 	temps := map[string]bool{}
 	for i, call := range in.Calls {
 		var e programEdit
@@ -104,17 +107,37 @@ func programBatch(ctx context.Context, d Deps, who opActor, project string, in o
 				return opApplied{}, bad
 			}
 		}
-		if e.Op == "add" && e.TempID == "" {
-			// Program wants a name for each new row; chat need not invent one.
-			e.TempID = fmt.Sprintf("new-%d", i+1)
+		if len(e.Labels) > 0 && (e.Op != "add" || e.Label != nil || e.TempID != "") {
+			return opApplied{}, &opError{Index: i, Field: "labels", Message: "labels is for add, in place of label and temp_id."}
 		}
-		if e.TempID != "" {
-			temps[e.TempID] = true
+		if len(e.Labels) == 0 {
+			e.Labels = []string{""}
 		}
-		ops[i] = e.ProgramOp
+		for j, label := range e.Labels {
+			one := e.ProgramOp
+			if label != "" {
+				l := label
+				one.Label = &l
+			}
+			if one.Op == "add" && one.TempID == "" {
+				// Program wants a name for each new row; chat need not invent one.
+				one.TempID = fmt.Sprintf("new-%d-%d", i+1, j+1)
+			}
+			if one.TempID != "" {
+				temps[one.TempID] = true
+			}
+			ops = append(ops, one)
+			from = append(from, i)
+		}
 	}
 	res, err := d.Store.ApplyProgramOps(ctx, who.OrgID, project, who.UserID, st.Program.ID, st.Program.Version, ops)
 	if err != nil {
+		// Program names the edit by its place in what it was sent; point
+		// back at the call it came from.
+		var bad *store.ProgramOpError
+		if errors.As(err, &bad) && bad.Index >= 0 && bad.Index < len(from) {
+			return opApplied{}, &opError{Index: from[bad.Index], Field: bad.Field, Message: bad.Message, status: 422}
+		}
 		return opApplied{}, err
 	}
 	if d.Broker != nil {
@@ -129,7 +152,7 @@ func programBatch(ctx context.Context, d Deps, who opActor, project string, in o
 		label[a.ID] = a.Label
 	}
 	for i, op := range ops {
-		out.Results = append(out.Results, opResult{Op: in.Calls[i].Op, Summary: programSummary(op, label, st)})
+		out.Results = append(out.Results, opResult{Op: in.Calls[from[i]].Op, Summary: programSummary(op, label, st)})
 	}
 	return out, nil
 }

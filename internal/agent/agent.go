@@ -122,6 +122,7 @@ type Request struct {
 	// last. Figures in any of them may be used in an operation.
 	Typed   []string
 	Outline string // Go's compact outline of the project, with ids
+	Think   bool   // let the model use hidden thinking (see llm.Conversation)
 	Today   time.Time
 }
 
@@ -189,7 +190,7 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 		res.Rounds++
 		said.Reset()
 		turn, err := m.Converse(ctx, llm.Conversation{Name: "chat", Model: req.Model, System: req.System, Tools: tools,
-			History: history, MaxTokens: maxTokens, Timeout: TurnTimeout}, func(s string) {
+			History: history, MaxTokens: maxTokens, Timeout: TurnTimeout, Think: req.Think}, func(s string) {
 			said.WriteString(s)
 			emit(Event{Type: "text", Text: s})
 		})
@@ -237,9 +238,10 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 		}
 		add(llm.ToolResults(results))
 		if final && !failed {
-			// Go's cards are the record of what was done; the model's words
-			// before the call, if any, stay beside them.
-			res.Answer.Text = strings.TrimSpace(said.String())
+			// Go's cards are the record of what was done. Words the model
+			// wrote before the call are its working, not an answer: they
+			// are dropped.
+			res.Answer.Text = ""
 			break
 		}
 		if refusals >= 2 {

@@ -142,7 +142,9 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
         parts = path.relative_to(KNOWLEDGE).parts[:-1]
         # RFP discipline files have their own shape and check (check_rfp).
         if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts) or "rfp" in parts \
-                or PROGRAM_DIR in parts:
+                or PROGRAM_DIR in parts or "chat" in parts:
+            # knowledge/chat holds the chat agent's prompt and search words,
+            # not building knowledge; the Go loader reads it (LoadChatWords).
             continue
         if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue

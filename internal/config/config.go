@@ -34,6 +34,9 @@ type Config struct {
 	TenderModel string
 	// ChatModel is the model id for the chat strip.
 	ChatModel string
+	// ChatThinking lets the chat model use hidden thinking at low effort.
+	// Off by default: measured on 15 November it was a little slower.
+	ChatThinking bool
 	// TenderSkipJevPrices stops asking Jev the prices the tender pass reads.
 	// Off until the owner has used the new tables on a live package.
 	TenderSkipJevPrices bool
@@ -160,6 +163,7 @@ func Load(getenv func(string) string) (Config, error) {
 	if cfg.ChatModel == "" {
 		cfg.ChatModel = DefaultTenderModel
 	}
+	cfg.ChatThinking = strings.TrimSpace(getenv("SITEWISE_CHAT_THINKING")) == "1"
 	if !tenderModelID.MatchString(cfg.ChatModel) {
 		return Config{}, fmt.Errorf("SITEWISE_CHAT_MODEL %q is not a model id", cfg.ChatModel)
 	}

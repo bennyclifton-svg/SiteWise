@@ -1,0 +1,42 @@
+# Construction synonyms the chat's document search is widened with
+# (docs/plans/2026-11-15-chat-agent.md, review change 5). When a search
+# names one word of a group, Go searches for every word of the group and
+# tells the PM which words were searched. Written by the chat build from
+# general construction usage; the owner has not reviewed it.
+version: 1
+status: draft
+synonyms:
+  - word: tree
+    also: [trees, arborist, arboricultural, vegetation, tree protection zone, canopy]
+  - word: asbestos
+    also: [hazardous materials, hazmat, acm, lead paint, synthetic mineral fibre]
+  - word: rock
+    also: [sandstone, excavation in rock, rock excavation, shale]
+  - word: latent condition
+    also: [latent conditions, unforeseen conditions, site conditions]
+  - word: contingency
+    also: [contingencies, contingency sum]
+  - word: after hours
+    also: [after-hours, out of hours, outside normal hours, night works, weekend works]
+  - word: working hours
+    also: [hours of work, construction hours, permitted hours]
+  - word: bms
+    also: [building management system, building management and control system, bmcs]
+  - word: carpet
+    also: [carpet tile, floor coverings, soft flooring]
+  - word: construction certificate
+    also: [prior to the issue of a construction certificate, before the construction certificate, cc]
+  - word: contamination
+    also: [contaminated land, remediation, site audit]
+  - word: flood
+    also: [flooding, flood planning level, overland flow]
+  - word: heritage
+    also: [heritage item, conservation area]
+  - word: variation
+    also: [variations, change order]
+  - word: defects liability
+    also: [defects liability period, dlp, defects period]
+  - word: practical completion
+    also: [date for practical completion, pc date]
+  - word: notice
+    also: [notify, notification, written notice]

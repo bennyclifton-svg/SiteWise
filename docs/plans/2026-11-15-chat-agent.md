@@ -639,6 +639,9 @@ Branch `chat/agent`, worktree `sitewise-chat`, cut from `main` at `114178d`.
 Baseline on 15 November before any change: `go build ./...` clean;
 `go test -p 1 ./internal/store ./internal/httpapi ./internal/llm ./internal/intake -count=1`
 all pass (store 184 s, httpapi 86 s) on a private PostgreSQL 17 on port 5435.
+`internal/latency` `TestCommittedBudgets` already failed at `114178d` (the
+test pins 79 budget rows and `bench/budgets.json` held 89); it is not part
+of that baseline set and is left as found.
 
 - **Task 1, done.** `data/eval/chat/commands.json` (95 cases: the 8 worked
   cases, the 24 review cases, areas, guards, questions), written by
@@ -646,13 +649,36 @@ all pass (store 184 s, httpapi 86 s) on a private PostgreSQL 17 on port 5435.
   fixtures; `internal/chateval` scores an outcome and fills the sheet;
   `cmd/chat-eval -replay` scores a recorded run. The owner has not read
   the cases yet.
-
 - **Task 4, done.** `llm.Converse` beside `Ask`: tools, streaming, one cache
   breakpoint after tools and system text, every tool input checked against
   its schema in Go, refusal and `max_tokens` handled, cache reads counted
   and logged without content. A warming call (`max_tokens` 0) is there for
   speed rule 6. Tests go through the injected seam.
 - **Task 2, done from this machine.** See "Task 2 results".
+- **Task 3, core part done.** `apiRoutes()` (route lines byte-identical),
+  the registry, `TestWriteRoutesHaveOperations` (37 routes excluded with a
+  reason, 94 pending), `applyOps` with undo on failure,
+  `POST /projects/{id}/ops`. Operations with apply-then-undo tests: Cost
+  Plan (add, rename, set amount, delete, copy, exclude or move; freeze is a
+  click), Profile values, Program (passed whole to `ApplyProgramOps`),
+  tender edits (passed whole to `ApplyTenderOps`). Review change 2 is in
+  the chat `apply` tool; review change 4 is `Click` and `Hold` on the
+  operation.
+- **Task 5, done.** Migration `061_chat.sql`, `internal/store/chat.go`.
+- **Task 6, done.** `read` (cost plan, profile, program, procurement, a
+  package's tender lines, implications, delivery, gaps, invoices,
+  specifications, attention), `find`, `documents`, `passages`, `messages`
+  (answers "This project has no inbox yet"), and `calc`.
+- **Task 7, done.** `internal/agent` (the loop), `POST /projects/{id}/chat`
+  (server-sent events), `GET /projects/{id}/chat`, `…/chat/warm`,
+  `…/chat/prepared/{id}/apply` and `/dismiss`, `GET …/chat/read` (an area
+  as chat reads it), `knowledge/chat/` (prompt, five area guides, search
+  words). `TestOnlyChatReachesTheModel` is the import-graph test.
+- **Task 8, done.** `internal/agent/guard.go`: figure tags, the quote
+  check, the scan for figures, dates and clauses, verdict words, the
+  coverage line.
+- **Live runner.** `cmd/chat-eval -live` builds each case's fixture in a
+  private database and sends the message through the real route.
 
 ## Deviations
 
@@ -662,6 +688,61 @@ all pass (store 184 s, httpapi 86 s) on a private PostgreSQL 17 on port 5435.
 - **Task 4, thinking off on Sonnet 5.5.** Sonnet 5.5 rejects thinking
   `disabled`; the client sends `between_tools` for that model. Confirmed
   against the live API.
+- **Task 3, operation fields.** `operation.Fields` is a plain-words list of
+  fields for the prompt, not a JSON Schema; each operation decodes its own
+  fields and refuses any it does not know. Fewer tokens in the cached
+  prefix and one less thing to keep in step.
+- **Task 3, a shorthand the plan did not have.** `cost_plan.add_line` and
+  Program `add` take `labels`, a list of names, for several rows alike.
+  It cut the five-row case from about 2.6 s to about 1.5 s.
+- **Task 3, site area.** "Set the site area" is `profile.set_value` with
+  key `plan.site_area`: the profile route already accepts a planning key
+  stated by the user, and it has Undo. The planning screen's own route
+  (`PUT …/planning/{key}`) stays pending.
+- **Task 3, two store defects fixed on the way** (each only as far as the
+  defect): undoing a change that touched a table with no ignored columns
+  failed on a NULL list; undoing the change that made a project's first
+  cost line failed because `cost_plans` was not captured (migration `062`).
+- **Task 5, `chat_blocks`.** One row per provider message of the turn (its
+  content blocks whole), not one row per block.
+- **Task 7, history across turns.** An earlier turn goes back to the model
+  as the PM's text and a few plain lines of what came of it (the answer and
+  what the cards said). Earlier tool results are not replayed: they are
+  stale by the next turn and would cost tokens on every call.
+- **Task 7, `max_tokens`.** One cap (1,200) for every round. The cap bounds
+  a runaway reply; it does not slow a short one. The system prompt asks for
+  short replies.
+- **Task 7, the import-graph test.** The chat route lives in
+  `internal/httpapi` beside the screen handlers, so a package-level rule
+  cannot separate them. The test holds two rules instead: outside
+  `httpapi`, only `agent`, `llm` and `tender` may import the model path;
+  inside it, only the chat files may import `agent`, and only they and the
+  tender pass's files may import `llm` or touch `Deps.Chat`.
+- **Task 7, the org switch.** `PUT /account/model` used to answer "not set
+  up" unless the tender pass was configured. It now accepts when either the
+  tender pass or chat is configured.
+- **Task 8, three kinds of figure, not two.** A figure in the answer is a
+  Go figure (written as a tag), or "seen" (the PM typed it or a tool
+  returned it this turn, but it is not tied to a row), or the model's own
+  ("check it"). Only the last counts as unchecked. Marking every untagged
+  number would flag "you said 3 claims".
+- **Task 8, a quotation under the wrong tag.** If the quoted words are not
+  in the passage the model named but are a literal part of another passage
+  read this turn, the quotation is accepted and linked to where the words
+  really are.
+- **Review change 1, rule numbers.** Chat reads do not print the rule and
+  clause numbers behind an implication, because they cannot yet be shown
+  each with its verified flag.
+- **Review change 5, the building-model route** returns the labelled
+  passages and the open implications for the matched system. Scope status,
+  work items and Program rows by system are not included yet.
+- **Outside text, a narrower rule for the profile.** A profile read marks
+  the turn only when a value read from a document is longer than four
+  words. Short values Jev picked from fixed options or numbers do not.
+- **Fixture stage names.** The plan's worked case 1 says "under Design".
+  Three of the seven stages have Design in their name, and the model
+  rightly asks which. The key's cases name the stage (Planning, Design
+  development).
 
 - **Task 1, a tenth expectation detail.** `state` takes an optional `count`
   ("exactly five lines of ten days"), because "five activities" cannot be
@@ -706,3 +787,42 @@ What this says:
 
 The stop condition ("cannot meet 3 s typical on either") is not met. Work
 continues on Haiku as the default.
+
+## Worked cases 1 to 3, measured live (15 November 2026)
+
+`claude-haiku-5-5`, from the development machine, through the real chat
+route against a private database, five runs of each case on a warm cache
+(5,660 prefix tokens read from the cache on every call; about 1,970 fresh
+input tokens: the outline and the message). Times are Enter to the last
+event. Go's own work in a turn (outline, apply, storing the turn) was 60
+to 90 ms; the rest is the model.
+
+| Case | Thinking off: rounds, p50, p90 | Hidden thinking, low effort: rounds, p50, p90 |
+|---|---|---|
+| 1. Five Program rows of two weeks | 1.0, 1,591 ms, 1,918 ms | 1.0, 1,326 ms, 2,346 ms |
+| 2. Three cost lines, one amount | 1.4, 1,616 ms, 2,523 ms | 1.0, 2,026 ms, 2,436 ms |
+| 3. Two profile values | 1.0, 1,191 ms, 1,480 ms | 1.0, 1,220 ms, 1,320 ms |
+
+All 30 runs ended with the right records. Per model call: thinking off
+1,379 ms mean, first token 755 ms, 202 output tokens; hidden thinking
+1,559 ms mean, first token 1,109 ms, 256 output tokens.
+
+What moved the numbers:
+
+- **Output length is the cost.** A call takes about 0.7 s to its first
+  token and then about 250 tokens a second. Five Program rows written as
+  five operations were 520 to 590 output tokens and 2.3 to 2.9 s. One
+  `add` with `labels` (five names) made the same turn 1.3 to 1.6 s.
+- **With thinking off, Haiku sometimes writes its reasoning as visible
+  text** before the tool call (a known effect of disabling thinking). On a
+  `final` apply Go drops that text. It still costs output tokens, and in 2
+  of 5 runs of case 2 it led to a second round.
+- **Hidden thinking never leaked and was always one round**, at about
+  0.2 s more per call. The default stays thinking off, as the plan says;
+  `SITEWISE_CHAT_THINKING=1` switches hidden thinking on. The owner
+  should choose after reading the two score sheets.
+
+Against the budget: `chat_simple_command` (p50 1,500 ms, p90 3,000 ms) is
+met by case 3 and missed at p50 by about 100 ms on cases 1 and 2 with
+thinking off. The p90 is met by all three.
+

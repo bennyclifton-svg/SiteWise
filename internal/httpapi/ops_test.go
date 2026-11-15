@@ -144,6 +144,12 @@ func TestOpsApplyBatchAndUndo(t *testing.T) {
 			t.Errorf("%s: reply %+v", name, r)
 		}
 	}
+	// Several lines for the same place are one operation with labels.
+	pair := m.ops(t, project, "cost_plan", http.StatusOK, op("cost_plan.add_line", map[string]any{"labels": []string{"Stone", "Tapware"}, "section": "construction", "system": "interiors"}))
+	if len(planOf(t, m, project).Items) != 3 || !strings.Contains(pair.Results[0].Summary, `"Stone", "Tapware"`) {
+		t.Fatalf("labels: %+v", pair)
+	}
+	m.undo(t, project, pair.ChangeID, http.StatusOK)
 	// A Click operation is not applied by this call: it waits for the PM.
 	if r := m.ops(t, project, "cost_plan", http.StatusUnprocessableEntity, op("cost_plan.freeze", nil)); !r.NeedsClick {
 		t.Errorf("freeze: %+v", r)
@@ -329,6 +335,11 @@ func TestProgramOperationPassesThrough(t *testing.T) {
 	m.getJSON(t, base, &view)
 	if len(view.Activities) != before {
 		t.Fatalf("after undo %d rows, want %d", len(view.Activities), before)
+	}
+	// Several rows alike are one edit with labels.
+	many := m.ops(t, project, "program", http.StatusOK, op("program.edit", map[string]any{"op": "add", "parent_id": stage, "kind": "activity", "labels": []string{"Basement", "Podium", "Tower"}, "duration": "8 weeks"}))
+	if len(many.Results) != 3 || !strings.Contains(many.Results[2].Summary, `"Tower"`) || !strings.Contains(many.Results[2].Summary, "40 working days") {
+		t.Fatalf("labels: %+v", many)
 	}
 	// A refused batch names the edit, in Program's own words.
 	r := m.ops(t, project, "program", http.StatusUnprocessableEntity,

@@ -66,6 +66,13 @@ func TestTrueQuotationLinksAndAlteredOneIsMarked(t *testing.T) {
 	}
 }
 
+func TestQuotationUnderTheWrongTagLinksToWhereTheWordsAre(t *testing.T) {
+	a := Check(`It says "The BMS shall be BACnet compatible." [p1]`, guardState())
+	if a.Unchecked != 0 || len(a.Cited) != 1 || a.Cited[0] != "Mechanical specification rev A" || a.Marks[0].Page != 12 {
+		t.Fatalf("the words are in p2, so the link must go there: %+v", a)
+	}
+}
+
 func TestFigureInsideACheckedQuotationIsNotMarked(t *testing.T) {
 	a := Check(`"A tree protection zone of 6.2 m applies." [p1] So keep 6.5 m clear.`, guardState())
 	if got := marksOf(a, "check"); len(got) != 1 || got[0] != "6.5" {

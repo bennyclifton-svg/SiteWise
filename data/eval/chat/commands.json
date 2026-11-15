@@ -6,7 +6,7 @@
    "source": "worked",
    "group": "program",
    "fixture": "house",
-   "message": "Add five activities under Design for the DA drawings, two weeks each",
+   "message": "Add five activities under Planning for the DA drawings, two weeks each",
    "money_or_date": true,
    "expect": [
     {
@@ -258,15 +258,15 @@
    "source": "review",
    "group": "cost_plan",
    "fixture": "house",
-   "message": "Stone is $49,500 including GST",
+   "message": "Benchtops is $49,500 including GST",
    "money_or_date": true,
-   "note": "The plan is ex GST at 10%: Go converts 49,500 to 45,000 with calc. The fixture holds a Stone line with no amount.",
+   "note": "The plan is ex GST at 10%: Go converts 49,500 to 45,000 with calc. The fixture holds a Benchtops line with no amount.",
    "expect": [
     {
      "kind": "state",
      "area": "cost_plan",
      "has": [
-      "Stone | budget 45000"
+      "Benchtops | budget 45000"
      ]
     }
    ]
@@ -276,9 +276,9 @@
    "source": "review",
    "group": "program",
    "fixture": "apartments",
-   "message": "Add five activities under Design, two weeks each",
+   "message": "Add five activities under Design development, two weeks each",
    "money_or_date": true,
-   "note": "Six-day calendar: two weeks is 12 working days, converted by Go.",
+   "note": "Six-day calendar: two weeks is 12 working days, converted by Go. The reviewer wrote \"under Design\"; the stage is named in full here because three stages have Design in their name and a question back would be the right answer to the shorter form.",
    "expect": [
     {
      "kind": "state",
@@ -801,7 +801,7 @@
    "source": "area",
    "group": "program",
    "fixture": "house",
-   "message": "Add an activity called Soil test under Design, 5 days",
+   "message": "Add an activity called Soil test under Planning, 5 days",
    "money_or_date": true,
    "expect": [
     {
@@ -1326,7 +1326,7 @@
    "source": "question",
    "group": "question",
    "fixture": "house",
-   "message": "When does the Design stage finish?",
+   "message": "When does the Planning stage finish?",
    "expect": [
     {
      "kind": "no_change"

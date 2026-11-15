@@ -100,9 +100,9 @@ func Check(text string, st *State) Answer {
 		}
 		switch {
 		case quote != "":
-			p, ok := st.Passages[pid]
+			p, ok := findQuote(st, pid, quote)
 			shown := `"` + quote + `"`
-			if ok && strings.Contains(squash(p.Text), squash(quote)) {
+			if ok {
 				mark(shown, "quote", where(p), p)
 				if !cited[p.Document] {
 					cited[p.Document] = true
@@ -180,6 +180,28 @@ func Check(text string, st *State) Answer {
 	}
 	sort.SliceStable(a.Marks, func(i, j int) bool { return a.Marks[i].Start < a.Marks[j].Start })
 	return a
+}
+
+// findQuote returns the passage a quotation is a literal part of: the one
+// the model named, or, when the words are not there, another passage read
+// this turn that does hold them. The link then goes to where the words
+// really are. A quotation in no passage is not found.
+func findQuote(st *State, pid, quote string) (Passage, bool) {
+	want := squash(quote)
+	if p, ok := st.Passages[pid]; ok && strings.Contains(squash(p.Text), want) {
+		return p, true
+	}
+	ids := make([]string, 0, len(st.Passages))
+	for id := range st.Passages {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		if p := st.Passages[id]; strings.Contains(squash(p.Text), want) {
+			return p, true
+		}
+	}
+	return Passage{}, false
 }
 
 // listNumber reports whether a number is a list marker ("1. ", "2) ") at

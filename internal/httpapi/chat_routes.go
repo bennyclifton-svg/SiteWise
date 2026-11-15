@@ -9,6 +9,7 @@ var chatRoutes = map[string]func(http.ResponseWriter, *http.Request, Deps){
 	"POST /projects/{id}/ops":                              postOps,
 	"POST /projects/{id}/chat":                             postChat,
 	"GET /projects/{id}/chat":                              getChat,
+	"GET /projects/{id}/chat/read":                         getChatRead,
 	"POST /projects/{id}/chat/warm":                        postChatWarm,
 	"POST /projects/{id}/chat/prepared/{prepared}/apply":   postChatPrepared,
 	"POST /projects/{id}/chat/prepared/{prepared}/dismiss": postChatPrepared,

@@ -20,7 +20,7 @@ var costSections = []string{"construction", "consultants", "contingency", "autho
 func costOperations() []operation {
 	return []operation{
 		{Name: "cost_plan.add_line", About: "Add one cost line. A line with no amount is added with its amount unknown.",
-			Fields:  `label; section (construction|consultants|contingency|authority); system (construction: a system id); package (consultants: a package id); category (contingency: contingency|escalation|exclusions|other); amount (optional budget, ex or inc GST as the plan is)`,
+			Fields:  `label, or labels (a list) for several lines in the same place with no amount; section (construction|consultants|contingency|authority); system (construction: a system id); package (consultants: a package id); category (contingency: contingency|escalation|exclusions|other); amount (optional budget, ex or inc GST as the plan is)`,
 			Figures: map[string]string{"amount": "money"}, Routes: []string{"POST /projects/{id}/cost-plan/items"}, Run: costAddLine},
 		{Name: "cost_plan.edit_line", About: "Rename one cost line.",
 			Fields: `line (id); label`, Routes: []string{"PATCH /projects/{id}/cost-plan/items/{item}"}, Run: costEditLine},
@@ -82,24 +82,41 @@ func typedAmount(field, s string) (costs.Money, error) {
 
 func costAddLine(ctx context.Context, d Deps, who opActor, project string, raw json.RawMessage) (string, error) {
 	var f struct {
-		Label    string  `json:"label"`
-		Section  string  `json:"section"`
-		System   string  `json:"system"`
-		Package  string  `json:"package"`
-		Category string  `json:"category"`
-		Amount   *string `json:"amount"`
+		Label    string   `json:"label"`
+		Labels   []string `json:"labels"`
+		Section  string   `json:"section"`
+		System   string   `json:"system"`
+		Package  string   `json:"package"`
+		Category string   `json:"category"`
+		Amount   *string  `json:"amount"`
 	}
 	if err := decodeFields(raw, &f); err != nil {
 		return "", err
 	}
-	if strings.TrimSpace(f.Label) == "" {
+	// labels adds several lines to the same place in one operation, so
+	// "add stone and tapware" is short to write and quick to apply.
+	labels := f.Labels
+	if f.Label != "" {
+		labels = append([]string{f.Label}, labels...)
+	}
+	for i := range labels {
+		if labels[i] = strings.TrimSpace(labels[i]); labels[i] == "" {
+			return "", refuse("label", "A cost line needs a name.")
+		}
+	}
+	switch {
+	case len(labels) == 0:
 		return "", refuse("label", "A cost line needs a name.")
+	case len(labels) > 1 && f.Amount != nil:
+		return "", refuse("amount", "An amount belongs to one line. Send the line with an amount on its own.")
+	case len(labels) > 30:
+		return "", refuse("labels", "Add at most 30 lines in one operation.")
 	}
 	p, err := draftPlan(ctx, d, who, project)
 	if err != nil {
 		return "", err
 	}
-	c := costs.Content{Label: strings.TrimSpace(f.Label), Posting: true, Origin: "user", Meaning: "allowance"}
+	c := costs.Content{Label: labels[0], Posting: true, Origin: "user", Meaning: "allowance"}
 	where := ""
 	section := strings.ToLower(f.Section)
 	if section == "" {
@@ -160,10 +177,18 @@ func costAddLine(ctx context.Context, d Deps, who opActor, project string, raw j
 		in.Values = map[string]costs.Value{"budget": {Amount: &m, ValueState: "known", Origin: "user", Meaning: "allowance"}}
 		amount = "budget " + dollars(m)
 	}
-	if _, err := d.Store.CreateCostItem(ctx, who.OrgID, project, who.UserID, in); err != nil {
-		return "", err
+	var names []string
+	for _, label := range labels {
+		in.Content.Label = label
+		p, err = d.Store.CreateCostItem(ctx, who.OrgID, project, who.UserID, in)
+		if err != nil {
+			return "", err
+		}
+		// Each write moves the plan on; the next one names the new version.
+		in.CostWrite = store.CostWrite{PlanVersionID: p.ID, Version: p.Version}
+		names = append(names, `"`+label+`"`)
 	}
-	return fmt.Sprintf("Added %q to %s, %s.", c.Label, where, amount), nil
+	return fmt.Sprintf("Added %s to %s, %s.", strings.Join(names, ", "), where, amount), nil
 }
 
 func costEditLine(ctx context.Context, d Deps, who opActor, project string, raw json.RawMessage) (string, error) {

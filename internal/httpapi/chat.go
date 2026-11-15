@@ -30,7 +30,14 @@ type Chat struct {
 	// Prompt is the stable system text: the rules and the area guides. The
 	// operation list is added from the registry.
 	Prompt string
-	warmed sync.Map // user id to the time of its last warming call
+	// Synonyms widen a document search with the words a builder would use;
+	// SystemTerms name the building systems a subject belongs to. Both are
+	// draft knowledge (LoadChatWords).
+	// Think turns the model's hidden thinking on (adaptive, low effort).
+	Think       bool
+	Synonyms    map[string][]string
+	SystemTerms map[string][]string
+	warmed      sync.Map // user id to the time of its last warming call
 }
 
 // LoadChatPrompt reads knowledge/chat: system.md, then each area guide in
@@ -222,7 +229,7 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 		name = p.Name
 	}
 	today := time.Now()
-	req := agent.Request{Model: d.Chat.Name, System: chatSystem(d.Chat.Prompt), Today: today,
+	req := agent.Request{Model: d.Chat.Name, System: chatSystem(d.Chat.Prompt), Today: today, Think: d.Chat.Think,
 		Outline: chatOutline(ctx, d, who, project, name, today.Format("Monday 2 January 2006"))}
 	for _, t := range earlier {
 		req.Typed = append(req.Typed, t.Text)
@@ -333,7 +340,7 @@ func postChatWarm(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	d.Chat.warmed.Store(s.UserID, now)
 	conv := llm.Conversation{Name: "chat_warm", Model: d.Chat.Name, System: chatSystem(d.Chat.Prompt), Tools: chatTools(),
-		History: []json.RawMessage{llm.UserText("warm")}, Warm: true, Timeout: 20 * time.Second}
+		History: []json.RawMessage{llm.UserText("warm")}, Warm: true, Timeout: 20 * time.Second, Think: d.Chat.Think}
 	go func() {
 		if _, err := d.Chat.Model.Converse(context.Background(), conv, nil); err != nil {
 			d.Log.Printf("chat: warming failed: %s", llmErrorClass(err))

@@ -97,7 +97,7 @@ func kinds(events []Event) string {
 func TestSimpleCommandIsOneModelRound(t *testing.T) {
 	m := &scripted{turns: []llm.Turn{{Calls: []llm.ToolCall{call("a", "apply", `{"final":true}`)}}}}
 	res, events := run(m, &box{}, "Add a line for joinery, $45,000")
-	if res.Rounds != 1 || len(m.sent) != 1 || len(res.Cards) != 1 || res.Cards[0].Kind != "change" || res.Err != nil {
+	if res.Rounds != 1 || len(m.sent) != 1 || len(res.Cards) != 1 || res.Cards[0].Kind != "change" || res.Err != nil || res.Answer.Text != "" {
 		t.Fatalf("rounds %d calls %d cards %+v err %v", res.Rounds, len(m.sent), res.Cards, res.Err)
 	}
 	if got := kinds(events); got != "tool change answer" {
