@@ -19,7 +19,11 @@ export interface TenderEdits {
 
 /** What is being dragged, shared by the two tables. The browser does not let
  * a drop target read the dragged data until the drop. */
-export const tenderDrag: { current: { sub: string; lines: string[] } | null } = { current: null };
+// What is being dragged: a firm's lines, from a row (its key; "" for "Not
+// broken down") and slot when it is one line of an open row. Dropped on
+// another row's cell it moves there; on a slot of its own column it changes
+// places. Lines out of the count only change places.
+export const tenderDrag: { current: { sub: string; lines: string[]; row?: string; slot?: number; counted?: boolean } | null } = { current: null };
 
 function words(e: unknown, fallback: string): string {
   if (!(e instanceof ApiError) || !e.message) return fallback;

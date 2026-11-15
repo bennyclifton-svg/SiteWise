@@ -3,9 +3,11 @@
 // counts. The tender sum plus the applied adds and subs is the like-for-like
 // total. The browser never adds: figures, ranges and totals all come from
 // the server.
-import { useState } from "react";
+import { use, useState } from "react";
 import type { Column, PriceTable } from "../submissionApi";
+import { TenderCents } from "./cents";
 import type { TenderAdjustment, TenderAmount, TenderOp, TenderTable } from "./tenderApi";
+import { spareCells, spareCols, spareFirms, spareHeads } from "./spare";
 import { tenderDrag, type TenderEdits } from "./useTenderEdits";
 import { dollars, gapWords, signed, sourceWords, suggestedWords } from "./words";
 
@@ -16,12 +18,14 @@ interface Props {
 }
 
 export function AddsSubs({ table, tender, edits }: Props) {
+  const cents = use(TenderCents);
   const [choosing, setChoosing] = useState<{ adj: string; sub: string } | null>(null);
   const [typing, setTyping] = useState<{ adj: string; sub: string; gap: boolean } | null>(null);
   const [renaming, setRenaming] = useState("");
   const [noting, setNoting] = useState("");
   const [adding, setAdding] = useState("");
   const cols = table.columns;
+  const spare = spareFirms(cols.length);
   const tcol = (c: Column) => tender.columns.find(t => t.submission_id === c.submission.id);
   const firm = (c: Column) => c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "");
   const read = (c: Column) => tcol(c)?.state === "read";
@@ -47,7 +51,7 @@ export function AddsSubs({ table, tender, edits }: Props) {
       const gap = m.amount == null;
       const isChoosing = choosing?.adj === a.id && choosing.sub === sub;
       return <td key={sub} className="tender-suggested">
-        <span className="prices-word">{gap ? gapWords(a.others[sub]) : signed(m.amount)}</span>
+        <span className="prices-word">{gap ? gapWords(a.others[sub], cents) : signed(m.amount, cents)}</span>
         <span className="tender-tag">suggested</span>
         {!gap && <span className="prices-note">{sourceWords(m)}</span>}
         {!locked && !gap && <button type="button" className="btn btn-small" disabled={busy} aria-label={`Apply ${a.label} for ${firm(c)}`} onClick={() => void run({ op: "apply_adjustment", adjustment: a.id, submission: sub, applied: true })}>Apply</button>}
@@ -62,7 +66,7 @@ export function AddsSubs({ table, tender, edits }: Props) {
     }
     const own = a.origin === "user" || m.source === "typed";
     return <td key={sub} className="tender-applied" onDoubleClick={() => { if (!locked && own && a.reason !== "taken_out") setTyping({ adj: a.id, sub, gap: a.reason === "gap" && a.origin === "system" }); }}>
-      <span className="prices-figure">{signed(m.amount)}</span>
+      <span className="prices-figure">{signed(m.amount, cents)}</span>
       <span className="prices-note">{sourceWords(m) || "applied"}</span>
       {!locked && a.origin === "system" && <button type="button" className="table-action" disabled={busy} aria-label={`Undo apply of ${a.label} for ${firm(c)}`} onClick={() => void run({ op: "apply_adjustment", adjustment: a.id, submission: sub, applied: false })}>Undo apply</button>}
       {!locked && a.origin === "user" && a.reason !== "taken_out" && <button type="button" className="table-action" disabled={busy} aria-label={`Clear the amount for ${firm(c)} on ${a.label}`} onClick={() => void run({ op: "set_adjustment_amount", adjustment: a.id, submission: sub, amount: null })}>Clear</button>}
@@ -70,12 +74,12 @@ export function AddsSubs({ table, tender, edits }: Props) {
   }
 
   return <section className="tender-adds" aria-label="Adds and subs"
-    onDragOver={e => { if (tenderDrag.current && tenderDrag.current.lines.length === 1 && !locked) e.preventDefault(); }}
+    onDragOver={e => { if (tenderDrag.current && tenderDrag.current.lines.length === 1 && tenderDrag.current.counted !== false && !locked) e.preventDefault(); }}
     onDrop={e => {
       // A tendered line dragged down becomes a subtraction for that firm.
       const d = tenderDrag.current;
       tenderDrag.current = null;
-      if (!d || d.lines.length !== 1 || locked) return;
+      if (!d || d.lines.length !== 1 || d.counted === false || locked) return;
       e.preventDefault();
       void run({ op: "take_out_line", line: d.lines[0] });
     }}>
@@ -83,13 +87,14 @@ export function AddsSubs({ table, tender, edits }: Props) {
     <div className="prices-scroll">
       <table className="prices-table tender-table">
         <caption>Adds and subs</caption>
-        <colgroup><col className="prices-label-col" />{cols.map(c => <col key={c.submission.id} />)}</colgroup>
+        <colgroup><col className="prices-label-col" />{cols.map(c => <col key={c.submission.id} />)}{spareCols(spare)}</colgroup>
         <thead><tr>
           <th scope="col" className="prices-item">Addition or subtraction</th>
           {cols.map(c => <th scope="col" key={c.submission.id} className="prices-firm">{firm(c)}
             {read(c) && !locked && tender.adjustments.some(a => a.amounts[c.submission.id]?.state === "suggested" && a.amounts[c.submission.id]?.source === "firm") &&
               <button type="button" className="table-action" disabled={busy} onClick={() => void run({ op: "apply_suggested", submission: c.submission.id })}>Apply this firm's own figures</button>}
           </th>)}
+          {spareHeads(spare)}
         </tr></thead>
         <tbody>
           {tender.adjustments.map(a => <tr key={a.id}>
@@ -107,9 +112,10 @@ export function AddsSubs({ table, tender, edits }: Props) {
               </span>}
             </th>
             {cols.map(c => amountCell(a, c))}
+            {spareCells(spare)}
           </tr>)}
           {!locked && <tr className="tender-ghost">
-            <th scope="row" className="prices-item" colSpan={cols.length + 1}>
+            <th scope="row" className="prices-item" colSpan={cols.length + spare.length + 1}>
               <input aria-label="New add or sub" placeholder="New add or sub" value={adding} maxLength={300} disabled={busy} onChange={e => setAdding(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && adding.trim()) { e.preventDefault(); void run({ op: "add_adjustment", label: adding.trim() }).then(ok => { if (ok) setAdding(""); }); } }} />
               <button type="button" className="table-action" disabled={busy || !adding.trim()} onClick={() => void run({ op: "add_adjustment", label: adding.trim() }).then(ok => { if (ok) setAdding(""); })}>Add row</button>
@@ -121,10 +127,11 @@ export function AddsSubs({ table, tender, edits }: Props) {
               const t = tcol(c);
               if (t?.state !== "read") return <td key={c.submission.id} />;
               return <td key={c.submission.id} className={t.lowest ? "lowest" : undefined}>
-                <span className="prices-figure" aria-label={`Like for like, ${firm(c)}`}>{t.like_for_like == null ? "Unknown" : dollars(t.like_for_like)}</span>
+                <span className="prices-figure" aria-label={`Like for like, ${firm(c)}`}>{t.like_for_like == null ? "Unknown" : dollars(t.like_for_like, cents)}</span>
                 {t.lowest && <span className="prices-note ok">Lowest</span>}
               </td>;
             })}
+            {spareCells(spare)}
           </tr>
         </tbody>
       </table>

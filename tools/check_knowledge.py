@@ -115,7 +115,7 @@ WEEKDAYS = {"mon", "tue", "wed", "thu", "fri", "sat", "sun"}
 PROGRAM_KEYS = {
     "skeletons": {"id", "label", "applies_when", "stages", "fragment_stages", "links", "status", "sources", "notes"},
     "fragments": {"id", "label", "scope", "stage", "systems", "applies_when", "activities", "links", "attach",
-                  "status", "sources", "notes"},
+                  "status", "sources", "notes", "outline_only", "fallback_for", "stage_fixed"},
     "durations": {"id", "version", "basis", "driver", "unit_days", "low", "typical", "high", "k", "b",
                   "cost_base_date", "index_basis", "instrument", "clause", "verified", "primary_source",
                   "applies_when", "geography", "limitations", "status", "sources", "notes", "assumption"},
@@ -1804,7 +1804,7 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
             report.error(where, "fragment needs activities")
             activities = []
         for a in activities:
-            if not isinstance(a, dict) or set(a) - {"key", "label", "systems", "duration", "after", "before"} \
+            if not isinstance(a, dict) or set(a) - {"key", "label", "systems", "duration", "after", "before", "outline"} \
                     or not ACTIVITY_KEY.match(str(a.get("key", ""))) or not str(a.get("label") or "").strip():
                 report.error(where, f"activity needs key, label, systems and duration: {a}")
                 continue
@@ -1831,6 +1831,23 @@ def check_program(report: Report, seed_dir: Path, cache: dict, refs: list) -> No
                     if end not in fragments or end == f.get("id"):
                         report.error(where, f"activity {a['key']} {side} names unknown fragment {end}")
         check_program_links(where, keys, f.get("links") or [], durations, report)
+        # Outline program fields (owner, 12 November 2026).
+        for flag in ("outline_only", "stage_fixed"):
+            if flag in f and not isinstance(f[flag], bool):
+                report.error(where, f"{flag} must be true or false")
+        for a in activities:
+            if isinstance(a, dict) and "outline" in a and not isinstance(a["outline"], bool):
+                report.error(where, f"activity {a.get('key')} outline must be true or false")
+        fallback = f.get("fallback_for")
+        if fallback is not None:
+            if not isinstance(fallback, list) or not fallback:
+                report.error(where, "fallback_for must be a list of fragments")
+                fallback = []
+            if f.get("outline_only") is not True or scope != "project":
+                report.error(where, "fallback_for needs scope project and outline_only")
+            for end in fallback:
+                if end not in fragments or end == f.get("id"):
+                    report.error(where, f"fallback_for names unknown fragment {end}")
         attach = f.get("attach")
         if attach is not None:
             if not isinstance(attach, dict) or not attach or set(attach) - {"after", "before"}:

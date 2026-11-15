@@ -1,7 +1,5 @@
 package tender
 
-import "sort"
-
 // Column is one firm's cells for marking.
 type Column struct {
 	ID     string
@@ -10,12 +8,9 @@ type Column struct {
 	Cells  map[string]Cell // by row key
 }
 
-// Cell marks.
-const (
-	MarkHigh = "high"
-	MarkLow  = "low"
-	MarkGap  = "gap"
-)
+// MarkGap is the one cell mark. High and low marks were removed (owner,
+// 15 Nov 2026): the manager reads the figures side by side.
+const MarkGap = "gap"
 
 // brokenDown: a firm whose lines put at least this share of its tender sum
 // on rows has broken its price down, so a row it left empty is a gap and
@@ -24,12 +19,10 @@ const brokenDown = 0.8
 
 func priced(c Cell, ok bool) bool { return ok && c.State == StatePriced && c.Cents != nil }
 
-// Marks returns, for each column id and row key, "high", "low" or "gap".
-// High is more than double the median of the other priced firms and low is
-// less than half; both need at least two others priced. Gap is a row the
-// firm excluded, did not price or left empty while at least one other
-// firm, and at least half of the others, priced it. The system row is
-// never marked.
+// Marks returns, for each column id and row key, "gap": a row the firm
+// excluded, did not price or left empty while at least one other firm, and
+// at least half of the others, priced it. A priced cell and the system row
+// are never marked.
 func Marks(rows []Row, cols []Column) map[string]map[string]string {
 	out := map[string]map[string]string{}
 	set := func(id, row, mark string) {
@@ -51,20 +44,6 @@ func Marks(rows []Row, cols []Column) map[string]map[string]string {
 			}
 			cell, has := col.Cells[row.Key]
 			if priced(cell, has) {
-				if len(others) < 2 {
-					continue
-				}
-				sort.Slice(others, func(a, b int) bool { return others[a] < others[b] })
-				median := others[len(others)/2]
-				if len(others)%2 == 0 {
-					median = (others[len(others)/2-1] + others[len(others)/2]) / 2
-				}
-				switch {
-				case median > 0 && *cell.Cents > 2*median:
-					set(col.ID, row.Key, MarkHigh)
-				case *cell.Cents*2 < median:
-					set(col.ID, row.Key, MarkLow)
-				}
 				continue
 			}
 			if len(others) == 0 || len(others)*2 < len(cols)-1 {

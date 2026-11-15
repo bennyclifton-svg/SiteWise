@@ -137,6 +137,9 @@ func run(addr, data string, programFixture bool) error {
 		if root, err = programLibrary(dir); err != nil {
 			return err
 		}
+		// The fixture has work-item rows only, which the outline leaves out;
+		// the editing suite needs activities to edit.
+		store.SetProgramOutline(false)
 	}
 	building, err := knowledge.Load(root)
 	if err != nil {

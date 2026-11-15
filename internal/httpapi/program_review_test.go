@@ -49,11 +49,14 @@ func TestProgramReviewRoutes(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 		m.getJSON(t, base+"/changes", &list)
 	}
-	if len(list.Changes) != 1 || list.Counts["add"] != 1 {
+	// The outline has no trade rows (owner, 12 November 2026): new work
+	// changes the Construction bar's length, sized from the trades.
+	if len(list.Changes) != 1 || list.Counts["duration"] != 1 {
 		t.Fatalf("raised %+v", list)
 	}
 	for _, c := range list.Changes {
-		if c.Kind != engine.ChangeAdd || c.Source != engine.SourceWorkItems || c.DefaultChoice != engine.ChoiceAdopt || len(c.Ops) == 0 {
+		if c.Kind != engine.ChangeDuration || c.SourceKey != "fragment:fr.construction:project:works" ||
+			c.Source != engine.SourceWorkItems || c.DefaultChoice != engine.ChoiceAdopt || len(c.Ops) == 0 {
 			t.Fatalf("change %+v", c)
 		}
 	}
@@ -78,7 +81,7 @@ func TestProgramReviewRoutes(t *testing.T) {
 	body, _ := json.Marshal(map[string]any{"version": v.Program.Version, "all": "adopt"})
 	var adopted programView
 	m.call(t, "POST", base+"/changes/decide", body, 200, &adopted)
-	if adopted.Program.Version != v.Program.Version+1 || len(adopted.Activities) != len(v.Activities)+1 || adopted.ChangesPending != 0 ||
+	if adopted.Program.Version != v.Program.Version+1 || len(adopted.Activities) != len(v.Activities) || adopted.ChangesPending != 0 ||
 		adopted.ProgramFeedback == nil || len(adopted.Toasts) != 1 {
 		t.Fatalf("adopt all v%d rows %d pending %d", adopted.Program.Version, len(adopted.Activities), adopted.ChangesPending)
 	}
@@ -86,6 +89,25 @@ func TestProgramReviewRoutes(t *testing.T) {
 	m.call(t, "POST", base+"/undo", []byte(`{"version":`+jsonInt(adopted.Program.Version)+`}`), 200, &undone)
 	if len(undone.Activities) != len(v.Activities) {
 		t.Fatalf("undo left %d rows", len(undone.Activities))
+	}
+
+	// Update program applies every difference in one click, with no review
+	// to answer, and one undo reverses it.
+	if e := m.programError(t, "POST", base+"/update", []byte(`{}`), 422); e.Field != "version" {
+		t.Fatalf("update without a version %+v", e)
+	}
+	if e := m.programError(t, "POST", base+"/update", []byte(`{"version":99}`), 409); len(e.Current) == 0 {
+		t.Fatalf("update conflict %+v", e)
+	}
+	var updated programView
+	m.call(t, "POST", base+"/update", []byte(`{"version":`+jsonInt(undone.Program.Version)+`}`), 200, &updated)
+	if updated.Program.Version != undone.Program.Version+1 || updated.ChangesPending != 0 || updated.ProgramFeedback == nil || len(updated.Toasts) != 1 {
+		t.Fatalf("update v%d pending %d", updated.Program.Version, updated.ChangesPending)
+	}
+	var same programView
+	m.call(t, "POST", base+"/update", []byte(`{"version":`+jsonInt(updated.Program.Version)+`}`), 200, &same)
+	if same.Program.Version != updated.Program.Version {
+		t.Fatalf("an up-to-date program was written: v%d", same.Program.Version)
 	}
 }
 

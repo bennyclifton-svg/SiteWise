@@ -281,6 +281,16 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
       else setError("Could not detach the proposal. Try again.");
     } finally { setBusyRow(""); }
   }
+  // An unplaced proposal the PM does not want: marked withdrawn, so it leaves
+  // the table and is not matched to a package again; the document stays filed.
+  async function withdraw(card: FirmCard) {
+    setBusyRow(card.submission_id); setError("");
+    try { await submissionApi.edit(projectId, card.submission_id, { status: "withdrawn" }); setReload(n => n + 1); }
+    catch (e) {
+      if (e instanceof ApiError && e.status === 401) onSignedOut();
+      else { setError("Could not remove the proposal. Try again."); setReload(n => n + 1); }
+    } finally { setBusyRow(""); }
+  }
   // A choice of "new:<discipline>" is a catalogue entry with no row yet: the
   // row is added first (the New button's path), then the proposal placed on it.
   async function assign(card: FirmCard, choice: string) {
@@ -401,7 +411,11 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         <td>—</td>
         {/* A combined proposal is never guessed onto rows: the PM ticks them. */}
         <td>{c.combined && !ticking ? <button type="button" className="table-action" disabled={!!busyRow} title={`${c.firm_name || c.filename} covers several disciplines`} onClick={() => setForProposal({ card: c, ids: [] })}>Combine for this proposal</button> : "—"}</td>
-        <td className="row-bin-cell" />
+        {/* A wrongly picked-up quote is removed here, without placing it on a
+            package first. The filed document stays in the register. */}
+        <td className="row-bin-cell"><button type="button" className="reg-del" aria-label={`Remove ${c.firm_name || c.filename} from procurement`}
+          title={c.status === "reading" ? "Wait until the proposal is read, then remove it" : "Remove from procurement; keep the filed document"}
+          disabled={!!busyRow || c.status === "reading"} onClick={() => void withdraw(c)}><IconBin /></button></td>
       </tr>
       {ticking && <tr className="row-unplaced-combine"><td colSpan={COLUMNS}>
         <fieldset className="procurement-combine-for"><legend>Tick the disciplines {c.firm_name || c.filename} covers</legend>
@@ -583,7 +597,7 @@ function InvitedFirm({ card: c, busy, uploading, onRemove, onEdit }: { card: Fir
  * with provenance and review status in its accessible description. */
 function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen?: () => void; onDetach?: () => void; busy: boolean }) {
   const description = [c.filename, `received ${c.received_on}`, STATUS_WORDS[c.status],
-    c.to_check ? "To check" : c.needs_review ? "Check proposal" : "",
+    c.needs_review ? "Check proposal" : "",
     c.like_for_like ? "Like-for-like total, ex GST" : "",
     c.not_priced ? `${c.not_priced} not priced` : "",
     c.pi_expires_on ? `Professional indemnity${c.pi_limit_cents ? ` $${(c.pi_limit_cents / 100).toLocaleString("en-AU")}` : ""} ${c.pi_expired ? "expired" : "to"} ${c.pi_expires_on}${c.pi_expired ? ": request a current certificate" : ""}` : "",
@@ -593,7 +607,6 @@ function FirmChip({ card: c, onOpen, onDetach, busy }: { card: FirmCard; onOpen?
   const inside = <>
     <span className="firm-chip-name">{c.firm_name || c.filename}</span>
     {c.status === "not_proposal" && <span className="firm-chip-status">Named in a document</span>}
-    {c.to_check && c.status !== "reading" && <span className="firm-chip-status">To check</span>}
     {/* Shown, not spoken: the description already says the firm is awarded. */}
     {c.status === "awarded" && <span className="firm-awarded" aria-hidden="true" title="Awarded"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" focusable="false"><path d="m3.5 8.5 3 3 6-7" /></svg></span>}
     <span className="firm-chip-figure">{c.status === "reading" ? <Pending>Reading proposal…</Pending> : c.base_total != null ? `$${fmt(c.base_total).replace(/\.00$/, "")}` : c.known_base && c.known_base !== "0.00" ? `$${fmt(c.known_base).replace(/\.00$/, "")}+` : c.stated_total != null ? `$${fmt(c.stated_total).replace(/\.00$/, "")}` : "—"}</span>

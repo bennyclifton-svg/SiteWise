@@ -1,0 +1,33 @@
+Drawing number: A-401
+Revision: D
+Title: Door and window schedule
+Date: 30 January 2026
+
+# Door and window schedule
+
+Axis Studio Pty Ltd
+Project: 11 townhouses and Torrens subdivision, 14–18 Wianamatta Avenue, Seven Hills NSW 2147
+Client: Wianamatta Developments Pty Ltd
+Discipline: Architectural
+Scale: 1:50 at A1
+Issue: For construction
+
+## Sheet shows
+
+- Aluminium framed double glazed windows by type and size
+- Glazing type for each room, from the acoustic and NatHERS reports
+
+## Notes
+
+1. Do not scale from this drawing. Use written dimensions.
+2. Read with the other consultants' drawings and the outline specification SP-001.
+3. All work to the National Construction Code 2022 and the conditions of consent DA/2025/0733.
+
+## Revisions
+
+| Rev | Date | Description |
+|---|---|---|
+| A | 14 July 2025 | Issued for coordination |
+| B | 22 September 2025 | Issued for the development application |
+| C | 12 December 2025 | Issued for tender |
+| D | 30 January 2026 | For construction |

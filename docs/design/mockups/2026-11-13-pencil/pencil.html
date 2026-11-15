@@ -1,0 +1,1029 @@
+<title>SiteWise Pencil</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: the SiteWise workbench (a drawing sheet on a drafting table) with Pencil in it; the notes on how it works lie on the table below. Tokens are the app's Trace values. */
+:root {
+  --table: #E9E8E4;
+  --sheet: #FBFAF8;
+  --paper: rgba(255, 255, 255, .74);
+  --rule: #E6E2DC;
+  --rule-strong: #887E74;
+  --ink: #2C241E;
+  --ink-body: #504740;
+  --ink-muted: #625950;
+  --graphite: #77706A;
+  --ember: #A85E2C;
+  --azure: #2D5E9E;
+  --doc: #28593B;
+  --check: #B07A2A;
+  --highlight: rgba(226, 170, 72, .45);
+  --link: #12606D;
+  --focus: #12606D;
+  --spotted: #D8F0F7;
+  --fact-bg: #F1EDE6;
+  --warn-bg: #FFF3E0;
+  --warn-text: #6E4117;
+  --err: #882F2D;
+  --inv-bg: #2C241E;
+  --inv-fg: #FDFCFA;
+  --brush: #FFFFFF;
+  --shadow: rgba(44, 36, 30, .16);
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --table: #0A0A0A; --sheet: #171717; --paper: rgba(34, 34, 34, .82); --rule: #3A3A3A; --rule-strong: #808080;
+    --ink: #F1EDE6; --ink-body: #CFC8BD; --ink-muted: #AFA69B; --graphite: #A39C94;
+    --ember: #D9935E; --azure: #93CEDD; --doc: #A6D7B6; --check: #EBB553; --highlight: rgba(235, 181, 83, .34);
+    --link: #93CEDD; --focus: #93CEDD; --spotted: #152E33; --fact-bg: #222222; --warn-bg: #392B1D; --warn-text: #F4D29B;
+    --err: #EFC1BC; --inv-bg: #F1EDE6; --inv-fg: #171717; --brush: rgba(255, 255, 255, .12); --shadow: rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --table: #0A0A0A; --sheet: #171717; --paper: rgba(34, 34, 34, .82); --rule: #3A3A3A; --rule-strong: #808080;
+  --ink: #F1EDE6; --ink-body: #CFC8BD; --ink-muted: #AFA69B; --graphite: #A39C94;
+  --ember: #D9935E; --azure: #93CEDD; --doc: #A6D7B6; --check: #EBB553; --highlight: rgba(235, 181, 83, .34);
+  --link: #93CEDD; --focus: #93CEDD; --spotted: #152E33; --fact-bg: #222222; --warn-bg: #392B1D; --warn-text: #F4D29B;
+  --err: #EFC1BC; --inv-bg: #F1EDE6; --inv-fg: #171717; --brush: rgba(255, 255, 255, .12); --shadow: rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--table); color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1280px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-muted); }
+.eyebrow { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600; }
+
+/* Intro on the table */
+.intro { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 28px; align-items: end; }
+.intro h1 { font-size: clamp(34px, 5vw, 52px); font-weight: 600; letter-spacing: -.02em; line-height: 1.05; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.wordmark { display: inline-block; color: var(--ink); }
+.wordmark svg { display: block; height: 100%; width: auto; }
+.intro .lead { font-size: 18px; color: var(--ink-body); max-width: 60ch; margin-top: 12px; }
+.intro .lead strong { color: var(--ink); font-weight: 600; }
+.live-box { border: 1px solid var(--rule); background: var(--sheet); border-radius: 14px; padding: 14px 16px; display: grid; gap: 10px; font-size: 14px; color: var(--ink-body); }
+.live-box label { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); font-weight: 500; cursor: pointer; }
+.live-box input { margin-top: 4px; accent-color: var(--ink); width: 16px; height: 16px; }
+.live-box .note { font-size: 13px; color: var(--ink-muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-body); margin-top: 16px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend .gr { color: var(--graphite); font-style: normal; }
+
+/* The workbench shell */
+.shell { display: grid; grid-template-columns: 200px minmax(0, 1fr); border-radius: 20px; border: 1px solid var(--rule); background: var(--table); min-height: 680px; position: relative; }
+.nav { padding: 20px 10px 20px 14px; display: flex; flex-direction: column; gap: 18px; }
+.nav .wordmark { height: 26px; margin-left: 6px; }
+.proj { font-size: 13px; color: var(--ink-muted); margin-left: 6px; display: grid; gap: 2px; }
+.proj b { color: var(--ink); font-weight: 600; font-size: 14px; }
+.tag { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--warn-text); background: var(--warn-bg); border-radius: 999px; padding: 1px 7px; justify-self: start; }
+.nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.nav li button { width: 100%; text-align: left; border: 0; background: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 15px; color: var(--ink-body); }
+.nav li button:hover { background: linear-gradient(90deg, var(--brush) 0 60%, transparent 92%); opacity: .95; }
+.nav li button[aria-current="page"] { color: var(--ink); font-weight: 600; background: linear-gradient(90deg, var(--brush) 0 68%, transparent 81%); }
+.nav-count { font-size: 12px; font-family: var(--font-mono); color: var(--ink); background: var(--highlight); border-radius: 3px; padding: 0 6px; }
+
+.sheet { background: var(--sheet); margin: 10px 10px 10px 0; border-radius: 14px; box-shadow: 0 1px 0 var(--rule), 0 14px 30px -22px var(--shadow); min-width: 0; display: flex; flex-direction: column; }
+.band { background: var(--paper); border-bottom: 1px solid var(--rule); border-radius: 14px 14px 0 0; padding: 18px 24px 14px; display: grid; gap: 12px; }
+.band-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.band h2 { font-size: 26px; font-weight: 600; letter-spacing: -.01em; }
+.identity { font-size: 13px; color: var(--ink-muted); margin-top: 2px; }
+.ground { position: relative; font-weight: 600; font-size: 14px; padding: 7px 16px 9px; border: 1.5px solid var(--ink); background: transparent; border-radius: 1px; cursor: pointer; }
+.ground::after { content: ""; position: absolute; left: -7px; right: -7px; bottom: 4px; border-bottom: 1.5px solid var(--ink); }
+.ground::before { content: ""; position: absolute; left: 0; bottom: 0; height: 4px; width: 50%; background: repeating-linear-gradient(135deg, var(--ink) 0 1px, transparent 1px 4px); opacity: .55; }
+
+.ask { display: flex; align-items: center; gap: 8px; border: 1px solid var(--rule-strong); border-radius: 999px; padding: 4px 4px 4px 16px; background: var(--sheet); max-width: 760px; }
+.ask:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+.ask label { font-size: 13px; font-weight: 600; color: var(--ink-muted); white-space: nowrap; }
+.ask input { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 15px; color: var(--ink); padding: 7px 0; outline: none; }
+.ask input::placeholder { color: var(--graphite); }
+kbd { font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; white-space: nowrap; }
+.btn { border: 1px solid var(--rule-strong); background: var(--sheet); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 500; cursor: pointer; min-height: 34px; }
+.btn:hover:not(:disabled) { background: var(--fact-bg); }
+.btn.primary { background: var(--inv-bg); color: var(--inv-fg); border-color: var(--inv-bg); }
+.btn.primary:hover:not(:disabled) { background: var(--inv-bg); opacity: .9; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn[aria-pressed="true"] { background: var(--fact-bg); }
+.suggest { display: flex; flex-wrap: wrap; gap: 6px; }
+.suggest button { border: 1px dashed var(--rule-strong); background: transparent; border-radius: 999px; padding: 3px 12px; font-size: 13px; color: var(--ink-body); cursor: pointer; }
+.suggest button:hover { border-style: solid; color: var(--ink); }
+
+.work { padding: 18px 24px 28px; display: grid; gap: 18px; align-content: start; min-width: 0; }
+
+/* Answer */
+.answer { border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; display: grid; gap: 12px; background: var(--sheet); box-shadow: 0 10px 28px -24px var(--shadow); }
+.answer-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.answer-q { font-weight: 600; font-size: 16px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.fcard { border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.fcard .l { font-size: 12px; color: var(--ink-muted); }
+.fcard .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; display: flex; gap: 6px; align-items: baseline; overflow-wrap: anywhere; }
+.fcard .v.word { font-family: var(--font-sans); }
+.fcard .s { font-size: 11.5px; color: var(--ink-muted); }
+.facts-note { font-size: 12.5px; color: var(--ink-muted); }
+
+/* Pencil prose */
+.prose { color: var(--graphite); font-size: 15.5px; line-height: 1.65; max-width: 70ch; overflow-wrap: anywhere; display: grid; gap: 10px; }
+.prose p { margin: 0; }
+.prose .wait { color: var(--ink-muted); font-style: italic; }
+.prose.inked { color: var(--ink); animation: ink-write 360ms cubic-bezier(.16, 1, .3, 1); }
+@keyframes ink-write { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.pencil-mark { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--ink-muted); }
+.pencil-mark::before { content: ""; width: 22px; height: 2px; background: repeating-linear-gradient(90deg, var(--graphite) 0 3px, transparent 3px 5px); }
+.caret { display: inline-block; width: 7px; height: 1.05em; background: var(--graphite); vertical-align: -2px; margin-left: 2px; animation: blink 1s steps(2) infinite; opacity: .6; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.fact { display: inline-flex; align-items: baseline; gap: 5px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: .9em; color: var(--ink); background: var(--fact-bg); border: 1px solid var(--rule); border-radius: 5px; padding: 0 6px 0 5px; white-space: nowrap; cursor: pointer; line-height: 1.5; }
+.fact.word { font-family: var(--font-sans); font-size: 1em; white-space: normal; }
+.fact:hover { border-color: var(--rule-strong); }
+.fact.bad { color: var(--err); border-color: var(--err); cursor: default; }
+.o { display: inline-block; width: 7px; height: 7px; border-radius: 50%; flex: none; transform: translateY(-1px); }
+.o.doc { background: var(--doc); }
+.o.user { background: var(--ember); border-radius: 1px; }
+.o.typ { background: var(--azure); }
+.o.calc { border: 1.5px solid var(--ink-muted); }
+.o.check { background: var(--check); }
+.typed { border: 0; font: inherit; color: var(--ink); cursor: pointer; padding: 0 2px; border-radius: 1px; background: linear-gradient(transparent 10%, var(--highlight) 10% 90%, transparent 90%); }
+.typed.kept { background: none; text-decoration: underline 2px var(--ember); text-underline-offset: 3px; cursor: default; }
+.inked .typed { cursor: default; }
+
+.guard { font-size: 13px; color: var(--ink-body); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+.guard .ok::before { content: "✓ "; color: var(--doc); font-weight: 700; }
+.guard .warn { color: var(--warn-text); background: var(--warn-bg); border-radius: 4px; padding: 0 6px; }
+.guard .warn::before { content: "! "; font-weight: 700; }
+.guard .bad { color: var(--err); }
+.meta { font-size: 12.5px; color: var(--ink-muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.hint { font-size: 12.5px; color: var(--warn-text); }
+.raw { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--fact-bg); border-radius: 8px; padding: 12px 14px; margin: 0; color: var(--ink-body); }
+.raw mark { background: var(--spotted); color: var(--ink); border-radius: 3px; padding: 0 2px; }
+.notice { font-size: 14px; color: var(--warn-text); background: var(--warn-bg); border-radius: 8px; padding: 8px 12px; }
+
+/* Catch-up */
+.catchup { border-top: 2px solid var(--ink); padding-top: 12px; display: grid; gap: 10px; }
+.catchup-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.catchup h3 { font-size: 17px; font-weight: 600; }
+
+/* Profile snippet */
+.tb { border-top: 1px solid var(--rule-strong); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+.tb div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 14px; align-items: baseline; }
+.tb dt { color: var(--ink-muted); }
+.tb dd { margin: 0; display: flex; gap: 7px; align-items: baseline; }
+.band-head { background: var(--inv-bg); color: var(--inv-fg); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 4px 10px; border-radius: 3px; justify-self: start; }
+
+/* Procurement */
+.tabs { display: flex; gap: 18px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.tabs span { padding: 6px 0; color: var(--ink-muted); }
+.tabs span[aria-current] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ink); }
+.pkg-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.pkg-head h3 { font-size: 18px; font-weight: 600; }
+.proc { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.proc.with-draft { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 560px; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+thead th { font-size: 12.5px; font-weight: 600; color: var(--ink-body); background: var(--fact-bg); vertical-align: bottom; }
+td.n { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+td.check { box-shadow: inset 2px 0 0 var(--check); color: var(--warn-text); }
+tr.total td { font-weight: 600; border-top: 1.5px solid var(--rule-strong); }
+tr.sub td { color: var(--ink-muted); font-size: 12.5px; }
+.flash { animation: flash 1.5s ease-out; }
+@keyframes flash { 0%, 30% { outline: 2px solid var(--check); outline-offset: -2px; background: var(--warn-bg); } 100% { outline: 2px solid transparent; outline-offset: -2px; } }
+.flags { display: grid; gap: 8px; }
+.flags ul { margin: 0; padding-left: 18px; font-size: 14px; color: var(--ink-body); display: grid; gap: 2px; }
+.others { font-size: 13.5px; color: var(--ink-muted); display: grid; gap: 4px; }
+.others div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--rule); padding: 5px 0; }
+
+/* Draft */
+.draft { border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; display: grid; gap: 12px; background: var(--sheet); box-shadow: 0 12px 28px -24px var(--shadow); }
+.draft header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.draft h3 { font-size: 17px; font-weight: 600; }
+.inked-line { font-size: 12.5px; color: var(--ember); }
+
+.placeholder { color: var(--ink-muted); font-size: 15px; padding: 40px 0; text-align: center; }
+
+/* Popover */
+#pop { position: absolute; z-index: 20; max-width: 300px; background: var(--sheet); border: 1px solid var(--rule-strong); border-radius: 10px; padding: 10px 12px; box-shadow: 0 12px 30px -12px var(--shadow); font-size: 13px; display: grid; gap: 4px; }
+#pop .v { font-family: var(--font-mono); font-size: 15px; display: flex; gap: 6px; align-items: baseline; }
+#pop .src { color: var(--ink-muted); }
+#pop .btn { justify-self: start; margin-top: 4px; min-height: 28px; padding: 2px 12px; font-size: 13px; }
+
+/* Notes below the mock */
+.how { display: grid; gap: 22px; }
+.how > header h2 { font-size: 30px; font-weight: 600; letter-spacing: -.015em; }
+.how > header p { color: var(--ink-body); max-width: 70ch; margin-top: 8px; font-size: 16px; }
+.lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.lane { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.lane h3 { font-size: 17px; font-weight: 600; }
+.lane p { font-size: 14px; color: var(--ink-body); }
+.lane .who { font-size: 12px; color: var(--ink-muted); font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.lane.pencil { border-color: var(--rule-strong); }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--sheet); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.panel h3 { font-size: 17px; font-weight: 600; }
+.panel p, .panel li { font-size: 14px; color: var(--ink-body); }
+.panel ul, .panel ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.panel table { min-width: 0; font-size: 13px; }
+.panel th, .panel td { white-space: normal; text-align: left; }
+.panel td.n { text-align: right; }
+.panel thead th { background: transparent; border-bottom: 1.5px solid var(--rule-strong); }
+
+.timeline { position: relative; height: 54px; margin: 6px 4px 0; }
+.tl-axis { position: absolute; left: 0; right: 0; top: 30px; border-top: 1px solid var(--rule-strong); }
+.tl-seg { position: absolute; top: 12px; height: 14px; border-radius: 2px; }
+.tl-seg.go { background: var(--ink); }
+.tl-seg.wait { background: repeating-linear-gradient(135deg, var(--graphite) 0 1px, transparent 1px 5px); border: 1px solid var(--graphite); }
+.tl-seg.words { background: var(--graphite); opacity: .55; }
+.tl-tick { position: absolute; top: 34px; font-size: 11.5px; font-family: var(--font-mono); color: var(--ink-muted); transform: translateX(-50%); }
+.tl-tick.start { transform: none; }
+.tl-tick.end { transform: translateX(-100%); }
+.tl-key { display: grid; gap: 4px; font-size: 13px; color: var(--ink-body); }
+.tl-key span { display: inline-flex; gap: 8px; align-items: center; }
+.tl-key i { width: 18px; height: 10px; border-radius: 2px; flex: none; }
+.foot { font-size: 13px; color: var(--ink-muted); border-top: 1px solid var(--rule-strong); padding-top: 12px; display: grid; gap: 4px; }
+
+@media (max-width: 1100px) {
+  .proc.with-draft { grid-template-columns: minmax(0, 1fr); }
+  .intro { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .nav { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px; }
+  .nav ul { display: flex; flex-wrap: wrap; gap: 2px; }
+  .nav li button { width: auto; }
+  .sheet { margin: 0 8px 8px; }
+  .lanes, .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .tb { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 520px) {
+  .band, .work { padding-left: 14px; padding-right: 14px; }
+  .ask kbd { display: none; }
+  .tb div { grid-template-columns: 120px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prose.inked, .flash { animation: none; }
+  .caret { animation: none; }
+}
+</style>
+
+<div class="page">
+  <header class="intro">
+    <div>
+      <p class="eyebrow">Proposal for SiteWise · 13 November 2026 · for owner review</p>
+      <h1>
+        <span class="wordmark" style="height:44px" aria-label="SiteWise">
+          <svg viewBox="8 7 238 51" fill="currentColor" aria-hidden="true">
+            <clipPath id="wm-ground-a"><path d="M14 34A24 24 0 0 0 62 34Z"/></clipPath>
+            <path d="M8 31A24 24 0 0 1 56 31Z"/>
+            <path d="M-9 30L23 62M0 30L32 62M9 30L41 62M18 30L50 62M27 30L59 62M36 30L68 62M45 30L77 62M54 30L86 62" fill="none" stroke="currentColor" stroke-width="3.4" clip-path="url(#wm-ground-a)"/>
+            <path d="M14 34A24 24 0 0 0 62 34Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M99.23 28.66 104.23 28.39C103.42 23.62 99.46 20.61 94.28 20.61C88.34 20.61 84.56 23.45 84.56 28.12C84.560 32.72 88.93 34.06 93.97 35.14C96.53 35.73 99.55 36 99.55 38.56C99.55 40.77 96.85 41.49 94.78 41.49C91.5 41.49 89.42 39.83 88.97 37.17L83.98 37.48C84.34 42.48 88.7 45.54 94.83 45.540C99.86 45.54 104.59 43.47 104.59 38.79C104.59 34.11 100.77 32.49 94.83 31.41C92.39 30.96 89.65 30.11 89.61 27.95C89.56 25.88 91.5 24.66 93.92 24.66C96.36 24.66 98.74 26.14 99.23 28.66ZM107.33 21.15V45H112.19V21.15ZM107.24 17.64H112.28V13.05H107.24ZM118 15.75V21.15H114.4V25.11H118V38.12C118 42.62 120.52 45 125.15 45H129.16V41.04H125.6C123.8 41.04 122.86 40.05 122.86 38.12V25.11H129.2V21.15H122.86V15.75ZM130.33 33.08C130.33 40.68 134.83 45.54 141.72 45.54C146.57 45.54 150.76 42.7 152.2 38.16L147.16 37.8C146.17 40.05 144.06 41.4 141.72 41.4C137.98 41.4 135.73 38.84 135.46 34.47H152.51V32.89C152.25 24.39 147.38 20.61 141.72 20.61C134.83 20.61 130.33 25.47 130.33 33.08ZM135.5 30.83C136.04 27 138.25 24.75 141.72 24.75C144.37 24.75 146.84 26.32 147.43 30.83ZM172.54 21.15H167.95L162.69 39.51L157.47 21.15H152.56L159.85 45H165.25L170.25 28.04L175.24 45H180.64L187.93 21.15H183.02L177.81 39.51ZM190.5 21.15V45H195.36V21.15ZM190.41 17.64H195.44V13.05H190.41ZM214.12 28.66 219.11 28.39C218.3 23.62 214.34 20.61 209.17 20.61C203.23 20.61 199.45 23.45 199.45 28.12C199.45 32.72 203.81 34.06 208.85 35.14C211.42 35.73 214.44 36 214.44 38.56C214.44 40.77 211.73 41.49 209.66 41.49C206.38 41.49 204.31 39.83 203.86 37.17L198.86 37.48C199.22 42.48 203.59 45.54 209.71 45.54C214.75 45.54 219.47 43.47 219.47 38.79C219.47 34.11 215.65 32.49 209.71 31.41C207.28 30.96 204.53 30.11 204.49 27.95C204.44 25.88 206.38 24.66 208.81 24.66C211.24 24.66 213.62 26.14 214.12 28.66ZM221.63 33.08C221.63 40.68 226.13 45.54 233.02 45.54C237.88 45.54 242.06 42.7 243.5 38.16L238.47 37.8C237.47 40.05 235.36 41.4 233.02 41.4C229.28 41.4 227.03 38.84 226.76 34.47H243.82V32.89C243.55 24.39 238.69 20.61 233.02 20.61C226.13 20.61 221.63 25.47 221.63 33.08ZM226.81 30.83C227.35 27 229.56 24.75 233.02 24.75C235.68 24.75 238.15 26.32 238.74 30.83Z"/>
+          </svg>
+        </span>
+        <span>Pencil</span>
+      </h1>
+      <p class="lead"><strong>Haiku writes the words. SiteWise inks every figure.</strong> Ask the project a question, draft the letter a flag calls for, and catch up on what changed. The facts are on screen before the model starts. Every number Haiku types for itself is caught and marked.</p>
+      <div class="legend" aria-label="What the marks mean">
+        <span><i class="o doc"></i>read from the documents</span>
+        <span><i class="o user"></i>set by you</span>
+        <span><i class="o calc"></i>computed by SiteWise</span>
+        <span><span class="typed" style="cursor:default">14 days</span>typed by Haiku, check it</span>
+        <span><em class="gr">graphite text</em>pencilled by Haiku, not yet yours</span>
+      </div>
+    </div>
+    <div class="live-box" id="live-box">
+      <label for="live"><input type="checkbox" id="live" disabled> <span>Answer live with Haiku 5.5</span></label>
+      <p class="note" id="live-note">Checking whether this viewer can reach Claude…</p>
+      <p class="note">With live off, answers are scripted examples played at the target speed. Live calls run the same guard on Haiku's real output and time it in your browser.</p>
+    </div>
+  </header>
+
+  <section class="shell" aria-label="Mockup of the SiteWise workbench with Pencil">
+    <nav class="nav" aria-label="Project">
+      <span class="wordmark" aria-label="SiteWise">
+        <svg viewBox="8 7 238 51" fill="currentColor" aria-hidden="true">
+          <clipPath id="wm-ground-b"><path d="M14 34A24 24 0 0 0 62 34Z"/></clipPath>
+          <path d="M8 31A24 24 0 0 1 56 31Z"/>
+          <path d="M-9 30L23 62M0 30L32 62M9 30L41 62M18 30L50 62M27 30L59 62M36 30L68 62M45 30L77 62M54 30L86 62" fill="none" stroke="currentColor" stroke-width="3.4" clip-path="url(#wm-ground-b)"/>
+          <path d="M14 34A24 24 0 0 0 62 34Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M99.23 28.66 104.23 28.39C103.42 23.62 99.46 20.61 94.28 20.61C88.34 20.61 84.56 23.45 84.56 28.12C84.560 32.72 88.93 34.06 93.97 35.14C96.53 35.73 99.55 36 99.55 38.56C99.55 40.77 96.85 41.49 94.78 41.49C91.5 41.49 89.42 39.83 88.97 37.17L83.98 37.48C84.34 42.48 88.7 45.54 94.83 45.540C99.86 45.54 104.59 43.47 104.59 38.79C104.59 34.11 100.77 32.49 94.83 31.41C92.39 30.96 89.65 30.11 89.61 27.95C89.56 25.88 91.5 24.66 93.92 24.66C96.36 24.66 98.74 26.14 99.23 28.66ZM107.33 21.15V45H112.19V21.15ZM107.24 17.64H112.28V13.05H107.24ZM118 15.75V21.15H114.4V25.11H118V38.12C118 42.62 120.52 45 125.15 45H129.16V41.04H125.6C123.8 41.04 122.86 40.05 122.86 38.12V25.11H129.2V21.15H122.86V15.75ZM130.33 33.08C130.33 40.68 134.83 45.54 141.72 45.54C146.57 45.54 150.76 42.7 152.2 38.16L147.16 37.8C146.17 40.05 144.06 41.4 141.72 41.4C137.98 41.4 135.73 38.84 135.46 34.47H152.51V32.89C152.25 24.39 147.38 20.61 141.72 20.61C134.83 20.61 130.33 25.47 130.33 33.08ZM135.5 30.83C136.04 27 138.25 24.75 141.72 24.75C144.37 24.75 146.84 26.32 147.43 30.83ZM172.54 21.15H167.95L162.69 39.51L157.47 21.15H152.56L159.85 45H165.25L170.25 28.04L175.24 45H180.64L187.93 21.15H183.02L177.81 39.51ZM190.5 21.15V45H195.36V21.15ZM190.41 17.64H195.44V13.05H190.41ZM214.12 28.66 219.11 28.39C218.3 23.62 214.34 20.61 209.17 20.61C203.23 20.61 199.45 23.45 199.45 28.12C199.45 32.72 203.81 34.06 208.85 35.14C211.42 35.73 214.44 36 214.44 38.56C214.44 40.77 211.73 41.49 209.66 41.49C206.38 41.49 204.31 39.83 203.86 37.17L198.86 37.48C199.22 42.48 203.59 45.54 209.71 45.54C214.75 45.54 219.47 43.47 219.47 38.79C219.47 34.11 215.65 32.49 209.71 31.41C207.28 30.96 204.53 30.11 204.49 27.95C204.44 25.88 206.38 24.66 208.81 24.66C211.24 24.66 213.62 26.14 214.12 28.66ZM221.63 33.08C221.63 40.68 226.13 45.54 233.02 45.54C237.88 45.54 242.06 42.7 243.5 38.16L238.47 37.8C237.47 40.05 235.36 41.4 233.02 41.4C229.28 41.4 227.03 38.84 226.76 34.47H243.82V32.89C243.55 24.39 238.69 20.61 233.02 20.61C226.13 20.61 221.63 25.47 221.63 33.08ZM226.81 30.83C227.35 27 229.56 24.75 233.02 24.75C235.68 24.75 238.15 26.32 238.74 30.83Z"/>
+        </svg>
+      </span>
+      <div class="proj"><b>Bellbird Row</b><span>4 townhouses · Tender</span><span class="tag">Sample project</span></div>
+      <ul>
+        <li><button type="button" data-view="profile" aria-current="page">Profile</button></li>
+        <li><button type="button" data-view="none" data-name="Project Plan">Project Plan</button></li>
+        <li><button type="button" data-view="none" data-name="Cost Plan">Cost Plan</button></li>
+        <li><button type="button" data-view="none" data-name="Program">Program</button></li>
+        <li><button type="button" data-view="procurement">Procurement <span class="nav-count" title="2 to check">2</span></button></li>
+        <li><button type="button" data-view="none" data-name="Specifications">Specifications</button></li>
+      </ul>
+    </nav>
+
+    <main class="sheet">
+      <div class="band">
+        <div class="band-top">
+          <div>
+            <h2>Bellbird Row</h2>
+            <p class="identity">Example Developments · Lot 4 DP 100234 · 612 m² · 12 Bellbird Row, Example NSW</p>
+          </div>
+          <button type="button" class="ground" id="update-btn">Update</button>
+        </div>
+        <form class="ask" id="ask-form" role="search">
+          <label for="ask-input">Ask</label>
+          <input id="ask-input" autocomplete="off" placeholder="Ask about this project, e.g. are we inside budget on main works?">
+          <kbd>Ctrl K</kbd>
+          <button class="btn primary" type="submit">Ask</button>
+        </form>
+        <div class="suggest" id="suggest" aria-label="Example questions"></div>
+      </div>
+
+      <div class="work">
+        <section class="answer" id="answer" hidden aria-label="Answer">
+          <div class="answer-head">
+            <p class="answer-q" id="answer-q"></p>
+            <button type="button" class="btn" id="answer-close">Close</button>
+          </div>
+          <div class="facts" id="answer-facts"></div>
+          <p class="facts-note" id="answer-facts-note"></p>
+          <p class="pencil-mark">Pencilled by Haiku from the facts above</p>
+          <div class="prose" id="answer-prose" aria-live="polite"></div>
+          <div class="guard" id="answer-guard"></div>
+          <div class="actions">
+            <button type="button" class="btn" id="answer-raw-btn" aria-pressed="false">Show what Haiku wrote</button>
+            <button type="button" class="btn" id="answer-copy">Copy</button>
+          </div>
+          <pre class="raw" id="answer-raw" hidden></pre>
+          <p class="meta" id="answer-meta"></p>
+        </section>
+
+        <section class="view" id="view-profile" aria-label="Profile">
+          <div class="catchup">
+            <div class="catchup-head">
+              <h3>Since you last looked <span class="muted" style="font-weight:400">· Tuesday 11 November</span></h3>
+              <p class="meta">Pencilled in the background at 06:12, after 3 filings and an invoice. Stored, so it opened with the page.</p>
+            </div>
+            <div class="prose" id="catchup-prose"></div>
+            <div class="guard" id="catchup-guard"></div>
+            <div class="actions">
+              <button type="button" class="btn" id="catchup-open">Open the price table</button>
+              <button type="button" class="btn" id="catchup-invoice">Pencil the invoice query</button>
+            </div>
+          </div>
+          <div id="draft-host-profile" hidden></div>
+          <p class="band-head">Project</p>
+          <dl class="tb">
+            <div><dt>Building</dt><dd><i class="o doc"></i>4 townhouses</dd></div>
+            <div><dt>NCC class</dt><dd><i class="o doc"></i>Class 1a</dd></div>
+            <div><dt>Storeys</dt><dd><i class="o doc"></i>2</dd></div>
+            <div><dt>Gross floor area</dt><dd><i class="o doc"></i><span class="mono">612 m²</span></dd></div>
+            <div><dt>Council</dt><dd><i class="o doc"></i>Inner West</dd></div>
+            <div><dt>Stage</dt><dd><i class="o user"></i>Tender</dd></div>
+            <div><dt>Main works budget</dt><dd><i class="o user"></i><span class="mono">$2,640,000</span></dd></div>
+            <div><dt>Award planned</dt><dd><i class="o user"></i>27 Nov 2026</dd></div>
+          </dl>
+        </section>
+
+        <section class="view" id="view-procurement" hidden aria-label="Procurement">
+          <div class="tabs"><span>Consultants</span><span aria-current="true">Trades</span></div>
+          <div class="pkg-head">
+            <h3>Main works</h3>
+            <p class="meta">RFT issued 16 Oct 2026 · tenders closed 6 Nov 2026 · <span id="tender-count"></span> · budget <span class="mono">$2,640,000</span> <i class="o user"></i> · 40 weeks asked <i class="o user"></i></p>
+          </div>
+          <div class="proc" id="proc">
+            <div style="display:grid; gap:14px; min-width:0">
+              <div class="tablewrap"><table id="price-table" aria-label="Main works price table"></table></div>
+              <div class="flags">
+                <p style="font-weight:600; font-size:14px"><span id="flag-count"></span> to check</p>
+                <ul id="flag-list"></ul>
+                <div class="actions"><button type="button" class="btn primary" id="pencil-clarify">Pencil a clarification to tenderers</button><span class="meta">Drafts one letter covering every flag. Nothing is sent.</span></div>
+              </div>
+              <div class="others">
+                <div><span>Landscaping</span><span>RFT not written</span></div>
+                <div><span>Joinery (supply)</span><span>2 quotes · no flags</span></div>
+              </div>
+            </div>
+            <div id="draft-host-procurement" hidden></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-none" hidden aria-label="Not in this mockup">
+          <p class="placeholder"><span id="none-name"></span> works as it does today. Pencil adds nothing to its reads, writes or typing.</p>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <section class="how" aria-labelledby="how-title">
+    <header>
+      <h2 id="how-title">How Pencil stays fast and honest</h2>
+      <p>SiteWise sells on speed and trust: a filing in a second, and a figure you can rely on. Most products bolt on a chat agent that loops through tools and can make up a number. Pencil makes a smaller promise and keeps it: one model call over facts SiteWise has already assembled, words only, every figure pinned to its record.</p>
+    </header>
+
+    <div class="lanes">
+      <div class="lane"><p class="who">Jev picks</p><h3>Reading, unchanged</h3><p>Files each document and reads profile evidence, invoices and proposals. Still the only AI that judges anything.</p></div>
+      <div class="lane"><p class="who">Go computes</p><h3>Every figure</h3><p>Money, dates, counts, ranges and rule lookups, as today. In the background it also keeps one fact sheet per project for Pencil to write from.</p></div>
+      <div class="lane pencil"><p class="who">Haiku writes</p><h3>Words around the figures</h3><p>Answers, letters and catch-ups. It may write a figure only as a fact's tag, and SiteWise puts the value in. It has no tools and writes nothing to the project.</p></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>One question, one call</h3>
+        <div class="timeline" aria-hidden="true">
+          <div class="tl-axis"></div>
+          <div class="tl-seg go" style="left:0; width:1.7%"></div>
+          <div class="tl-seg wait" style="left:1.7%; width:21.6%"></div>
+          <div class="tl-seg words" style="left:23.3%; width:60%"></div>
+          <span class="tl-tick start" style="left:0">0 s</span>
+          <span class="tl-tick" style="left:33.33%">1 s</span>
+          <span class="tl-tick" style="left:66.67%">2 s</span>
+          <span class="tl-tick end" style="left:100%">3 s</span>
+        </div>
+        <div class="tl-key">
+          <span><i style="background:var(--ink)"></i>Facts on screen from the stored fact sheet: 50 ms (Go, no model)</span>
+          <span><i style="background:repeating-linear-gradient(135deg, var(--graphite) 0 1px, transparent 1px 5px); border:1px solid var(--graphite)"></i>Haiku reads the cached fact sheet: first words by 0.7 s</span>
+          <span><i style="background:var(--graphite); opacity:.55"></i>Words stream in: done by 2.5 s</span>
+        </div>
+        <p>Pencil's timings are targets, not measurements. This machine has no Anthropic key. Measure p50 and p90 from the Singapore server before sign-off. Filing, edits, navigation and typing stay exactly as fast as they are now: Pencil lives in its own package, and a test fails the build if filing ever imports it.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Proposed budgets</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Path</th><th>p50</th><th>p90</th></tr></thead>
+            <tbody>
+              <tr><td>Ask: facts on screen (code)</td><td class="n">50 ms</td><td class="n">150 ms</td></tr>
+              <tr><td>Ask or draft: first words</td><td class="n">700 ms</td><td class="n">1,500 ms</td></tr>
+              <tr><td>Ask: answer complete</td><td class="n">2.5 s</td><td class="n">5 s</td></tr>
+              <tr><td>Draft: letter complete</td><td class="n">4 s</td><td class="n">8 s</td></tr>
+              <tr><td>Catch-up on open (stored text)</td><td class="n">+5 ms</td><td class="n">+10 ms</td></tr>
+              <tr><td>Fact sheet rebuild (background)</td><td class="n">100 ms</td><td class="n">300 ms</td></tr>
+              <tr><td>Every existing path</td><td class="n" colspan="2">unchanged</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>No first word within 2.5 s: the call is dropped, the facts stay, and the letter falls back to template wording. No retries while a person waits.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Why Haiku cannot change a figure</h3>
+        <ol>
+          <li>Go writes the fact sheet: each figure with a tag, its value, how it was decided and where it came from.</li>
+          <li>Haiku is told to write a figure only as its tag, like <span class="mono">{f:cost.main.budget}</span>. It is never asked to add, compare or convert.</li>
+          <li>SiteWise puts each value in from its own records, then reads the rest of the text. Any digit, amount, date or number word Haiku typed is highlighted. A draft cannot be inked until you keep or edit each one.</li>
+        </ol>
+        <p>A tag that names no fact shows as an error. Unknown stays unknown: an unpriced line reaches Haiku as "unknown" and prints as unknown. Press <b>Show what Haiku wrote</b> on any answer to see the tags.</p>
+      </div>
+
+      <div class="panel">
+        <h3>What it costs</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Use</th><th>Tokens</th><th>Cost</th></tr></thead>
+            <tbody>
+              <tr><td>Ask</td><td>12k cached in, 400 out</td><td class="n">$0.0003</td></tr>
+              <tr><td>Draft a letter</td><td>12k cached in, 600 out</td><td class="n">$0.0004</td></tr>
+              <tr><td>Catch-up after a change</td><td>12k written to cache, 200 out</td><td class="n">$0.0016</td></tr>
+              <tr><td>A heavy PM day: 50 asks, 10 letters, 20 catch-ups</td><td></td><td class="n">$0.05</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Haiku 5.5 lists at $0.10 per million input tokens and $0.50 per million output. These figures assume the usual cache prices (reads at a tenth of input, writes at one and a quarter times input). A heavy user costs about a dollar a month against a $50 plan.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Approaches considered</h3>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Approach</th><th>Wait</th><th>Invents figures?</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>Chat agent that calls tools</td><td>a full model call per round, several rounds</td><td>Can</td><td>No: serial round trips</td></tr>
+              <tr><td>Haiku reads documents instead of Jev</td><td>adds generation to filing</td><td>Can</td><td>No: filing stays Jev and code</td></tr>
+              <tr><td>Template wording only</td><td>none</td><td>No</td><td>Keep as the fallback</td></tr>
+              <tr><td>Pencil: one call, stored fact sheet</td><td>first words under 1 s</td><td>Caught</td><td>Proposed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>For the owner to decide</h3>
+        <ol>
+          <li>Amend rule 1: Jev stays the only AI that judges; Haiku may write words, never figures, never on filing.</li>
+          <li>Project facts (not documents) leave for Anthropic: an org switch, and whether Australian processing is required.</li>
+          <li>Which to build first: the clarification and invoice letters, then Ask, then catch-up with the Report module.</li>
+          <li>Plans: a monthly allowance on Free, and unlimited use on paid plans.</li>
+          <li>The name. "Pencil" is also a hand mark in DESIGN.md.</li>
+          <li>Whether a figure Haiku typed blocks inking (as shown here) or is only marked.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="foot">
+      <p>Bellbird Row, its firms and its figures are examples. Totals, ranges and dates in the mockup are computed in the page's code, as Go would compute them.</p>
+      <p>Design note: <span class="mono">docs/design/2026-11-13-pencil.md</span>. This page: <span class="mono">docs/design/mockups/2026-11-13-pencil/pencil.html</span>.</p>
+    </div>
+  </section>
+</div>
+
+<div id="pop" role="dialog" aria-label="Where this figure came from" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const money = (n) => "$" + Math.round(n).toLocaleString("en-AU");
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const day = (d) => `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const daysBetween = (a, b) => Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) - Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000);
+  const secs = (ms) => (ms / 1000).toFixed(2) + " s";
+  const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---- The sample project. In SiteWise these are saved records and Go rollups. ----
+  const TODAY = new Date(2026, 10, 13);
+  const BUDGET = 2640000;
+  const ASKED_WEEKS = 40;
+  const LINES = [
+    ["prelims", "Preliminaries"], ["site", "Demolition and site works"], ["rock", "Rock excavation"],
+    ["sub", "Substructure"], ["frame", "Frame and upper floors"], ["envelope", "Roof, walls and windows"],
+    ["services", "Services"], ["finishes", "Internal finishes"],
+  ];
+  const FIRMS = [
+    { key: "harbour", name: "Harbour Build", weeks: 40, p: { prelims: 312000, site: 148200, rock: 45000, sub: 286400, frame: 498600, envelope: 541000, services: 402700, finishes: 478500 } },
+    { key: "northline", name: "Northline Constructions", weeks: 40, p: { prelims: 296500, site: 139000, rock: null, sub: 279300, frame: 486200, envelope: 532700, services: 398000, finishes: 466300 } },
+    { key: "kestrel", name: "Kestrel Projects", weeks: 46, p: { prelims: 305800, site: 151600, rock: 38000, sub: 281000, frame: 502300, envelope: 538900, services: 410500, finishes: 427800 } },
+  ];
+  const byKey = Object.fromEntries(FIRMS.map((f) => [f.key, f]));
+  const total = (f) => LINES.reduce((s, [k]) => s + (f.p[k] ?? 0), 0);
+  const T = Object.fromEntries(FIRMS.map((f) => [f.key, total(f)]));
+  const rockPriced = FIRMS.filter((f) => f.p.rock != null);
+  const rockLow = Math.min(...rockPriced.map((f) => f.p.rock));
+  const rockHigh = Math.max(...rockPriced.map((f) => f.p.rock));
+  const rockLowFirm = rockPriced.find((f) => f.p.rock === rockLow);
+  const rockHighFirm = rockPriced.find((f) => f.p.rock === rockHigh);
+  const FLAGS = [];
+  FIRMS.forEach((f) => { if (f.p.rock == null) FLAGS.push({ cell: `cell-rock-${f.key}`, text: `${f.name} excludes rock excavation; the others priced it at ${money(rockLow)} and ${money(rockHigh)}.`, tagged: `{f:firm.${f.key}} excludes rock excavation; the others priced it at {f:tender.rock.low} and {f:tender.rock.high}.` }); });
+  FIRMS.forEach((f) => { if (f.weeks !== ASKED_WEEKS) FLAGS.push({ cell: `cell-weeks-${f.key}`, text: `${f.name} offers ${f.weeks} weeks against the ${ASKED_WEEKS} asked.`, tagged: `{f:firm.${f.key}} offers {f:tender.${f.key}.weeks} against the {f:tender.asked.weeks} asked.` }); });
+
+  const AWARD = new Date(2026, 10, 27);
+  const START = new Date(2027, 1, 1);
+  const PC_EARLY = addDays(START, ASKED_WEEKS * 7);
+  const PC_LATE = addDays(PC_EARLY, 35);
+  const KESTREL_DELTA = byKey.kestrel.weeks - ASKED_WEEKS;
+  const INV = { net: 14500, gstStated: 1420 };
+  const gstCalc = Math.round(INV.net * 0.1);
+
+  // ---- The fact sheet: what Haiku may cite, each with value, origin and source. ----
+  const F = {};
+  const fact = (id, label, value, origin, source, cell) => { F[id] = { id, label, value, origin, source, cell }; };
+  fact("proj.name", "Project", "Bellbird Row", "user", "Profile, set by you");
+  fact("proj.building", "Building", "4 townhouses, NCC Class 1a, 2 storeys", "doc", "Profile, read from the architectural set");
+  fact("org.name", "Organisation", "Example Developments", "user", "Account");
+  fact("me.name", "Project manager", "Sam Ortiz", "user", "Account");
+  fact("me.role", "Role", "Project Manager", "user", "Account");
+  fact("cost.main.budget", "Main works budget", money(BUDGET), "user", "Cost Plan › Construction › Main works, set by you on 3 Nov", "cell-budget");
+  FIRMS.forEach((f) => {
+    fact(`firm.${f.key}`, "Main works tenderer", f.name, "doc", "Procurement, read from the tender", `col-${f.key}`);
+    fact(`tender.${f.key}.total`, `${f.name} tender, ex GST${f.p.rock == null ? " (excludes rock excavation)" : ""}`, money(T[f.key]), "calc", "Procurement price table, summed in code", `cell-total-${f.key}`);
+    fact(`tender.${f.key}.weeks`, `Construction period ${f.name} offers`, `${f.weeks} weeks`, "doc", `Read from ${f.name}'s tender`, `cell-weeks-${f.key}`);
+  });
+  fact("tender.count", "Main works tenders received", String(FIRMS.length), "calc", "Procurement, counted in code");
+  fact("proc.flags", "Points to check on the price table", String(FLAGS.length), "calc", "Procurement checks, counted in code");
+  fact("tender.closed", "Tenders closed", "6 Nov 2026", "user", "RFT transmittal, set by you");
+  fact("tender.validity", "Tender validity asked", "90 days", "user", "RFT terms, set by you");
+  fact("tender.asked.weeks", "Construction period the RFT asked for", `${ASKED_WEEKS} weeks`, "user", "RFT, set by you", "cell-weeks-asked");
+  fact("tender.rock.low", "Lowest rock excavation price tendered", money(rockLow), "doc", `Read from ${rockLowFirm.name}'s tender`, `cell-rock-${rockLowFirm.key}`);
+  fact("tender.rock.high", "Highest rock excavation price tendered", money(rockHigh), "doc", `Read from ${rockHighFirm.name}'s tender`, `cell-rock-${rockHighFirm.key}`);
+  fact("tender.northline.under", "Northline Constructions under the budget (rock excluded)", money(BUDGET - T.northline), "calc", "Computed in code", "cell-diff-northline");
+  fact("tender.northline.adj.low", "Northline Constructions with the lowest rock price added", money(T.northline + rockLow), "calc", "Computed in code", "cell-rock-northline");
+  fact("tender.northline.adj.high", "Northline Constructions with the highest rock price added", money(T.northline + rockHigh), "calc", "Computed in code", "cell-rock-northline");
+  fact("tender.harbour.over", "Harbour Build over the budget", money(T.harbour - BUDGET), "calc", "Computed in code", "cell-diff-harbour");
+  fact("tender.kestrel.over", "Kestrel Projects over the budget", money(T.kestrel - BUDGET), "calc", "Computed in code", "cell-diff-kestrel");
+  fact("report.main", "Main works comparison report", "no recommendation yet, not signed off", "calc", "Procurement report");
+  fact("prog.award", "Award planned", day(AWARD), "user", "Program, set by you");
+  fact("prog.award.days", "Days from today to the planned award", `${daysBetween(TODAY, AWARD)} days`, "calc", "Computed in code");
+  fact("prog.start", "Construction start, forecast", day(START), "calc", "Program, computed in Go");
+  fact("prog.pc.early", "Practical completion, earliest", day(PC_EARLY), "calc", "Program, computed in Go");
+  fact("prog.pc.late", "Practical completion, latest", day(PC_LATE), "calc", "Program, computed in Go; authority connection durations are unknown");
+  fact("prog.kestrel.delta", "Completion moves if Kestrel Projects' period is accepted", `${KESTREL_DELTA} weeks`, "calc", "Program, computed in Go");
+  fact("inv.firm", "Invoice supplier", "Plumb Line Structures", "doc", "Invoices, read from INV-2207");
+  fact("inv.no", "Invoice number", "INV-2207", "doc", "Invoices, read from the invoice");
+  fact("inv.net", "Invoice amount ex GST", money(INV.net), "doc", "Invoices, read from INV-2207");
+  fact("inv.gst.stated", "GST stated on the invoice", money(INV.gstStated), "doc", "Invoices, read from INV-2207");
+  fact("inv.gst.calc", "GST at the standard rate on that amount", money(gstCalc), "calc", "Invoice check, computed in code");
+  fact("doc.geotech", "Geotechnical report", "GR-01 rev B (filed 12 Nov 2026)", "doc", "Repository; supersedes rev A");
+  fact("cost.cons.contract", "Consultant contracts", "$241,500", "user", "Cost Plan, contract values you entered");
+  fact("cost.cons.claimed", "Consultants claimed to date", "$118,200", "calc", "Invoice ledger, summed in code");
+  fact("cost.cons.remaining", "Consultant contracts remaining", money(241500 - 118200), "calc", "Cost Plan, computed in Go");
+  const ORIGIN = { doc: "Read from the documents", user: "Set by you", typ: "Typical value", calc: "Computed by SiteWise", check: "To check" };
+  const factSheet = () => Object.values(F).map((f) => `[f:${f.id}] ${f.label}: ${f.value} (${ORIGIN[f.origin].toLowerCase()}; ${f.source})`).join("\n");
+
+  // ---- Examples: what Haiku would write, in the tagged form it returns. ----
+  const EXAMPLES = [
+    { q: "Are we inside budget on main works?",
+      raw: "Not yet clearly. The lowest tender, {f:firm.northline} at {f:tender.northline.total}, is {f:tender.northline.under} under the main works budget of {f:cost.main.budget}, but it leaves out rock excavation. Adding the other tenderers' rock prices ({f:tender.rock.low} to {f:tender.rock.high}) brings it to {f:tender.northline.adj.low} to {f:tender.northline.adj.high}, either side of the budget. {f:firm.kestrel} includes rock at {f:tender.kestrel.total}, {f:tender.kestrel.over} over. A clarification from {f:firm.northline} would settle it." },
+    { q: "What's holding up the award?",
+      raw: "{f:proc.flags} points are open on the price table: {f:firm.northline} leaves out rock excavation, and {f:firm.kestrel} offers {f:tender.kestrel.weeks} against the {f:tender.asked.weeks} asked, which would move practical completion out by {f:prog.kestrel.delta}. The comparison report has no recommendation or sign-off yet. Award is planned for {f:prog.award}, {f:prog.award.days} from today." },
+    { q: "When does construction start?",
+      raw: "Program forecasts the start of construction on {f:prog.start}, after award on {f:prog.award}. Practical completion is a range, {f:prog.pc.early} to {f:prog.pc.late}, because the authority connection durations are still unknown. Choosing {f:firm.kestrel} at {f:tender.kestrel.weeks} would move that range out by {f:prog.kestrel.delta}." },
+    { q: "How deep is the rock in the geotech report?",
+      raw: "SiteWise doesn't hold rock depth as a figure yet. The geotechnical report, {f:doc.geotech}, is filed in the repository; open it to read the borehole logs. Pencil answers from the workbench's records, not from inside documents." },
+  ];
+  const CATCHUP = "{f:tender.count} main works tenders are in. The lowest, {f:firm.northline} at {f:tender.northline.total}, leaves out rock excavation, so it can't be compared yet; {f:proc.flags} points wait in Procurement.\n\nAn invoice from {f:inv.firm} is held: the GST shown, {f:inv.gst.stated}, doesn't match {f:inv.gst.calc} on {f:inv.net}.\n\nThe geotechnical report {f:doc.geotech} was filed. Award is planned for {f:prog.award}, {f:prog.award.days} away.";
+  const DRAFTS = {
+    clarify: {
+      title: "Clarification to the main works tenderers",
+      host: "procurement",
+      raw: "Subject: Main works tender at {f:proj.name}: clarifications before award\n\nDear {f:firm.harbour}, {f:firm.northline} and {f:firm.kestrel},\n\nThank you for your tenders for the main works at {f:proj.name}, received by {f:tender.closed}. Before we recommend an award, please confirm the following in writing.\n\nAll tenderers: please confirm that your price excludes GST and holds for {f:tender.validity}.\n\n{f:firm.northline}: your tender excludes rock excavation. Please price it on the same basis as the schedule, or confirm that the exclusion stands.\n\n{f:firm.kestrel}: you offer a construction period of {f:tender.kestrel.weeks} against the {f:tender.asked.weeks} the tender asked for. Please tell us whether you can meet {f:tender.asked.weeks}, and at what cost, if any.\n\nPlease reply within 3 business days so we can keep to the planned award on {f:prog.award}.\n\nRegards,\n{f:me.name}\n{f:me.role}, {f:org.name}",
+      task: () => `TASK: Draft a clarification letter from {f:me.name} to all main works tenderers ({f:firm.harbour}, {f:firm.northline}, {f:firm.kestrel}). Start with a "Subject:" line. Cover only these open points from the price table, each addressed to the firm concerned:\n${FLAGS.map((x) => "- " + x.tagged).join("\n")}\nAlso ask every tenderer to confirm the price excludes GST and holds for {f:tender.validity}. Ask for a written reply before the planned award on {f:prog.award}. Under 190 words. Sign off with {f:me.name}, {f:me.role}, {f:org.name}.`,
+    },
+    invoice: {
+      title: "Query to Plumb Line Structures about INV-2207",
+      host: "profile",
+      raw: "Subject: {f:inv.no}: GST amount\n\nHello {f:inv.firm},\n\nThank you for invoice {f:inv.no} for {f:inv.net} plus GST. The GST shown is {f:inv.gst.stated}; at the standard rate on {f:inv.net} it would be {f:inv.gst.calc}. Could you please send a corrected invoice, or let us know if part of the amount is GST-free?\n\nWe'll process it as soon as the corrected copy arrives.\n\nRegards,\n{f:me.name}\n{f:me.role}, {f:org.name}",
+      task: () => "TASK: Draft a short, friendly email from {f:me.name} to {f:inv.firm} about invoice {f:inv.no}. The GST stated ({f:inv.gst.stated}) does not match the GST computed at the standard rate ({f:inv.gst.calc}) on {f:inv.net}. Ask for a corrected invoice, or an explanation if part is GST-free. Start with a \"Subject:\" line. Under 120 words. Sign off with {f:me.name}, {f:me.role}, {f:org.name}.",
+    },
+  };
+
+  const buildPrompt = (task) => `You write for SiteWise, a construction project workbench used by Australian project managers. Write plain, specific Australian professional English. No headings, no markdown, no bullet lists.
+
+The rule that matters most: every figure, amount, date, duration, count, firm name and person's name must come from FACTS, written only as its tag in braces, exactly like {f:cost.main.budget}. Never type a digit or a number word yourself. Never add, subtract or compare figures yourself; FACTS already holds every result you may need. If the figure you need is not in FACTS, leave it out and say SiteWise does not hold it yet.
+
+FACTS
+${factSheet()}
+
+${task}`;
+
+  // ---- The guard: put values in from the fact sheet; mark anything Haiku typed. ----
+  const TOKEN = /\{f:([A-Za-z0-9._-]+)\}/g;
+  const TYPED = /\$\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:k|m|million))?|\d[\d,]*(?:\.\d+)?(?:\s?(?:%|per cent|m²|m2|sqm|business days|working days|days|weeks|months|years|hours))?|\b(?:two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion)\b(?:\s(?:business days|working days|days|weeks|months|years))?/gi;
+
+  function chip(f) {
+    const numeric = /\d/.test(f.value);
+    return `<button type="button" class="fact${numeric ? "" : " word"}" data-f="${esc(f.id)}" aria-label="${esc(f.label)}: ${esc(f.value)}. ${ORIGIN[f.origin]}."><i class="o ${f.origin}" aria-hidden="true"></i>${esc(f.value)}</button>`;
+  }
+
+  function renderGuarded(raw, { streaming = false, kept = new Set() } = {}) {
+    let text = String(raw).replace(/\*\*/g, "");
+    if (streaming) {
+      const open = text.lastIndexOf("{");
+      if (open > text.lastIndexOf("}")) text = text.slice(0, open);
+    }
+    const stats = { facts: 0, typed: 0, open: 0, bad: 0 };
+    let n = 0;
+    const plain = (s) => {
+      let out = "", last = 0, m;
+      TYPED.lastIndex = 0;
+      while ((m = TYPED.exec(s))) {
+        out += esc(s.slice(last, m.index));
+        const i = n++;
+        const isKept = kept.has(i);
+        stats.typed++; if (!isKept) stats.open++;
+        out += `<button type="button" class="typed${isKept ? " kept" : ""}" data-typed="${i}" title="${isKept ? "You kept this as your word" : "Haiku typed this. Click to keep it as your word."}">${esc(m[0])}</button>`;
+        last = m.index + m[0].length;
+      }
+      out += esc(s.slice(last));
+      return out.replace(/\n{2,}/g, "</p><p>").replace(/\n/g, "<br>");
+    };
+    let html = "", last = 0, m;
+    TOKEN.lastIndex = 0;
+    while ((m = TOKEN.exec(text))) {
+      html += plain(text.slice(last, m.index));
+      const f = F[m[1]];
+      if (f) { stats.facts++; html += chip(f); }
+      else { stats.bad++; html += `<span class="fact bad" title="Haiku named ${esc(m[1])}, which SiteWise doesn't hold">no such figure</span>`; }
+      last = TOKEN.lastIndex;
+    }
+    html += plain(text.slice(last));
+    if (streaming) html += '<span class="caret" aria-hidden="true"></span>';
+    return { html: "<p>" + html + "</p>", stats };
+  }
+
+  function guardHTML(stats, done) {
+    const parts = [];
+    parts.push(`<span class="ok">${stats.facts} figure${stats.facts === 1 ? "" : "s"} from SiteWise</span>`);
+    if (stats.bad) parts.push(`<span class="bad">${stats.bad} tag${stats.bad === 1 ? "" : "s"} naming no fact</span>`);
+    if (stats.open) parts.push(`<span class="warn">${stats.open} typed by Haiku: check ${stats.open === 1 ? "it" : "them"}</span>`);
+    else if (done) parts.push(`<span class="ok">${stats.typed ? "Haiku's typed figures kept by you" : "none typed by Haiku"}</span>`);
+    return parts.join("");
+  }
+
+  const plainText = (raw) => String(raw).replace(/\*\*/g, "").replace(TOKEN, (_, id) => (F[id] ? F[id].value : "[unknown figure]"));
+  const rawHTML = (raw) => esc(raw).replace(/\{f:[A-Za-z0-9._-]+\}/g, (t) => `<mark>${t}</mark>`);
+
+  // ---- Producing words: live Haiku through the viewer, or a scripted example. ----
+  let sampleFn = null;
+  let liveOn = false;
+  let firstLive = true;
+  const liveBox = $("#live"), liveNote = $("#live-note");
+  function liveUnavailable(msg) {
+    sampleFn = null; liveOn = false; liveBox.checked = false; liveBox.disabled = true;
+    liveNote.textContent = msg || "Live answers run inside the Claude viewer. Here, the examples play as scripted.";
+  }
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("sample").then((s) => {
+      if (!s) return liveUnavailable();
+      sampleFn = s; liveBox.disabled = false;
+      liveNote.textContent = "Available. Live calls use your own Claude usage, and the first asks your permission.";
+    }).catch(() => liveUnavailable());
+  } else {
+    liveUnavailable();
+  }
+  liveBox.addEventListener("change", () => { liveOn = liveBox.checked && !!sampleFn; });
+
+  function replay(raw, signal, onText) {
+    return new Promise((resolve, reject) => {
+      let i = 0;
+      const step = () => {
+        if (signal.aborted) return reject({ code: "cancelled" });
+        i = reduced() ? raw.length : Math.min(raw.length, i + 18);
+        onText(raw.slice(0, i));
+        if (i < raw.length) setTimeout(step, 24); else resolve(raw);
+      };
+      setTimeout(step, 600);
+    });
+  }
+
+  async function produce({ raw, task, paint, signal }) {
+    const t0 = performance.now();
+    let tFirst = null;
+    const onText = (text) => { if (tFirst === null) tFirst = performance.now(); paint(text); };
+    if (liveOn && sampleFn && task) {
+      const wasFirst = firstLive; firstLive = false;
+      const res = await sampleFn(buildPrompt(task), {
+        model: "claude-haiku-5-5", modelTier: "quick", effort: "low", cache: false, signal,
+        onText: ({ text }) => onText(text),
+      });
+      const tDone = performance.now();
+      const who = res.modelApplied === "claude-haiku-5-5" ? "Live · Haiku 5.5" : `Live · Claude ${res.modelTierApplied} tier (Haiku 5.5 isn't offered to this account)`;
+      return { text: res.text, truncated: res.truncated, meta: `${who} · first words ${secs((tFirst ?? tDone) - t0)} · done ${secs(tDone - t0)}${wasFirst ? " · includes the permission prompt" : ""} · timed in your browser through the Claude viewer, not the production path` };
+    }
+    if (!raw) throw { code: "no_live" };
+    const text = await replay(raw, signal, onText);
+    return { text, meta: `Example · scripted at the target speed: first words ${secs((tFirst ?? performance.now()) - t0)}, done ${secs(performance.now() - t0)} · not a live call` };
+  }
+
+  const ERRORS = {
+    not_granted: "Live answers are off: this page wasn't allowed to use Claude. The examples still work.",
+    sampling_disabled: "Claude isn't available on this account. The examples still work.",
+    rate_limited: "Claude is busy for this account. Try again in a minute.",
+    refused: "Haiku declined that one. Try asking it another way.",
+    empty_completion: "Haiku returned nothing. Try a simpler question.",
+    session_expired: "Sign in to Claude again to use live answers.",
+    upstream_error: "The connection dropped part-way. What arrived is kept; try again.",
+    no_live: "No words without live mode for a question outside the examples. The facts above came from code and needed no model. That is also what you'd see if Haiku were down.",
+  };
+  function errorCopy(e) {
+    if (e && (e.code === "not_granted" || e.code === "sampling_disabled")) liveUnavailable(ERRORS[e.code]);
+    return ERRORS[e && e.code] || ERRORS.upstream_error;
+  }
+
+  // ---- Fact chips: a popover says where each figure came from. ----
+  const pop = $("#pop");
+  let popFor = null;
+  function closePop() { pop.hidden = true; popFor = null; }
+  function openPop(btn) {
+    const f = F[btn.dataset.f];
+    if (!f) return;
+    if (popFor === btn) return closePop();
+    popFor = btn;
+    pop.innerHTML = `<span class="muted">${esc(f.label)}</span><span class="v"><i class="o ${f.origin}"></i>${esc(f.value)}</span><span>${ORIGIN[f.origin]}</span><span class="src">${esc(f.source)}</span>${f.cell ? '<button type="button" class="btn" id="pop-show">Show in the price table</button>' : ""}`;
+    pop.hidden = false;
+    const r = btn.getBoundingClientRect();
+    const w = Math.min(300, document.documentElement.clientWidth - 24);
+    let left = r.left + window.scrollX;
+    left = Math.max(12, Math.min(left, window.scrollX + document.documentElement.clientWidth - w - 12));
+    pop.style.left = left + "px";
+    pop.style.top = (r.bottom + window.scrollY + 6) + "px";
+    const show = $("#pop-show");
+    if (show) show.addEventListener("click", () => { closePop(); showCell(f.cell); });
+  }
+  document.addEventListener("click", (e) => {
+    const chipBtn = e.target.closest(".fact[data-f]");
+    if (chipBtn) { e.preventDefault(); openPop(chipBtn); return; }
+    if (!e.target.closest("#pop")) closePop();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closePop();
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); $("#ask-input").focus(); }
+  });
+
+  function showCell(id) {
+    setView("procurement");
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ block: "center", behavior: reduced() ? "auto" : "smooth" });
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+  }
+
+  // ---- Views ----
+  function setView(name, label) {
+    $$(".view").forEach((v) => { v.hidden = v.id !== "view-" + name; });
+    $$(".nav li button").forEach((b) => {
+      const on = b.dataset.view === name && (name !== "none" || b.dataset.name === label);
+      if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    if (name === "none") $("#none-name").textContent = label;
+  }
+  $$(".nav li button").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view, b.dataset.name)));
+
+  // ---- Price table, computed in code. ----
+  function renderTable() {
+    const head = `<thead><tr><th>Item</th>${FIRMS.map((f) => `<th id="col-${f.key}">${esc(f.name)}</th>`).join("")}</tr></thead>`;
+    const rows = LINES.map(([k, label]) => `<tr><td>${esc(label)}</td>${FIRMS.map((f) => {
+      const v = f.p[k];
+      return v == null
+        ? `<td class="check" id="cell-${k}-${f.key}" title="Excluded in the tender">Excluded</td>`
+        : `<td class="n" id="cell-${k}-${f.key}">${money(v)}</td>`;
+    }).join("")}</tr>`).join("");
+    const totals = `<tr class="total"><td>Total ex GST</td>${FIRMS.map((f) => `<td class="n" id="cell-total-${f.key}">${money(T[f.key])}</td>`).join("")}</tr>`;
+    const diff = `<tr class="sub"><td id="cell-budget">Against the ${money(BUDGET)} budget</td>${FIRMS.map((f) => {
+      const d = T[f.key] - BUDGET;
+      const s = (d > 0 ? "+" : "−") + money(Math.abs(d)).slice(0);
+      return `<td class="n" id="cell-diff-${f.key}">${s}${f.p.rock == null ? " (no rock)" : ""}</td>`;
+    }).join("")}</tr>`;
+    const weeks = `<tr><td id="cell-weeks-asked">Construction period (${ASKED_WEEKS} weeks asked)</td>${FIRMS.map((f) => `<td class="n${f.weeks !== ASKED_WEEKS ? " check" : ""}" id="cell-weeks-${f.key}">${f.weeks} weeks</td>`).join("")}</tr>`;
+    $("#price-table").innerHTML = head + "<tbody>" + rows + totals + diff + weeks + "</tbody>";
+    $("#tender-count").textContent = `${FIRMS.length} tenders`;
+    $("#flag-count").textContent = String(FLAGS.length);
+    $("#flag-list").innerHTML = FLAGS.map((x) => `<li><button type="button" class="btn" style="min-height:0; padding:0 8px; font-size:12px; margin-right:6px" data-cell="${x.cell}">Show</button>${esc(x.text)}</li>`).join("");
+    $$("#flag-list [data-cell]").forEach((b) => b.addEventListener("click", () => showCell(b.dataset.cell)));
+  }
+
+  // ---- Ask ----
+  const SYN = {
+    budget: ["budget", "cost", "over", "under", "money", "price", "afford", "tender", "cheapest", "lowest"],
+    start: ["start", "begin", "commence", "construction", "when", "site", "completion", "finish", "program", "date"],
+    award: ["award", "holding", "hold", "appoint", "recommend", "decision", "flags", "open"],
+    rock: ["rock", "excavation", "geotech", "ground", "borehole"],
+    invoice: ["invoice", "gst", "plumb", "claim", "claimed", "paid", "consultant", "consultants"],
+  };
+  const FACT_TOPICS = {
+    budget: ["cost.main.budget", "tender.northline.total", "tender.northline.adj.high", "tender.kestrel.total"],
+    start: ["prog.start", "prog.pc.early", "prog.pc.late", "prog.award"],
+    award: ["proc.flags", "prog.award", "prog.award.days", "report.main"],
+    rock: ["doc.geotech", "tender.rock.low", "tender.rock.high"],
+    invoice: ["inv.gst.stated", "inv.gst.calc", "cost.cons.claimed", "cost.cons.remaining"],
+  };
+  function findFacts(q) {
+    const words = q.toLowerCase().match(/[a-z]+/g) || [];
+    const scored = Object.keys(SYN).map((t) => [t, words.filter((w) => SYN[t].includes(w)).length]).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]);
+    const ids = [];
+    scored.slice(0, 2).forEach(([t]) => FACT_TOPICS[t].forEach((id) => { if (!ids.includes(id)) ids.push(id); }));
+    return ids.slice(0, 4).map((id) => F[id]);
+  }
+
+  let askCtl = null;
+  const answer = { raw: "", kept: new Set(), done: false };
+  function paintAnswer(streaming) {
+    const r = renderGuarded(answer.raw, { streaming, kept: answer.kept });
+    $("#answer-prose").innerHTML = r.html;
+    $("#answer-guard").innerHTML = guardHTML(r.stats, !streaming);
+    $("#answer-raw").innerHTML = rawHTML(answer.raw);
+  }
+  function ask(q) {
+    q = q.trim();
+    if (!q) return;
+    if (askCtl) askCtl.abort();
+    askCtl = new AbortController();
+    const signal = askCtl.signal;
+    const ex = EXAMPLES.find((e) => e.q.toLowerCase() === q.toLowerCase());
+    $("#answer").hidden = false;
+    $("#answer-q").textContent = q;
+    const t0 = performance.now();
+    const hits = findFacts(q);
+    const dt = performance.now() - t0;
+    $("#answer-facts").innerHTML = hits.map((f) => `<div class="fcard"><span class="l">${esc(f.label)}</span><span class="v${/\d/.test(f.value) ? "" : " word"}"><i class="o ${f.origin}"></i>${esc(f.value)}</span><span class="s">${esc(f.source)}</span></div>`).join("");
+    $("#answer-facts-note").textContent = hits.length
+      ? `Found in code in ${dt.toFixed(2)} ms, before any model call. In SiteWise this is a lookup on the stored fact sheet.`
+      : `Code found no matching figures in ${dt.toFixed(2)} ms.`;
+    answer.raw = ""; answer.kept = new Set(); answer.done = false;
+    $("#answer-prose").innerHTML = '<p class="wait">Haiku is writing…</p>';
+    $("#answer-prose").setAttribute("aria-busy", "true");
+    $("#answer-guard").innerHTML = ""; $("#answer-meta").textContent = "";
+    const task = `QUESTION: ${q}\nAnswer in at most four short sentences, for the project manager. If FACTS don't answer it, say SiteWise doesn't hold that yet and name the part of the workbench that would.`;
+    produce({ raw: ex && ex.raw, task, signal, paint: (t) => { answer.raw = t; paintAnswer(true); } })
+      .then(({ text, meta, truncated }) => {
+        answer.raw = text; answer.done = true; paintAnswer(false);
+        $("#answer-meta").textContent = meta + (truncated ? " · cut short" : "");
+      })
+      .catch((e) => {
+        if (e && e.code === "cancelled") return;
+        if (e && e.text) { answer.raw = e.text; paintAnswer(false); } else { $("#answer-prose").innerHTML = ""; }
+        $("#answer-meta").innerHTML = `<span class="notice">${esc(errorCopy(e))}</span>`;
+      })
+      .finally(() => $("#answer-prose").removeAttribute("aria-busy"));
+    $("#answer").scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+  }
+  $("#suggest").innerHTML = EXAMPLES.map((e, i) => `<button type="button" data-i="${i}">${esc(e.q)}</button>`).join("");
+  $$("#suggest button").forEach((b) => b.addEventListener("click", () => { const q = EXAMPLES[+b.dataset.i].q; $("#ask-input").value = q; ask(q); }));
+  $("#ask-form").addEventListener("submit", (e) => { e.preventDefault(); ask($("#ask-input").value); });
+  $("#answer-close").addEventListener("click", () => { if (askCtl) askCtl.abort(); $("#answer").hidden = true; });
+  $("#answer-prose").addEventListener("click", (e) => {
+    const t = e.target.closest(".typed[data-typed]");
+    if (!t || !answer.done) return;
+    answer.kept.add(+t.dataset.typed); paintAnswer(false);
+  });
+  $("#answer-raw-btn").addEventListener("click", (e) => {
+    const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+    e.currentTarget.setAttribute("aria-pressed", String(on));
+    $("#answer-raw").hidden = !on;
+  });
+  $("#answer-copy").addEventListener("click", (e) => copy(plainText(answer.raw), e.currentTarget, $("#answer-prose")));
+
+  function copy(text, btn, fallbackEl) {
+    const done = (label) => { const old = btn.dataset.label || btn.textContent; btn.dataset.label = old; btn.textContent = label; setTimeout(() => { btn.textContent = old; }, 1600); };
+    try {
+      navigator.clipboard.writeText(text).then(() => done("Copied"), () => { selectText(fallbackEl); done("Selected: press Ctrl C"); });
+    } catch (_) { selectText(fallbackEl); done("Selected: press Ctrl C"); }
+  }
+  function selectText(el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+
+  // ---- Drafts ----
+  const drafts = {};
+  function openDraft(kind) {
+    const d = DRAFTS[kind];
+    const host = document.getElementById("draft-host-" + d.host);
+    if (drafts[kind] && drafts[kind].ctl) drafts[kind].ctl.abort();
+    const st = drafts[kind] = { raw: "", kept: new Set(), done: false, inked: false, ctl: new AbortController() };
+    host.hidden = false;
+    if (d.host === "procurement") $("#proc").classList.add("with-draft");
+    host.innerHTML = `<section class="draft" aria-label="${esc(d.title)}">
+      <header><div><p class="pencil-mark">Pencil · draft</p><h3>${esc(d.title)}</h3></div><button type="button" class="btn" data-act="discard">Discard</button></header>
+      <div class="prose" data-el="prose" aria-live="polite"><p class="wait">Haiku is writing…</p></div>
+      <div class="guard" data-el="guard"></div>
+      <div class="actions"><button type="button" class="btn primary" data-act="ink" disabled>Ink it</button><button type="button" class="btn" data-act="copy" disabled>Copy</button><button type="button" class="btn" data-act="raw" aria-pressed="false">Show what Haiku wrote</button></div>
+      <p class="hint" data-el="hint" hidden></p>
+      <pre class="raw" data-el="raw" hidden></pre>
+      <p class="meta" data-el="meta"></p>
+    </section>`;
+    const el = (n) => host.querySelector(`[data-el="${n}"]`);
+    const act = (n) => host.querySelector(`[data-act="${n}"]`);
+    const paint = (streaming) => {
+      const r = renderGuarded(st.raw, { streaming, kept: st.kept });
+      el("prose").innerHTML = r.html;
+      el("guard").innerHTML = guardHTML(r.stats, !streaming);
+      el("raw").innerHTML = rawHTML(st.raw);
+      if (!streaming && !st.inked) {
+        const blocked = r.stats.open > 0 || r.stats.bad > 0;
+        act("ink").disabled = blocked;
+        el("hint").hidden = !blocked;
+        el("hint").textContent = r.stats.bad ? "A tag names a figure SiteWise doesn't hold. Discard and draft again." : `Click the highlighted figure${r.stats.open === 1 ? "" : "s"} Haiku typed to keep ${r.stats.open === 1 ? "it" : "them"} as your word, then ink the letter.`;
+      }
+    };
+    act("discard").addEventListener("click", () => { st.ctl.abort(); host.hidden = true; host.innerHTML = ""; if (d.host === "procurement") $("#proc").classList.remove("with-draft"); });
+    act("raw").addEventListener("click", (e) => { const on = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", String(on)); el("raw").hidden = !on; });
+    act("copy").addEventListener("click", (e) => copy(plainText(st.raw), e.currentTarget, el("prose")));
+    act("ink").addEventListener("click", () => {
+      st.inked = true;
+      el("prose").classList.add("inked");
+      act("ink").disabled = true; act("ink").textContent = "Inked";
+      el("hint").hidden = false; el("hint").className = "inked-line";
+      el("hint").textContent = `Inked by you on ${day(TODAY)}. Words by Haiku 5.5, figures by SiteWise. Nothing has been sent.`;
+      act("copy").disabled = false;
+    });
+    el("prose").addEventListener("click", (e) => {
+      const t = e.target.closest(".typed[data-typed]");
+      if (!t || !st.done || st.inked) return;
+      st.kept.add(+t.dataset.typed); paint(false);
+    });
+    produce({ raw: d.raw, task: d.task(), signal: st.ctl.signal, paint: (t) => { st.raw = t; paint(true); } })
+      .then(({ text, meta, truncated }) => {
+        st.raw = text; st.done = true; paint(false);
+        el("meta").textContent = meta + (truncated ? " · cut short" : "");
+      })
+      .catch((e) => {
+        if (e && e.code === "cancelled") return;
+        st.done = true;
+        if (e && e.text) { st.raw = e.text; paint(false); } else { st.raw = d.raw; paint(false); }
+        el("meta").innerHTML = `<span class="notice">${esc(errorCopy(e))} ${e && e.text ? "" : "Showing the template wording instead."}</span>`;
+      });
+    host.scrollIntoView({ block: "nearest", behavior: reduced() ? "auto" : "smooth" });
+  }
+  $("#pencil-clarify").addEventListener("click", () => openDraft("clarify"));
+  $("#catchup-invoice").addEventListener("click", () => openDraft("invoice"));
+  $("#catchup-open").addEventListener("click", () => showCell("cell-rock-northline"));
+  $("#update-btn").addEventListener("click", () => { $("#update-btn").textContent = "Up to date"; setTimeout(() => { $("#update-btn").textContent = "Update"; }, 1400); });
+
+  // ---- First paint: the catch-up is stored text, so it shows at once. ----
+  renderTable();
+  const cu = renderGuarded(CATCHUP);
+  $("#catchup-prose").innerHTML = cu.html;
+  $("#catchup-guard").innerHTML = guardHTML(cu.stats, true);
+})();
+</script>

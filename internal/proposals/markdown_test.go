@@ -81,3 +81,90 @@ func TestMarkdownStageTaxAndExclusions(t *testing.T) {
 		t.Fatalf("total: %v", r.StatedTotal)
 	}
 }
+
+// A header table names the client in a labelled row ("| Client | … Pty Ltd |").
+// That row is the addressee, never the firm, even though it carries the only
+// registered company name in the header; nor is the project's address the
+// firm's (Seven Hills corpus, 15 Nov 2026: 23 proposals read the client as
+// the firm). Every name and address here is invented.
+func TestHeaderTableClientRowIsNotTheFirm(t *testing.T) {
+	body := "# Fee Proposal — Structural Engineering\n\n" +
+		"> Invented document for a test.\n\n" +
+		"| Field | Detail |\n|---|---|\n" +
+		"| Project | 14–18 Example Avenue, Exampleton NSW 2147 |\n" +
+		"| Client | Example Developments Pty Ltd |\n" +
+		"| RFP | RFP-STR-01 |\n" +
+		"| Proponent | Gridline Engineers |\n" +
+		"| Proposal date | 26 June 2025 |\n\n" +
+		"## Offer\n\nGridline Engineers offers its services for a lump-sum fee of **$112,000.00 excluding GST**.\n"
+	ev := markdownEvidence(t, body)
+	if ev.HeaderFirm != "" {
+		t.Fatalf("header firm %q: the client row was read as the firm", ev.HeaderFirm)
+	}
+	d := NewDraft(ev, Context{PackageID: "p", SiteAddress: "14-18 Example Avenue, Exampleton NSW 2147"}, nil)
+	for _, field := range []string{FieldFirmName, FieldFirmAddress} {
+		if got, ok := d.Decided(field); ok && strings.Contains(got.Value, "Example") {
+			t.Fatalf("%s decided as %q: that is the client's or the project's", field, got.Value)
+		}
+	}
+	// The row the document labels as the proponent names the firm.
+	if got, ok := d.Decided(FieldFirmName); !ok || got.Value != "Gridline Engineers" {
+		t.Fatalf("firm %+v", got)
+	}
+}
+
+// A header table row that names the firm under another label ("| Builder |
+// … Pty Ltd |") gives the name alone, without its label. Invented names.
+func TestHeaderTableFirmRowGivesTheNameAlone(t *testing.T) {
+	body := "# Letter of Acceptance\n\n" +
+		"| Field | Detail |\n|---|---|\n" +
+		"| Client | Example Developments Pty Ltd |\n" +
+		"| Builder | Example Building Group Pty Ltd |\n" +
+		"| Date | 4 May 2026 |\n\n## Acceptance\n\nThe tender is accepted.\n"
+	if got := markdownEvidence(t, body).HeaderFirm; got != "Example Building Group Pty Ltd" {
+		t.Fatalf("header firm %q", got)
+	}
+}
+
+// Candidate names come from a table row's cells, never the row with its
+// label: Jev and the directory see "Example Studio", not "Consultant |
+// Example Studio". A labelled client or project row's address is not the
+// firm's, even when the site's address is not known. Invented names.
+func TestHeaderTableNamesAreCellsAndProjectRowIsNoAddress(t *testing.T) {
+	body := "# Letter of Appointment\n\n" +
+		"| Field | Detail |\n|---|---|\n" +
+		"| Project | 14–18 Example Avenue, Exampleton NSW 2147 |\n" +
+		"| Client | Example Developments Pty Ltd |\n" +
+		"| Consultant | Example Studio |\n\n" +
+		"The Client appoints **Example Studio** to provide architectural services.\n"
+	ev := markdownEvidence(t, body)
+	if !containsFold(ev.Names, "Example Studio") {
+		t.Fatalf("names %q", ev.Names)
+	}
+	for _, n := range ev.Names {
+		if strings.Contains(n, "|") || strings.HasPrefix(n, "Consultant") || strings.HasPrefix(n, "Client") {
+			t.Fatalf("a whole table row is a candidate name: %q", n)
+		}
+	}
+	if len(ev.Addresses) != 0 {
+		t.Fatalf("addresses %q: the project row is the site's", ev.Addresses)
+	}
+}
+
+// A role-labelled row offers its value to Jev as a candidate, even when the
+// name has no company word ("Northline Structures"), so an appointment
+// letter's firm is there to choose. It is offered, not decided. Invented names.
+func TestRoleLabelledRowOffersItsFirm(t *testing.T) {
+	body := "# Letter of Appointment\n\n" +
+		"| Field | Detail |\n|---|---|\n" +
+		"| Client | Example Developments Pty Ltd |\n" +
+		"| Consultant | Northline Example |\n\n" +
+		"The Client appoints Northline Example to provide structural services.\n"
+	ev := markdownEvidence(t, body)
+	if !containsFold(ev.Names, "Northline Example") {
+		t.Fatalf("names %q", ev.Names)
+	}
+	if got, ok := NewDraft(ev, Context{PackageID: "p"}, nil).Decided(FieldFirmName); ok {
+		t.Fatalf("a Consultant row decided the firm by rule: %+v", got)
+	}
+}

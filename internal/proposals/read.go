@@ -325,6 +325,9 @@ func (d *Draft) settleFirm() {
 	if own := d.ownFirm(); own != "" {
 		keys = []string{NameKey(own)}
 	}
+	if lf := d.ev.LabelledFirm; lf != "" {
+		keys = []string{NameKey(lf)}
+	}
 	if u := d.by[FieldFirmName]; u.DecidedBy == ByUser && u.Value != "" {
 		keys = []string{NameKey(u.Value)}
 	}
@@ -345,6 +348,8 @@ func (d *Draft) settleFirm() {
 	if len(d.ev.Appointed) == 1 {
 		d.rule(FieldFirmName, d.ev.Appointed[0])
 	}
+	// A header table that labels the proponent names the firm outright.
+	d.rule(FieldFirmName, d.ev.LabelledFirm)
 	// A response form names its firm in labelled cells; that rule follows.
 	if l := d.ev.Letterhead; l != nil && d.ev.FormFirm == nil {
 		d.rule(FieldFirmName, l.Name)
@@ -461,9 +466,17 @@ func (d *Draft) firmAddresses() []string {
 }
 
 // isSite reports the project's own address, which is never the firm's.
+// Street and suburb are compared without the house number: a site at
+// "14–18 Example Avenue" is printed, and read, as "18 Example Avenue" too
+// (Seven Hills corpus, 15 Nov 2026).
 func (d *Draft) isSite(a string) bool {
-	site := NameKey(d.ctx.SiteAddress)
-	return site != "" && strings.Contains(NameKey(a), site[:min(len(site), 12)])
+	site := streetKey(d.ctx.SiteAddress)
+	return site != "" && strings.Contains(streetKey(a), site[:min(len(site), 12)])
+}
+
+// streetKey is an address's name key without its leading house number.
+func streetKey(a string) string {
+	return strings.TrimLeft(NameKey(a), "0123456789")
 }
 
 func (d *Draft) settleGST() {

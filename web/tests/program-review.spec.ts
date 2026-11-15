@@ -38,7 +38,6 @@ async function newProject(page: Page, name: string): Promise<string> {
 const origin = (page: Page) => ({ Origin: new URL(page.url()).origin });
 const read = async (page: Page, project: string): Promise<View> => (await page.request.get(`/api/projects/${project}/program`)).json();
 const grid = (page: Page) => page.getByRole("treegrid", { name: "Program rows" });
-const rowNamed = (page: Page, label: string) => grid(page).locator('[role="row"]', { has: page.locator(".pg-label", { hasText: new RegExp(`^${label}$`) }) });
 
 async function profileSet(page: Page, project: string, key: string, value: string) {
   const profile = await (await page.request.get(`/api/projects/${project}/profile`)).json();
@@ -121,64 +120,46 @@ test("answer the strip question: the range narrows and the Profile shows the val
   await expect(page.getByRole("combobox", { name: "Work type", exact: true }).locator("option:checked")).toHaveText(option);
 });
 
-test("a work item changed in the Profile raises the review: an edited row defaults to Keep, Adopt all, Undo (step 13)", async ({ page }) => {
+test("Update program applies every change in one click: no review to answer, one undo (owner, 12 November 2026)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  const project = await newProject(page, "Program review");
-  await profileSet(page, project, "hdr.work_type", "new");
-  const profile = await gasWork(page, project);
+  const project = await newProject(page, "Program update");
   await build(page);
   let v = await read(page, project);
-  const rough = v.activities.find((a) => a.label === "Gas rough-in")!;
-  const fitOff = v.activities.find((a) => a.label === "Gas fit-off")!;
-  expect(rough && fitOff).toBeTruthy();
-  // The user edits one of the two rows the work item brought.
-  v = await ops(page, project, [{ op: "update", id: rough.id, label: "Gas rough-in, level 1" }]);
+  // The e2e library has no project activities, so the outline is its
+  // stages; Delivery takes its length from the Profile's construction duration.
+  const delivery = v.activities.find((a) => a.catalogue_stage_id === "delivery")!;
+  const brief = v.activities.find((a) => a.catalogue_stage_id === "brief_concept")!;
+  expect(delivery && brief).toBeTruthy();
+  expect(delivery.duration_days).not.toBe(50);
+  // The user's own wording on a generated row.
+  v = await ops(page, project, [{ op: "update", id: brief.id, label: "Brief and concept with the owners" }]);
   expect(v.changes_pending).toBe(0);
-  await expect(page.locator(".pg-update")).toHaveText("Update program");
 
-  // Exclude the gas work in the Profile (the system row's tick is its inclusion).
-  await page.getByRole("button", { name: "Profile", exact: true }).click();
-  const group = profile.systems.find((g: { rows: { leaf: string }[] }) => g.rows.some((r) => r.leaf === "hydraulic.gas"));
-  const leaf = group.rows.find((r: { leaf: string }) => r.leaf === "hydraulic.gas");
-  await page.locator(".sw-entry", { hasText: group.label }).click();
-  const pane = page.getByRole("region", { name: group.label, exact: true });
-  await pane.getByRole("checkbox", { name: leaf.label, exact: true }).uncheck();
-
-  // The review runs in the background; the open Program hears of it.
+  // Ten weeks on the Profile: the review runs in the background and only
+  // lights the button; the program does not move.
+  await profileSet(page, project, "plan.construction_duration", "10");
+  await page.reload();
   await openProgram(page);
-  // Only the Update program button lights up; no banner opens by itself.
   const update = page.locator(".pg-update");
   await expect(update).toHaveClass(/is-pending/, { timeout: 20_000 });
-  await expect(update).toHaveAttribute("title", /^Profile or Procurement changed: (.*, )?2 to remove(, .*)?\.$/);
-  // Nothing changed on the program until a choice is made.
-  expect((await read(page, project)).activities.some((a) => a.id === fitOff.id)).toBe(true);
+  expect((await read(page, project)).activities.find((a) => a.id === delivery.id)?.duration_days).not.toBe(50);
+
+  // One click applies everything; there is nothing to choose.
   await update.click();
-
-  const panel = page.getByRole("region", { name: "Update program" });
-  const item = (label: string) => panel.locator(".pg-review-item", { hasText: label });
-  const choice = (label: string, c: "Adopt" | "Keep") => item(label).getByRole("radio", { name: c, exact: true });
-  // The edited row defaults to Keep and says why; the untouched one to Adopt.
-  await expect(item("Gas rough-in, level 1")).toContainText("you edited “Gas rough-in, level 1”");
-  await expect(choice("Gas rough-in, level 1", "Keep")).toHaveAttribute("aria-checked", "true");
-  await expect(choice("Gas fit-off", "Adopt")).toHaveAttribute("aria-checked", "true");
-  await expect(item("Gas fit-off")).not.toContainText("you edited");
-
-  // Adopt all adopts what defaults to Adopt; the edited row waits for an explicit choice.
-  await panel.getByRole("button", { name: "Adopt all", exact: true }).click();
-  await expect(rowNamed(page, "Gas fit-off")).toHaveCount(0);
-  await expect(item("Gas fit-off")).toHaveCount(0);
-  await expect(item("Gas rough-in, level 1")).toBeVisible();
+  await expect(page.locator(".pg-toast")).toContainText("Program updated");
+  expect((await read(page, project)).activities.find((a) => a.id === delivery.id)?.duration_days).toBe(50);
+  await expect(page.getByRole("region", { name: "Update program" })).toHaveCount(0);
+  await expect(page.getByRole("radio", { name: "Adopt" })).toHaveCount(0);
+  await expect(update).not.toHaveClass(/is-pending/);
   v = await read(page, project);
-  expect(v.activities.some((a) => a.id === fitOff.id)).toBe(false);
-  expect(v.activities.some((a) => a.id === rough.id)).toBe(true);
-  expect(v.changes_pending).toBe(1);
+  expect(v.changes_pending).toBe(0);
+  expect(v.activities.find((a) => a.id === brief.id)?.label).toBe("Brief and concept with the owners");
 
-  // One undo step restores the adopted removal.
+  // One undo takes the whole update back.
   const toast = page.locator(".pg-toast");
-  await expect(toast).toContainText("1 change adopted");
+  await expect(toast).toContainText("Program updated");
   await toast.getByRole("button", { name: "Undo", exact: true }).click();
-  await expect.poll(async () => (await read(page, project)).activities.filter((a) => a.id === rough.id || a.id === fitOff.id).length).toBe(2);
-  expect((await read(page, project)).activities.find((a) => a.id === rough.id)?.label).toBe("Gas rough-in, level 1");
+  await expect.poll(async () => (await read(page, project)).activities.find((a) => a.id === delivery.id)?.duration_days).not.toBe(50);
 });
 
 test("a program file is read by rule, its dates proposed beside the row, accepted, and an unmatched row added (plan 10.2)", async ({ page }) => {

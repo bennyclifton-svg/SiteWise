@@ -1,0 +1,547 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>SiteWise Set-out</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,400..700&family=Red+Hat+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a fresh slab on set-out day. The plan is pegged out in marking paint;
+   values read from the documents hang off the pegs on flagging tape. Concrete,
+   then light concrete, then blacktop for the close. One deliberate light look. */
+:root {
+  --slab: #c6c4be;          /* fresh slab, hero */
+  --slab-deep: #b3b0a8;
+  --concrete: #e3e1dc;      /* light concrete, body */
+  --concrete-2: #d6d3cc;
+  --asphalt: #1f1f1e;       /* blacktop, close */
+  --ink: #1a1917;
+  --ink-2: #45423c;
+  --ink-3: #5f5b53;
+  --on-asphalt: #f2f0ea;
+  --on-asphalt-2: #b9b6ae;
+  --paint: #ff2d87;         /* fluoro marking paint */
+  --paint-deep: #d1005f;
+  --string: #fbf6df;        /* string line */
+  --timber: #c9975a;
+  --timber-edge: #8d6332;
+  --tape-docs: #17794a;     /* green: from the documents */
+  --tape-typical: #1f4fd1;  /* blue: typical */
+  --tape-you: #a2421d;      /* rust: your word */
+  --tape-check: #f4b400;    /* amber: to check */
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Red Hat Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--concrete);
+  color: var(--ink);
+  font: 400 17px/1.55 var(--body);
+  font-variation-settings: "wdth" 100;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--paint-deep); outline-offset: 3px; border-radius: 2px; }
+
+.wrap { width: 100%; max-width: 1240px; margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter-r); }
+
+/* Concrete grain: one authored noise tile, reused. */
+.grain {
+  background-color: var(--slab);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .24 0 0 0 0 .22 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .29 0 0 0 0 .26 0 0 0 .35 0'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23m)'/%3E%3C/svg%3E");
+  background-size: 240px 240px, 600px 600px;
+}
+.grain-light { background-color: var(--concrete); }
+
+/* ---------- header ---------- */
+.top { position: relative; z-index: 3; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 22px; }
+.logo { display: inline-flex; color: var(--ink); text-decoration: none; }
+.logo svg { height: 30px; width: auto; }
+.nav { display: flex; align-items: center; gap: 28px; font-weight: 500; font-size: 15px; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; text-decoration-color: var(--paint); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+@media (max-width: 720px) { .nav .hide-s { display: none; } .nav { gap: 18px; } }
+
+/* The one button. Ink tag, a stroke of paint under it. */
+.btn {
+  position: relative; display: inline-flex; align-items: center; gap: 10px;
+  min-height: 48px; padding: 0 22px;
+  background: var(--ink); color: #fff; text-decoration: none;
+  font: 700 16px/1 var(--body); font-variation-settings: "wdth" 88;
+  letter-spacing: .01em; border-radius: 3px; border: 0; cursor: pointer;
+  box-shadow: 0 2px 0 rgba(0,0,0,.12), 0 10px 24px -12px rgba(0,0,0,.45);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.btn::after {
+  content: ""; position: absolute; left: 8px; right: 8px; bottom: -9px; height: 7px;
+  background: var(--paint); border-radius: 6px 2px 5px 3px;
+  filter: url(#spray); opacity: .95;
+  transform-origin: left; transition: transform .35s var(--ease);
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 2px 0 rgba(0,0,0,.12), 0 16px 30px -14px rgba(0,0,0,.5); }
+.btn:hover::after { transform: scaleX(1.04); }
+.btn svg { width: 18px; height: 18px; }
+.btn-sm { min-height: 40px; padding: 0 16px; font-size: 15px; }
+.btn-sm::after { bottom: -7px; height: 5px; }
+
+/* ---------- hero ---------- */
+.hero { position: relative; overflow: hidden; padding-bottom: 72px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: center; padding-block: 28px 0; }
+.hero h1 {
+  margin: 0; font-family: var(--display);
+  font-size: clamp(44px, 6.6vw, 92px); line-height: .9; letter-spacing: -.015em;
+  font-weight: 850; font-variation-settings: "wdth" 62; text-transform: uppercase;
+  text-wrap: balance;
+}
+.hero h1 .paint { color: var(--paint-deep); }
+.lede { max-width: 33em; margin: 26px 0 0; font-size: clamp(17px, 1.35vw, 19px); color: var(--ink-2); }
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: 34px; }
+.cta-note { font-size: 14px; color: var(--ink-3); }
+
+.plan { position: relative; container-type: inline-size; }
+.plan svg.site { width: 100%; height: auto; display: block; overflow: visible; }
+.plan .caption {
+  margin-top: 10px; font: 500 12px/1.4 var(--mono); color: var(--ink-3);
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+}
+
+/* paint strokes draw in once, in pour order */
+.draw { stroke-dasharray: var(--len); stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .draw { animation: spray 1.1s var(--ease) both; animation-delay: var(--d, 0s); }
+  @keyframes spray { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+  .wipe { animation: wipe 1s var(--ease) both; animation-delay: var(--d, 0s); }
+  @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  .peg { animation: drive .5s var(--ease) both; animation-delay: var(--d, 1s); transform-box: fill-box; transform-origin: center; }
+  @keyframes drive { from { transform: scale(1.8); opacity: 0; } to { transform: none; opacity: 1; } }
+  .tape { animation: hang .7s var(--ease) both; animation-delay: var(--d, 1.4s); }
+  @keyframes hang { from { transform: translateY(-10px) rotate(calc(var(--r, 0deg) - 8deg)); opacity: 0; } to { transform: rotate(var(--r, 0deg)); opacity: 1; } }
+}
+
+/* Flagging tape, written on in marker. */
+.tape {
+  position: absolute; left: var(--x); top: var(--y);
+  transform: rotate(var(--r, 0deg)); transform-origin: 0 50%;
+  display: block; max-width: 34cqw;
+  padding: .55em 1.6em .5em .8em;
+  font: 800 clamp(9px, 1.85cqw, 13.5px)/1.1 var(--display); font-variation-settings: "wdth" 70;
+  text-transform: uppercase; letter-spacing: .02em; color: #fff;
+  background: var(--c);
+  clip-path: polygon(0 0, 100% 0, calc(100% - .9em) 50%, 100% 100%, 0 100%);
+  box-shadow: 0 6px 10px -6px rgba(0,0,0,.4);
+  filter: drop-shadow(0 3px 3px rgba(0,0,0,.18));
+  white-space: nowrap;
+}
+.tape small { display: block; margin-top: .35em; font: 500 .82em/1.15 var(--mono); text-transform: none; letter-spacing: 0; opacity: .92; white-space: normal; }
+.tape.check { color: var(--ink); }
+.tape.docs { --c: var(--tape-docs); }
+.tape.typical { --c: var(--tape-typical); }
+.tape.you { --c: var(--tape-you); }
+.tape.check { --c: var(--tape-check); }
+@container (max-width: 520px) { .tape small { display: none; } .tape.minor { display: none; } }
+
+/* ---------- section scaffolding ---------- */
+section { position: relative; }
+.band { padding-block: clamp(72px, 9vw, 128px); }
+.h2 {
+  margin: 0; font-family: var(--display); font-weight: 820; font-variation-settings: "wdth" 66;
+  text-transform: uppercase; font-size: clamp(34px, 4.6vw, 64px); line-height: .94; letter-spacing: -.01em;
+  text-wrap: balance;
+}
+.sub { max-width: 36em; color: var(--ink-2); margin: 20px 0 0; font-size: 18px; }
+
+/* ---------- flags explained ---------- */
+.flags { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+.flag-list { list-style: none; margin: 36px 0 0; padding: 0; display: grid; gap: 22px; }
+.flag-list li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; align-items: start; }
+.swatch {
+  height: 30px; margin-top: 2px; background: var(--c);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 0 100%);
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,.08);
+}
+.flag-list b { display: block; font: 750 17px/1.25 var(--body); font-variation-settings: "wdth" 90; }
+.flag-list span { color: var(--ink-2); font-size: 15.5px; }
+.sheet {
+  position: relative; margin: 0; background: #fff; border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 30px 60px -28px rgba(30,25,15,.55), 0 10px 18px -12px rgba(30,25,15,.3);
+  overflow: hidden;
+}
+.sheet img { width: 100%; height: auto; }
+.sheet-cap { margin-top: 14px; font: 500 12.5px/1.5 var(--mono); color: var(--ink-3); }
+.sheet-pinned { transform: rotate(-.6deg); }
+
+/* ---------- workbench along the string line ---------- */
+.line-wrap { position: relative; margin-top: 48px; }
+.stops { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.stops::before {
+  content: ""; position: absolute; left: 2%; right: 2%; top: 21px; height: 2px;
+  background: var(--paint); border-radius: 2px; box-shadow: 0 1px 0 rgba(0,0,0,.15);
+}
+.stop {
+  position: relative; display: grid; justify-items: center; gap: 12px; padding: 0 4px 10px;
+  background: none; border: 0; cursor: pointer; color: var(--ink-2);
+  font: 700 15px/1.2 var(--body); font-variation-settings: "wdth" 85; text-align: center;
+}
+.stop .pegtop {
+  width: 30px; height: 30px; margin-top: 7px; background: var(--timber);
+  border: 2px solid var(--timber-edge); border-radius: 2px;
+  box-shadow: inset -4px -4px 0 rgba(0,0,0,.12), 0 4px 6px -2px rgba(0,0,0,.35);
+  transition: transform .3s var(--ease), background .3s;
+}
+.stop[aria-selected="true"] { color: var(--ink); }
+.stop[aria-selected="true"] .pegtop { background: var(--paint); border-color: var(--paint-deep); transform: scale(1.12) rotate(45deg); }
+.stop:hover .pegtop { transform: scale(1.08); }
+.stop[aria-selected="true"]:hover .pegtop { transform: scale(1.12) rotate(45deg); }
+.view { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 9fr); gap: clamp(24px, 4vw, 56px); margin-top: 40px; align-items: start; }
+.view h3 { margin: 0; font: 820 30px/1 var(--display); font-variation-settings: "wdth" 66; text-transform: uppercase; }
+.view p { margin: 14px 0 0; color: var(--ink-2); }
+.view ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; font-size: 15.5px; color: var(--ink-2); }
+.view li { padding-left: 22px; position: relative; }
+.view li::before { content: ""; position: absolute; left: 0; top: .55em; width: 12px; height: 4px; background: var(--paint); border-radius: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .view.swap .sheet { animation: lay .55s var(--ease) both; }
+  @keyframes lay { from { opacity: .2; transform: translateY(14px) rotate(-.6deg); } to { opacity: 1; transform: rotate(-.6deg); } }
+}
+
+/* ---------- two truths ---------- */
+.truths { display: grid; gap: clamp(64px, 8vw, 112px); }
+.truth { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+.truth.flip { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.truth.flip .copy { order: 2; }
+.truth .big { font: 850 clamp(36px, 4.4vw, 60px)/.92 var(--display); font-variation-settings: "wdth" 62; text-transform: uppercase; margin: 0; text-wrap: balance; }
+.truth .big em { font-style: normal; color: var(--paint-deep); }
+.truth p { color: var(--ink-2); margin: 18px 0 0; max-width: 32em; }
+.facts { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; font: 500 14px/1.45 var(--mono); color: var(--ink-2); }
+.facts li { display: flex; gap: 10px; }
+.facts li::before { content: "×"; color: var(--paint-deep); font-weight: 700; }
+
+/* ---------- pricing ---------- */
+.prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 44px; border-top: 2px solid var(--ink); }
+.price { padding: 26px 26px 28px 0; border-right: 1px solid rgba(26,25,23,.18); display: grid; gap: 6px; align-content: start; }
+.price + .price { padding-left: 26px; }
+.price:last-child { border-right: 0; }
+.price h3 { margin: 0; font: 800 22px/1 var(--display); font-variation-settings: "wdth" 70; text-transform: uppercase; }
+.price .amt { font: 820 46px/1 var(--display); font-variation-settings: "wdth" 66; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.price .amt small { font: 500 15px/1 var(--body); color: var(--ink-3); margin-left: 4px; }
+.price ul { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 6px; color: var(--ink-2); font-size: 15.5px; }
+.price-note { margin-top: 18px; font-size: 14px; color: var(--ink-3); }
+
+/* ---------- close on blacktop ---------- */
+.close { background: var(--asphalt); color: var(--on-asphalt); overflow: hidden; }
+.close .wrap { position: relative; padding-block: clamp(84px, 11vw, 150px); }
+.close h2 { margin: 0; font: 880 clamp(52px, 9vw, 132px)/.86 var(--display); font-variation-settings: "wdth" 62; text-transform: uppercase; color: var(--on-asphalt); max-width: 11ch; text-wrap: balance; }
+.close h2 .paint { color: var(--paint); }
+.close p { color: var(--on-asphalt-2); max-width: 30em; margin: 26px 0 0; font-size: 18px; }
+.close .btn { background: var(--paint); color: var(--ink); }
+.close .btn::after { background: var(--on-asphalt); }
+.close .marks { position: absolute; right: -40px; bottom: -30px; width: min(520px, 60vw); opacity: .9; pointer-events: none; }
+.foot { background: var(--asphalt); color: var(--on-asphalt-2); border-top: 1px solid rgba(255,255,255,.08); }
+.foot .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-block: 26px; font-size: 14px; }
+.foot nav { display: flex; gap: 22px; flex-wrap: wrap; }
+.foot a { text-decoration: none; } .foot a:hover { color: var(--on-asphalt); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 960px) {
+  .hero .wrap, .flags, .view, .truth, .truth.flip { grid-template-columns: minmax(0, 1fr); }
+  .truth.flip .copy { order: 0; }
+  .hero .wrap { gap: 30px; }
+}
+@media (max-width: 720px) {
+  .stops { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .stop { font-size: 12.5px; }
+  .stop .pegtop { width: 24px; height: 24px; }
+  .stops::before { top: 18px; }
+  .prices { grid-template-columns: minmax(0, 1fr); }
+  .price, .price + .price { padding: 22px 0; border-right: 0; border-bottom: 1px solid rgba(26,25,23,.18); }
+  .flag-list li { grid-template-columns: 64px minmax(0, 1fr); }
+}
+</style>
+<!--
+THESIS: The job pegged out from its documents, every value on flagging tape; it refuses the screenshot-and-icon-grid SaaS hero.
+OWN-WORLD: Fresh slab grey with aggregate grain, fluoro marking-paint pink, timber pegs and string lines, flagging tape in the origin colours, condensed Archivo caps, Red Hat Mono for measures, blacktop close.
+STORY: A PM sees their job laid out with provenance, learns the four flags, walks the five views along the string line, trusts the blanks, starts free.
+FIRST VIEWPORT: Condensed caps headline and CTA left; right, the T05 plan sprayed on the slab with pegs and six tapes carrying profile values.
+FORM: Grounded candidate 5 (set-out pegs and marking paint), the assigned roll; seed key 9b92d957.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+<!-- Shared filter: overspray on marking paint. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="spray" x="-10%" y="-40%" width="120%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="3" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="2.6" result="d"/>
+      <feGaussianBlur in="d" stdDeviation=".35" result="core"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="halo"/>
+      <feComponentTransfer in="halo" result="haloF"><feFuncA type="linear" slope=".38"/></feComponentTransfer>
+      <feMerge><feMergeNode in="haloF"/><feMergeNode in="core"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<div class="grain">
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="SiteWise home">
+      <svg viewBox="8 7 238 51" fill="currentColor" aria-hidden="true">
+        <clipPath id="wmA"><path d="M14 34A24 24 0 0 0 62 34Z"/></clipPath>
+        <path d="M8 31A24 24 0 0 1 56 31Z"/>
+        <path d="M-9 30L23 62M0 30L32 62M9 30L41 62M18 30L50 62M27 30L59 62M36 30L68 62M45 30L77 62M54 30L86 62" fill="none" stroke="currentColor" stroke-width="3.4" clip-path="url(#wmA)"/>
+        <path d="M14 34A24 24 0 0 0 62 34Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M99.23 28.66 104.23 28.39C103.42 23.62 99.46 20.61 94.28 20.61C88.34 20.61 84.56 23.45 84.56 28.12C84.56 32.72 88.93 34.06 93.97 35.14C96.53 35.73 99.55 36 99.55 38.56C99.55 40.77 96.85 41.49 94.78 41.49C91.5 41.49 89.42 39.83 88.97 37.17L83.98 37.48C84.34 42.48 88.7 45.54 94.83 45.54C99.86 45.54 104.59 43.47 104.59 38.79C104.59 34.11 100.77 32.49 94.83 31.41C92.39 30.96 89.65 30.11 89.61 27.95C89.56 25.88 91.5 24.66 93.92 24.66C96.36 24.66 98.74 26.14 99.23 28.66ZM107.33 21.15V45H112.19V21.15ZM107.24 17.64H112.28V13.05H107.24ZM118 15.75V21.15H114.4V25.11H118V38.12C118 42.62 120.52 45 125.15 45H129.16V41.04H125.6C123.8 41.04 122.86 40.05 122.86 38.12V25.11H129.2V21.15H122.86V15.75ZM130.33 33.08C130.33 40.68 134.83 45.54 141.72 45.54C146.57 45.54 150.76 42.7 152.2 38.16L147.16 37.8C146.17 40.05 144.06 41.4 141.72 41.4C137.98 41.4 135.73 38.84 135.46 34.47H152.51V32.89C152.25 24.39 147.38 20.61 141.72 20.61C134.83 20.61 130.33 25.47 130.33 33.08ZM135.5 30.83C136.04 27 138.25 24.75 141.72 24.75C144.37 24.75 146.84 26.32 147.43 30.83ZM172.54 21.15H167.95L162.69 39.51L157.47 21.15H152.56L159.85 45H165.25L170.25 28.04L175.24 45H180.64L187.93 21.15H183.02L177.81 39.51ZM190.5 21.15V45H195.36V21.15ZM190.41 17.64H195.44V13.05H190.41ZM214.12 28.66 219.11 28.39C218.3 23.62 214.34 20.61 209.17 20.61C203.23 20.61 199.45 23.45 199.45 28.12C199.45 32.72 203.81 34.06 208.85 35.14C211.42 35.73 214.44 36 214.44 38.56C214.44 40.77 211.73 41.49 209.66 41.49C206.38 41.49 204.31 39.83 203.86 37.17L198.86 37.48C199.22 42.48 203.59 45.54 209.71 45.54C214.75 45.54 219.47 43.47 219.47 38.79C219.47 34.11 215.65 32.49 209.71 31.41C207.28 30.96 204.53 30.11 204.49 27.95C204.44 25.88 206.38 24.66 208.81 24.66C211.24 24.66 213.62 26.14 214.12 28.66ZM221.63 33.08C221.63 40.68 226.13 45.54 233.02 45.54C237.88 45.54 242.06 42.7 243.5 38.16L238.47 37.8C237.47 40.05 235.36 41.4 233.02 41.4C229.28 41.4 227.03 38.84 226.76 34.47H243.82V32.89C243.55 24.39 238.69 20.61 233.02 20.61C226.13 20.61 221.63 25.47 221.63 33.08ZM226.81 30.83C227.35 27 229.56 24.75 233.02 24.75C235.68 24.75 238.15 26.32 238.74 30.83Z"/>
+      </svg>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a class="hide-s" href="#flags">How it reads</a>
+      <a class="hide-s" href="#workbench">Workbench</a>
+      <a class="hide-s" href="#pricing">Pricing</a>
+      <a href="https://sitewise.au/">Sign in</a>
+      <a class="btn btn-sm" href="https://sitewise.au/">Start free</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div>
+      <h1 id="hero-title">Set out the whole job <span class="paint">from its documents.</span></h1>
+      <p class="lede">Drop in the drawings, reports and fee proposals. SiteWise files each one in about a second, then lays out the building, the cost plan, the consultants and the program. Every value is flagged with where it came from.</p>
+      <div class="cta-row">
+        <a class="btn" href="https://sitewise.au/">Start a project free
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 10h11M11 5l5 5-5 5"/></svg>
+        </a>
+        <span class="cta-note">Free for one project. Upgrade when the next job lands.</span>
+      </div>
+    </div>
+
+    <figure class="plan" aria-label="Illustration: the T05 house alterations pegged out on the slab, with values from the project profile written on flagging tape." style="margin:0">
+      <svg class="site" viewBox="0 0 720 440" role="img" aria-hidden="true">
+        <defs>
+          <pattern id="newWork" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="9" stroke="#ff2d87" stroke-width="2.2" opacity=".55"/>
+          </pattern>
+        </defs>
+        <!-- street -->
+        <text x="34" y="250" transform="rotate(-90 34 250)" fill="#1a1917" opacity=".55" style="font:600 12px 'Red Hat Mono',monospace;letter-spacing:.2em">TALLOWWOOD AVENUE</text>
+        <line x1="56" y1="40" x2="56" y2="410" stroke="#1a1917" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="2 7"/>
+        <!-- lot boundary, 36.58 x 15.24 m at 16 u/m -->
+        <rect class="wipe" x="72" y="92" width="585" height="244" fill="none" stroke="#ff2d87" stroke-width="3" stroke-dasharray="14 9" filter="url(#spray)" style="--d:.05s"/>
+        <!-- string lines past the corners to the profiles -->
+        <g stroke="#fbf6df" stroke-width="1.3" opacity=".95">
+          <line x1="166" y1="118" x2="482" y2="118"/>
+          <line x1="166" y1="310" x2="482" y2="310"/>
+          <line x1="192" y1="96" x2="192" y2="332"/>
+          <line x1="378" y1="96" x2="378" y2="332"/>
+          <line x1="458" y1="104" x2="458" y2="324"/>
+        </g>
+        <!-- profile boards -->
+        <g fill="#c9975a" stroke="#8d6332" stroke-width="1.2">
+          <rect x="160" y="113" width="6" height="10"/><rect x="160" y="305" width="6" height="10"/>
+          <rect x="482" y="113" width="6" height="10"/><rect x="482" y="305" width="6" height="10"/>
+          <rect x="187" y="90" width="10" height="6"/><rect x="373" y="90" width="10" height="6"/><rect x="453" y="98" width="10" height="6"/>
+          <rect x="187" y="332" width="10" height="6"/><rect x="373" y="332" width="10" height="6"/><rect x="453" y="324" width="10" height="6"/>
+        </g>
+        <!-- existing house 11.7 x 12.0 m -->
+        <rect class="draw" x="192" y="118" width="186" height="192" fill="none" stroke="#ff2d87" stroke-width="5" stroke-linejoin="round" filter="url(#spray)" style="--len:756;--d:.35s"/>
+        <!-- walls to be demolished, dashed -->
+        <path class="wipe" d="M300 118V210M300 250H378" fill="none" stroke="#ff2d87" stroke-width="3.5" stroke-dasharray="10 8" filter="url(#spray)" style="--d:.75s"/>
+        <!-- addition 5.0 x 11.0 m -->
+        <rect x="378" y="126" width="80" height="176" fill="url(#newWork)"/>
+        <rect class="draw" x="378" y="126" width="80" height="176" fill="none" stroke="#ff2d87" stroke-width="5" stroke-linejoin="round" filter="url(#spray)" style="--len:512;--d:.9s"/>
+        <!-- deck -->
+        <rect class="wipe" x="458" y="190" width="54" height="80" fill="none" stroke="#ff2d87" stroke-width="3" stroke-dasharray="6 6" filter="url(#spray)" style="--d:1.15s"/>
+        <!-- painted words and dims -->
+        <g fill="#d1005f" style="font:800 15px 'Archivo',sans-serif;font-variation-settings:'wdth' 62;letter-spacing:.04em">
+          <text x="226" y="222" opacity=".9">EXIST.</text>
+          <text x="392" y="222" opacity=".9">NEW</text>
+          <text x="468" y="236" font-size="11" opacity=".8">DECK</text>
+        </g>
+        <g fill="#1a1917" opacity=".72" style="font:600 11px 'Red Hat Mono',monospace">
+          <text x="268" y="108">11.70</text>
+          <text x="403" y="116">5.00</text>
+          <text x="388" y="320" transform="rotate(-90 388 320)">11.00</text>
+          <text x="100" y="356">LOT 23 · 557.4 m²</text>
+        </g>
+        <!-- pegs, offset from the corners -->
+        <g class="pegs" fill="#c9975a" stroke="#8d6332" stroke-width="1.4">
+          <rect class="peg" x="185" y="111" width="14" height="14" style="--d:1.2s"/>
+          <rect class="peg" x="371" y="111" width="14" height="14" style="--d:1.27s"/>
+          <rect class="peg" x="185" y="303" width="14" height="14" style="--d:1.34s"/>
+          <rect class="peg" x="371" y="303" width="14" height="14" style="--d:1.41s"/>
+          <rect class="peg" x="451" y="119" width="14" height="14" style="--d:1.48s"/>
+          <rect class="peg" x="451" y="295" width="14" height="14" style="--d:1.55s"/>
+          <rect class="peg" x="65" y="85" width="14" height="14" style="--d:1.62s"/>
+          <rect class="peg" x="650" y="329" width="14" height="14" style="--d:1.69s"/>
+        </g>
+      </svg>
+
+      <!-- tape positions are % of the plan box; values are T05's real profile -->
+      <span class="tape docs" style="--x:23%;--y:9%;--r:-4deg;--d:1.55s">Extension / addition<small>Work type · 10 documents</small></span>
+      <span class="tape docs" style="--x:57%;--y:16%;--r:3deg;--d:1.65s">195 m² proposed<small>GFA · from the drawings</small></span>
+      <span class="tape docs minor" style="--x:4%;--y:83%;--r:-2deg;--d:1.75s">Lot 23 DP 30418<small>3 documents agree</small></span>
+      <span class="tape check" style="--x:62%;--y:46%;--r:-3deg;--d:1.85s">Floor area: 140 or 195?<small>Sources differ. Your call.</small></span>
+      <span class="tape you" style="--x:72%;--y:70%;--r:2deg;--d:1.95s">$640,000 budget<small>Your figure. Kept.</small></span>
+      <span class="tape typical minor" style="--x:30%;--y:76%;--r:-3deg;--d:2.05s">Laundry<small>Typical for a house</small></span>
+      <figcaption class="caption"><span>T05 House Alterations · 41 Tallowwood Ave, Concord</span><span>Synthetic test project · illustration</span></figcaption>
+    </figure>
+  </div>
+</section>
+</div>
+
+<section id="flags" class="band grain-light" aria-labelledby="flags-title">
+  <div class="wrap flags">
+    <div>
+      <h2 class="h2" id="flags-title">Every value carries its flag.</h2>
+      <p class="sub">SiteWise reads the building from your documents and tells you how each value was decided. Four colours, the same everywhere in the app.</p>
+      <ul class="flag-list">
+        <li><i class="swatch" style="--c:var(--tape-docs)"></i><div><b>Read from your documents</b><span>The drawing, report or brief it came from is one click away.</span></div></li>
+        <li><i class="swatch" style="--c:var(--tape-typical)"></i><div><b>Typical for this building</b><span>A placeholder until a document says otherwise.</span></div></li>
+        <li><i class="swatch" style="--c:var(--tape-you)"></i><div><b>Your word</b><span>You typed it, so a later upload never overwrites it.</span></div></li>
+        <li><i class="swatch" style="--c:var(--tape-check)"></i><div><b>To check</b><span>The sources disagree. SiteWise shows both and waits for you.</span></div></li>
+      </ul>
+    </div>
+    <div>
+      <figure class="sheet sheet-pinned" style="margin:0">
+        <img src="assets/profile.webp" width="2400" height="1500" alt="SiteWise Project Profile for T05 House Alterations: a one-sentence summary of the building with underlined values, a site, building and delivery title block with a source dot beside each value, the scope by building system, and the document register on the right.">
+      </figure>
+      <p class="sheet-cap">Project Profile, as it ships. T05 is a synthetic test project.</p>
+    </div>
+  </div>
+</section>
+
+<section id="workbench" class="band grain" aria-labelledby="wb-title">
+  <div class="wrap">
+    <h2 class="h2" id="wb-title">One string line through the whole job.</h2>
+    <p class="sub">Five views, one project. Each reads from the same profile, so a change in one shows up where it matters in the others.</p>
+    <div class="line-wrap">
+      <div class="stops" role="tablist" aria-label="Workbench views">
+        <button class="stop" role="tab" id="t-profile" aria-controls="view" aria-selected="true" data-k="profile"><span class="pegtop"></span>Profile</button>
+        <button class="stop" role="tab" id="t-cost" aria-controls="view" aria-selected="false" tabindex="-1" data-k="cost"><span class="pegtop"></span>Cost Plan</button>
+        <button class="stop" role="tab" id="t-program" aria-controls="view" aria-selected="false" tabindex="-1" data-k="program"><span class="pegtop"></span>Program</button>
+        <button class="stop" role="tab" id="t-procurement" aria-controls="view" aria-selected="false" tabindex="-1" data-k="procurement"><span class="pegtop"></span>Procurement</button>
+        <button class="stop" role="tab" id="t-specs" aria-controls="view" aria-selected="false" tabindex="-1" data-k="specs"><span class="pegtop"></span>Specifications</button>
+      </div>
+      <div class="view" id="view" role="tabpanel" aria-labelledby="t-profile">
+        <div>
+          <h3 id="v-title">Project Profile</h3>
+          <p id="v-lede">What the building is, read from the documents: class, storeys, area, site, zone, client and budget.</p>
+          <ul id="v-points">
+            <li>A one-sentence summary you can read in a meeting</li>
+            <li>Scope by building system, in build order</li>
+            <li>An accommodation schedule, room by room</li>
+          </ul>
+        </div>
+        <figure class="sheet sheet-pinned" style="margin:0">
+          <img id="v-img" src="assets/profile-wide.webp" width="2400" height="1500" alt="Project Profile with the document rail hidden.">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band grain-light" aria-label="What SiteWise will and won't do">
+  <div class="wrap truths">
+    <div class="truth">
+      <div class="copy">
+        <p class="big">Filed in about <em>a second.</em></p>
+        <p>Drop a PDF, Word, Excel or Markdown file. Its number, revision, title, kind and discipline are read from the title block or first pages, and a new revision links to the one it supersedes. You correct anything in one move, and your correction stands.</p>
+      </div>
+      <figure class="sheet" style="margin:0;max-width:520px;justify-self:center">
+        <img src="assets/register-crop.webp" width="1024" height="1264" loading="lazy" alt="The document register: drawing numbers, titles, revisions, dates and disciplines for 18 filed documents, with superseded revisions marked.">
+      </figure>
+    </div>
+    <div class="truth flip">
+      <div class="copy">
+        <p class="big">If nobody priced it, <em>it stays blank.</em></p>
+        <p>Money is worked out in code from the quotes and contracts you have. SiteWise never fills a gap with a guess.</p>
+        <ul class="facts">
+          <li>No invented rates, prices or rule numbers</li>
+          <li>No chatbot to second-guess</li>
+          <li>No accepted value overwritten by a later upload</li>
+        </ul>
+      </div>
+      <figure class="sheet" style="margin:0">
+        <img src="assets/compare-crop.webp" width="2000" height="1039" loading="lazy" alt="An architect's fee proposal priced against the RFP's stages: four stages priced to a $44,000 total, an optional stage shown separately, and eight stages marked Not priced.">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="band grain" aria-labelledby="price-title">
+  <div class="wrap">
+    <h2 class="h2" id="price-title">Pay for the jobs you run.</h2>
+    <div class="prices">
+      <div class="price"><h3>Free</h3><div class="amt">$0</div><ul><li>1 active project</li><li>50 documents read a month</li><li>500 MB storage</li></ul></div>
+      <div class="price"><h3>Starter</h3><div class="amt">$50<small>/ month</small></div><ul><li>5 active projects</li><li>500 documents read a month</li><li>10 GB storage</li></ul></div>
+      <div class="price"><h3>Team</h3><div class="amt">$200<small>/ month</small></div><ul><li>Unlimited projects</li><li>3,000 documents read a month</li><li>Up to 5 users</li></ul></div>
+    </div>
+    <p class="price-note">Australian dollars, excluding GST. Two months free when you pay yearly. Editing costs, procurement, specifications or the program never counts as a read.</p>
+  </div>
+</section>
+
+<section class="close" aria-labelledby="close-title">
+  <div class="wrap">
+    <h2 id="close-title">Peg out your <span class="paint">next job.</span></h2>
+    <p>Make a project, drop in what you have, and read the building back in the time it takes to open the folder.</p>
+    <div class="cta-row"><a class="btn" href="https://sitewise.au/">Start a project free</a></div>
+    <svg class="marks" viewBox="0 0 520 300" aria-hidden="true">
+      <g fill="none" stroke="#ff2d87" stroke-width="7" stroke-linecap="round" filter="url(#spray)" opacity=".85">
+        <path d="M40 250L240 250M240 250L240 60"/>
+        <path d="M222 78L240 52L258 78"/>
+        <path d="M300 250h170M300 230v40M470 230v40"/>
+      </g>
+      <text x="350" y="222" fill="#ff2d87" opacity=".85" style="font:800 30px 'Archivo',sans-serif;font-variation-settings:'wdth' 62">5.00</text>
+    </svg>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>SiteWise · Built in Australia for project managers, designers and builders.</span>
+    <nav aria-label="Legal"><a href="https://sitewise.au/legal/pricing.html">Pricing</a><a href="https://sitewise.au/legal/terms.html">Terms</a><a href="https://sitewise.au/legal/privacy.html">Privacy</a></nav>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const views = {
+    profile: { t: "Project Profile", l: "What the building is, read from the documents: class, storeys, area, site, zone, client and budget.", p: ["A one-sentence summary you can read in a meeting", "Scope by building system, in build order", "An accommodation schedule, room by room"], src: "assets/profile-wide.webp", alt: "Project Profile with the document rail hidden." },
+    cost: { t: "Cost Plan", l: "Fees and charges, consultants, construction and contingency. Approved contracts and claims come from what you award and the invoices you drop in.", p: ["Forecast and remaining worked out in code", "Invoices read and checked for duplicates, GST and ABN", "An unpriced line stays unknown"], src: "assets/cost.webp", alt: "Cost Plan grid with fees and charges and consultant lines, approved contracts by stage, and blanks where nothing is priced." },
+    program: { t: "Program", l: "Stages and activities built from the profile and the packages, shown as a grid beside a Gantt chart.", p: ["Every date and the critical path computed", "Unknown durations shown as unknown", "Exports to Excel and prints A3"], src: "assets/program.webp", alt: "Program grid and Gantt chart: approval documentation, investigation and construction activities with durations, start and finish dates and links." },
+    procurement: { t: "Procurement", l: "Consultant and trade packages in one table. Create the RFP, drop the proposals on the row, compare line by line, award.", p: ["RFPs and RFTs written from the profile", "Proposals read against your own schedule", "Award writes the contract into the cost plan"], src: "assets/procurement.webp", alt: "Procurement table of consultant packages with awarded firms and fees, and RFP and price actions for each discipline." },
+    specs: { t: "Specifications", l: "A schedule of materials, products, finishes and equipment, organised by the building's systems.", p: ["Readings from filed documents wait for your review", "Explicit unknowns, never blanks you can't see", "Issue a frozen PDF or CSV"], src: "assets/specs.webp", alt: "Specification schedule grouped by building system with item, type, location and supplier columns." }
+  };
+  const tabs = [...document.querySelectorAll('.stop')];
+  const view = document.getElementById('view');
+  const set = (btn, focus) => {
+    const v = views[btn.dataset.k];
+    tabs.forEach(b => { const on = b === btn; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    view.setAttribute('aria-labelledby', btn.id);
+    document.getElementById('v-title').textContent = v.t;
+    document.getElementById('v-lede').textContent = v.l;
+    document.getElementById('v-points').innerHTML = v.p.map(x => '<li>' + x + '</li>').join('');
+    const img = document.getElementById('v-img'); img.src = v.src; img.alt = v.alt;
+    view.classList.remove('swap'); void view.offsetWidth; view.classList.add('swap');
+    if (focus) btn.focus();
+  };
+  tabs.forEach((b, i) => {
+    b.addEventListener('click', () => set(b));
+    b.addEventListener('keydown', e => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); set(tabs[(i + d + tabs.length) % tabs.length], true); }
+    });
+  });
+  Object.values(views).forEach(v => { const i = new Image(); i.src = v.src; });
+})();
+</script>
+</body></html>

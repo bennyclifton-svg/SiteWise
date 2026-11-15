@@ -100,7 +100,14 @@ type FragmentActivity struct {
 	// them, which a fragment-level attach cannot say (F44).
 	After  []string `yaml:"after,omitempty" json:"after,omitempty"`
 	Before []string `yaml:"before,omitempty" json:"before,omitempty"`
+	// Outline false leaves the activity out of an outline program (owner,
+	// 12 November 2026: a first program is 20 to 30 rows). It still links
+	// as if absent: its fragment's other activities keep their own links.
+	Outline *bool `yaml:"outline,omitempty" json:"outline,omitempty"`
 }
+
+// InOutline reports whether an outline program keeps the activity.
+func (a FragmentActivity) InOutline() bool { return a.Outline == nil || *a.Outline }
 
 // FragmentAttach places a fragment in its stage: after and before are
 // stage_start, stage_finish or another fragment id, each an FS link, no lag.
@@ -126,6 +133,18 @@ type Fragment struct {
 	Status      string              `yaml:"status" json:"status"`
 	Sources     []map[string]string `yaml:"sources" json:"sources"`
 	Notes       string              `yaml:"notes" json:"-"`
+	// OutlineOnly fragments belong to an outline program only: the single
+	// Construction bar that stands for the trade breakdown, the
+	// for-construction issue, and the class-free fallbacks below.
+	OutlineOnly bool `yaml:"outline_only,omitempty" json:"outline_only,omitempty"`
+	// FallbackFor names class-specific fragments this class-free one stands
+	// in for. It is included when none of them holds outright, so an
+	// unknown or uncovered NCC class gets one generic activity rather than
+	// an "If …" copy per class (owner, 12 November 2026).
+	FallbackFor []string `yaml:"fallback_for,omitempty" json:"fallback_for,omitempty"`
+	// StageFixed keeps the fragment in its library stage when a skeleton's
+	// fragment_stages moves the rest of that stage elsewhere.
+	StageFixed bool `yaml:"stage_fixed,omitempty" json:"stage_fixed,omitempty"`
 }
 
 // DurationDriver names the Profile value a scaled duration reads: exactly
@@ -807,6 +826,14 @@ func (c *Catalog) validateFragment(f Fragment, fragments map[string]bool) error 
 	}
 	if err := c.checkLinks(keys, f.Links); err != nil {
 		return err
+	}
+	if len(f.FallbackFor) > 0 && (!f.OutlineOnly || f.Scope != ScopeProject) {
+		return fmt.Errorf("fallback_for needs scope project and outline_only")
+	}
+	for _, id := range f.FallbackFor {
+		if !fragments[id] || id == f.ID {
+			return fmt.Errorf("fallback_for names unknown fragment %s", id)
+		}
 	}
 	if f.Attach != nil {
 		if f.Attach.After == "" && f.Attach.Before == "" {

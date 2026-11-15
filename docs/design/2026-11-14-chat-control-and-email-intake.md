@@ -374,6 +374,17 @@ All answered by the owner on 14 November 2026.
    with anything else held for the PM (8.3).
 7. Chat and email are included in every plan at no extra charge.
 
+Added on 15 November 2026 (plan: `docs/plans/2026-11-15-chat-agent.md`):
+
+8. Messages are listed in the repository beside documents, behind a
+   Documents | Messages toggle.
+9. Chat may answer a question from the project's records, messages and
+   documents, quoting what it read. This is a fourth job in rule 1, and it
+   replaces "Answers from inside documents" in section 15.
+10. A turn that has read a message or a document does not apply changes at
+    once; it prepares them for the PM's click.
+11. A reply to a message is a draft. SiteWise does not send it.
+
 ## 15. Out of scope
 
 Voice. Sending email from SiteWise. Email as an instruction to the agent.

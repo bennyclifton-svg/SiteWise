@@ -69,6 +69,13 @@ body { --head-tone: var(--tone-blue); }
 /* Narrow figure columns keep their width: tighter tracking there. */
 .cost-grid thead th { letter-spacing: .03em !important; }
 
+/* The one disclosure chevron (Chevron.tsx) in every table: same size,
+   stroke and colour on Profile, Cost Plan, Program and Procurement
+   (owner, 15 Nov 2026). Its button darkens it on hover. */
+.disclosure-chevron { flex: none; width: 20px; height: 20px; color: var(--ink-body); }
+:is(button, [role="button"]):hover > .disclosure-chevron,
+:is(button, [role="button"]):hover > * > .disclosure-chevron { color: var(--sw-text-primary); }
+
 @media print {
   :is(.cockpit-scroll, .project-side-panel) table thead th,
   :is(.cockpit-scroll, .project-side-panel) table tr.table-subhead > th,

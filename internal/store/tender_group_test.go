@@ -67,12 +67,10 @@ func TestTenderOnACombinedEngagement(t *testing.T) {
 		{Label: "Not broken down", Keys: []string{tender.SystemRow}},
 	}
 	award := store.AwardInput{SubmissionID: sub, Lines: lines, Total: "8500.00"}
-	if _, err := s.PreviewAward(ctx, orgA, projectA, group.ID, award); !errors.Is(err, store.ErrInvalidInput) || !strings.Contains(err.Error(), "Check this firm's column") {
+	// An unchecked column is awarded: pressing Award is the acceptance.
+	if _, err := s.PreviewAward(ctx, orgA, projectA, group.ID, award); err != nil {
 		t.Fatalf("unchecked group column: %v", err)
 	}
-	check := top("check_column")
-	check.Submission, check.Checked = sub, tbp(true)
-	mustOps(t, s, group.ID, check)
 	// Leaving "Not broken down" out would drop part of the tender sum.
 	if _, err := s.PreviewAward(ctx, orgA, projectA, group.ID, store.AwardInput{SubmissionID: sub, Lines: lines[:2]}); !errors.Is(err, store.ErrInvalidInput) {
 		t.Fatalf("partial award %v", err)

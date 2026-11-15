@@ -15,10 +15,26 @@
 .tender-table td { vertical-align: top; }
 .tender-adds { margin-top: 22px; }
 
-/* A cell is a button that opens the firm's lines behind it. */
+/* A cell is a button that opens or closes its row. Its figure, the tender
+   sum and every line's amount keep a 26 px right gutter (the lines' ⋯
+   column plus its gap), so all figures in a column line up. */
 .tender-cell { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; text-align: left; cursor: pointer; }
 .tender-cell[draggable="true"] { cursor: grab; }
-.tender-cell-open { background: var(--state-selected); }
+.tender-table .tender-cell, .tender-table .tender-sum-line { padding-right: 26px; box-sizing: border-box; }
+.tender-row-open > th, .tender-row-open > td { background: var(--state-selected); }
+/* Row titles read as the Cost Plan's items: 15 px, regular, primary text,
+   behind the shared chevron (owner, 15 Nov 2026). */
+.tender-table > tbody > tr > th.prices-item { font-weight: 400; }
+/* A sticky cell paints over a collapsed border in Chrome: its line is drawn inside it. */
+.tender-table > tbody > tr:not(.prices-total) > th.prices-item { box-shadow: inset 0 -1px 0 var(--line); }
+.tender-row-toggle { display: flex; align-items: flex-start; gap: 4px; margin-left: -4px; padding: 0; border: 0; background: none; font: inherit; color: var(--sw-text-primary); text-align: left; cursor: pointer; }
+.tender-row-toggle .disclosure-chevron { margin-top: 1px; }
+.tender-table .prices-item .tender-row-label { margin: 0; font-size: var(--fs-md); font-weight: 400; color: var(--sw-text-primary); }
+/* The firm's grip: drag the head left or right. Shown on hover. */
+.tender-col-grip { position: absolute; left: 0; top: 4px; width: 12px; height: 24px; padding: 0; border: 0; background: none; cursor: grab; opacity: 0; }
+.tender-col-grip .table-row-handle { opacity: .8; }
+.prices-firm:hover .tender-col-grip, .tender-col-grip:focus-visible { opacity: 1; }
+@media print { .tender-col-grip { display: none; } }
 .tender-mark {
   padding: 0 5px;
   border: 1px solid var(--line-strong);
@@ -27,39 +43,63 @@
   color: var(--ink-muted);
   white-space: nowrap;
 }
-.tender-mark[data-mark="high"], .tender-mark[data-mark="gap"] { border-color: var(--warn); color: var(--warn); }
+.tender-mark[data-mark="gap"] { border-color: var(--warn); color: var(--warn); }
 /* The amber dot: a figure to check. The cell's left edge says the same (states.css). */
 .tender-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--origin-check, var(--warn)); }
 .tender-waiting { color: var(--ink-muted); }
+/* A spare column, kept so three firms always fit: headed, otherwise empty. */
+.tender-table thead th.tender-spare .tender-spare-name { opacity: .55; }
 .tender-system th, .tender-system td { border-top: 1px solid var(--line-strong); }
 
 /* The column's state under the firm's name. */
 .tender-state { display: block; margin-top: 4px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
-.tender-state[data-state="to-check"], .tender-state[data-state="failed"] { color: var(--warn); }
-.tender-state[data-state="checked"] { color: var(--ok); }
-.tender-check { display: block; margin-top: 4px; }
-.tender-tag {
-  margin-left: 6px;
-  font-size: var(--fs-xs);
-  color: var(--ink-muted);
-  white-space: nowrap;
-}
+.tender-state[data-state="failed"] { color: var(--warn); }
+/* Award beside the tender sum it commits to; the figure keeps the right edge. */
+.tender-sum-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 10px; }
+.tender-sum-line .prices-award { margin-top: 0; }
+/* Figures sit on the right edge of their column (owner, 15 Nov 2026). A
+   cell's mark and dot sit to the left of its figure. */
+.tender-table > tbody > tr:not(.tender-lines-row, .tender-ghost) > td { text-align: right; }
+.tender-table .tender-cell { flex-direction: row-reverse; justify-content: flex-start; text-align: right; }
 
-/* The lines behind a cell, as a row beneath it. */
-.tender-lines-row > td { padding: 0; background: var(--canvas); }
-.tender-lines { padding: 8px 10px 12px; }
-.tender-lines-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
-.tender-lines-table th { padding: 4px 8px; text-align: left; font-size: var(--fs-xs); font-weight: 600; color: var(--ink-muted); border-bottom: 1px solid var(--line); }
-.tender-lines-table td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+/* An open row: each firm's own lines in its own column (owner, 15 Nov 2026).
+   No heads; wording at most two lines with its page after it; amount on the
+   right edge; the ⋯ in a fixed 18 px gutter, shown on hover. */
+.tender-lines-row > td { padding: 2px 10px 8px; background: var(--canvas); vertical-align: top; }
+.tender-lines { padding: 0; }
+.tender-lines-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--fs-sm); }
+.tender-lines-table col.tender-lines-amount { width: 6.5em; }
+.tender-lines-table col.tender-lines-gutter { width: 18px; }
+.tender-lines-table td { padding: 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.35; }
+.tender-lines-table td.tender-num { padding-right: 8px; text-align: right; }
 .tender-lines-table tbody tr { cursor: default; }
+/* Every slot is two lines tall, so each firm's lines sit level with the
+   others' (owner, 15 Nov 2026). An empty slot is a place to drop a line. */
+.tender-lines-table tbody tr { height: 46px; }
+.tender-lines-table tbody tr[draggable="true"] { cursor: grab; }
+.tender-line-cell { position: relative; }
+.tender-line-grip { left: -11px; }
+.tender-lines-table tr:hover .table-row-handle { opacity: .8; }
+.tender-lines-table tbody tr:last-child > td { border-bottom: 0; }
 .tender-lines-table tbody tr:hover > td { background: var(--state-hover); }
 .tender-lines-table tbody tr:focus-visible { outline: 1px solid var(--sw-action-focus, var(--azure)); outline-offset: -1px; }
+.tender-line-words { display: flex; align-items: flex-end; gap: 5px; min-width: 0; padding-right: 6px; }
+.tender-line-label { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.tender-line-page { flex: none; padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-xs); color: var(--ink-muted); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.tender-line-page:hover { color: var(--ink); }
+.tender-lines-table .tender-dot { display: inline-block; margin-right: 5px; vertical-align: middle; }
 .tender-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tender-uncounted > td { color: var(--ink-muted); }
-.tender-heading { color: var(--ink-muted); font-size: var(--fs-xs); }
-.tender-line-actions { position: relative; width: 1%; white-space: nowrap; }
+.tender-uncounted .tender-line-amount { text-decoration: line-through; }
+.tender-line-actions { position: relative; text-align: center; }
+.tender-line-actions .price-icon { width: 18px; height: 18px; padding: 0; opacity: 0; }
+.tender-lines-table tr:hover .price-icon, .tender-lines-table tr[aria-selected="true"] .price-icon,
+.tender-line-actions .price-icon:focus-visible, .tender-line-actions .price-icon[aria-expanded="true"] { opacity: 1; }
 .tender-menu { position: absolute; right: 0; top: 100%; z-index: 5; min-width: 240px; max-height: 320px; overflow-y: auto; }
 .tender-menu button { display: block; width: 100%; text-align: left; }
+.tender-add-open { display: block; margin: 0; padding: 0; line-height: 1.3; border: 0; background: none; font: inherit; font-size: var(--fs-xs); color: var(--ink-muted); cursor: pointer; opacity: 0; }
+.tender-lines:hover .tender-add-open, .tender-add-open:focus-visible { opacity: 1; }
+.tender-add-open:hover { color: var(--ink); text-decoration: underline; }
 
 /* Small inline editors: an amount, a GST basis, Save and Cancel. */
 .tender-editor, .tender-add, .tender-split, .tender-choices { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -72,6 +112,7 @@
 .tender-split-part { display: flex; gap: 6px; }
 
 /* Adds and subs: a suggested amount is grey until the manager applies it. */
+.tender-tag { margin-left: 6px; font-size: var(--fs-xs); color: var(--ink-muted); white-space: nowrap; }
 .tender-suggested .prices-word { color: var(--ink-muted); }
 .tender-suggested .btn, .tender-applied .table-action, .tender-suggested .tender-choices { margin-top: 4px; }
 .tender-suggested-count { margin: 0 0 6px; font-size: var(--fs-sm); color: var(--warn); }
@@ -83,7 +124,7 @@
 @media print {
   /* Both tables print with the firms in columns; the lines panels, the
      editors and every button stay on screen. The flags row is kept. */
-  .tender-lines-row, .tender-ghost, .tender-row-actions, .tender-choices, .tender-check, .tender-suggested-count,
-  .tender-table button:not(.prices-firm-name):not(.tender-cell) { display: none !important; }
+  .tender-lines-row, .tender-ghost, .tender-row-actions, .tender-choices, .tender-suggested-count,
+  .tender-table button:not(.prices-firm-name, .tender-cell, .tender-row-toggle), .tender-table .disclosure-chevron { display: none !important; }
   .tender-adds { break-inside: avoid; }
 }

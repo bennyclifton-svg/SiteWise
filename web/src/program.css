@@ -124,12 +124,11 @@
 /* Split pane: one scroller in both directions; the grid column is sticky on
    the left and the timescale sticky on top, so the vertical scroll is shared
    and the chart alone scrolls sideways. */
+/* No frame: the Cost Plan and Procurement tables have none (owner, 15 Nov 2026). */
 .pg-body {
   position: relative;
   height: max(320px, calc(100dvh - 330px));
   overflow: auto;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
   background: var(--paper);
   overscroll-behavior: contain;
   touch-action: pan-x pan-y;
@@ -140,7 +139,7 @@
 .pg-gridcol { position: sticky; left: 0; z-index: 2; background: var(--paper); border-right: 1px solid var(--line-strong); overflow: hidden; }
 .pg-chartcol { position: relative; z-index: 1; }
 
-.pg-gridhead, .pg-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 84px 96px 96px 100px; align-items: center; }
+.pg-gridhead, .pg-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) 64px 72px 72px 64px; align-items: center; }
 .is-narrow .pg-gridhead, .is-narrow .pg-row { grid-template-columns: minmax(0, 1fr); }
 .pg-gridhead { height: 100%; padding-top: 18px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
 .pg-cell { padding: 0 8px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
@@ -165,18 +164,16 @@
 .pg-gridhead:has(.pg-head-del) > .pg-cell:last-of-type { padding-right: 32px; }
 @media (hover: none) { .pg-row-del { display: grid; } }
 
-.pg-row.is-stage .pg-label { font-weight: 600; color: var(--ink); }
-.pg-row:not(.is-stage) .pg-name { padding-left: 30px; }
-.pg-num { font-family: var(--mono); font-size: var(--fs-xs); color: var(--ink-muted); text-align: right; }
+.pg-row.is-stage .pg-label { font-weight: 500; color: var(--ink); }
+.pg-row:not(.is-stage) .pg-name { padding-left: 20px; }
+.pg-num { font-family: var(--mono); font-size: var(--fs-xs); color: var(--ink-muted); text-align: right; padding: 0 4px; }
 .pg-name { display: flex; align-items: center; gap: 4px; min-width: 0; }
 .pg-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pg-dur, .pg-date { font-family: var(--mono); font-size: var(--fs-xs); font-variant-numeric: tabular-nums; color: var(--ink-body); }
-.pg-assumed { margin-right: 4px; color: var(--ink-muted); font-family: var(--sans); cursor: help; }
+.pg-assumed { margin-right: 2px; color: var(--ink-muted); font-family: var(--sans); cursor: help; }
 .pg-dur.is-unknown { color: var(--warn); font-style: italic; font-family: var(--sans); }
-.pg-chevron { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--ink-muted); cursor: pointer; flex: none; }
-.pg-chevron:hover { background: var(--line); color: var(--ink); }
-.pg-chevron svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.pg-chevron-gap { width: 20px; flex: none; }
+.pg-chevron { display: inline-grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 4px; background: none; cursor: pointer; flex: none; }
+.pg-chevron-gap { width: 24px; flex: none; }
 /* Amber square plus the "proposed" text for screen readers and the title. */
 .pg-proposed { flex: none; width: 8px; height: 8px; margin-left: 4px; border: 1.5px dashed var(--warn); border-radius: 1px; background: var(--warn-soft); }
 .pg-unknown-tag { flex: none; padding: 0 4px; border: 1px dotted var(--warn); border-radius: 3px; color: var(--warn); font-size: var(--fs-xs); }
@@ -195,13 +192,15 @@
 .pg-today { stroke: var(--ember); stroke-width: 1.5; stroke-dasharray: 3 3; }
 
 .pg-bar .pg-shape { stroke-width: 1; }
-.pg-bar.o-user .pg-shape { fill: var(--origin-user); stroke: var(--origin-user); }
-.pg-bar.o-doc .pg-shape { fill: var(--origin-doc); stroke: var(--origin-doc); }
+/* Quieter than the app's origin colours (owner, 12 Nov 2026): a tint with
+   the origin's edge, so many edited bars do not shout. */
+.pg-bar.o-user .pg-shape { fill: color-mix(in oklab, var(--origin-user) 32%, var(--paper)); stroke: color-mix(in oklab, var(--origin-user) 75%, var(--paper)); }
+.pg-bar.o-doc .pg-shape { fill: color-mix(in oklab, var(--origin-doc) 32%, var(--paper)); stroke: color-mix(in oklab, var(--origin-doc) 75%, var(--paper)); }
 .pg-bar.o-library .pg-shape { fill: color-mix(in oklab, var(--origin-typical) 14%, var(--paper)); stroke: var(--origin-typical); }
-.pg-bar.is-summary .pg-shape { fill: var(--ink-body); stroke: var(--ink-body); }
-.pg-bar.is-summary.o-user .pg-shape { fill: var(--origin-user); stroke: var(--origin-user); }
-.pg-bar.is-proposed .pg-shape { stroke: var(--warn); stroke-dasharray: 4 2; stroke-width: 1.5; }
-.pg-bar.is-critical .pg-shape { stroke: var(--alert); stroke-width: 2; stroke-dasharray: none; }
+.pg-bar.is-summary .pg-shape { fill: var(--ink-muted); stroke: var(--ink-muted); }
+.pg-bar.is-summary.o-user .pg-shape { fill: var(--ink-muted); stroke: var(--ink-muted); }
+.pg-bar.is-proposed .pg-shape { stroke-dasharray: 4 2; }
+.pg-bar.is-critical .pg-shape { stroke: color-mix(in oklab, var(--alert) 70%, var(--paper)); stroke-width: 1; stroke-dasharray: none; }
 .pg-bar.is-conflict .pg-shape { stroke: var(--alert); stroke-dasharray: 2 2; stroke-width: 2; }
 .pg-bar.is-selected .pg-shape { stroke: var(--ember); stroke-width: 2.5; }
 .pg-bar:focus-visible { outline: none; }
@@ -209,19 +208,19 @@
 .pg-hold-mark { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
 .pg-label-in, .pg-label-out { font-size: var(--fs-sm); dominant-baseline: auto; pointer-events: none; }
 .pg-label-out { fill: var(--ink-body); }
-.pg-bar:is(.o-user, .o-doc) .pg-label-in { fill: var(--sw-p-neutral-0); }
+.pg-bar:is(.o-user, .o-doc) .pg-label-in { fill: var(--ink); }
 .pg-bar.o-library .pg-label-in { fill: var(--ink); }
-.pg-bar.is-summary .pg-label-out { font-weight: 600; fill: var(--ink); }
+.pg-bar.is-summary .pg-label-out { font-weight: 500; fill: var(--ink); }
 .pg-unknown rect { fill: none; stroke: var(--warn); stroke-dasharray: 2 2; }
 .pg-unknown text { font-size: var(--fs-xs); fill: var(--warn); font-weight: 600; }
 .pg-unknown .pg-unknown-text { font-weight: 400; font-style: italic; }
 
-.pg-link-line { fill: none; stroke: var(--ink-muted); stroke-width: 1; }
+.pg-link-line { fill: none; stroke: color-mix(in oklab, var(--ink-muted) 60%, var(--paper)); stroke-width: 1; }
 .pg-link.is-free .pg-link-line { stroke-dasharray: 4 3; }
-.pg-link.is-critical .pg-link-line { stroke: var(--alert); stroke-width: 2; }
+.pg-link.is-critical .pg-link-line { stroke: color-mix(in oklab, var(--alert) 60%, var(--paper)); stroke-width: 1; }
 .pg-link.is-faint { opacity: 0.4; }
-.pg-link-arrow { fill: var(--ink-muted); }
-.pg-link.is-critical .pg-link-arrow { fill: var(--alert); }
+.pg-link-arrow { fill: color-mix(in oklab, var(--ink-muted) 60%, var(--paper)); }
+.pg-link.is-critical .pg-link-arrow { fill: color-mix(in oklab, var(--alert) 60%, var(--paper)); }
 .pg-link-hit { fill: none; stroke: transparent; stroke-width: 10; pointer-events: stroke; }
 .pg-link-hold { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
 .pg-link-lag { font-size: var(--fs-xs); font-family: var(--mono); fill: var(--ink); opacity: 0; pointer-events: none; }
@@ -235,8 +234,23 @@
 
 /* Editing (WP-P8) */
 .pg-row.is-editing { position: relative; z-index: 3; }
-.pg-cell:focus-visible { outline: 2px solid var(--sw-action-focus); outline-offset: -2px; }
-.pg-edit { width: 100%; min-width: 0; height: calc(var(--pg-row-h) - 6px); padding: 0 6px; }
+.pg-cell:focus-visible { outline: 1px solid var(--state-edit-ring); outline-offset: -1px; }
+/* Editing looks as the Cost Plan's (states.css): the whole cell takes the
+   surface colour and a 1px line inside it; the text stays where it was. */
+.pg-cell:has(> .pg-edit) { background: var(--state-edit-bg); box-shadow: inset 0 0 0 1px var(--state-edit-ring); }
+.pg-cell:has(> .pg-edit[aria-invalid="true"]) { background: var(--state-error-bg); box-shadow: inset 0 0 0 1px var(--state-error-ring); }
+.pg-cell .pg-edit.inline-cell-editor,
+.pg-cell .pg-edit.inline-cell-editor:focus,
+.pg-cell .pg-edit.inline-cell-editor:focus-visible { flex: 1; width: 100%; min-width: 0; height: 100%; padding: 0; background: transparent; box-shadow: none; }
+
+/* Duration steppers: on hover or on the selected row, laid over the cell's end. */
+.pg-dur { position: relative; }
+.pg-step { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); display: none; flex-direction: column; gap: 1px; }
+.pg-row:hover .pg-step, .pg-row.is-selected .pg-step { display: flex; }
+.pg-step button { display: grid; place-items: center; width: 16px; height: 10px; padding: 0; border: 0; border-radius: 2px; background: var(--ground); color: var(--ink-muted); cursor: pointer; }
+.pg-step button:hover { background: var(--line-strong); color: var(--ink); }
+.pg-step svg { width: 8px; height: 5px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: none) { .pg-step { display: flex; } }
 
 .pg-cell-error { position: absolute; left: 40px; top: 100%; z-index: 4; max-width: 420px; padding: 4px 8px; border: 1px solid var(--alert); border-radius: var(--radius-sm); background: var(--alert-soft); color: var(--ink); font-size: var(--fs-sm); white-space: normal; }
 .pg-pred { font-family: var(--mono); font-size: var(--fs-xs); color: var(--ink-body); }

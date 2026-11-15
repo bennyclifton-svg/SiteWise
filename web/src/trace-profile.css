@@ -236,7 +236,8 @@
   background: transparent;
   color: var(--sw-text-secondary);
   font: inherit;
-  font-size: 14px;
+  /* Item text is 15 px in every table (owner, 15 Nov 2026). */
+  font-size: var(--fs-md);
   text-align: left;
   cursor: pointer;
 }
@@ -356,9 +357,6 @@
 /* Each scope entry opens with a chevron before its name, the same thin
    chevron as the RFP stage table (owner, 8 Nov 2026). */
 .sw-matrix .sw-entry-label { display: inline-flex; align-items: center; gap: 8px; min-width: 0; padding-left: 4px; }
-.sw-caret { flex: none; width: 9px; height: 9px; margin: 0 2px 0 2px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--sw-text-secondary); transform: rotate(-45deg); transition: transform 120ms ease; }
-.sw-entry[aria-expanded="true"] .sw-caret { transform: rotate(45deg); margin-top: -5px; }
-@media (prefers-reduced-motion: reduce) { .sw-caret { transition: none; } }
 .sw-empty { margin: 12px 4px; font-size: 13.5px; }
 
 /* An open entry's systems sit in two tables side by side, so the list is

@@ -429,7 +429,7 @@ func tenderPackage2(t *testing.T, s *store.Store) (string, string, []string) {
 	return sub, pkg, keys
 }
 
-func TestAwardNeedsACheckedColumn(t *testing.T) {
+func TestAwardNeedsNoColumnCheck(t *testing.T) {
 	ctx := context.Background()
 	s, pkg, _, a, _ := twoFirms(t)
 	if err := s.EditSubmission(ctx, orgA, projectA, a, store.SubmissionEdit{Firm: &store.FirmFields{Name: "Invented Planning Pty Ltd"}}); err != nil {
@@ -448,15 +448,7 @@ func TestAwardNeedsACheckedColumn(t *testing.T) {
 		}
 	}
 	in := store.AwardInput{SubmissionID: a, Lines: lines}
-	if _, err := s.PreviewAward(ctx, orgA, projectA, pkg, in); !errors.Is(err, store.ErrInvalidInput) || !strings.Contains(err.Error(), "Check this firm's column before awarding") {
-		t.Fatalf("an unchecked column was previewed for award: %v", err)
-	}
-	if _, err := s.Award(ctx, orgA, projectA, pkg, userA, in); !errors.Is(err, store.ErrInvalidInput) {
-		t.Fatalf("an unchecked column was awarded: %v", err)
-	}
-	check := top("check_column")
-	check.Submission, check.Checked = a, tbp(true)
-	mustOps(t, s, pkg, check)
+	// The column was never marked checked: pressing Award is the acceptance.
 	view, err := s.PreviewAward(ctx, orgA, projectA, pkg, in)
 	if err != nil || view.Total != 7500000 {
 		t.Fatalf("award total %d, want the tender sum: %v", view.Total, err)
@@ -469,4 +461,43 @@ func TestAwardNeedsACheckedColumn(t *testing.T) {
 	move.Line, move.Row = lineNamed(t, tenderColumn(t, s, pkg, a), "Advice").ID, tsp("")
 	refusedOps(t, s, pkg, "Undo the award", move)
 	_ = time.Now
+}
+
+// The manager's layout is saved for everyone: a line's place in its row,
+// undone with the change log, and the firms' order in the price table.
+func TestSlotsAndFirmOrder(t *testing.T) {
+	ctx := context.Background()
+	s, pkg, _, a, b := twoFirms(t)
+	// Word matching puts each firm's "Advice" in the same place.
+	advA, advB := lineNamed(t, tenderColumn(t, s, pkg, a), "Advice"), lineNamed(t, tenderColumn(t, s, pkg, b), "Advice")
+	if ca, cb := tenderColumn(t, s, pkg, a), tenderColumn(t, s, pkg, b); ca.Slots[advA.ID] != cb.Slots[advB.ID] {
+		t.Fatalf("like lines apart: %v %v", ca.Slots, cb.Slots)
+	}
+	place := func(line string, at int) store.TenderOp {
+		op := top("set_slot")
+		op.Line, op.Slot = line, &at
+		return op
+	}
+	change := mustOps(t, s, pkg, place(advA.ID, 0), place(advB.ID, 1))
+	if got := tenderColumn(t, s, pkg, b).Slots[advB.ID]; got != 1 {
+		t.Fatalf("saved place %d", got)
+	}
+	if _, err := s.UndoChange(ctx, orgA, projectA, userA, change); err != nil {
+		t.Fatal(err)
+	}
+	if ca, cb := tenderColumn(t, s, pkg, a), tenderColumn(t, s, pkg, b); ca.Slots[advA.ID] != cb.Slots[advB.ID] {
+		t.Fatal("undo did not give the row back to word matching")
+	}
+	refusedOps(t, s, pkg, "Choose a place in the row", place(advA.ID, 1000))
+
+	order := top("order_columns")
+	order.Order = []string{b, a}
+	mustOps(t, s, pkg, order)
+	table, err := s.ReadPriceTable(ctx, orgA, projectA, pkg)
+	if err != nil || len(table.Columns) != 2 || table.Columns[0].Submission.ID != b || table.Tender.Columns[0].SubmissionID != b {
+		t.Fatalf("firm order not kept: %v", err)
+	}
+	other, _, _ := tenderPackage2(t, s)
+	order.Order = []string{a, other}
+	refusedOps(t, s, pkg, "not in this package", order)
 }

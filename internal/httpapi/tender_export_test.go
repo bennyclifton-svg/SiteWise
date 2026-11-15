@@ -97,7 +97,7 @@ func TestTenderExportReportAndBoard(t *testing.T) {
 		t.Fatalf("workbook of %d bytes", len(book))
 	}
 
-	// The report carries the figures, and cannot be signed off until the column is checked.
+	// The report carries the figures and is signed off without a column check.
 	var report struct {
 		Table tenderTableBody `json:"table"`
 	}
@@ -106,15 +106,11 @@ func TestTenderExportReportAndBoard(t *testing.T) {
 		t.Fatalf("report table %+v", c)
 	}
 	recommend, _ := json.Marshal(map[string]any{"text": "Appoint the invented firm.", "sign_off": true})
-	if code, words := m.text(t, http.MethodPut, base+"/report", recommend); code != http.StatusUnprocessableEntity || words != "Check every firm's column before signing off." {
+	if code, words := m.text(t, http.MethodPut, base+"/report", recommend); code != http.StatusOK {
 		t.Fatalf("sign-off of an unchecked column: %d %q", code, words)
 	}
-	m.call(t, http.MethodPost, ops, opsBody(edited.Tender.Version, map[string]any{"op": "check_column", "submission": sub, "checked": true}), http.StatusOK, &edited)
-	if code, words := m.text(t, http.MethodPut, base+"/report", recommend); code != http.StatusOK {
-		t.Fatalf("sign-off after checking: %d %q", code, words)
-	}
 
-	// The board card shows the like-for-like total and is no longer "to check".
+	// The board card shows the like-for-like total and never says "to check".
 	var board struct {
 		Packages map[string][]struct {
 			SubmissionID string  `json:"submission_id"`

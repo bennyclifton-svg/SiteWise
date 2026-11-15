@@ -18,7 +18,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { flushSync } from "react-dom";
 import { ApiError } from "./api";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { needsRefetch, programApi, ProgramConflict, ProgramRefused, type ProgramChange, type ProgramHoldPoint, type ProgramOp, type ProgramView, type RemoteProgram } from "./programApi";
+import { needsRefetch, programApi, ProgramConflict, ProgramRefused, type ProgramHoldPoint, type ProgramOp, type ProgramView, type RemoteProgram } from "./programApi";
 import { Cal } from "./program/calendar";
 import { deletePlan, dropTarget, inOutline, predecessorOps, predecessorTexts, reorderStep, rowNumbers, ZONE_COARSE, ZONE_FINE, type DeletePlan } from "./program/edit";
 import { clampPx, fitHeight, fitSpan, LEFT_ROOM, PX_DEFAULT, scaleFor, zoomAbout } from "./program/fit";
@@ -43,8 +43,8 @@ import { Bars } from "./program/chart/Bars";
 import { Links, lagText } from "./program/chart/Links";
 import { Overlay, type OverlayHandle } from "./program/chart/Overlay";
 import { useDrag } from "./program/chart/useDrag";
-import { EvidenceNotice, HoldPointsPanel, ReadingsPanel, ReviewPanel, UpdateProgramButton } from "./program/Panels";
-import { groupReadings, importable, orphanEvidence, proposedText, reviewWords } from "./program/readings";
+import { EvidenceNotice, HoldPointsPanel, ReadingsPanel, UpdateProgramButton } from "./program/Panels";
+import { groupReadings, importable, orphanEvidence, proposedText } from "./program/readings";
 import type { RowNote } from "./program/grid/Grid";
 import type { Times } from "./program/types";
 import "./program.css";
@@ -65,6 +65,19 @@ interface Props {
 const GRID_W = 620;
 const GRID_W_NARROW = 150;
 const GRID_W_MIN = 220;
+// Narrow column heads say the short word; the full name is the tooltip and
+// the screen reader's column header.
+const HEAD_SHORT: Record<string, string> = { Duration: "Days", Predecessors: "Pred" };
+const GRID_W_KEY = "sitewise.program.gridWidth";
+
+function storedGridW(): number {
+  try {
+    const n = Number(localStorage.getItem(GRID_W_KEY));
+    return Number.isFinite(n) && n >= GRID_W_MIN ? n : GRID_W;
+  } catch {
+    return GRID_W;
+  }
+}
 /** Below this pane width the grid shows the name column only (plan 9.1). */
 const NARROW = 720;
 const X_CHUNK = 256;
@@ -171,15 +184,21 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   const [rowH, setRowH] = useState(ROW_H);
   const [tooMany, setTooMany] = useState(false);
   const [showLinks, setShowLinks] = useState(true);
-  const [gridW, setGridW] = useState(GRID_W);
+  const [gridW, setGridW] = useState(storedGridW);
+  // Where the user left the divider, per browser; the program works without it.
+  useEffect(() => {
+    try {
+      localStorage.setItem(GRID_W_KEY, String(gridW));
+    } catch {
+      // Storage blocked: the divider still moves for this visit.
+    }
+  }, [gridW]);
   const [box, setBox] = useState({ w: 0, h: 0 });
   const [win, setWin] = useState<Win>({ first: 0, last: 40, x0: 0, x1: 2048 });
   const [printing, setPrinting] = useState(false);
   const [printFirst, setPrintFirst] = useState(PRINT_ROWS);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [holdsOpen, setHoldsOpen] = useState(false);
-  const [reviewOpen, setReviewOpen] = useState(false);
-  const [changes, setChanges] = useState<{ list: ProgramChange[]; counts: Record<string, number> } | null>(null);
   const [readingsOpen, setReadingsOpen] = useState(true);
   const [dropping, setDropping] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -266,25 +285,6 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     if (dragging.current) refetchOnRelease.current = true;
     else load();
   }, [remoteTick, load]);
-
-  // The review list and its counts, read whenever the pending count or the
-  // program changes while something is pending (plan 7.4).
-  const pendingChanges = view?.changes_pending ?? 0;
-  const viewVersion = view?.program.version ?? 0;
-  useEffect(() => {
-    if (pendingChanges <= 0) {
-      setChanges(null);
-      return;
-    }
-    let stale = false;
-    programApi.changes(projectId).then(
-      (c) => !stale && setChanges({ list: c.changes ?? [], counts: c.counts ?? {} }),
-      (e) => !stale && fail(e),
-    );
-    return () => {
-      stale = true;
-    };
-  }, [projectId, pendingChanges, viewVersion, fail]);
 
   /** Ends a drag and runs a refetch deferred during it. */
   const releaseDrag = useCallback(() => {
@@ -378,7 +378,6 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
       times: view.computed.activities as Record<string, Times>,
       driving: new Set(view.computed.driving_links ?? []),
       conflicts: new Set((view.computed.conflicts ?? []).map((c) => c.activity_id)),
-      proposed: view.activities.filter((a) => a.review_status === "proposed").length,
     };
   }, [view]);
 
@@ -421,7 +420,10 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   useEffect(() => setSel((s) => prune(s, order)), [order]);
   const selected = useMemo(() => new Set(sel.ids), [sel]);
 
-  const span = useMemo(() => (model ? extent(order, model.times, view?.computed.finish.high_index ?? null) : null), [model, order, view]);
+  // Fit to the typical bars, not the high-run finish: the program opens with
+  // its bars filling the chart width (owner, 12 November 2026). The canvas
+  // (allSpan) still reaches the high finish, so the long case scrolls.
+  const span = useMemo(() => (model ? extent(order, model.times) : null), [model, order]);
   const allSpan = useMemo(
     () => (model && view ? extent(view.activities.map((a) => a.id), model.times, view.computed.finish.high_index) : null),
     [model, view],
@@ -741,6 +743,24 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     [rows, note],
   );
 
+  /**
+   * One stepper click (or + / −) on an activity's duration: a single write
+   * with one undo, shown at once. Never below one day; a milestone keeps its
+   * own question.
+   */
+  const onStep = useCallback(
+    (id: string, delta: number) => {
+      const cur = viewRef.current;
+      const a = cur?.activities.find((x) => x.id === id);
+      if (!cur || !a || rows.find((x) => x.id === id)?.hasChildren) return;
+      const days = Math.max(1, (a.duration_days ?? 0) + delta);
+      if (days === a.duration_days) return;
+      const optimistic = { ...cur, activities: cur.activities.map((x) => (x.id === id ? { ...x, duration_days: days } : x)) };
+      commit([{ op: "update", id, duration_days: days }], { optimistic });
+    },
+    [rows, commit],
+  );
+
   const onCommit = useCallback(
     (id: string, col: EditCol, text: string, key: CommitKey) => {
       if (!view || !model) return;
@@ -1005,6 +1025,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     else if (k === "ArrowUp" || k === "ArrowDown") act(() => moveFocus(k === "ArrowUp" ? -1 : 1, 0, e.shiftKey, bar));
     else if ((k === "ArrowLeft" || k === "ArrowRight") && cell) act(() => moveFocus(0, k === "ArrowLeft" ? -1 : 1, false, null));
     else if ((k === "ArrowLeft" || k === "ArrowRight") && bar && !mod && !e.altKey) act(() => stepLink(bar, null, k === "ArrowRight" ? 1 : -1));
+    else if ((k === "+" || k === "=" || k === "-") && !mod && cell && focus?.col === "duration") act(() => onStep(focus.id, k === "-" ? -1 : 1));
     else if ((k === "Enter" || k === "F2") && cell && focus) {
       const col = focus.col as EditCol;
       if (col === "name" || col === "duration" || col === "predecessors") act(() => onEdit(focus.id, col));
@@ -1070,7 +1091,9 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   const m = model!;
   const d = docs!;
   const orphaned = (view.checks ?? []).some((c) => c.code === "evidence_without_stage") ? d.orphans : [];
-  const acceptCount = m.proposed + d.live.length;
+  // Only readings from a dropped program file are offered for acceptance;
+  // generated rows are the user's draft as they open (owner, 12 November 2026).
+  const acceptCount = d.live.length;
   const labelOf = (id: string) => m.byId.get(id)?.label ?? "";
   const stageChoices = view.activities.filter((a) => !a.parent_id).map((a) => ({ id: a.id, label: a.label }));
 
@@ -1219,24 +1242,8 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
       {calendarOpen && <ProgramCalendar week={view.program.working_week} busy={busy} onClose={() => setCalendarOpen(false)} onSave={week => commit([{ op: "set_working_week", working_week: week }], { note: "Calendar saved. Dates recalculated." })} />}
       {error && <Failure error={error} retry={load} />}
       <PagePrimaryAction surface="program">
-        <UpdateProgramButton pending={view.changes_pending} words={reviewWords(changes?.counts, view.changes_pending)} open={reviewOpen} onToggle={() => setReviewOpen((o) => !o)} />
+        <UpdateProgramButton pending={view.changes_pending} busy={busy} onUpdate={() => apply((cur) => programApi.update(projectId, cur!), { undoable: true })} />
       </PagePrimaryAction>
-      {reviewOpen && (
-        <ReviewPanel
-          changes={view.changes_pending > 0 ? changes?.list ?? null : []}
-          words={reviewWords(changes?.counts, view.changes_pending)}
-          busy={busy}
-          onClose={() => setReviewOpen(false)}
-          onAdoptAll={() => apply((cur) => programApi.adoptAll(projectId, cur!), { undoable: true, note: "Adopted every change that defaults to Adopt; edited rows wait for your choice." })}
-          onApply={(decisions) => {
-            const adopted = decisions.filter((x) => x.choice === "adopt").length;
-            apply((cur) => programApi.decide(projectId, cur!, decisions), {
-              undoable: adopted > 0,
-              note: adopted ? `Adopted ${adopted} change${adopted === 1 ? "" : "s"}; kept ${decisions.length - adopted}.` : "Kept the program as it is.",
-            });
-          }}
-        />
-      )}
       {orphaned.map((g) => (
         <EvidenceNotice
           key={g.key}
@@ -1277,7 +1284,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
 
       {view.computed.cycle && <div className="pg-alert" role="alert">The links form a loop, so no dates can be worked out.</div>}
       {(acceptCount > 0 || d.holds.length > 0) && <div className="pg-secondary-actions">
-        {acceptCount > 0 && <button type="button" className="btn btn-small" disabled={busy} title="Confirm generated rows and apply eligible imported date and duration proposals. Undo is available." onClick={() => apply(cur => programApi.acceptAll(projectId, cur!), { undoable: true })}>Accept proposed values ({acceptCount})</button>}
+        {acceptCount > 0 && <button type="button" className="btn btn-small" disabled={busy} title="Apply the dates and durations read from the program file. Undo is available." onClick={() => apply(cur => programApi.acceptAll(projectId, cur!), { undoable: true })}>Accept proposed values ({acceptCount})</button>}
         {d.holds.length > 0 && <button type="button" className="btn btn-small" aria-expanded={holdsOpen} onClick={() => setHoldsOpen(value => !value)}>Hold-point releases ({d.holds.length})</button>}
       </div>}
 
@@ -1326,6 +1333,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
               onHandleDown={onHandleDown}
               onCatalogue={onCatalogue}
               onDelete={removeRow}
+              onStep={onStep}
               notes={d.notes}
             />
             <div ref={insert} className="pg-insert" hidden aria-hidden="true" />
@@ -1484,8 +1492,8 @@ function GridHeader({
         </button>
       )}
       {(narrow ? (["Name"] as const) : GRID_COLUMNS).map((c) => (
-        <span key={c} className={`pg-cell pg-h-${c === "#" ? "num" : c.toLowerCase()}`}>
-          {c === "Name" && onToggle && <button type="button" className="pg-master-toggle" aria-label={expanded ? "Collapse all" : "Expand all"} aria-expanded={expanded} onClick={onToggle}><svg viewBox="0 0 16 16" aria-hidden="true"><path d={expanded ? "M4 6l4 4 4-4" : "M6 4l4 4-4 4"} /></svg></button>}{c}
+        <span key={c} className={`pg-cell pg-h-${c === "#" ? "num" : c.toLowerCase()}`} title={HEAD_SHORT[c] ? c : undefined}>
+          {c === "Name" && onToggle && <button type="button" className="pg-master-toggle" aria-label={expanded ? "Collapse all" : "Expand all"} aria-expanded={expanded} onClick={onToggle}><svg viewBox="0 0 16 16" aria-hidden="true"><path d={expanded ? "M4 6l4 4 4-4" : "M6 4l4 4-4 4"} /></svg></button>}{HEAD_SHORT[c] ?? c}
         </span>
       ))}
     </div>

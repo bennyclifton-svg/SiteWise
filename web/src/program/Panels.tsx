@@ -1,123 +1,35 @@
-// The Program view's review and readings panels (plan
+// The Program view's update button and readings panels (plan
 // docs/plans/2026-10-18-program.md 7.4, 7.7, 10.2 to 10.4). Each panel only
 // shows what the server sent and hands a choice back to Program.tsx, which
 // sends it as one write through `apply`: no panel changes a value itself and
 // none calls Jev.
 
-import { useEffect, useState, type ReactNode } from "react";
-import type { ProgramActivity, ProgramChange, ProgramHoldPoint, ProgramImport, ProgramProposedLink } from "../programApi";
+import { useState, type ReactNode } from "react";
+import type { ProgramActivity, ProgramHoldPoint, ProgramImport, ProgramProposedLink } from "../programApi";
 import { fmtDate } from "./layout";
 import { fileLinks, notReadWords, proposedText, type ReadingGroup } from "./readings";
 
 /**
  * The page's primary action, like Update project profile on the Profile
  * (owner, 2026-11-03). A change elsewhere never moves the program's dates:
- * it only lights this button with a count. The user opens the list and
- * chooses; nothing is applied until then.
+ * it only lights this button with a count. Clicking it is the user committing
+ * to every update, so it applies them at once with nothing to answer (owner,
+ * 12 November 2026); one undo reverses it.
  */
-export function UpdateProgramButton({ pending, words, open, onToggle }: { pending: number; words: string; open: boolean; onToggle: () => void }) {
+export function UpdateProgramButton({ pending, busy, onUpdate }: { pending: number; busy: boolean; onUpdate: () => void }) {
   return (
     <button
       type="button"
       className={pending > 0 ? "btn pg-update is-pending" : "btn pg-update"}
-      aria-expanded={open}
-      title={pending > 0 ? words : "The program is up to date with the Profile and Procurement."}
-      onClick={onToggle}
+      disabled={busy}
+      title={pending > 0
+        ? `${pending} update${pending === 1 ? "" : "s"} from the Profile and Procurement. Click to apply; undo reverses it.`
+        : "Rebuild the program from the Profile and Procurement."}
+      onClick={onUpdate}
     >
       Update program{pending > 0 && <span className="pg-update-count">{pending}</span>}
     </button>
   );
-}
-
-/**
- * Each change with Adopt and Keep, its default chosen (Keep for a row the
- * user made, edited or accepted), plus Adopt all. The choices go as one
- * batch; adopted changes are one undo step.
- */
-export function ReviewPanel({
-  changes,
-  words,
-  busy,
-  onApply,
-  onAdoptAll,
-  onClose,
-}: {
-  changes: readonly ProgramChange[] | null;
-  words: string;
-  busy: boolean;
-  onApply: (decisions: { id: string; choice: string }[]) => void;
-  onAdoptAll: () => void;
-  onClose: () => void;
-}) {
-  const [choice, setChoice] = useState<Record<string, string>>({});
-  // A new list (another review ran) resets choices not yet sent.
-  useEffect(() => setChoice({}), [changes]);
-  const chosen = (c: ProgramChange) => choice[c.id] ?? c.default_choice;
-  return (
-    <section className="pg-panel" aria-label="Update program">
-      <header className="pg-panel-head">
-        <h2>Update program</h2>
-        <button type="button" className="btn btn-small" onClick={onClose}>
-          Close
-        </button>
-      </header>
-      {!changes ? (
-        <p className="pg-panel-empty">Loading the changes…</p>
-      ) : changes.length === 0 ? (
-        <p className="pg-panel-empty">The program is up to date with the Profile and Procurement.</p>
-      ) : (
-        <>
-          <p className="pg-panel-intro">{words} Nothing changes until you choose. Rows you edited default to Keep.</p>
-          <ul className="pg-review">
-            {changes.map((c) => (
-              <li key={c.id} className="pg-review-item" data-change={c.id}>
-                <span className={`pg-kind is-${c.kind}`}>{kindWord(c.kind)}</span>
-                <span className="pg-review-text">{c.summary}</span>
-                <span className="pg-segment" role="radiogroup" aria-label={`Choice for: ${c.summary}`}>
-                  {(["adopt", "keep"] as const).map((k) => (
-                    <button
-                      key={k}
-                      type="button"
-                      role="radio"
-                      aria-checked={chosen(c) === k}
-                      className={chosen(c) === k ? "is-on" : undefined}
-                      onClick={() => setChoice((m) => ({ ...m, [c.id]: k }))}
-                    >
-                      {k === "adopt" ? "Adopt" : "Keep"}
-                    </button>
-                  ))}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <div className="pg-panel-actions">
-            <button type="button" className="btn btn-small" disabled={busy} onClick={onAdoptAll}>
-              Adopt all
-            </button>
-            <button type="button" className="btn btn-small pg-build" disabled={busy} onClick={() => onApply(changes.map((c) => ({ id: c.id, choice: chosen(c) })))}>
-              Update program
-            </button>
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
-
-function kindWord(kind: string): string {
-  switch (kind) {
-    case "add":
-      return "Add";
-    case "remove":
-      return "Remove";
-    case "rename":
-      return "Rename";
-    case "duration":
-      return "Duration";
-    case "link":
-      return "Link";
-  }
-  return kind;
 }
 
 /** A stage to add a file row under; "" adds it as a stage. */

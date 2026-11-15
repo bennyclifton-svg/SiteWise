@@ -12,6 +12,8 @@ export interface TenderLine {
   kind: "base" | "ps" | "pc" | "option" | "saving" | "rate" | "subtotal" | "total" | "gst";
   placed: "sum" | "inside" | "outside"; heading: string; row: string; note: string; counted: boolean;
   flags: TenderFlag[]; decided_by: "model" | "rule" | "user"; split_of: string;
+  /** The line's place in its open row, shared across firms; -1 when no row shows it. */
+  slot: number;
 }
 export interface TenderCell { state: "" | "priced" | "included" | "excluded" | "not_priced"; amount: Money; lines: number; mark: "" | "high" | "low" | "gap"; to_check: boolean; note?: string }
 export interface TenderColumn {
@@ -42,6 +44,8 @@ export type TenderOp =
   | { op: "add_line"; submission: string; label: string; amount: string; gst: string; row: string; page?: number }
   | { op: "count_line"; line: string; counted: boolean }
   | { op: "delete_line"; line: string }
+  | { op: "set_slot"; line: string; slot: number }
+  | { op: "order_columns"; order: string[] }
   | { op: "set_tender_sum"; submission: string; amount: string; gst: string }
   | { op: "add_adjustment"; label: string; note?: string; row?: string }
   | { op: "set_adjustment"; adjustment: string; label?: string; note?: string }

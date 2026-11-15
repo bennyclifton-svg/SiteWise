@@ -23,6 +23,8 @@ type TenderOp struct {
 	Applied    *bool   `json:"applied,omitempty"`
 	Source     string  `json:"source,omitempty"`
 	Note       *string `json:"note,omitempty"`
+	// Order is order_columns' firms, left to right, by submission id.
+	Order []string `json:"order,omitempty"`
 }
 
 // maxTenderOps is the most operations one batch may hold.
@@ -216,6 +218,8 @@ func (b *tenderBatch) apply(ctx context.Context, op TenderOp) error {
 	switch name := op.Op.Op; {
 	case name == "check_column":
 		return b.check(ctx, op)
+	case name == "order_columns":
+		return b.orderColumns(ctx, op.Order)
 	case tender.LineOps[name]:
 		sub := op.Submission
 		if name != "add_line" && name != "set_tender_sum" {
@@ -249,6 +253,24 @@ func (b *tenderBatch) apply(ctx context.Context, op TenderOp) error {
 		return b.adjust(ctx, op)
 	}
 	return tenderInvalid("Unknown operation %q.", op.Op.Op)
+}
+
+// orderColumns saves the firms' left-to-right order for everyone on the
+// project (owner, 15 Nov 2026). Every id must be a firm of this package,
+// once; firms left out follow in the order they were received.
+func (b *tenderBatch) orderColumns(ctx context.Context, order []string) error {
+	if len(order) == 0 || len(order) > 50 {
+		return tenderInvalid("Name the firms in their new order.")
+	}
+	seen := map[string]bool{}
+	for _, id := range order {
+		if _, ok := b.status[id]; !ok || seen[id] {
+			return tenderInvalid("That firm is not in this package's table.")
+		}
+		seen[id] = true
+	}
+	_, err := b.tx.Exec(ctx, `UPDATE packages SET firm_order=$3::uuid[] WHERE org_id=$1::uuid AND id::text=$2`, b.org, b.pkg, order)
+	return err
 }
 
 func containsString(list []string, v string) bool {

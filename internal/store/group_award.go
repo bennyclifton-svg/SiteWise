@@ -54,14 +54,6 @@ func (s *Store) planGroupAward(ctx context.Context, tx pgx.Tx, org, project, gro
 	if sub.Status != SubmissionReceived && sub.Status != SubmissionNeedsReview {
 		return g, ErrInvalidInput
 	}
-	// A tender-read column is a proposal until the manager has checked it.
-	var unchecked bool
-	if err := tx.QueryRow(ctx, `SELECT tender_state = 'read' AND tender_checked_at IS NULL FROM submissions WHERE org_id=$1::uuid AND id::text=$2`, org, sub.ID).Scan(&unchecked); err != nil {
-		return g, err
-	}
-	if unchecked {
-		return g, tenderInvalid("Check this firm's column before awarding.")
-	}
 	if sub.FirmID == "" {
 		return g, fmt.Errorf("%w: name the appointed firm on this proposal before awarding", ErrInvalidInput)
 	}

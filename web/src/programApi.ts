@@ -140,26 +140,6 @@ export interface ProgramHoldPoint {
   limit: string;
 }
 
-/** One ask-first review item (plan 7.4). */
-export interface ProgramChange {
-  id: string;
-  kind: "add" | "remove" | "rename" | "duration" | "link" | string;
-  source: string;
-  source_key: string;
-  target_activity_id: string | null;
-  summary: string;
-  default_choice: "adopt" | "keep" | string;
-  edited: boolean;
-  edited_since: boolean;
-}
-
-export interface ProgramChangeList {
-  program_id: string;
-  version: number;
-  changes: ProgramChange[];
-  counts: Record<string, number>;
-}
-
 export interface ProgramTarget {
   key: string;
   label: string;
@@ -299,11 +279,8 @@ export const programApi = {
     write(request<ProgramView>("POST", `${base(p)}/ops`, { program_id: v.program.id, version: v.program.version, ops })),
   undo: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/undo`, { version: v.program.version })),
   redo: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/redo`, { version: v.program.version })),
-  changes: (p: string) => request<ProgramChangeList>("GET", `${base(p)}/changes`),
-  /** Adopted changes apply as one undoable batch. */
-  decide: (p: string, v: ProgramView, decisions: { id: string; choice: string }[]) =>
-    write(request<ProgramView>("POST", `${base(p)}/changes/decide`, { version: v.program.version, decisions })),
-  adoptAll: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/changes/decide`, { version: v.program.version, all: "adopt" })),
+  /** Update program: every update from the Profile and Procurement, applied as one undoable batch. */
+  update: (p: string, v: ProgramView) => write(request<ProgramView>("POST", `${base(p)}/update`, { version: v.program.version })),
   /** Readings (a target's start, finish and duration go together) or rows. */
   accept: (p: string, v: ProgramView, ids: string[]) => write(request<ProgramView>("POST", `${base(p)}/accept`, { version: v.program.version, ids })),
   dismissReadings: (p: string, v: ProgramView, ids: string[]) => write(request<ProgramView>("POST", `${base(p)}/readings/dismiss`, { version: v.program.version, ids })),

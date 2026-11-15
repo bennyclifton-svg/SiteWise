@@ -1,3 +1,4 @@
+import { Chevron } from "./Chevron";
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { RowHandle, startRowDrag } from "./table/RowHandle";
@@ -517,7 +518,3 @@ function DetailedValueCell({ item, metric, editable, onSave }: { item: CostItem;
   </fieldset>{error && <span role="alert">{error}</span>}</form>;
 }
 
-/** Disclosure chevron: down when open, right when closed. */
-function Chevron({ open }: { open: boolean }) {
-  return <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={open ? "m4 6 4 4 4-4" : "m6 4 4 4-4 4"} /></svg>;
-}

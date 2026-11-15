@@ -2,7 +2,6 @@ package store_test
 
 import (
 	"context"
-	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -158,13 +157,8 @@ func TestAwardATenderReadHeadContract(t *testing.T) {
 		}
 	}
 	award := store.AwardInput{SubmissionID: sub, Lines: lines}
-	if _, err := s.PreviewAward(ctx, orgA, projectA, pkg, award); !errors.Is(err, store.ErrInvalidInput) || !strings.Contains(err.Error(), "Check this firm's column") {
-		t.Fatalf("unchecked: %v", err)
-	}
-	check := top("check_column")
-	check.Submission, check.Checked = sub, tbp(true)
-	mustOps(t, s, pkg, check)
-	// No separate confirmation of a quoted total is needed: the column was checked.
+	// No separate confirmation of a quoted total, and no column check, is
+	// needed: pressing Award is the manager's acceptance (owner, 15 Nov 2026).
 	view, err := s.PreviewAward(ctx, orgA, projectA, pkg, award)
 	if err != nil || view.Total != 55000000 || len(view.Lines) != 3 {
 		t.Fatalf("total %d lines %d: %v", view.Total, len(view.Lines), err)

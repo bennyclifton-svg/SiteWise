@@ -200,7 +200,10 @@ func (s *Store) packageColumnsInner(ctx context.Context, tx pgx.Tx, org, project
 	if err != nil {
 		return nil, nil, err
 	}
-	rows, err := tx.Query(ctx, `SELECT id::text FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 ORDER BY received_on, created_at`, org, project, pkg)
+	// Firms stand in the order the manager set (firm_order), then as received.
+	rows, err := tx.Query(ctx, `SELECT s.id::text FROM submissions s JOIN packages p ON p.org_id=s.org_id AND p.id=s.package_id
+WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id::text=$3
+ORDER BY array_position(p.firm_order, s.id) NULLS LAST, s.received_on, s.created_at`, org, project, pkg)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -420,9 +423,8 @@ type FirmCard struct {
 	// ("Services Engineer"): the PM combines rows for it or places it.
 	Combined bool `json:"combined,omitempty"`
 	// LikeForLike marks a tender-read firm: its figure is the tender sum
-	// plus the applied adds and subs. ToCheck is true until its column is checked.
+	// plus the applied adds and subs.
 	LikeForLike bool `json:"like_for_like,omitempty"`
-	ToCheck     bool `json:"to_check,omitempty"`
 	// joined is when the card's firm took its place on the row.
 	joined time.Time
 }
@@ -554,9 +556,8 @@ func cardOf(c FirmColumn) FirmCard {
 		card.FirmName = c.Firm.Name
 	}
 	if t := c.Tender; t != nil && t.State == TenderRead {
-		// A tender-read firm's card shows its like-for-like total, and says
-		// "To check" until the manager has checked its column.
-		card.BaseTotal, card.LikeForLike, card.ToCheck = t.LikeForLike, true, !t.Checked
+		// A tender-read firm's card shows its like-for-like total.
+		card.BaseTotal, card.LikeForLike = t.LikeForLike, true
 		if t.LikeForLike != nil {
 			card.KnownBase = *t.LikeForLike
 		}

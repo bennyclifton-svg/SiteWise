@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { basisWords, cellWords, columnState, gapWords, markWords, printedWords, remainderWords, signed, sourceWords, suggestedWords } from "./words";
+import { basisWords, cellWords, columnState, dollars, gapWords, markWords, printedWords, remainderWords, signed, sourceWords, suggestedWords } from "./words";
 
 const cell = (state: "" | "priced" | "included" | "excluded" | "not_priced", amount: string | null = null) => ({ state, amount, lines: 1, mark: "" as const, to_check: false });
 
@@ -14,8 +14,8 @@ test("a cell says its amount, or what the firm said", () => {
 });
 
 test("marks are one plain word or phrase", () => {
-  expect(markWords("high")).toBe("High");
-  expect(markWords("low")).toBe("Low");
+  // High and low marks were removed (owner, 15 Nov 2026).
+  expect(markWords("high")).toBe("");
   expect(markWords("gap")).toBe("Others priced this");
   expect(markWords("")).toBe("");
 });
@@ -34,8 +34,8 @@ test("a column says where its reading stands", () => {
   expect(columnState({ state: "reading", error: "", checked: false })).toBe("Reading prices…");
   expect(columnState({ state: "failed", error: "The model declined to read this file.", checked: false })).toBe("The model declined to read this file.");
   expect(columnState({ state: "failed", error: "", checked: false })).toBe("Prices not read");
-  expect(columnState({ state: "read", error: "", checked: false })).toBe("To check");
-  expect(columnState({ state: "read", error: "", checked: true })).toBe("Checked");
+  // A read column carries no "to check" word: Award is the acceptance.
+  expect(columnState({ state: "read", error: "", checked: false })).toBe("");
 });
 
 test("a price that is not fixed says so", () => {
@@ -61,6 +61,16 @@ test("adds and subs carry their sign and where the figure came from", () => {
   expect(suggestedWords(3)).toBe("3 suggestions not applied");
   expect(suggestedWords(1)).toBe("1 suggestion not applied");
   expect(suggestedWords(0)).toBe("");
+});
+
+test("whole dollars round half up and keep the grouping", () => {
+  expect(dollars("1234567.49", false)).toBe("$1,234,567");
+  expect(dollars("999.50", false)).toBe("$1,000");
+  expect(dollars("-12.5", false)).toBe("-$13");
+  expect(signed("15000.00", false)).toBe("+$15,000");
+  expect(cellWords(cell("priced", "96000.00"), false)).toBe("$96,000");
+  expect(gapWords({ low: "5000.40", high: "5000.40", average: "5000.40", count: 1 }, false)).toBe("Not priced. Others $5,000");
+  expect(dollars("1234.5")).toBe("$1,234.50");
 });
 
 test("a line printed with GST says what was printed", () => {

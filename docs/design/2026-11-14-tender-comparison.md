@@ -106,15 +106,37 @@ LIKE FOR LIKE                      737,000     607,000     798,000
 
 - A cell opens to show the firm's own lines behind it: wording, amount, page.
   A page number opens the document at that page.
-- "High" and "Low" mark a cell far from the other firms on that row.
+- Cells are not marked "High" or "Low" (removed by the owner, 15 November
+  2026: the manager reads the figures side by side). Figures sit on the
+  right edge in whole dollars; "Decimals" in the ⋮ menu shows cents.
 - An amber dot marks a figure to check (section 9).
 - The like-for-like total counts applied adds and subs only. The table says
   how many suggestions are not applied.
 - The lowest like-for-like total is marked. A firm with rows not priced is
   never marked lowest.
-- Each firm's column is **to check** until the manager marks it **checked**
-  (one click a firm, or all at once). The reading is a proposal until then.
-  Award and report sign-off refuse a firm whose column is not checked.
+- The reading is a proposal until the manager presses **Award**, which sits
+  beside the firm's tender sum. Pressing it, after reading the column, is the
+  acceptance. There is no separate "checked" step (owner, 15 November 2026:
+  it was friction; the manager checks the figures before awarding). Report
+  sign-off is likewise its own acceptance. The firm's head shows its name
+  and, on hover, a read-again icon and a cross to detach the proposal (as on
+  the Procurement board); it shows no received date and no "Received".
+- Each row has a chevron. Opening a row shows every firm's own lines at
+  once, each in its own column, and leaves other open rows open. A line is
+  at most two lines tall: the wording with its page after it, the amount on
+  the column's right edge (lined up with the row's figure), and the ⋯ menu
+  on hover. The firm's heading, the printed inc GST figure and notes are in
+  the hover text; a warning keeps its amber dot (owner, 15 November 2026).
+- Lines of an open row sit in slots shared across the firms, every slot two
+  lines tall, so like lines sit level. Until the manager arranges a row, Go
+  word matching (`tender.Slots`: shared words, no model, nothing stored)
+  sets the slots. Dragging a line by its grip, or Alt+Up/Down, saves every
+  line's slot in that row (`set_slot`, `tender_lines.slot`, undoable), and
+  the row keeps that layout for everyone. Moving a line to another row
+  clears its slot.
+- A firm's head has a grip: dragging it, or Alt+Left/Right, sets the
+  firms' order for everyone (`order_columns`, `packages.firm_order`); the
+  price table, report and export follow it.
 - Rates (consultants), earlier and superseded submissions, award and the
   comparison report stay as they are.
 
@@ -286,11 +308,12 @@ calibrated. It is not in this version.
 On a line: amount not found on the page; read from a scan; row not sure;
 counted to match the total; treated as a breakdown.
 
-On a cell: High or Low (more than double or less than half the median of the
-other firms on the row, with at least two others priced); Not priced or
-Excluded where at least half the others priced it.
+On a cell: Not priced or Excluded where at least half the others priced it
+("Others priced this"). High and Low marks were removed on 15 November 2026.
 
-On a column: not a fixed price (estimate, cost plus, rates only); GST basis
+On a column: not a fixed price (estimate, cost plus, rates only; still read
+and sent with the table, no longer shown in the firm's head since 15
+November 2026); GST basis
 not stated; no total printed; tender sum to check; lines differ from the
 tender sum; a pack or section whose detail does not add up, with the
 difference; options or alternatives offered.
@@ -310,10 +333,11 @@ All of these are saved reads and writes. None calls Jev or the model.
 - Take a line out as a subtraction (drag down).
 - Add, rename or remove a row.
 - Everything in section 6.
-- Mark a firm's column checked, or un-check it.
 - Undo a change.
 - "Read again" re-runs the tender pass for one firm. The manager's own
-  lines and corrections are kept, and the column goes back to "to check".
+  lines and corrections are kept. It is for a revised proposal that
+  replaced the file, a reading that failed or split lines poorly, or a
+  schedule that changed after the reading.
 - Export both tables to Excel and CSV; print with the comparison report.
 
 Selection, inline editing and the right-click menu follow the document
@@ -563,7 +587,7 @@ of its conditions, and how the tender pass meets it:
 | In background jobs the LLM may propose line structure, row mappings and qualifications for quotes | That is all the tender pass returns: lines, a row for each, exclusions and notes. |
 | It never supplies an amount SiteWise did not give it | R3: an amount not in the page text SiteWise sent is thrown away. Go parses, converts and adds every figure. |
 | Nothing in a document is an instruction to it | Section 13: a tender is data; the answer is held to the schema, the page text and the schedule's row keys. |
-| Nothing it proposes is applied without the user's acceptance | A column is "to check" until the manager marks it checked. Award and sign-off need it checked. Adds and subs are suggested until applied. |
+| Nothing it proposes is applied without the user's acceptance | Nothing reaches a contract value until the manager presses Award; nothing is signed off until the manager signs. Adds and subs are suggested until applied. |
 | One LLM, which each org switches on | Section 17. |
 | No screen read or write calls the LLM | Section 10: the pass runs only in the background job and on "Read again". |
 
@@ -583,8 +607,7 @@ Each is a vertical slice with its own tests and stays within its budget.
    model.
 2. The org switch; storage; the cell projection; the table read; the
    background job.
-3. The first table: cells, lines behind a cell, flags, "to check" and
-   "checked". Read only.
+3. The first table: cells, lines behind a cell, flags. Read only.
 4. Editing the first table: move, split, correct, add, count and uncount,
    as operations, with undo. Needs the project change log.
 5. Adds and subs: suggestions, apply, the manager's own rows, drag down,
@@ -609,9 +632,9 @@ Recommended here. The owner said to proceed on these recommendations on 14
 November 2026, so they stand unless changed:
 
 5. Jev keeps identity and does not gate the tender pass (section 7.2).
-6. A firm's column is "to check" until the manager marks it checked, and
-   award needs it checked. This is how rule 1's "not applied without the
-   user's acceptance" is met.
+6. Pressing Award is the acceptance rule 1 asks for. (Until 15 November
+   2026 a separate "checked" mark gated award and sign-off; the owner
+   removed it as friction.)
 7. A suggested add or sub does not count until the manager applies it.
 8. Dragging a tendered line down makes a subtraction; the first table never
    changes its total.
@@ -628,7 +651,7 @@ November 2026, so they stand unless changed:
 
 A manager drops three tenders on a package and, without typing a figure,
 sees both tables with each column equal to its printed tender sum; moves a
-line; applies one suggested add; marks the columns checked; reads a
+line; applies one suggested add; reads a
 like-for-like total; and exports it. With the org's switch off, no tender
 page leaves the server and the old reading still works. The answer key
 passes its marks. Every budget in section 12 is met.

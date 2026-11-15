@@ -1,3 +1,4 @@
+import { Chevron } from "../../Chevron";
 import { RowHandle } from "../../table/RowHandle";
 import { IconBin } from "../../icons";
 // The Program grid (plan 9.1, 9.5): a treegrid of stages and activities.
@@ -8,7 +9,7 @@ import { IconBin } from "../../icons";
 // message when it is not valid. A handle in the # cell drags rows to
 // reorder them. Every cell carries data-col for focus and editing.
 
-import { memo, type PointerEvent as ReactPointerEvent } from "react";
+import { memo, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from "react";
 import type { Cal } from "../calendar";
 import type { Times } from "../types";
 import { shownDates, type Row } from "../layout";
@@ -65,6 +66,8 @@ export interface GridProps {
   onDelete?: (id: string) => void;
   /** Row id → markers shown beside its name (plan 10.2, 10.4). */
   notes?: ReadonlyMap<string, readonly RowNote[]>;
+  /** One step up or down on an activity's duration; no steppers without it (print). */
+  onStep?: (id: string, days: number) => void;
 }
 
 export const GRID_COLUMNS = ["#", "Name", "Duration", "Start", "Finish", "Predecessors"] as const;
@@ -73,10 +76,14 @@ export function durationText(row: Row, t: Times | undefined): string {
   const a = row.act;
   if (row.hasChildren) return t && t.es !== null && t.ef !== null ? `${t.ef - t.es}d` : "Unknown";
   if (a.duration_days === null) return "Unknown";
-  if (a.duration_low !== null && a.duration_high !== null && a.duration_low !== a.duration_high) {
-    return `${a.duration_days}d (${a.duration_low}–${a.duration_high})`;
-  }
   return a.duration_days === 0 ? "Milestone" : `${a.duration_days}d`;
+}
+
+/** "Typical range 15–45 days", or "" without a range; shown on hover so the cell stays narrow. */
+export function rangeText(row: Row): string {
+  const a = row.act;
+  if (row.hasChildren || a.duration_low === null || a.duration_high === null || a.duration_low === a.duration_high) return "";
+  return `Typical range ${a.duration_low}–${a.duration_high} days`;
 }
 
 /** Why a duration is a default the user should adjust, or "" when it is not. */
@@ -99,10 +106,11 @@ export const Grid = memo(function Grid(p: GridProps) {
   for (let i = first; i < last; i++) {
     const r = rows[i];
     const t = times[r.id];
-    const d = shownDates(cal, t);
+    const d = shownDates(cal, t, true);
     const unknown = durationText(r, t) === "Unknown";
     const assumed = assumedNote(r);
-    const proposed = r.act.review_status === "proposed";
+    const durTitle = [assumed && `Assumed: ${assumed}`, rangeText(r)].filter(Boolean).join(" ");
+    const steps = !!p.onStep && !r.hasChildren && r.act.kind !== "milestone" && r.act.kind !== "hold_point";
     const ed = editing && editing.id === r.id ? editing : null;
     const cell = (col: string) => ({
       "data-col": col,
@@ -159,9 +167,7 @@ export const Grid = memo(function Grid(p: GridProps) {
                 onToggle(r.id);
               }}
             >
-              <svg viewBox="0 0 12 12" aria-hidden="true">
-                <path d={r.expanded ? "M2.5 4.5 6 8l3.5-3.5" : "M4.5 2.5 8 6l-3.5 3.5"} />
-              </svg>
+              <Chevron open={r.expanded} />
             </button>
           ) : (
             <span className="pg-chevron-gap" aria-hidden="true" />
@@ -179,11 +185,6 @@ export const Grid = memo(function Grid(p: GridProps) {
               }}
             >
               {r.act.label}
-            </span>
-          )}
-          {proposed && (
-            <span className="pg-proposed" title="Proposed: not yet accepted">
-              <span className="sr-only">, proposed</span>
             </span>
           )}
           {!ed &&
@@ -216,16 +217,18 @@ export const Grid = memo(function Grid(p: GridProps) {
               role="gridcell"
               className={`pg-cell pg-dur${unknown ? " is-unknown" : ""}`}
               {...cell("duration")}
+              title={durTitle || undefined}
               onDoubleClick={() => p.onEdit?.(r.id, "duration")}
             >
               {editor("duration") ?? (
                 <>
                   {assumed && (
-                    <span className="pg-assumed" title={assumed} aria-label={`Assumed: ${assumed}`}>
+                    <span className="pg-assumed" aria-label={`Assumed: ${assumed}`}>
                       ≈
                     </span>
                   )}
                   {durationText(r, t)}
+                  {steps && <Stepper label={r.act.label} onStep={(n) => p.onStep!(r.id, n)} />}
                 </>
               )}
             </span>
@@ -270,3 +273,25 @@ export const Grid = memo(function Grid(p: GridProps) {
     </div>
   );
 });
+
+/**
+ * Up and down on a duration (owner, 12 Nov 2026): one day a click, five with
+ * Shift. Out of the tab order; + and − do the same from the keyboard.
+ */
+function Stepper({ label, onStep }: { label: string; onStep: (days: number) => void }) {
+  const step = (dir: 1 | -1) => (e: ReactMouseEvent) => {
+    e.stopPropagation();
+    onStep(dir * (e.shiftKey ? 5 : 1));
+  };
+  const stop = (e: ReactMouseEvent) => e.stopPropagation();
+  return (
+    <span className="pg-step" onDoubleClick={stop}>
+      <button type="button" tabIndex={-1} aria-label={`One day longer: ${label}`} title="One day longer (Shift: five)" onClick={step(1)}>
+        <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1.5 5 5 1.5 8.5 5" /></svg>
+      </button>
+      <button type="button" tabIndex={-1} aria-label={`One day shorter: ${label}`} title="One day shorter (Shift: five)" onClick={step(-1)}>
+        <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1.5 1 5 4.5 8.5 1" /></svg>
+      </button>
+    </span>
+  );
+}

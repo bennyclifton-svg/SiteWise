@@ -53,6 +53,9 @@ type tenderLineJSON struct {
 	Flags     []tender.Flag `json:"flags"`
 	DecidedBy string        `json:"decided_by"`
 	SplitOf   string        `json:"split_of"`
+	// Slot is the line's place in its open row, shared across firms; -1
+	// for a line no row shows.
+	Slot int `json:"slot"`
 }
 
 type tenderColumnJSON struct {
@@ -128,7 +131,7 @@ func tenderBody(t *store.TenderTable, available bool) *tenderJSON {
 				flags = []tender.Flag{}
 			}
 			col.Lines = append(col.Lines, tenderLineJSON{ID: l.ID, Ordinal: l.Ordinal, Page: l.Page, Label: l.Label, Printed: l.Printed, Amount: cents(l.Cents), GST: l.GST, State: l.State, Kind: l.Kind,
-				Placed: l.Placed, Heading: l.Heading, Row: l.Row, Note: l.Note, Counted: l.Counted, Flags: flags, DecidedBy: l.DecidedBy, SplitOf: l.SplitOf})
+				Placed: l.Placed, Heading: l.Heading, Row: l.Row, Note: l.Note, Counted: l.Counted, Flags: flags, DecidedBy: l.DecidedBy, SplitOf: l.SplitOf, Slot: slotOf(c.Slots, l.ID)})
 		}
 		out.Columns = append(out.Columns, col)
 	}
@@ -143,4 +146,11 @@ func tenderBody(t *store.TenderTable, available bool) *tenderJSON {
 		out.Adjustments = append(out.Adjustments, adj)
 	}
 	return out
+}
+
+func slotOf(slots map[string]int, id string) int {
+	if s, ok := slots[id]; ok {
+		return s
+	}
+	return -1
 }

@@ -177,6 +177,7 @@ var programReviewRoutes = map[string]bool{
 	"POST /projects/{id}/program/accept":                 true,
 	"POST /projects/{id}/program/question":               true,
 	"POST /projects/{id}/program/changes/decide":         true,
+	"POST /projects/{id}/program/update":                 true,
 }
 
 // statusWriter remembers the status a handler wrote.
@@ -233,6 +234,41 @@ func getProgramChanges(w http.ResponseWriter, r *http.Request, d Deps) {
 		return
 	}
 	writeJSON(w, http.StatusOK, list)
+}
+
+// postProgramUpdate is POST /program/update {"version"}: the Update program
+// button. Every difference from the regenerated program is applied at once,
+// with no review to answer (owner, 12 November 2026); one undo reverses it.
+func postProgramUpdate(w http.ResponseWriter, r *http.Request, d Deps) {
+	s, ok := programSession(w, r, d, true)
+	if !ok {
+		return
+	}
+	var body struct {
+		Version int64 `json:"version"`
+	}
+	if readProposalJSON(w, r, d.MaxBodyBytes, &body) != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if body.Version < 1 {
+		programInvalid(w, "version", "The program version is required.")
+		return
+	}
+	ctx, project := r.Context(), r.PathValue("id")
+	res, err := d.Store.UpdateProgram(ctx, s.OrgID, project, s.UserID, body.Version, d.Knowledge)
+	if err != nil {
+		programError(w, r, d, s.OrgID, res, err)
+		return
+	}
+	view, err := d.Store.ResultView(ctx, s.OrgID, project, res, d.Knowledge)
+	if err != nil {
+		programError(w, r, d, s.OrgID, res, err)
+		return
+	}
+	programChanged(r, d, s.OrgID, res.Program)
+	publishReview(ctx, d.Broker, d.Log, s.OrgID, project, res.Program.ID, view.ChangesPending)
+	writeJSON(w, http.StatusOK, view)
 }
 
 // postProgramDecide is POST /program/changes/decide {"version",

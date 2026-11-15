@@ -59,6 +59,9 @@ type TenderColumn struct {
 	Exclusions   []tender.RawExclusion
 	Cells        map[string]TenderCell
 	Lines        []tender.Line
+	// Slots is each shown line's place within its row, shared across the
+	// package's firms (tender.Slots).
+	Slots map[string]int
 	// Gaps is how many rows carry a gap mark that no applied add answers.
 	Gaps int
 }
@@ -172,6 +175,21 @@ func packageTenderColumns(ctx context.Context, tx pgx.Tx, org string, items []Sc
 		}
 		cols = append(cols, col)
 		marking = append(marking, tender.Column{ID: id, Sum: st.Sum, OnRows: tender.OnRows(r, rows), Cells: cells})
+	}
+	// Like lines sit side by side when a row is opened: the manager's places,
+	// else word matching, in column order.
+	var lineCols [][]tender.Line
+	for _, c := range cols {
+		lineCols = append(lineCols, c.Lines)
+	}
+	slots := tender.Slots(rows, lineCols)
+	for i := range cols {
+		cols[i].Slots = map[string]int{}
+		for _, l := range cols[i].Lines {
+			if s, ok := slots[l.ID]; ok {
+				cols[i].Slots[l.ID] = s
+			}
+		}
 	}
 	marks := tender.Marks(rows, marking)
 	for i := range cols {

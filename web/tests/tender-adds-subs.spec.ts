@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { dropTender, freshOwner, modelSwitch, money, openPrices, tenderPackage, tenderTable, waitRead, type TenderJSON } from "./tender-helpers";
+import { dropTender, freshOwner, modelSwitch, openPrices, tenderPackage, tenderTable, type TenderJSON, waitRead, whole } from "./tender-helpers";
 
 // The second table: the system suggests, the manager applies, and the tender
 // sum plus what is applied is the like-for-like total. The browser never
@@ -28,27 +28,27 @@ test("adds and subs: suggestions, apply, a gap, the manager's own row, a line ta
   await openPrices(page, p);
   const adds = page.getByRole("region", { name: "Adds and subs" });
   await expect(adds.getByText("3 suggestions not applied")).toBeVisible();
-  await expect(adds.getByLabel("Like for like, Alder Planning")).toHaveText(money(6000));
-  await expect(adds.getByLabel("Like for like, Birch Planning")).toHaveText(money(4000));
-  await expect(adds.getByLabel("Like for like, Cedar Planning")).toHaveText(money(7400));
+  await expect(adds.getByLabel("Like for like, Alder Planning")).toHaveText(whole(6000));
+  await expect(adds.getByLabel("Like for like, Birch Planning")).toHaveText(whole(4000));
+  await expect(adds.getByLabel("Like for like, Cedar Planning")).toHaveText(whole(7400));
   // B left a row out, so the lower sum is not marked lowest; A is.
   expect(col(t, a).lowest).toBe(true);
 
   // 2. Apply C's extra, the firm's own figure: its like-for-like rises by it, and it stays applied.
   await adds.getByRole("button", { name: /^Apply Extra to the price: .*asbestos removal for Cedar Planning$/ }).click();
-  await expect(adds.getByLabel("Like for like, Cedar Planning")).toHaveText(money(8100));
+  await expect(adds.getByLabel("Like for like, Cedar Planning")).toHaveText(whole(8100));
   await expect(adds.getByText("2 suggestions not applied")).toBeVisible();
   await openPrices(page, p);
-  await expect(page.getByRole("region", { name: "Adds and subs" }).getByLabel("Like for like, Cedar Planning")).toHaveText(money(8100));
+  await expect(page.getByRole("region", { name: "Adds and subs" }).getByLabel("Like for like, Cedar Planning")).toHaveText(whole(8100));
 
   // 3. B's gap: the manager chooses the highest of the others.
   const gapRow = adds.getByRole("row", { name: new RegExp(`Allowance for ${r3.label}`) });
-  await expect(gapRow).toContainText(`Not priced. Others ${money(3000)} to ${money(4000)}`);
+  await expect(gapRow).toContainText(`Not priced. Others ${whole(3000)} to ${whole(4000)}`);
   await gapRow.getByRole("button", { name: /^Apply Allowance for .* for Birch Planning$/ }).click();
   await gapRow.getByRole("button", { name: "Use the highest" }).click();
-  await expect(gapRow).toContainText(`+${money(4000)}`);
+  await expect(gapRow).toContainText(`+${whole(4000)}`);
   await expect(gapRow).toContainText("highest of the others");
-  await expect(adds.getByLabel("Like for like, Birch Planning")).toHaveText(money(8000));
+  await expect(adds.getByLabel("Like for like, Birch Planning")).toHaveText(whole(8000));
 
   // 4. The manager's own row, with a typed subtraction for A.
   await adds.getByLabel("New add or sub").fill("Site shed");
@@ -57,17 +57,17 @@ test("adds and subs: suggestions, apply, a gap, the manager's own row, a line ta
   await shed.getByRole("button", { name: "Type an amount for Alder Planning on Site shed" }).click();
   await shed.getByLabel("Amount, minus for a subtraction").fill("-5000");
   await shed.getByRole("button", { name: "Save" }).click();
-  await expect(shed).toContainText(`−${money(5000)}`);
-  await expect(adds.getByLabel("Like for like, Alder Planning")).toHaveText(money(1000));
+  await expect(shed).toContainText(`−${whole(5000)}`);
+  await expect(adds.getByLabel("Like for like, Alder Planning")).toHaveText(whole(1000));
 
   // 5. A tendered line taken out: a subtraction for that firm; the first table is unchanged.
   const table = page.getByRole("table", { name: "As tendered, ex GST" });
-  await table.getByRole("button", { name: `${r2.label}, Alder Planning: ${money(2000)}. Show lines` }).click();
-  await page.getByRole("region", { name: `Alder Planning: lines in ${r2.label}` }).getByRole("row", { name: new RegExp(r2.label.split(" ")[0]) }).click({ button: "right" });
+  await table.getByRole("button", { name: `${r2.label}, Alder Planning: ${whole(2000)}. Show lines` }).click();
+  await page.getByRole("region", { name: `Alder Planning: lines in ${r2.label}` }).getByRole("row", { name: new RegExp(r2.label.split(" ")[0]) }).locator(".tender-line-label").click({ button: "right" });
   await page.getByRole("menuitem", { name: "Take out as a subtraction" }).click();
-  await expect(adds.getByRole("row", { name: new RegExp(`Less: ${r2.label.split(" ")[0]}`) })).toContainText(`−${money(2000)}`);
-  await expect(table.getByLabel("Tender sum, Alder Planning", { exact: true })).toHaveText(money(6000));
-  await expect(adds.getByLabel("Like for like, Alder Planning")).toHaveText(`-${money(1000)}`);
+  await expect(adds.getByRole("row", { name: new RegExp(`Less: ${r2.label.split(" ")[0]}`) })).toContainText(`−${whole(2000)}`);
+  await expect(table.getByLabel("Tender sum, Alder Planning", { exact: true })).toHaveText(whole(6000));
+  await expect(adds.getByLabel("Like for like, Alder Planning")).toHaveText(`-${whole(1000)}`);
   t = await tenderTable(page, p);
   expect(cents(col(t, a).tender_sum)).toBe(600000);
   expect(lfl(t, a)).toBe(-100000);
@@ -76,7 +76,7 @@ test("adds and subs: suggestions, apply, a gap, the manager's own row, a line ta
   await adds.getByRole("button", { name: "Remove Option: epoxy grout" }).click();
   await expect(adds.getByRole("row", { name: /Option: epoxy grout/ })).toHaveCount(0);
   const version = (await tenderTable(page, p)).version;
-  await table.getByRole("columnheader", { name: /Alder Planning/ }).getByRole("button", { name: "Read again" }).click();
+  await table.getByRole("columnheader", { name: /Alder Planning/ }).getByRole("button", { name: "Read prices again for Alder Planning" }).click();
   await expect.poll(async () => {
     const now = await tenderTable(page, p);
     return now.version > version && col(now, a).state === "read";

@@ -264,6 +264,9 @@ type Evidence struct {
 	SignatureFirm string
 	// HeaderFirm is the one registered company name in the header.
 	HeaderFirm string
+	// LabelledFirm is the firm a header table names in its own labelled row
+	// ("| Proponent | … |").
+	LabelledFirm string
 	// MonthlyFees are fee rows worded per month ("Monthly × est. 9 months").
 	MonthlyFees []string
 	// PI is the professional indemnity cover the document states, or nil.
@@ -394,11 +397,14 @@ func Harvest(filename string, text identity.Text) Evidence {
 		if addressee(t) {
 			inAddressee = 3
 		}
-		if inAddressee == 0 {
+		// A table row labelled Client, Project or Site is the addressee's or
+		// the site's too, but only that row (Seven Hills corpus, 15 Nov 2026).
+		rowAddressee := len(l.Cells) > 1 && addresseeCellRe.MatchString(stripEmphasis(l.Cells[0]))
+		if inAddressee == 0 && !rowAddressee {
 			for _, m := range addressRe.FindAllString(t, -1) {
 				addUnique(&ev.Addresses, strings.Trim(m, " ,."))
 			}
-		} else {
+		} else if inAddressee > 0 {
 			inAddressee--
 		}
 		for _, m := range abnRe.FindAllString(abnGlued.ReplaceAllString(t, "ABN $1"), -1) {
@@ -427,8 +433,22 @@ func Harvest(filename string, text identity.Text) Evidence {
 		if monthlyFee.MatchString(t) && moneyRe.MatchString(t) {
 			ev.MonthlyFees = append(ev.MonthlyFees, strings.TrimSpace(strings.Trim(stripEmphasis(t), "|")))
 		}
+		// A table row offers its cells as names, never the row with its label
+		// ("Consultant | Example Studio"); a two-cell row's first cell is
+		// that label (Seven Hills corpus, 15 Nov 2026).
+		for _, c := range nameCells(l) {
+			if companyRe.MatchString(c) && len(strings.Fields(c)) <= 8 && !moneyRe.MatchString(c) && !emailRe.MatchString(c) {
+				addUnique(&ev.Names, cleanFirmCandidate(strings.Trim(c, " ,.-|")))
+			}
+		}
+		// A row labelled with the firm's role offers its value to Jev even
+		// without a company word ("| Consultant | Northline Structures |").
+		if l.X == nil && len(l.Cells) == 2 && roleCellRe.MatchString(stripEmphasis(l.Cells[0])) {
+			if c := strings.Trim(stripEmphasis(l.Cells[1]), " ,.-|"); len(strings.Fields(c)) <= 8 && !moneyRe.MatchString(c) && !emailRe.MatchString(c) && !addressRe.MatchString(c) {
+				addUnique(&ev.Names, cleanFirmCandidate(c))
+			}
+		}
 		if companyRe.MatchString(t) && len(strings.Fields(t)) <= 8 && !moneyRe.MatchString(t) && !emailRe.MatchString(t) {
-			addUnique(&ev.Names, cleanFirmCandidate(strings.Trim(t, " ,.-|")))
 			if signatureRole.MatchString(t) && i > 0 && personName(lines[i-1].Text) {
 				addUnique(&ev.Contacts, lines[i-1].Text)
 			}
@@ -516,6 +536,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 	ev.Dated = headerDate(lines)
 	ev.PI = readInsurance(lines)
 	ev.HeaderFirm = headerFirm(lines)
+	ev.LabelledFirm = labelledFirm(lines)
 	// Keep table structure with a subtotal: the headings above its component
 	// rows explain the scope a single bundled figure covers.
 	for i := range ev.Amounts {
@@ -1035,6 +1056,28 @@ func formCells(lines []Line) (map[string]string, map[string]string) {
 		}
 	}
 	return form, firm
+}
+
+// roleCellRe is a table row's label naming the engaged firm's role.
+var roleCellRe = regexp.MustCompile(`(?i)^\s*(?:consultant|builder|contractor|firm|company|proponent|tenderer|respondent|supplier|subcontractor|submitted\s+by|prepared\s+by)\s*:?\s*$`)
+
+// nameCells is where a line's candidate names are: its text, or a table
+// row's cells, leaving out a two-cell row's label. A PDF line's "cells" are
+// its runs of text, not a table's, so it keeps its whole text as before.
+func nameCells(l Line) []string {
+	switch {
+	case l.X != nil:
+		return []string{l.Text}
+	case len(l.Cells) == 2:
+		return []string{stripEmphasis(l.Cells[1])}
+	case len(l.Cells) > 2:
+		out := make([]string, 0, len(l.Cells))
+		for _, c := range l.Cells {
+			out = append(out, stripEmphasis(c))
+		}
+		return out
+	}
+	return []string{l.Text}
 }
 
 func firstPage(lines []Line) int {

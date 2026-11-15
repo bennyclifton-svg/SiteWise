@@ -133,11 +133,13 @@ export const Bars = memo(function Bars({ rows, times, v, first, last, selected, 
       const s = MILESTONE / 2;
       shape = <path className="pg-shape" d={`M${b.x},${mid - s}L${b.x + s},${mid}L${b.x},${mid + s}L${b.x - s},${mid}Z`} />;
     } else if (r.hasChildren) {
-      // A stage spanning its activities: a thin band with end ticks.
-      const top = Math.round(y + h * 0.3) + 0.5;
-      const bh = Math.max(4, Math.round(h * 0.22));
+      // A stage spanning its activities: a slender line with end ticks, so it
+      // reads as an extent, not as an activity bar.
+      const bh = Math.max(2, Math.round(h * 0.1));
+      const tick = 3;
+      const top = Math.round(mid - (bh + tick) / 2) + 0.5;
       const w = Math.max(1, Math.round(b.w) - 1);
-      shape = <path className="pg-shape" d={`M${x},${top}h${w}v${bh + 4}l-4,-4H${x + 4}l-4,4Z`} />;
+      shape = <path className="pg-shape" d={`M${x},${top}h${w}v${bh + tick}l-${tick},-${tick}H${x + tick}l-${tick},${tick}Z`} />;
     } else {
       const top = Math.round(y + h * 0.22) + 0.5;
       shape = <rect className="pg-shape" x={x} y={top} width={Math.max(1, Math.round(b.w) - 1)} height={Math.round(h * 0.56) - 1} rx={2} />;

@@ -19,8 +19,12 @@ var (
 	// client, the project or the site.
 	addresseeRe = regexp.MustCompile(`(?i)^\s*(?:to|attn\.?|attention|client|principal|owner|project|site|prepared\s+for|re|subject)\s*[:–]`)
 	bareLabelRe = regexp.MustCompile(`(?i)^\s*(?:to|client|principal|owner|attention|prepared\s+for)\s*$`)
-	dateLabelRe = regexp.MustCompile(`(?i)^\s*(?:date|dated|proposal\s+date)\s*:\s*(.+)$`)
-	dayInLine   = regexp.MustCompile(`\b\d{1,2}\s+[A-Za-z]+\s+\d{4}\b|\b\d{1,2}/\d{1,2}/\d{4}\b`)
+	// addresseeCellRe is a table row's label cell that names someone other
+	// than the firm: "| Client | Example Pty Ltd |" (Seven Hills corpus,
+	// 15 Nov 2026: a header table's client row was read as the firm).
+	addresseeCellRe = regexp.MustCompile(`(?i)^\s*(?:to|attn\.?|attention|client|principal|owner|developer|proprietor|project|site|prepared\s+for|re|subject)\s*:?\s*$`)
+	dateLabelRe     = regexp.MustCompile(`(?i)^\s*(?:date|dated|proposal\s+date)\s*:\s*(.+)$`)
+	dayInLine       = regexp.MustCompile(`\b\d{1,2}\s+[A-Za-z]+\s+\d{4}\b|\b\d{1,2}/\d{1,2}/\d{4}\b`)
 	// legalName is a company's registered form, as a header prints it.
 	legalName = regexp.MustCompile(`(?i)\bpty\.?\s*(?:ltd|limited)\b|\blimited\b`)
 )
@@ -36,10 +40,53 @@ func headerFirm(lines []Line) string {
 			break
 		}
 		t := strings.Trim(stripEmphasis(l.Text), " ,.-|#")
-		if !legalName.MatchString(t) || addressee(l.Text) || len(strings.Fields(t)) > 8 || moneyRe.MatchString(t) || emailRe.MatchString(t) || addressRe.MatchString(t) {
+		// In a table row the name is its own cell, not the row with its label.
+		if len(l.Cells) > 1 {
+			t = ""
+			for _, c := range l.Cells {
+				if c = strings.Trim(stripEmphasis(c), " ,.-|#"); legalName.MatchString(c) {
+					t = c
+					break
+				}
+			}
+		}
+		if !legalName.MatchString(t) || addresseeLine(l) || len(strings.Fields(t)) > 8 || moneyRe.MatchString(t) || emailRe.MatchString(t) || addressRe.MatchString(t) {
 			continue
 		}
 		name := cleanFirmCandidate(t)
+		if found != "" && !strings.EqualFold(found, name) {
+			return ""
+		}
+		found = name
+	}
+	return found
+}
+
+// firmCellRe is a header table's label cell that names the submitting firm.
+// Only labels that cannot mean anything else: "Consultant" or "Firm" may
+// head a role or a column, so they are left out.
+var firmCellRe = regexp.MustCompile(`(?i)^\s*(?:proponent|tenderer|respondent|submitted\s+by|prepared\s+by)\s*:?\s*$`)
+
+// labelledFirm is the firm a document's header table names in a labelled
+// row, before its first section: "| Proponent | Span Theory Engineers |"
+// (Seven Hills corpus, 15 Nov 2026). Two different such names settle nothing.
+func labelledFirm(lines []Line) string {
+	found := ""
+	for i, l := range lines {
+		if i >= 25 || i > 0 && (l.Heading || strings.HasPrefix(l.Text, "## ")) {
+			break
+		}
+		if len(l.Cells) < 2 || !firmCellRe.MatchString(stripEmphasis(l.Cells[0])) {
+			continue
+		}
+		t := strings.Trim(stripEmphasis(l.Cells[1]), " ,.-|")
+		if t == "" || len(strings.Fields(t)) > 8 || moneyRe.MatchString(t) || emailRe.MatchString(t) || addressRe.MatchString(t) {
+			continue
+		}
+		name := cleanFirmCandidate(t)
+		if name == "" {
+			continue
+		}
 		if found != "" && !strings.EqualFold(found, name) {
 			return ""
 		}
@@ -58,6 +105,12 @@ func stripEmphasis(s string) string {
 func addressee(s string) bool {
 	s = stripEmphasis(s)
 	return addresseeRe.MatchString(s) || bareLabelRe.MatchString(s)
+}
+
+// addresseeLine is addressee for a whole line: a table row whose first cell
+// is such a label is the addressee's row too, whatever its other cells say.
+func addresseeLine(l Line) bool {
+	return addressee(l.Text) || len(l.Cells) > 1 && addresseeCellRe.MatchString(stripEmphasis(l.Cells[0]))
 }
 
 // legalNameRe is a registered company suffix.
@@ -79,7 +132,7 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 			break
 		}
 	}
-	if at < 0 || addressee(lines[at].Text) {
+	if at < 0 || addresseeLine(lines[at]) {
 		return nil
 	}
 	// A heading closes the block: a "Client:" line in the document header
@@ -92,7 +145,7 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 		}
 	}
 	for j := top; j < at; j++ {
-		if addressee(lines[j].Text) {
+		if addresseeLine(lines[j]) {
 			return nil
 		}
 	}
@@ -122,7 +175,7 @@ func letterhead(lines []Line, abns []string) *Letterhead {
 	var addresses []string
 	for j := top; j <= min(len(lines)-1, at+3); j++ {
 		t := stripEmphasis(lines[j].Text)
-		if j > at && (addressee(t) || isHeading(t) || strings.HasPrefix(t, "#")) {
+		if j > at && (addresseeLine(lines[j]) || isHeading(t) || strings.HasPrefix(t, "#")) {
 			break
 		}
 		for _, m := range addressRe.FindAllString(t, -1) {

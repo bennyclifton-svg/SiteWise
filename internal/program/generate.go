@@ -2,6 +2,7 @@ package program
 
 import (
 	"fmt"
+	"maps"
 	"math/big"
 	"slices"
 	"sort"
@@ -73,6 +74,13 @@ const (
 	// duration. Both carry an assumption note in durations.yaml.
 	durationInvestigateDefault = "du.investigate-default"
 	durationActivityDefault    = "du.activity-default"
+
+	// The outline's single bar for the building works (tradeChainDays), and
+	// the class its fallbacks and trade chain assume when the Profile's
+	// class is unknown or the library has no variant for it.
+	fragmentConstruction = "fr.construction"
+	assumedClass         = "1a"
+	noteFallback         = "No length for this building class yet; a house (Class 1a) length is assumed. Drag to adjust."
 )
 
 // GenInput is everything plan 7.1 lists, as plain values the store reads
@@ -115,6 +123,12 @@ type GenInput struct {
 	// WorkingWeek is the program's Mon=1 … Sun=64 mask; 0 is Mon–Fri. It
 	// turns construction_duration weeks into working days.
 	WorkingWeek int
+	// Outline builds the program a user opens (owner, 12 November 2026): the
+	// stages and their project activities, 20 to 30 rows. No trade rows from
+	// work items, no investigations, no hold points and no "If …" rows; one
+	// Construction bar stands for the trades. False builds the detailed
+	// program, which sizes that bar (tradeChainDays).
+	Outline bool
 }
 
 // Facts are the Profile facts generation reads.
@@ -190,6 +204,7 @@ type Row struct {
 	// Generation-only bookkeeping, not stored.
 	durationID  string
 	conditional bool
+	fallback    bool // from a class-free fallback fragment
 	item        *WorkItem
 }
 
@@ -311,9 +326,13 @@ func Generate(cat *knowledge.Catalog, in GenInput) (Plan, error) {
 	// have activities before any link is placed.
 	g.stageRows(choice.Skeleton)
 	g.packageStages()
-	g.investigationRows()
+	if !in.Outline {
+		g.investigationRows()
+	}
 	g.fragmentRows()
-	g.holdPointRows()
+	if !in.Outline {
+		g.holdPointRows()
+	}
 
 	g.stageLinks(choice.Skeleton)
 	g.fragmentLinks()
@@ -581,13 +600,25 @@ func (g *gen) investigationFragment(it WorkItem) bool {
 // add a copy for every work item.
 func (g *gen) fragmentRows() {
 	for _, f := range g.cat.Fragments() {
+		if f.OutlineOnly && !g.in.Outline {
+			continue
+		}
+		if g.in.Outline && f.Scope != knowledge.ScopeProject {
+			// Trade rows: the outline's Construction bar stands for them.
+			continue
+		}
+		if len(f.FallbackFor) > 0 && g.anyHolds(f.FallbackFor) {
+			continue
+		}
 		if f.Scope == knowledge.ScopeProject {
 			env := g.env(nil)
 			truth := knowledge.True
 			if f.AppliesWhen != nil {
 				truth = g.cat.Holds(f.AppliesWhen, env)
 			}
-			if truth == knowledge.False {
+			// The outline shows what is known to apply; an unknown condition
+			// would add an "If …" row per NCC class, so it is left out.
+			if truth == knowledge.False || g.in.Outline && truth == knowledge.Unknown {
 				continue
 			}
 			prefix := ""
@@ -624,11 +655,26 @@ func (g *gen) fragmentRows() {
 	}
 }
 
+// anyHolds reports whether one of the listed project fragments holds
+// outright, so a class-free fallback for them is not needed.
+func (g *gen) anyHolds(ids []string) bool {
+	env := g.env(nil)
+	for _, f := range g.cat.Fragments() {
+		if !slices.Contains(ids, f.ID) {
+			continue
+		}
+		if f.AppliesWhen == nil || g.cat.Holds(f.AppliesWhen, env) == knowledge.True {
+			return true
+		}
+	}
+	return false
+}
+
 // instantiate adds one copy of a fragment. item is nil for a project fragment,
 // which keeps the library label and the source-key slot "project".
 func (g *gen) instantiate(f knowledge.Fragment, item *WorkItem, slot, prefix string, conditional bool) {
 	stage := f.Stage
-	if moved, ok := g.fragmentStages[stage]; ok {
+	if moved, ok := g.fragmentStages[stage]; ok && !f.StageFixed {
 		stage = moved
 	}
 	stageKey, _ := g.resolveStage(stage)
@@ -639,6 +685,9 @@ func (g *gen) instantiate(f knowledge.Fragment, item *WorkItem, slot, prefix str
 		workID = item.ID
 	}
 	for _, a := range f.Activities {
+		if g.in.Outline && !a.InOutline() {
+			continue
+		}
 		label := a.Label
 		if item != nil && len(f.Activities) == 1 && strings.TrimSpace(item.Title) != "" {
 			label = item.Title
@@ -646,18 +695,25 @@ func (g *gen) instantiate(f knowledge.Fragment, item *WorkItem, slot, prefix str
 		key := "fragment:" + f.ID + ":" + slot + ":" + a.Key
 		r := Row{SourceKey: key, ParentKey: stageKey, Kind: KindActivity, Label: prefix + label,
 			WorkItemID: workID, FragmentID: f.ID, Systems: append([]string(nil), a.Systems...),
-			conditional: conditional, item: item}
+			conditional: conditional, fallback: len(f.FallbackFor) > 0, item: item}
 		if a.Duration != nil {
 			r.durationID = *a.Duration
 		}
 		g.addRow(r)
 		inst.keys[a.Key] = key
 	}
+	// Sources and sinks over the kept activities only: a link to a dropped
+	// activity does not make its other end internal.
 	internalPred, internalSucc := map[string]bool{}, map[string]bool{}
 	for _, l := range f.Links {
-		internalSucc[l.From], internalPred[l.To] = true, true
+		if inst.keys[l.From] != "" && inst.keys[l.To] != "" {
+			internalSucc[l.From], internalPred[l.To] = true, true
+		}
 	}
 	for _, a := range f.Activities {
+		if inst.keys[a.Key] == "" {
+			continue
+		}
 		if !internalPred[a.Key] {
 			inst.sources = append(inst.sources, inst.keys[a.Key])
 		}
@@ -1293,6 +1349,16 @@ func (g *gen) duration(i int) {
 		}
 		return
 	}
+	if r.FragmentID == fragmentConstruction {
+		if days, raw, ok := g.constructionDays(); ok {
+			set(days, DurationProfile, map[string]any{"planning_key": planConstructionDuration, "value": raw})
+			return
+		}
+		if days, note, ok := g.tradeChainDays(); ok {
+			set(days, DurationCalculation, map[string]any{"trade_chain": true, "assumed": note})
+			return
+		}
+	}
 	if !g.libraryDuration(r, r.durationID) && r.Duration == nil && r.Low == nil {
 		// Nothing in the library fits this activity. A row with no length
 		// blanks every row after it, so it takes the default and says so.
@@ -1345,6 +1411,8 @@ func (g *gen) libraryDuration(r *Row, id string) bool {
 		source["assumed"] = assumed
 	case d.Assumption != "":
 		source["assumed"] = d.Assumption
+	case r.fallback:
+		source["assumed"] = noteFallback
 	}
 	switch {
 	case r.conditional:
@@ -1400,6 +1468,56 @@ func (g *gen) childHasDuration(stage string) bool {
 		}
 	}
 	return false
+}
+
+// tradeChainDays sizes the outline's Construction bar from the library's
+// own trade activities: it builds the detailed program in memory, computes
+// it, and takes the working-day span of the Construction stage's work-item
+// rows. Nothing is invented; the bar is as long as the trades it replaces.
+// An unknown class, or one the library has no trades for, is taken as a
+// Class 1a house and the note says so.
+func (g *gen) tradeChainDays() (int, string, bool) {
+	class := strings.TrimSpace(g.in.Values["ncc_class"])
+	tries := []string{class, assumedClass}
+	if class == "" || class == assumedClass {
+		tries = []string{assumedClass}
+	}
+	for _, try := range tries {
+		in := g.in
+		in.Outline = false
+		in.Values = maps.Clone(g.in.Values)
+		in.Values["ncc_class"] = try
+		p, err := Generate(g.cat, in)
+		if err != nil {
+			return 0, "", false
+		}
+		out := Compute(p.Input(Calendar{WorkingWeek: in.WorkingWeek}))
+		lo, hi, found := 0, 0, false
+		for _, r := range p.Rows {
+			if r.ParentKey != p.ConstructionStageKey || r.WorkItemID == "" && r.Kind != KindHoldPoint {
+				continue
+			}
+			t, ok := out.Activities.Get(r.SourceKey)
+			if !ok || t.Unknown {
+				continue
+			}
+			if !found || t.ES < lo {
+				lo = t.ES
+			}
+			if !found || t.EF > hi {
+				hi = t.EF
+			}
+			found = true
+		}
+		if found && hi > lo && validDays(hi-lo) {
+			note := "Construction length from the library's trade activities for the included work. Set the construction duration on the Profile to replace it."
+			if try != class {
+				note = "NCC class not known or not covered: construction length assumed from a house (Class 1a) build of the included work. Set the class or the construction duration on the Profile to replace it."
+			}
+			return hi - lo, note, true
+		}
+	}
+	return 0, "", false
 }
 
 // constructionDays turns construction_duration (weeks) into working days:

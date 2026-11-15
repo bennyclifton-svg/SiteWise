@@ -91,8 +91,10 @@ test("shown dates: the last working day as finish; Week N, day M without a start
   const dated = new Cal({ start: "2027-03-01", working_week: 31 });
   const t: Times = { ...times(0, 5), start: "2027-03-01", finish: "2027-03-05" };
   expect(shownDates(dated, t)).toEqual({ start: "1 Mar 2027", finish: "5 Mar 2027" });
+  expect(shownDates(dated, t, true)).toEqual({ start: "01/03/27", finish: "05/03/27" });
   const relative = new Cal({ start: "", working_week: 31 });
   expect(shownDates(relative, times(0, 5))).toEqual({ start: "Week 1, day 1", finish: "Week 1, day 5" });
+  expect(shownDates(relative, times(0, 5), true)).toEqual({ start: "W1 d1", finish: "W1 d5" });
   expect(shownDates(relative, times(5, 6))).toEqual({ start: "Week 2, day 1", finish: "Week 2, day 1" });
   // A milestone shows its start only.
   expect(shownDates(relative, times(7, 7))).toEqual({ start: "Week 2, day 3", finish: "" });

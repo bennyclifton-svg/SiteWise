@@ -75,7 +75,6 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
             {applied.map(a => <tr key={a.id} className="report-applied"><th scope="row">{a.label}</th>{cols.map(c => { const m = a.amounts[c.submission.id]; return <td key={c.submission.id}>{m?.state === "applied" ? signed(m.amount) : ""}</td>; })}</tr>)}
             <tr className="report-total"><th scope="row">Like for like</th>{cols.map((c, i) => <td key={c.submission.id} className={tenderCols[i]?.lowest ? "lowest" : undefined}>{tenderCols[i] ? money(tenderCols[i]!.like_for_like) : "—"}</td>)}</tr>
             {tenderCols.some(t => t && t.flags.length > 0) && <tr><th scope="row">To look at</th>{cols.map((c, i) => <td key={c.submission.id}>{tenderCols[i]?.flags.map(f => <p key={f.code + f.text} className="report-passage">{f.text}</p>)}</td>)}</tr>}
-            {tenderCols.some(t => t && !t.checked) && <tr><th scope="row">Checked by the manager</th>{cols.map((c, i) => <td key={c.submission.id}>{tenderCols[i] ? (tenderCols[i]!.checked ? "Checked" : "To check") : "—"}</td>)}</tr>}
           </tbody>
         </table>
       </>}

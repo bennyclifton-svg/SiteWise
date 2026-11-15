@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { ProgramImport, ProgramReading } from "../programApi";
-import { fileLinks, groupReadings, importable, linkText, orphanEvidence, proposedText, reviewWords } from "./readings";
+import { fileLinks, groupReadings, importable, linkText, orphanEvidence, proposedText } from "./readings";
 
 const reading = (over: Partial<ProgramReading>): ProgramReading => ({
   id: "r1",
@@ -46,12 +46,6 @@ test("evidence whose stage was deleted is an orphan; evidence on a live row is n
     reading({ id: "n", document_id: "d2", target_activity_id: null }),
   ]);
   expect(orphanEvidence(groups).map((g) => g.ids)).toEqual([["o"]]);
-});
-
-test("the review banner names each kind of change with its count (plan 7.4)", () => {
-  expect(reviewWords({ add: 3, remove: 1, rename: 2, duration: 0, link: 0 }, 6)).toBe("Profile or Procurement changed: 3 to add, 1 to remove, 2 renamed.");
-  expect(reviewWords({ add: 0, remove: 0, rename: 0, duration: 1, link: 2 }, 3)).toBe("Profile or Procurement changed: 1 duration changed, 2 links changed.");
-  expect(reviewWords(null, 1)).toBe("Profile or Procurement changed: 1 change.");
 });
 
 test("only PDF, DOCX and XLSX files are imported", () => {

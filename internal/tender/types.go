@@ -72,6 +72,9 @@ type Line struct {
 	Flags     []Flag
 	DecidedBy string
 	SplitOf   string
+	// Slot is the manager's place for the line within its row, shared
+	// across firms (Slots). Nil leaves it to the word matching.
+	Slot *int
 }
 
 // Reading is one submission after reconciling.

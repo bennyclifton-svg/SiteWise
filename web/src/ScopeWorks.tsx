@@ -17,6 +17,7 @@
 // remove, Shift+click for a range. Right-click sets works or supplier on
 // every selected system at once.
 
+import { Chevron } from "./Chevron";
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent } from "react";
 import { Conflict, ResetButton, unanswered, type Setter } from "./ProfileFields";
 import { QuickField } from "./QuickField";
@@ -381,7 +382,7 @@ export function ScopeWorks({ projectId, data, tick, selected, onSelect, onScope,
                   }}
                 >
                   <span className="sw-entry-label">
-                    <span className="sw-caret" aria-hidden="true" />
+                    <Chevron open={active} />
                     {e.label}
                   </span>
                   <span className="sw-cells" aria-hidden="true">

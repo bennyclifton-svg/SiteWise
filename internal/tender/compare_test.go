@@ -16,18 +16,14 @@ func col(id string, sum, onRows int64, cells map[string]Cell) Column {
 
 var markRows = []Row{{Key: "a", Label: "A"}, {Key: "b", Label: "B"}, {Key: SystemRow, Label: "Not broken down"}}
 
-func TestHighAndLow(t *testing.T) {
-	m := Marks(markRows, []Column{col("1", 100, 100, map[string]Cell{"a": pc(100)}), col("2", 110, 110, map[string]Cell{"a": pc(110)}), col("3", 300, 300, map[string]Cell{"a": pc(300)})})
-	if m["3"]["a"] != MarkHigh || m["2"]["a"] != "" {
-		t.Fatalf("%v", m)
-	}
-	m = Marks(markRows, []Column{col("1", 100, 100, map[string]Cell{"a": pc(100)}), col("2", 110, 110, map[string]Cell{"a": pc(110)}), col("3", 40, 40, map[string]Cell{"a": pc(40)})})
-	if m["3"]["a"] != MarkLow {
-		t.Fatalf("%v", m)
-	}
-	m = Marks(markRows, []Column{col("1", 100, 100, map[string]Cell{"a": pc(100)}), col("3", 300, 300, map[string]Cell{"a": pc(300)})})
-	if len(m) != 0 {
-		t.Fatalf("two firms cannot mark each other: %v", m)
+// A priced cell is never marked high or low, however far it sits from the
+// others (owner, 15 Nov 2026): the manager reads the figures side by side.
+func TestPricedCellsAreNotMarked(t *testing.T) {
+	for _, outlier := range []int64{300, 40} {
+		m := Marks(markRows, []Column{col("1", 100, 100, map[string]Cell{"a": pc(100)}), col("2", 110, 110, map[string]Cell{"a": pc(110)}), col("3", outlier, outlier, map[string]Cell{"a": pc(outlier)})})
+		if len(m) != 0 {
+			t.Fatalf("outlier %d marked: %v", outlier, m)
+		}
 	}
 }
 

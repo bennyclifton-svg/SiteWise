@@ -120,14 +120,12 @@ test("build, collapse and expand, the question strip and Accept all (steps 1–4
   expect(view.question).toBeNull();
   await expect(page.locator(".pg-q-why")).toHaveCount(0);
 
-  // 4. Accept all → the amber proposal marks clear.
+  // 4. Accept all → the dashed proposal bars clear.
   const proposed = view.activities.filter((a: { review_status: string }) => a.review_status === "proposed").length;
   expect(proposed).toBeGreaterThan(0);
   await expect(page.getByRole("button", { name: `Accept all (${proposed})`, exact: true })).toBeVisible();
-  await expect(page.locator(".pg-proposed").first()).toBeVisible();
   await expect(page.locator(".pg-bar.is-proposed").first()).toBeVisible();
   await page.getByRole("button", { name: `Accept all (${proposed})`, exact: true }).click();
-  await expect(page.locator(".pg-proposed")).toHaveCount(0);
   await expect(page.locator(".pg-bar.is-proposed")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /^Accept all/ })).toHaveCount(0);
 });

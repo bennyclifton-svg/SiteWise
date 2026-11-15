@@ -111,9 +111,22 @@ ORDER BY p.title,p.id,s.ordinal,s.label,s.id`
 // readProgramGenInput reads plan 7.1's inputs in one round trip. The
 // construction budget is not read: it only feeds the time_cost basis, which
 // stays unknown without a cost index (owner answer Q7 defers both).
+// programOutline is always true in the product. Review mechanics tests
+// switch it off to drive changes through trade rows (SetProgramOutlineForTest),
+// and so does the browser suite's server, whose fixture library is work-item
+// rows only (SetProgramOutline).
+var programOutline = true
+
+// SetProgramOutline switches first programs between the outline and the
+// detailed generation. Only test servers call it; the product never does.
+func SetProgramOutline(on bool) { programOutline = on }
+
 func readProgramGenInput(ctx context.Context, q programQuerier, org, project string, cat *knowledge.Catalog) (programInputs, error) {
 	in := programInputs{hashes: map[string]string{}, targets: map[string]string{}, gi: engine.GenInput{Values: map[string]string{}, Conditions: map[string]string{},
-		Planning: map[string]string{}, Present: map[string]bool{}, Existing: map[string]bool{}}}
+		Planning: map[string]string{}, Present: map[string]bool{}, Existing: map[string]bool{},
+		// Users get the outline (docs/plans/2026-11-12-program-outline.md);
+		// generate, review and regeneration all read this one input.
+		Outline: programOutline}}
 	b := &pgx.Batch{}
 	b.Queue(programProfileSQL, org, project)
 	b.Queue(programWorkSQL, org, project)

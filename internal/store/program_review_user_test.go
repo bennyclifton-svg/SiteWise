@@ -74,6 +74,7 @@ func TestProgramReviewLeavesTheUsersOwnEdits(t *testing.T) {
 }
 
 func TestProgramReviewRaisesAReviewRemovalWhoseInputComesBack(t *testing.T) {
+	store.SetProgramOutlineForTest(t, false) // removal driven by a trade row
 	ctx := context.Background()
 	s, b, part := workStore(t)
 	cat := b.Catalog

@@ -13,13 +13,14 @@ import (
 	"sitewise/internal/tender"
 )
 
-const tenderLineColumns = `id::text, ordinal, page, label, printed, amount_cents, gst, state, kind, placed, heading, COALESCE(row_key,''), note, counted, flags, decided_by, COALESCE(split_of::text,'')`
+const tenderLineColumns = `id::text, ordinal, page, label, printed, amount_cents, gst, state, kind, placed, heading, COALESCE(row_key,''), note, counted, flags, decided_by, COALESCE(split_of::text,''), slot`
 
 func scanTenderLine(row pgx.Rows, sub *string) (tender.Line, error) {
 	var l tender.Line
 	var ordinal, page int32
+	var slot *int32
 	var flags []byte
-	dest := []any{&l.ID, &ordinal, &page, &l.Label, &l.Printed, &l.Cents, &l.GST, &l.State, &l.Kind, &l.Placed, &l.Heading, &l.Row, &l.Note, &l.Counted, &flags, &l.DecidedBy, &l.SplitOf}
+	dest := []any{&l.ID, &ordinal, &page, &l.Label, &l.Printed, &l.Cents, &l.GST, &l.State, &l.Kind, &l.Placed, &l.Heading, &l.Row, &l.Note, &l.Counted, &flags, &l.DecidedBy, &l.SplitOf, &slot}
 	if sub != nil {
 		dest = append([]any{sub}, dest...)
 	}
@@ -27,6 +28,10 @@ func scanTenderLine(row pgx.Rows, sub *string) (tender.Line, error) {
 		return l, err
 	}
 	l.Ordinal, l.Page = int(ordinal), int(page)
+	if slot != nil {
+		v := int(*slot)
+		l.Slot = &v
+	}
 	if err := json.Unmarshal(flags, &l.Flags); err != nil {
 		return l, err
 	}
@@ -61,19 +66,19 @@ func tenderLines(ctx context.Context, q querier, org string, subs []string, lock
 
 func insertTenderLine(ctx context.Context, tx pgx.Tx, org, project, sub string, l tender.Line) error {
 	flags, _ := json.Marshal(flagsOrEmpty(l.Flags))
-	_, err := tx.Exec(ctx, `INSERT INTO tender_lines (org_id,id,project_id,submission_id,ordinal,page,label,printed,amount_cents,gst,state,kind,placed,heading,row_key,note,counted,flags,decided_by,split_of)
-VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,NULLIF($15,''),$16,$17,$18::jsonb,$19,NULLIF($20,'')::uuid)`,
+	_, err := tx.Exec(ctx, `INSERT INTO tender_lines (org_id,id,project_id,submission_id,ordinal,page,label,printed,amount_cents,gst,state,kind,placed,heading,row_key,note,counted,flags,decided_by,split_of,slot)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,NULLIF($15,''),$16,$17,$18::jsonb,$19,NULLIF($20,'')::uuid,$21)`,
 		org, l.ID, project, sub, l.Ordinal, max(l.Page, 0), clipText(l.Label, 500), clipText(l.Printed, 80), l.Cents, gstColumn(l.GST), l.State, l.Kind, l.Placed,
-		clipText(l.Heading, 300), l.Row, clipText(l.Note, 300), l.Counted, string(flags), l.DecidedBy, l.SplitOf)
+		clipText(l.Heading, 300), l.Row, clipText(l.Note, 300), l.Counted, string(flags), l.DecidedBy, l.SplitOf, l.Slot)
 	return err
 }
 
 func updateTenderLine(ctx context.Context, tx pgx.Tx, org string, l tender.Line) error {
 	flags, _ := json.Marshal(flagsOrEmpty(l.Flags))
 	_, err := tx.Exec(ctx, `UPDATE tender_lines SET ordinal=$3, page=$4, label=$5, printed=$6, amount_cents=$7, gst=$8, state=$9, kind=$10, placed=$11, heading=$12,
- row_key=NULLIF($13,''), note=$14, counted=$15, flags=$16::jsonb, decided_by=$17, split_of=NULLIF($18,'')::uuid, updated_at=now()
+ row_key=NULLIF($13,''), note=$14, counted=$15, flags=$16::jsonb, decided_by=$17, split_of=NULLIF($18,'')::uuid, slot=$19, updated_at=now()
 WHERE org_id=$1::uuid AND id=$2::uuid`, org, l.ID, l.Ordinal, max(l.Page, 0), clipText(l.Label, 500), clipText(l.Printed, 80), l.Cents, gstColumn(l.GST), l.State, l.Kind, l.Placed,
-		clipText(l.Heading, 300), l.Row, clipText(l.Note, 300), l.Counted, string(flags), l.DecidedBy, l.SplitOf)
+		clipText(l.Heading, 300), l.Row, clipText(l.Note, 300), l.Counted, string(flags), l.DecidedBy, l.SplitOf, l.Slot)
 	return err
 }
 

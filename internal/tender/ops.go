@@ -23,6 +23,7 @@ type Op struct {
 	Page       int     `json:"page,omitempty"`
 	Parts      []Part  `json:"parts,omitempty"`
 	RestRow    *string `json:"rest_row,omitempty"`
+	Slot       *int    `json:"slot,omitempty"`
 }
 
 // Part is one named share of a split. The rest goes to RestRow.
@@ -48,7 +49,10 @@ const RowFigureNote = "Your figure for this row"
 
 // LineOps are the operations that change a submission's lines.
 var LineOps = map[string]bool{"move_line": true, "split_line": true, "unsplit_line": true, "set_line": true, "add_line": true,
-	"count_line": true, "delete_line": true, "set_tender_sum": true}
+	"count_line": true, "delete_line": true, "set_tender_sum": true, "set_slot": true}
+
+// MaxSlot bounds a line's place within its row (the column's CHECK).
+const MaxSlot = 999
 
 func typedCents(amount, gst string) (int64, error) {
 	c, ok, err := invoices.ParseCents(amount)
@@ -120,8 +124,21 @@ func Apply(lines []Line, rows map[string]bool, op Op, newID func() string) ([]Li
 		if op.Row == nil || !rowOK(*op.Row) {
 			return nil, opErr("row", "Choose a row of this schedule.")
 		}
-		out[i].Row, out[i].DecidedBy = clean(*op.Row), "user"
+		// A line moved to another row takes the next free place there.
+		out[i].Row, out[i].DecidedBy, out[i].Slot = clean(*op.Row), "user", nil
 		out[i].Flags = dropFlags(out[i].Flags, FlagRowUnsure, FlagRowUnknown)
+	case "set_slot":
+		// Layout only: the line's place in its row. Its figures and who
+		// decided them are untouched.
+		i, err := find()
+		if err != nil {
+			return nil, err
+		}
+		if op.Slot == nil || *op.Slot < 0 || *op.Slot > MaxSlot {
+			return nil, opErr("slot", "Choose a place in the row.")
+		}
+		v := *op.Slot
+		out[i].Slot = &v
 	case "split_line":
 		i, err := find()
 		if err != nil {

@@ -83,26 +83,6 @@ export function orphanEvidence(groups: readonly ReadingGroup[]): ReadingGroup[] 
   return groups.filter((g) => !g.targetId && !!g.catalogueStageId);
 }
 
-const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
-
-/**
- * What waits behind Update program (plan 7.4): "Profile or Procurement
- * changed: 3 to add, 1 to remove, 2 renamed." Without counts yet, the
- * pending total.
- */
-export function reviewWords(counts: Record<string, number> | null | undefined, pending: number): string {
-  const parts: string[] = [];
-  if (counts) {
-    if (counts.add) parts.push(`${counts.add} to add`);
-    if (counts.remove) parts.push(`${counts.remove} to remove`);
-    if (counts.rename) parts.push(`${counts.rename} renamed`);
-    if (counts.duration) parts.push(plural(counts.duration, "duration changed", "durations changed"));
-    if (counts.link) parts.push(plural(counts.link, "link changed", "links changed"));
-  }
-  if (!parts.length) parts.push(plural(pending, "change", "changes"));
-  return `Profile or Procurement changed: ${parts.join(", ")}.`;
-}
-
 /** Why a file could not be read, in plain words. */
 export function notReadWords(reason: string | null | undefined): string {
   switch (reason) {

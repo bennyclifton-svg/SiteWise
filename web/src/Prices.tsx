@@ -5,7 +5,7 @@ import { BuilderQuotedTotals, BuilderWorkSections } from "./BuilderComparison";
 // it is the review screen; with several it is the comparison. Every total
 // arrives computed by the server; a cell a user corrects is final.
 import { useCallback, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { IconMore } from "./icons";
+import { IconConfirmed, IconMore, IconUpdate } from "./icons";
 import { BackButton, PageActionsContext, PageSidePanel } from "./PageActions";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
@@ -17,6 +17,7 @@ import { packageApi, type PackageRecord } from "./packageApi";
 import { FLAG_WORDS, STATUS_WORDS, submissionApi, uploadProposal, type Cell, type CellState, type Column, type FirmFields, type PriceTable, type ScheduleItem } from "./submissionApi";
 import { AddsSubs } from "./tender/AddsSubs";
 import { AsTendered } from "./tender/AsTendered";
+import { storeCents, storedCents, TenderCents } from "./tender/cents";
 import type { TenderColumn } from "./tender/tenderApi";
 import { useTenderEdits } from "./tender/useTenderEdits";
 import "./prices.css";
@@ -104,6 +105,8 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   const tender = table?.tender;
   const tenderMode = !!tender && tender.columns.some(c => c.state);
   const edits = useTenderEdits(projectId, pkg, tender, setTable, onSignedOut);
+  // Whole dollars unless the manager turns Decimals on (owner, 15 Nov 2026).
+  const [cents, setCents] = useState(storedCents);
 
   const moveColumn = cols.find(c => c.submission.id === moving?.sub);
   const destination = items.find(i => i.key === moving?.target);
@@ -144,21 +147,52 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     return out;
   }
 
-  // The firm's head: name, date, status, upload and Award. Both the old
-  // table and the tender table render it, so it behaves the same in each.
-  function firmHead(c: Column, t?: TenderColumn) {
+  // Detaching takes the proposal off this package, as the cross on the
+  // Procurement board does; the filed document stays in the register.
+  async function detach(c: Column) {
+    await run(async () => {
+      await submissionApi.edit(projectId, c.submission.id, { package_id: "" });
+      if (panel === c.submission.id) setPanel("");
+      return submissionApi.table(projectId, pkg);
+    });
+  }
+  // Award sits beside the tender sum on a tender column, and in the head of
+  // the old tables. Pressing it is the manager's acceptance: there is no
+  // separate "checked" step (owner, 15 Nov 2026).
+  function awardButton(c: Column, t?: TenderColumn) {
     if (!table) return null;
     const builderUnconfirmed = table.builder && (c.cells["stage:lump_sum"]?.decided_by !== "user" || c.cells["stage:lump_sum"]?.state !== "priced");
-    const unchecked = !!t && !(t.state === "read" && t.checked);
     const awardable = (t?.state === "read" || !quoted) && !table.award && (c.submission.status === "received" || c.submission.status === "needs_review");
+    if (!awardable) return null;
+    return <button type="button" className="btn btn-small prices-award" disabled={busy || edits.busy || (!t && builderUnconfirmed)} onClick={() => setAwardFor(c.submission.id)}>Award</button>;
+  }
+
+  // The firm's head: name, status, upload, detach and (old tables) Award.
+  // Both the old table and the tender table render it. "Received" is not
+  // said: a filled column shows it was received (owner, 15 Nov 2026).
+  function firmHead(c: Column, t?: TenderColumn) {
+    if (!table) return null;
+    const name = c.firm?.name ?? c.submission.filename;
+    const rereadable = t?.state === "read" && !!tender?.on && !table.award && c.submission.status !== "awarded" && c.submission.status !== "unsuccessful";
     return <>
-      <button type="button" className="prices-firm-name" onClick={() => setPanel(panel === c.submission.id ? "" : c.submission.id)} aria-expanded={panel === c.submission.id}>
-        {c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "")}{!table.builder && c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
-      </button>
+      <span className="prices-firm-top">
+        <button type="button" className="prices-firm-name" onClick={() => setPanel(panel === c.submission.id ? "" : c.submission.id)} aria-expanded={panel === c.submission.id}>
+          {c.firm?.name ?? c.submission.filename.replace(/\.pdf$/i, "")}{!table.builder && c.firm?.status === "draft" && <span className="prices-draft" title="New to your firm directory: check the details">new</span>}
+        </button>
+        {/* Read again: rare (rows changed, lines landed poorly), so it waits on hover beside the cross. */}
+        {rereadable && <button type="button" className="firm-detach prices-detach prices-reread" aria-label={`Read prices again for ${name}`}
+          title="Read this proposal's prices again, for example after you changed the rows or when lines landed in the wrong place. Your own moves and corrections are kept."
+          disabled={busy || edits.busy} onClick={() => void edits.readAgain(c.submission.id)}><IconUpdate /></button>}
+        <button type="button" className="firm-detach prices-detach" aria-label={`Detach proposal for ${name}`}
+          title={c.submission.status === "awarded" ? "Undo the award before detaching this proposal" : "Detach proposal from this package; keep the filed document"}
+          disabled={busy || edits.busy || c.submission.status === "awarded"} onClick={() => void detach(c)}>
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="m4 4 8 8m0-8-8 8" /></svg>
+        </button>
+      </span>
       {/* The old builder table tucks these behind "⋯"; a tender column shows them. */}
       <details className={table.builder && !t ? "builder-firm-actions" : "prices-firm-actions"} open={table.builder && !t ? undefined : true}>
       <summary hidden={!table.builder || !!t} aria-label={`Options for ${c.firm?.name ?? c.submission.filename}`}>⋯</summary>
-      <span className="prices-firm-meta">{day(c.submission.received_on)} · <span className="prices-status" data-status={c.submission.status}>{c.submission.status === "reading" ? <Pending>Reading proposal…</Pending> : STATUS_WORDS[c.submission.status]}</span></span>
+      {c.submission.status !== "received" && <span className="prices-firm-meta"><span className="prices-status" data-status={c.submission.status}>{c.submission.status === "reading" ? <Pending>Reading proposal…</Pending> : STATUS_WORDS[c.submission.status]}</span></span>}
       {!c.submission.document_id && c.submission.status !== "awarded" && <label className="prices-upload">
         <span>{uploading === c.submission.id ? <Pending>Uploading proposal…</Pending> : "Upload proposal"}</span>
         <input type="file" aria-label={`Upload proposal for ${c.firm?.name ?? c.submission.filename}`} accept=".pdf,.docx,.xlsx" disabled={busy} onChange={e => { void attach(c.submission.id, e.target.files?.[0]); e.target.value = ""; }} />
@@ -166,7 +200,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
       </label>}
       {!t && tender?.on && c.submission.document_id && (c.submission.status === "received" || c.submission.status === "needs_review") && !table.award &&
         <button type="button" className="table-action" disabled={busy || edits.busy} title="List this tender's prices with the model, for you to check" onClick={() => void edits.readAgain(c.submission.id)}>Read prices</button>}
-      {awardable && <button type="button" className="btn btn-small prices-award" disabled={busy || edits.busy || (t ? unchecked : builderUnconfirmed)} title={unchecked ? "Check this column first" : undefined} onClick={() => setAwardFor(c.submission.id)}>Award</button>}
+      {!t && awardButton(c)}
       {!t && c.undo_alignment && !table.award && <button className="table-action prices-undo" disabled={busy} onClick={() => void run(() => submissionApi.align(projectId, c.submission.id, c.submission.version, "", [], true)).then(ok => { if (ok) setMoving(null); })}>Undo last alignment</button>}
       </details>
     </>;
@@ -195,6 +229,7 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
           {reportId && <a role="menuitem" href={submissionApi.responseFormURL(reportId)} download>Response form</a>}
           {cols.length > 0 && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
           {tenderMode && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg, "csv")} download>Export to CSV</a>}
+          {tenderMode && <button type="button" role="menuitemcheckbox" aria-checked={cents} onClick={() => { setCents(!cents); storeCents(!cents); }}>Decimals{cents && <span className="more-menu-tick" aria-hidden="true"><IconConfirmed /></span>}</button>}
           <button type="button" role="menuitem" onClick={() => window.print()}>Download (print)</button>
           {cols.length > 0 && <button type="button" role="menuitem" onClick={() => setShowReport(true)}>Report</button>}
           {quoted && table?.award && onOpenCostPlan && <button type="button" role="menuitem" onClick={onOpenCostPlan}>Open cost plan</button>}
@@ -214,10 +249,10 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     </div>}
     {/* The consultant table shows the award in its own cells and total, so the banner is only for the trade table. */}
     {table?.award && (!quoted || tenderMode) && <AwardBanner table={table} busy={busy} onUndo={() => void run(() => submissionApi.undoAward(projectId, pkg))} onOpenCostPlan={onOpenCostPlan} />}
-    {table && tenderMode && tender && <>
-      <AsTendered table={table} tender={tender} edits={edits} head={firmHead} onOpenPage={openPage} />
+    {table && tenderMode && tender && <TenderCents value={cents}>
+      <AsTendered table={table} tender={tender} edits={edits} head={firmHead} award={awardButton} onOpenPage={openPage} />
       <AddsSubs table={table} tender={tender} edits={edits} />
-    </>}
+    </TenderCents>}
     {table && quoted && !tenderMode && <ConsultantComparison onUndoAward={() => void run(() => submissionApi.undoAward(projectId, pkg))} onAdd={() => setAdding(true)} onSave={(sub, key, state, amount, note) => run(() => submissionApi.setCell(projectId, sub, key, state, amount, note))} table={table} projectId={projectId} busy={busy} onOpen={setPanel} onAward={setAwardFor} onSelect={(col, row, included, keys) => run(() => submissionApi.appointmentRow(projectId, col.submission.id, col.submission.version, row.id, included, keys))} />}
     {!quoted && !tenderMode && <details open><summary>Fee schedule</summary>
     {!table ? !error && <p role="status"><Pending delayed>Loading prices…</Pending></p> : cols.length === 0 ? <div className="prices-empty">

@@ -24,6 +24,12 @@ chat agent needs. It does not call a model and adds no screen.
 **Status:** written 14 November 2026 from reading `main`. Nothing in it has
 been compiled or run. Names marked *verify* were not opened.
 
+**Update, 15 November 2026:** Tasks 1 to 4 were built on `main` by the
+tender comparison work (migration `056_project_changes.sql`,
+`internal/store/change.go`, `change_undo.go`, the undo route). Tasks 5 to 9
+are not built; they are now Task 3 of `docs/plans/2026-11-15-chat-agent.md`,
+which lists what changed since.
+
 ---
 
 ## Feature statement (AGENTS.md run sheet)

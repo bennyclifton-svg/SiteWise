@@ -55,6 +55,7 @@ func changeStatus(t *testing.T, id string) string {
 }
 
 func TestProgramReview(t *testing.T) {
+	store.SetProgramOutlineForTest(t, false) // changes driven by trade rows
 	ctx := context.Background()
 	s, b, part := workStore(t)
 	cat := b.Catalog

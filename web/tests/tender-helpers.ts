@@ -64,7 +64,7 @@ export interface TenderJSON {
   rows: { key: string; label: string; system: boolean }[];
   columns: { submission_id: string; state: string; tender_sum: string | null; like_for_like: string | null; lowest: boolean; checked: boolean;
     cells: Record<string, { state: string; amount: string | null; mark: string }>;
-    lines: { id: string; label: string; row: string; counted: boolean; amount: string | null }[] }[];
+    lines: { id: string; label: string; row: string; counted: boolean; amount: string | null; slot: number }[] }[];
   adjustments: { id: string; label: string; origin: string; reason: string; amounts: Record<string, { amount: string | null; state: string; source: string }> }[];
 }
 
@@ -91,3 +91,5 @@ export async function openPrices(page: Page, p: TenderPackage, rowName = "Town P
 }
 
 export const money = (dollars: number) => `$${dollars.toLocaleString("en-AU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+/** A figure as the comparison tables show it by default: whole dollars (Decimals off). */
+export const whole = (dollars: number) => `$${Math.round(dollars).toLocaleString("en-AU")}`;

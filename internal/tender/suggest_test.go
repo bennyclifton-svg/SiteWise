@@ -61,7 +61,7 @@ func TestAllowanceOutsideThePrice(t *testing.T) {
 }
 
 func TestGapSuggestsARowWithNoFigureAndIsShared(t *testing.T) {
-	cols := []SuggestColumn{{ID: "A"}, {ID: "B", Marks: map[string]string{"b": MarkGap}}, {ID: "C"}, {ID: "D", Marks: map[string]string{"b": MarkGap, "a": MarkHigh}}}
+	cols := []SuggestColumn{{ID: "A"}, {ID: "B", Marks: map[string]string{"b": MarkGap}}, {ID: "C"}, {ID: "D", Marks: map[string]string{"b": MarkGap, "a": "high"}}}
 	got := Suggest(sugRows, nil, cols)
 	if len(got) != 1 {
 		t.Fatalf("%+v", got)

@@ -191,10 +191,25 @@ export function fmtDate(ymd: string | null | undefined): string {
  * "Week N, day M" on a relative one (plan 6.1: the finish is the last
  * working day, start + duration − 1; a milestone shows its start only).
  */
-export function shownDates(cal: Cal, t: Times | undefined): { start: string; finish: string } {
+export function shownDates(cal: Cal, t: Times | undefined, compact = false): { start: string; finish: string } {
   if (!t || t.unknown || t.es === null || t.ef === null) return { start: "", finish: "" };
-  if (!cal.relative) return { start: fmtDate(t.start), finish: fmtDate(t.finish) };
-  return { start: cal.dayLabel(t.es), finish: t.ef - t.es > 0 ? cal.dayLabel(t.ef - 1) : "" };
+  if (!cal.relative) {
+    const f = compact ? fmtShort : fmtDate;
+    return { start: f(t.start), finish: f(t.finish) };
+  }
+  const day = (i: number) => (compact ? shortDay(cal.dayLabel(i)) : cal.dayLabel(i));
+  return { start: day(t.es), finish: t.ef - t.es > 0 ? day(t.ef - 1) : "" };
+}
+
+/** "2027-05-12" → "12/05/27": the grid's date, so the Name column keeps the room (owner, 12 Nov 2026). */
+export function fmtShort(ymd: string | null | undefined): string {
+  if (!ymd || ymd.length !== 10) return "";
+  return `${ymd.slice(8, 10)}/${ymd.slice(5, 7)}/${ymd.slice(2, 4)}`;
+}
+
+// "Week 3, day 2" → "W3 d2" for the grid's narrow date columns.
+function shortDay(label: string): string {
+  return label.replace(/^Week (\d+), day (\d+)$/, "W$1 d$2");
 }
 
 /** The finish shown for the project: a date, or "Week N, day M" on a relative program. */

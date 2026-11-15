@@ -6,6 +6,9 @@
 .prices-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .prices-empty { max-width: 70ch; color: var(--ink-body); }
 .prices-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
+/* In the workbench, no frame: the Cost Plan and the Procurement board have
+   none (owner, 15 Nov 2026). */
+.cockpit-scroll .prices-scroll { border: 0; border-radius: 0; }
 .prices-table { border-collapse: collapse; font-size: var(--fs-md); width: 100%; min-width: 760px; table-layout: fixed; }
 .prices-table th, .prices-table td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .prices-table thead th { position: sticky; top: 0; z-index: 1; background: var(--canvas); border-bottom-color: var(--line-strong); }
@@ -16,6 +19,13 @@
 .prices-firm.lowest, .prices-table td.lowest { background: color-mix(in oklab, var(--ok) 13%, var(--paper)); }
 .prices-firm-name { display: block; padding: 0; border: 0; background: none; font: inherit; font-weight: 600; color: var(--ink); text-align: left; cursor: pointer; overflow-wrap: anywhere; }
 .prices-firm-name:hover { text-decoration: underline; }
+/* The firm's name with the detach cross, shown on hover as on the Procurement board. */
+.prices-firm-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; }
+.prices-firm-top .prices-detach { position: static; flex: none; width: 22px; height: 22px; margin: -2px -4px 0 0; background: transparent; }
+.prices-firm:hover .prices-detach, .prices-firm:focus-within .prices-detach { opacity: 1; }
+.prices-firm-top .prices-reread { margin-left: auto; margin-right: 0; }
+.prices-firm-top .prices-reread:hover:not(:disabled) { color: var(--ink); }
+.prices-firm-top .prices-reread svg { width: 15px; height: 15px; }
 .prices-firm-meta { display: block; margin-top: 2px; font-size: var(--fs-xs); font-weight: 400; color: var(--ink-muted); }
 .prices-status[data-status="awarded"] { color: var(--ok); font-weight: 600; }
 .prices-status[data-status="needs_review"], .prices-status[data-status="reading"] { color: var(--warn); }
@@ -124,7 +134,7 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
 
 @media print {
   @page { size: A4 landscape; margin: 10mm; }
-  .no-print, .leftnav, .project-views, .cockpit-header, .register-col { display: none !important; }
+  .no-print, .leftnav, .project-views, .cockpit-header, .register-col, .prices-detach { display: none !important; }
   .print-only { display: block; }
   .procurement-report { padding: 0; }
   .report-grid th, .report-grid td { border-color: #999; }

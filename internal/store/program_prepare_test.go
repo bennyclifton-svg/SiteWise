@@ -204,15 +204,17 @@ func TestProgramGenInputReadsProfileWorksAndPackages(t *testing.T) {
 		t.Fatalf("works package stages %+v", gi.Packages[1].Stages)
 	}
 
-	// Generation over these inputs: the retained facade brings nothing, the
-	// investigation brings one activity, and the program has no row for the
-	// cancelled package.
+	// Generation over these inputs opens the outline (owner, 12 November
+	// 2026): stages and project activities in 20 to 30 rows, one
+	// Construction bar for the trades, no investigation or work-item rows,
+	// and no row for the cancelled package.
 	st, created, err := s.PrepareProgram(ctx, orgA, projectA, "program", cat)
 	if err != nil || !created {
 		t.Fatalf("prepare %v %v", created, err)
 	}
-	if !hasRow(st, "Trace the gas line") || hasRow(st, "Keep the facade") || hasRow(st, "Cancelled engineer: Concept") {
-		t.Fatalf("rows %s", labels(st))
+	if n := len(st.Activities); n < 20 || n > 30 || !hasRow(st, "Construction") || hasRow(st, "Trace the gas line") ||
+		hasRow(st, "Keep the facade") || hasRow(st, "Cancelled engineer: Concept") {
+		t.Fatalf("%d rows %s", len(st.Activities), labels(st))
 	}
 }
 
