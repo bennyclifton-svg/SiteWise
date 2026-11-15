@@ -647,7 +647,21 @@ all pass (store 184 s, httpapi 86 s) on a private PostgreSQL 17 on port 5435.
   `cmd/chat-eval -replay` scores a recorded run. The owner has not read
   the cases yet.
 
+- **Task 4, done.** `llm.Converse` beside `Ask`: tools, streaming, one cache
+  breakpoint after tools and system text, every tool input checked against
+  its schema in Go, refusal and `max_tokens` handled, cache reads counted
+  and logged without content. A warming call (`max_tokens` 0) is there for
+  speed rule 6. Tests go through the injected seam.
+- **Task 2, done from this machine.** See "Task 2 results".
+
 ## Deviations
+
+- **Task 2, where it was measured.** From the development machine only, as
+  the amendments say; the live server (Singapore) was not contacted, so its
+  figures are still unmeasured.
+- **Task 4, thinking off on Sonnet 5.5.** Sonnet 5.5 rejects thinking
+  `disabled`; the client sends `between_tools` for that model. Confirmed
+  against the live API.
 
 - **Task 1, a tenth expectation detail.** `state` takes an optional `count`
   ("exactly five lines of ten days"), because "five activities" cannot be
@@ -655,3 +669,40 @@ all pass (store 184 s, httpapi 86 s) on a private PostgreSQL 17 on port 5435.
 - **Task 1, `refuses`.** The scorer cannot judge the wording of a refusal,
   so `refuses` checks only that nothing was applied or prepared. The plan's
   "names why" is read by hand from the transcript.
+
+## Task 2 results: the model, measured (15 November 2026)
+
+Measured from the development machine (Windows, Australia) through
+`llm.Converse`, 20 samples per row, real key, `cmd/chat-probe`. The live
+server was not contacted. Thinking off, effort low, streamed. The prefix
+(tools and system text) was 8,883 tokens and was read from the cache on
+every sample.
+
+| Model | Case | First token p50 | First token p90 | Total p50 | Total p90 | Output tokens |
+|---|---|---|---|---|---|---|
+| claude-haiku-5-5 | a: cached prefix, one tool call (`max_tokens` 300) | 839 ms | 1,177 ms | 1,190 ms | 1,507 ms | 120 |
+| claude-haiku-5-5 | b: the same with a 30,000-token tool result, one-sentence answer | 1,273 ms | 1,379 ms | 1,412 ms | 1,500 ms | 27 |
+| claude-sonnet-5-5 | a | 1,367 ms | 1,622 ms | 2,125 ms | 2,378 ms | 126 |
+| claude-sonnet-5-5 | b | 1,948 ms | 2,552 ms | 1,951 ms | 2,558 ms | 31 |
+
+What this says:
+
+- **One model round on Haiku is about 1.2 s typical, 1.5 s slow.** A
+  one-round simple command can meet `chat_simple_command` (p50 1,500 ms,
+  p90 3,000 ms) with about 300 ms left for Go. A two-round command cannot
+  meet the p50. Speed rule 1 (`final: true`) is therefore required, not
+  optional.
+- **Sonnet is about 0.9 s slower per round** (2.1 s typical). A one-round
+  command on Sonnet misses the 1,500 ms p50 and meets the 3,000 ms p90.
+- **A 30,000-token tool result costs about 0.4 s on Haiku** before the
+  first word. Capped tool results matter less than the number of rounds.
+- **Cache:** the warming request (`max_tokens` 0, not streamed) wrote the
+  prefix in 1.2 to 1.7 s; a second one read it in about 0.9 s. Every
+  sample read 8,883 tokens from the cache.
+- **Request shapes confirmed live:** thinking `disabled` on Haiku 5.5 and
+  `between_tools` on Sonnet 5.5 (which rejects `disabled`), effort low,
+  `tool_choice` left at auto, no temperature, no prefill, eager input
+  streaming on the tools with Go validating every input.
+
+The stop condition ("cannot meet 3 s typical on either") is not met. Work
+continues on Haiku as the default.
