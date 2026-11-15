@@ -62,6 +62,9 @@ type Options struct {
 	ResetMail auth.ResetMailer
 	// Billing switches on paid plans and limits; nil is off (development).
 	Billing *Billing
+	// Chat switches the chat strip on: the model, its id and the prompt.
+	// Nil leaves chat off; every screen works the same without it.
+	Chat *Chat
 	// Knowledge and ProfileThresholds serve the project profile. Nil
 	// knowledge disables the profile routes (404).
 	Knowledge         *knowledge.Catalog
@@ -317,6 +320,7 @@ func New(opts Options) (*Server, error) {
 		ProposalShowCount: opts.ProposalShowCount,
 		ResetMail:         opts.ResetMail,
 		Billing:           opts.Billing,
+		Chat:              opts.Chat,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})

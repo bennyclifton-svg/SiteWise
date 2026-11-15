@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -209,6 +210,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	// it is off for every org and tenders are read as before.
 	var tenderLLM llm.Asker
 	var tenderRender tender.Renderer
+	var chat *httpapi.Chat
 	if model := llm.New(llm.Options{APIKey: cfg.TenderKey, Logger: slog.New(slog.NewJSONHandler(stderr, nil))}); model.On() {
 		tenderLLM = model
 		if ocrErr != nil {
@@ -227,9 +229,19 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 			}
 		}
 		logger.Printf("tender pass: on, model %s", cfg.TenderModel)
+		// Chat shares the client (and so its slots and breaker) and sits
+		// behind the same org switch.
+		prompt, err := httpapi.LoadChatPrompt(filepath.Join(*knowledgeDir, "chat"))
+		if err != nil {
+			logger.Printf("chat: off, the prompt could not be read: %v", err)
+		} else {
+			chat = &httpapi.Chat{Model: model, On: model.On, Name: cfg.ChatModel, Prompt: prompt}
+			logger.Printf("chat: on, model %s", cfg.ChatModel)
+		}
 	}
 	srv, err := httpapi.New(httpapi.Options{
 		TenderLLM:           tenderLLM,
+		Chat:                chat,
 		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
 		TenderModel:         cfg.TenderModel,
 		TenderRender:        tenderRender,

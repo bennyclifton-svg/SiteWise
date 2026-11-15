@@ -27,6 +27,7 @@ var captured = map[string]capturedTable{
 	"scope_cost_links":           {Key: []string{"org_id", "project_id", "plan_version_id", "package_scope_item_id", "cost_item_id"}, Area: "costs"},
 	"cost_suggestion_dismissals": {Key: []string{"org_id", "project_id", "source_key"}, Area: "costs"},
 	"cost_plan_versions":         {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "costs"},
+	"cost_plans":                 {Key: []string{"org_id", "project_id"}, Area: "costs"},
 	"profile_user_values":        {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "profile"},
 	"tender_lines":               {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustments":         {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
@@ -312,8 +313,24 @@ func rowField(log []changeRow, tables map[string]string) []string {
 // bump each touched plan's version, the costs revision, and tell screens.
 func (s *Store) touchCostsAfterUndo(ctx context.Context, tx pgx.Tx, org, project string, log []changeRow) error {
 	plans := rowField(log, map[string]string{"cost_plan_versions": "id", "cost_item_revisions": "plan_version_id", "cost_values": "plan_version_id",
-		"scope_cost_links": "plan_version_id", "cost_suggestion_dismissals": "plan_version_id", "cost_items": "plan_version_id"})
+		"scope_cost_links": "plan_version_id", "cost_suggestion_dismissals": "plan_version_id", "cost_items": "plan_version_id", "cost_plans": "draft_version_id"})
 	for _, id := range plans {
+		// A change that made the project's first cost line also made the
+		// plan; undoing it removes the plan, so there is none to touch.
+		var exists bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM cost_plan_versions WHERE org_id=$1::uuid AND id=$2::uuid)`, org, id).Scan(&exists); err != nil {
+			return err
+		}
+		if !exists {
+			if err := BumpRevision(ctx, tx, org, project, "costs"); err != nil {
+				return err
+			}
+			raw, _ := json.Marshal(map[string]any{"project_id": project, "plan_version_id": id, "revision": 0})
+			if _, err := appendEvent(ctx, s.q.WithTx(tx), org, "costs", "", string(raw)); err != nil {
+				return err
+			}
+			continue
+		}
 		if err := s.touchCost(ctx, tx, org, project, id); err != nil {
 			return err
 		}

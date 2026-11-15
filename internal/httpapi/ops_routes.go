@@ -7,6 +7,10 @@ package httpapi
 
 // noOperation: route to the reason it is not an operation.
 var noOperation = map[string]string{
+	"POST /projects/{id}/chat":                                     "the chat route itself",
+	"POST /projects/{id}/chat/warm":                                "warms the model's cache; changes nothing",
+	"POST /projects/{id}/chat/prepared/{prepared}/apply":           "the PM's click on a prepared chat change; it applies operations",
+	"POST /projects/{id}/chat/prepared/{prepared}/dismiss":         "the PM's click dismissing a prepared chat change",
 	"DELETE /projects/{id}":                                        "deleting or archiving a project is never done from chat",
 	"DELETE /session":                                              "signing in, signing up and passwords are never done from chat",
 	"DELETE /team/invites/{id}":                                    "team and invitations are never done from chat",

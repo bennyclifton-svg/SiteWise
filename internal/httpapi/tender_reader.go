@@ -313,7 +313,8 @@ func putAccountModel(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
-	if deps.TenderReader == nil {
+	// The one switch covers the tender pass and chat; either makes it real.
+	if deps.TenderReader == nil && deps.Chat == nil {
 		http.Error(w, "This server is not set up to use a model.", http.StatusConflict)
 		return
 	}

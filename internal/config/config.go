@@ -32,6 +32,8 @@ type Config struct {
 	TenderKey string
 	// TenderModel is the pinned model id for the tender pass.
 	TenderModel string
+	// ChatModel is the model id for the chat strip.
+	ChatModel string
 	// TenderSkipJevPrices stops asking Jev the prices the tender pass reads.
 	// Off until the owner has used the new tables on a live package.
 	TenderSkipJevPrices bool
@@ -151,6 +153,15 @@ func Load(getenv func(string) string) (Config, error) {
 	}
 	if !tenderModelID.MatchString(cfg.TenderModel) {
 		return Config{}, fmt.Errorf("SITEWISE_TENDER_MODEL must be a pinned Claude model id")
+	}
+	// Chat uses the same key and its own model id, so the owner can move
+	// chat to another model without touching the tender pass.
+	cfg.ChatModel = strings.TrimSpace(getenv("SITEWISE_CHAT_MODEL"))
+	if cfg.ChatModel == "" {
+		cfg.ChatModel = DefaultTenderModel
+	}
+	if !tenderModelID.MatchString(cfg.ChatModel) {
+		return Config{}, fmt.Errorf("SITEWISE_CHAT_MODEL %q is not a model id", cfg.ChatModel)
 	}
 	switch v := strings.TrimSpace(getenv("SITEWISE_TENDER_SKIP_JEV_PRICES")); v {
 	case "", "0", "false":

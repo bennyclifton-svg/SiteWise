@@ -73,7 +73,10 @@ type Deps struct {
 	AccountMail auth.AccountMailer
 	// Billing switches on paid plans and limits; nil is off.
 	Billing *Billing
-	limits  *authLimits
+	// Chat is the chat strip's model and prompt; nil is off for every org.
+	// Only chat.go and chat_tools.go use it.
+	Chat   *Chat
+	limits *authLimits
 }
 
 // InvoiceReader starts reading an invoice that outlives the upload request.
