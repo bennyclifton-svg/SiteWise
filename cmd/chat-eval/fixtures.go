@@ -80,7 +80,7 @@ var fixtures = map[string]fixture{
 			{Label: "Landscaping", Section: "construction", System: "site", Budget: "240000"},
 			{Label: "Contingency", Section: "contingency", Budget: "600000"},
 		},
-		Activities: []activity{{"Schematic design", "Sketch plans", "6 weeks"}, {"Delivery", "Site establishment", "2 weeks"}},
+		Activities: []activity{{"Schematic design", "Sketch plans", "6 weeks"}, {"Delivery", "Site establishment", "3 weeks"}},
 		Packages:   []pkg{{Discipline: "consultant.structural"}, {Discipline: "consultant.civil", Invited: []string{"Tideline Civil"}}},
 		Documents: []chatfix.Document{
 			{Title: "Mechanical specification rev A", Kind: "specification", Discipline: "mechanical", Number: "M-SPEC", Revision: "A", Pages: []string{

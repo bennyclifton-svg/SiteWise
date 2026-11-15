@@ -292,6 +292,14 @@ func (s *session) seed(ctx context.Context, f fixture) error {
 			}
 		}
 	}
+	// The plan is ex GST at 10%, as the fixtures' description says.
+	if err := s.must(http.MethodGet, base+"/cost-plan", nil, &plan); err != nil {
+		return err
+	}
+	settings := map[string]any{"plan_version_id": plan.ID, "version": plan.Version, "currency": "AUD", "tax_basis": "ex_tax", "tax_rate": "0.1", "coverage": ""}
+	if err := s.must(http.MethodPut, base+"/cost-plan", settings, nil); err != nil {
+		return err
+	}
 	for key, value := range f.Profile {
 		if err := s.ops("profile", op("profile.set_value", map[string]any{"key": key, "value": value})); err != nil {
 			return err
@@ -426,7 +434,7 @@ func (l *live) Run(ctx context.Context, c chateval.Case) (chateval.Outcome, erro
 		case "answer":
 			if e.Answer != nil {
 				out.Text, out.Question, out.Unchecked = e.Answer.Text, e.Answer.Question, e.Answer.Unchecked
-				out.Cited, out.Coverage = e.Answer.Cited, e.Answer.Coverage != ""
+				out.Cited, out.Coverage, out.Verdicts = e.Answer.Cited, e.Answer.Coverage != "", e.Answer.Verdicts
 			}
 		case "error":
 			failed = e.Text

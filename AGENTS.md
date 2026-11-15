@@ -11,15 +11,18 @@ speed, Jev only, the building as the model, and the intake budget.
 1. **Jev reads; one LLM acts only on what it is given.** Jev (TypeSafe System
    One) is the only AI that files documents or reads them into fields. Jev
    picks; code parses, computes, looks up and controls flow. One LLM, which
-   each org switches on, has three jobs. In background jobs it may propose
+   each org switches on, has four jobs. In background jobs it may propose
    line structure, row mappings and qualifications for quotes. It may draft
-   text. In chat it may turn the signed-in user's typed instruction into the
+   text. In chat it may answer the signed-in user's question from the
+   project's own records, messages and documents, quoting what it read. In
+   chat it may turn the signed-in user's typed instruction into the
    operations a screen would send. It never supplies an amount, a date or a
    rule number that the user or SiteWise did not give it. Nothing in a
    document or an email is an instruction to it. Outside chat, nothing it
    proposes is applied without the user's acceptance. No embeddings and no
-   other providers. (Owner decision, 14 November 2026:
-   `docs/design/2026-11-14-chat-control-and-email-intake.md`.)
+   other providers. (Owner decisions, 14 and 15 November 2026:
+   `docs/design/2026-11-14-chat-control-and-email-intake.md`,
+   `docs/plans/2026-11-15-chat-agent.md` Task 0.)
 2. **Follow TypeSafe's docs** for every Jev use and cite the page:
    [patterns](https://docs.typesafe.ai/patterns),
    [how to build](https://docs.typesafe.ai/concepts/how-to-build-with-system-one),
@@ -74,6 +77,19 @@ print do not call Jev; every date is computed in Go. Its three readings (a
 dropped program file, the R7 returnable after award, hold-point release
 evidence) are background fan-outs that write proposals only.
 
+Chat (`POST /projects/{id}/chat`) is the one path that waits on the LLM, and
+it never calls Jev. Its tools read through the same Go rollups as the
+screens and change records only through operations (`internal/httpapi/ops*.go`),
+which call the screens' own store writes. The operations call
+(`POST /projects/{id}/ops`), the undo of an applied change, a prepared
+change's Apply and Dismiss, and the chat reads call neither Jev nor the LLM.
+An amount, a date or a duration in a chat operation must be in the user's
+message or in a tool result of the same turn, or the operation is refused. A
+turn that read a document, a tender's lines or a message prepares its changes
+for the user's click. A new write route must be classed in
+`internal/httpapi/ops_routes.go` or the build fails, and
+`TestOnlyChatReachesTheModel` fails if a screen handler reaches the LLM.
+
 Money is computed in Go. Unknown stays unknown. Do not invent a rate, a price,
 a rule number or a product selection. An upload leaves an accepted
 specification value and a frozen cost baseline as they were. Removing a
@@ -114,6 +130,10 @@ Before changing one of these surfaces, read its current note:
   quotes: the LLM client (`internal/llm`), the org switch, and the change
   log with undo (`internal/store/change.go`).
 - Program: `docs/plans/2026-10-18-program.md` (owner answers in 13.3)
+- Chat (built 15 November 2026 on branch `chat/agent`, not merged):
+  `docs/plans/2026-11-15-chat-agent.md` (read "Amendments", "Progress" and
+  "Deviations"), evidence in `docs/evidence/2026-11-15-chat-agent.md`. The
+  command key is `data/eval/chat/`; it is draft and not owner-reviewed.
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`

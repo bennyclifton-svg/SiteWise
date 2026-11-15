@@ -90,6 +90,12 @@ func TestPreparedCitesSearchAndVerdict(t *testing.T) {
 	if v := Score(search, Outcome{Text: "There is no asbestos.", Coverage: true}); v.Pass {
 		t.Fatal("a verdict must fail")
 	}
+	if v := Score(search, Outcome{Text: "I can't say there is no asbestos; no mention was found.", Coverage: true}); !v.Pass {
+		t.Fatalf("declining to judge is not a verdict: %+v", v)
+	}
+	if v := Score(search, Outcome{Text: "No mention found.", Coverage: true, Verdicts: 1}); v.Pass {
+		t.Fatal("a verdict Go marked must fail")
+	}
 	if v := Score(search, Outcome{Text: "No mention found."}); v.Pass {
 		t.Fatal("an answer that does not say what was searched must fail")
 	}

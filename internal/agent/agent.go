@@ -41,6 +41,9 @@ type State struct {
 	// figure a tool returned this turn. An operation's amount, date or
 	// duration must be in it (review change 2).
 	Book figures.Book
+	// Seen is the book plus the outline: what an answer may repeat without
+	// it being the model's own figure.
+	Seen figures.Book
 	// Outside is true once a tool result carried text that came from
 	// outside: a document, a message, a firm's tender. From then on this
 	// turn's changes wait for the PM's click. Why says where it came from.
@@ -170,8 +173,14 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 	typed := ""
 	for _, t := range req.Typed {
 		st.Book.Add(t)
+		st.Seen.Add(t)
 		typed = t
 	}
+	// The outline is SiteWise's own records: a figure from it may be
+	// repeated in an answer. It does not go in the book for operations,
+	// because it is full of small numbers (dates, counts) that would make
+	// any small figure look given.
+	st.Seen.Add(req.Outline)
 	res := Result{State: st}
 	history := append([]json.RawMessage{}, req.History...)
 	add := func(msg json.RawMessage) {
@@ -259,7 +268,9 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 	}
 	if res.Err == nil {
 		res.Answer = Check(res.Answer.Text, st)
-		res.Answer.Question = len(res.Cards) == 0 && strings.HasSuffix(strings.TrimSpace(res.Answer.Text), "?")
+		// A reply that asks something and changed nothing is a question
+		// back, wherever in the reply the question sits.
+		res.Answer.Question = len(res.Cards) == 0 && strings.Contains(res.Answer.Text, "?")
 		emit(Event{Type: "answer", Answer: &res.Answer})
 	}
 	return res
@@ -308,6 +319,7 @@ func merge(st *State, out Output) {
 		return
 	}
 	st.Book.Add(out.Text)
+	st.Seen.Add(out.Text)
 	if out.Outside != "" && !st.Outside {
 		st.Outside, st.Why = true, out.Outside
 	}

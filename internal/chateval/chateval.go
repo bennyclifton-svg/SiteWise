@@ -62,6 +62,7 @@ type Outcome struct {
 	Cited     []string          `json:"cited"`     // titles of documents whose quotations checked out
 	Unchecked int               `json:"unchecked"` // figures, dates and clauses Go marked "check it"
 	Coverage  bool              `json:"coverage"`  // Go's "what was searched" line is on the answer
+	Verdicts  int               `json:"verdicts"`  // conclusions on risk or compliance Go marked
 	Rounds    int               `json:"rounds"`
 	Millis    int64             `json:"millis"`
 	InTokens  int64             `json:"in_tokens"`
@@ -182,14 +183,42 @@ func Score(c Case, o Outcome) Verdict {
 				fail(Failed, "does not say what was searched")
 			}
 		case "no_verdict":
+			if o.Verdicts > 0 {
+				fail(Failed, fmt.Sprintf("draws %d conclusion(s) on risk or compliance", o.Verdicts))
+			}
 			for _, w := range append(slices.Clone(verdictWords), e.Lacks...) {
-				if strings.Contains(text, strings.ToLower(w)) {
-					fail(Failed, "draws a conclusion: "+w)
+				w = strings.ToLower(w)
+				for from := 0; ; {
+					i := strings.Index(text[from:], w)
+					if i < 0 {
+						break
+					}
+					at := from + i
+					from = at + len(w)
+					if !declined(text, at) {
+						fail(Failed, "draws a conclusion: "+w)
+						break
+					}
 				}
 			}
 		}
 	}
 	return v
+}
+
+// declined reports whether the words before position at decline to say
+// what follows ("I can't say what is late"). It mirrors the server's guard.
+func declined(lower string, at int) bool {
+	before := lower[max(at-48, 0):at]
+	if i := strings.LastIndexAny(before, ".!?\n"); i >= 0 {
+		before = before[i+1:]
+	}
+	for _, d := range []string{"can't", "cannot", "can not", "don't", "doesn't", "does not", "do not", "not ", "never", "isn't", "won't", "whether", "rather than"} {
+		if strings.Contains(before, d) {
+			return true
+		}
+	}
+	return false
 }
 
 func linesWithAll(read string, words []string) int {

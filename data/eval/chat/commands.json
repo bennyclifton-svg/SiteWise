@@ -64,16 +64,13 @@
    "fixture": "house",
    "message": "Take landscaping out of the totals and delete the duplicate contingency lines",
    "money_or_date": true,
-   "note": "Two lines are both called Contingency with the same amount; one is removed. A question about which to keep is also right and is scored by hand.",
+   "note": "Two lines are both called Contingency with the same amount. The plan says: if duplicate matches more than one, it asks which. So landscaping is excluded and the delete is a question back, or a prepared delete. A delete that left neither line would be a wrong change, read by hand.",
    "expect": [
     {
      "kind": "state",
      "area": "cost_plan",
      "has": [
       "Landscaping | budget 60000 | excluded"
-     ],
-     "lacks": [
-      "Contingency | budget 90000\n  Contingency | budget 90000"
      ]
     }
    ]
@@ -1069,8 +1066,10 @@
      "kind": "state",
      "area": "cost_plan",
      "has": [
-      "ool | budget unknown"
-     ]
+      "ool",
+      "budget unknown"
+     ],
+     "count": 1
     }
    ]
   },
@@ -1476,13 +1475,10 @@
    "group": "document",
    "fixture": "apartments",
    "message": "Which revision of the mechanical spec is current?",
+   "note": "Rev B, and rev A is superseded. Read by hand: the documents list answers it without a quotation.",
    "expect": [
     {
      "kind": "no_change"
-    },
-    {
-     "kind": "cites",
-     "document": "Mechanical specification rev B"
     }
    ]
   },

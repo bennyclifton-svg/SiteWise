@@ -82,7 +82,7 @@ func (b *box) Run(_ context.Context, st *State, c llm.ToolCall) Output {
 
 func run(m Model, b Toolbox, typed ...string) (Result, []Event) {
 	var events []Event
-	res := Run(context.Background(), m, b, Request{Model: "m", System: "sys", Typed: typed, Outline: "Cost sections", Today: time.Now()}, func(e Event) { events = append(events, e) })
+	res := Run(context.Background(), m, b, Request{Model: "m", System: "sys", Typed: typed, Outline: "Cost sections\n Mechanical | budget 120000", Today: time.Now()}, func(e Event) { events = append(events, e) })
 	return res, events
 }
 
@@ -109,7 +109,7 @@ func TestSimpleCommandIsOneModelRound(t *testing.T) {
 	if sent.System != "sys" || !strings.Contains(string(sent.History[0]), "project_outline") || !strings.Contains(string(sent.History[0]), "joinery") {
 		t.Fatalf("request %+v", sent)
 	}
-	if !res.State.Book.HasNumber("45000") || res.State.Book.HasNumber("54000") {
+	if !res.State.Book.HasNumber("45000") || res.State.Book.HasNumber("54000") || res.State.Book.HasNumber("120000") || !res.State.Seen.HasNumber("120000") {
 		t.Fatal("the book should hold the PM's figure and no other")
 	}
 	// The turn's messages are kept for the store: user, assistant, results.

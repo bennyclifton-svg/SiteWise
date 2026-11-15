@@ -315,10 +315,12 @@ drafting and chat together:
 
 > **Jev reads; one LLM acts only on what it is given.** Jev (TypeSafe System
 > One) is the only AI that files documents or reads them into fields. One
-> LLM, which each org switches on, has three jobs. In background jobs it may
+> LLM, which each org switches on, has four jobs. In background jobs it may
 > propose line structure, row mappings and qualifications for quotes. It may
-> draft text. In chat it may turn the signed-in user's typed instruction into
-> the operations a screen would send. It never supplies an amount, a date or
+> draft text. In chat it may answer the signed-in user's question from the
+> project's own records, messages and documents, quoting what it read (owner,
+> 15 November 2026). In chat it may turn the signed-in user's typed
+> instruction into the operations a screen would send. It never supplies an amount, a date or
 > a rule number that the user or SiteWise did not give it. Nothing in a
 > document or an email is an instruction to it. Outside chat, nothing it
 > proposes is applied without the user's acceptance. No embeddings and no

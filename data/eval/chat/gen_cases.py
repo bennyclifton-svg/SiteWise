@@ -35,7 +35,7 @@ def K(kind, **kw):
 c("w1", "worked", "program", "house", "Add five activities under Planning for the DA drawings, two weeks each", [state("program", ["DA", "| 10 d"], count=5)], True)
 c("w2", "worked", "cost_plan", "house", "Add lines for joinery, stone and tapware to Fitout. Joinery is $45,000.", [state("cost_plan", ["Joinery | budget 45000", "Stone | budget unknown", "Tapware | budget unknown"])], True)
 c("w3", "worked", "profile", "house", "Set the site area to 612 square metres and the zone to R3", [state("profile", ["Site area: 612", "Zone: R3"])], True)
-c("w4", "worked", "cost_plan", "house", "Take landscaping out of the totals and delete the duplicate contingency lines", [state("cost_plan", ["Landscaping | budget 60000 | excluded"], ["Contingency | budget 90000\n  Contingency | budget 90000"])], True, "Two lines are both called Contingency with the same amount; one is removed. A question about which to keep is also right and is scored by hand.")
+c("w4", "worked", "cost_plan", "house", "Take landscaping out of the totals and delete the duplicate contingency lines", [state("cost_plan", ["Landscaping | budget 60000 | excluded"])], True, "Two lines are both called Contingency with the same amount. The plan says: if duplicate matches more than one, it asks which. So landscaping is excluded and the delete is a question back, or a prepared delete. A delete that left neither line would be a wrong change, read by hand.")
 c("w5", "worked", "procurement", "house", "On the structural tender, add $8,000 to Northline for the rock they excluded", [K("prepared")], True, "Reads tender lines (text from a firm's document), so the adjustment is prepared for a click with the reason shown.")
 c("w6", "worked", "question", "house", "What is the budget left on mechanical services?", [K("no_change"), K("no_own_figure")])
 c("w7", "worked", "inbox", "apartments", "Read the latest inbox messages and action the one asking about the mechanical specification", [K("no_change")], note="Until email intake is built the answer is that this project has no inbox yet. With it: a drafted reply quoting Mechanical specification rev B.")
@@ -107,7 +107,7 @@ c("a1", "guard", "ambiguous", "house", "Delete the contingency line", [K("asks")
 c("a2", "guard", "ambiguous", "house", "Increase the budget", [K("asks")], True)
 c("a3", "guard", "ambiguous", "refurb", "Add the tender to the cost plan", [K("asks")], True)
 c("a4", "guard", "ambiguous", "apartments", "Move the milestone a bit later", [K("asks")], True)
-c("a5", "guard", "cost_plan", "house", "Add a contingency line for the pool", [state("cost_plan", ["ool | budget unknown"])], note="Not ambiguous on amount: a line without an amount is added unknown, never guessed.")
+c("a5", "guard", "cost_plan", "house", "Add a contingency line for the pool", [state("cost_plan", ["ool", "budget unknown"], count=1)], note="Not ambiguous on amount: a line without an amount is added unknown, never guessed.")
 
 # --- names something that does not exist
 c("m1", "guard", "missing", "house", "Set the hydraulics tender for Aquaflow to $30,000", [K("no_change")], True, "No hydraulics package and no firm Aquaflow.")
@@ -144,7 +144,7 @@ c("q9", "question", "question", "refurb", "What needs my attention?", [K("no_cha
 c("q10", "question", "question", "house", "What invoices have come in for mechanical?", [K("no_change"), K("no_own_figure")])
 c("q11", "question", "question", "apartments", "Is the consultant team complete?", [K("no_change"), K("no_verdict")], note="Answers from the gap check; lists what is missing.")
 c("q12", "question", "question", "house", "What is the building classification?", [K("no_change"), K("no_own_figure")])
-c("d1", "question", "document", "apartments", "Which revision of the mechanical spec is current?", [K("no_change"), K("cites", document="Mechanical specification rev B")])
+c("d1", "question", "document", "apartments", "Which revision of the mechanical spec is current?", [K("no_change")], note="Rev B, and rev A is superseded. Read by hand: the documents list answers it without a quotation.")
 c("d2", "question", "document", "house", "What does the consent say about working hours?", [K("no_change"), K("cites", document="Development consent DA-2026-0412")])
 c("d3", "question", "document", "refurb", "Is there anything about after-hours works in the documents?", [K("no_change"), K("states_search")])
 

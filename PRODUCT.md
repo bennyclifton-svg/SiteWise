@@ -131,6 +131,21 @@ The workbench, in navigation order:
   designed PDF tables, images and automatic application assignment remain ahead.
   The document repository stays beside every view.
 
+- **Chat** (built on branch `chat/agent`, not merged or deployed). A strip
+  at the foot of the middle panel, for an org whose owner has switched the
+  model on. The user types an instruction and SiteWise carries it out at
+  once, showing what changed with Undo: cost lines and amounts, profile
+  values, Program rows, durations and links, and adds and subs on a tender
+  comparison. Or the user asks a question and gets an answer from the
+  project's records and filed documents, with each quotation checked
+  against the page and linked to it, every figure printed by SiteWise from
+  its own row, and a line saying what was searched. A change that follows
+  reading a document, or that the user vouches for (freezing the plan,
+  releasing a hold point, checking a tender column, a large delete), waits
+  for the user's click. Chat cannot yet change scope, accommodation,
+  packages, awards, specifications, reports or documents, and there is no
+  inbox. It never signs in, bills, deletes a project or issues a document.
+
 Delivery records and implication proposals stay on the project. They are not
 in the left nav. Consultant suggestions still appear on Procurement.
 

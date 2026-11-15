@@ -245,7 +245,21 @@ func readProfile(ctx context.Context, d Deps, who opActor, project string, r *re
 		}
 		planning = append(planning, f)
 	}
-	group("Building", body.Header)
+	// The size of the building (storeys, floor area and the like). The
+	// screen shows the ones that fit the building class; chat lists them
+	// all, so a size the PM states always has its own key.
+	header := body.Header
+	listed := map[string]bool{}
+	for _, f := range header {
+		listed[f.Key] = true
+	}
+	for _, f := range d.Knowledge.ScaleFields() {
+		if key := "hdr.scale." + f.Key; !listed[key] {
+			listed[key] = true
+			header = append(header, fieldJSON{Key: key, Label: f.Label, Unit: f.Unit})
+		}
+	}
+	group("Building", header)
 	group("Planning", planning)
 	group("Project", body.Details)
 	group("Site", body.SiteDetails)
@@ -301,7 +315,7 @@ func readProgram(ctx context.Context, d Deps, who opActor, project string, r *re
 	r.line("Program: start %s, working week of %d days, finish %s. Rows with no duration: %d. Hold points: %d. Every date is computed by SiteWise; the program holds no progress, so nothing here says what is late.",
 		start, workingDays(st.Program.WorkingWeek), finish, unknown, holds)
 	for _, a := range st.Activities {
-		if stagesOnly && a.Kind != "stage" {
+		if stagesOnly && a.Kind != "stage" && len(st.Activities) > 160 {
 			continue
 		}
 		parts := []string{r.id(a.ID) + a.Label}
@@ -406,7 +420,9 @@ func readProcurement(ctx context.Context, d Deps, who opActor, project string, r
 
 // chatOutline is the compact picture of the project that opens every turn,
 // so a simple command needs no read first (speed rule 2): the cost plan
-// with ids, the Program's stages, the packages and the profile's values.
+// with ids, the Program's stages and rows (stages only on a very large
+// program), the packages and the profile's values. Dates and links are
+// left to read(program).
 func chatOutline(ctx context.Context, d Deps, who opActor, project, name, today string) string {
 	parts := make([]string, 4)
 	run := func(i int, f func(r *reader) error) func() {

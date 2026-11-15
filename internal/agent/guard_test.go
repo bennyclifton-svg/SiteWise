@@ -13,8 +13,8 @@ func guardState() *State {
 		Text: "The BMS shall be BACnet compatible.", Note: "superseded by rev B"}
 	st.Facts["f1"] = Fact{Label: "Mechanical services, budget", Value: "$120,000", Source: "Cost Plan"}
 	st.Facts["f2"] = Fact{Label: "120,000 less 45,000", Value: "$75,000", Source: "calc"}
-	st.Book.Add("What is left on mechanical? I think about 3 claims so far")
-	st.Book.Add("Mechanical services | budget 120000 | claimed 45000")
+	st.Seen.Add("What is left on mechanical? I think about 3 claims so far")
+	st.Seen.Add("Mechanical services | budget 120000 | claimed 45000")
 	return st
 }
 
@@ -118,5 +118,9 @@ func TestVerdictWordsAreMarkedAndCoverageIsCarried(t *testing.T) {
 	a := Check("This project is low risk and the carpet complies with the specification.", st)
 	if a.Verdicts != 2 || len(marksOf(a, "verdict")) != 2 || a.Coverage != st.Coverage {
 		t.Fatalf("answer %+v", a)
+	}
+	// Declining to judge is not a judgment.
+	if b := Check("I can't call this project low risk. SiteWise doesn't judge whether it complies with the specification.", st); b.Verdicts != 0 {
+		t.Fatalf("a declined verdict was marked: %+v", b.Marks)
 	}
 }

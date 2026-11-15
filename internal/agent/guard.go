@@ -145,7 +145,7 @@ func Check(text string, st *State) Answer {
 				continue
 			}
 			kind := "seen"
-			known := st.Book.HasNumbersOf(tok)
+			known := st.Seen.HasNumbersOf(tok)
 			if date {
 				known = known && len(figures.Numbers(tok)) > 0
 			}
@@ -174,12 +174,34 @@ func Check(text string, st *State) Answer {
 			}
 			s := from + i
 			from = s + len(v)
+			if Declined(lower, s) {
+				continue
+			}
 			a.Marks = append(a.Marks, Mark{Start: s, End: s + len(v), Kind: "verdict", Note: "SiteWise does not judge risk level or compliance. This is the assistant's reading."})
 			a.Verdicts++
 		}
 	}
 	sort.SliceStable(a.Marks, func(i, j int) bool { return a.Marks[i].Start < a.Marks[j].Start })
 	return a
+}
+
+var declining = []string{"can't", "cannot", "can not", "don't", "doesn't", "does not", "do not", "not ", "never", "isn't", "won't", "whether", "no statement", "rather than"}
+
+// Declined reports whether the words just before position at decline to
+// say what follows ("I can't call this project low risk"). lower is the
+// text in lower case.
+func Declined(lower string, at int) bool {
+	from := max(at-48, 0)
+	before := lower[from:at]
+	if i := strings.LastIndexAny(before, ".!?\n"); i >= 0 {
+		before = before[i+1:]
+	}
+	for _, d := range declining {
+		if strings.Contains(before, d) {
+			return true
+		}
+	}
+	return false
 }
 
 // findQuote returns the passage a quotation is a literal part of: the one
