@@ -133,6 +133,16 @@ type Request struct {
 	Outline string // Go's compact outline of the project, with ids
 	Think   bool   // let the model use hidden thinking (see llm.Conversation)
 	Today   time.Time
+	// Prefetch is reads Go runs before the model is asked, because the
+	// PM's words already say which area a question is about. Their results
+	// go in the first turn, so the answer takes one model call, not two.
+	Prefetch []Prefetch
+}
+
+// Prefetch is one read done ahead of the model.
+type Prefetch struct {
+	Area string // named in the turn so the model knows what it holds
+	Call llm.ToolCall
 }
 
 // Event is one thing sent to the strip while a turn runs.
@@ -165,7 +175,42 @@ type Result struct {
 // UserMessage is the text of the PM's turn as the model sees it: Go's
 // outline first, then the message. Both sit after the cache breakpoint.
 func UserMessage(outline, typed string) string {
-	return "<project_outline>\n" + strings.TrimSpace(outline) + "\n</project_outline>\n\n<pm_message>\n" + strings.TrimSpace(typed) + "\n</pm_message>"
+	return userMessage(outline, "", typed)
+}
+
+// userMessage puts what Go read ahead between the outline and the message.
+func userMessage(outline, read, typed string) string {
+	return "<project_outline>\n" + strings.TrimSpace(outline) + "\n</project_outline>\n\n" + read + "<pm_message>\n" + strings.TrimSpace(typed) + "\n</pm_message>"
+}
+
+// prefetch runs the reads Go was asked to do ahead and returns them as the
+// model will see them. A result is merged into the state exactly as if the
+// model had asked for it. A failed read is left out: the model can still
+// ask. A write is never run here.
+func prefetch(ctx context.Context, box Toolbox, st *State, reads []Prefetch) string {
+	outs := make([]Output, len(reads))
+	var wg sync.WaitGroup
+	for i, p := range reads {
+		if box.Writes(p.Call.Name) {
+			outs[i].IsError = true
+			continue
+		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			outs[i] = box.Run(ctx, st, p.Call)
+		}()
+	}
+	wg.Wait()
+	var b strings.Builder
+	for i, out := range outs {
+		if out.IsError || strings.TrimSpace(out.Text) == "" {
+			continue
+		}
+		merge(st, out)
+		b.WriteString("<already_read area=\"" + reads[i].Area + "\">\n" + strings.TrimSpace(out.Text) + "\n</already_read>\n\n")
+	}
+	return b.String()
 }
 
 // Run carries out one turn. emit is called from this goroutine only.
@@ -194,7 +239,7 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 		history = append(history, msg)
 		res.Messages = append(res.Messages, msg)
 	}
-	add(llm.UserText(UserMessage(req.Outline, typed)))
+	add(llm.UserText(userMessage(req.Outline, prefetch(ctx, box, st, req.Prefetch), typed)))
 	tools := box.Tools()
 	refusals := 0
 	var said strings.Builder

@@ -226,3 +226,42 @@ func TestAnswerIsCheckedByGo(t *testing.T) {
 		t.Fatalf("last event %+v", last)
 	}
 }
+
+// A question about figures SiteWise can tell the area of is answered in
+// one model round: Go has read the area before the model is asked.
+func TestAPrefetchedReadAnswersInOneRound(t *testing.T) {
+	m := &scripted{turns: []llm.Turn{{Text: "Mechanical services has a budget of 120000."}}}
+	b := &box{}
+	res := Run(context.Background(), m, b, Request{Model: "m", System: "sys", Typed: []string{"What is the mechanical budget?"},
+		Outline: "Cost sections: Mechanical", Today: time.Now(),
+		Prefetch: []Prefetch{{Area: "cost_plan", Call: call("", "read", `{"area":"cost_plan"}`)}}}, nil)
+	if res.Rounds != 1 || len(m.sent) != 1 || res.Err != nil {
+		t.Fatalf("rounds %d calls %d err %v", res.Rounds, len(m.sent), res.Err)
+	}
+	if len(b.ran) != 1 || b.ran[0] != "read" {
+		t.Fatalf("tools run: %v", b.ran)
+	}
+	first := string(m.sent[0].History[0])
+	at := func(s string) int { return strings.Index(first, s) }
+	if at("already_read area=") < 0 || at("Mechanical services | budget 120000") < 0 || at("already_read") < at("project_outline") || at("pm_message") < at("already_read") {
+		t.Fatalf("the read should sit between the outline and the message: %s", first)
+	}
+	// What Go read is in the book, exactly as if the model had asked.
+	if !res.State.Book.HasNumber("120000") {
+		t.Fatal("the prefetched figure should be in the book")
+	}
+	if res.Answer.Unchecked != 0 {
+		t.Fatalf("a figure Go read is not the model's own: %+v", res.Answer)
+	}
+}
+
+// Go only ever reads ahead. A write is never run before the model asks.
+func TestAPrefetchIsNeverAWrite(t *testing.T) {
+	m := &scripted{turns: []llm.Turn{{Text: "Which line?"}}}
+	b := &box{}
+	res := Run(context.Background(), m, b, Request{Model: "m", System: "sys", Typed: []string{"What is it?"}, Today: time.Now(),
+		Prefetch: []Prefetch{{Area: "cost_plan", Call: call("", "apply", `{"final":true}`)}}}, nil)
+	if res.Err != nil || len(b.ran) != 0 || len(res.Cards) != 0 || strings.Contains(string(m.sent[0].History[0]), "already_read") {
+		t.Fatalf("err %v ran %v cards %v", res.Err, b.ran, res.Cards)
+	}
+}

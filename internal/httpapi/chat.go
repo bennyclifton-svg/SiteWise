@@ -239,6 +239,7 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 		}
 	}
 	req.Typed = append(req.Typed, in.Text)
+	req.Prefetch = prefetchFor(in.Text)
 	box := &chatBox{d: d, who: who, project: project, turn: turn.ID}
 	// The turn runs to its end even if the PM closes the strip: a change
 	// half way through a batch must be finished or put back, and the card
