@@ -1012,3 +1012,29 @@ budget rows). One failure is this work's:
   foot of the middle panel is the owner's decision and the test is an
   earlier layout rule; the two cannot both hold as written. The test is
   left failing and unchanged for the owner to settle.
+
+## Speed follow-up: reading ahead (15 November 2026, evening)
+
+Built after the second leg, on the owner asking for more speed. A question
+whose words name an area has that area read by Go before the model is
+asked, so it is answered in one model call (speed rule 4). Questions went
+from 2.2 calls and a 3.1 s median to 1.4 calls and 2.0 s, with the key's
+pass count held (evidence note, section 8). Commands were measured to be
+near the model's floor and were left alone.
+
+Not done, in the order they would be worth trying:
+
+1. Read ahead for a command that needs a figure it does not carry
+   ("increase the contingency by 10%"). It would save a call on those, but
+   a profile read can carry document text and so make the change wait for
+   a click, and every figure in the area would count as given. Needs its
+   own cases in the key.
+2. A question about a named firm's tender: read that package's lines
+   ahead. They are outside text, which is harmless on a question.
+3. Warm the cache again when the PM comes back to the strip after more
+   than five minutes. The cold first call was not timed.
+4. Time all of this from the live server.
+
+`w1` made ten rows for five once in six runs of the after build: the
+double-apply fix of the second leg catches two identical calls in one
+step, not every way the model can repeat itself.

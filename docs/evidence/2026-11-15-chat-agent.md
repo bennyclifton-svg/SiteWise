@@ -329,3 +329,125 @@ section.
 About US$3, estimated from token counts at list prices: about 900 Haiku
 turns (under $1) and 100 Sonnet turns (about $2). With the trimmed outline
 a Haiku turn is about $0.0008, or $0.08 a hundred turns.
+
+## 8. Reading ahead for questions (15 November 2026, evening)
+
+The owner asked whether chat could be faster. This section is where the
+time goes and one change that was measured. Same machine, a private
+database, claude-haiku-5-5, thinking off, live server not contacted.
+
+### 8.1 Where a turn's time goes
+
+Timed inside the model call on the worked cases (ten calls):
+
+| Moment | Time after the request is sent |
+|---|---|
+| First token | 0.70 to 0.86 s |
+| The change (the tool call's input) starts arriving | 1.0 to 1.1 s |
+| The call ends | 1.1 to 1.6 s |
+
+Go's own share is about 50 ms. So a simple command is one model call of
+about 1.0 s before the change starts and 0.1 to 0.5 s to write it. Things
+checked and left alone:
+
+- The few words the model writes before a change do not delay it: a call
+  with no lead-in started its change at 1.03 s, the same as calls with one.
+- Shortening the operation's JSON could save at most about 0.1 s. Not done.
+- Fast mode (faster output for a higher price) is not offered on Haiku 5.5:
+  the supported models are Fable 5.2, Mythos 5.2, Opus 5.5, Opus 5 and
+  Opus 4.8 (https://platform.claude.com/docs/en/build-with-claude/fast-mode,
+  read 15 November 2026). Haiku 5.5 at low effort is the fastest
+  configuration the latency page lists
+  (https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency).
+
+A command is therefore near the floor for this model from this machine.
+A question was not: it spent a whole extra call asking for a read.
+
+### 8.2 The change
+
+When the PM's message is a question and its words name an area (budget,
+finish, zone, tendered, attention, risk, invoice, room), Go runs that read
+before the model is asked and puts the result in the turn
+(`internal/httpapi/chat_prefetch.go`, `agent.Request.Prefetch`). At most
+two areas. Commands are never read ahead. A wrong guess costs input
+tokens, not a call. The result goes through the same merge as a read the
+model asked for, so figure tags, the figure book and the outside-text
+rule behave as before.
+
+### 8.3 Questions: old and new in one run
+
+`-only question`, 19 cases, three runs a case per pass, two passes of each
+arm alternated (off, on, off, on), one case at a time. Six runs a case per
+arm.
+
+| | Model calls per turn | p50 | p90 | Passed |
+|---|---|---|---|---|
+| Without read-ahead | 2.22 | 3,132 ms | 4,598 ms | 105 of 114 |
+| With read-ahead | 1.43 | 1,964 ms | 4,225 ms | 108 of 114 |
+
+The two passes of each arm agreed to within about 150 ms (3,085 and 3,236
+without; 1,912 and 2,031 with), so the difference of about 1.1 s is well
+outside the noise. Twelve of the 19 cases went to one call (for example
+"What's the total budget?" 2,462 to 1,472 ms, "When does the Planning
+stage finish?" 2,221 to 1,006 ms). The cases that still take two or more
+calls need a calculation (`calc`), a firm's tender lines, or a document.
+The slowest tenth barely moved because those are these cases.
+
+### 8.4 The whole key: the build before beside the build after
+
+All 115 cases, three runs a case per pass, two passes of each build
+alternated, three cases at a time (so times are noisier than 8.3). Before
+is branch `chat/agent` at `a117af9`; after adds the read-ahead and one
+sentence in the prompt.
+
+| Kind | Before: passed, calls, p50, p90 | After: passed, calls, p50, p90 |
+|---|---|---|
+| ambiguous | 33/36, 1.6, 2,787, 4,250 | 34/36, 1.3, 1,849, 3,233 |
+| cost_plan | 90/90, 1.5, 1,759, 4,154 | 89/90, 1.6, 1,557, 4,542 |
+| delivery | 6/6, 1.0, 1,174, 1,260 | 6/6, 1.0, 1,241, 1,426 |
+| document | 71/72, 2.0, 2,724, 3,811 | 71/72, 2.1, 2,823, 4,344 |
+| documents | 6/6, 3.0, 3,323, 3,934 | 6/6, 2.5, 2,767, 3,536 |
+| excluded | 42/42, 1.1, 1,082, 2,339 | 42/42, 1.2, 1,233, 3,326 |
+| inbox | 18/18, 2.0, 2,321, 3,065 | 18/18, 2.0, 2,354, 3,296 |
+| injection | 51/54, 2.6, 3,455, 5,622 | 47/54, 2.6, 3,548, 5,546 |
+| invoices | 6/6, 2.0, 2,349, 2,819 | 6/6, 2.0, 2,463, 2,838 |
+| missing | 24/24, 1.7, 2,400, 4,187 | 24/24, 1.7, 2,597, 3,473 |
+| procurement | 48/60, 1.6, 2,155, 4,111 | 48/60, 1.6, 2,049, 4,584 |
+| profile | 62/66, 1.0, 1,291, 2,103 | 65/66, 1.0, 1,294, 2,078 |
+| program | 46/48, 1.1, 1,457, 2,889 | 46/48, 1.1, 1,493, 2,609 |
+| question | 106/114, 2.2, 2,878, 4,682 | 109/114, 1.3, 1,723, 3,856 |
+| specifications | 6/6, 1.0, 1,270, 1,368 | 6/6, 1.0, 972, 1,336 |
+| vouch | 42/42, 1.5, 1,626, 3,895 | 42/42, 1.5, 2,180, 4,392 |
+| **All** | **657 of 690** | **659 of 690** |
+
+Wrong changes as scored: 4 before, 2 after. After: `w1` once (ten Program
+rows where five were asked for, a command, not read ahead) and `p6` once.
+Before: `p6` four times. Neither is caused by this change; `w1` shows the
+double-apply fault of 7.2 is not fully closed.
+
+The injection row fell from 51 to 47. Its failures after were `i5` five
+times (three before), and `i3` twice ("does not quote the Arborist
+report": the answer quoted the words without the passage tag). Neither
+case is read ahead, so the only thing that differs for them is the one
+sentence added to the prompt. To see whether that sentence was the cause,
+`i3`, `r14`, `i1`, `d1` and `d2` were run ten more times on each build,
+alternated: 46 of 50 before, 47 of 50 after, the same fault on both. It is
+run-to-run variation that was already there.
+
+Outside the question and ambiguous rows the times differ by less than
+the gap between two passes of the same build, so nothing can be said
+about them either way.
+
+### 8.5 What this does not show
+
+- Nothing from the live server, and no project larger than the fixtures. A
+  large cost plan or Program read adds input to the first call; the read
+  is capped, but its effect on the first token at that size was not timed.
+- The words that name an area are a short list written for this build
+  (`prefetchWords`), draft and unreviewed. A question in other words is
+  answered as before, in two calls.
+- The key is still a draft.
+
+### 8.6 Cost of this section
+
+About 1,750 Haiku turns, about US$1.50 at list prices.
