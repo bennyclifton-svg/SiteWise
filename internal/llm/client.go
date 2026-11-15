@@ -64,6 +64,7 @@ type Options struct {
 
 type Client struct {
 	send      func(context.Context, Request) (Response, error)
+	talk      func(context.Context, Conversation, func(string)) (Turn, error)
 	slots     chan struct{}
 	log       *slog.Logger
 	now       func() time.Time
@@ -76,7 +77,10 @@ type Client struct {
 func New(opts Options) *Client {
 	var send func(context.Context, Request) (Response, error)
 	if opts.APIKey != "" {
-		send = sdkSend(anthropic.NewClient(option.WithAPIKey(opts.APIKey), option.WithMaxRetries(1)))
+		client := anthropic.NewClient(option.WithAPIKey(opts.APIKey), option.WithMaxRetries(1))
+		c := newWithSend(opts, sdkSend(client))
+		c.talk = sdkTalk(client)
+		return c
 	}
 	return newWithSend(opts, send)
 }
@@ -94,24 +98,17 @@ func newWithSend(opts Options, send func(context.Context, Request) (Response, er
 }
 
 // On reports whether a key is configured.
-func (c *Client) On() bool { return c != nil && c.send != nil }
+func (c *Client) On() bool { return c != nil && (c.send != nil || c.talk != nil) }
 
 func (c *Client) Ask(ctx context.Context, req Request) (Response, error) {
-	if !c.On() {
+	if c == nil || c.send == nil {
 		return Response{}, ErrOff
 	}
-	c.mu.Lock()
-	open := c.now().Before(c.openUntil)
-	c.mu.Unlock()
-	if open {
-		return Response{}, ErrBusy
+	release, err := c.enter(ctx)
+	if err != nil {
+		return Response{}, err
 	}
-	select {
-	case c.slots <- struct{}{}:
-		defer func() { <-c.slots }()
-	case <-ctx.Done():
-		return Response{}, ctx.Err()
-	}
+	defer release()
 	timeout := req.Timeout
 	if timeout <= 0 {
 		timeout = 2 * time.Minute
@@ -121,17 +118,7 @@ func (c *Client) Ask(ctx context.Context, req Request) (Response, error) {
 	began := c.now()
 	res, err := c.send(ctx, req)
 	res.Latency = c.now().Sub(began)
-	c.mu.Lock()
-	switch {
-	case err == nil || errors.Is(err, ErrRefused):
-		c.fails = 0
-	default:
-		c.fails++
-		if c.fails >= 5 {
-			c.openUntil, c.fails = c.now().Add(time.Minute), 0
-		}
-	}
-	c.mu.Unlock()
+	c.settle(err)
 	class := "ok"
 	if err != nil {
 		class = errorClass(err)
@@ -140,6 +127,39 @@ func (c *Client) Ask(ctx context.Context, req Request) (Response, error) {
 	c.log.Info("llm call", "name", req.Name, "model", req.Model, "class", class, "stop", res.StopReason,
 		"latency_ms", res.Latency.Milliseconds(), "in_tokens", res.InTokens, "out_tokens", res.OutTokens)
 	return res, err
+}
+
+// enter refuses while the breaker is open, then waits for a slot. Ask and
+// Converse share both, so chat and the tender pass cannot together exceed
+// the limit.
+func (c *Client) enter(ctx context.Context) (release func(), err error) {
+	c.mu.Lock()
+	open := c.now().Before(c.openUntil)
+	c.mu.Unlock()
+	if open {
+		return nil, ErrBusy
+	}
+	select {
+	case c.slots <- struct{}{}:
+		return func() { <-c.slots }, nil
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
+// settle counts a call's result towards the breaker: five failures in a row
+// open it for a minute. A refusal is an answer, not a failure.
+func (c *Client) settle(err error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if err == nil || errors.Is(err, ErrRefused) {
+		c.fails = 0
+		return
+	}
+	c.fails++
+	if c.fails >= 5 {
+		c.openUntil, c.fails = c.now().Add(time.Minute), 0
+	}
 }
 
 func errorClass(err error) string {
