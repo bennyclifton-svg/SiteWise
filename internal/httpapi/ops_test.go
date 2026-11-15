@@ -341,6 +341,10 @@ func TestProgramOperationPassesThrough(t *testing.T) {
 	if len(many.Results) != 3 || !strings.Contains(many.Results[2].Summary, `"Tower"`) || !strings.Contains(many.Results[2].Summary, "40 working days") {
 		t.Fatalf("labels: %+v", many)
 	}
+	numbered := m.ops(t, project, "program", http.StatusOK, op("program.edit", map[string]any{"op": "add", "parent_id": stage, "label": "Inspection", "count": 3, "duration": "1 day"}))
+	if len(numbered.Results) != 3 || !strings.Contains(numbered.Results[2].Summary, `"Inspection 3"`) {
+		t.Fatalf("count: %+v", numbered)
+	}
 	// A refused batch names the edit, in Program's own words.
 	r := m.ops(t, project, "program", http.StatusUnprocessableEntity,
 		op("program.edit", map[string]any{"op": "add", "parent_id": stage, "kind": "activity", "label": "Fine", "duration": "1 week"}),

@@ -25,8 +25,11 @@ import (
 
 // reader collects one read's text, facts and outside source.
 type reader struct {
-	b       strings.Builder
-	plain   bool
+	b     strings.Builder
+	plain bool
+	// brief is the outline's form: names and ids only, enough to resolve
+	// what a command names. Amounts, dates and values are left to read.
+	brief   bool
 	facts   map[string]agent.Fact
 	next    func() string // the next fact tag
 	outside string
@@ -111,7 +114,11 @@ func readCostPlan(ctx context.Context, d Deps, who opActor, project string, r *r
 	if p.TaxRate != nil {
 		rate = plainMoney(p.TaxRate)
 	}
-	r.line("Cost plan: %s, amounts %s, GST rate %s. Every figure here is computed by SiteWise.", p.Status, basis, rate)
+	if r.brief {
+		r.line("Cost plan (%s, amounts %s): lines by section, id then name. Amounts are in read cost_plan.", p.Status, basis)
+	} else {
+		r.line("Cost plan: %s, amounts %s, GST rate %s. Every figure here is computed by SiteWise.", p.Status, basis, rate)
+	}
 	money := func(metric, label string, t costs.Total) string {
 		known := t.KnownSubtotal
 		out := metric + " " + r.fig(plainMoney(&known), dollars(known), label+", "+metric, "Cost Plan")
@@ -120,7 +127,9 @@ func readCostPlan(ctx context.Context, d Deps, who opActor, project string, r *r
 		}
 		return out
 	}
-	r.line("Total: %s | %s | %s", money("budget", "Total", totals.Overall["budget"]), money("contract", "Total", totals.Overall["commitment"]), money("claimed", "Total", totals.Overall["claimed_to_date"]))
+	if !r.brief {
+		r.line("Total: %s | %s | %s", money("budget", "Total", totals.Overall["budget"]), money("contract", "Total", totals.Overall["commitment"]), money("claimed", "Total", totals.Overall["claimed_to_date"]))
+	}
 	sections := costs.CostSections(p.Items)
 	system := map[string]string{}
 	for _, s := range p.Systems {
@@ -133,6 +142,16 @@ func readCostPlan(ctx context.Context, d Deps, who opActor, project string, r *r
 	var write func(i costs.Item, depth int)
 	write = func(i costs.Item, depth int) {
 		parts := []string{r.id(i.ID) + i.Label}
+		if r.brief {
+			if !i.Posting {
+				parts[0] += " (group)"
+			}
+			r.line("%s%s", strings.Repeat(" ", depth), parts[0])
+			for _, c := range children[i.ID] {
+				write(c, depth+1)
+			}
+			return
+		}
 		val := func(metric, name string, always bool) {
 			v := i.Values[metric]
 			switch {
@@ -171,7 +190,7 @@ func readCostPlan(ctx context.Context, d Deps, who opActor, project string, r *r
 			}
 		}
 		head := strings.ToUpper(sectionNames[section])
-		if t, ok := totals.Sections[section]; ok && len(roots) > 0 {
+		if t, ok := totals.Sections[section]; ok && len(roots) > 0 && !r.brief {
 			head += ": " + money("budget", sectionNames[section], t["budget"]) + " | " + money("contract", sectionNames[section], t["commitment"]) + " | " + money("claimed", sectionNames[section], t["claimed_to_date"])
 		}
 		r.line("%s", head)
@@ -195,10 +214,39 @@ func readProfile(ctx context.Context, d Deps, who opActor, project string, r *re
 		return err
 	}
 	body := profileBody(project, view, d)
-	r.line("Profile (key | label: value (where it came from)). A dash is blank.")
+	if r.brief {
+		r.line("Profile keys, set with profile.set_value. Each line is a prefix and the names under it: the key is the prefix joined to the name (hdr.scale.storeys). Values are in read profile.")
+	} else {
+		r.line("Profile (key | label: value (where it came from)). A dash is blank.")
+	}
 	blank := 0
 	group := func(name string, fields []fieldJSON) {
 		if len(fields) == 0 {
+			return
+		}
+		if r.brief {
+			// Keys are grouped under their prefix and the label is given
+			// only where the key's own words do not say it: the list is
+			// most of the outline, and every token of it is sent each turn.
+			byPrefix := map[string][]string{}
+			var order []string
+			for _, f := range fields {
+				if strings.HasPrefix(f.Key, "proj.flag.") || strings.HasPrefix(f.Key, "hdr.cond.") {
+					continue
+				}
+				cut := strings.LastIndexByte(f.Key, '.')
+				prefix, short := f.Key[:cut+1], f.Key[cut+1:]
+				if _, seen := byPrefix[prefix]; !seen {
+					order = append(order, prefix)
+				}
+				if !sameWords(short, f.Label) {
+					short += " (" + f.Label + ")"
+				}
+				byPrefix[prefix] = append(byPrefix[prefix], short)
+			}
+			for _, prefix := range order {
+				r.line("%s: %s", prefix, strings.Join(byPrefix[prefix], ", "))
+			}
 			return
 		}
 		r.line("%s", name)
@@ -270,6 +318,23 @@ func readProfile(ctx context.Context, d Deps, who opActor, project string, r *re
 	return nil
 }
 
+// sameWords reports whether a key's last part already says what its label
+// says ("site_area" and "Site area"), ignoring case, units and small words.
+func sameWords(key, label string) bool {
+	norm := func(s string) string {
+		s = strings.ToLower(s)
+		var b strings.Builder
+		for _, w := range strings.FieldsFunc(s, func(r rune) bool { return !(r >= 'a' && r <= 'z') && !(r >= '0' && r <= '9') }) {
+			if w != "sqm" && w != "m2" && w != "of" && w != "the" && w != "and" && w != "or" {
+				b.WriteString(w)
+			}
+		}
+		return b.String()
+	}
+	a, b := norm(key), norm(label)
+	return a == b || strings.Contains(b, a) && len(a) >= 5
+}
+
 func workingDays(week int) int { return bits.OnesCount8(uint8(week)) }
 
 // readProgram renders stages and their rows with Go's dates.
@@ -312,10 +377,25 @@ func readProgram(ctx context.Context, d Deps, who opActor, project string, r *re
 			finish += " at the earliest (some durations are unknown)"
 		}
 	}
-	r.line("Program: start %s, working week of %d days, finish %s. Rows with no duration: %d. Hold points: %d. Every date is computed by SiteWise; the program holds no progress, so nothing here says what is late.",
-		start, workingDays(st.Program.WorkingWeek), finish, unknown, holds)
+	if r.brief {
+		r.line("Program (working week of %d days): stages and their rows, id then name. Durations, dates and links are in read program.", workingDays(st.Program.WorkingWeek))
+	} else {
+		r.line("Program: start %s, working week of %d days, finish %s. Rows with no duration: %d. Hold points: %d. Every date is computed by SiteWise; the program holds no progress, so nothing here says what is late.",
+			start, workingDays(st.Program.WorkingWeek), finish, unknown, holds)
+	}
 	for _, a := range st.Activities {
 		if stagesOnly && a.Kind != "stage" && len(st.Activities) > 160 {
+			continue
+		}
+		if r.brief {
+			switch {
+			case a.Kind == "stage":
+				r.line("%s%s (stage)", r.id(a.ID), a.Label)
+			case a.Kind == "activity":
+				r.line(" %s%s", r.id(a.ID), a.Label)
+			default:
+				r.line(" %s%s (%s)", r.id(a.ID), a.Label, strings.ReplaceAll(a.Kind, "_", " "))
+			}
 			continue
 		}
 		parts := []string{r.id(a.ID) + a.Label}
@@ -375,9 +455,29 @@ func readProcurement(ctx context.Context, d Deps, who opActor, project string, r
 		r.line("Procurement: no packages yet.")
 		return nil
 	}
-	r.line("Procurement (package, then its firms). Amounts are ex GST.")
+	if r.brief {
+		r.line("Packages (id name), with their firms. Quotes and status are in read procurement.")
+	} else {
+		r.line("Procurement (package, then its firms). Amounts are ex GST.")
+	}
 	for _, p := range pkgs {
 		if p.RetiredAt != nil {
+			continue
+		}
+		if r.brief {
+			var firms []string
+			for _, c := range board[p.ID] {
+				f := c.FirmName
+				if c.SubmissionID != "" {
+					f += " (column " + shortID(c.SubmissionID) + ")"
+				}
+				firms = append(firms, f)
+			}
+			line := r.id(p.ID) + p.Title
+			if len(firms) > 0 {
+				line += ": " + strings.Join(firms, ", ")
+			}
+			r.line("%s", line)
 			continue
 		}
 		kind := "consultant"
@@ -419,15 +519,16 @@ func readProcurement(ctx context.Context, d Deps, who opActor, project string, r
 }
 
 // chatOutline is the compact picture of the project that opens every turn,
-// so a simple command needs no read first (speed rule 2): the cost plan
-// with ids, the Program's stages and rows (stages only on a very large
-// program), the packages and the profile's values. Dates and links are
-// left to read(program).
+// so a simple command needs no read first (speed rule 2). It holds only
+// what resolves a name to an id: cost lines, the Program's stages and rows
+// (stages only on a very large program), packages with their firms, and
+// the profile's keys. Every amount, date and value is left to read, which
+// also gives the figure its tag.
 func chatOutline(ctx context.Context, d Deps, who opActor, project, name, today string) string {
 	parts := make([]string, 4)
 	run := func(i int, f func(r *reader) error) func() {
 		return func() {
-			r := &reader{}
+			r := &reader{brief: true}
 			if err := f(r); err != nil {
 				parts[i] = "(could not be read)\n"
 				return

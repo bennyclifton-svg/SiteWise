@@ -357,6 +357,11 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 	rd := &reader{plain: true}
 	var err error
 	switch r.URL.Query().Get("area") {
+	case "outline":
+		// The outline exactly as a turn opens with it.
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		_, _ = w.Write([]byte(chatOutline(r.Context(), d, who, project, "", "")))
+		return
 	case "cost_plan":
 		err = readCostPlan(r.Context(), d, who, project, rd)
 	case "profile":

@@ -21,12 +21,12 @@ func programOperations() []operation {
 	return []operation{
 		{Name: "program.edit", About: "One Program edit. Edits of a batch apply together; a later edit may name an earlier add by its temp_id. Go computes every date.",
 			Fields: `op (add|update|delete|move|link_add|link_delete|set_start|set_working_week); ` +
-				`add: parent_id (the stage), label or labels (a list, for several rows alike), kind (activity|milestone|stage), duration, temp_id; ` +
+				`add: parent_id (the stage), label, or labels (a list, for several rows alike), or label with count (5 makes "label 1" to "label 5"), kind (activity|milestone|stage), duration, temp_id; ` +
 				`update: id, label, duration; delete: ids; link_add: pred_id, succ_id, type (FS), lag_days; ` +
 				`move: id, days; set_start: start_date (YYYY-MM-DD); set_working_week: working_week (31 is Monday to Friday, 63 Monday to Saturday, 127 every day). ` +
 				`duration is written as the PM said it ("2 weeks", "10 days"); Go converts it on the program's working week`,
 			Figures: map[string]string{"duration": "duration", "duration_days": "number", "days": "number", "lag_days": "number",
-				"start_date": "date", "constraint_date": "date", "day": "date", "working_week": "number"},
+				"start_date": "date", "constraint_date": "date", "day": "date", "working_week": "number", "count": "number"},
 			Routes: []string{"POST /projects/{id}/program/ops"}, Batch: programBatch},
 		{Name: "program.release_hold_point", About: "release a hold point: you are saying its inspection or approval was given.", Click: true,
 			Fields: `id (the hold point)`, Routes: []string{"POST /projects/{id}/program/hold-points/release"}, Run: programRelease},
@@ -40,6 +40,9 @@ type programEdit struct {
 	Duration *string `json:"duration,omitempty"`
 	// Labels adds one row per label, alike in every other field.
 	Labels []string `json:"labels,omitempty"`
+	// Count adds that many rows named label 1, label 2 and so on: "five
+	// activities for the DA drawings" is then a dozen tokens, not fifty.
+	Count int `json:"count,omitempty"`
 }
 
 func loadProgramForOps(ctx context.Context, d Deps, who opActor, project string) (store.ProgramState, error) {
@@ -106,6 +109,15 @@ func programBatch(ctx context.Context, d Deps, who opActor, project string, in o
 			if bad := full(ref); bad != nil {
 				return opApplied{}, bad
 			}
+		}
+		if e.Count != 0 {
+			if e.Op != "add" || e.Label == nil || len(e.Labels) > 0 || e.TempID != "" || e.Count < 2 || e.Count > 50 {
+				return opApplied{}, &opError{Index: i, Field: "count", Message: "count is for add with one label: it adds 2 to 50 rows named label 1, label 2 and so on."}
+			}
+			for n := 1; n <= e.Count; n++ {
+				e.Labels = append(e.Labels, fmt.Sprintf("%s %d", *e.Label, n))
+			}
+			e.Label = nil
 		}
 		if len(e.Labels) > 0 && (e.Op != "add" || e.Label != nil || e.TempID != "") {
 			return opApplied{}, &opError{Index: i, Field: "labels", Message: "labels is for add, in place of label and temp_id."}

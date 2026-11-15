@@ -387,6 +387,9 @@ func (l *live) Run(ctx context.Context, c chateval.Case) (chateval.Outcome, erro
 	if err != nil {
 		return out, err
 	}
+	if _, outline, err := s.do(http.MethodGet, "/api/projects/"+s.project+"/chat/read?area=outline", nil); err == nil && os.Getenv("CHAT_EVAL_OUTLINE") != "" {
+		_ = os.WriteFile(os.Getenv("CHAT_EVAL_OUTLINE"), outline, 0o644)
+	}
 	// Focusing the strip warms the cached prefix; the eval does it once.
 	l.warm.Do(func() {
 		_, _, _ = s.do(http.MethodPost, "/api/projects/"+s.project+"/chat/warm", []byte(`{}`))
