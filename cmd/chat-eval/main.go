@@ -27,7 +27,9 @@ func main() {
 	runs := flag.Int("runs", 5, "runs per case for -live")
 	only := flag.String("only", "", "comma-separated case ids or groups to run")
 	out := flag.String("out", "", "write the score sheet as JSON here")
+	workers := flag.Int("workers", 1, "runs at once for -live; more than one is faster and makes timings a little noisier")
 	flag.Parse()
+	chateval.Workers = *workers
 	cases, err := chateval.Load(*key)
 	if err != nil {
 		fail(err)

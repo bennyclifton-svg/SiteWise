@@ -12,6 +12,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"sync"
 )
 
 // Case is one typed message on one fixture project and what must be true
@@ -279,14 +280,40 @@ type Sheet struct {
 	Notes  map[string][]string `json:"notes"` // case id to its failure reasons
 }
 
+// Workers is how many runs RunAll does at once. One keeps timings clean.
+var Workers = 1
+
 // RunAll runs every case the given number of times and fills the sheet.
 func RunAll(ctx context.Context, agent Agent, cases []Case, runs int) Sheet {
+	// Every run is independent (a fresh fixture each), so they may run a
+	// few at a time; the sheet is filled in case order afterwards.
+	type result struct {
+		o   Outcome
+		err error
+	}
+	results := make([][]result, len(cases))
+	workers := max(Workers, 1)
+	slots := make(chan struct{}, workers)
+	var wg sync.WaitGroup
+	for ci, c := range cases {
+		results[ci] = make([]result, runs)
+		for i := 0; i < runs; i++ {
+			wg.Add(1)
+			slots <- struct{}{}
+			go func() {
+				defer func() { <-slots; wg.Done() }()
+				o, err := agent.Run(ctx, c)
+				results[ci][i] = result{o, err}
+			}()
+		}
+	}
+	wg.Wait()
 	sheet := Sheet{Groups: map[string]Row{}, Notes: map[string][]string{}}
-	for _, c := range cases {
+	for ci, c := range cases {
 		row := sheet.Groups[c.Group]
 		for i := 0; i < runs; i++ {
 			row.Runs++
-			o, err := agent.Run(ctx, c)
+			o, err := results[ci][i].o, results[ci][i].err
 			if err != nil {
 				row.Errors++
 				sheet.Notes[c.ID] = append(sheet.Notes[c.ID], "error: "+err.Error())

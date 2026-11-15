@@ -153,7 +153,13 @@ func run(addr, data string, programFixture bool) error {
 	if err != nil {
 		return err
 	}
+	chat, err := e2eChat()
+	if err != nil {
+		return err
+	}
 	srv, err := httpapi.New(httpapi.Options{
+		// Chat is answered by a stand-in that reads the PM's words only.
+		Chat:              chat,
 		Knowledge:         building,
 		ProfileThresholds: profileTh,
 		ProfileReading:    reading,

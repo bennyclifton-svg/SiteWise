@@ -7,7 +7,7 @@ import { readLocationChoice, writeLocationChoice } from "./workbenchLocation";
 // block, correct any box. Live updates come from the durable event stream and
 // never move focus.
 
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type DragEvent, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useReducer, useRef, useState, type DragEvent, type ReactNode } from "react";
 import {
   api,
   request,
@@ -22,6 +22,10 @@ import {
 } from "./api";
 import { type RowModel } from "./DocumentRow";
 import { CockpitFrame } from "./CockpitFrame";
+
+// The chat strip is its own chunk, fetched after the workbench has rendered,
+// so opening a project does not wait for it.
+const Chat = lazy(() => import("./Chat"));
 import { LeftNav, viewLabel, type WorkbenchView } from "./LeftNav";
 import { Profile, type ProfileRunState } from "./Profile";
 import { Register } from "./Register";
@@ -793,6 +797,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram)}
       profileFeedbackRef={setProfileFeedbackTarget}
       showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram}
+      chat={<Suspense fallback={null}><Chat projectId={projectId} onShow={showView} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
       onDragEnter={onDragEnter}
       onDragOverCapture={e => { if ((e.target as HTMLElement).closest("[data-proposal-drop]")) { dragDepth.current = 0; setOver(false); } }}
       onDropCapture={() => { dragDepth.current = 0; setOver(false); }}

@@ -14,6 +14,8 @@ interface Props {
   repositoryOpenRequest?: number;
   profileFeedbackRef?: (element: HTMLDivElement | null) => void;
   showProfileFeedback?: boolean;
+  /** The chat strip, at the foot of the middle panel. */
+  chat?: ReactNode;
   onDragEnter?: (e: DragEvent) => void;
   onDragOver?: (e: DragEvent) => void;
   onDragOverCapture?: (e: DragEvent) => void;
@@ -75,7 +77,7 @@ function storeRepoWidth(px: number) {
 // view, and the document repository. The repository stays up on every view.
 // Its width is dragged from the left edge; columns fold in cockpit.css when
 // the rail is too narrow to read them.
-export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitle, children, repository, wideWorkspace=false, repositoryOpenRequest=0, profileFeedbackRef, showProfileFeedback=false, onDragEnter, onDragOver, onDragLeave, onDrop, onDragOverCapture, onDropCapture, onDragEndCapture }: Props) {
+export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitle, children, repository, wideWorkspace=false, repositoryOpenRequest=0, profileFeedbackRef, showProfileFeedback=false, chat, onDragEnter, onDragOver, onDragLeave, onDrop, onDragOverCapture, onDropCapture, onDragEndCapture }: Props) {
   const [showDocuments,setShowDocuments]=useState(true);
   useEffect(() => { if (repositoryOpenRequest) setShowDocuments(true); }, [repositoryOpenRequest]);
   const focusWorkspace=!showDocuments;
@@ -223,6 +225,7 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
             {children}
           </div>
           <div ref={profileFeedbackRef} hidden={!showProfileFeedback} className="profile-feedback-slot" />
+          {chat}
         </main>
         <aside id="project-documents" className="project-side-panel" aria-label="Document register" style={focusWorkspace?{display:"none"}:undefined}>
           {wide && (
