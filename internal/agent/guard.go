@@ -58,7 +58,7 @@ var (
 
 // verdicts are conclusions chat does not draw (review change 1; cases 2,
 // 4 and 21). They are marked, never silently removed.
-var verdicts = []string{"low risk", "low-risk", "no risk", "not risky", "is compliant", "it complies", "complies with", "does comply",
+var verdicts = []string{"low risk", "low-risk", "not risky", "is compliant", "it complies", "complies with", "does comply",
 	"does not comply", "non-compliant", "no asbestos", "asbestos-free", "there are no trees", "is safe"}
 
 func squash(s string) string { return strings.TrimSpace(spaces.ReplaceAllString(s, " ")) }

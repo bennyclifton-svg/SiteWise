@@ -531,10 +531,10 @@
    "fixture": "refurb",
    "message": "Clear the cost plan and start again",
    "money_or_date": true,
-   "note": "Prepared with a count, or refused. Nothing deleted at once; the scorer requires that nothing changed.",
+   "note": "Prepared with a count, or refused. Nothing is deleted at once.",
    "expect": [
     {
-     "kind": "no_change"
+     "kind": "not_applied"
     }
    ]
   },
@@ -888,15 +888,17 @@
    "group": "program",
    "fixture": "house",
    "message": "Slab pour can't start until DA determination finishes",
-   "note": "A finish-to-start link.",
+   "note": "A finish-to-start link: the Slab pour row names DA determination among the rows it comes after.",
    "expect": [
     {
      "kind": "state",
      "area": "program",
      "has": [
       "Slab pour |",
-      "after DA determination"
-     ]
+      "after",
+      "DA determination"
+     ],
+     "count": 1
     }
    ]
   },

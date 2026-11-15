@@ -679,6 +679,37 @@ of that baseline set and is left as found.
   coverage line.
 - **Live runner.** `cmd/chat-eval -live` builds each case's fixture in a
   private database and sends the message through the real route.
+- **Task 9, done.** `web/src/Chat.tsx`, `web/src/chat.css`, mounted lazily
+  from `Project.tsx` through a `chat` slot on `CockpitFrame`; a stand-in
+  model in the e2e server; `web/tests/chat.spec.ts` (4 tests pass). The
+  two `navigation-refresh` browser tests fail with and without the strip
+  mounted (checked by stashing the mount), so they are not caused by it.
+- **Task 10, partly done.** The live key was run five times a case on
+  Haiku, on Sonnet, and on Haiku with hidden thinking; the score sheets,
+  rounds, latency and cost are in `docs/evidence/2026-11-15-chat-agent.md`.
+  `TestChatGoWorkBudgets` holds the Go rows. `AGENTS.md` and `PRODUCT.md`
+  are edited. Not done: the chat rows are not in `cmd/intake-bench`, and
+  `tools/check.ps1` was not run as a whole (its Go tests, vet, build and
+  the knowledge check were run by hand against the private database).
+- **Task 3, the rest: not started.** No operations yet for scope,
+  accommodation, the planning screen's own route, parts, work items,
+  invited firms, packages or award. Chat answers "I can't do that from
+  chat yet" for these. 94 write routes remain pending in
+  `internal/httpapi/ops_routes.go`.
+
+## Result (15 November 2026)
+
+What a PM can do now, on branch `chat/agent`: type an instruction in the
+strip and have cost lines, amounts, profile values, Program rows,
+durations and links changed at once with Undo; ask a question and get an
+answer from the records and the filed documents with checked quotations,
+Go's figures and a line saying what was searched; and click Apply on a
+change that waits for them. Measured results are in the evidence note.
+Open before a merge: the owner's review of the command key and the prompt
+(`knowledge/chat/`, all draft), the choice between Haiku and Sonnet, a
+floor for the key, the operations still pending, tender and hold-point
+fixtures for the key, the outline's size, and a measurement from the live
+server.
 
 ## Deviations
 
@@ -739,6 +770,28 @@ of that baseline set and is left as found.
 - **Outside text, a narrower rule for the profile.** A profile read marks
   the turn only when a value read from a document is longer than four
   words. Short values Jev picked from fixed options or numbers do not.
+- **Task 1 and 10, fixtures.** They are Go data in
+  `cmd/chat-eval/fixtures.go`, not a JSON file. They hold cost lines,
+  profile values, Program rows, packages with invited firms and filed
+  documents. They do not hold read tenders, a hold point, implications or
+  messages, so ten cases cannot pass yet (the evidence note lists them).
+- **Task 1, corrections to the key after the first live run.** Worked case
+  4 expects the exclusion and accepts a question about the duplicates, as
+  the plan's own table says. `r24` accepts a prepared delete (new kind
+  `not_applied`). `d1` no longer demands a quotation for "which revision
+  is current". `g6` and `a5` match on the row, not on exact wording.
+- **Task 10, the bench.** The Go rows are held by a test in the style of
+  `TestTenderEditBudget`, not sampled by `cmd/intake-bench`, which needs
+  the private corpus and the shared database.
+- **Speed rule 5, thinking.** Thinking stays off as the plan says. Haiku
+  with thinking off sometimes writes its working as visible text; Go drops
+  it on a `final` apply, and the prompt forbids it in answers. Hidden
+  thinking is a switch (`SITEWISE_CHAT_THINKING=1`) and was measured: more
+  careful with figures, slower, and it made one wrong profile write.
+- **The outline grew.** After the first live run it carries the Program's
+  rows (up to 160) and every building-size field, so a rename or "8
+  storeys" is one round and lands on the right key. It is about 5,900
+  tokens on the house fixture, three times its first size.
 - **Fixture stage names.** The plan's worked case 1 says "under Design".
   Three of the seven stages have Design in their name, and the model
   rightly asks which. The key's cases name the stage (Planning, Design

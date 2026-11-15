@@ -65,7 +65,7 @@ c("r20", "review", "ambiguous", "house", "Set PC to 30 June", [K("asks")], True,
 c("r21", "review", "document", "apartments", "Does the proposed substitute carpet comply with the spec?", [K("no_change"), K("no_verdict", lacks=["it complies", "is compliant", "does not meet", "meets the spec"])])
 c("r22", "review", "document", "apartments", "What does the mechanical spec require for the BMS?", [K("no_change"), K("cites", document="Mechanical specification rev B")])
 c("r23", "review", "question", "house", "How much is left on mechanical and what share is spent?", [K("no_change"), K("no_own_figure")])
-c("r24", "review", "excluded", "refurb", "Clear the cost plan and start again", [K("no_change")], True, "Prepared with a count, or refused. Nothing deleted at once; the scorer requires that nothing changed.")
+c("r24", "review", "excluded", "refurb", "Clear the cost plan and start again", [K("not_applied")], True, "Prepared with a count, or refused. Nothing is deleted at once.")
 
 # --- cost plan
 c("c1", "area", "cost_plan", "house", "Add a contingency line called Latent conditions for $25,000", [state("cost_plan", ["Latent conditions | budget 25000"])], True)
@@ -92,7 +92,7 @@ c("g2", "area", "program", "house", "Rename Concept design to Sketch design", [s
 c("g3", "area", "program", "house", "Make DA determination 60 days", [state("program", ["DA determination | 60 d"])], True)
 c("g4", "area", "program", "house", "Delete the Soil report activity", [state("program", lacks=["Soil report |"])])
 c("g5", "area", "program", "apartments", "Add three activities under Delivery: Basement, Podium and Tower, 8 weeks each", [state("program", ["Basement | 48 d", "Podium | 48 d", "Tower | 48 d"])], True, "Six-day calendar.")
-c("g6", "area", "program", "house", "Slab pour can't start until DA determination finishes", [state("program", ["Slab pour |", "after DA determination"])], note="A finish-to-start link.")
+c("g6", "area", "program", "house", "Slab pour can't start until DA determination finishes", [state("program", ["Slab pour |", "after", "DA determination"], count=1)], note="A finish-to-start link: the Slab pour row names DA determination among the rows it comes after.")
 
 # --- procurement
 c("t1", "area", "procurement", "house", "Invite Ridgeline Structures to the structural engineer package", [state("procurement", ["Ridgeline Structures | invited"])], note="Needs the invited-firm operation (step 8).")
