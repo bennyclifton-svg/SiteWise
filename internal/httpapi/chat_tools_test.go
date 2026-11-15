@@ -231,3 +231,30 @@ func TestChatReadsCalcAndFind(t *testing.T) {
 		}
 	}
 }
+
+// When the PM names a document, Go keeps the search to it, and a
+// superseded revision is left out unless it was asked about.
+func TestPassagesKeepToTheNamedDocument(t *testing.T) {
+	ta := newToolApp(t)
+	if _, err := chatfix.SeedDocuments(context.Background(), ta.a.store, ta.m.orgID, ta.project, testDocs); err != nil {
+		t.Fatal(err)
+	}
+	events := ta.run(t, "What does the arborist report say about tree 4?", tool("passages", map[string]any{"words": "tree"}))
+	got := ta.results[0]
+	if strings.Contains(got, "Condition 14") || !strings.Contains(got, "Tree 4 (Eucalyptus saligna)") || !strings.Contains(got, "Searched only Arborist report, which the question names") {
+		t.Errorf("the search did not keep to the arborist report:\n%s", got)
+	}
+	if a := events[len(events)-2].Answer; a == nil || !strings.Contains(a.Coverage, "Only the matching passages were read") {
+		t.Errorf("the answer must say only the hits were read: %+v", a)
+	}
+	ta.run(t, "What does the mechanical spec require for the BMS?", tool("passages", map[string]any{"words": "bms"}))
+	got = ta.results[0]
+	if strings.Contains(got, "proprietary system") || !strings.Contains(got, "BACnet compatible") || !strings.Contains(got, "Left out: Mechanical specification rev A (superseded by Mechanical specification rev B)") {
+		t.Errorf("the superseded revision was not left out:\n%s", got)
+	}
+	// Asked about, it is searched.
+	ta.run(t, "What did the superseded mechanical spec say about the BMS?", tool("passages", map[string]any{"words": "bms"}))
+	if !strings.Contains(ta.results[0], "proprietary system") {
+		t.Errorf("the superseded revision was asked for:\n%s", ta.results[0])
+	}
+}

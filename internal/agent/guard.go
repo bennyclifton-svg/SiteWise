@@ -144,6 +144,15 @@ func Check(text string, st *State) Answer {
 			if !free(s, e) || listNumber(a.Text, s, e) {
 				continue
 			}
+			// The model typed a figure instead of its tag. If exactly one
+			// figure Go returned this turn has that value, it is that
+			// figure: Go ties it to its row, with no further model call.
+			if f, ok := soleFact(st, tok); ok && !date {
+				m := Mark{Start: s, End: e, Kind: "fact", Note: f.Label + " (" + f.Source + ")"}
+				taken = append(taken, m)
+				a.Marks = append(a.Marks, m)
+				continue
+			}
 			kind := "seen"
 			known := st.Seen.HasNumbersOf(tok)
 			if date {
@@ -202,6 +211,25 @@ func Declined(lower string, at int) bool {
 		}
 	}
 	return false
+}
+
+// soleFact finds the one fact of this turn whose value is the typed number.
+// Two facts with the same value are not guessed between.
+func soleFact(st *State, tok string) (Fact, bool) {
+	nums := figures.Numbers(tok)
+	if len(nums) == 0 {
+		return Fact{}, false
+	}
+	want := nums[0]
+	var found Fact
+	n := 0
+	for _, f := range st.Facts {
+		if p, ok := figures.Plain(f.Plain); ok && f.Plain != "" && strings.TrimPrefix(p, "-") == want {
+			found = f
+			n++
+		}
+	}
+	return found, n == 1 && len(want) >= 3
 }
 
 // findQuote returns the passage a quotation is a literal part of: the one

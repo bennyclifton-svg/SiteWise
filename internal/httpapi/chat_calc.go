@@ -47,7 +47,7 @@ func (b *chatBox) calc(ctx context.Context, st *agent.State, input json.RawMessa
 	money := func(r *big.Rat) string { p, _ := figures.Plain(r.FloatString(2)); return p }
 	result := func(value, shown, label string) agent.Output {
 		tag := b.nextTag("f")()
-		return agent.Output{Text: fmt.Sprintf("%s = %s [%s]", label, value, tag), Facts: map[string]agent.Fact{tag: {Label: label, Value: shown, Source: "calculated by SiteWise"}}}
+		return agent.Output{Text: fmt.Sprintf("%s = %s [%s]", label, value, tag), Facts: map[string]agent.Fact{tag: {Label: label, Value: shown, Source: "calculated by SiteWise", Plain: strings.TrimSuffix(value, "%")}}}
 	}
 	list := func(sep string) string {
 		parts := make([]string, len(nums))

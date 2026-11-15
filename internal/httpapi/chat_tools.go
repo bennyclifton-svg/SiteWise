@@ -105,7 +105,7 @@ func (b *chatBox) Run(ctx context.Context, st *agent.State, call llm.ToolCall) a
 	case "documents":
 		out = b.documents(ctx, call.Input)
 	case "passages":
-		out = b.passages(ctx, call.Input)
+		out = b.passages(ctx, st, call.Input)
 	case "messages":
 		// Email intake is not built. The tool keeps its place in the list
 		// so the prompt does not change when it is.

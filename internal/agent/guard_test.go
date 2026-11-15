@@ -105,6 +105,21 @@ func TestFigureSeenThisTurnIsNotTheModelsOwn(t *testing.T) {
 	}
 }
 
+func TestTypedFigureThatIsOneFactIsTiedToItsRow(t *testing.T) {
+	st := guardState()
+	st.Facts["f1"] = Fact{Label: "Mechanical services, budget", Value: "$120,000", Source: "Cost Plan", Plain: "120000"}
+	a := Check("The budget is $120,000 and 45000 is claimed.", st)
+	facts := marksOf(a, "fact")
+	if len(facts) != 1 || facts[0] != "$120,000" || a.Unchecked != 0 || a.Marks[0].Note != "Mechanical services, budget (Cost Plan)" {
+		t.Fatalf("marks %+v", a.Marks)
+	}
+	// Two rows with the same figure are not guessed between.
+	st.Facts["f3"] = Fact{Label: "Another line, budget", Value: "$120,000", Source: "Cost Plan", Plain: "120000"}
+	if b := Check("The budget is $120,000.", st); len(marksOf(b, "fact")) != 0 {
+		t.Fatalf("an ambiguous figure was tied to a row: %+v", b.Marks)
+	}
+}
+
 func TestSupersededRevisionIsNamed(t *testing.T) {
 	a := Check(`"The BMS shall be BACnet compatible." [p2]`, guardState())
 	if len(a.Marks) != 1 || !strings.Contains(a.Marks[0].Note, "Mechanical specification rev A, page 12") || !strings.Contains(a.Marks[0].Note, "superseded by rev B") {

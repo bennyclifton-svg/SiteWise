@@ -215,7 +215,7 @@ const (
 )
 
 // passages searches or reads document text.
-func (b *chatBox) passages(ctx context.Context, input json.RawMessage) agent.Output {
+func (b *chatBox) passages(ctx context.Context, st *agent.State, input json.RawMessage) agent.Output {
 	var in struct {
 		Words, Document, Pages string
 	}
@@ -267,6 +267,42 @@ func (b *chatBox) passages(ctx context.Context, input json.RawMessage) agent.Out
 		return toolError("The search failed.")
 	}
 	coverage := coverageLine(docs, one, alts)
+	// The PM named a document or a firm: the answer is from that document
+	// only, so another firm's proposal or another report is never quoted
+	// beside it. A superseded revision is left out unless the PM asked
+	// about it. Go does this; it is not left to the model.
+	var kept []string
+	if one == nil {
+		named := namedDocs(st.Asked, docs)
+		old := strings.Contains(strings.ToLower(st.Asked), "supersed") || strings.Contains(strings.ToLower(st.Asked), "previous rev") || strings.Contains(strings.ToLower(st.Asked), "earlier rev")
+		var keep []store.ChatPassage
+		dropped := map[string]bool{}
+		for _, p := range found {
+			doc := byID[p.DocumentID]
+			switch {
+			case len(named) > 0 && !named[p.DocumentID]:
+			case len(named) == 0 && doc.SupersededBy != "" && !old:
+				dropped[doc.name()+" (superseded by "+doc.SupersededBy+")"] = true
+			default:
+				keep = append(keep, p)
+			}
+		}
+		found = keep
+		if len(named) > 0 {
+			for _, d := range docs {
+				if named[d.ID] {
+					kept = append(kept, d.name())
+				}
+			}
+			coverage = fmt.Sprintf("Searched only %s, which the question names, for: %s.", strings.Join(kept, ", "), strings.Join(alts, ", "))
+		}
+		for name := range dropped {
+			coverage += " Left out: " + name + "."
+		}
+	}
+	if len(found) > 0 {
+		coverage += " Only the matching passages were read, not the whole of each document."
+	}
 	out := agent.Output{Coverage: coverage, Outside: "filed documents"}
 	var text strings.Builder
 	if len(found) == 0 {
@@ -305,6 +341,45 @@ func (b *chatBox) passages(ctx context.Context, input json.RawMessage) agent.Out
 	text.WriteString(coverage + "\n")
 	out.Text = text.String()
 	return out
+}
+
+// namedDocs finds the documents the PM's message names: by a title's own
+// words ("the arborist report"), or by the firm whose submission it is
+// ("Northline"). An empty result means the message names none.
+func namedDocs(asked string, docs []docInfo) map[string]bool {
+	asked = " " + strings.ToLower(asked) + " "
+	named := map[string]bool{}
+	for _, d := range docs {
+		title := strings.ToLower(d.Title)
+		if i := strings.Index(title, " rev "); i > 0 {
+			title = title[:i]
+		}
+		if len(title) >= 6 && strings.Contains(asked, title) {
+			named[d.ID] = true
+		}
+		if firm := strings.Fields(strings.ToLower(d.Firm.Firm)); len(firm) > 0 && len(firm[0]) >= 4 && strings.Contains(asked, firm[0]) {
+			named[d.ID] = true
+		}
+		// A proposal filed but not yet tied to a firm still carries the
+		// firm's name in its title ("Northline fee proposal").
+		if first := strings.Fields(title); len(first) > 1 && len(first[0]) >= 5 && (d.Kind == "commercial" || strings.Contains(title, "proposal") || strings.Contains(title, "tender")) &&
+			strings.Contains(asked, " "+first[0]) {
+			named[d.ID] = true
+		}
+	}
+	// A superseded revision of a named document gives way to the current one.
+	current := false
+	for _, d := range docs {
+		current = current || (named[d.ID] && d.SupersededBy == "")
+	}
+	if current && !strings.Contains(asked, "supersed") {
+		for _, d := range docs {
+			if named[d.ID] && d.SupersededBy != "" {
+				delete(named, d.ID)
+			}
+		}
+	}
+	return named
 }
 
 // alternatives splits the model's words into search alternatives and
@@ -454,6 +529,39 @@ func (b *chatBox) systemRoute(ctx context.Context, text *strings.Builder, out *a
 	for _, p := range labelled {
 		if _, ok := docs[p.DocumentID]; ok {
 			b.writePassage(text, out, docs[p.DocumentID], p)
+		}
+	}
+	under := func(id string) bool {
+		for _, s := range systems {
+			if id != "" && (id == s || strings.HasPrefix(id, s+".") || strings.HasPrefix(s, id+".")) {
+				return true
+			}
+		}
+		return false
+	}
+	// Scope status: what the profile holds for the system, in or out.
+	if view, err := b.d.Store.ReadProfile(ctx, b.who.OrgID, b.project, b.d.ProfileReading.Kinds()); err == nil {
+		for _, row := range view.Rows {
+			if leaf, ok := strings.CutPrefix(row.Key, "scope."); ok && under(leaf) && row.Value != "" {
+				fmt.Fprintf(text, "  Scope: %s is %s (%s)\n", leaf, row.Value, orDash(row.Origin))
+			}
+		}
+	}
+	if works, err := b.d.Store.ReadWorks(ctx, b.who.OrgID, b.project); err == nil {
+		for _, w := range works {
+			if under(w.SystemID) {
+				fmt.Fprintf(text, "  Work item: %s (%s, %s)\n", w.Title, w.SystemID, w.Action)
+			}
+		}
+	}
+	if st, err := b.d.Store.LoadProgram(ctx, b.who.OrgID, b.project); err == nil {
+		for _, act := range st.Activities {
+			for _, s := range act.Systems {
+				if under(s) {
+					fmt.Fprintf(text, "  Program row: %s\n", act.Label)
+					break
+				}
+			}
 		}
 	}
 	items, err := b.d.Store.ReadProposals(ctx, b.who.OrgID, b.project)

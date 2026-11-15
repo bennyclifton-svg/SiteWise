@@ -53,7 +53,7 @@ func (r *reader) fig(value, shown, label, source string) string {
 		return value
 	}
 	tag := r.next()
-	r.facts[tag] = agent.Fact{Label: label, Value: shown, Source: source}
+	r.facts[tag] = agent.Fact{Label: label, Value: shown, Source: source, Plain: value}
 	return value + " [" + tag + "]"
 }
 
@@ -167,6 +167,12 @@ func readCostPlan(ctx context.Context, d Deps, who opActor, project string, r *r
 			val("claimed_to_date", "claimed", false)
 			if rem := totals.Items[i.ID].Remaining; rem != nil && i.Values["commitment"].ValueState == "known" {
 				parts = append(parts, "remaining "+r.fig(plainMoney(rem), dollars(*rem), i.Label+", contract less claimed", "Cost Plan"))
+			}
+			// "What is left of the budget" is a figure too, so nobody has
+			// to subtract: budget less claimed, when both are known.
+			if b, c := i.Values["budget"], i.Values["claimed_to_date"]; !r.plain && b.ValueState == "known" && c.ValueState == "known" && b.Amount != nil && c.Amount != nil {
+				left := costs.Sub(*b.Amount, *c.Amount)
+				parts = append(parts, "budget less claimed "+r.fig(plainMoney(&left), dollars(left), i.Label+", budget less claimed", "Cost Plan"))
 			}
 		} else {
 			parts = append(parts, "group")

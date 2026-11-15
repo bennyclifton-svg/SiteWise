@@ -50,6 +50,9 @@ type State struct {
 	Outside bool
 	Why     string
 	Today   time.Time
+	// Asked is the PM's message of this turn. Tools read it to keep to the
+	// document or the firm the PM named.
+	Asked string
 	// Passages are the passages read this turn, by id, for the quote check.
 	Passages map[string]Passage
 	// Facts are the figures tools returned this turn, by tag (Task 8).
@@ -73,6 +76,9 @@ type Fact struct {
 	Label  string `json:"label"`
 	Value  string `json:"value"`
 	Source string `json:"source"` // "Cost Plan", "calc", …
+	// Plain is the figure as a bare number ("120000"), when it is one. An
+	// answer that types it without its tag is tied back to this row by Go.
+	Plain string `json:"-"`
 }
 
 // Output is what one tool call returned.
@@ -181,6 +187,7 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 	// because it is full of small numbers (dates, counts) that would make
 	// any small figure look given.
 	st.Seen.Add(req.Outline)
+	st.Asked = typed
 	res := Result{State: st}
 	history := append([]json.RawMessage{}, req.History...)
 	add := func(msg json.RawMessage) {

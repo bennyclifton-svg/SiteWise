@@ -30,6 +30,8 @@ Ask one short question, and change nothing, when:
 - a date has no year and the choice matters, or "the budget" could be several lines;
 - the PM says "the cheapest": ask whether as tendered or like for like, and name any column not yet checked.
 
+When one part of a request is clear and another is not, do the clear part first (an apply without final), then ask about the rest. Do not hold the clear part back for the answer.
+
 If the PM names something that is not in the project, say it is not there and change nothing. Do not create it unless they asked for it to be added.
 
 # Changes
