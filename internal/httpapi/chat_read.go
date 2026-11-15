@@ -515,6 +515,17 @@ func readProcurement(ctx context.Context, d Deps, who opActor, project string, r
 			r.line("  %s", strings.Join(parts, " | "))
 		}
 	}
+	if !r.plain && d.Knowledge != nil {
+		// What add_package can add: the disciplines with an RFP or RFT.
+		var ids []string
+		for _, id := range d.Knowledge.RFPDisciplines() {
+			if rfp, ok := d.Knowledge.RFP(id); ok {
+				ids = append(ids, rfp.DisciplineIDs...)
+			}
+		}
+		sort.Strings(ids)
+		r.line("Disciplines a package can be added for: %s", strings.Join(ids, ", "))
+	}
 	return nil
 }
 

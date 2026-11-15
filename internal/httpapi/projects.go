@@ -317,7 +317,7 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 	for pattern, h := range billingRoutes {
 		routes[pattern] = h
 	}
-	for pattern, h := range chatRoutes {
+	for pattern, h := range chatRoutes() {
 		routes[pattern] = h
 	}
 	return routes

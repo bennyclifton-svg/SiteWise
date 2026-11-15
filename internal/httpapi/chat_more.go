@@ -138,6 +138,9 @@ func readImplications(ctx context.Context, d Deps, who opActor, project string, 
 			open++
 		}
 		parts := []string{fmt.Sprintf("%d", it.Rank), it.Label, "severity " + orDash(it.Severity), state}
+		if !r.plain {
+			parts = append(parts, "key "+it.Key)
+		}
 		if it.Critical {
 			parts = append(parts, "critical")
 		}
@@ -366,12 +369,14 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 		err = readCostPlan(r.Context(), d, who, project, rd)
 	case "profile":
 		err = readProfile(r.Context(), d, who, project, rd)
+	case "accommodation":
+		err = chatAccommodation(withOpRequest(r.Context(), r), d, project, rd)
 	case "program":
 		err = readProgram(r.Context(), d, who, project, rd, false)
 	case "procurement":
 		err = readProcurement(r.Context(), d, who, project, rd)
 	default:
-		http.Error(w, "area is cost_plan, profile, program or procurement", http.StatusUnprocessableEntity)
+		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement or outline", http.StatusUnprocessableEntity)
 		return
 	}
 	if err != nil {

@@ -29,6 +29,8 @@ var captured = map[string]capturedTable{
 	"cost_plan_versions":         {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "costs"},
 	"cost_plans":                 {Key: []string{"org_id", "project_id"}, Area: "costs"},
 	"profile_user_values":        {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "profile"},
+	"package_invitations":        {Key: []string{"org_id", "package_id", "firm_id"}, Area: "procurement"},
+	"accommodation_lines":        {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "profile"},
 	"tender_lines":               {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustments":         {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustment_amounts":  {Key: []string{"org_id", "adjustment_id", "submission_id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
@@ -359,6 +361,16 @@ func (s *Store) touchProfileAfterUndo(ctx context.Context, tx pgx.Tx, org, proje
 // adds and subs back in step: the tender sum, flags, price cells and
 // suggestions of every submission and package the change touched.
 func (s *Store) refreshTenderAfterUndo(ctx context.Context, tx pgx.Tx, org, project string, log []changeRow) error {
+	// An invitation put back or taken away shows on the Procurement table.
+	for _, r := range log {
+		if r.Table == "package_invitations" {
+			payload, _ := json.Marshal(map[string]any{"project_id": project})
+			if _, err := appendEvent(ctx, s.q.WithTx(tx), org, "packages", "", string(payload)); err != nil {
+				return err
+			}
+			break
+		}
+	}
 	subs := rowField(log, map[string]string{"tender_lines": "submission_id", "tender_adjustment_amounts": "submission_id"})
 	pkgs := map[string]bool{}
 	for _, id := range rowField(log, map[string]string{"tender_adjustments": "package_id"}) {

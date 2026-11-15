@@ -26,7 +26,7 @@ type chatBox struct {
 	tags    atomic.Int64
 }
 
-var readAreas = []string{"cost_plan", "profile", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention"}
+var readAreas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention"}
 
 func object(required []string, props map[string]any) map[string]any {
 	return map[string]any{"type": "object", "additionalProperties": false, "required": required, "properties": props}
@@ -136,6 +136,8 @@ func (b *chatBox) read(ctx context.Context, input json.RawMessage) agent.Output 
 		err = readCostPlan(ctx, b.d, b.who, b.project, r)
 	case "profile":
 		err = readProfile(ctx, b.d, b.who, b.project, r)
+	case "accommodation":
+		err = chatAccommodation(ctx, b.d, b.project, r)
 	case "program":
 		err = readProgram(ctx, b.d, b.who, b.project, r, false)
 	case "procurement":

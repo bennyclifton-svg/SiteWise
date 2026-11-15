@@ -77,7 +77,8 @@ func chatSystem(prompt string) string {
 		}
 		fmt.Fprintf(&b, "\n- %s%s: %s Fields: %s.", op.Name, click, op.About, op.Fields)
 	}
-	b.WriteString("\n\nNot available from chat yet: specifications, reports, documents (filing, deleting), invoices, delivery records, scope, accommodation, packages and awards. Say \"I can't do that from chat yet\" and name the screen.\n")
+	b.WriteString("\n\nAn operation marked as waiting for the PM's click, or one that cannot be undone from chat, is still sent with apply: SiteWise prepares it. Awards are made in the award dialog on Procurement.\n")
+	b.WriteString("Not available from chat: uploading or re-reading a document, editing a report's wording, combining packages. Say \"I can't do that from chat yet\" and name the screen.\n")
 	b.WriteString("Never from chat: sign-in, billing, team and invitations, deleting or archiving a project, issuing anything.\n")
 	return b.String()
 }
@@ -242,7 +243,7 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 	// The turn runs to its end even if the PM closes the strip: a change
 	// half way through a batch must be finished or put back, and the card
 	// must be stored.
-	res := agent.Run(context.WithoutCancel(ctx), d.Chat.Model, box, req, emit)
+	res := agent.Run(withOpRequest(context.WithoutCancel(ctx), r), d.Chat.Model, box, req, emit)
 	if res.Err != nil {
 		d.Log.Printf("chat: model call failed: %s", llmErrorClass(res.Err))
 		emit(agent.Event{Type: "error", Text: agent.Unavailable(res.Err, res.Cards)})
@@ -387,7 +388,7 @@ func postChatPrepared(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	// The operations read the current values now, not those of the turn
 	// that prepared them (review change 7).
-	done, bad := applyOps(r.Context(), d, opActor{s.OrgID, s.UserID}, project, batch)
+	done, bad := applyOps(withOpRequest(r.Context(), r), d, opActor{s.OrgID, s.UserID}, project, batch)
 	if bad != nil {
 		if err := d.Store.ReopenChatPrepared(r.Context(), s.OrgID, id); err != nil {
 			d.Log.Printf("chat: reopening a prepared change failed: %v", err)

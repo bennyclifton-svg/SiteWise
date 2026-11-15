@@ -29,6 +29,9 @@ type operation struct {
 	// Click: the PM vouches for something by doing this, so chat prepares
 	// it and the PM clicks (review change 4).
 	Click bool
+	// NoUndo: the change log cannot put this back (its tables carry no
+	// capture trigger), so it is never recorded as an undoable change.
+	NoUndo bool
 	// Hold says why this call must wait for a click even though the
 	// operation usually applies at once ("" means apply). It reads; it
 	// never writes.
@@ -93,15 +96,22 @@ func refuse(field, format string, args ...any) error {
 
 const maxOpsPerBatch = 50
 
-var opAreas = []string{"cost_plan", "profile", "program", "procurement"}
+var opAreas = []string{"cost_plan", "profile", "program", "procurement", "invoices", "delivery", "specifications", "reports", "documents"}
 
 // operations is the registry. The order is the order the agent reads.
 func operations() []operation {
 	var all []operation
 	all = append(all, costOperations()...)
+	all = append(all, forwardedOperations("cost_plan")...)
 	all = append(all, profileOperations()...)
+	all = append(all, roomOperations()...)
+	all = append(all, forwardedOperations("profile")...)
 	all = append(all, programOperations()...)
+	all = append(all, forwardedOperations("program")...)
 	all = append(all, procurementOperations()...)
+	for _, area := range opAreas[3:] {
+		all = append(all, forwardedOperations(area)...)
+	}
 	return all
 }
 
@@ -189,7 +199,7 @@ func applyOps(ctx context.Context, d Deps, who opActor, project string, in opBat
 	out := opApplied{ChangeID: change.ID, Undo: opUndo{Kind: "change"}}
 	for i, op := range ops {
 		run := marked
-		if op.Click {
+		if op.Click || op.NoUndo {
 			// What the PM vouches for by a click (a freeze, a release) is
 			// not put back by Undo, so it is not captured as a change.
 			run = ctx
@@ -315,7 +325,7 @@ func postOps(w http.ResponseWriter, r *http.Request, d Deps) {
 		return
 	}
 	in.Via = "screen"
-	out, bad := applyOps(r.Context(), d, opActor{s.OrgID, s.UserID}, r.PathValue("id"), in)
+	out, bad := applyOps(withOpRequest(r.Context(), r), d, opActor{s.OrgID, s.UserID}, r.PathValue("id"), in)
 	if bad != nil {
 		writeOpError(w, bad)
 		return
