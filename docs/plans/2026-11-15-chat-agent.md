@@ -632,3 +632,26 @@ Task 0 and Task 1 first; they need no code review to start and the owner
 reads the command key. Task 2 needs the live server. Tasks 3 to 6 need no
 model. Task 7 onward needs Task 2's go-ahead. The inbox case needs the
 email plan through its Task 7.
+
+## Progress
+
+Branch `chat/agent`, worktree `sitewise-chat`, cut from `main` at `114178d`.
+Baseline on 15 November before any change: `go build ./...` clean;
+`go test -p 1 ./internal/store ./internal/httpapi ./internal/llm ./internal/intake -count=1`
+all pass (store 184 s, httpapi 86 s) on a private PostgreSQL 17 on port 5435.
+
+- **Task 1, done.** `data/eval/chat/commands.json` (95 cases: the 8 worked
+  cases, the 24 review cases, areas, guards, questions), written by
+  `gen_cases.py`; `README.md` describes scoring and the three synthetic
+  fixtures; `internal/chateval` scores an outcome and fills the sheet;
+  `cmd/chat-eval -replay` scores a recorded run. The owner has not read
+  the cases yet.
+
+## Deviations
+
+- **Task 1, a tenth expectation detail.** `state` takes an optional `count`
+  ("exactly five lines of ten days"), because "five activities" cannot be
+  checked by line presence alone.
+- **Task 1, `refuses`.** The scorer cannot judge the wording of a refusal,
+  so `refuses` checks only that nothing was applied or prepared. The plan's
+  "names why" is read by hand from the transcript.
