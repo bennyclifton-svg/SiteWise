@@ -215,6 +215,16 @@ func TestCommittedBudgets(t *testing.T) {
 		"chat_tool_read":            {100_000, 250_000},
 		"price_table_tender":        {150_000, 300_000},
 		"tender_edit":               {100_000, 250_000},
+		"procurement_invite":        {100000, 250000},
+		"procurement_board":         {150000, 300000},
+		"report_assemble_group":     {300000, 1000000},
+		"price_table_group":         {150000, 300000},
+		"stage_sync_write_group":    {100000, 250000},
+		"award_write_group":         {200000, 500000},
+		"billing_read":              {100000, 250000},
+		"billing_session":           {800000, 1500000},
+		"stripe_webhook":            {100000, 250000},
+		"team":                      {100000, 250000},
 	}
 	if len(budgets.Paths) != len(want) {
 		t.Fatalf("paths = %d", len(budgets.Paths))

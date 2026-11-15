@@ -332,7 +332,12 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err != nil {
 		return 0, err
 	}
+	chat, err := benchChat(repo)
+	if err != nil {
+		return 0, err
+	}
 	srv, err := httpapi.New(httpapi.Options{
+		Chat:               chat,
 		InvoiceThresholds:  invoiceTh,
 		InvoiceJev:         invoiceAsk,
 		ProposalThresholds: proposalTh,
@@ -432,6 +437,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	}
 	if err := api.combineForProposal(ctx, o.apiSamples); err != nil {
 		return 0, fmt.Errorf("bench combine for this proposal: %w", err)
+	}
+	if err := api.chat(ctx, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench chat: %w", err)
 	}
 	if err := api.costs(ctx, st, o.apiSamples); err != nil {
 		return 0, err

@@ -153,6 +153,15 @@ func TestReadsRunBeforeWritesAndOutsideTextPreparesTheChange(t *testing.T) {
 	}
 }
 
+func TestTheSameWriteSentTwiceRunsOnce(t *testing.T) {
+	b := &box{}
+	m := &scripted{turns: []llm.Turn{{Calls: []llm.ToolCall{call("a", "apply", `{"final":true}`), call("b", "apply", `{"final":true}`)}}}}
+	res, _ := run(m, b, "Add five rows")
+	if len(b.ran) != 1 || len(res.Cards) != 1 || res.Rounds != 1 {
+		t.Fatalf("ran %v, %d cards, %d rounds", b.ran, len(res.Cards), res.Rounds)
+	}
+}
+
 func TestRefusalIsFedBackOnceThenReported(t *testing.T) {
 	refuse := llm.Turn{Calls: []llm.ToolCall{call("a", "apply", `{"refuse":true}`)}}
 	m := &scripted{turns: []llm.Turn{refuse, refuse, {Text: "never reached"}}}

@@ -312,8 +312,18 @@ func runRound(ctx context.Context, box Toolbox, st *State, calls []llm.ToolCall,
 			merge(st, outs[i])
 		}
 	}
+	// The model sometimes sends the same write twice in one round. Running
+	// both would make every row twice, so a write whose input is the same
+	// as an earlier one in the round is answered, not run.
+	ran := map[string]bool{}
 	for i, call := range calls {
 		if call.Err == "" && box.Writes(call.Name) {
+			key := call.Name + "\x00" + string(call.Input)
+			if ran[key] {
+				outs[i] = Output{Text: "This is the same call as an earlier one in this step. It was run once; nothing was done twice."}
+				continue
+			}
+			ran[key] = true
 			outs[i] = box.Run(ctx, st, call)
 			merge(st, outs[i])
 		}

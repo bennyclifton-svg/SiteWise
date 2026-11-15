@@ -377,10 +377,15 @@ func costDeleteHold(ctx context.Context, d Deps, who opActor, project string, ra
 		}
 	}
 	switch {
-	case len(doomed) > 10:
-		return fmt.Sprintf("This deletes %d lines, so it waits for your click.", len(doomed)), nil
 	case len(doomed) == len(p.Items) && len(doomed) > 1:
 		return fmt.Sprintf("This deletes every line of the cost plan (%d), so it waits for your click.", len(doomed)), nil
+	case len(doomed) > 3:
+		// The plan says more than ten. The live run showed "clear the plan"
+		// arriving as a delete of most lines, a few at a time, so the line
+		// is drawn lower: four or more wait for a click.
+		return fmt.Sprintf("This deletes %d lines, so it waits for your click.", len(doomed)), nil
+	case len(p.Items) >= 4 && len(doomed)*2 >= len(p.Items):
+		return fmt.Sprintf("This deletes %d of the plan's %d lines, so it waits for your click.", len(doomed), len(p.Items)), nil
 	}
 	return "", nil
 }

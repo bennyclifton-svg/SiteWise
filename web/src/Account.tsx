@@ -107,14 +107,16 @@ function ModelSection({ initial }: { initial: ModelSwitch }) {
   }
   return (
     <section className="account-section" aria-labelledby="model-heading">
-      <h2 id="model-heading">Reading tenders with a model</h2>
+      {/* Draft wording for the owner to settle (15 Nov 2026): one switch covers tender reading and chat. */}
+      <h2 id="model-heading">Use a model for tender reading and chat</h2>
       <p className="muted">
         SiteWise can send the pages of a tender you file to Claude, a model made by Anthropic, so it can list the prices for you to check.
-        Nothing is sent while this is off, and tenders are read as they are now.
+        The same switch turns on chat. When it is on, what you type in chat, your project's records and passages of its filed documents are sent to the model provider.
+        Nothing is sent while this is off: tenders are read as they are now, and chat stays off.
       </p>
       <label className="account-switch">
         <input type="checkbox" role="switch" checked={model.enabled} disabled={busy} onChange={e => void toggle(e.target.checked)} />
-        <span>Send tender pages to the model</span>
+        <span>Use a model for tender reading and chat</span>
       </label>
       {model.enabled && model.enabled_at && <p className="muted small">On since {date(model.enabled_at)}</p>}
       {error && <p className="error-text" role="alert">{error}</p>}

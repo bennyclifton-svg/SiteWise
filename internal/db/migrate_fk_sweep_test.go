@@ -190,6 +190,10 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["tender_adjustment_amounts"] = row{"org_id": org, "adjustment_id": id(4500 + n), "submission_id": submission, "project_id": p, "amount_cents": 100, "state": "applied", "source": "typed"}
 		f["project_changes"] = row{"org_id": org, "project_id": p, "id": id(4600 + n), "actor": u, "via": "screen", "area": "procurement"}
 		f["project_change_rows"] = row{"org_id": org, "change_id": id(4600 + n), "tbl": "tender_lines", "op": "INSERT", "new": row{}}
+		f["chat_conversations"] = row{"org_id": org, "id": id(4700 + n), "project_id": p, "user_id": u}
+		f["chat_turns"] = row{"org_id": org, "id": id(4800 + n), "conversation_id": id(4700 + n), "text": "Add a line"}
+		f["chat_blocks"] = row{"org_id": org, "turn_id": id(4800 + n), "ordinal": 0, "block": row{}}
+		f["chat_prepared"] = row{"org_id": org, "id": id(4900 + n), "turn_id": id(4800 + n), "area": "cost_plan", "ops": []any{}}
 		f["submission_responses"] = row{"org_id": org, "project_id": p, "submission_id": submission, "item_key": "criterion:r2", "rating": "strong", "rated_by": u}
 		f["comparison_reports"] = row{"org_id": org, "project_id": p, "package_id": pkg, "recommendation_by": u, "signed_off_by": u, "signed_off_at": "2026-10-16T00:00:00Z"}
 		f["awards"] = row{"org_id": org, "id": award, "project_id": p, "package_id": pkg, "submission_id": submission, "parent_item_id": costID, "parent_created": false, "created_by": u}
@@ -206,7 +210,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["program_imports"] = row{"org_id": org, "id": id(4400 + n), "program_id": program, "document_id": id(1900 + n), "filename": "program.xlsx"}
 		f["comparison_alignment"] = row{"org_id": org, "submission_id": submission, "prices": []any{}, "decisions": row{}, "version": 1}
 		f["visual_identity"] = row{"org_id": org, "document_id": id(1900 + n)}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards", "tender_adjustments", "project_changes"} {
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}

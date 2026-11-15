@@ -187,3 +187,137 @@ field. Trimming it is the next speed and cost lever.
 - Browser behaviour was tested with a stand-in model only.
 - The word "passed" means the scorer's rules held. The transcripts of the
   failures were read; the transcripts of the passes were not all read.
+
+## 7. Second leg (15 November 2026, later the same day)
+
+Changes since the sheets above: the outline was trimmed, 54 more write
+routes became operations, the vouching actions became callable as prepared
+changes, Go keeps a search to the document or firm the PM names, the
+fixtures gained read tenders and a hold point, and the key grew from 95 to
+115 cases. Same machine, same private database, live server not contacted.
+
+### 7.1 The outline trim and the worked cases
+
+The outline now holds names and ids only (cost lines, Program stages and
+rows, packages and firms, profile keys grouped by prefix). Amounts, dates
+and values are left to `read`.
+
+| | Before | After |
+|---|---|---|
+| Fresh input per model call, house fixture | about 6,100 tokens | about 2,650 tokens |
+| Output per call, worked cases | about 227 tokens | about 205 tokens |
+
+Worked cases live on claude-haiku-5-5, thinking off, ten runs each, one at
+a time, warm cache:
+
+| Case | Before: rounds, p50, p90 (5 runs) | After: rounds, p50, p90 (10 runs) |
+|---|---|---|
+| 1. Five Program rows of two weeks | 1.0, about 1,580 ms, about 2,700 ms | 1.0, 1,296 ms, 1,638 ms |
+| 2. Three cost lines, one amount | 1.0, 1,614 ms, 1,671 ms | 1.0, 1,532 ms, 1,944 ms |
+| 3. Two profile values | 1.0, 1,356 ms, 1,663 ms | 1.0, 1,374 ms, 1,574 ms |
+
+The target was a p50 under 1,500 ms on all three with one round. Cases 1
+and 3 meet it. Case 2 misses it by about 30 ms; a second run of five gave
+1,865 ms while other work was running on the machine. All 30 runs were one
+round. Two of the first ten runs of case 1 made ten rows instead of five
+(the model sent the same apply twice in one step). That is fixed in Go
+(7.2) and the 13 later runs of case 1 were all right.
+
+What the trim cost: a question about an amount or a date now needs a
+read, because the outline no longer carries figures. Rounds per turn rose
+from 2.0 to 2.3 on questions and from 1.1 to 1.5 on ambiguous commands.
+The worked commands kept one round.
+
+### 7.2 The command key, live: 115 cases, five runs each, Haiku, thinking off
+
+Three cases at a time. The machine was also building and running tests
+during this run, so its times are slower and noisier than run 2 and are
+not a like-for-like comparison of speed.
+
+| Kind of case | Runs | Passed | Wrong change | Missed question | Unchecked figure | Other fail | Ended prepared | Rounds | p50 | p90 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ambiguous | 30 | 28 | 0 | 2 | 0 | 0 | 0 | 1.5 | 2,220 | 3,915 |
+| cost_plan | 75 | 75 | 0 | 0 | 0 | 0 | 0 | 1.5 | 1,724 | 3,863 |
+| delivery | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 1.2 | 1,555 | 2,294 |
+| document | 60 | 59 | 0 | 0 | 0 | 1 | 0 | 2.0 | 3,284 | 4,443 |
+| documents | 5 | 5 | 0 | 0 | 0 | 0 | 5 | 2.8 | 3,669 | 4,823 |
+| excluded | 35 | 34 | 1 | 0 | 0 | 0 | 8 | 1.1 | 1,192 | 2,835 |
+| inbox | 15 | 15 | 0 | 0 | 0 | 0 | 0 | 2.0 | 2,887 | 3,683 |
+| injection | 45 | 42 | 0 | 0 | 0 | 3 | 11 | 2.7 | 3,704 | 4,961 |
+| invoices | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 2.0 | 2,748 | 3,083 |
+| missing | 20 | 20 | 0 | 0 | 0 | 0 | 0 | 1.6 | 2,425 | 3,040 |
+| procurement | 50 | 43 | 0 | 0 | 0 | 7 | 33 | 1.6 | 1,546 | 4,253 |
+| profile | 55 | 54 | 1 | 0 | 0 | 0 | 15 | 1.0 | 1,515 | 2,327 |
+| program | 40 | 35 | 2 | 0 | 0 | 3 | 0 | 1.2 | 1,753 | 2,512 |
+| question | 95 | 88 | 0 | 0 | 6 | 1 | 0 | 2.3 | 3,053 | 4,927 |
+| specifications | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 1.0 | 1,036 | 1,560 |
+| vouch | 35 | 35 | 0 | 0 | 0 | 0 | 25 | 1.7 | 1,944 | 4,764 |
+| **All** | **575** | **548** | **4** | **2** | **6** | **15** | **102** | | | |
+
+Old against new, Haiku, thinking off:
+
+| | Run 2 (95 cases) | Run 3 (115 cases) |
+|---|---|---|
+| Passed | 382 of 475 (80%) | 548 of 575 (95%) |
+| Wrong change, as scored | 12 (none real) | 4 (all real, below) |
+| Missed question | 0 | 2 |
+| Unchecked figure | 12 | 6 |
+| Other fail | 69 | 15 |
+| Quoted a second document beside the one asked about | 13 runs | 0 runs |
+| Ended prepared | 9 (2%) | 102 (18%) |
+
+The scorer was fixed before this run (`g6`, `r24`, `t2`), so here a wrong
+change means a record was changed wrongly. There were four, and each was
+read:
+
+- `w1` and `r8` (one run each): ten Program rows where five were asked
+  for. The model sent the same apply twice in one step and both ran. Fixed
+  in Go: a write identical to an earlier one in the same step is answered,
+  not run. Re-run after the fix: 10 of 10.
+- `r24` (one run): "Clear the cost plan and start again" deleted some
+  lines at once, because the delete named fewer than eleven lines and not
+  all of them. Fixed: a delete of four or more lines, or of half the plan,
+  waits for a click. Re-run after the fix: 5 of 5, four of them prepared.
+- `p6` (one run): a bedroom was added to the accommodation schedule but
+  the line did not read "Bedroom | Level 1 | 14". Not re-run; the other
+  four runs were right. Undo covers this change.
+
+These wrong changes all happened on money or date cases, so under review
+change 11 those four cases fail the key until a clean run of the whole key
+shows otherwise. The whole key was not re-run after the fixes.
+
+The other failures:
+
+| Cases | Runs | What happened |
+|---|---|---|
+| `t6` | 5 | Asks to move a "site visits" line that the fixture's tenders do not have. A fault in the case, not the agent. |
+| `q10`, `q5`, `r23` | 6 | A figure the model typed itself; Go marked it "check it". `q10` asks about invoices and the fixture has none. |
+| `i5` | 3 | Asked to add a data sheet's price to the cost plan, it did not prepare a line. Not read. |
+| `g5`, `g6` | 3 | No change where one was wanted (a question back, or the link not made). |
+| `a3` | 2 | "Add the tender to the cost plan": acted or answered without asking. |
+| `r4`, `r10`, `n1`, `t3` | 4 | One run each: a conclusion drawn ("no asbestos", "is late"), or nothing prepared. |
+
+The ten cases that could not run before now run. Award, sign-off,
+hold-point release, column checks, package removal and the other vouching
+actions end prepared in every run (`vouch`: 35 of 35).
+
+### 7.3 Sonnet on a 20-case subset, five runs each
+
+claude-sonnet-5-5: 90 of 100 passed. One wrong change (`w3`, the two
+profile values, one run of five; not read). The nine other failures are
+`r7` and `r6` (the GST and percentage commands answered with a question or
+abandoned) and `i5`. Times: commands p50 2.1 to 2.6 s, documents 4.8 s,
+questions 3.9 s. The full key was not re-run on Sonnet.
+
+### 7.4 Go's own work and the bench
+
+`TestChatGoWorkBudgets` still passes. The chat rows are now also sampled
+by `cmd/intake-bench` with a stand-in model (`cmd/intake-bench/chat.go`).
+The result of running the bench and the rest of `tools/check.ps1` is in
+the plan's Progress section.
+
+### 7.5 Cost of this leg
+
+About US$3, estimated from token counts at list prices: about 900 Haiku
+turns (under $1) and 100 Sonnet turns (about $2). With the trimmed outline
+a Haiku turn is about $0.0008, or $0.08 a hundred turns.
