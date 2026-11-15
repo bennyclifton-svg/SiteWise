@@ -31,8 +31,11 @@ migrations 050 to 063. A dump taken just before that deploy is on the server
 at `/root/sitewise-before-76bb126.dump`. Done: operations.md section 1 steps
 1–5 and 8–10, OCR.
 
-- No model key is set on the server, so the tender pass and chat are off
-  there (see "Tender pass" below; chat uses the same key and org switch).
+- The model key was added to `/etc/sitewise/sitewise.env` on 16 Nov 2026, so
+  the tender pass and chat start on (see "Tender pass" below; chat uses the
+  same key). Each org still switches the model on for itself in Account.
+  The settings file as it was before is beside it, `sitewise.env.bak-20261116`.
+- For about ten seconds after a restart `/healthz` answers 503, then ok.
 
 - Settings: `/etc/sitewise/sitewise.env` holds production values. Mail is
   Mailgun (`smtp.mailgun.org:587`, user `app@sitewise.au`, from
