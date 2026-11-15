@@ -25,8 +25,14 @@ a symlink to the live one; files live in `/var/lib/sitewise/files`; logs via
 
 ## State of the live server
 
-Live since 8 Nov 2026 with commit `79a8d5f`, fresh empty database (no local
-data was copied). Done: operations.md section 1 steps 1–5 and 8–10, OCR.
+Live since 8 Nov 2026 (first release `79a8d5f`, fresh empty database, no
+local data copied). Current release: `76bb126`, deployed 16 Nov 2026; it ran
+migrations 050 to 063. A dump taken just before that deploy is on the server
+at `/root/sitewise-before-76bb126.dump`. Done: operations.md section 1 steps
+1–5 and 8–10, OCR.
+
+- No model key is set on the server, so the tender pass and chat are off
+  there (see "Tender pass" below; chat uses the same key and org switch).
 
 - Settings: `/etc/sitewise/sitewise.env` holds production values. Mail is
   Mailgun (`smtp.mailgun.org:587`, user `app@sitewise.au`, from
