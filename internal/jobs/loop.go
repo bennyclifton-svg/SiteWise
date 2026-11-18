@@ -16,7 +16,9 @@ func RunBackground(ctx context.Context, w *Worker, poll time.Duration, logf func
 	extraction.Kinds = []string{store.JobKindFullText}
 	extraction.Since = time.Time{}
 	reading.Kinds = []string{store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification}
-	ocr.Kinds = []string{store.JobKindOCR, store.JobKindVisualIdentity}
+	// The register's reply match rides the always-on lane: it is queued only
+	// when a project has an Open RFI, and it must not wait for a profile read.
+	ocr.Kinds = []string{store.JobKindOCR, store.JobKindVisualIdentity, store.JobKindRegister}
 	ocr.Since = time.Time{}
 	var done sync.WaitGroup
 	for _, worker := range []*Worker{extraction, reading, ocr} {
@@ -40,7 +42,7 @@ func (w *Worker) forLane() *Worker {
 		Text: w.Text, Source: w.Source, Catalog: w.Catalog,
 		Lease: w.Lease, Backoff: w.Backoff, MinNoul: w.MinNoul,
 		Since: w.Since, Profile: w.Profile, Reading: w.Reading,
-		ProgramThresholds: w.ProgramThresholds,
+		ProgramThresholds: w.ProgramThresholds, RegisterThresholds: w.RegisterThresholds,
 	}
 }
 
