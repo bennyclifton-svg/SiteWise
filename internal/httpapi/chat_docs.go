@@ -386,10 +386,12 @@ func (b *chatBox) documentsAbout(ctx context.Context, in docsInput) agent.Output
 	}
 	var text strings.Builder
 	if in.Select {
-		// After the merge with the view tool (plan 0 Task 2), the view event
-		// is emitted here: {do: "select", table: "documents", ids:
-		// set.SelectIDs()}, stored with the turn, and Output.Final set so the
-		// turn ends with set.Summary(). Until then the ids go to the model.
+		// The set is selected on the PM's screen and the turn ends here, in
+		// one round: Go's summary is the answer, so the model cannot restate
+		// the counts wrongly. Every id came from projectDocs, which is scoped
+		// to this org and project.
+		out.Views = []agent.View{{Do: "select", Table: "documents", IDs: set.SelectIDs(), Line: set.Summary()}}
+		out.Final = true
 		short := make([]string, len(set.Rows))
 		for i, m := range set.Rows {
 			short[i] = shortID(m.Doc.ID)

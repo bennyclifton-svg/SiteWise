@@ -124,26 +124,44 @@ func TestDocumentsAboutRanksBySignals(t *testing.T) {
 	}
 }
 
+// viewOf is the turn's view event, or nil when the screen did not move.
+func viewOf(events []chatEvent) *chatEvent {
+	for i := range events {
+		if events[i].Type == "view" {
+			return &events[i]
+		}
+	}
+	return nil
+}
+
 func TestDocumentsAboutSelect(t *testing.T) {
 	ta := newToolApp(t)
 	seedBasement(t, ta)
-	ta.run(t, "Select the basement documents", tool("documents", map[string]any{"about": "basement documents", "select": true}))
-	got := ta.results[0]
-	if !strings.Contains(got, "summary: Selected 6 documents: 3 by title, 3 by what they say. 1 scan could be matched by title only.\n") {
-		t.Errorf("summary:\n%s", got)
-	}
-	ids := regexp.MustCompile(`(?m)^select_ids: (.*)$`).FindStringSubmatch(got)
-	if ids == nil {
-		t.Fatalf("no select_ids:\n%s", got)
-	}
-	// The ids are the listed rows, in the same order.
-	rows := regexp.MustCompile(`(?m)^([0-9a-f]{8}) \| `).FindAllStringSubmatch(got, -1)
+	// The rows as the model would be shown them, in rank order.
+	ta.run(t, "Which documents are about the basement?", tool("documents", map[string]any{"about": "basement documents"}))
 	var listed []string
-	for _, r := range rows {
+	for _, r := range regexp.MustCompile(`(?m)^([0-9a-f]{8}) \| `).FindAllStringSubmatch(ta.results[0], -1) {
 		listed = append(listed, r[1])
 	}
-	if ids[1] != strings.Join(listed, " ") || len(listed) != 6 {
-		t.Errorf("select_ids %q, rows %v", ids[1], listed)
+	// With select the screen moves in the same round and Go's summary is the
+	// answer: the model is not asked again, so it cannot restate the counts.
+	events := ta.run(t, "Select the basement documents", tool("documents", map[string]any{"about": "basement documents", "select": true}))
+	view := viewOf(events)
+	if view == nil || view.View.Do != "select" || view.View.Table != "documents" ||
+		view.View.Line != "Selected 6 documents: 3 by title, 3 by what they say. 1 scan could be matched by title only." ||
+		events[len(events)-1].Rounds != 1 {
+		t.Fatalf("the set was not selected in one round: %+v", view)
+	}
+	// The ids are the listed rows, in the same order, as full ids.
+	var selected []string
+	for _, id := range view.View.IDs {
+		if len(id) != 36 {
+			t.Fatalf("not a full id: %q", id)
+		}
+		selected = append(selected, id[:8])
+	}
+	if len(listed) != 6 || strings.Join(selected, " ") != strings.Join(listed, " ") {
+		t.Errorf("selected %v, listed %v", selected, listed)
 	}
 }
 
@@ -178,14 +196,13 @@ func TestDocumentsAboutCap(t *testing.T) {
 		t.Fatal(err)
 	}
 	ta.reply = func([]string) llm.Turn { return llm.Turn{Text: "ok"} }
-	ta.run(t, "Select the basement drawings", tool("documents", map[string]any{"about": "basement", "select": true}))
-	got := ta.results[0]
-	if !strings.Contains(got, "[Capped: the strongest 200 of 205 matching documents are listed.") ||
-		!strings.Contains(got, "summary: Selected the first 200 of 205 matching documents: 200 by title, 0 by what they say. 205 scans could be matched by title only.") {
+	ta.run(t, "Which drawings are about the basement?", tool("documents", map[string]any{"about": "basement"}))
+	if got := ta.results[0]; !strings.Contains(got, "[Capped: the strongest 200 of 205 matching documents are listed.") {
 		t.Errorf("cap:\n%s", got[:min(len(got), 1500)])
 	}
-	ids := regexp.MustCompile(`(?m)^select_ids: (.*)$`).FindStringSubmatch(got)
-	if ids == nil || len(strings.Fields(ids[1])) != 200 {
-		t.Errorf("select_ids not 200")
+	view := viewOf(ta.run(t, "Select the basement drawings", tool("documents", map[string]any{"about": "basement", "select": true})))
+	if view == nil || len(view.View.IDs) != 200 ||
+		view.View.Line != "Selected the first 200 of 205 matching documents: 200 by title, 0 by what they say. 205 scans could be matched by title only." {
+		t.Errorf("cap, selected: %+v", view)
 	}
 }

@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // ChatPassage is a passage with where it sits in its document, for the
@@ -71,6 +73,12 @@ type DocumentHits struct {
 // "substructure" is about footings as often as about the basement, so only
 // the system itself or a part of it ("mechanical" finds
 // "mechanical.ventilation") says the passage is about the subject.
+//
+// The query is planned afresh on every call (QueryExecModeExec). A cached
+// generic plan cannot see how many passages the words or the system match,
+// assumes one, and walks every document's passages instead: 1.4 s where the
+// planned query takes 40 ms. PostgreSQL switches to that plan after five
+// calls on a connection, so the first few calls hide it.
 func (s *Store) ChatDocumentHits(ctx context.Context, org, project, query string, systems []string) (map[string]DocumentHits, error) {
 	if systems == nil {
 		systems = []string{}
@@ -91,7 +99,7 @@ lab AS (
  WHERE d.project_id=$2::uuid
  GROUP BY p.document_id)
 SELECT COALESCE(hit.document_id,lab.document_id)::text,COALESCE(hit.n,0),COALESCE(lab.n,0)
-FROM hit FULL JOIN lab ON lab.document_id=hit.document_id`, org, project, query, systems)
+FROM hit FULL JOIN lab ON lab.document_id=hit.document_id`, pgx.QueryExecModeExec, org, project, query, systems)
 	if err != nil {
 		return nil, err
 	}
