@@ -281,7 +281,14 @@ func postGuestQuote(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	body := http.MaxBytesReader(w, r.Body, limit)
 	defer body.Close()
-	filing, err := deps.Uploader.Upload(r.Context(), g.OrgID, g.ProjectID, intake.Upload{Filename: name, Body: body, Reason: intake.ReasonFor(name)})
+	// The upload lands held (not filed, no intake job): nothing can claim
+	// it or send it to Jev until OpenGuestQuote has rechecked the link and
+	// released it in the transaction that places it.
+	reason := intake.ReasonFor(name)
+	if reason == "" {
+		reason = store.GuestHoldReason
+	}
+	filing, err := deps.Uploader.Upload(r.Context(), g.OrgID, g.ProjectID, intake.Upload{Filename: name, Body: body, Reason: reason})
 	var tooBig *http.MaxBytesError
 	switch {
 	case errors.As(err, &tooBig), errors.Is(err, files.ErrTooLarge):
@@ -317,9 +324,9 @@ func postGuestQuote(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	if filing.Created {
 		countDocument(deps, g.OrgID)
-		// As uploadSubmission: new bytes are filed first, and the filing hook
-		// reads the proposal; bytes already filed are read at once.
-		if filing.Status == store.StatusPending {
+		// As uploadSubmission: new bytes, released from hold, are filed first
+		// and the filing hook reads the proposal; anything else is read at once.
+		if q.Queued {
 			deps.Filer.Start(g.OrgID, filing.DocumentID)
 		} else if deps.ProposalReader != nil {
 			deps.ProposalReader.Start(g.OrgID, q.SubmissionID, time.Now(), true)

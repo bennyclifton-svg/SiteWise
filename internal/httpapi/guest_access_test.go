@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -964,5 +965,72 @@ func TestGuestUploadLimits(t *testing.T) {
 	}
 	if code, _ := acme.raw(t, http.MethodPost, "/api/guest/quote?name=quote.pdf", quote, true); code != 429 {
 		t.Fatalf("21st upload in the hour = %d", code)
+	}
+}
+
+// TestGuestUploadIsHeldUntilTheRecheck: a guest's upload lands not filed
+// with no intake job, so no worker can claim it and Jev never reads it,
+// whatever the timing. A revoked link leaves it unclaimable; only the
+// recheck that places the quote releases it to filing, in one transaction.
+func TestGuestUploadIsHeldUntilTheRecheck(t *testing.T) {
+	f := newGuestFixture(t)
+	ctx := context.Background()
+	link, _ := f.share(t, map[string]any{"kind": "package", "package_id": f.pkg, "firm_id": f.firmA, "shared_with": "acme@example.test"})
+	held := func(t *testing.T, name string) string {
+		t.Helper()
+		body := psample.PDF(psample.Proposal{Firm: name, Lines: []psample.Line{{Label: "Fee", Cents: 123}}})
+		blob, err := f.blobs.Put(ctx, bytes.NewReader(body))
+		if err != nil {
+			t.Fatal(err)
+		}
+		in, err := f.a.store.CommitIntake(ctx, f.m.orgID, store.CommitIntake{ProjectID: f.project, SHA256: blob.SHA256, ByteSize: blob.Size, MediaType: "application/pdf", Filename: name + ".pdf", Reason: store.GuestHoldReason})
+		if err != nil || !in.Created || in.Status != store.StatusNotFiled || in.JobID != "" {
+			t.Fatalf("held upload %+v %v", in, err)
+		}
+		return in.DocumentID
+	}
+	// Intake work is reached two ways: the filer started by the upload
+	// route, and Resume at start-up, which lists queued intake jobs on
+	// pending documents (PendingIntake). A held upload is on neither.
+	claimable := func(t *testing.T, doc string) int {
+		t.Helper()
+		n := f.count(t, `SELECT count(*) FROM jobs WHERE org_id=$1::uuid AND document_id=$2::uuid`, f.m.orgID, doc)
+		pending, err := f.a.store.PendingIntake(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, p := range pending {
+			if p.DocumentID == doc {
+				n += 100
+			}
+		}
+		return n
+	}
+	// The grant as the guest route holds it, then revoked before the recheck.
+	g := store.GuestGrant{ID: link.Share.ID, OrgID: f.m.orgID, ProjectID: f.project, Kind: store.GuestPackage, PackageID: f.pkg, FirmID: f.firmA, CreatedBy: f.user}
+	late := held(t, "Late Acme quote")
+	if claimable(t, late) != 0 {
+		t.Fatal("a held upload has an intake job")
+	}
+	if _, err := f.a.store.RevokeGuestGrant(ctx, f.m.orgID, f.project, link.Share.ID, time.Now()); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.a.store.OpenGuestQuote(ctx, g, late, true, time.Now()); !errors.Is(err, store.ErrGuestGone) {
+		t.Fatalf("revoked recheck = %v", err)
+	}
+	var status, reason string
+	if err := f.conn.QueryRow(ctx, `SELECT status, reason FROM documents WHERE org_id=$1::uuid AND id=$2::uuid`, f.m.orgID, late).Scan(&status, &reason); err != nil || status != store.StatusNotFiled || reason != store.GuestHoldReason || claimable(t, late) != 0 {
+		t.Fatalf("after a revoked recheck: %s %s %v, jobs %d", status, reason, err, claimable(t, late))
+	}
+	// A live link: the recheck places it and releases it to filing at once.
+	live, _ := f.share(t, map[string]any{"kind": "package", "package_id": f.pkg, "firm_id": f.firmA, "shared_with": "acme@example.test"})
+	g.ID = live.Share.ID
+	doc := held(t, "Acme quote")
+	q, err := f.a.store.OpenGuestQuote(ctx, g, doc, true, time.Now())
+	if err != nil || !q.Queued || q.SubmissionID == "" {
+		t.Fatalf("live recheck %+v %v", q, err)
+	}
+	if err := f.conn.QueryRow(ctx, `SELECT status FROM documents WHERE org_id=$1::uuid AND id=$2::uuid`, f.m.orgID, doc).Scan(&status); err != nil || status != store.StatusPending || claimable(t, doc) != 101 {
+		t.Fatalf("released upload: %s %v, jobs %d", status, err, claimable(t, doc))
 	}
 }

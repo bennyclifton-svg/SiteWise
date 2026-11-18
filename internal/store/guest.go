@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"sitewise/internal/db"
 	"sitewise/internal/reports"
 )
 
@@ -630,11 +631,20 @@ func (s *Store) GuestIssueFile(ctx context.Context, g GuestGrant, version string
 	return s.ReadIssuedReport(ctx, g.OrgID, report, version)
 }
 
+// GuestHoldReason is the not-filed reason a guest's upload lands with. A
+// held document has no intake job, so no worker can claim it and Jev never
+// reads it; OpenGuestQuote releases it to filing only after rechecking the
+// grant, in the same transaction that places it.
+const GuestHoldReason = "guest_hold"
+
 // GuestQuote is what the guest is told about a quote it sent.
 type GuestQuote struct {
 	SubmissionID string `json:"-"`
-	Filename     string `json:"filename"`
-	ReceivedOn   string `json:"received_on"`
+	// Queued: this call released a held upload to filing (its intake job
+	// exists now), so the caller starts the filer as a PM drop does.
+	Queued     bool   `json:"-"`
+	Filename   string `json:"filename"`
+	ReceivedOn string `json:"received_on"`
 }
 
 // OpenGuestQuote places a firm's quote on its own invited cell, as a PM drop
@@ -691,6 +701,21 @@ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND d.id::text=$3`, g.OrgID, g
 	if !mine {
 		if q.SubmissionID, err = s.openSubmissionTx(ctx, tx, g.OrgID, g.ProjectID, documentID, g.PackageID, g.FirmID, now); err != nil {
 			return GuestQuote{}, err
+		}
+		// Release a held upload to filing only now, after the recheck and in
+		// this transaction: a link revoked before here leaves no job.
+		tag, err := tx.Exec(ctx, `UPDATE documents SET status='pending', reason='' WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3 AND status='not_filed' AND reason=$4`, g.OrgID, g.ProjectID, documentID, GuestHoldReason)
+		if err != nil {
+			return GuestQuote{}, err
+		}
+		if tag.RowsAffected() == 1 {
+			if n, err := s.q.WithTx(tx).EnqueueJob(ctx, db.EnqueueJobParams{OrgID: g.OrgID, ID: newID(), DocumentID: documentID, Kind: JobKindIntake}); err != nil || n == 0 {
+				if err == nil {
+					err = ErrNotFound
+				}
+				return GuestQuote{}, err
+			}
+			q.Queued = true
 		}
 		ops, _ := json.Marshal([]map[string]string{{"op": "guest_quote", "document_id": documentID, "submission_id": q.SubmissionID, "filename": q.Filename}})
 		if _, err := tx.Exec(ctx, `INSERT INTO project_changes (org_id,project_id,id,actor,via,area,ops,at) VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,'guest','procurement',$5::jsonb,$6)`,
