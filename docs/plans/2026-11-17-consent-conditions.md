@@ -1,7 +1,10 @@
 # Consent conditions register: implementation plan
 
 Date 17 November 2026; revised 18 November. Lane A (filing, rule numbers from the instrument,
-hold points a PM trusts). Status: plan only, nothing built.
+hold points a PM trusts). Status: built 18 November 2026 on branch
+`wave/conditions` (not merged, not pushed); every task done, with the
+deviations in `docs/evidence/2026-11-18-consent-conditions.md`. Accuracy
+on real notices is not measured: the owner's key is not yet written.
 
 **Revised 18 November** after the review in `2026-11-17-next-wave-index.md`.
 The scope stands. Conditions are a kind in the one register table, not a

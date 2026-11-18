@@ -64,8 +64,8 @@ The workbench, in navigation order:
   name with their levels, areas, capacities and requirements, and the
   card's counts. It is edited like the document register (select, right-
   click, add, copy, split, delete, drag) and the user's word is final.
-- **Register.** One table of what is owed on the project: RFIs, notices and
-  the older delivery kinds (actions, risks, issues, decisions, approvals,
+- **Register.** One table of what is owed on the project: RFIs, notices,
+  consent conditions and the older delivery kinds (actions, risks, issues, decisions, approvals,
   accepted hold points), each with No., Item, With, Due, Status and System.
   An RFI typed in the grey row is numbered (RFI-007) and due five working
   days on (the Program's calendar; the PM sets the project's own in the
@@ -74,7 +74,17 @@ The workbench, in navigation order:
   makes it Answered, with Undo. A System filter adds what else is open on
   that part of the building. Its reads and writes call neither Jev nor the
   model; chat reads it, changes it with Undo, and leaves accepting an answer
-  to the PM's click. "Project report" on its toolbar opens the project
+  to the PM's click. A notice of determination filed as a Statutory
+  Instrument (or chosen in Read conditions) becomes its numbered conditions,
+  grouped by gate (Before CC, Before work starts, Before OC…), each with the
+  council's own words and page, who acts, the system and whether evidence is
+  needed; what SiteWise read stays amber "to check" until the PM edits it.
+  A later document that cites "Condition 13" shows as possible evidence;
+  Link makes it Evidence filed, and only the PM marks a condition Satisfied.
+  Add to RFP puts one line on the package's RFP draft, and the Program
+  offers one gate hold point per gate through its review. Reading a notice
+  is a background Jev read; the screen's own reads and writes call neither
+  Jev nor the model. "Project report" on its toolbar opens the project
   report: cost by section, Program completion and critical path,
   procurement, the registers, what needs attention and what is due next,
   each figure the one its screen shows, with what moved since the last

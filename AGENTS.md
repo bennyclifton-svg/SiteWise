@@ -50,7 +50,8 @@ speed, Jev only, the building as the model, and the intake budget.
 rules above and describes the intake slice. The workbench also includes
 Profile, Cost Plan, Procurement, Specifications, Program and Register.
 Register is the left nav's former Project Plan slot: one table of what is
-owed (RFIs, notices and the older delivery kinds). Implication proposals
+owed (RFIs, notices, consent conditions and the older delivery kinds).
+Implication proposals
 stay on the project and are off the left nav.
 
 When a task does not name a budget, use the budget already recorded for that
@@ -94,6 +95,23 @@ any document, and for correspondence one Jev fan-out (one noul per RFI, at
 most 12) whose picks stay hidden until the owner approves a cut-off
 (`docs/plans/2026-11-17-rfis-review-comments.md`). A reading is a proposal;
 only the PM's edit makes an RFI answered.
+
+Consent conditions are a kind in the same table
+(`docs/plans/2026-11-17-consent-conditions.md`). A notice of determination
+is read into rows by a background `consent` job: Go splits it by its
+printed numbers and stage headings (the number and words are the notice's,
+never renumbered or reworded), then one Jev fan-out per condition (who acts,
+the system, whether evidence is needed, and the gate only when the heading
+left it open), cached by source. It is queued after filing for a document
+filed as a Statutory Instrument that Go recognises as a notice, or by Read
+conditions (`POST /projects/{id}/delivery/imports`, which only checks the
+text and queues). Every pick is amber "to check" at most until the PM edits
+the row; nothing is green until the owner reviews the key. The `register`
+job carries the evidence nouls (one per open condition, at most 12) in its
+one request; Go's "Condition 13" rule shows at once, Jev's picks wait for an
+approved cut-off. Evidence never satisfies a condition: only the PM's click
+does. Program gates (one hold point per gate) come through the existing
+review; their dates are Go's.
 
 The project report (Register toolbar, one per project) calls neither Jev
 nor the LLM: Update, comments, issue and export are Go over saved records,
@@ -176,6 +194,11 @@ Before changing one of these surfaces, read its current note:
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`
+- Consent conditions (Register; built 18 November 2026 on branch
+  `wave/conditions`): `docs/plans/2026-11-17-consent-conditions.md`,
+  evidence in `docs/evidence/2026-11-18-consent-conditions.md`. The answer
+  key is the owner's (`data/eval/consent/private/`, not in git); accuracy on
+  real notices is not measured.
 
 ## Deploying
 
