@@ -301,6 +301,7 @@ func TestBenchEndToEnd(t *testing.T) {
 			{"name": "costs_read", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "costs_write", "p50_us": 100_000, "p90_us": 250_000},
 			{"name": "report_issue", "p50_us": 30_000_000, "p90_us": 30_000_000},
+			{"name": "report_assemble_monthly", "p50_us": 30_000_000, "p90_us": 30_000_000},
 			{"name": "report_export", "p50_us": 30_000_000, "p90_us": 30_000_000},
 		},
 	})
