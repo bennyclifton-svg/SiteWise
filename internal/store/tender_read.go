@@ -139,6 +139,18 @@ func touchTender(ctx context.Context, tx pgx.Tx, s *Store, org, project, pkg, su
 	return procurementEvent(ctx, tx, s, org, project, sub, "tender_"+state)
 }
 
+// TenderReadState is a submission's tender pass state ("", pending,
+// reading, read or failed). A submission outside this org and project is
+// ErrNotFound. Chat's prepared read uses it to say a read is under way.
+func (s *Store) TenderReadState(ctx context.Context, org, project, id string) (string, error) {
+	var state string
+	err := s.pool.QueryRow(ctx, `SELECT tender_state FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3`, org, project, id).Scan(&state)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", ErrNotFound
+	}
+	return state, err
+}
+
 // ClaimTenderRead moves pending or due-failed to reading and counts the
 // attempt. Exactly one caller wins.
 func (s *Store) ClaimTenderRead(ctx context.Context, org, id string, now time.Time) (bool, error) {

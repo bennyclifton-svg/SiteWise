@@ -6,16 +6,12 @@ package httpapi
 // TestWriteRoutesHaveOperations fails when a new write route has none.
 
 // noOperation: route to the reason it is not an operation.
+//
+// The nine routes that start a Jev read (or the tender pass) left this map
+// on 18 November 2026: chat prepares each as a card and the PM's click
+// queues the read (ops_reads.go; docs/plans/2026-11-18-chat-agency.md
+// Task 6). Each handler only queues; none reads while the PM waits.
 var noOperation = map[string]string{
-	"POST /documents/{id}/details/reprocess":                       "starts a Jev read; chat starts no read",
-	"POST /documents/{id}/filing":                                  "starts a Jev filing; chat starts no read",
-	"POST /documents/{id}/split":                                   "splits a drawing set and files each sheet with Jev; chat starts no read",
-	"POST /documents/{id}/visual-review":                           "starts an image read; chat starts no read",
-	"POST /projects/{id}/procurement/packages/{pkg}/documents":     "links a filed proposal to a row and starts its Jev read; chat starts no read",
-	"POST /projects/{id}/profile/read":                             "queues Jev reading of the project's documents; chat starts no read",
-	"POST /projects/{id}/specifications/update":                    "starts the background specification read (Jev); chat starts no read",
-	"POST /projects/{id}/submissions/{sub}/tender-read":            "starts the tender pass (Jev and the model); chat starts no read",
-	"PUT /projects/{id}/documents/profile-read":                    "changes which documents Jev reads and can queue reads; chat starts no read",
 	"POST /projects/{id}/chat":                                     "the chat route itself",
 	"POST /projects/{id}/chat/warm":                                "warms the model's cache; changes nothing",
 	"POST /projects/{id}/chat/prepared/{prepared}/apply":           "the PM's click on a prepared chat change; it applies operations",

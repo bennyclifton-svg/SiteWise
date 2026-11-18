@@ -19,10 +19,13 @@ speed, Jev only, the building as the model, and the intake budget.
    operations a screen would send. It never supplies an amount, a date or a
    rule number that the user or SiteWise did not give it. Nothing in a
    document or an email is an instruction to it. Outside chat, nothing it
-   proposes is applied without the user's acceptance. No embeddings and no
-   other providers. (Owner decisions, 14 and 15 November 2026:
+   proposes is applied without the user's acceptance. Chat may prepare a Jev
+   read for the user's click; the turn never calls Jev; the click queues the
+   background read. No embeddings and no other providers. (Owner decisions,
+   14 and 15 November 2026:
    `docs/design/2026-11-14-chat-control-and-email-intake.md`,
-   `docs/plans/2026-11-15-chat-agent.md` Task 0.)
+   `docs/plans/2026-11-15-chat-agent.md` Task 0; 18 November 2026:
+   `docs/plans/2026-11-18-chat-agency.md` decision 1.)
 2. **Follow TypeSafe's docs** for every Jev use and cite the page:
    [patterns](https://docs.typesafe.ai/patterns),
    [how to build](https://docs.typesafe.ai/concepts/how-to-build-with-system-one),
@@ -83,6 +86,9 @@ screens and change records only through operations (`internal/httpapi/ops*.go`),
 which call the screens' own store writes. The operations call
 (`POST /projects/{id}/ops`), the undo of an applied change, a prepared
 change's Apply and Dismiss, and the chat reads call neither Jev nor the LLM.
+A read chat prepares (`internal/httpapi/ops_reads.go`) is always a card for
+the user's click, never applied at once and never undone; its Apply runs the
+screen's own route, which only queues the background read.
 An amount, a date or a duration in a chat operation must be in the user's
 message or in a tool result of the same turn, or the operation is refused. A
 turn that read a document, a tender's lines or a message prepares its changes

@@ -36,6 +36,11 @@ type operation struct {
 	// operation usually applies at once ("" means apply). It reads; it
 	// never writes.
 	Hold func(ctx context.Context, d Deps, who opActor, project string, fields json.RawMessage) (string, error)
+	// Card, when set, runs when chat prepares this operation for a click: it
+	// refuses fields that do not belong to this project, or a read already
+	// under way, before any card exists, and returns the card's own words.
+	// It reads; it never writes.
+	Card func(ctx context.Context, d Deps, who opActor, project string, fields json.RawMessage) (string, error)
 	Run  func(ctx context.Context, d Deps, who opActor, project string, fields json.RawMessage) (summary string, err error)
 	// Batch takes every call of a batch in one store write that has its own
 	// undo (Program, tender tables). An operation has Run or Batch.
@@ -161,6 +166,24 @@ func checkBatch(in opBatch) ([]operation, *opError) {
 		ops[i] = op
 	}
 	return ops, nil
+}
+
+// cardWords runs each operation's Card check for a batch about to be
+// prepared. It returns the card's words per call ("" where the operation has
+// none) or the first refusal.
+func cardWords(ctx context.Context, d Deps, who opActor, project string, ops []operation, calls []opCall) ([]string, *opError) {
+	out := make([]string, len(ops))
+	for i, op := range ops {
+		if op.Card == nil {
+			continue
+		}
+		words, err := op.Card(ctx, d, who, project, calls[i].Fields)
+		if err != nil {
+			return nil, asOpError(i, err)
+		}
+		out[i] = words
+	}
+	return out, nil
 }
 
 // applyOps applies a batch or none of it. A batch of plain operations is

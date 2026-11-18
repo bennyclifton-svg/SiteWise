@@ -76,3 +76,21 @@ func TestOperationsAreWellFormed(t *testing.T) {
 		}
 	}
 }
+
+// A prepared read spends Jev credits and cannot be put back: it is always
+// the PM's click, it checks its fields before a card exists, and none of
+// its routes is still listed as one chat never does.
+func TestPreparedReadsWaitForTheClick(t *testing.T) {
+	if len(readForwards) != 9 {
+		t.Fatalf("%d prepared reads, want the nine read routes", len(readForwards))
+	}
+	for _, fw := range readForwards {
+		op, ok := operationNamed(fw.Name)
+		if !ok || !op.Click || !op.NoUndo || op.Card == nil || op.Hold != nil {
+			t.Errorf("%s: want a Click operation with a Card and no Undo", fw.Name)
+		}
+		if noOperation[fw.Route] != "" || pendingOperation[fw.Route] != "" {
+			t.Errorf("%s: %s is also classed elsewhere", fw.Name, fw.Route)
+		}
+	}
+}

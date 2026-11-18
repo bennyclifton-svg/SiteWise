@@ -27,7 +27,7 @@ type toolApp struct {
 	results []string
 }
 
-func newToolApp(t *testing.T) *toolApp {
+func newToolApp(t *testing.T, extra ...func(*httpapi.Options)) *toolApp {
 	t.Helper()
 	ta := &toolApp{reply: func([]string) llm.Turn { return llm.Turn{Text: "ok"} }}
 	model := &scriptModel{script: func(n int, conv llm.Conversation) llm.Turn {
@@ -53,7 +53,8 @@ func newToolApp(t *testing.T) *toolApp {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ta.a = newApp(t, withProfile(t), withChat(t, model), func(o *httpapi.Options) { o.Chat.Synonyms, o.Chat.SystemTerms = synonyms, systems })
+	opts := append([]func(*httpapi.Options){withProfile(t), withChat(t, model), func(o *httpapi.Options) { o.Chat.Synonyms, o.Chat.SystemTerms = synonyms, systems }}, extra...)
+	ta.a = newApp(t, opts...)
 	ta.m = ta.a.member(t, newUUID(t))
 	ta.m.modelSwitch(t, true, http.StatusOK)
 	ta.project = ta.m.createProject(t, "Tools")

@@ -266,6 +266,12 @@ func (b *chatBox) apply(ctx context.Context, st *agent.State, input json.RawMess
 			return refused(bad)
 		}
 	}
+	// A prepared read checks its ids and whether it is already under way
+	// before any card exists (ops_reads.go).
+	words, bad := cardWords(ctx, b.d, b.who, b.project, ops, in.Calls)
+	if bad != nil {
+		return refused(bad)
+	}
 	why := ""
 	if st.Outside {
 		why = "This used text from " + st.Why + ", so it waits for your click."
@@ -288,6 +294,11 @@ func (b *chatBox) apply(ctx context.Context, st *agent.State, input json.RawMess
 	}
 	raw, _ := json.Marshal(in.Calls)
 	lines := describeOps(ops, in.Calls)
+	for i, w := range words {
+		if w != "" {
+			lines[i] = w
+		}
+	}
 	id, err := b.d.Store.AddChatPrepared(ctx, b.who.OrgID, store.ChatPrepared{TurnID: b.turn, Area: in.Area, Ops: raw, Summary: strings.Join(lines, "\n"), Why: why})
 	if err != nil {
 		b.d.Log.Printf("chat: storing a prepared change failed: %v", err)

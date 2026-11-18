@@ -19,7 +19,7 @@ type sender = func(ctx context.Context, d Deps, who opActor, project string, f m
 // forwardedOperations lists them by area.
 func forwardedOperations(area string) []operation {
 	var out []operation
-	for _, fw := range forwards {
+	for _, fw := range append(append([]forward{}, forwards...), readForwards...) {
 		if opArea(fw.Name) == area {
 			out = append(out, fw.operation())
 		}

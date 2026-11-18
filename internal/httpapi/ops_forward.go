@@ -36,6 +36,9 @@ type forward struct {
 	Send func(ctx context.Context, d Deps, who opActor, project string, f map[string]any) (sent, error)
 	// Done says in plain words what was changed.
 	Done func(f map[string]any) string
+	// Card, when set, checks the fields when chat prepares the card and
+	// gives the card's own words (operation.Card).
+	Card func(ctx context.Context, d Deps, who opActor, project string, f map[string]any) (string, error)
 }
 
 type sent struct {
@@ -109,6 +112,9 @@ func callRoute(ctx context.Context, d Deps, project, route string, s sent) (int,
 	for name, v := range values {
 		req.SetPathValue(name, v)
 	}
+	// The mux sets the matched pattern; writeSpecification chooses its write
+	// by it, so a forwarded call must carry it too.
+	req.Pattern = route
 	for _, h := range []string{"Cookie", "Origin"} {
 		if v := origin.Header.Get(h); v != "" {
 			req.Header.Set(h, v)
@@ -154,12 +160,19 @@ func (fw forward) operation() operation {
 			return "This cannot be undone from chat yet, so it waits for your click.", nil
 		}
 	}
-	op.Run = func(ctx context.Context, d Deps, who opActor, project string, raw json.RawMessage) (string, error) {
-		f := map[string]any{}
-		if len(bytes.TrimSpace(raw)) > 0 {
-			if err := json.Unmarshal(raw, &f); err != nil {
-				return "", refuse("", "The fields are not in the shape this operation takes.")
+	if fw.Card != nil {
+		op.Card = func(ctx context.Context, d Deps, who opActor, project string, raw json.RawMessage) (string, error) {
+			f, err := forwardFields(raw)
+			if err != nil {
+				return "", err
 			}
+			return fw.Card(ctx, d, who, project, f)
+		}
+	}
+	op.Run = func(ctx context.Context, d Deps, who opActor, project string, raw json.RawMessage) (string, error) {
+		f, err := forwardFields(raw)
+		if err != nil {
+			return "", err
 		}
 		s := sent{Body: f}
 		if fw.Send != nil {
@@ -196,6 +209,20 @@ func (fw forward) operation() operation {
 		return strings.ToUpper(fw.About[:1]) + strings.TrimSuffix(fw.About[1:], ".") + ": done.", nil
 	}
 	return op
+}
+
+// forwardFields reads a forwarded operation's fields as the screen's JSON.
+func forwardFields(raw json.RawMessage) (map[string]any, error) {
+	f := map[string]any{}
+	if len(bytes.TrimSpace(raw)) > 0 {
+		if err := json.Unmarshal(raw, &f); err != nil {
+			return nil, refuse("", "The fields are not in the shape this operation takes.")
+		}
+	}
+	if f == nil { // "fields": null
+		f = map[string]any{}
+	}
+	return f, nil
 }
 
 // str reads a text field.
