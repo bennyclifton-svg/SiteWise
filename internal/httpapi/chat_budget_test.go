@@ -57,6 +57,15 @@ func TestChatGoWorkBudgets(t *testing.T) {
 			t.Fatalf("read = %d", code)
 		}
 		samples["chat_tool_read"] = append(samples["chat_tool_read"], time.Since(start).Microseconds())
+		// What needs attention reads six or more records; it is held to the
+		// same row and logged on its own so a slow rule shows.
+		start = time.Now()
+		if code, _ := m.text(t, http.MethodGet, "/api/projects/"+project+"/chat/read?area=attention", nil); code != http.StatusOK {
+			t.Fatalf("attention read = %d", code)
+		}
+		took := time.Since(start).Microseconds()
+		samples["chat_tool_read"] = append(samples["chat_tool_read"], took)
+		samples["chat_tool_read_attention"] = append(samples["chat_tool_read_attention"], took)
 
 		before := model.calls()
 		start = time.Now()

@@ -11,6 +11,7 @@ import (
 	"sitewise/internal/agent"
 	"sitewise/internal/costs"
 	"sitewise/internal/figures"
+	"sitewise/internal/reports"
 	"sitewise/internal/store"
 )
 
@@ -78,8 +79,8 @@ func plainMoney(m *costs.Money) string {
 	return string(*m)
 }
 
-var sectionNames = map[string]string{"authority": "Authority fees", "consultants": "Consultants", "construction": "Construction", "contingency": "Contingency and project-wide"}
-var sectionOrder = []string{"construction", "consultants", "contingency", "authority"}
+var sectionNames = reports.CostSectionNames
+var sectionOrder = reports.CostSectionOrder
 
 // readCostPlan renders the draft plan: totals, then each section's lines.
 func readCostPlan(ctx context.Context, d Deps, who opActor, project string, r *reader) error {
