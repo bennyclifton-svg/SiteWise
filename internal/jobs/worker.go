@@ -97,7 +97,7 @@ func (w *Worker) Once(ctx context.Context, orgID string) error {
 	}
 	kinds := w.Kinds
 	if len(kinds) == 0 {
-		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification, store.JobKindRegister}
+		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification, store.JobKindRegister, store.JobKindConsent}
 	}
 	job, err := w.Store.ClaimJobSince(ctx, orgID, lease, kinds, w.Since)
 	if err != nil {
@@ -180,6 +180,8 @@ func (w *Worker) Perform(ctx context.Context, job store.ClaimedJob) error {
 		return w.evidence(ctx, job)
 	case store.JobKindRegister:
 		return w.register(ctx, job)
+	case store.JobKindConsent:
+		return w.consent(ctx, job)
 	default:
 		return errors.New("unknown background stage")
 	}
@@ -191,7 +193,12 @@ func (w *Worker) fullText(ctx context.Context, job store.ClaimedJob) error {
 		if err != nil {
 			return err
 		}
-		return w.Store.ReplaceSource(ctx, job.OrgID, job.DocumentID, src)
+		if err := w.Store.ReplaceSource(ctx, job.OrgID, job.DocumentID, src); err != nil {
+			return err
+		}
+		// A notice of determination filed as a Statutory Instrument is read
+		// into its conditions after filing (consent plan, owner decision 2).
+		return w.queueConsentRead(ctx, job, src)
 	}
 	if w.Text == nil {
 		return errors.New("document text is unavailable")
@@ -206,7 +213,10 @@ func (w *Worker) fullText(ctx context.Context, job store.ClaimedJob) error {
 	for _, body := range SplitPassages(text) {
 		src.Units = append(src.Units, store.SourceUnit{Body: body})
 	}
-	return w.Store.ReplaceSource(ctx, job.OrgID, job.DocumentID, src)
+	if err := w.Store.ReplaceSource(ctx, job.OrgID, job.DocumentID, src); err != nil {
+		return err
+	}
+	return w.queueConsentRead(ctx, job, src)
 }
 
 func (w *Worker) label(ctx context.Context, job store.ClaimedJob) error {

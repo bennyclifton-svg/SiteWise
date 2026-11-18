@@ -18,7 +18,9 @@ func RunBackground(ctx context.Context, w *Worker, poll time.Duration, logf func
 	reading.Kinds = []string{store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification}
 	// The register's reply match rides the always-on lane: it is queued only
 	// when a project has an Open RFI, and it must not wait for a profile read.
-	ocr.Kinds = []string{store.JobKindOCR, store.JobKindVisualIdentity, store.JobKindRegister}
+	// The consent read rides it too: it is queued after filing or by the
+	// PM's Read conditions, and must not wait for a profile read.
+	ocr.Kinds = []string{store.JobKindOCR, store.JobKindVisualIdentity, store.JobKindRegister, store.JobKindConsent}
 	ocr.Since = time.Time{}
 	var done sync.WaitGroup
 	for _, worker := range []*Worker{extraction, reading, ocr} {

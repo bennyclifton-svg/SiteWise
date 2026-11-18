@@ -17,3 +17,8 @@ ALTER TABLE program_changes DROP CONSTRAINT program_changes_source_check,
  ADD CONSTRAINT program_changes_source_check CHECK (source IN ('profile','work_items','procurement','library','consent'));
 -- Conditions are read per notice and matched by their consent and number.
 CREATE INDEX delivery_condition_idx ON project_delivery_items(org_id,project_id) WHERE kind='condition';
+-- The consent read is a background job (kind 'consent'). requested_by is
+-- the PM who asked for it, so the rows it writes are one change that PM can
+-- undo; outcome is what the read found (conditions read, gaps, the consent
+-- reference), shown above the register's conditions.
+ALTER TABLE jobs ADD COLUMN requested_by uuid, ADD COLUMN outcome jsonb CHECK (outcome IS NULL OR jsonb_typeof(outcome)='object');
