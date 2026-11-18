@@ -1,0 +1,38 @@
+/* The register (plan 4): the cost tables' grammar, one row height, faint
+   rules, states from states.css. Nothing new to look at. */
+.register-screen { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.register-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.register-head h2 { margin: 0; margin-right: auto; }
+.register-toggle { display: inline-flex; align-items: center; gap: 4px; }
+.register-scroll { overflow-x: auto; }
+.register-table { width: 100%; border-collapse: collapse; font-size: var(--fs-md); }
+.register-table :is(th, td) {
+  box-sizing: border-box;
+  height: var(--ct-row-h, 32px);
+  padding: 0 8px;
+  line-height: 18px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--ct-line, var(--sw-border-subtle));
+  font-weight: 400;
+  text-align: left;
+}
+.register-table thead th { border-top: 1px solid var(--ct-line, var(--sw-border-subtle)); }
+.register-table tbody tr:hover > :is(td, th) { background: var(--state-hover); }
+.register-table .register-no { white-space: nowrap; width: 7em; }
+.register-table td[data-field="title"] { width: 40%; }
+.register-table .register-more { width: 32px; text-align: right; }
+.register-table td[data-band="typical"] .register-value { color: var(--origin-typical); }
+.register-table td[data-band="amber"],
+.register-reading[data-band="amber"] { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+.register-late { color: var(--sw-error-text); }
+.register-check { color: var(--origin-check); }
+.register-ghost input { width: 100%; border: 0; background: transparent; color: var(--sw-text-secondary); font: inherit; }
+.register-empty td { color: var(--sw-text-secondary); }
+.register-also, .register-days { margin: 0; }
+.register-detail { border-top: 1px solid var(--ct-line, var(--sw-border-subtle)); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.register-detail h3 { margin: 0; }
+.register-field { display: flex; flex-direction: column; gap: 2px; }
+.register-field textarea { width: 100%; font: inherit; }
+.register-pair { display: flex; gap: 12px; }
+.register-reading { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
+.register-history { color: var(--sw-text-secondary); }
