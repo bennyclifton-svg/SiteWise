@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"crypto/rand"
@@ -67,6 +66,11 @@ type live struct {
 	url   string
 	debug io.Writer
 	warm  sync.Once
+	// warmFor is how long the first case waits after warming the prefix.
+	warmFor time.Duration
+	// onSeed, when set, is told each case's rows after its fixture is
+	// built: the offline test's stand-in model needs their ids.
+	onSeed func(c chateval.Case, n *names)
 }
 
 func uuid() string {
@@ -91,6 +95,35 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 	if err := st.Migrate(ctx); err != nil {
 		return nil, nil, err
 	}
+	logFile, err := os.Create(filepath.Join(os.TempDir(), "chat-eval-llm.log"))
+	if err != nil {
+		return nil, nil, err
+	}
+	client := llm.New(llm.Options{APIKey: os.Getenv("SITEWISE_ANTHROPIC_HAIKU_KEY"), Logger: slog.New(slog.NewJSONHandler(logFile, nil)), MaxConcurrent: 4})
+	if !client.On() {
+		return nil, nil, errors.New("SITEWISE_ANTHROPIC_HAIKU_KEY is not set")
+	}
+	l, done, err := newRunner(st, client, client.On, model, ".")
+	if err != nil {
+		return nil, nil, err
+	}
+	l.debug = io.Discard
+	if path := os.Getenv("CHAT_EVAL_DEBUG"); path != "" {
+		if f, err := os.Create(path); err == nil {
+			l.debug = f
+		}
+	}
+	return l, func() {
+		done()
+		st.Close()
+		logFile.Close()
+	}, nil
+}
+
+// newRunner starts the real server on st with the given chat model. The
+// live run passes the provider's client; the offline test passes a
+// stand-in. repo is the repository root, for the knowledge and data files.
+func newRunner(st *store.Store, model agent.Model, on func() bool, name, repo string) (*live, func(), error) {
 	tmp, err := os.MkdirTemp("", "chat-eval")
 	if err != nil {
 		return nil, nil, err
@@ -99,19 +132,19 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	cat, err := intake.LoadCatalog(filepath.Join("data", "intake"))
+	cat, err := intake.LoadCatalog(filepath.Join(repo, "data", "intake"))
 	if err != nil {
 		return nil, nil, err
 	}
-	thresholds, err := intake.LoadThresholds(filepath.Join("data", "intake"))
+	thresholds, err := intake.LoadThresholds(filepath.Join(repo, "data", "intake"))
 	if err != nil {
 		return nil, nil, err
 	}
-	building, err := knowledge.Load("knowledge")
+	building, err := knowledge.Load(filepath.Join(repo, "knowledge"))
 	if err != nil {
 		return nil, nil, err
 	}
-	reading, err := profile.LoadReadPolicy(filepath.Join("data", "profile", "reading.json"))
+	reading, err := profile.LoadReadPolicy(filepath.Join(repo, "data", "profile", "reading.json"))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -123,20 +156,12 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	logFile, err := os.Create(filepath.Join(os.TempDir(), "chat-eval-llm.log"))
+	prompt, err := httpapi.LoadChatPrompt(filepath.Join(repo, "knowledge", "chat"))
 	if err != nil {
 		return nil, nil, err
 	}
-	client := llm.New(llm.Options{APIKey: os.Getenv("SITEWISE_ANTHROPIC_HAIKU_KEY"), Logger: slog.New(slog.NewJSONHandler(logFile, nil)), MaxConcurrent: 4})
-	if !client.On() {
-		return nil, nil, errors.New("SITEWISE_ANTHROPIC_HAIKU_KEY is not set")
-	}
-	prompt, err := httpapi.LoadChatPrompt(filepath.Join("knowledge", "chat"))
-	if err != nil {
-		return nil, nil, err
-	}
-	chat := &httpapi.Chat{Model: client, On: client.On, Name: model, Prompt: prompt, Think: os.Getenv("CHAT_EVAL_THINK") == "1"}
-	if chat.Synonyms, chat.SystemTerms, err = httpapi.LoadChatWords("knowledge"); err != nil {
+	chat := &httpapi.Chat{Model: model, On: on, Name: name, Prompt: prompt, Think: os.Getenv("CHAT_EVAL_THINK") == "1"}
+	if chat.Synonyms, chat.SystemTerms, err = httpapi.LoadChatWords(filepath.Join(repo, "knowledge")); err != nil {
 		return nil, nil, err
 	}
 	ts := httptest.NewUnstartedServer(nil)
@@ -163,17 +188,11 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 	}
 	ts.Config.Handler = srv
 	ts.Start()
-	l := &live{st: st, url: ts.URL, debug: io.Discard}
-	if path := os.Getenv("CHAT_EVAL_DEBUG"); path != "" {
-		if f, err := os.Create(path); err == nil {
-			l.debug = f
-		}
-	}
+	l := &live{st: st, url: ts.URL, debug: io.Discard, warmFor: 3 * time.Second}
 	done := func() {
 		srv.CloseStreams()
 		ts.Close()
-		st.Close()
-		logFile.Close()
+		fake.Close()
 		_ = os.RemoveAll(tmp)
 	}
 	return l, done, nil
@@ -537,96 +556,6 @@ func (s *session) reads() (map[string]string, error) {
 			return nil, fmt.Errorf("read %s = %d %v", area, code, err)
 		}
 		out[area] = string(raw)
-	}
-	return out, nil
-}
-
-// Run is one case from a fresh fixture.
-func (l *live) Run(ctx context.Context, c chateval.Case) (chateval.Outcome, error) {
-	var out chateval.Outcome
-	s, err := l.open(ctx, fixtures[c.Fixture].Name)
-	if err != nil {
-		return out, err
-	}
-	defer func() { _ = l.st.DeleteOrg(context.Background(), s.org) }()
-	if err := s.seed(ctx, fixtures[c.Fixture], c.Needs); err != nil {
-		return out, fmt.Errorf("fixture %s: %w", c.Fixture, err)
-	}
-	before, err := s.reads()
-	if err != nil {
-		return out, err
-	}
-	if _, outline, err := s.do(http.MethodGet, "/api/projects/"+s.project+"/chat/read?area=outline", nil); err == nil && os.Getenv("CHAT_EVAL_OUTLINE") != "" {
-		_ = os.WriteFile(os.Getenv("CHAT_EVAL_OUTLINE"), outline, 0o644)
-	}
-	// Focusing the strip warms the cached prefix; the eval does it once.
-	l.warm.Do(func() {
-		_, _, _ = s.do(http.MethodPost, "/api/projects/"+s.project+"/chat/warm", []byte(`{}`))
-		time.Sleep(3 * time.Second)
-	})
-	raw, _ := json.Marshal(map[string]string{"text": c.Message})
-	req, _ := http.NewRequestWithContext(ctx, http.MethodPost, l.url+"/api/projects/"+s.project+"/chat", bytes.NewReader(raw))
-	req.Header.Set("Origin", l.url)
-	req.Header.Set("Content-Type", "application/json")
-	began := time.Now()
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return out, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return out, fmt.Errorf("chat = %d", resp.StatusCode)
-	}
-	sc := bufio.NewScanner(resp.Body)
-	sc.Buffer(make([]byte, 4<<20), 4<<20)
-	fmt.Fprintf(l.debug, "\n=== %s [%s] %s\n", c.ID, c.Fixture, c.Message)
-	failed := ""
-	for sc.Scan() {
-		line, ok := strings.CutPrefix(sc.Text(), "data: ")
-		if !ok {
-			continue
-		}
-		var e struct {
-			agent.Event
-			Rounds     int   `json:"rounds"`
-			InTokens   int64 `json:"in_tokens"`
-			OutTokens  int64 `json:"out_tokens"`
-			CacheRead  int64 `json:"cache_read_tokens"`
-			FirstMilli int64 `json:"first_millis"`
-		}
-		if err := json.Unmarshal([]byte(line), &e); err != nil {
-			return out, err
-		}
-		if e.Type != "text" {
-			fmt.Fprintf(l.debug, "%s\n", line)
-		}
-		switch e.Type {
-		case "prepared":
-			out.Prepared++
-		case "answer":
-			if e.Answer != nil {
-				out.Text, out.Question, out.Unchecked = e.Answer.Text, e.Answer.Question, e.Answer.Unchecked
-				out.Cited, out.Coverage, out.Verdicts = e.Answer.Cited, e.Answer.Coverage != "", e.Answer.Verdicts
-			}
-		case "error":
-			failed = e.Text
-		case "done":
-			out.Rounds, out.InTokens, out.OutTokens, out.CacheRead = e.Rounds, e.InTokens, e.OutTokens, e.CacheRead
-		}
-	}
-	out.Millis = time.Since(began).Milliseconds()
-	if failed != "" {
-		return out, errors.New(failed)
-	}
-	after, err := s.reads()
-	if err != nil {
-		return out, err
-	}
-	out.After = after
-	for _, area := range areas {
-		if before[area] != after[area] {
-			out.Changed = append(out.Changed, area)
-		}
 	}
 	return out, nil
 }

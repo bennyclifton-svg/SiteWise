@@ -103,6 +103,15 @@ var fixtures = map[string]fixture{
 				"Carpet tiles to common corridors shall be solution dyed nylon with a minimum pile weight of 680 g per square metre and a 15 year warranty."}},
 			{Title: "Carpet data sheet", Kind: "report", Discipline: "architecture", Pages: []string{
 				"Proposed substitute: Meridian Loop carpet tile. Solution dyed nylon. Pile weight 610 g per square metre. Warranty 10 years.\n\nSupply price $48 per square metre."}},
+			// The basement set (screen group): one document for each way a
+			// document is about the basement. Its title only, its text only,
+			// the profile's label only, and a scan matched by its title.
+			{Title: "Basement excavation plan", Kind: "drawing", Discipline: "structural", Pages: []string{"Set out and levels for the bulk dig."}},
+			{Title: "Geotechnical report", Kind: "report", Discipline: "geotechnical", Pages: []string{
+				"Groundwater was met at 3.1 m, above the basement floor level.\n\nBorehole BH1 met sandstone at 4.0 m."}},
+			{Title: "Shoring design", Kind: "report", Discipline: "structural", Pages: []string{"Contiguous piles with temporary anchors along the eastern boundary."},
+				Systems: []string{"substructure.basement-retention"}},
+			{Title: "Basement survey", Kind: "drawing", Discipline: "surveyor"},
 		},
 	},
 	"refurb": {

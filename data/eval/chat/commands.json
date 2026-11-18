@@ -1794,6 +1794,583 @@
      "kind": "not_applied"
     }
    ]
+  },
+  {
+   "id": "s1",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Show the cost lines with no budget",
+   "note": "Named filter no_budget: Go computes the set in one round.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "cost_lines",
+     "do": "only",
+     "rows": [
+      "Benchtops"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Select the cost lines that are over budget",
+   "note": "Named filter over_budget (claimed to date above the line's budget). No line is over, so Go shows the table and says so.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "cost_lines",
+     "do": "show"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s3",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "apartments",
+   "message": "Show only the superseded documents",
+   "note": "Named filter superseded.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "do": "only",
+     "rows": [
+      "Mechanical specification rev A"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Select the Program rows with no duration",
+   "note": "Named filter no_duration. Every activity has a duration (a hold point has none and is not an activity), so Go shows the table and says so.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "program",
+     "do": "show"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "apartments",
+   "message": "Show the packages with no quote",
+   "note": "Named filter no_quote: no quote has come in on either package.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "procurement",
+     "do": "only",
+     "rows": [
+      "consultant.structural",
+      "consultant.civil"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s6",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "apartments",
+   "message": "Select the basement documents",
+   "note": "documents with about and select: Go ranks by title, passages and the profile's labels. The scan is matched by its title only and counted as such.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "rows": [
+      "Basement excavation plan",
+      "Geotechnical report",
+      "Shoring design",
+      "Basement survey"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Select the documents about trees",
+   "note": "The arborist report by title and text, the consent by its tree condition. The scanned survey holds no text and no tree in its title.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "rows": [
+      "Arborist report",
+      "Development consent DA-2026-0412"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s8",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Exclude these from the totals",
+   "note": "Three lines selected by hand: exactly those are excluded, with Undo.",
+   "screen": {
+    "view": "costs",
+    "selected": {
+     "table": "cost_lines",
+     "rows": [
+      "Landscaping",
+      "Escalation",
+      "DA fees"
+     ]
+    }
+   },
+   "expect": [
+    {
+     "kind": "state",
+     "area": "cost_plan",
+     "has": [
+      "Landscaping | budget 60000 | excluded",
+      "Escalation | budget 20000 | excluded",
+      "DA fees | budget 8400 | excluded"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s9",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Exclude these from the totals",
+   "note": "Nothing is selected: chat asks which, and changes nothing.",
+   "screen": {
+    "view": "costs"
+   },
+   "expect": [
+    {
+     "kind": "asks"
+    }
+   ]
+  },
+  {
+   "id": "s10",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "apartments",
+   "message": "Show only these",
+   "screen": {
+    "view": "specifications",
+    "selected": {
+     "table": "documents",
+     "rows": [
+      "Finishes specification",
+      "Carpet data sheet"
+     ]
+    }
+   },
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "do": "only",
+     "rows": [
+      "Finishes specification",
+      "Carpet data sheet"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s11",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "apartments",
+   "message": "Now show only those",
+   "note": "The ids come from the earlier turn's history line; no screen context is sent with this message.",
+   "before": [
+    "Select the basement documents"
+   ],
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "do": "only",
+     "rows": [
+      "Basement excavation plan",
+      "Geotechnical report",
+      "Shoring design",
+      "Basement survey"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s12",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Now show only those",
+   "before": [
+    "Select the landscaping and escalation lines"
+   ],
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "cost_lines",
+     "do": "only",
+     "rows": [
+      "Landscaping",
+      "Escalation"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s13",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Undo that",
+   "note": "Go undoes the newest change of this conversation with no model call. The areas are compared with the fixture before the first message, so the undone change leaves no change.",
+   "before": [
+    "Exclude escalation from the totals"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "cost_plan",
+     "has": [
+      "Escalation | budget 20000"
+     ],
+     "lacks": [
+      "Escalation | budget 20000 | excluded"
+     ]
+    },
+    {
+     "kind": "no_model"
+    }
+   ]
+  },
+  {
+   "id": "s14",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "refurb",
+   "message": "Undo the last change",
+   "before": [
+    "Duplicate the make good line"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "cost_plan",
+     "lacks": [
+      "Make good (copy)"
+     ]
+    },
+    {
+     "kind": "no_model"
+    }
+   ]
+  },
+  {
+   "id": "s15",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Undo that",
+   "note": "A new conversation has nothing to undo; Go says so.",
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_model"
+    }
+   ]
+  },
+  {
+   "id": "s16",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "refurb",
+   "message": "Open the award dialog for Polar Air on the mechanical package",
+   "money_or_date": true,
+   "note": "Chat opens the dialog on the firm; the PM presses Award. Nothing is awarded from chat.",
+   "needs": [
+    "tenders"
+   ],
+   "expect": [
+    {
+     "kind": "opens",
+     "dialog": "award",
+     "fields": {
+      "package": "trade.mechanical",
+      "column": "Polar Air"
+     }
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "s17",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Open the award dialog for Northline on the structural package",
+   "money_or_date": true,
+   "note": "Nothing is awarded from chat.",
+   "needs": [
+    "tenders"
+   ],
+   "expect": [
+    {
+     "kind": "opens",
+     "dialog": "award",
+     "fields": {
+      "package": "consultant.structural",
+      "column": "Northline Structural"
+     }
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "s18",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Find what the consent says about working hours, then open the consent",
+   "note": "A screen move after a document read is done at once: it prepares nothing.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "do": "open",
+     "rows": [
+      "Development consent DA-2026-0412"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s19",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Read the arborist report and select it",
+   "note": "A screen move after a document read prepares nothing.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "documents",
+     "rows": [
+      "Arborist report"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s20",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Update the profile",
+   "note": "A prepared read: a card that waits for the PM's click, which queues the read. The turn queues nothing and calls no Jev.",
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "s21",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "refurb",
+   "message": "Read Polar Air's tender again",
+   "note": "A prepared read (procurement.read_tender_again). Nothing is queued until the click.",
+   "needs": [
+    "tenders"
+   ],
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "s22",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "apartments",
+   "message": "Show me the messages",
+   "note": "No messages table yet: the fixed words, and the turn is logged as declined.",
+   "expect": [
+    {
+     "kind": "refuses",
+     "has": [
+      "I can't do that from chat yet"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s23",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Select the RFIs that are still open",
+   "note": "No RFI table yet: the fixed words, and the turn is logged as declined.",
+   "expect": [
+    {
+     "kind": "refuses",
+     "has": [
+      "I can't do that from chat yet"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s24",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Open the program",
+   "note": "An exact phrase: Go shows the screen with no model call.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "program",
+     "do": "show"
+    },
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_model"
+    }
+   ]
+  },
+  {
+   "id": "s25",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Select the structural package",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "procurement",
+     "rows": [
+      "consultant.structural"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s26",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "Show all the cost lines again",
+   "before": [
+    "Show the cost lines with no budget"
+   ],
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "cost_lines",
+     "do": "clear"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "s27",
+   "source": "agency",
+   "group": "screen",
+   "fixture": "house",
+   "message": "What does this document say about tree 4?",
+   "note": "\"This document\" is the one open on screen.",
+   "screen": {
+    "open": {
+     "kind": "document",
+     "name": "Arborist report"
+    }
+   },
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "cites",
+     "document": "Arborist report"
+    }
+   ]
   }
  ]
 }

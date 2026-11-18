@@ -29,8 +29,36 @@ type Case struct {
 	Note  string `json:"note,omitempty"`
 	// Needs names slower parts of the fixture a case depends on, so only
 	// those cases pay for them: "tenders" reads the fixture's tenders.
-	Needs  []string      `json:"needs,omitempty"`
+	Needs []string `json:"needs,omitempty"`
+	// Before are earlier messages of the same conversation, sent first; the
+	// case judges where the whole conversation leaves the project. Screen
+	// is what the strip says is on screen when Message is sent.
+	Before []string      `json:"before,omitempty"`
+	Screen *Screen       `json:"screen,omitempty"`
 	Expect []Expectation `json:"expect"`
+}
+
+// Screen is the screen context sent with a case's message, with rows named
+// the way the fixture names them (see Rows), never by id: the runner turns
+// them into this fixture's ids.
+type Screen struct {
+	View     string `json:"view,omitempty"` // costs | program | procurement | profile | specifications
+	Open     *Named `json:"open,omitempty"`
+	Selected *Rows  `json:"selected,omitempty"`
+}
+
+// Named is one row of a table, named as the fixture names it.
+type Named struct {
+	Kind string `json:"kind"` // document
+	Name string `json:"name"`
+}
+
+// Rows are rows of one table, named as the fixture names them: a cost line
+// by its label, a document by its title, a Program row by its label, a
+// package by its discipline id.
+type Rows struct {
+	Table string   `json:"table"` // cost_lines | documents | program | procurement
+	Rows  []string `json:"rows"`
 }
 
 // Expectation is one thing that must hold. Kinds:
@@ -45,6 +73,9 @@ type Case struct {
 //	no_own_figure  the answer carries no figure, date or clause of the model's own
 //	states_search  the answer says what was searched (Go's coverage line)
 //	no_verdict     the answer draws no conclusion on compliance or risk level
+//	selects        the screen moved: Do on Table with exactly Rows (by name)
+//	opens          a dialog opened with Fields (by name); nothing was done in it
+//	no_model       Go answered the message; the model was not called
 type Expectation struct {
 	Kind  string   `json:"kind"`
 	Area  string   `json:"area,omitempty"`
@@ -54,19 +85,39 @@ type Expectation struct {
 	// hold every Has string ("five rows of ten days"), no more and no fewer.
 	Count    int    `json:"count,omitempty"`
 	Document string `json:"document,omitempty"`
+	// On selects: the table, the move (select when empty; only, show,
+	// clear or open) and the exact set of rows, by name, in any order.
+	Table string   `json:"table,omitempty"`
+	Do    string   `json:"do,omitempty"`
+	Rows  []string `json:"rows,omitempty"`
+	// On opens: the dialog and its fields by name (award: package is the
+	// discipline id, column the firm's name).
+	Dialog string            `json:"dialog,omitempty"`
+	Fields map[string]string `json:"fields,omitempty"`
+}
+
+// View is one screen move of the turn, with rows named as the fixture
+// names them. The runner names them; a recording carries the names.
+type View struct {
+	Do     string            `json:"do"`
+	Table  string            `json:"table,omitempty"`
+	Rows   []string          `json:"rows,omitempty"`
+	Dialog string            `json:"dialog,omitempty"`
+	Fields map[string]string `json:"fields,omitempty"`
 }
 
 // Outcome is what one turn did, as the scorer needs it.
 type Outcome struct {
 	Text      string            `json:"text"`
 	Question  bool              `json:"question"`
-	Changed   []string          `json:"changed"`   // areas whose read differs from before the turn
-	Prepared  int               `json:"prepared"`  // changes waiting for a click
-	After     map[string]string `json:"after"`     // area to its read after the turn, ids replaced by labels
-	Cited     []string          `json:"cited"`     // titles of documents whose quotations checked out
-	Unchecked int               `json:"unchecked"` // figures, dates and clauses Go marked "check it"
-	Coverage  bool              `json:"coverage"`  // Go's "what was searched" line is on the answer
-	Verdicts  int               `json:"verdicts"`  // conclusions on risk or compliance Go marked
+	Changed   []string          `json:"changed"`         // areas whose read differs from before the turn
+	Prepared  int               `json:"prepared"`        // changes waiting for a click
+	After     map[string]string `json:"after"`           // area to its read after the turn, ids replaced by labels
+	Cited     []string          `json:"cited"`           // titles of documents whose quotations checked out
+	Unchecked int               `json:"unchecked"`       // figures, dates and clauses Go marked "check it"
+	Coverage  bool              `json:"coverage"`        // Go's "what was searched" line is on the answer
+	Verdicts  int               `json:"verdicts"`        // conclusions on risk or compliance Go marked
+	Views     []View            `json:"views,omitempty"` // the turn's screen moves
 	Rounds    int               `json:"rounds"`
 	Millis    int64             `json:"millis"`
 	InTokens  int64             `json:"in_tokens"`
@@ -90,7 +141,7 @@ type Verdict struct {
 	Reasons []string `json:"reasons,omitempty"`
 }
 
-var kinds = []string{"state", "asks", "refuses", "prepared", "cites", "no_change", "not_applied", "no_own_figure", "states_search", "no_verdict"}
+var kinds = []string{"state", "asks", "refuses", "prepared", "cites", "no_change", "not_applied", "no_own_figure", "states_search", "no_verdict", "selects", "opens", "no_model"}
 
 // verdictWords are conclusions the agent must not draw (review change 1 and
 // cases 2, 4 and 21). A case may add its own with Lacks.
@@ -119,7 +170,8 @@ func Score(c Case, o Outcome) Verdict {
 			fail(WrongChange, area+" changed and the case expects no change there")
 		}
 	}
-	text := strings.ToLower(o.Text)
+	// A typographic apostrophe is the same word ("can’t").
+	text := strings.ReplaceAll(strings.ToLower(o.Text), "’", "'")
 	for _, e := range c.Expect {
 		switch e.Kind {
 		case "state":
@@ -207,9 +259,83 @@ func Score(c Case, o Outcome) Verdict {
 					}
 				}
 			}
+		case "selects":
+			if !moved(o.Views, e) {
+				fail(Failed, fmt.Sprintf("the screen did not %s %s %v; moves: %s", doOf(e), e.Table, e.Rows, movesSaid(o.Views)))
+			}
+		case "opens":
+			if !opened(o.Views, e) {
+				fail(Failed, fmt.Sprintf("%s did not open with %v; moves: %s", e.Dialog, e.Fields, movesSaid(o.Views)))
+			}
+		case "no_model":
+			if o.Rounds > 0 {
+				fail(Failed, fmt.Sprintf("the model was called (%d rounds); Go answers this", o.Rounds))
+			}
 		}
 	}
 	return v
+}
+
+func doOf(e Expectation) string {
+	if e.Do == "" {
+		return "select"
+	}
+	return e.Do
+}
+
+// moved reports whether one of the turn's moves is e's: the same move on
+// the same table with exactly the same rows, in any order.
+func moved(views []View, e Expectation) bool {
+	for _, v := range views {
+		if v.Dialog == "" && v.Do == doOf(e) && v.Table == e.Table && sameRows(v.Rows, e.Rows) {
+			return true
+		}
+	}
+	return false
+}
+
+// opened reports whether the dialog opened with every field e names.
+func opened(views []View, e Expectation) bool {
+	for _, v := range views {
+		if v.Do != "open" || v.Dialog != e.Dialog {
+			continue
+		}
+		all := true
+		for k, want := range e.Fields {
+			all = all && v.Fields[k] == want
+		}
+		if all {
+			return true
+		}
+	}
+	return false
+}
+
+// sameRows compares two lists of row names as multisets: a fixture may
+// hold two rows of one name.
+func sameRows(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	x, y := slices.Clone(a), slices.Clone(b)
+	sort.Strings(x)
+	sort.Strings(y)
+	return slices.Equal(x, y)
+}
+
+func movesSaid(views []View) string {
+	if len(views) == 0 {
+		return "none"
+	}
+	var parts []string
+	for _, v := range views {
+		if v.Dialog != "" {
+			parts = append(parts, fmt.Sprintf("open %s %v", v.Dialog, v.Fields))
+			continue
+		}
+		parts = append(parts, fmt.Sprintf("%s %s %v", v.Do, v.Table, v.Rows))
+	}
+	return strings.Join(parts, "; ")
 }
 
 // declined reports whether the words before position at decline to say
@@ -265,12 +391,37 @@ func Load(path string) ([]Case, error) {
 		}
 		seen[c.ID] = true
 		for _, e := range c.Expect {
-			if !slices.Contains(kinds, e.Kind) || (e.Kind == "state" && e.Area == "") || (e.Kind == "cites" && e.Document == "") {
+			if !slices.Contains(kinds, e.Kind) || (e.Kind == "state" && e.Area == "") || (e.Kind == "cites" && e.Document == "") ||
+				(e.Kind == "selects" && !slices.Contains(Tables, e.Table)) || (e.Kind == "opens" && (e.Dialog == "" || len(e.Fields) == 0)) {
 				return nil, fmt.Errorf("%s: bad expectation %+v", c.ID, e)
 			}
 		}
+		if err := checkScreen(c); err != nil {
+			return nil, fmt.Errorf("%s: %w", c.ID, err)
+		}
 	}
 	return file.Cases, nil
+}
+
+// Tables are the tables a screen move or a selection names.
+var Tables = []string{"cost_lines", "documents", "program", "procurement"}
+
+func checkScreen(c Case) error {
+	for _, m := range c.Before {
+		if strings.TrimSpace(m) == "" {
+			return fmt.Errorf("an earlier message is empty")
+		}
+	}
+	if c.Screen == nil {
+		return nil
+	}
+	if s := c.Screen.Selected; s != nil && (!slices.Contains(Tables, s.Table) || len(s.Rows) == 0) {
+		return fmt.Errorf("a selection names a table and its rows")
+	}
+	if o := c.Screen.Open; o != nil && (o.Kind != "document" || o.Name == "") {
+		return fmt.Errorf("the open row is a document named by its title")
+	}
+	return nil
 }
 
 // Agent runs one case from a fresh fixture and reports what happened.

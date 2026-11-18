@@ -2,6 +2,7 @@ package chateval
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -153,7 +154,7 @@ func TestReplayAgentAndTheCommittedKey(t *testing.T) {
 	if count["source:review"] != 24 || count["source:worked"] != 8 {
 		t.Errorf("review %d (want 24), worked %d (want 8)", count["source:review"], count["source:worked"])
 	}
-	for group, min := range map[string]int{"injection": 5, "ambiguous": 3, "missing": 3, "excluded": 3, "question": 10} {
+	for group, min := range map[string]int{"injection": 5, "ambiguous": 3, "missing": 3, "excluded": 3, "question": 10, "screen": 20} {
 		if count[group] < min {
 			t.Errorf("%s: %d cases, want at least %d", group, count[group], min)
 		}
@@ -168,5 +169,73 @@ func TestReplayAgentAndTheCommittedKey(t *testing.T) {
 	}
 	if _, err := agent.Run(context.Background(), cases[1]); err == nil {
 		t.Fatal("a case with no recording must be an error, not a pass")
+	}
+}
+
+// The screen group's expectations (chat agency plan, Task 7).
+func TestScreenExpectations(t *testing.T) {
+	c := Case{ID: "s", Fixture: "house", Group: "screen", Message: "Select the landscaping and escalation lines",
+		Expect: []Expectation{{Kind: "selects", Table: "cost_lines", Rows: []string{"Landscaping", "Escalation"}}, {Kind: "no_change"}}}
+	right := Outcome{Rounds: 1, Views: []View{{Do: "select", Table: "cost_lines", Rows: []string{"Escalation", "Landscaping"}}}}
+	if v := Score(c, right); !v.Pass {
+		t.Fatalf("the same set in another order must pass: %+v", v)
+	}
+	for name, o := range map[string]Outcome{
+		"no move":          {},
+		"one row short":    {Views: []View{{Do: "select", Table: "cost_lines", Rows: []string{"Landscaping"}}}},
+		"one row extra":    {Views: []View{{Do: "select", Table: "cost_lines", Rows: []string{"Landscaping", "Escalation", "DA fees"}}}},
+		"only, not select": {Views: []View{{Do: "only", Table: "cost_lines", Rows: []string{"Landscaping", "Escalation"}}}},
+		"another table":    {Views: []View{{Do: "select", Table: "documents", Rows: []string{"Landscaping", "Escalation"}}}},
+	} {
+		if v := Score(c, o); v.Pass || v.Class != Failed {
+			t.Errorf("%s: want a fail, got %+v", name, v)
+		}
+	}
+	// A move is not a record change, but a change beside it still is.
+	if v := Score(c, Outcome{Views: right.Views, Changed: []string{"cost_plan"}}); v.Class != WrongChange {
+		t.Errorf("a change beside the move: %+v", v)
+	}
+
+	award := Case{ID: "a", Fixture: "refurb", Group: "screen", Message: "Open the award for Polar Air",
+		Expect: []Expectation{{Kind: "opens", Dialog: "award", Fields: map[string]string{"package": "trade.mechanical", "column": "Polar Air"}}, {Kind: "not_applied"}}}
+	if v := Score(award, Outcome{Views: []View{{Do: "open", Dialog: "award", Fields: map[string]string{"package": "trade.mechanical", "column": "Polar Air"}}}}); !v.Pass {
+		t.Fatalf("got %+v", v)
+	}
+	if v := Score(award, Outcome{Views: []View{{Do: "open", Dialog: "award", Fields: map[string]string{"package": "trade.mechanical", "column": "Venturi Mechanical"}}}}); v.Pass {
+		t.Fatal("another firm's column must fail")
+	}
+	if v := Score(award, Outcome{Changed: []string{"procurement"}, Views: []View{{Do: "open", Dialog: "award", Fields: map[string]string{"package": "trade.mechanical", "column": "Polar Air"}}}}); v.Class != WrongChange {
+		t.Fatalf("an award made from chat is a wrong change: %+v", v)
+	}
+
+	undo := Case{ID: "u", Fixture: "house", Group: "screen", Message: "Undo that", Expect: []Expectation{{Kind: "no_model"}}}
+	if v := Score(undo, Outcome{Text: "Undone: …"}); !v.Pass {
+		t.Fatalf("got %+v", v)
+	}
+	if v := Score(undo, Outcome{Text: "Undone: …", Rounds: 1}); v.Pass {
+		t.Fatal("a model call must fail")
+	}
+
+	decline := Case{ID: "d", Fixture: "house", Group: "screen", Message: "Show the messages", Expect: []Expectation{{Kind: "refuses", Has: []string{"I can't do that from chat yet"}}}}
+	if v := Score(decline, Outcome{Text: "I can’t do that from chat yet. Messages are on the Inbox screen once it is built."}); !v.Pass {
+		t.Fatalf("a typographic apostrophe is the same words: %+v", v)
+	}
+}
+
+func TestScreenCasesAreChecked(t *testing.T) {
+	dir := t.TempDir()
+	for name, raw := range map[string]string{
+		"a selects with no table": `{"cases":[{"id":"x","group":"screen","fixture":"house","message":"m","expect":[{"kind":"selects","rows":["A"]}]}]}`,
+		"an opens with no fields": `{"cases":[{"id":"x","group":"screen","fixture":"house","message":"m","expect":[{"kind":"opens","dialog":"award"}]}]}`,
+		"a selection of nothing":  `{"cases":[{"id":"x","group":"screen","fixture":"house","message":"m","screen":{"selected":{"table":"cost_lines"}},"expect":[{"kind":"asks"}]}]}`,
+		"an empty earlier turn":   `{"cases":[{"id":"x","group":"screen","fixture":"house","message":"m","before":[" "],"expect":[{"kind":"asks"}]}]}`,
+	} {
+		path := filepath.Join(dir, "key.json")
+		if err := os.WriteFile(path, []byte(raw), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := Load(path); err == nil {
+			t.Errorf("%s: loaded", name)
+		}
 	}
 }

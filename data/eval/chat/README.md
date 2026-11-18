@@ -28,9 +28,48 @@ changed. A case passes when every expectation holds:
 | `no_own_figure` | Go marked no figure, date or clause in the answer as the model's own. |
 | `states_search` | Go's line saying what was searched is on the answer. |
 | `no_verdict` | The answer does not say the project is low risk, that something complies, or that something is absent. |
+| `selects` | The turn moved the screen: `do` (select when empty; only, show, clear or open) on `table`, with exactly `rows`, in any order. |
+| `opens` | The turn opened `dialog` with the named `fields`. Nothing is done inside it: the PM presses the button. |
+| `no_model` | Go answered the message; the model was not called (no rounds). |
 
 An area that changed without a `state` expectation naming it is a wrong
-change, whatever else the case expects.
+change, whatever else the case expects. A screen move is not a change.
+
+Rows are named the way the fixtures name them, never by id: a cost line
+by its label, a document by its title, a Program row by its label, a
+package by its discipline id, and the award dialog's column by the firm's
+name. The runner turns names into this run's ids and back.
+
+A case may carry `before`, earlier messages sent first in the same
+conversation, and `screen`, what the strip says is on screen when the
+case's message is sent (`view`, `open` as a document title, `selected` as
+a table and row names). With `before`, the areas are read before the first
+message, so the case judges where the whole conversation leaves the
+project; the rest of the outcome is the last turn's.
+
+## The screen group
+
+`screen` (draft, 27 cases, `s1` to `s27`) is the chat agency plan's key
+(`docs/plans/2026-11-18-chat-agency.md`, Task 7): named filters on the
+four tables, documents selected by subject, "these" with and without a
+selection, "now show only those" from the history, "undo that", the award
+dialog opened and never pressed, a screen move after a document read, a
+prepared read, and a table that is not built yet (the fixed words "I
+can't do that from chat yet").
+
+`TestScreenCasesScoredOffline` in `cmd/chat-eval` scores 23 of them with
+no live model: a stand-in makes the call a right answer makes, the real
+server does the rest on the real fixture, and the scorer judges the end
+state. That scores Go's half of a case: the set a filter or a subject
+finds, the ids the screen or the history carries, the undo, the dialog's
+fields, and that a move after a read prepares nothing. Four have no model
+half in their last turn: `s13`, `s14` and `s15` ("undo") and `s24` (an
+exact phrase) are answered by Go, though `s13` and `s14` need a model for
+their earlier message. `s9`, `s22`, `s23` and `s27` are the model's
+judgement alone (ask, say the fixed words, quote the open document) and
+are scored only by a live run. Whether the model makes the right call in
+any case is the live run's to score; no live run of this group has been
+made.
 
 A failing run has one class, the worst that applies: wrong change, missed
 question, unchecked figure, failed (anything else). A case marked
@@ -75,7 +114,11 @@ and construct with novation. Six-day calendar. No contract is filed.
 - Procurement: consultant packages, some with no firm invited.
 - Documents: Mechanical specification rev A (superseded) and rev B (the
   BMS requirement differs between them); Finishes specification (carpet
-  requirement); Carpet data sheet (a substitute product with a price).
+  requirement); Carpet data sheet (a substitute product with a price);
+  the basement set: Basement excavation plan (basement in its title
+  only), Geotechnical report (in its text only), Shoring design (labelled
+  with the basement retention system only) and Basement survey (scanned,
+  no text).
 
 **refurb: Level 6 office refurbishment.** An occupied commercial
 refurbishment (Class 5, built 1987) on a lump sum.
