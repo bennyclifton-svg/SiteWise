@@ -210,7 +210,9 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["program_imports"] = row{"org_id": org, "id": id(4400 + n), "program_id": program, "document_id": id(1900 + n), "filename": "program.xlsx"}
 		f["comparison_alignment"] = row{"org_id": org, "submission_id": submission, "prices": []any{}, "decisions": row{}, "version": 1}
 		f["visual_identity"] = row{"org_id": org, "document_id": id(1900 + n)}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns"} {
+		// A firm's link on its invited cell; the report key's control is a report link.
+		f["guest_grants"] = row{"org_id": org, "id": id(5000 + n), "project_id": p, "token_hash": "\\x" + strings.Repeat(fmt.Sprintf("%02d", 70+n), 32), "kind": "package", "shared_with": "firm@example.test", "package_id": pkg, "firm_id": firm, "created_by": u, "expires_at": "2026-12-01T00:00:00Z"}
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
@@ -223,6 +225,12 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			if err := insert(tx, table, f[key]); err != nil {
 				t.Fatal(key, err)
 			}
+		}
+		// The invitation's control names a second firm: the first is invited.
+		spareFirm := maps.Clone(f["firms"])
+		spareFirm["id"], spareFirm["name"], spareFirm["name_key"] = id(3350+n), "Spare firm", "spare firm"
+		if err := insert(tx, "firms", spareFirm); err != nil {
+			t.Fatal(err)
 		}
 		unusedCost := maps.Clone(f["cost_items"])
 		secondType := maps.Clone(f["specification_types"])
@@ -345,6 +353,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 					base["superseded_by"] = fixtures[0]["submissions"]["id"]
 					base["status"] = "superseded"
 				}
+			case "package_invitations":
+				base["firm_id"] = id(3351)
 			case "awards":
 				// One live award per package: the control is an undone award.
 				base["undone_at"] = "2026-10-16T00:00:00Z"
@@ -375,6 +385,11 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			case "proposals":
 				base["record_id"] = "ic.sweep"
 				base["key"] = "ic.sweep||||0"
+			case "guest_grants":
+				base["token_hash"] = "\\x" + strings.Repeat("ed", 32)
+				if strings.Contains(f.definition, "report_id") {
+					base["kind"], base["report_id"], base["package_id"], base["firm_id"] = "report", fixtures[0]["reports"]["id"], nil, nil
+				}
 			}
 			if f.name == "project_parts_org_id_site_id_fkey" {
 				base["created_by_project_id"] = nil

@@ -425,6 +425,11 @@ type FirmCard struct {
 	// LikeForLike marks a tender-read firm: its figure is the tender sum
 	// plus the applied adds and subs.
 	LikeForLike bool `json:"like_for_like,omitempty"`
+	// Linked: the firm holds a live guest link to this row's RFP or RFT;
+	// LinkOpenedOn is the Sydney date it was last opened, "" if never
+	// (docs/plans/2026-11-17-guest-access.md, Task 6).
+	Linked       bool   `json:"linked,omitempty"`
+	LinkOpenedOn string `json:"link_opened_on,omitempty"`
 	// joined is when the card's firm took its place on the row.
 	joined time.Time
 }
@@ -504,6 +509,9 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 	}
 	for pkg, cards := range out {
 		out[pkg] = placeFirms(pkg, cards, invited[pkg], joined)
+	}
+	if err := markGuestLinks(ctx, tx, org, project, out); err != nil {
+		return nil, nil, err
 	}
 	loose := []FirmCard{}
 	// A proposal filed as the combined services discipline is marked, so
