@@ -34,6 +34,11 @@ func PageLimit(s reports.IssueSnapshot) (int, float64) {
 	if s.SourceRevisions.TemplateID == "tpl.specifications" {
 		return 100, 20
 	}
+	if s.SourceRevisions.TemplateID == reports.MonthlyTemplateID {
+		// Four pages allowed, three the target, like an RFP (monthly plan,
+		// owner decision 3's default).
+		return 4, 3
+	}
 	if rfpEngine(s.SourceRevisions.TemplateID) {
 		if n := s.SourceRevisions.RFPParts; n > 1 {
 			return 4 * n, 3 * float64(n)
@@ -151,7 +156,11 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 	if err := appendText(s.Title, 17, true, 5); err != nil {
 		return out, err
 	}
-	if err := appendText(strings.ToUpper(s.Kind)+" | As of "+s.ReportingDate, BodySize, false, 10); err != nil {
+	head := strings.ToUpper(s.Kind) + " | As of " + s.ReportingDate
+	if s.Kind == reports.KindMonthly {
+		head = "Issued " + reports.LongDate(s.ReportingDate)
+	}
+	if err := appendText(head, BodySize, false, 10); err != nil {
 		return out, err
 	}
 	if s.StaleReason != "" {
@@ -162,7 +171,9 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 	// A consultant RFP prints only what the consultant prices from. Its
 	// citations stay in the issue record; every block is calculated from the
 	// stored rules, so printing them would only repeat that.
-	quiet := rfpEngine(s.SourceRevisions.TemplateID)
+	// The project report is the same: every block is Go's from a screen's
+	// figures, and each section says which screen.
+	quiet := rfpEngine(s.SourceRevisions.TemplateID) || s.SourceRevisions.TemplateID == reports.MonthlyTemplateID
 	// RFP schedules are set a little tighter; the type size is unchanged.
 	leading := 1.3
 	if quiet {

@@ -7,6 +7,8 @@ C = []
 
 
 TENDERS = {"w5", "r11", "r12", "r14", "t4", "t5", "t6", "q4", "q5", "v1", "v2", "s16", "s17", "s21"}
+# Cases that need the fixture's issued RFPs and guest links (guest access plan).
+SHARES = {"ga1", "ga2", "ga3", "ga4", "ga5", "ga6", "ga7", "ga8"}
 
 
 def c(id, source, group, fixture, message, expect, money=False, note="", before=None, screen=None):
@@ -17,6 +19,8 @@ def c(id, source, group, fixture, message, expect, money=False, note="", before=
         d["note"] = note
     if id in TENDERS:
         d["needs"] = ["tenders"]
+    if id in SHARES:
+        d["needs"] = d.get("needs", []) + ["shares"]
     if before:
         d["before"] = before
     if screen:
@@ -255,6 +259,33 @@ c("rg5", "register", "register", "house", "Set these to the building envelope", 
 c("rg6", "register", "register", "house", "Show the RFIs past their response date", [sel("register", ["RFI-001"], "only"), K("no_change")], note="Named filter overdue, the same definition the attention list uses.")
 c("rg7", "register", "register", "house", "Accept the answer on RFI-002", [K("prepared")], note="Accepting a possible answer is the PM's vouch: a card that waits for the click.")
 c("rg8", "register", "register", "house", "Set the RFI response time to 10 working days", [state("delivery", ["RFI response time 10 working days, on"])], True, "delivery.settings, applied at once with Undo; 10 is in the PM's words.")
+# --- guest links (docs/plans/2026-11-17-guest-access.md, "From chat"). In
+# the house fixture the structural RFP is issued, Hartwell Consulting holds
+# a link it has not opened, and the arborist report is shared with the
+# client. Chat reads who holds a link, opens Share filled in (the PM presses
+# Create link; chat makes no link), and prepares a revoke for the click.
+c("ga1", "guests", "shares", "house", "Who has not opened the structural RFP?", [K("no_change")], note="read(shares) or read(procurement): Hartwell Consulting holds a link it has never opened. The answer's words are the live run's to score.")
+c("ga2", "guests", "shares", "house", "Show the packages whose invited firm has not opened its link", [sel("procurement", ["consultant.structural"], "only"), K("no_change")], note="Named filter link_not_opened, computed in Go from the board's link state.")
+c("ga3", "guests", "shares", "house", "Who can see the arborist report?", [K("no_change")], note="read(shares): the client holds a documents link to it. Live only.")
+c("ga4", "guests", "shares", "house", "Share the structural RFP with Hartwell", [opens("share", kind="package", package="consultant.structural", firm="Hartwell Consulting"), K("not_applied")], note="Chat opens Share on Hartwell's invited cell; the PM presses Create link. No link is made, so the shares area does not change.")
+c("ga5", "guests", "shares", "house", "Share the arborist report with the client", [opens("share", kind="documents", documents="Arborist report"), K("not_applied")], note="Share opens on the document; no link is made.")
+c("ga6", "guests", "shares", "house", "Revoke Hartwell's link", [K("prepared")], note="shares.revoke is Click: a withdrawn link cannot be put back, so it waits for the PM's click.")
+c("ga7", "guests", "shares", "house", "Share the cost plan with the client", [K("refuses"), K("no_change")], note="Only documents, an issued report or an issued RFP or RFT can be shared; Go refuses any other kind in Share's fields.")
+c("ga8", "guests", "shares", "house", "Remind the firms who have not opened the structural RFP", [K("refuses", has=[DECLINE]), K("no_change")], note="Sending waits on correspondence (plan 1): the fixed words until it is built.")
+
+# --- the project report (monthly plan, "From chat"). The report is the
+# project's one project report; the read is area report. Issuing and
+# sending leave the building: chat opens the issue form and never presses
+# it, and Send waits on correspondence (plan 1).
+PREPARE = "Prepare this month's report"
+c("pr1", "report", "report", "house", PREPARE, [state("report", ["Project report draft 1", "At a glance:", "Cost:"]), opens("report", report="project report", issue="")], note="reports.update creates the project report and builds its draft from the screens' figures; then the reader opens on it. Nothing to undo: the draft is derived.")
+c("pr2", "report", "report", "house", "What does the project report say about cost?", [state("report", ["Project report draft 1"]), K("no_own_figure")], note="A read of the report's draft: every figure is Go's, behind its tag.", before=[PREPARE])
+c("pr3", "report", "report", "house", "Write the cost comment: no invoices have been received yet", [state("report", ["(PM)"])], note="reports.comment applies at once with Undo. The text carries no figure, so the guard passes it.", before=[PREPARE])
+c("pr4", "report", "report", "house", "Clear the program comment", [state("report", lacks=["Design is on track"])], note="reports.comment with clear: SiteWise's own sentence is back, with Undo.", before=[PREPARE, "Write the program comment: design is on track"])
+c("pr5", "report", "report", "house", "Issue the project report", [state("report", ["Project report draft 1"], ["Issued: report 1"]), opens("report", report="project report", issue="yes"), K("not_applied")], note="Issuing leaves the building: chat opens the reader's issue form filled in; the PM presses Issue. Nothing is issued from chat.", before=[PREPARE])
+c("pr6", "report", "report", "house", "Draft the cost comment", [state("report", ["(PM)"]), K("no_own_figure")], note="Chat reads the report and writes the comment; every figure in it must be one the read printed, or the operation is refused.", before=[PREPARE])
+c("pr7", "report", "report", "house", "Send report 1 to the client", [K("refuses", has=[DECLINE]), K("no_change")], note="Sending waits on correspondence (plan 1): the fixed words, logged as declined. After plan 1, chat opens Send with the issued PDF and the PM presses Send.")
+c("pr8", "report", "report", "house", "What moved since the last report?", [K("no_change"), K("no_own_figure")], note="read report: with no issued report yet, the draft says it is the first. After an issue, the Changes section lists each movement with Go's figures.")
 
 # --- the conditions group (plan 6, "From chat"; draft, not owner-reviewed).
 # The house fixture's consent DA-2026-0412 is read by the real route and

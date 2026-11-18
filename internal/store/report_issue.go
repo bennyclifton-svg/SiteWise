@@ -64,7 +64,7 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if err != nil {
 		return out, err
 	}
-	if r.Kind != "pmp" {
+	if !projectLevel(r.Kind) {
 		var grouped bool
 		if err = tx.QueryRow(ctx, `SELECT group_id IS NOT NULL FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3`, org, r.ProjectID, r.PackageID).Scan(&grouped); err != nil && !errors.Is(err, pgx.ErrNoRows) {
 			return out, err
@@ -84,7 +84,7 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 		return out, ErrVersionConflict
 	}
 	var pkg procurement.Package
-	if r.Kind != "pmp" {
+	if !projectLevel(r.Kind) {
 		if pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true); err != nil {
 			return out, err
 		}
@@ -100,7 +100,11 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if err != nil {
 		return out, err
 	}
-	stale := reports.StaleReasons(r.Kind, d.SourceRevisions, s.reportSourceState(v, template, appBuild))
+	current, err := s.currentSourceState(ctx, tx, org, r, v, template, appBuild)
+	if err != nil {
+		return out, err
+	}
+	stale := reports.StaleReasons(r.Kind, d.SourceRevisions, current)
 	if v.PendingDocuments > 0 || v.FailedDocuments > 0 || len(v.StaleFor(*s.profileBuild)) > 0 {
 		stale = append(stale, "reading")
 	}
@@ -130,7 +134,7 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if err != nil {
 		return out, err
 	}
-	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: options.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: sections, References: refs, BudgetDisclosed: options.BudgetDisclosed, RendererVersion: render.Version}
+	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: reports.IssueTitle(r.Kind, r.Title, d.Number), ReportingDate: options.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: sections, References: refs, BudgetDisclosed: options.BudgetDisclosed, RendererVersion: render.Version}
 	if len(stale) > 0 {
 		snap.StaleReason = options.StaleReason
 	}

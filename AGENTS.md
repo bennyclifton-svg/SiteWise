@@ -61,7 +61,12 @@ is tighter.
 
 These paths do not call Jev: cost reads and writes, procurement row create,
 report create, specification direct edit, review, schedule and issue, the
-profile's run reads (progress, finds, next), and Accommodation schedule edits.
+profile's run reads (progress, finds, next), Accommodation schedule edits,
+and guest links: share create, list and revoke, the guest page open and
+guest downloads. A guest's quote is filing plus the existing proposal
+fan-out, exactly as a PM drop on that firm's cell
+(`docs/plans/2026-11-17-guest-access.md`). Only the `/guest` routes read
+the guest cookie, and they read nothing else.
 Specification import is a background job in the existing worker: one fan-out
 per candidate, cached by source. A reading is a proposal. Navigation and
 typing do not call Jev. An uploaded invoice is read with one interactive
@@ -89,6 +94,15 @@ any document, and for correspondence one Jev fan-out (one noul per RFI, at
 most 12) whose picks stay hidden until the owner approves a cut-off
 (`docs/plans/2026-11-17-rfis-review-comments.md`). A reading is a proposal;
 only the PM's edit makes an RFI answered.
+
+The project report (Register toolbar, one per project) calls neither Jev
+nor the LLM: Update, comments, issue and export are Go over saved records,
+and every figure comes from the screens' own rollups (`costs.Summarize`,
+the invoice ledger, the Program engine, the procurement board, the
+register, `reports.Attention`); unknown stays unknown. Chat may update it
+and write or clear its comments with Undo, and opens its issue form filled
+in, but never presses Issue
+(`docs/plans/2026-11-17-monthly-report.md`).
 
 Chat (`POST /projects/{id}/chat`) is the one path that waits on the LLM, and
 it never calls Jev. Its tools read through the same Go rollups as the

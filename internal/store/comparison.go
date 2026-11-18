@@ -425,6 +425,14 @@ type FirmCard struct {
 	// LikeForLike marks a tender-read firm: its figure is the tender sum
 	// plus the applied adds and subs.
 	LikeForLike bool `json:"like_for_like,omitempty"`
+	// Linked: the firm holds a live guest link to this row's RFP or RFT;
+	// LinkOpenedOn is the Sydney date it was last opened, "" if never
+	// (docs/plans/2026-11-17-guest-access.md, Task 6).
+	Linked       bool   `json:"linked,omitempty"`
+	LinkOpenedOn string `json:"link_opened_on,omitempty"`
+	// TenderIssued: the row's RFP or RFT has an issue, so the firm can be
+	// sent a link to it.
+	TenderIssued bool `json:"tender_issued,omitempty"`
 	// joined is when the card's firm took its place on the row.
 	joined time.Time
 }
@@ -440,6 +448,16 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 		return nil, nil, err
 	}
 	defer tx.Rollback(ctx)
+	out, loose, err := s.procurementBoardTx(ctx, tx, org, project)
+	if err != nil {
+		return nil, nil, err
+	}
+	return out, loose, tx.Commit(ctx)
+}
+
+// procurementBoardTx is the board on the caller's snapshot, so the project
+// report counts firms and quotes exactly as Procurement and chat do.
+func (s *Store) procurementBoardTx(ctx context.Context, tx pgx.Tx, org, project string) (map[string][]FirmCard, []FirmCard, error) {
 	rows, err := tx.Query(ctx, `SELECT DISTINCT package_id::text FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id IS NOT NULL`, org, project)
 	if err != nil {
 		return nil, nil, err
@@ -505,6 +523,9 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 	for pkg, cards := range out {
 		out[pkg] = placeFirms(pkg, cards, invited[pkg], joined)
 	}
+	if err := markGuestLinks(ctx, tx, org, project, out); err != nil {
+		return nil, nil, err
+	}
 	loose := []FirmCard{}
 	// A proposal filed as the combined services discipline is marked, so
 	// Procurement offers Combine for this proposal (slice 5).
@@ -543,7 +564,7 @@ WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id IS NULL AND s
 		card.Combined = combined[id]
 		loose = append(loose, card)
 	}
-	return out, loose, tx.Commit(ctx)
+	return out, loose, nil
 }
 
 func cardOf(c FirmColumn) FirmCard {

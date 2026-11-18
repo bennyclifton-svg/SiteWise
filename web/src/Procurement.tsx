@@ -11,7 +11,7 @@ import { api, ApiError, type Option } from "./api";
 import { FILED_DOCUMENT_TYPE } from "./documentDrag";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { costApi, type CostPlan } from "./costApi";
-import { IconBin, IconPrint, IconUpload } from "./icons";
+import { IconBin, IconLinks, IconPrint, IconUpload } from "./icons";
 import { packageApi, type CombinePrompt, type PackageOverview, type PackageRecord } from "./packageApi";
 import { procurementApi } from "./procurementApi";
 import { Prices } from "./Prices";
@@ -23,7 +23,7 @@ import { Reports } from "./Reports";
 import { MoreMenu, PageActions } from "./PageActions";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
-import { showingLine, useChatTable } from "./chatView";
+import { dialogOf, showingLine, useChatTable } from "./chatView";
 import "./reports.css";
 
 type View = { at: "table" } | { at: "report"; id: string } | { at: "prices"; pkg: string; report?: string };
@@ -389,7 +389,8 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         uploadingFirm={uploadingFirm} onOpen={() => row.pkg && setView({ at: "prices", pkg: row.pkg.id, report: row.report?.id })}
         onInvite={firm => row.pkg ? invite(row.pkg, firm) : Promise.resolve(false)} onUninvite={card => row.pkg && void uninvite(row.pkg, card)}
         onCorrect={(card, firm) => row.pkg ? correctInvitation(row.pkg, card, firm) : Promise.resolve("")}
-        onDropOnFirm={(card, e) => row.pkg && void dropOnFirm(row.pkg, card, e)} />
+        onDropOnFirm={(card, e) => row.pkg && void dropOnFirm(row.pkg, card, e)}
+        onShare={card => row.pkg && card.firm_id && dialogOf("share")?.open({ kind: "package", package: row.pkg.id, firm: card.firm_id, firm_name: card.firm_name, title: `${row.label} with ${card.firm_name}` })} />
       <td>{row.kind === "supply" ? "—"
         : row.report ? <button type="button" className="table-action" aria-label={`View ${doc} for ${row.label}`} onClick={() => setView({ at: "report", id: row.report!.id })}>View</button>
         : <button type="button" className="table-action" aria-label={`Create ${doc} for ${row.label}`} disabled={busy} onClick={() => void create(row)}>{busy ? <Pending delayed>Creating…</Pending> : "Create"}</button>}</td>
@@ -542,11 +543,13 @@ const TAB_KEY = "sitewise.procurement.tab";
  * later show as "+n more" in Firm 3. An empty cell takes a firm's name
  * before its quote arrives; that invited firm's cell takes its quote
  * (docs/plans/2026-11-11-procurement-invited-firms.md). */
-function FirmSlots({ row, cards, droppable, uploading, uploadingFirm, onOpen, onDetach, onInvite, onUninvite, onCorrect, onDropOnFirm, busy }: {
+function FirmSlots({ row, cards, droppable, uploading, uploadingFirm, onOpen, onDetach, onInvite, onUninvite, onCorrect, onDropOnFirm, onShare, busy }: {
   row: string; cards: FirmCard[]; droppable: boolean; uploading: boolean; uploadingFirm: string; busy: boolean;
   onOpen: () => void; onDetach: (card: FirmCard) => void; onInvite: (firm: NamedFirm) => Promise<boolean>;
   onUninvite: (card: FirmCard) => void; onCorrect: (card: FirmCard, firm: NamedFirm) => Promise<string>;
   onDropOnFirm: (card: FirmCard, e: DragEvent) => void;
+  /** Opens Share for an invited firm's link to the row's issued RFP or RFT. */
+  onShare: (card: FirmCard) => void;
 }) {
   const [naming, setNaming] = useState<number | null>(null);
   // The invited firm whose name is being corrected.
@@ -575,7 +578,7 @@ function FirmSlots({ row, cards, droppable, uploading, uploadingFirm, onOpen, on
     let body;
     if (invited && editing === c.firm_id) body = <FirmNameEditor label={`Firm ${i + 1} for ${row}`} initial={c.firm_name} exclude={named} busy={saving} error={nameError}
       onCommit={firm => void correct(c, firm)} onCancel={stop} />;
-    else if (invited) body = <InvitedFirm card={c} busy={busy} uploading={uploadingFirm === c.firm_id} onRemove={() => onUninvite(c)}
+    else if (invited) body = <InvitedFirm card={c} busy={busy} uploading={uploadingFirm === c.firm_id} onRemove={() => onUninvite(c)} onShare={() => onShare(c)}
       onEdit={() => { setNaming(null); setEditing(c.firm_id!); setNameError(""); }} />;
     else if (c) body = <FirmChip card={c} onOpen={onOpen} onDetach={() => onDetach(c)} busy={busy} />;
     else if (naming === i) body = <FirmNameEditor label={`Firm ${i + 1} for ${row}`} exclude={named} busy={saving} error={nameError}
@@ -601,16 +604,25 @@ function FirmSlots({ row, cards, droppable, uploading, uploadingFirm, onOpen, on
  * "Invited" in the user's colour (the origin rule), no figure, nothing to
  * open in Prices. Its quote is dropped on this cell; a click corrects the
  * name in place. */
-function InvitedFirm({ card: c, busy, uploading, onRemove, onEdit }: { card: FirmCard; busy: boolean; uploading: boolean; onRemove: () => void; onEdit: () => void }) {
+function InvitedFirm({ card: c, busy, uploading, onRemove, onEdit, onShare }: { card: FirmCard; busy: boolean; uploading: boolean; onRemove: () => void; onEdit: () => void; onShare: () => void }) {
   const on = c.invited_on ? new Date(`${c.invited_on}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "";
+  // A guest link's state on the cell (docs/plans/2026-11-17-guest-access.md).
+  const opened = c.link_opened_on ? new Date(`${c.link_opened_on}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short" }) : "";
+  const link = c.linked ? (opened ? ` · link opened ${opened}` : " · link not opened") : "";
   // The name leads: a long one is cut short in the cell.
-  const description = `${c.firm_name}. Invited${on ? ` ${on}` : ""}. Click to correct the name; drop the firm's quote on this cell.`;
+  // Until the row's RFP or RFT is issued there is nothing to share: the cell
+  // says so rather than showing a button that would sit over the name.
+  const description = `${c.firm_name}. Invited${on ? ` ${on}` : ""}${link}. Click to correct the name; drop the firm's quote on this cell.${c.tender_issued ? "" : " Issue the RFT first to share it by link."}`;
   return <div className="firm-card">
     <button type="button" className="firm-chip" data-status="invited" title={description} aria-label={`Change ${c.firm_name}`} aria-description={description}
       disabled={busy} onClick={onEdit}>
       <span className="firm-chip-name">{c.firm_name}</span>
-      <span className="firm-chip-status">{uploading ? <Pending>Uploading…</Pending> : STATUS_WORDS.invited}</span>
+      <span className="firm-chip-status">{uploading ? <Pending>Uploading…</Pending> : STATUS_WORDS.invited + link}</span>
     </button>
+    {c.tender_issued && <button type="button" className="firm-detach firm-share" aria-label={`Share the RFT with ${c.firm_name}`}
+      title="Make a link for this firm to download the RFT and send its quote" disabled={busy} onClick={onShare}>
+      <IconLinks />
+    </button>}
     <button type="button" className="firm-detach" aria-label={`Remove invitation for ${c.firm_name}`} title="Remove the invitation; the firm stays in your directory"
       disabled={busy} onClick={onRemove}>
       <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="m4 4 8 8m0-8-8 8" /></svg>

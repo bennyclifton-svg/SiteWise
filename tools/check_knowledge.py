@@ -1190,6 +1190,8 @@ def planning_value_ok(key: dict, value) -> bool:
 SCOPES = {"site", "project"}
 NOVATION = {"pre", "post"}
 REPORT_OUTPUTS = {"rfp", "rft", "pmp"}
+# The project report has no catalogue clauses, so it is a template kind only.
+TEMPLATE_KINDS = REPORT_OUTPUTS | {"monthly"}
 CLAUSE_ID = re.compile(r"^cl\.[a-z0-9-]+$")
 BENCHMARK_ID = re.compile(r"^bm\.[a-z0-9-]+$")
 DECIMAL = re.compile(r"^-?\d+(\.\d+)?$")
@@ -1402,7 +1404,7 @@ def check_catalogues(report: Report, seed_dir: Path, cache: dict, determinants: 
             seen.add(template_id)
             if type(template.get("version")) is not int or template["version"] < 1:
                 report.error(where, "template version must be a positive integer")
-            if template.get("kind") not in REPORT_OUTPUTS or template.get("status") not in STATUSES:
+            if template.get("kind") not in TEMPLATE_KINDS or template.get("status") not in STATUSES:
                 report.error(where, "invalid template kind or status")
             check_sources(where, template.get("sources"), seed_dir, report, cache)
             sections = template.get("sections")

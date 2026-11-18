@@ -306,23 +306,46 @@ func uploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, session st
 		http.Error(w, "Confirm your email address to upload documents. Use the link we emailed you, or send a new one from the Account page.", http.StatusForbidden)
 		return false
 	}
-	b, err := deps.Store.OrgBilling(ctx, session.OrgID)
+	return orgUploadAllowed(w, r, deps, session.OrgID, 0, "")
+}
+
+// orgUploadAllowed is the org's half of uploadAllowed: inside its monthly
+// documents and storage. A guest's quote counts toward the org as a PM drop
+// does (guest access, owner decision 7); full says so to a guest in its own
+// words, without the plan's name.
+//
+// reserve is the share of the monthly documents and storage the caller may
+// not use: 0 for a PM; a guest leaves the last tenth to the org's own team.
+func orgUploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, org string, reserve float64, full string) bool {
+	if deps.Billing == nil {
+		return true
+	}
+	ctx := r.Context()
+	b, err := deps.Store.OrgBilling(ctx, org)
 	if err != nil {
 		readFailed(w, deps, "upload allowance", err)
 		return false
 	}
-	usage, err := deps.Store.Usage(ctx, session.OrgID, deps.Billing.now())
+	usage, err := deps.Store.Usage(ctx, org, deps.Billing.now())
 	if err != nil {
 		readFailed(w, deps, "upload allowance", err)
 		return false
 	}
 	plan := b.Effective()
-	if usage.DocumentsThisMonth >= plan.DocumentsPerMonth {
-		http.Error(w, fmt.Sprintf("Your %s plan reads %d documents a month and this month's are used. Upgrade on the Account page to read more.", plan.Name, plan.DocumentsPerMonth), http.StatusPaymentRequired)
+	docCap := plan.DocumentsPerMonth - int(float64(plan.DocumentsPerMonth)*reserve)
+	storeCap := plan.StorageBytes - int64(float64(plan.StorageBytes)*reserve)
+	if usage.DocumentsThisMonth >= docCap {
+		if full == "" {
+			full = fmt.Sprintf("Your %s plan reads %d documents a month and this month's are used. Upgrade on the Account page to read more.", plan.Name, plan.DocumentsPerMonth)
+		}
+		http.Error(w, full, http.StatusPaymentRequired)
 		return false
 	}
-	if usage.StorageBytes >= plan.StorageBytes {
-		http.Error(w, fmt.Sprintf("Your %s plan stores %s and it is full. Delete documents or upgrade on the Account page.", plan.Name, sizeLabel(plan.StorageBytes)), http.StatusPaymentRequired)
+	if usage.StorageBytes >= storeCap {
+		if full == "" {
+			full = fmt.Sprintf("Your %s plan stores %s and it is full. Delete documents or upgrade on the Account page.", plan.Name, sizeLabel(plan.StorageBytes))
+		}
+		http.Error(w, full, http.StatusPaymentRequired)
 		return false
 	}
 	return true

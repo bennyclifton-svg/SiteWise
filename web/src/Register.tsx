@@ -7,11 +7,11 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEve
 import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, notFiledReason, type RowModel } from "./DocumentRow";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { IconBin, IconEye, IconEyeOff, IconMore, IconOpen, IconPlus, IconRename, IconRetry, IconStored, IconSubdivide, IconTag, IconUndo, IconUpload } from "./icons";
+import { IconBin, IconEye, IconEyeOff, IconLinks, IconMore, IconOpen, IconPlus, IconRename, IconRetry, IconStored, IconSubdivide, IconTag, IconUndo, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
 import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
-import { revealQuietly, showingLine, useChatTable } from "./chatView";
+import { dialogOf, revealQuietly, showingLine, useChatTable } from "./chatView";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 import "./register-edit.css";
@@ -328,6 +328,8 @@ export function Register({
     // Offered only where the automatic split stopped on an unconfirmed page.
     if (one && docs[0].expansion?.can_split) items.push({ label: "Split into pages", icon: <IconSubdivide />, onSelect: () => void onSplit(docs[0].id) });
     if (one && filed && onRaiseRFI) items.push({ label: "Raise RFI from this document", icon: <IconPlus />, onSelect: () => onRaiseRFI(docs[0].id, fieldValue(docs[0], "title") || docs[0].filename) });
+    // A link for someone outside the org to these documents (guest access).
+    items.push({ label: "Share…", icon: <IconLinks />, disabled: !filed || m.ids.length > 200, onSelect: () => dialogOf("share")?.open({ kind: "documents", documents: m.ids.join(",") }) });
     items.push("sep", {
       label: "Set discipline…", icon: <IconTag />, disabled: !filed || !catalog,
       onSelect: () => { setFieldChoice(null); setFieldEdit({ field: "discipline", ids: m.ids }); },

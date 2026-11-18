@@ -139,6 +139,10 @@ func (s *Store) RemoveMember(ctx context.Context, orgID, userID string) error {
 	if _, err := tx.Exec(ctx, `DELETE FROM sessions WHERE org_id = $1 AND user_id::text = $2`, orgID, userID); err != nil {
 		return err
 	}
+	// Links the member made stop with their membership (security review L3).
+	if err := revokeGrantsTx(ctx, tx, `g.created_by::text=$2`, orgID, userID); err != nil {
+		return err
+	}
 	if _, err := tx.Exec(ctx, `UPDATE users SET password_hash = NULL WHERE org_id = $1 AND id::text = $2`, orgID, userID); err != nil {
 		return err
 	}

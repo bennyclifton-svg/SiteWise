@@ -74,7 +74,14 @@ The workbench, in navigation order:
   makes it Answered, with Undo. A System filter adds what else is open on
   that part of the building. Its reads and writes call neither Jev nor the
   model; chat reads it, changes it with Undo, and leaves accepting an answer
-  to the PM's click.
+  to the PM's click. "Project report" on its toolbar opens the project
+  report: cost by section, Program completion and critical path,
+  procurement, the registers, what needs attention and what is due next,
+  each figure the one its screen shows, with what moved since the last
+  issue. The PM comments under any section and issues an A4 PDF, at most
+  four pages; issued versions are frozen. It calls neither Jev nor the
+  model; chat updates it and writes comments with Undo, and opens Issue
+  filled in but never presses it.
 - **Cost Plan.** Four sections: fees and charges, consultants, construction,
   contingency. Budget is the planning figure. The user enters the approved
   contract and the amount claimed. Forecast, variance and remaining are
@@ -194,7 +201,11 @@ project, with one action that opens the create-account panel at `/signup`.
 Sign-in is at `/signin`; `/welcome` shows the landing page to anyone. It
 reads nothing from the server and calls no model. Anyone can
 sign up with email and password; each account is its own org with one owner
-and many projects, and every project belongs to one org. No sharing yet. Documents are
+and many projects, and every project belongs to one org. A PM can share one thing with
+one person outside the org by a link with no account (Share…: documents, an issued
+report, or an issued RFP or RFT for an invited firm, who may drop its quote on its own
+cell); the guest sees only that thing at `/g`, and the PM sees opens and revokes in one
+click (`docs/plans/2026-11-17-guest-access.md`). Documents are
 the working material: consultant drawings with title blocks, reports, specs,
 spreadsheets. Scanned PDFs without a text layer are stored but not filed.
 

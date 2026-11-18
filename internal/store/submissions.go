@@ -103,8 +103,19 @@ func (s *Store) OpenSubmissionFor(ctx context.Context, org, project, documentID,
 	if err := lockProject(ctx, tx, org, project); err != nil {
 		return "", err
 	}
+	id, err := s.openSubmissionTx(ctx, tx, org, project, documentID, packageID, firmID, now)
+	if err != nil {
+		return "", err
+	}
+	return id, tx.Commit(ctx)
+}
+
+// openSubmissionTx is OpenSubmissionFor inside the caller's transaction,
+// which already holds the project lock. A guest's quote uses it under the
+// same lock as its grant check (docs/plans/2026-11-17-guest-access.md, Task 4).
+func (s *Store) openSubmissionTx(ctx context.Context, tx pgx.Tx, org, project, documentID, packageID, firmID string, now time.Time) (string, error) {
 	var filename string
-	err = tx.QueryRow(ctx, `SELECT filename FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3`, org, project, documentID).Scan(&filename)
+	err := tx.QueryRow(ctx, `SELECT filename FROM documents WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text=$3`, org, project, documentID).Scan(&filename)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return "", ErrNotFound
 	}
@@ -156,7 +167,7 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,NULLIF($4,'')::uuid,$5::uuid,$6,'reading',$7:
 	if err := procurementEvent(ctx, tx, s, org, project, id, "reading"); err != nil {
 		return "", err
 	}
-	return id, tx.Commit(ctx)
+	return id, nil
 }
 
 // presetSubmissionFirm makes a submission the user's chosen directory firm's,

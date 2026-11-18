@@ -29,6 +29,7 @@
 	{"name":"procurement_invite","p50_us":100000,"p90_us":250000,"note":"name a firm on a row before its quote, correct its name, or remove it; no Jev (the submission_write budget)"},
 	{"name":"procurement_board","p50_us":150000,"p90_us":300000,"note":"Procurement board, eight rows of five firms and one invited firm (the price_table budget)"},
 	{"name":"packages_combine","p50_us":100000,"p90_us":250000,"note":"combine or uncombine two consultant rows, fee lines re-parented in the same transaction (the packages_write budget)"},
+	{"name":"report_assemble_monthly","p50_us":300000,"p90_us":1000000,"note":"Update on the project report with 1,000 Program rows and 2,000 links, 1,000 invoices, 30 packages, 200 register items and a previous issue (monthly plan, Task 8); held by TestProjectReportBudget and sampled by the bench"},
 	{"name":"report_assemble_group","p50_us":300000,"p90_us":1000000,"note":"a five-consultant combined engagement's RFP build, member drafts assembled in the same transaction (the report_assemble budget)"},
 	{"name":"price_table_group","p50_us":150000,"p90_us":300000,"note":"a five-consultant combined engagement's price table with five firms (the price_table budget)"},
 	{"name":"stage_sync_write_group","p50_us":100000,"p90_us":250000,"note":"Update on a five-consultant combined engagement's stage lines after a stage rename in Program (the stage_sync_write budget)"},
@@ -109,7 +110,13 @@
       "name": "team",
       "p50_us": 100000,
       "p90_us": 250000,
-      "note": "team list, invite, revoke, remove"
+      "note": "team list, invite, revoke, remove; also guest link create, list and revoke (docs/plans/2026-11-17-guest-access.md)"
+    },
+    {
+      "name": "guest_open",
+      "p50_us": 100000,
+      "p90_us": 250000,
+      "note": "a guest link: token exchange, or the guest page read (grant check plus page) on a package link with a 50-document transmittal; no Jev, no model. Held by TestGuestOpenBudget and sampled by the bench"
     },
     {
       "name": "health_speed",

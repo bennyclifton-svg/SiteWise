@@ -139,11 +139,17 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 	m.call(t, "POST", base+"/program/prepare", []byte(`{"surface":"program"}`), 200, &program)
 	programOps := jsonBody(map[string]any{"program_id": program.Program.ID, "version": program.Program.Version,
 		"ops": []map[string]any{{"op": "set_start", "start_date": "2027-03-01"}}})
+	// A guest link on the project: the share routes join the sweep.
+	var share struct {
+		Share store.ShareView `json:"share"`
+	}
+	shareBody := jsonBody(map[string]any{"kind": "documents", "document_ids": []string{doc}, "shared_with": "client@example.test"})
+	m.call(t, "POST", base+"/shares", shareBody, 201, &share)
 	// Capture authoritative rows, including versions, histories, projections
 	// and events. Checking just the returned status would miss partial writes.
 	snapshot := func() map[string]string {
 		out := map[string]string{}
-		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs", "programs", "program_activities", "program_links", "program_calendar_days", "program_ops", "program_changes", "program_readings", "program_imports"} {
+		for _, table := range []string{"cost_plan_versions", "cost_plans", "cost_items", "cost_item_revisions", "cost_values", "cost_suggestion_dismissals", "projects", "sites", "project_parts", "profile_user_values", "profile_planning_values", "profile_builds", "profile_rows", "project_revisions", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "proposals", "proposal_decisions", "reports", "report_versions", "report_edits", "report_settings", "report_references", "events", "documents", "files", "passages", "passage_sources", "document_sources", "profile_facts", "passage_calls", "passage_evidence", "passage_systems", "jobs", "programs", "program_activities", "program_links", "program_calendar_days", "program_ops", "program_changes", "program_readings", "program_imports", "guest_grants"} {
 			var raw []byte
 			err := conn.QueryRow(ctx, `SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY to_jsonb(r)::text),'[]'::jsonb) FROM `+pgx.Identifier{table}.Sanitize()+` r WHERE org_id=ANY($1::uuid[])`, []string{m.orgID, foreign.orgID}).Scan(&raw)
 			if err != nil {
@@ -195,6 +201,7 @@ func TestNextWaveRouteAccessSweep(t *testing.T) {
 		{"GET", reportPath + "/stage-sync", nil, false}, {"POST", reportPath + "/stage-sync", []byte(`{"choice":"update","revision":1}`), false},
 		{"POST", base + "/program/import?name=Intrusion.xlsx", []byte("x"), true}, {"POST", base + "/program/readings/dismiss", []byte(`{"version":1,"ids":["` + newUUID(t) + `"]}`), true},
 		{"POST", base + "/program/hold-points/release", []byte(`{"version":1,"id":"` + newUUID(t) + `"}`), true},
+		{"POST", base + "/shares", shareBody, true}, {"GET", base + "/shares", nil, false}, {"DELETE", base + "/shares/" + share.Share.ID, nil, true},
 		{"GET", base + "/planning", nil, false}, {"PUT", base + "/planning/gross_floor_area", jsonBody(map[string]any{"part_id": part, "value": 1300, "unit": "m2", "version": 1}), true}, {"DELETE", base + "/planning/gross_floor_area?version=1&part_id=" + part, nil, true},
 	}
 	denied := func(t *testing.T, actor *member, r route, path string, want int) {

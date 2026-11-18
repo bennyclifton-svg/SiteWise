@@ -15,7 +15,7 @@ type Change struct {
 	ID, OrgID, ProjectID, Actor string
 	Via                         string // "chat" or "screen"
 	TurnID                      string // groups one chat turn's changes; may be empty
-	Area                        string // "cost_plan", "profile" or "procurement"
+	Area                        string // "cost_plan", "profile", "procurement" or "reports"
 }
 
 type changeKey struct{}

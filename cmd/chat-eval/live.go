@@ -56,7 +56,7 @@ func pick(cases []chateval.Case, only string) []chateval.Case {
 	return out
 }
 
-var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery"}
+var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery", "report", "shares"}
 
 // live runs each case through the real server: a fresh org and project, the
 // fixture seeded through the same routes and store a PM's work goes
@@ -72,6 +72,9 @@ type live struct {
 	// onSeed, when set, is told each case's rows after its fixture is
 	// built: the offline test's stand-in model needs their ids.
 	onSeed func(c chateval.Case, n *names)
+	// dsn is the database the runner's store uses; seeding a fixture's
+	// issued RFP writes it directly (shares.go).
+	dsn string
 }
 
 func uuid() string {
@@ -108,6 +111,7 @@ func liveAgent(model string) (chateval.Agent, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	l.dsn = dsn
 	l.debug = io.Discard
 	if path := os.Getenv("CHAT_EVAL_DEBUG"); path != "" {
 		if f, err := os.Create(path); err == nil {
@@ -517,6 +521,11 @@ func (s *session) seed(ctx context.Context, f fixture, needs []string) error {
 	docs, err := chatfix.SeedDocuments(ctx, s.l.st, s.org, s.project, f.Documents)
 	if err != nil {
 		return err
+	}
+	if slices.Contains(needs, "shares") {
+		if err := s.seedShares(ctx, f); err != nil {
+			return fmt.Errorf("shares: %w", err)
+		}
 	}
 	if err := s.seedRegister(ctx, f.Register, docs); err != nil {
 		return err

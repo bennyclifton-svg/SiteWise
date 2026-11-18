@@ -108,6 +108,21 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 		return view, err
 	}
 	defer tx.Rollback(ctx)
+	if view, err = s.readRegisterTx(ctx, tx, org, project, q, view); err != nil {
+		return view, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return view, err
+	}
+	view.Consents, err = s.ConsentReads(ctx, org, project)
+	return view, err
+}
+
+// readRegisterTx is the register on the caller's snapshot, so the project
+// report lists exactly the register's rows, with With, days late and
+// possible answers computed the same way.
+func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project string, q RegisterQuery, view RegisterView) (RegisterView, error) {
+	today, cat := view.Today, s.workCatalog()
 	var exists bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
 		return view, err
@@ -195,11 +210,7 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 	if view.Consent, err = consentFacts(ctx, tx, org, project); err != nil {
 		return view, err
 	}
-	if err := tx.Commit(ctx); err != nil {
-		return view, err
-	}
-	view.Consents, err = s.ConsentReads(ctx, org, project)
-	return view, err
+	return view, nil
 }
 
 // consentFacts reads the Profile's consent number, date and lapse date as

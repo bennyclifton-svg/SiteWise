@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 // Self-hosted Latin subsets: no third-party font request on the hot path.
 import "@fontsource/instrument-sans/latin-400.css";
@@ -33,8 +33,13 @@ import "./sizing.css";
 
 applyTheme(readStoredTheme());
 
+// A guest link opens the guest page in its own chunk, before App mounts, so
+// no session or account call is made (docs/plans/2026-11-17-guest-access.md).
+const GuestPage = lazy(() => import("./GuestPage"));
+const guest = window.location.pathname === "/g";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    {guest ? <Suspense fallback={null}><GuestPage /></Suspense> : <App />}
   </StrictMode>,
 );

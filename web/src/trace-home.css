@@ -325,3 +325,15 @@
   .trace-home-sheet { box-shadow: none; }
   .trace-band { position: static; }
 }
+
+/* The guest page (docs/plans/2026-11-17-guest-access.md): the sheet with
+   what was shared, nothing else. */
+.guest-page .trace-home-bar { justify-content: flex-start; }
+.guest-section { margin: 0 0 28px; }
+.guest-head { margin: 0 0 8px; font-size: var(--fs-md, 1rem); color: var(--sw-text-primary); }
+.guest-note { margin: 8px 0; color: var(--sw-text-tertiary); font-size: var(--fs-sm); }
+.guest-gone { padding: 48px 0; max-width: 34rem; }
+.guest-drop { display: grid; justify-items: start; gap: 6px; padding: 18px; border: 1px dashed var(--sw-border-default); border-radius: var(--radius-control); }
+.guest-drop[data-over="true"] { border-style: solid; border-color: var(--sw-text-primary); }
+.guest-drop p { margin: 0; }
+.guest-received { margin: 8px 0 0; padding-left: 18px; }
