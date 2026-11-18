@@ -440,6 +440,16 @@ func (s *Store) ProcurementBoard(ctx context.Context, org, project string) (map[
 		return nil, nil, err
 	}
 	defer tx.Rollback(ctx)
+	out, loose, err := s.procurementBoardTx(ctx, tx, org, project)
+	if err != nil {
+		return nil, nil, err
+	}
+	return out, loose, tx.Commit(ctx)
+}
+
+// procurementBoardTx is the board on the caller's snapshot, so the project
+// report counts firms and quotes exactly as Procurement and chat do.
+func (s *Store) procurementBoardTx(ctx context.Context, tx pgx.Tx, org, project string) (map[string][]FirmCard, []FirmCard, error) {
 	rows, err := tx.Query(ctx, `SELECT DISTINCT package_id::text FROM submissions WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id IS NOT NULL`, org, project)
 	if err != nil {
 		return nil, nil, err
@@ -543,7 +553,7 @@ WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id IS NULL AND s
 		card.Combined = combined[id]
 		loose = append(loose, card)
 	}
-	return out, loose, tx.Commit(ctx)
+	return out, loose, nil
 }
 
 func cardOf(c FirmColumn) FirmCard {

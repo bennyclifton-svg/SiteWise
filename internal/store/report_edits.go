@@ -131,7 +131,7 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		return view, err
 	}
 	var pkg procurement.Package
-	if r.Kind != "pmp" {
+	if !projectLevel(r.Kind) {
 		if pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true); err != nil {
 			return view, err
 		}
@@ -157,7 +157,7 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		if err != nil {
 			return view, err
 		}
-		fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: r.Title, ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version})
+		fit := render.Fit(reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: reports.IssueTitle(r.Kind, r.Title, d.Number), ReportingDate: d.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: issued, References: refs, RendererVersion: render.Version})
 		view.PageFit = &fit
 	}
 	if len(view.Issues) > 0 {
@@ -194,7 +194,11 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if err != nil {
 		return view, err
 	}
-	view.Stale = reports.StaleReasons(r.Kind, d.SourceRevisions, s.reportSourceState(v, template, appBuild))
+	current, err := s.currentSourceState(ctx, tx, org, r, v, template, appBuild)
+	if err != nil {
+		return view, err
+	}
+	view.Stale = reports.StaleReasons(r.Kind, d.SourceRevisions, current)
 	if v.PendingDocuments > 0 {
 		view.Stale = append(view.Stale, "reading_pending")
 	}
@@ -204,7 +208,7 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 	if len(v.StaleFor(*s.profileBuild)) > 0 {
 		view.Stale = append(view.Stale, "saved_profile")
 	}
-	if r.Kind != "pmp" && pkg.RetiredAt != nil {
+	if !projectLevel(r.Kind) && pkg.RetiredAt != nil {
 		view.Stale = append(view.Stale, "package_retired")
 	}
 	return view, tx.Commit(ctx)

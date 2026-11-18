@@ -23,8 +23,11 @@ const (
 	attentionDocuments
 	attentionProgram
 	attentionDelivery
+	// attentionReport is the planned completion the last issued project
+	// report printed; with attentionProgram it feeds the completion rule.
+	attentionReport
 
-	attentionAll = attentionImplications | attentionCosts | attentionLedger | attentionPackages | attentionDocuments | attentionProgram | attentionDelivery
+	attentionAll = attentionImplications | attentionCosts | attentionLedger | attentionPackages | attentionDocuments | attentionProgram | attentionDelivery | attentionReport
 )
 
 // loadAttention reads the records reports.Attention needs, each read at the
@@ -109,6 +112,14 @@ func loadAttention(ctx context.Context, d Deps, who opActor, project string, par
 		for _, a := range st.Activities {
 			in.Program = append(in.Program, reports.AttentionActivity{ID: a.ID, Kind: a.Kind, DurationDays: a.DurationDays})
 		}
+		if err == nil {
+			in.Completion = reports.CompletionOf(store.MonthlyProgramOf(st))
+		}
+		return err
+	})
+	run(attentionReport, func() error {
+		last, err := d.Store.LastReportCompletion(ctx, who.OrgID, project)
+		in.LastReport = last
 		return err
 	})
 	run(attentionDelivery, func() error {

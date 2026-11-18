@@ -33,6 +33,16 @@ func (s *Store) ReadDelivery(ctx context.Context, org, project string) ([]delive
 	if !exists {
 		return nil, ErrNotFound
 	}
+	out, err := readDeliveryTx(ctx, tx, org, project)
+	if err != nil {
+		return nil, err
+	}
+	return out, tx.Commit(ctx)
+}
+
+// readDeliveryTx is the live delivery records on the caller's snapshot, in
+// the delivery read's order: target date, then title.
+func readDeliveryTx(ctx context.Context, tx pgx.Tx, org, project string) ([]delivery.Item, error) {
 	rows, err := tx.Query(ctx, `SELECT to_jsonb(i) FROM project_delivery_items i WHERE org_id=$1::uuid AND project_id=$2::uuid AND retired_at IS NULL ORDER BY target_date NULLS LAST,title,id`, org, project)
 	if err != nil {
 		return nil, err
@@ -53,10 +63,7 @@ func (s *Store) ReadDelivery(ctx context.Context, org, project string) ([]delive
 	}
 	err = rows.Err()
 	rows.Close()
-	if err != nil {
-		return nil, err
-	}
-	return out, tx.Commit(ctx)
+	return out, err
 }
 
 func (s *Store) CreateDelivery(ctx context.Context, org, project, actor string, input DeliveryInput) (delivery.Item, error) {

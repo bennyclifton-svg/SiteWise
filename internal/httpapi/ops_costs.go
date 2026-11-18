@@ -48,28 +48,7 @@ func costLine(p costs.Plan, ref string) (costs.Item, error) {
 }
 
 // dollars writes an amount for a summary: "$45,000".
-func dollars(m costs.Money) string {
-	p, ok := figures.Plain(string(m))
-	if !ok {
-		return string(m)
-	}
-	whole, frac, _ := strings.Cut(strings.TrimPrefix(p, "-"), ".")
-	var b strings.Builder
-	for i, r := range whole {
-		if i > 0 && (len(whole)-i)%3 == 0 {
-			b.WriteByte(',')
-		}
-		b.WriteRune(r)
-	}
-	out := "$" + b.String()
-	if frac != "" {
-		out += "." + frac
-	}
-	if strings.HasPrefix(p, "-") {
-		out = "-" + out
-	}
-	return out
-}
+func dollars(m costs.Money) string { return figures.Dollars(string(m)) }
 
 // typedAmount reads an amount field as the PM wrote it.
 func typedAmount(field, s string) (costs.Money, error) {

@@ -49,6 +49,32 @@ func Plain(dec string) (string, bool) {
 	return s, true
 }
 
+// Dollars writes a decimal as an amount for a sentence: "$45,000" or
+// "$45,000.5" (trailing zeros dropped). Text that is not a decimal is
+// returned as it is.
+func Dollars(dec string) string {
+	p, ok := Plain(dec)
+	if !ok {
+		return dec
+	}
+	whole, frac, _ := strings.Cut(strings.TrimPrefix(p, "-"), ".")
+	var b strings.Builder
+	for i, r := range whole {
+		if i > 0 && (len(whole)-i)%3 == 0 {
+			b.WriteByte(',')
+		}
+		b.WriteRune(r)
+	}
+	out := "$" + b.String()
+	if frac != "" {
+		out += "." + frac
+	}
+	if strings.HasPrefix(p, "-") {
+		out = "-" + out
+	}
+	return out
+}
+
 // Amount reads one amount as a PM writes it: "$45,000", "45k", "1.2m".
 // It refuses anything that is not exactly one amount.
 func Amount(s string) (string, bool) {

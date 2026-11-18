@@ -37,6 +37,7 @@ const (
 	RuleDocumentNotFiled      = "documents.not_filed"
 	RuleProgramNoDuration     = "program.no_duration"
 	RuleApprovalPastTarget    = "approvals.submitted_past_target"
+	RuleCompletionLater       = "program.completion_later_than_report"
 )
 
 // MaxAttentionShown is how many items a list shows before "and N more".
@@ -47,7 +48,6 @@ const MaxAttentionShown = 10
 //   - plan 1 (correspondence): messages awaiting a reply;
 //   - plan 3 (variations and claims): payment schedules due or past due;
 //   - plan 4 (register): open RFIs past their due date;
-//   - plan 5 (monthly report): completion later than the last issued report;
 //   - plan 6 (consent conditions): conditions due in the window.
 type AttentionInput struct {
 	// Today is the Sydney date, YYYY-MM-DD, for rules with a due date.
@@ -63,6 +63,23 @@ type AttentionInput struct {
 	Program   []AttentionActivity
 	// Delivery is the live delivery records (retired ones left out).
 	Delivery []AttentionRecord
+	// Completion is the Program's planned completion now; LastReport is the
+	// one the last issued project report printed. Nil when there is none.
+	Completion *AttentionCompletion
+	LastReport *AttentionCompletion
+}
+
+// AttentionCompletion is a planned completion as a report or the Program
+// states it.
+type AttentionCompletion struct {
+	// Number is the issued report's number; 0 for the Program now.
+	Number   int
+	Relative bool
+	// Date is the ISO date on a dated Program, "" on a relative one.
+	Date string
+	// Index is the typical finish in working days from the start.
+	Index *int
+	Label string
 }
 
 // AttentionImplication is one implication proposal and whether it is decided.
@@ -209,6 +226,7 @@ func Attention(in AttentionInput) []AttentionItem {
 	}
 	out = appendIf(out, documentItem(in.Documents))
 	out = appendIf(out, programItem(in.Program))
+	out = appendIf(out, completionItem(in.Completion, in.LastReport))
 	out = appendIf(out, approvalItem(in.Delivery, in.Today))
 	return out
 }
@@ -419,6 +437,34 @@ func programItem(acts []AttentionActivity) AttentionItem {
 	}
 	return AttentionItem{Rule: RuleProgramNoDuration, Source: "Program", Count: len(ids), IDs: ids,
 		Words: plural(len(ids), "Program row has", "Program rows have") + " no duration, so the finish date is a lower bound"}
+}
+
+// completionItem is the Program's planned completion later than the last
+// issued project report printed: calendar days on a dated Program, working
+// days on a relative one. Unknown on either side, or a Program that changed
+// between dated and relative, says nothing.
+func completionItem(now, last *AttentionCompletion) AttentionItem {
+	if now == nil || last == nil || now.Relative != last.Relative {
+		return AttentionItem{}
+	}
+	days, unit := 0, "day"
+	if now.Relative {
+		if now.Index == nil || last.Index == nil {
+			return AttentionItem{}
+		}
+		days, unit = *now.Index-*last.Index, "working day"
+	} else {
+		d, ok := dayDiff(last.Date, now.Date)
+		if !ok {
+			return AttentionItem{}
+		}
+		days = d
+	}
+	if days <= 0 {
+		return AttentionItem{}
+	}
+	return AttentionItem{Rule: RuleCompletionLater, Source: "Program", Count: 1,
+		Words: esc(fmt.Sprintf("Planned completion %s is %s later than report %d printed (%s)", now.Label, plural(days, unit, unit+"s"), last.Number, last.Label))}
 }
 
 // approvalItem is approvals submitted, not yet determined, whose target
