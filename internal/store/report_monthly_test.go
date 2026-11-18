@@ -449,3 +449,76 @@ func TestMonthlyReportListsARemovedPackage(t *testing.T) {
 		t.Fatalf("changes %q", text)
 	}
 }
+
+// An awarded package's firm and contract sum are the award's and the cost
+// plan's (Done means 2, the procurement half): the firm ReadAward names and
+// the approved contract the cost plan holds for the package.
+func TestMonthlyReportAwardEqualsReadAward(t *testing.T) {
+	ctx := context.Background()
+	s, _, _ := workStore(t)
+	row, _ := procurement.DisciplinePackage("consultant.town_planner", "Town Planner")
+	pkg, err := s.CreateDisciplinePackage(ctx, orgA, projectA, userA, row)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.CreateDecision(ctx, orgA, store.Decision{ID: "11111111-1111-4111-8111-aaaaaaaaaa34", DocumentID: docA, Field: "discipline", Value: "consultant.town_planner", Band: "amber", DecidedBy: "jev"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.PrepareCostPlan(ctx, orgA, projectA, userA); err != nil {
+		t.Fatal(err)
+	}
+	table, err := s.ReadPriceTable(ctx, orgA, projectA, pkg.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var keys []string
+	for _, it := range table.Items {
+		if it.Kind == "stage" && it.Base && len(keys) < 2 {
+			keys = append(keys, it.Key)
+		}
+	}
+	id, err := s.OpenSubmission(ctx, orgA, projectA, docA, pkg.ID, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	readWithQuote(t, s, id, pageText(
+		[]string{"Mecone Pty Ltd"}, []string{"ABN 88 071 762 537"}, []string{"1. FEE PROPOSAL"},
+		[]string{"Advice", "$3,000"}, []string{"Report", "$9,000"},
+	), answers{"price:" + keys[0]: "a1", "price:" + keys[1]: "a2", "firm_name": "c1"}, false)
+	if _, err := s.Award(ctx, orgA, projectA, pkg.ID, userA, store.AwardInput{SubmissionID: id, Lines: []store.AwardLine{{Label: "Advice", Keys: keys[:1]}, {Label: "Report", Keys: keys[1:]}}, Total: "12000.00"}); err != nil {
+		t.Fatal(err)
+	}
+	r, err := s.CreateReport(ctx, orgA, projectA, userA, reports.KindMonthly, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := s.RefreshReport(ctx, orgA, r.ID, userA, "test", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var proc struct {
+		Packages map[string]struct {
+			AwardedTo string `json:"awarded_to"`
+			Contract  any    `json:"contract"`
+		} `json:"packages"`
+	}
+	if err := json.Unmarshal(blockOf(t, d, "proc:table").Basis, &proc); err != nil {
+		t.Fatal(err)
+	}
+	award, err := s.ReadAward(ctx, orgA, projectA, pkg.ID)
+	if err != nil || award == nil {
+		t.Fatalf("award %+v %v", award, err)
+	}
+	byPackage, err := s.CostTotals(ctx, orgA, projectA, "", "package")
+	if err != nil {
+		t.Fatal(err)
+	}
+	contract := byPackage.Groups[pkg.ID]["commitment"]
+	got := proc.Packages[pkg.ID]
+	if got.AwardedTo != award.FirmName || contract.Amount == nil || got.Contract != string(*contract.Amount) {
+		t.Fatalf("report %+v; award %q, cost plan %+v", got, award.FirmName, contract)
+	}
+	if text := sectionText(d, "procurement"); !strings.Contains(text, award.FirmName) || !strings.Contains(text, "$12,000") {
+		t.Fatalf("procurement %q", text)
+	}
+}

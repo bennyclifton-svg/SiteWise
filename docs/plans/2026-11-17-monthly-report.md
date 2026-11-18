@@ -1,7 +1,11 @@
 # Monthly project report: implementation plan
 
 Date 17 November 2026; revised 18 November. Lane A (it restates cost figures, awards and dates a
-client relies on). Status: plan only, nothing built.
+client relies on). Status: built 18 November 2026 on branch `wave/report`
+(not merged, not pushed): Tasks 1 to 8 and 10, and Task 5's added rule.
+Task 9 (send and the guest view) waits on plans 1 and 2. What was built,
+measured and left open, and where the code differs from this plan, is in
+`docs/evidence/2026-11-18-monthly-report.md`.
 
 This turns the requirements framework `docs/design/2026-11-12-project-report.md`
 into a build. It does not rewrite it. Its 12 open decisions are answered
