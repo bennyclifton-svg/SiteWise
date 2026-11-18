@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"testing"
@@ -473,5 +474,31 @@ func TestShortlistConditionsCapAndOrder(t *testing.T) {
 	hits, left := jobs.ConditionRuleMatches("As required by Conditions 4 and 5, and condition 21.", conds)
 	if len(hits) != 3 || len(left) != len(conds)-3 {
 		t.Fatalf("hits %d left %d", len(hits), len(left))
+	}
+}
+
+// The consent_read row's Go half (Task 10): a 120-condition notice, job
+// lease to last row written, with an instant stand-in for Jev. The live row
+// (Jev's sixteen in flight) is cmd/consent-eval -live's to measure.
+func TestConsentReadGoSideBudget(t *testing.T) {
+	r := consentProject(t)
+	w := &jobs.Worker{Store: r.st, Ask: &consentAsk{}}
+	var samples []time.Duration
+	for n := 0; n < 10; n++ {
+		text := fmt.Sprintf("NOTICE OF DETERMINATION\nDevelopment Application No: DA/2026/%04d\n\nGENERAL CONDITIONS\n", n+1)
+		for i := 1; i <= 120; i++ {
+			text += fmt.Sprintf("%d. Heading %d\nThe applicant must provide the plan.\n", i, i)
+		}
+		r.notice(t, text)
+		start := time.Now()
+		if err := r.read(t, w); err != nil {
+			t.Fatal(err)
+		}
+		samples = append(samples, time.Since(start))
+	}
+	sort.Slice(samples, func(i, j int) bool { return samples[i] < samples[j] })
+	t.Logf("consent read Go side, 120 conditions: p50 %v p90 %v", samples[5], samples[9])
+	if samples[5] > 5*time.Second || samples[9] > 10*time.Second {
+		t.Fatalf("over the consent_read budget: p50 %v p90 %v", samples[5], samples[9])
 	}
 }

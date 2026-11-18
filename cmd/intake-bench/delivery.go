@@ -82,7 +82,62 @@ func (a *apiClient) delivery(ctx context.Context, st *store.Store, n int) error 
 			return err
 		}
 	}
-	return registerMatch(ctx, st, a.samples, project, n)
+	if err := registerMatch(ctx, st, a.samples, project, n); err != nil {
+		return err
+	}
+	return a.conditions(ctx, st, n)
+}
+
+// conditions samples plan 6's screen paths on a register of 300 consent
+// conditions: the read (delivery_read), a condition's gate edited
+// (delivery_write), and Read conditions on a 120-condition notice
+// (delivery_import: Go's split and the queued job). No Jev.
+func (a *apiClient) conditions(ctx context.Context, st *store.Store, n int) error {
+	project, err := a.createProject(ctx, "Consent conditions benchmark")
+	if err != nil {
+		return err
+	}
+	base := "/projects/" + project + "/delivery"
+	var ids []string
+	for i := 1; i <= 300; i++ {
+		body, _ := json.Marshal(map[string]any{"kind": "condition", "title": fmt.Sprintf("Condition %d · Heading", i), "system_id": "site",
+			"details": map[string]any{"consent_ref": "DA/2025/0001", "number": fmt.Sprint(i), "heading": "Heading", "text": "The council's words for this condition.", "stage": "before_cc", "evidence_needed": true}})
+		resp, err := a.do(ctx, http.MethodPost, base, bytes.NewReader(body), int64(len(body)))
+		if err != nil {
+			return err
+		}
+		var item delivery.Item
+		err = json.NewDecoder(resp.Body).Decode(&item)
+		resp.Body.Close()
+		if err != nil || resp.StatusCode != http.StatusCreated {
+			return fmt.Errorf("seeding conditions: status %d", resp.StatusCode)
+		}
+		ids = append(ids, item.ID)
+	}
+	notice := "NOTICE OF DETERMINATION\nDevelopment Application No: DA/2026/0120\n\nPRIOR TO THE ISSUE OF A CONSTRUCTION CERTIFICATE\n"
+	for i := 1; i <= 120; i++ {
+		notice += fmt.Sprintf("%d. Heading %d\nThe applicant must provide the plan.\n", i, i)
+	}
+	for i := 0; i < n; i++ {
+		if _, err := a.timed(ctx, "delivery_read", http.MethodGet, base, nil, http.StatusOK); err != nil {
+			return err
+		}
+		edit, _ := json.Marshal(map[string]any{"version": 1 + i/len(ids), "details": map[string]any{"stage": "before_occupation"}})
+		if _, err := a.timed(ctx, "delivery_write", http.MethodPatch, base+"/"+ids[i%len(ids)], edit, http.StatusOK); err != nil {
+			return err
+		}
+		docs, err := chatfix.SeedDocuments(ctx, st, benchOrg, project, []chatfix.Document{{Title: fmt.Sprintf("Notice %d", i), Kind: "statutory_instrument", Pages: []string{notice}}})
+		if err != nil {
+			return err
+		}
+		for _, id := range docs {
+			body, _ := json.Marshal(map[string]string{"document_id": id})
+			if _, err := a.timed(ctx, "delivery_import", http.MethodPost, base+"/imports", body, http.StatusAccepted); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 // registerMatch files n replies that cite an open RFI and times the
