@@ -35,13 +35,7 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 		r.line("Package gap check: work items and who is responsible for them. A state of unassigned is a gap.")
 		return compact(r, items, 0)
 	case "delivery":
-		items, err := d.Store.ReadDelivery(ctx, who.OrgID, project)
-		if err != nil {
-			return err
-		}
-		r.outside = "delivery records, some of which were read from documents"
-		r.line("Delivery records: risks, approvals, decisions and actions. A record marked addressed means a document states it; say \"a document states…\".")
-		return compact(r, items, 0)
+		return readRegister(ctx, d, who, project, "", r)
 	case "invoices":
 		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, time.Now().Format("2006-01-02"))
 		if err != nil {
@@ -311,8 +305,10 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 		err = readAttention(r.Context(), d, who, project, rd)
 	case "report":
 		err = readProjectReport(r.Context(), d, who, project, rd)
+	case "delivery":
+		err = readRegister(r.Context(), d, who, project, r.URL.Query().Get("part"), rd)
 	default:
-		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, report or outline", http.StatusUnprocessableEntity)
+		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, delivery, report or outline", http.StatusUnprocessableEntity)
 		return
 	}
 	if err != nil {

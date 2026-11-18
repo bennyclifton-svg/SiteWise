@@ -122,10 +122,15 @@ func Handler(deps Deps) http.Handler {
 			mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) { h(w, r, deps) })
 			continue
 		}
+		alt, hasAlt := queryPaths[pattern]
 		mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 			h(w, r, deps)
-			deps.Speed.Observe(path, time.Since(start))
+			p := path
+			if hasAlt && r.URL.Query().Get(alt.param) != "" {
+				p = alt.path
+			}
+			deps.Speed.Observe(p, time.Since(start))
 		})
 	}
 	return mux
@@ -253,6 +258,7 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 		"GET /projects/{id}/delivery":                        getDelivery,
 		"POST /projects/{id}/delivery":                       postDelivery,
 		"PATCH /projects/{id}/delivery/{item}":               patchDelivery,
+		"PUT /projects/{id}/delivery/settings":               putDeliverySettings,
 		"GET /projects/{id}/packages":                        getPackages,
 		"PATCH /projects/{id}/packages/{pkg}":                patchPackage,
 		"POST /projects/{id}/packages/{pkg}/stages":          postPackageStage,
@@ -326,6 +332,13 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 // routePaths names the budget path each timed route reports to the speed
 // view. Failed requests are timed too. Uploads are not: their duration is
 // the client's network.
+// queryPaths times a route on another budget row when a query parameter
+// is present: the register read with a System filter computes the
+// also-open line (delivery_system_read).
+var queryPaths = map[string]struct{ param, path string }{
+	"GET /projects/{id}/delivery": {"system", pathDeliverySystemRead},
+}
+
 var routePaths = map[string]string{
 	"DELETE /session":                                                  "project_invite_auth",
 	"POST /projects/{id}/specifications/cells":                         "specification_write",
@@ -423,6 +436,7 @@ var routePaths = map[string]string{
 	"GET /projects/{id}/delivery":                                      pathDeliveryRead,
 	"POST /projects/{id}/delivery":                                     pathDeliveryWrite,
 	"PATCH /projects/{id}/delivery/{item}":                             pathDeliveryWrite,
+	"PUT /projects/{id}/delivery/settings":                             pathDeliveryWrite,
 	"POST /projects/{id}/works":                                        pathWorksWrite,
 	"PATCH /projects/{id}/works/{wi}":                                  pathWorksWrite,
 	"PATCH /projects/{id}":                                             pathProfileEdit,

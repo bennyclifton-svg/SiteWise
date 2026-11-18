@@ -32,9 +32,10 @@ var viewTables = map[string]viewTable{
 	"cost_lines":  {"cost line", "cost lines", "cost_plan", "costs"},
 	"program":     {"Program row", "Program rows", "program", "program"},
 	"procurement": {"package", "packages", "procurement", "procurement"},
+	"register":    {"register row", "register rows", "delivery", "register"},
 }
 
-var viewTableNames = []string{"documents", "cost_lines", "program", "procurement"}
+var viewTableNames = []string{"documents", "cost_lines", "program", "procurement", "register"}
 
 func (t viewTable) count(n int) string {
 	if n == 1 {
@@ -45,7 +46,7 @@ func (t viewTable) count(n int) string {
 
 // viewNames are the workbench views the strip may report, with the words
 // the model reads.
-var viewNames = map[string]string{"profile": "Profile", "costs": "Cost Plan", "procurement": "Procurement", "specifications": "Specifications", "program": "Program"}
+var viewNames = map[string]string{"profile": "Profile", "costs": "Cost Plan", "procurement": "Procurement", "specifications": "Specifications", "program": "Program", "register": "Register"}
 
 // tableRows lists the full ids of a table's rows in this project, read with
 // the org from the session.
@@ -91,6 +92,14 @@ func tableRows(ctx context.Context, d Deps, who opActor, project, table string) 
 			if p.RetiredAt == nil {
 				ids = append(ids, p.ID)
 			}
+		}
+	case "register":
+		items, err := d.Store.ReadDelivery(ctx, who.OrgID, project)
+		if err != nil {
+			return nil, err
+		}
+		for _, it := range items {
+			ids = append(ids, it.ID)
 		}
 	default:
 		return nil, fmt.Errorf("no table %q", table)

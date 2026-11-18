@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"sitewise/internal/costs"
+	"sitewise/internal/delivery"
 	"sitewise/internal/procurement"
 	"sitewise/internal/reports"
 	"sitewise/internal/store"
@@ -132,7 +133,7 @@ func loadAttention(ctx context.Context, d Deps, who opActor, project string, par
 			if it.TargetDate != nil {
 				target = *it.TargetDate
 			}
-			in.Delivery = append(in.Delivery, reports.AttentionRecord{ID: it.ID, Kind: it.Kind, Status: it.Status, TargetDate: target})
+			in.Delivery = append(in.Delivery, attentionRecord(it, target))
 		}
 		return err
 	})
@@ -172,4 +173,9 @@ func attentionRule(parts attentionPart, rule string) func(context.Context, Deps,
 		it, _ := reports.AttentionFor(reports.Attention(in), rule)
 		return it.IDs, nil
 	}
+}
+
+// attentionRecord is a register row as the attention rules read it.
+func attentionRecord(it delivery.Item, _ string) reports.AttentionRecord {
+	return reports.AttentionRecordOf(it)
 }

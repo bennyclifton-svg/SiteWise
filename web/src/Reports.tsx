@@ -22,7 +22,7 @@ import { AGREEMENT_BLOCK, RfpTermsTable } from "./RfpTerms";
 
 function localDate() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "Assumption" };
-export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, backTo = "Procurement" }: { transmittal?: TransmittalSelection; reportId: string; tick: number; onBack: () => void; onSignedOut: () => void; backTo?: string }) {
+export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, backTo = "Procurement", surface = "procurement" }: { transmittal?: TransmittalSelection; reportId: string; tick: number; onBack: () => void; onSignedOut: () => void; backTo?: string; /** The host view's page-action surface, where Back appears. */ surface?: string }) {
   const [issueDate, setIssueDate] = useState(localDate);
   // null until the user ticks or clears it: a consultant RFP prints the
   // budget by default (owner decision, 13 October 2026); a tender to
@@ -251,7 +251,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, back
   </form>;
   return <section className="reports report-view" aria-label="Report" aria-busy={busy}>
     <div className="report-reader" ref={reader}>
-      <PagePrimaryAction surface="procurement"><BackButton to={backTo} className="report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} /></PagePrimaryAction>
+      <PagePrimaryAction surface={surface}><BackButton to={backTo} className="report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} /></PagePrimaryAction>
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>

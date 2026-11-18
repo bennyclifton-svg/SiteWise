@@ -47,6 +47,21 @@ a table and row names). With `before`, the areas are read before the first
 message, so the case judges where the whole conversation leaves the
 project; the rest of the outcome is the last turn's.
 
+## The register group
+
+`register` (draft, 8 cases, `rg1` to `rg8`) is plan 4's key
+(`docs/plans/2026-11-17-rfis-review-comments.md`, "From chat"): two reads
+(what is open on a system, what is with a firm and how late), raising an
+RFI as a Draft with no invented date, closing one by its number, setting
+the system on rows selected by hand, the overdue filter, accepting a
+possible answer (prepared for the click), and the response time. The
+house fixture holds two RFIs and a structural sketch that cites one of
+them, so Go's rule gives it a possible answer. `TestScreenCasesScoredOffline`
+scores all eight with the stand-in model; the two reads are scored on
+Go's half only (nothing changed, no figure of the model's own), and the
+words of the answer are the live run's to judge. `s23` now asks chat to
+send an RFI, which is plan 1's and not built.
+
 ## The screen group
 
 `screen` (draft, 27 cases, `s1` to `s27`) is the chat agency plan's key

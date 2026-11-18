@@ -62,3 +62,43 @@ func TestDeliveryManualStatusDatesAndIsolationAPI(t *testing.T) {
 		t.Fatal("delivery called Jev")
 	}
 }
+
+// The register routes (docs/plans/2026-11-17-rfis-review-comments.md, Task 3).
+func TestRegisterRoutesIsolationAndSettings(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Register")
+	other := m.createProject(t, "Other")
+	base := "/api/projects/" + project + "/delivery"
+	var item delivery.Item
+	m.call(t, http.MethodPost, base, []byte(`{"kind":"rfi","title":"Basement wall waterproofing","system_id":"substructure","details":{"question":"Which membrane?","raised_on":"2026-11-20"}}`), http.StatusCreated, &item)
+	if item.Number == nil || *item.Number != 1 || item.TargetDate == nil || *item.TargetDate != "2026-11-27" {
+		t.Fatalf("rfi %+v", item)
+	}
+	foreign := a.member(t, newUUID(t))
+	foreign.call(t, http.MethodGet, base+"?system=substructure", nil, http.StatusNotFound, nil)
+	foreign.call(t, http.MethodPut, base+"/settings", []byte(`{"rfi_response_days":10}`), http.StatusNotFound, nil)
+	// The row is not in the other project.
+	m.call(t, http.MethodPatch, "/api/projects/"+other+"/delivery/"+item.ID, []byte(`{"version":1,"status":"open"}`), http.StatusNotFound, nil)
+	m.call(t, http.MethodGet, base+"?kind=invented", nil, http.StatusUnprocessableEntity, nil)
+	m.call(t, http.MethodGet, base+"?system=nowhere", nil, http.StatusUnprocessableEntity, nil)
+	m.call(t, http.MethodPut, base+"/settings", []byte(`{"rfi_response_days":0}`), http.StatusUnprocessableEntity, nil)
+	m.call(t, http.MethodPut, base+"/settings", []byte(`{"rfi_response_days":"ten"}`), http.StatusBadRequest, nil)
+	m.call(t, http.MethodPut, base+"/settings", []byte(`{"rfi_response_days":10}`), http.StatusOK, nil)
+	var view struct {
+		Items           []delivery.Item         `json:"items"`
+		Kinds           []struct{ Kind string } `json:"kinds"`
+		ResponseDays    int                     `json:"response_days"`
+		ResponseTypical bool                    `json:"response_typical"`
+		AlsoOpen        *struct {
+			System string `json:"system"`
+		} `json:"also_open"`
+	}
+	m.getJSON(t, base+"?system=substructure", &view)
+	if len(view.Items) != 1 || view.ResponseDays != 10 || view.ResponseTypical || view.AlsoOpen == nil || view.AlsoOpen.System != "substructure" || len(view.Kinds) != 1 {
+		t.Fatalf("view %+v", view)
+	}
+	if a.jevHits.Load() != 0 {
+		t.Fatal("the register called Jev")
+	}
+}

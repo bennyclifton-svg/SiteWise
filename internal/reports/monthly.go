@@ -749,12 +749,12 @@ func (m monthly) procurementSentence() string {
 
 // ---- Registers
 
-// registerKinds are the delivery kinds the report lists, in its order, with
-// their plural names. "rfi" and "condition" are plans 4's and 6's kinds:
-// until they exist the report says none are recorded.
+// registerKinds are the register's kinds the report lists, in the
+// register's own order (RFIs and notices first), with their plural names.
+// Plan 6's consent conditions join here once that kind exists.
 var registerKinds = []struct{ kind, many string }{
-	{"risk", "risks"}, {"issue", "issues"}, {"approval", "approvals"}, {"decision", "decisions"},
-	{"action", "actions"}, {"rfi", "RFIs"}, {"condition", "consent conditions"},
+	{"rfi", "RFIs"}, {"notice", "notices"}, {"action", "actions"}, {"risk", "risks"},
+	{"issue", "issues"}, {"decision", "decisions"}, {"approval", "approvals"},
 }
 
 type registerBasis struct {

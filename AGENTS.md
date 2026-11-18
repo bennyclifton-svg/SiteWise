@@ -48,9 +48,10 @@ speed, Jev only, the building as the model, and the intake budget.
 
 `PRODUCT.md` names the workbench. The foundation design is the origin of the
 rules above and describes the intake slice. The workbench also includes
-Profile, Cost Plan, Procurement, Specifications and Program.
-Project Plan is a navigation placeholder. Delivery records and
-implication proposals stay on the project and are off the left nav.
+Profile, Cost Plan, Procurement, Specifications, Program and Register.
+Register is the left nav's former Project Plan slot: one table of what is
+owed (RFIs, notices and the older delivery kinds). Implication proposals
+stay on the project and are off the left nav.
 
 When a task does not name a budget, use the budget already recorded for that
 path in `bench/budgets.json`. Filing stays p50 ≤ 1 s and p90 ≤ 2 s. Profile
@@ -79,6 +80,24 @@ Program open, edit, drag, link, generate, review, stage sync, export and
 print do not call Jev; every date is computed in Go. Its three readings (a
 dropped program file, the R7 returnable after award, hold-point release
 evidence) are background fan-outs that write proposals only.
+
+Register reads and writes call neither Jev nor the LLM: numbers, due dates
+(the Program's working days), days late, With and the also-open line are
+Go's. Its one reading is the background `register` job queued in the
+filing commit when the project has an Open RFI: Go's cited-number rule for
+any document, and for correspondence one Jev fan-out (one noul per RFI, at
+most 12) whose picks stay hidden until the owner approves a cut-off
+(`docs/plans/2026-11-17-rfis-review-comments.md`). A reading is a proposal;
+only the PM's edit makes an RFI answered.
+
+The project report (Register toolbar, one per project) calls neither Jev
+nor the LLM: Update, comments, issue and export are Go over saved records,
+and every figure comes from the screens' own rollups (`costs.Summarize`,
+the invoice ledger, the Program engine, the procurement board, the
+register, `reports.Attention`); unknown stays unknown. Chat may update it
+and write or clear its comments with Undo, and opens its issue form filled
+in, but never presses Issue
+(`docs/plans/2026-11-17-monthly-report.md`).
 
 Chat (`POST /projects/{id}/chat`) is the one path that waits on the LLM, and
 it never calls Jev. Its tools read through the same Go rollups as the

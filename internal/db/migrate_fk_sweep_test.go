@@ -210,6 +210,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["program_imports"] = row{"org_id": org, "id": id(4400 + n), "program_id": program, "document_id": id(1900 + n), "filename": "program.xlsx"}
 		f["comparison_alignment"] = row{"org_id": org, "submission_id": submission, "prices": []any{}, "decisions": row{}, "version": 1}
 		f["visual_identity"] = row{"org_id": org, "document_id": id(1900 + n)}
+		f["delivery_readings"] = row{"org_id": org, "id": id(5000 + n), "project_id": p, "item_id": d, "document_id": id(1900 + n), "field": "answers", "decided_by": "rule", "band": "amber"}
+		f["delivery_settings"] = row{"org_id": org, "project_id": p, "rfi_response_days": 5}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)

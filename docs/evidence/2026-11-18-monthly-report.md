@@ -17,7 +17,7 @@ key's new `report` group are drafts the owner has not reviewed.
 | 4. Changes since report N | Compares this draft's blocks with the last issued report's frozen blocks by id: cost totals and sections exactly (and the known part of a partly known total), completion in calendar days (working days on a relative Program), milestones by activity id (moved, added, removed; a renamed one keeps its id), packages (status, award, award withdrawn, removed), register items opened, closed and removed, documents filed. A block built by another method says "not compared". The first report says it is the first. | `internal/reports/monthly_changes.go` |
 | 5. Needs attention | Was built before this branch. This plan's rule was added: planned completion later than the last issued report printed (`program.completion_later_than_report`), a pure function with a table test. Chat's loader fetches the two figures concurrently with its other parts. | `internal/reports/attention.go`, `internal/httpapi/attention.go` |
 | 6. Comments | `comment:summary` opens At a glance; Cost, Program, Procurement, Registers and Next period end with `comment:<section>`. The generated text is Go's sentence; the basis holds the section's figures and the period start, so last period's comment comes forward flagged and issue waits until it is kept (one save), rewritten or restored. | `internal/reports/monthly.go` |
-| 7. The screen | `ProjectReportButton` finds or creates the report and shows it in the shared reader; `useProjectReportDialog` lets chat open it in the host panel. The reader titles it "Project report No. N", hides the budget checkbox for this kind, registers its issue form for chat, and re-reads on invoice and Program events while it is open. | `web/src/ProjectReportButton.tsx`, `Reports.tsx`, `Procurement.tsx`, `Project.tsx`, `Chat.tsx`, `chatView.ts`, `reportApi.ts` |
+| 7. The screen | `ProjectReportButton`, the one item on the Register's toolbar, finds or creates the report and shows it in the shared reader (Back returns to the Register); `useProjectReportDialog` lets chat open it there. The reader titles it "Project report No. N", hides the budget checkbox for this kind, registers its issue form for chat, and re-reads on invoice and Program events while it is open. | `web/src/ProjectReportButton.tsx`, `Reports.tsx`, `Delivery.tsx`, `Project.tsx`, `Chat.tsx`, `chatView.ts`, `reportApi.ts` |
 | 8. Bench | `report_assemble_monthly` (300 / 1,000 ms) in `bench/budgets.json` and the committed-budget test; `TestProjectReportBudget` holds it on the heavy fixture; the intake bench gains `monthlyReport`. | `internal/httpapi/report_monthly_budget_test.go`, `cmd/intake-bench/reports.go` |
 | 9. Send and guest view | Not built: waits on plans 1 and 2 (section 5). | — |
 | 10. Operations, reads, key | `reports.update`, `reports.comment`, `read report`, the view tool's `report` dialog, the undo finisher for `report_edits`, eight key cases. | `internal/httpapi/ops_reports.go`, `chat_more.go`, `chat_view.go`, `internal/store/report_undo.go`, `data/eval/chat/` |
@@ -34,7 +34,7 @@ key's new `report` group are drafts the owner has not reviewed.
 | Firms, quotes, quotes to check | the procurement board (`procurementBoardTx`) counted by `reports.PackageQuotes`, as chat and the filter count them |
 | Awarded firm and date | live `awards` rows (undone_at IS NULL), the `ReadAward` query shape |
 | Contract sum of an awarded package | `costs.Summarize(plan, "package")`, the package's approved contract when complete |
-| Registers | `project_delivery_items`, open by `delivery.Open` |
+| Registers | the register's own read on the draft's snapshot (`readRegisterTx`, as the Register screen and chat), open by `delivery.Open` |
 | Needs attention | `reports.Attention` |
 
 ### The tests that hold the figures
@@ -125,11 +125,12 @@ before); `POST /reports/{r}/issue` stays `noOperation`.
   listed newest first by `GET /reports/{r}` (`issues`) with their frozen
   PDF at `GET /reports/{r}/versions/{v}/file`. Nothing was changed for
   guests here.
-- **Plan 4 (the register):** the entry point moves from Procurement to the
-  Register toolbar; `REPORT_PLACE` in `web/src/chatView.ts` becomes
-  `"register"`. The register list reads kinds `rfi` and `condition` by
-  those names: if plan 4 or 6 names them otherwise, `registerKinds` in
-  `internal/reports/monthly.go` follows.
+- **Plan 4 (the register)** was merged into this branch on 18 November:
+  the entry point is on the Register's toolbar, `REPORT_PLACE` is
+  `"register"`, and the report lists the register's kinds by its own names
+  and order (`rfi`, `notice`, `action`, `risk`, `issue`, `decision`,
+  `approval`). Plan 6's consent conditions join `registerKinds` in
+  `internal/reports/monthly.go` once that kind exists.
 - **Plan 3:** variations ("Variations are not yet recorded in SiteWise")
   and the `payment_schedule` kind. Migration 070 lists `pmp, rfp, rft,
   monthly`; whichever lands second lists both.

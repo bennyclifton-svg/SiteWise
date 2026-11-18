@@ -32,14 +32,14 @@ interface Turn {
 }
 interface CardState { card: Card; state: "" | "busy" | "undone" | "dismissed"; note?: string }
 
-const VIEW: Record<string, WorkbenchView> = { cost_plan: "costs", costs: "costs", profile: "profile", program: "program", procurement: "procurement", specifications: "specifications" };
+const VIEW: Record<string, WorkbenchView> = { cost_plan: "costs", costs: "costs", profile: "profile", program: "program", procurement: "procurement", specifications: "specifications", register: "register", delivery: "register" };
 const AREA: Record<string, string> = { cost_plan: "Cost Plan", profile: "Profile", program: "Program", procurement: "Procurement" };
 const DOING: Record<string, string> = {
   read: "Reading the records…", find: "Looking it up…", apply: "Making the change…", calc: "Working it out…",
   documents: "Looking through the documents…", passages: "Reading the documents…", messages: "Checking the inbox…", view: "Moving the screen…",
 };
 // Where each table chat can name lives (internal/httpapi/chat_screen.go).
-const PLACE: Record<string, ChatPlace> = { documents: "documents", cost_lines: "costs", program: "program", procurement: "procurement" };
+const PLACE: Record<string, ChatPlace> = { documents: "documents", cost_lines: "costs", program: "program", procurement: "procurement", register: "register" };
 
 /** The key Go's undo names a change by: its change id, or the Program version it left. */
 const undoKey = (c: Card) => c.undo === "program" ? `program:${c.program_version ?? ""}` : c.change_id ?? "";

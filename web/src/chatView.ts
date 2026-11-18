@@ -11,7 +11,7 @@ import type { WorkbenchView } from "./LeftNav";
 // keeps it while the selection changes under it.
 
 /** The tables chat can name. They match viewTables in internal/httpapi/chat_screen.go. */
-export type ChatTableName = "documents" | "cost_lines" | "program" | "procurement";
+export type ChatTableName = "documents" | "cost_lines" | "program" | "procurement" | "register";
 
 /** Where a table lives: a workbench view, or the repository panel beside every view. */
 export type ChatPlace = WorkbenchView | "documents";
@@ -30,12 +30,8 @@ export interface ChatTable {
   selected(): readonly string[];
 }
 
-/**
- * Where the project report's reader opens. Procurement lists the project's
- * reports today; once the register lands this is "register", where its
- * toolbar's "Project report" button lives (monthly plan, Task 7).
- */
-export const REPORT_PLACE: WorkbenchView = "procurement";
+/** Where the project report's reader opens: the Register, whose toolbar holds "Project report" (monthly plan, Task 7). */
+export const REPORT_PLACE: WorkbenchView = "register";
 
 export interface ChatDialog {
   open(fields: Readonly<Record<string, string>>): void;
@@ -141,6 +137,7 @@ export const ROW_WORDS: Record<ChatTableName, [string, string]> = {
   cost_lines: ["cost line", "cost lines"],
   program: ["Program row", "Program rows"],
   procurement: ["package", "packages"],
+  register: ["register row", "register rows"],
 };
 
 /** The "Showing …" line. A named filter's words (Go writes them to follow the count) replace "chosen in chat". */

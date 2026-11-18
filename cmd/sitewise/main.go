@@ -93,6 +93,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	invoiceData := fs.String("invoice-data", "data/invoice", "invoice question thresholds directory")
 	proposalData := fs.String("proposal-data", "data/proposal", "fee proposal question thresholds directory")
 	programData := fs.String("program-data", "data/program", "program file reading thresholds directory")
+	registerData := fs.String("register-data", "data/register", "register reply-match thresholds directory")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -166,6 +167,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	programTh, err := programread.LoadThresholds(*programData)
 	if err != nil {
 		fmt.Fprintln(stderr, "program thresholds: "+err.Error())
+		return 1
+	}
+	registerTh, err := jobs.LoadRegisterThresholds(*registerData)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
 		return 1
 	}
 	invoiceTh, err := invoices.LoadThresholds(*invoiceData)
@@ -291,7 +297,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	// Passages, labels, evidence and the project profile run in the
 	// background; filing keeps its slots and the interactive Jev reserve.
 	worker := &jobs.Worker{Store: st, Ask: client, Catalog: building, Source: jobs.FullSource(st, blobs),
-		MinNoul: minNoul, Profile: profileTh, Reading: reading, ProgramThresholds: programTh}
+		MinNoul: minNoul, Profile: profileTh, Reading: reading, ProgramThresholds: programTh, RegisterThresholds: registerTh}
 	ocrService, err := intake.NewService(st, client, cat, thresholds)
 	if err != nil {
 		fmt.Fprintln(stderr, err)

@@ -97,6 +97,17 @@ func (s *session) names(ctx context.Context) (*names, error) {
 			n.add("procurement", p.ID, p.DisciplineID)
 		}
 	}
+	register, err := s.l.st.ReadDelivery(ctx, s.org, s.project)
+	if err != nil {
+		return nil, err
+	}
+	for _, it := range register {
+		name := it.Title
+		if it.Number != nil {
+			name = fmt.Sprintf("RFI-%03d", *it.Number)
+		}
+		n.add("register", it.ID, name)
+	}
 	board, _, err := s.l.st.ProcurementBoard(ctx, s.org, s.project)
 	if err != nil {
 		return nil, err
@@ -136,7 +147,7 @@ func (n *names) screen(sc *chateval.Screen) (map[string]any, error) {
 }
 
 // goTables are the tables a go event shows.
-var goTables = map[string]string{"costs": "cost_lines", "program": "program", "procurement": "procurement", "documents": "documents"}
+var goTables = map[string]string{"costs": "cost_lines", "program": "program", "procurement": "procurement", "documents": "documents", "register": "register"}
 
 // view is a screen move with its rows named as the key names them.
 func (n *names) view(v agent.View) chateval.View {

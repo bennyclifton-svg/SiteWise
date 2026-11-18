@@ -35,6 +35,9 @@ var captured = map[string]capturedTable{
 	"tender_adjustments":         {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustment_amounts":  {Key: []string{"org_id", "adjustment_id", "submission_id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"report_edits":               {Key: []string{"org_id", "report_version_id", "target_id"}, Ignore: []string{"version", "updated_at"}, Area: "reports"},
+	"project_delivery_items":     {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "delivery"},
+	"delivery_readings":          {Key: []string{"org_id", "id"}, Area: "delivery"},
+	"delivery_settings":          {Key: []string{"org_id", "project_id"}, Area: "delivery"},
 }
 
 var (
@@ -218,6 +221,8 @@ func (s *Store) UndoChange(ctx context.Context, org, project, actor, id string) 
 			err = s.refreshTenderAfterUndo(ctx, tx, org, project, log)
 		case "reports":
 			err = s.touchReportsAfterUndo(ctx, tx, org, project, log)
+		case "delivery":
+			err = s.touchDeliveryAfterUndo(ctx, tx, org, project)
 		}
 		if err != nil {
 			var pg *pgconn.PgError
@@ -344,6 +349,21 @@ func (s *Store) touchCostsAfterUndo(ctx context.Context, tx pgx.Tx, org, project
 		return BumpRevision(ctx, tx, org, project, "costs")
 	}
 	return nil
+}
+
+// touchDeliveryAfterUndo is what every register write does before it
+// commits: bump the delivery revision and tell screens.
+func (s *Store) touchDeliveryAfterUndo(ctx context.Context, tx pgx.Tx, org, project string) error {
+	if err := bumpRevisionLocked(ctx, tx, org, project, "delivery"); err != nil {
+		return err
+	}
+	revisions, err := readRevisions(ctx, tx, org, project)
+	if err != nil {
+		return err
+	}
+	payload, _ := json.Marshal(map[string]any{"project_id": project, "revision": revisions.Delivery})
+	_, err = appendEvent(ctx, s.q.WithTx(tx), org, "delivery", "", string(payload))
+	return err
 }
 
 // touchProfileAfterUndo is what SetUserValue does before it commits.

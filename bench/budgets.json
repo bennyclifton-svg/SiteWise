@@ -208,6 +208,18 @@
       "p90_us": 250000
     },
     {
+      "name": "delivery_system_read",
+      "p50_us": 150000,
+      "p90_us": 300000,
+      "note": "the register read with a System filter and its also-open line (specification unknowns and tender exclusions on that system), 1,000 rows; no Jev and no model (plan 4)"
+    },
+    {
+      "name": "register_match",
+      "p50_us": 2000000,
+      "p90_us": 4000000,
+      "note": "background: a filed document's register job, claim to possible answer written (Go's cited-number rule; with correspondence, one Jev fan-out). Shared with plan 6's evidence step (plan 4, index agreement 2)"
+    },
+    {
       "name": "package_scope_write",
       "p50_us": 100000,
       "p90_us": 250000

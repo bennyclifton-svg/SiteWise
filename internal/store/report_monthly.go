@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/costs"
 	"sitewise/internal/db"
+	"sitewise/internal/delivery"
 	"sitewise/internal/knowledge"
 	engine "sitewise/internal/program"
 	"sitewise/internal/reports"
@@ -138,16 +139,14 @@ func (s *Store) monthlyInputTx(ctx context.Context, tx pgx.Tx, org, project stri
 		return in, state, err
 	}
 
-	in.Delivery, err = readDeliveryTx(ctx, tx, org, project)
+	// The register's rows, read as the Register screen and chat read them.
+	register, err := s.readRegisterTx(ctx, tx, org, project, RegisterQuery{}, RegisterView{Items: []delivery.Item{}, Kinds: []RegisterKind{}, Systems: []RegisterSystem{}, Today: today})
 	if err != nil {
 		return in, state, err
 	}
+	in.Delivery = register.Items
 	for _, it := range in.Delivery {
-		target := ""
-		if it.TargetDate != nil {
-			target = *it.TargetDate
-		}
-		in.Attention.Delivery = append(in.Attention.Delivery, reports.AttentionRecord{ID: it.ID, Kind: it.Kind, Status: it.Status, TargetDate: target})
+		in.Attention.Delivery = append(in.Attention.Delivery, reports.AttentionRecordOf(it))
 	}
 
 	if err := monthlyDocumentsTx(ctx, tx, s.q.WithTx(tx), org, project, sydney, &in); err != nil {

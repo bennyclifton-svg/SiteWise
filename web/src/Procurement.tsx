@@ -20,7 +20,6 @@ import { FirmNameEditor, type NamedFirm } from "./FirmNameEditor";
 import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
-import { ProjectReportButton, useProjectReportDialog } from "./ProjectReportButton";
 import { MoreMenu, PageActions } from "./PageActions";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
@@ -45,9 +44,8 @@ interface Row {
 
 interface Loaded { overview: PackageOverview; reports: SavedReport[]; board: Board }
 
-export function Procurement({ projectId, tick, readerTick = 0, onSignedOut, onOpenCostPlan, onOpenDocument, transmittal }: { transmittal?: TransmittalSelection; projectId: string; tick: number; readerTick?: number; onSignedOut: () => void; onOpenCostPlan?: () => void; onOpenDocument?: (documentId: string) => boolean }) {
+export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOpenDocument, transmittal }: { transmittal?: TransmittalSelection; projectId: string; tick: number; onSignedOut: () => void; onOpenCostPlan?: () => void; onOpenDocument?: (documentId: string) => boolean }) {
   const [view, setView] = useState<View>({ at: "table" });
-  useProjectReportDialog(id => setView({ at: "report", id }));
   const [data, setData] = useState<Loaded | null>(null);
   const [disciplines, setDisciplines] = useState<Option[]>([]);
   const [reload, setReload] = useState(0);
@@ -333,7 +331,7 @@ export function Procurement({ projectId, tick, readerTick = 0, onSignedOut, onOp
     catch (err) { fail(err); } finally { setBusyRow(""); }
   }
 
-  if (view.at === "report") return <Reports transmittal={transmittal} key={view.id} reportId={view.id} tick={tick + readerTick} onBack={back} onSignedOut={onSignedOut} />;
+  if (view.at === "report") return <Reports transmittal={transmittal} key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
   // An open RFP has its own menu (Reports); prices print from the top right,
   // the table from its own three dots beside New.
   const print = <PageActions surface="procurement"><button type="button" onClick={() => window.print()}>Print procurement</button></PageActions>;
@@ -467,8 +465,6 @@ export function Procurement({ projectId, tick, readerTick = 0, onSignedOut, onOp
       </div>
       <div className="procurement-actions">
       {tab === "consultants" && tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
-      {/* The project report's entry point until the register's toolbar lands (monthly plan, Task 7). */}
-      <ProjectReportButton projectId={projectId} onOpen={id => setView({ at: "report", id })} onSignedOut={onSignedOut} />
       <button type="button" className="btn btn-small" aria-label="New discipline" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>New</button>
       <MoreMenu label="Procurement actions" items={[{ label: "Print procurement", icon: <IconPrint />, onSelect: () => window.print() }]} />
       </div>

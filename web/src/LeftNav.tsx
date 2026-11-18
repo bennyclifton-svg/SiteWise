@@ -7,7 +7,7 @@ import { AccountMenu } from "./AccountMenu";
 import { requestCostSettings } from "./costSettingsRequest";
 import { Wordmark } from "./Wordmark";
 
-export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program";
+export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program" | "register";
 
 interface Props {
   projects: { id: string; name: string; archived?: boolean }[] | null;
@@ -23,7 +23,7 @@ interface Props {
 // drawing colours, brass or blue (green and rose are kept for status). The
 // solid part of each drawing takes a pale wash; the page's tables share it.
 type NavIcon = { line: string; wash?: string };
-const VIEWS: { id: WorkbenchView | "plan"; label: string; name?: string; icon: NavIcon; tone: string; idle?: boolean }[] = [
+const VIEWS: { id: WorkbenchView; label: string; name?: string; icon: NavIcon; tone: string; idle?: boolean }[] = [
   // An elevation: gable, door and ground line.
   { id: "profile", label: "Project Profile", name: "Profile", tone: "blue", icon: { line: "M2.5 20h19M5 20V10.5L12 5l7 5.5V20M10 20v-5h4v5", wash: "M5 20V10.5L12 5l7 5.5V20z" } },
   // Elemental cost bars on a baseline.
@@ -34,8 +34,9 @@ const VIEWS: { id: WorkbenchView | "plan"; label: string; name?: string; icon: N
   { id: "procurement", label: "Procurement", tone: "brass", icon: { line: "M9 3.5h10v13M5 7.5h10v13H5zM7.5 14l2 2 3.5-4", wash: "M5 7.5h10v13H5z" } },
   // A drawing sheet with its title block.
   { id: "specifications", label: "Specifications", tone: "blue", icon: { line: "M3.5 4.5h17v15h-17zM13 15h7.5M13 15v4.5M6.5 8h8M6.5 11h5", wash: "M13 15h7.5v4.5H13z" } },
-  // The old Project Plan placeholder: still not built, so it stays disabled and marked Planned.
-  { id: "plan", label: "Report", tone: "report", icon: { line: "M6 3h12v18H6zM9 3v18M12.5 16v-2M15 16v-5" }, idle: true },
+  // The register: what is owed on the project (RFIs, notices and the older
+  // delivery kinds), in the slot the Project Plan placeholder held.
+  { id: "register", label: "Register", tone: "report", icon: { line: "M6 3h12v18H6zM9 3v18M12.5 16v-2M15 16v-5" } },
 ];
 
 /** A view's name as the nav shows it, for a Back button that returns to it. */

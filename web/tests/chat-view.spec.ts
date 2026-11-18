@@ -190,6 +190,8 @@ test("the project report opens with its issue form; chat issues nothing", async 
   await expect(page.getByRole("heading", { name: "Project report No. 1", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Issue saved report", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Freeze and issue PDF", exact: true })).toBeVisible();
+  // It opened on the Register, where the report's toolbar item lives.
+  await expect(page.getByRole("button", { name: "Register", exact: true })).toHaveAttribute("aria-current", /page|true/);
   const list = await (await page.request.get(`/api/projects/${id}/reports`)).json();
   const view = await (await page.request.get(`/api/reports/${list[0].id}`)).json();
   expect(view.issues).toHaveLength(0);
