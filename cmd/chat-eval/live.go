@@ -31,6 +31,7 @@ import (
 	"sitewise/internal/httpapi"
 	"sitewise/internal/intake"
 	"sitewise/internal/jev"
+	"sitewise/internal/jobs"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/llm"
 	"sitewise/internal/profile"
@@ -55,7 +56,7 @@ func pick(cases []chateval.Case, only string) []chateval.Case {
 	return out
 }
 
-var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement"}
+var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery"}
 
 // live runs each case through the real server: a fresh org and project, the
 // fixture seeded through the same routes and store a PM's work goes
@@ -513,10 +514,68 @@ func (s *session) seed(ctx context.Context, f fixture, needs []string) error {
 			}
 		}
 	}
-	if _, err := chatfix.SeedDocuments(ctx, s.l.st, s.org, s.project, f.Documents); err != nil {
+	docs, err := chatfix.SeedDocuments(ctx, s.l.st, s.org, s.project, f.Documents)
+	if err != nil {
 		return err
 	}
-	return nil
+	return s.seedRegister(ctx, f.Register, docs)
+}
+
+// seedRegister adds the fixture's register rows through the screen's
+// operation, then runs the register's reply match on the filed documents,
+// as the post-filing job would: Go's rule only (no fixture document that
+// the job reads is correspondence, so no Jev step runs).
+func (s *session) seedRegister(ctx context.Context, rows []registerRow, docs map[string]string) error {
+	if len(rows) == 0 {
+		return nil
+	}
+	for _, r := range rows {
+		fields := map[string]any{"kind": "rfi", "title": r.Title, "status": r.Status, "question": r.Question}
+		for k, v := range map[string]string{"owner_text": r.With, "system": r.System, "raised_on": r.RaisedOn} {
+			if v != "" {
+				fields[k] = v
+			}
+		}
+		if err := s.ops("delivery", op("delivery.add", fields)); err != nil {
+			return err
+		}
+	}
+	for _, id := range docs {
+		if err := s.l.st.QueueRegister(ctx, s.org, id); err != nil {
+			return err
+		}
+	}
+	// The fixture's text is already stored, so extraction is done: its
+	// jobs are finished as the worker would finish them, which lets the
+	// register's job (held until extraction is done) run.
+	for {
+		job, err := s.l.st.ClaimJobSince(ctx, s.org, time.Minute, []string{store.JobKindFullText}, time.Time{})
+		if errors.Is(err, store.ErrIdle) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		if err := s.l.st.CompleteJob(ctx, job.OrgID, job.ID, job.Token, store.EventWrite{Kind: "job", DocumentID: job.DocumentID, Payload: `{"kind":"full_text","status":"done"}`}); err != nil {
+			return err
+		}
+	}
+	w := &jobs.Worker{Store: s.l.st}
+	for {
+		job, err := s.l.st.ClaimJobSince(ctx, s.org, time.Minute, []string{store.JobKindRegister}, time.Time{})
+		if errors.Is(err, store.ErrIdle) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if err := w.Perform(ctx, job); err != nil {
+			return err
+		}
+		if err := s.l.st.CompleteJob(ctx, job.OrgID, job.ID, job.Token, store.EventWrite{Kind: "job", DocumentID: job.DocumentID, Payload: `{"kind":"register","status":"done"}`}); err != nil {
+			return err
+		}
+	}
 }
 
 // abn is the n-th invented, checksum-valid ABN, so each fixture firm is a

@@ -49,7 +49,7 @@ func chatTools() []llm.Tool {
 		{Name: "read", Description: "Read one area of this project as SiteWise holds it, with ids. Figures carry a tag like [f3].",
 			Schema: object([]string{"area"}, map[string]any{
 				"area": str("the area", readAreas...),
-				"part": str("optional: a package id for its tender lines (procurement)"),
+				"part": str("optional: a package id for its tender lines (procurement); for delivery (the register) a kind such as rfi, a top-level system id such as envelope, or overdue"),
 			})},
 		{Name: "find", Description: "Find firms, packages, cost lines, Program rows and documents by name.",
 			Schema: object([]string{"words"}, map[string]any{"words": str("words from the name")})},
@@ -157,6 +157,8 @@ func (b *chatBox) read(ctx context.Context, input json.RawMessage) agent.Output 
 		err = chatAccommodation(ctx, b.d, b.project, r)
 	case "program":
 		err = readProgram(ctx, b.d, b.who, b.project, r, false)
+	case "delivery":
+		err = readRegister(ctx, b.d, b.who, b.project, in.Part, r)
 	case "procurement":
 		if in.Part != "" {
 			err = readTender(ctx, b.d, b.who, b.project, in.Part, r)

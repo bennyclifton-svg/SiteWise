@@ -37,6 +37,8 @@ const (
 	RuleDocumentNotFiled      = "documents.not_filed"
 	RuleProgramNoDuration     = "program.no_duration"
 	RuleApprovalPastTarget    = "approvals.submitted_past_target"
+	RuleRFIOverdue            = "register.rfi_overdue"
+	RuleRegisterToCheck       = "register.to_check"
 )
 
 // MaxAttentionShown is how many items a list shows before "and N more".
@@ -119,6 +121,19 @@ type AttentionRecord struct {
 	Kind       string
 	Status     string
 	TargetDate string
+	// LateDays is working days past the due date on the project's calendar,
+	// as the register read computes it; 0 when not late.
+	LateDays int
+	// ToCheck is a row with a possible answer shown for the PM to check.
+	ToCheck bool
+}
+
+// RFIOverdue is the one definition of an overdue register row, shared by
+// this rule and the register's "overdue" filter: a Draft or Open RFI at
+// least one working day past its due date. An Answered RFI is with the PM,
+// not late.
+func RFIOverdue(r AttentionRecord) bool {
+	return r.Kind == "rfi" && (r.Status == "draft" || r.Status == "open") && r.LateDays > 0
 }
 
 // AttentionFigure is one money figure in a sentence, ex GST as its screen
@@ -210,6 +225,8 @@ func Attention(in AttentionInput) []AttentionItem {
 	out = appendIf(out, documentItem(in.Documents))
 	out = appendIf(out, programItem(in.Program))
 	out = appendIf(out, approvalItem(in.Delivery, in.Today))
+	out = appendIf(out, rfiOverdueItem(in.Delivery))
+	out = appendIf(out, registerToCheckItem(in.Delivery))
 	return out
 }
 
@@ -432,6 +449,30 @@ func approvalItem(records []AttentionRecord, today string) AttentionItem {
 	}
 	return AttentionItem{Rule: RuleApprovalPastTarget, Source: "Delivery records", Count: len(ids), IDs: ids,
 		Words: plural(len(ids), "approval is", "approvals are") + " submitted, not determined and past the target date"}
+}
+
+// rfiOverdueItem is the RFIs past their due date (plan 4).
+func rfiOverdueItem(records []AttentionRecord) AttentionItem {
+	var ids []string
+	for _, r := range records {
+		if RFIOverdue(r) {
+			ids = append(ids, r.ID)
+		}
+	}
+	return AttentionItem{Rule: RuleRFIOverdue, Source: "Register", Count: len(ids), IDs: ids,
+		Words: plural(len(ids), "RFI is", "RFIs are") + " past the response date"}
+}
+
+// registerToCheckItem is register rows with a possible answer to check.
+func registerToCheckItem(records []AttentionRecord) AttentionItem {
+	var ids []string
+	for _, r := range records {
+		if r.ToCheck {
+			ids = append(ids, r.ID)
+		}
+	}
+	return AttentionItem{Rule: RuleRegisterToCheck, Source: "Register", Count: len(ids), IDs: ids,
+		Words: plural(len(ids), "register row has", "register rows have") + " a possible answer to check"}
 }
 
 // plural is "1 cost line has" or "3 cost lines have".

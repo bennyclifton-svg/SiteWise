@@ -36,6 +36,11 @@ var viewFilters = map[string]map[string]namedFilter{
 	"procurement": {
 		"no_quote": {rows: packageNoQuote, shown: "with no quote", none: "Every package has at least one quote."},
 	},
+	"register": {
+		"overdue":  {rows: registerFilter(registerOverdue), shown: "past the response date", none: "No RFI is past its response date."},
+		"with_me":  {rows: registerFilter(registerWithMe), shown: "with you (answered, or your drafts)", none: "Nothing on the register is with you."},
+		"to_check": {rows: registerFilter(registerToCheck), shown: "with a possible answer to check", none: "No register row has a possible answer to check."},
+	},
 }
 
 // viewDialogs are the dialogs chat may open, filled in. It opens them; the

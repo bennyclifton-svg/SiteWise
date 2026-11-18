@@ -25,6 +25,12 @@ func WithChange(ctx context.Context, c Change) context.Context {
 	return context.WithValue(ctx, changeKey{}, c)
 }
 
+// ChangeOf is the change a context's writes are captured under, if any.
+func ChangeOf(ctx context.Context) (Change, bool) {
+	c, ok := ctx.Value(changeKey{}).(Change)
+	return c, ok
+}
+
 // NewChangeID is a fresh id for a Change.
 func NewChangeID() string { return newID() }
 

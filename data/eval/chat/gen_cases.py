@@ -236,11 +236,25 @@ c("s19", "agency", "screen", "house", "Read the arborist report and select it", 
 c("s20", "agency", "screen", "house", "Update the profile", [K("prepared")], note="A prepared read: a card that waits for the PM's click, which queues the read. The turn queues nothing and calls no Jev.")
 c("s21", "agency", "screen", "refurb", "Read Polar Air's tender again", [K("prepared")], note="A prepared read (procurement.read_tender_again). Nothing is queued until the click.")
 c("s22", "agency", "screen", "apartments", "Show me the messages", [K("refuses", has=[DECLINE]), K("no_change")], note="No messages table yet: the fixed words, and the turn is logged as declined.")
-c("s23", "agency", "screen", "house", "Select the RFIs that are still open", [K("refuses", has=[DECLINE]), K("no_change")], note="No RFI table yet: the fixed words, and the turn is logged as declined.")
+c("s23", "agency", "screen", "house", "Send RFI-002 to the structural engineer", [K("refuses", has=[DECLINE]), K("no_change")], note="Sending is plan 1's and is not built: the fixed words, and the turn is logged as declined. (Until 18 November this case asked for the RFI table, which the register now is.)")
 c("s24", "agency", "screen", "house", "Open the program", [sel("program", do="show"), K("no_change"), K("no_model")], note="An exact phrase: Go shows the screen with no model call.")
 c("s25", "agency", "screen", "house", "Select the structural package", [sel("procurement", ["consultant.structural"]), K("no_change")])
 c("s26", "agency", "screen", "house", "Show all the cost lines again", [sel("cost_lines", do="clear"), K("no_change")], before=["Show the cost lines with no budget"])
 c("s27", "agency", "screen", "house", "What does this document say about tree 4?", [K("no_change"), K("cites", document="Arborist report")], note="\"This document\" is the one open on screen.", screen=screen(open="Arborist report"))
+
+# --- the register group (plan 4, "From chat"; draft, not owner-reviewed).
+# The house fixture holds RFI-001 (envelope, raised 1 October, past its
+# response date) and RFI-002 (substructure, no raised date, so no due date),
+# and a structural sketch that cites RFI-002, so RFI-002 carries a possible
+# answer by Go's rule. Register rows are named by their RFI number.
+c("rg1", "register", "register", "house", "What is open on the facade?", [K("no_change"), K("no_own_figure")], note="read delivery with part envelope: RFI-001 and the also-open line, each from Go.")
+c("rg2", "register", "register", "house", "What is with the structural engineer and how late is it?", [K("no_change"), K("no_own_figure")], note="read delivery: RFI-002 is with Northline Structural and has no due date, so it is not late; the answer must not invent one.")
+c("rg3", "register", "register", "house", "Raise an RFI to the structural engineer about the basement wall waterproofing", [state("delivery", ["| RFI | RFI-003 | Basement wall waterproofing |", "| — | — | draft |"])], True, "Saved as Draft with the next number and no date: none was given, so Due is blank. Applied at once with Undo.")
+c("rg4", "register", "register", "house", "Close RFI-001", [state("delivery", ["| RFI-001 | Window head flashing detail | Arc Architects | 2026-10-08 | — | closed |"])], note="An edit by RFI number, applied at once with Undo.")
+c("rg5", "register", "register", "house", "Set these to the building envelope", [state("delivery", ["| RFI-002 | Retaining wall footing depth | Northline Structural | — | — | open | Building envelope |"])], note="RFI-002 selected by hand: exactly that row moves; RFI-001 was already on the envelope.", screen=screen("register", ("register", ["RFI-002"])))
+c("rg6", "register", "register", "house", "Show the RFIs past their response date", [sel("register", ["RFI-001"], "only"), K("no_change")], note="Named filter overdue, the same definition the attention list uses.")
+c("rg7", "register", "register", "house", "Accept the answer on RFI-002", [K("prepared")], note="Accepting a possible answer is the PM's vouch: a card that waits for the click.")
+c("rg8", "register", "register", "house", "Set the RFI response time to 10 working days", [state("delivery", ["RFI response time 10 working days, on"])], True, "delivery.settings, applied at once with Undo; 10 is in the PM's words.")
 
 out = {"about": "The command key for chat. Each case is one typed message on a fresh fixture project. See README.md.", "cases": C}
 with open("data/eval/chat/commands.json", "w", newline="\n", encoding="utf-8") as f:
