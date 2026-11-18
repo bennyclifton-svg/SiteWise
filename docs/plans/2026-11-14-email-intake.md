@@ -35,6 +35,14 @@ paged. The chat agent reads the same list
 (`docs/plans/2026-11-15-chat-agent.md`, Task 6). Migrations 055 to 060 are
 now taken on `main`: use the next free number.
 
+**Update, 18 November 2026:** `docs/plans/2026-11-17-correspondence-transmittals.md`
+builds on this plan and amends it (its A1 to A7): outside senders who
+reply to something SiteWise sent are filed, not held; `To`, `Cc`,
+`In-Reply-To` and `References` are kept; a part's `document_id` is written
+before filing starts; the write routes are classed for chat; no route
+deletes a filed message. Read that section before building Tasks 0, 2, 6
+and 9 here.
+
 ---
 
 ## Feature statement (AGENTS.md run sheet)

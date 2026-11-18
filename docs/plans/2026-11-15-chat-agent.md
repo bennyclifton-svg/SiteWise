@@ -23,6 +23,15 @@ events, React. No new dependency. No embeddings.
 Owner direction on 15 November adds the inbox and document questions
 (section "What is new" below).
 
+**Update, 18 November 2026:** the follow-ups this plan deferred are now
+planned. Screen context (review change 10), moving the screen, finding a
+set of documents by subject, ids kept between turns and a measure of what
+chat declines are in `docs/plans/2026-11-18-chat-agency.md`. Message
+threading and notice flags (change 9) are in
+`docs/plans/2026-11-17-correspondence-transmittals.md`; "what changed
+since" (change 13) is in `docs/plans/2026-11-17-monthly-report.md`. The
+remaining report routes become operations there. Nothing below is changed.
+
 **Status:** written 15 November 2026 from reading `main` at `bf0a543`.
 Nothing in it has been compiled or run. Every model timing is a target
 until Task 2 measures it.
