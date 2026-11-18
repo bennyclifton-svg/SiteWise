@@ -1,0 +1,89 @@
+package httpapi_test
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	"sitewise/internal/chatfix"
+)
+
+// The register's budgets (docs/plans/2026-11-17-rfis-review-comments.md,
+// Task 7): a read of 1,000 rows with their readings (delivery_read), the
+// same read with a System filter and its also-open line
+// (delivery_system_read), and the screen's writes through POST /ops
+// (delivery_write). Thirty samples each: more than five, so a slow cached
+// generic plan after the fifth call on a connection would show.
+func TestRegisterBudget(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Register budget")
+	ctx := context.Background()
+	docs, err := chatfix.SeedDocuments(ctx, a.store, m.orgID, project, []chatfix.Document{{Title: "Reply", Kind: "correspondence", Pages: []string{"Response to RFI-001."}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pool, err := pgxpool.New(ctx, os.Getenv("SITEWISE_TEST_DATABASE_URL"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer pool.Close()
+	// 1,000 rows: three RFIs in four on the envelope, every tenth with a
+	// possible answer to check.
+	if _, err := pool.Exec(ctx, `INSERT INTO project_delivery_items(org_id,id,project_id,kind,title,status,number,system_id,target_date,details,origin,review_status)
+ SELECT $1::uuid, gen_random_uuid(), $2::uuid, CASE WHEN g%4=0 THEN 'risk' ELSE 'rfi' END, 'Row '||g, 'open', CASE WHEN g%4=0 THEN NULL ELSE g END,
+ CASE WHEN g%4=0 THEN 'substructure' ELSE 'envelope' END, DATE '2026-11-02' + (g%30), '{}', 'user', 'accepted_for_planning' FROM generate_series(1,1000) g`, m.orgID, project); err != nil {
+		t.Fatal(err)
+	}
+	for _, doc := range docs {
+		if _, err := pool.Exec(ctx, `INSERT INTO delivery_readings(org_id,id,project_id,item_id,document_id,field,decided_by,band,basis)
+ SELECT org_id, gen_random_uuid(), project_id, id, $3::uuid, 'answers', 'rule', 'amber', 'cites the number' FROM project_delivery_items
+ WHERE org_id=$1::uuid AND project_id=$2::uuid AND kind='rfi' AND number%10=1`, m.orgID, project, doc); err != nil {
+			t.Fatal(err)
+		}
+	}
+	base := "/api/projects/" + project + "/delivery"
+	samples := map[string][]int64{}
+	timed := func(path, method, url string, body []byte, want int, out any) {
+		start := time.Now()
+		m.call(t, method, url, body, want, out)
+		samples[path] = append(samples[path], time.Since(start).Microseconds())
+	}
+	for i := 0; i < 30; i++ {
+		var view struct {
+			Items []json.RawMessage `json:"items"`
+		}
+		timed("delivery_read", http.MethodGet, base, nil, http.StatusOK, &view)
+		if len(view.Items) != 1000+i {
+			t.Fatalf("read %d rows", len(view.Items))
+		}
+		timed("delivery_system_read", http.MethodGet, base+"?system=envelope", nil, http.StatusOK, nil)
+		add, _ := json.Marshal(map[string]any{"area": "delivery", "ops": []map[string]any{{"op": "delivery.add", "fields": map[string]any{"kind": "rfi", "title": fmt.Sprintf("Budget RFI %d", i), "raised_on": "2026-11-20"}}}})
+		timed("delivery_write", http.MethodPost, "/api/projects/"+project+"/ops", add, http.StatusOK, nil)
+		edit, _ := json.Marshal(map[string]any{"area": "delivery", "ops": []map[string]any{{"op": "delivery.edit", "fields": map[string]any{"item": fmt.Sprintf("RFI-%03d", 1000+i), "status": "open"}}}})
+		timed("delivery_write", http.MethodPost, "/api/projects/"+project+"/ops", edit, http.StatusOK, nil)
+	}
+	for _, path := range []string{"delivery_read", "delivery_system_read", "delivery_write"} {
+		s := append([]int64(nil), samples[path]...)
+		t.Logf("%s: %d samples, p50 %d us, p90 %d us", path, len(s), pct(s, 50), pct(s, 90))
+	}
+	gateTender(t, []string{"delivery_read", "delivery_system_read", "delivery_write"}, samples)
+	if a.jevHits.Load() != 0 {
+		t.Fatal("the register called Jev")
+	}
+}
+
+func pct(s []int64, p int) int64 {
+	c := append([]int64(nil), s...)
+	for i := 1; i < len(c); i++ {
+		for j := i; j > 0 && c[j] < c[j-1]; j-- {
+			c[j], c[j-1] = c[j-1], c[j]
+		}
+	}
+	return c[(len(c)*p+99)/100-1]
+}

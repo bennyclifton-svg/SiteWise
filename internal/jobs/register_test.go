@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -15,6 +16,7 @@ import (
 	"sitewise/internal/delivery"
 	"sitewise/internal/jev"
 	"sitewise/internal/jobs"
+	"sitewise/internal/latency"
 	"sitewise/internal/store"
 )
 
@@ -234,5 +236,41 @@ func TestRegisterExcerptAndRule(t *testing.T) {
 		if h, _ := jobs.RuleMatches(text, rfis[:1]); len(h) != 0 {
 			t.Errorf("%q matched RFI 7", text)
 		}
+	}
+}
+
+// TestRegisterMatchBudget holds register_match: a filed reply's register
+// job, claim to reading written, on a project with 40 Open RFIs, Go's rule
+// only. Twenty samples, more than five calls on a connection.
+func TestRegisterMatchBudget(t *testing.T) {
+	r := registerProject(t, 40)
+	w := &jobs.Worker{Store: r.st}
+	var samples []int64
+	for i := 1; i <= 20; i++ {
+		r.file(t, "drawing", fmt.Sprintf("Issued in response to RFI-%03d.", i))
+		start := time.Now()
+		if err := r.run(t, w); err != nil {
+			t.Fatal(err)
+		}
+		samples = append(samples, time.Since(start).Microseconds())
+	}
+	if got := r.readings(t); len(got) != 20 {
+		t.Fatalf("readings %d", len(got))
+	}
+	budgets, err := latency.LoadBudgets(filepath.Join("..", "..", "bench", "budgets.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	scoped := latency.Budgets{MinSamples: budgets.MinSamples}
+	for _, p := range budgets.Paths {
+		if p.Name == "register_match" {
+			scoped.Paths = append(scoped.Paths, p)
+		}
+	}
+	p50, _ := latency.Percentile(samples, 0.5)
+	p90, _ := latency.Percentile(samples, 0.9)
+	t.Logf("register_match: %d samples, p50 %d us, p90 %d us", len(samples), p50, p90)
+	if code, report := latency.Gate(scoped, map[string][]int64{"register_match": samples}, false); code != 0 || len(scoped.Paths) != 1 {
+		t.Fatalf("register_match budget: %s", report)
 	}
 }
