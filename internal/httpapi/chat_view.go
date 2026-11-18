@@ -40,7 +40,7 @@ var viewFilters = map[string]map[string]namedFilter{
 
 // viewDialogs are the dialogs chat may open, filled in. It opens them; the
 // PM presses the button inside.
-var viewDialogs = map[string]string{"award": "the award dialog"}
+var viewDialogs = map[string]string{"award": "the award dialog", "report": "the project report"}
 
 // viewIn is the view tool's input.
 type viewIn struct {
@@ -135,7 +135,10 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 	}
 	what, ok := viewDialogs[in.Dialog]
 	if !ok {
-		return agent.View{}, "The dialog chat can open is award (fields package and column)."
+		return agent.View{}, "The dialogs chat can open are award (fields package and column) and report (field issue yes to open its issue form)."
+	}
+	if in.Dialog == "report" {
+		return checkReportDialog(ctx, d, who, project, in)
 	}
 	pkgs, err := d.Store.ReadPackages(ctx, who.OrgID, project)
 	if err != nil {
@@ -209,4 +212,20 @@ func checkFilter(ctx context.Context, d Deps, who opActor, project string, in vi
 		v.Line = "Showing " + t.count(len(ids)) + " " + f.shown + "."
 	}
 	return v, ""
+}
+
+// checkReportDialog opens the project report in its reader, with its issue
+// form when asked. Issuing leaves the building, so the PM presses Issue.
+func checkReportDialog(ctx context.Context, d Deps, who opActor, project string, in viewIn) (agent.View, string) {
+	r, err := d.Store.MonthlyReport(ctx, who.OrgID, project)
+	if err != nil {
+		return agent.View{}, "There is no project report yet. Prepare it first with apply reports.update. Nothing on screen was changed."
+	}
+	fields := map[string]string{"report": r.ID}
+	line := "Opened the project report."
+	if strings.EqualFold(strings.TrimSpace(in.Fields["issue"]), "yes") {
+		fields["issue"] = "yes"
+		line = "Opened the project report's issue form. Press Freeze and issue PDF there to issue it."
+	}
+	return agent.View{Do: "open", Dialog: "report", Fields: fields, Line: line}, ""
 }

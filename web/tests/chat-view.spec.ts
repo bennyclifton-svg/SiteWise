@@ -176,3 +176,21 @@ test("documents: select and open from the register", async ({ page }) => {
   await say(page, "screen open documents Memo 2");
   await expect(page.getByRole("region", { name: "Document viewer" })).toHaveAttribute("data-filename", "Memo 2.md");
 });
+
+test("the project report opens with its issue form; chat issues nothing", async ({ page }) => {
+  await freshOwner(page, "chat-view-report");
+  await modelSwitch(page, true);
+  const id = await newProject(page, "Chat opens the project report");
+  const ops = await page.request.post(`/api/projects/${id}/ops`, { headers, data: { area: "reports", ops: [{ op: "reports.update", fields: {} }] } });
+  expect(ops.ok(), await ops.text()).toBeTruthy();
+  await page.goto(`/projects/${id}?view=costs`);
+  const chat = page.getByRole("region", { name: "Chat" });
+  await say(page, "screen report issue");
+  await expect(chat).toContainText("Opened the project report's issue form.");
+  await expect(page.getByRole("heading", { name: "Project report No. 1", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Issue saved report", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Freeze and issue PDF", exact: true })).toBeVisible();
+  const list = await (await page.request.get(`/api/projects/${id}/reports`)).json();
+  const view = await (await page.request.get(`/api/reports/${list[0].id}`)).json();
+  expect(view.issues).toHaveLength(0);
+});

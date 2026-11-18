@@ -277,6 +277,9 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   // Bumped when the program's review or readings change (no new version).
   const [programTick, setProgramTick] = useState(0);
 	const [reportTick, setReportTick] = useState(0);
+	// An open report re-reads on invoice and Program events too (the project
+	// report prints both); the screens behind it do not.
+	const [readerTick, setReaderTick] = useState(0);
   const [notReadOnly, setNotReadOnly] = useState(false);
   const [address, setAddress] = useState("");
   const lastId = useRef(0);
@@ -365,7 +368,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
           if (ev.kind === "invoices") {
-            if (ev.payload?.project_id === projectId) setInvoiceTick(n => n + 1);
+            // The project report prints claimed to date from the ledger.
+            if (ev.payload?.project_id === projectId) { setInvoiceTick(n => n + 1); setReaderTick(n => n + 1); }
             return;
           }
           if (ev.kind === "program.review" || ev.kind === "program.readings") {
@@ -376,6 +380,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           if (ev.kind === "program.changed") {
             const p = ev.payload as unknown as { project_id?: string; program_id?: string; version?: number } | undefined;
             if (p?.project_id === projectId && typeof p.version === "number") setProgramVersion((v) => newerAnnouncement(v, p.program_id ?? "", p.version as number));
+            // The project report prints the Program's completion.
+            if (p?.project_id === projectId) setReaderTick(n => n + 1);
             return;
           }
           if (ev.kind === "specification") {
@@ -814,7 +820,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       {costsOpened && <div className="project-reports" hidden={!!viewingRow || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={!!viewingRow || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} projectId={projectId} tick={profileTick + reportTick} readerTick={readerTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
       {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={viewLabel(view)} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });

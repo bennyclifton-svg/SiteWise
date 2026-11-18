@@ -450,6 +450,9 @@ func bench(ctx context.Context, o options, getenv func(string) string, stdout io
 	if err := api.reports(ctx, o.apiSamples); err != nil {
 		return 0, err
 	}
+	if err := api.monthlyReport(ctx, st, o.apiSamples); err != nil {
+		return 0, fmt.Errorf("bench project report: %w", err)
+	}
 	if err := api.groupRFP(ctx, o.apiSamples); err != nil {
 		return 0, fmt.Errorf("bench combined engagement RFP: %w", err)
 	}

@@ -120,6 +120,7 @@ func operations() []operation {
 	for _, area := range opAreas[3:] {
 		all = append(all, forwardedOperations(area)...)
 	}
+	all = append(all, reportOperations()...)
 	return all
 }
 

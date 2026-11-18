@@ -30,6 +30,13 @@ export interface ChatTable {
   selected(): readonly string[];
 }
 
+/**
+ * Where the project report's reader opens. Procurement lists the project's
+ * reports today; once the register lands this is "register", where its
+ * toolbar's "Project report" button lives (monthly plan, Task 7).
+ */
+export const REPORT_PLACE: WorkbenchView = "procurement";
+
 export interface ChatDialog {
   open(fields: Readonly<Record<string, string>>): void;
 }
