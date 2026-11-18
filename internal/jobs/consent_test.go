@@ -330,7 +330,7 @@ func TestConsentReadOfNoConditionsSaysSo(t *testing.T) {
 }
 
 func ptr(s string) *string { return &s }
-func ptrBool(b bool) *bool  { return &b }
+func ptrBool(b bool) *bool { return &b }
 
 // A read the PM asked for is one change: one Undo takes it back out.
 func TestConsentReadIsOneUndoableChange(t *testing.T) {
