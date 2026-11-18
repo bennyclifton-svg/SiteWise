@@ -12,7 +12,7 @@ import "./chat.css";
 
 interface Mark { start: number; end: number; kind: "fact" | "quote" | "source" | "seen" | "check" | "verdict"; note?: string; document_id?: string; page?: number }
 interface Answer { text: string; marks?: Mark[]; question?: boolean; coverage?: string; unchecked?: number }
-interface Card { kind: "change" | "prepared"; area: string; lines: string[] | null; change_id?: string; undo?: string; prepared_id?: string; why?: string }
+interface Card { kind: "change" | "prepared"; area: string; lines: string[] | null; change_id?: string; undo?: string; prepared_id?: string; why?: string; refs?: string[]; program_version?: number }
 /** A screen move from the view tool: ids are full ids Go checked against the project. */
 interface View { do: "show" | "open" | "select" | "only" | "clear"; table?: string; ids?: string[]; dialog?: string; fields?: Record<string, string>; line: string }
 interface ChatEvent { type: string; text?: string; tool?: string; card?: Card; answer?: Answer; view?: View }
@@ -41,6 +41,9 @@ const DOING: Record<string, string> = {
 // Where each table chat can name lives (internal/httpapi/chat_screen.go).
 const PLACE: Record<string, ChatPlace> = { documents: "documents", cost_lines: "costs", program: "program", procurement: "procurement" };
 
+/** The key Go's undo names a change by: its change id, or the Program version it left. */
+const undoKey = (c: Card) => c.undo === "program" ? `program:${c.program_version ?? ""}` : c.change_id ?? "";
+const markUndone = (turns: Turn[], key: string): Turn[] => turns.map(t => ({ ...t, cards: t.cards.map(c => c.card.kind === "change" && undoKey(c.card) === key ? { ...c, state: "undone" } : c) }));
 
 function fromStored(t: StoredTurn): Turn {
   const turn: Turn = { key: t.id, text: t.text, status: t.status === "failed" ? "failed" : "done", doing: "", streamed: "", cards: [], moved: [] };
@@ -129,7 +132,9 @@ export default function Chat({ projectId, view, openDocument, onShow, onShowDocu
     request<{ available: boolean; unavailable: string; turns: (StoredTurn & { conversation_id: string })[] }>("GET", `${base}/chat`).then(v => {
       if (!live) return;
       setUnavailable(v.available ? "" : v.unavailable);
-      setTurns(v.turns.map(fromStored));
+      let shown = v.turns.map(fromStored);
+      for (const t of v.turns) for (const e of t.answer?.events ?? []) if (e.type === "undone" && e.text) shown = markUndone(shown, e.text);
+      setTurns(shown);
       conversation.current = v.turns.at(-1)?.conversation_id ?? "";
     }, () => { if (live) setUnavailable("Chat can't be reached right now."); });
     return () => { live = false; };
@@ -187,6 +192,7 @@ export default function Chat({ projectId, view, openDocument, onShow, onShowDocu
             patch(key, t => ({ ...t, doing: "", moved: [...t.moved, v.line] }));
             void moveScreen(v, onShow, onShowDocuments).then(note => { if (note) patch(key, t => ({ ...t, error: note })); });
           }
+          else if (ev.type === "undone" && ev.text) { const undone = ev.text; setTurns(all => markUndone(all, undone)); }
           else if (ev.type === "go") { const view = VIEW[ev.text ?? ""]; if (view) onShow(view); patch(key, t => ({ ...t, doing: "", answer: { text: `Opened ${AREA[ev.text ?? ""] ?? ev.text}.` } })); }
           else if (ev.type === "error") fail(ev.text ?? "Chat is unavailable. Nothing was changed.");
           else if (ev.type === "done") { conversation.current = ev.conversation_id ?? conversation.current; patch(key, t => t.status === "running" ? { ...t, status: "done", doing: "" } : t); }

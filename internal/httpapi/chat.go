@@ -228,6 +228,11 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 		finish(agent.Result{}, "done")
 		return
 	}
+	if undoPhrases[said] {
+		undoLast(ctx, d, who, project, earlier, emit)
+		finish(agent.Result{}, "done")
+		return
+	}
 	name := ""
 	if p, err := d.Store.GetProject(ctx, s.OrgID, project); err == nil {
 		name = p.Name
@@ -283,8 +288,10 @@ func assistantText(text string) json.RawMessage {
 }
 
 // saidBefore is what an earlier turn came to, in a few plain lines, for the
-// model's history: the answer and what the cards said. Tool results are not
-// replayed: they are stale by the next turn and cost tokens on every call.
+// model's history: the answer, what the cards said and the ids they and the
+// screen moves named, so "those" in a later turn has rows to point at. Tool
+// results are not replayed: they are stale by the next turn and cost tokens
+// on every call.
 func saidBefore(t store.ChatTurn) string {
 	if t.Status != "done" && t.Status != "stopped" {
 		return ""
@@ -299,11 +306,13 @@ func saidBefore(t store.ChatTurn) string {
 		case e.Type == "answer" && e.Answer != nil && e.Answer.Text != "":
 			lines = append(lines, e.Answer.Text)
 		case e.Card != nil && e.Type == "change":
-			lines = append(lines, "[Applied: "+strings.Join(e.Card.Lines, " ")+"]")
+			lines = append(lines, "[Changed"+idList(e.Card.Refs)+": "+strings.Join(e.Card.Lines, " ")+"]")
 		case e.Card != nil && e.Type == "prepared":
 			lines = append(lines, "[Prepared for the PM's click: "+strings.Join(e.Card.Lines, " ")+"]")
 		case e.Type == "go":
 			lines = append(lines, "[Opened "+e.Text+"]")
+		case e.Type == "view" && e.View != nil:
+			lines = append(lines, viewSaid(*e.View))
 		}
 	}
 	return strings.Join(lines, "\n")

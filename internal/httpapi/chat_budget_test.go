@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -14,7 +15,8 @@ import (
 // figures are the server's own time and not the provider's:
 //
 //	ops_apply            five cost lines in one operations call
-//	change_undo          undoing that change
+//	change_undo          undoing that change, by its route and by typing
+//	                     "undo that" (answered by Go, no model call)
 //	chat_tool_read       one area rendered as chat reads it, on a 60-line plan
 //	chat_simple_command  a whole turn (outline, one apply, the card, storing
 //	                     the turn) with the model answering at once
@@ -61,8 +63,16 @@ func TestChatGoWorkBudgets(t *testing.T) {
 		events := m.chat(t, project, "", "Add a joinery line to Fitout, $45,000")
 		samples["chat_simple_command"] = append(samples["chat_simple_command"], time.Since(start).Microseconds())
 		rounds = append(rounds, model.calls()-before)
-		card := cardOf(t, events, "change")
-		m.undo(t, project, card.Card.ChangeID, http.StatusOK)
+		cardOf(t, events, "change")
+		// "Undo that" is answered by Go with no model call; it is held to
+		// the undo route's own budget (agency plan, Task 5).
+		before = model.calls()
+		start = time.Now()
+		undone := m.chat(t, project, events[len(events)-1].ConversationID, "Undo that")
+		samples["change_undo"] = append(samples["change_undo"], time.Since(start).Microseconds())
+		if a := undone[len(undone)-2].Answer; model.calls() != before || a == nil || !strings.HasPrefix(a.Text, "Undone:") {
+			t.Fatalf("undo that: %+v, model calls %d", a, model.calls()-before)
+		}
 	}
 	sort.Ints(rounds)
 	if median := rounds[len(rounds)/2]; median != 1 {

@@ -273,7 +273,7 @@ func (b *chatBox) apply(ctx context.Context, st *agent.State, input json.RawMess
 			if b.d.Broker != nil {
 				b.d.Broker.Wake(b.who.OrgID)
 			}
-			card := agent.Card{Kind: "change", Area: in.Area, ChangeID: done.ChangeID, Undo: done.Undo.Kind}
+			card := agent.Card{Kind: "change", Area: in.Area, ChangeID: done.ChangeID, Undo: done.Undo.Kind, Refs: cardRefs(in.Calls), ProgramVersion: done.ProgramVersion}
 			for _, r := range done.Results {
 				card.Lines = append(card.Lines, r.Summary)
 			}

@@ -158,7 +158,7 @@ func programBatch(ctx context.Context, d Deps, who opActor, project string, in o
 			d.Log.Printf("program event: %v", err)
 		}
 	}
-	out := opApplied{Undo: opUndo{Kind: "program"}}
+	out := opApplied{Undo: opUndo{Kind: "program"}, ProgramVersion: res.Program.Version}
 	label := map[string]string{}
 	for _, a := range res.Activities {
 		label[a.ID] = a.Label

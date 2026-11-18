@@ -113,6 +113,12 @@ type Card struct {
 	Undo     string   `json:"undo,omitempty"` // change | program | none
 	Prepared string   `json:"prepared_id,omitempty"`
 	Why      string   `json:"why,omitempty"`
+	// Refs are the short row ids the card's operations named, so a later
+	// turn can say "those" (chat agency plan, Task 5).
+	Refs []string `json:"refs,omitempty"`
+	// ProgramVersion is the Program's version just after a Program change,
+	// so an undo typed later can tell whether anything has moved since.
+	ProgramVersion int64 `json:"program_version,omitempty"`
 }
 
 // View is one move of the screen: show a table, select or show only some of

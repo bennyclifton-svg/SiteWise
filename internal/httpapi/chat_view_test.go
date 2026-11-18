@@ -65,6 +65,10 @@ func TestChatViewMovesTheScreen(t *testing.T) {
 	// The next turn's history names the selected rows by id.
 	ta.calls = nil
 	ta.m.chat(t, ta.project, conversation, "Now show only those")
+	said := string(ta.model.sent[len(ta.model.sent)-1].History[1])
+	if !strings.Contains(said, "[Selected 2 cost lines: "+ids[0][:8]+" "+ids[1][:8]+"]") {
+		t.Errorf("the history does not name the selection: %s", said)
+	}
 
 	// Another org's row, a made-up id, a bad table and a filter name are
 	// refused, and nothing moves.

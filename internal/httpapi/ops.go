@@ -74,6 +74,9 @@ type opApplied struct {
 	ChangeID string     `json:"change_id,omitempty"`
 	Undo     opUndo     `json:"undo"`
 	Results  []opResult `json:"results"`
+	// ProgramVersion is the Program's version after a Program batch, so a
+	// later undo can tell whether anything moved since.
+	ProgramVersion int64 `json:"program_version,omitempty"`
 }
 
 // opError is a refused batch, in Program's shape. NeedsClick is not a

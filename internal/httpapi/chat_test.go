@@ -219,7 +219,7 @@ func TestChatSimpleCommandAppliesInOneRound(t *testing.T) {
 	// The next turn carries what was said before, and the short ids.
 	events = m.chat(t, project, done.ConversationID, "And a contingency line called Latent conditions")
 	second := model.sent[1]
-	if len(second.History) != 3 || !strings.Contains(string(second.History[1]), "Applied") {
+	if len(second.History) != 3 || !strings.Contains(string(second.History[1]), "[Changed") {
 		t.Fatalf("history of the second turn: %d messages", len(second.History))
 	}
 	var view struct {

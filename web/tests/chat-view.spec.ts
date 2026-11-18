@@ -18,7 +18,7 @@ async function newProject(page: Page, name: string): Promise<string> {
   return (await created.json()).id as string;
 }
 
-test("cost lines: select, act on these, show only, clear, Escape", async ({ page }) => {
+test("cost lines: select, act on these, show only, clear, Escape, undo that", async ({ page }) => {
   await freshOwner(page, "chat-view-costs");
   await modelSwitch(page, true);
   const id = await newProject(page, "Chat moves cost lines");
@@ -58,6 +58,11 @@ test("cost lines: select, act on these, show only, clear, Escape", async ({ page
   await page.keyboard.press("Escape");
   await expect(page.locator("tr.cost-row")).toHaveCount(all);
   await expect(page.locator(".reg-filter")).toHaveCount(0);
+
+  // "Undo that" is answered without the model and puts the lines back.
+  await say(page, "undo that");
+  await expect(chat).toContainText("Undone:");
+  await expect.poll(excluded).toEqual([]);
 });
 
 test("a table not on screen is shown first, then moved", async ({ page }) => {
