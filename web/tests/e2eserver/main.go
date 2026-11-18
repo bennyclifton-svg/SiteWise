@@ -7,6 +7,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -26,6 +27,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 
 	"sitewise/internal/auth"
 	"sitewise/internal/config"
@@ -271,6 +274,35 @@ func run(addr, data string, programFixture bool) error {
 		}
 		w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 		_ = xlsx.WriteXLSX(w, []xlsx.Sheet{{Name: "Program", Rows: rows}})
+	})
+	// Marks an RFP or RFT draft issued, as the issue route leaves it, with a
+	// synthetic PDF, so a guest link has an issue to share. The RFP issue
+	// route's clause gates are not what the guest suite is about.
+	mux.HandleFunc("POST /__e2e/issue-rft", func(w http.ResponseWriter, r *http.Request) {
+		blob, err := blobs.Put(r.Context(), bytes.NewReader(sample2.PDF(sample2.Proposal{Firm: "Request for tender"})))
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		conn, err := pgx.Connect(r.Context(), dsn)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		defer conn.Close(r.Context())
+		report := r.URL.Query().Get("report")
+		tag, err := conn.Exec(r.Context(), `UPDATE report_versions v SET status='issued', snapshot='{}'::jsonb, snapshot_sha256=repeat('a',64), export_file_sha256=$2,
+ issued_at=now(), issued_by=(SELECT u.id FROM users u WHERE u.org_id=v.org_id ORDER BY u.created_at LIMIT 1)
+ FROM reports r WHERE r.org_id=v.org_id AND r.id=v.report_id AND r.id::text=$1 AND v.id=r.current_draft_version_id AND r.kind IN ('rfp','rft')`, report, blob.SHA256)
+		if err != nil || tag.RowsAffected() != 1 {
+			http.Error(w, fmt.Sprintf("no draft to issue: %v", err), 400)
+			return
+		}
+		if _, err := conn.Exec(r.Context(), `UPDATE reports SET current_draft_version_id=NULL WHERE id::text=$1`, report); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	})
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()

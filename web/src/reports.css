@@ -513,3 +513,10 @@ p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
   .rfp-line[data-edited] .rfp-line-text { box-shadow: none; }
   .rfp-line[data-selected] td { background: none; }
 }
+
+/* An invited firm's link button sits left of its remove button (guest access). */
+.firm-detach.firm-share { right: 31px; }
+.cockpit-scroll .procurement-table .firm-detach.firm-share { right: 42px; }
+.firm-card:has(.firm-share) .firm-chip { padding-right: 60px; }
+.cockpit-scroll .procurement-table .firm-card:has(.firm-share) .firm-chip { padding-right: 80px; }
+.firm-detach.firm-share:hover:not(:disabled) { color: var(--ink); }

@@ -2169,3 +2169,18 @@ button.cell[data-state="check"]:hover {
 .profile-progress progress::-webkit-progress-bar { background: var(--ground); }
 .profile-progress progress::-webkit-progress-value { background: var(--azure); }
 .profile-progress progress::-moz-progress-bar { background: var(--azure); }
+
+/* Share: the link dialog (docs/plans/2026-11-17-guest-access.md). */
+.share-dialog { display: grid; gap: 12px; margin: 0 0 16px; }
+.share-fields, .share-link { display: grid; gap: 4px; }
+.share-fields label, .share-link label { font-size: var(--fs-sm); color: var(--ink-muted); }
+.share-fields .input + label { margin-top: 6px; }
+.share-link-row { display: flex; gap: 8px; }
+.share-link-row .input { flex: 1; min-width: 0; }
+.share-warning { margin: 0; color: var(--alert); }
+.share-error { margin: 0; color: var(--alert); }
+.share-list { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.share-list :is(th, td) { padding: 4px 6px 4px 0; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
+.share-list thead th { border-top: 0; color: var(--ink-muted); font-weight: 500; }
+.share-list tr[data-live="false"] { color: var(--ink-muted); }
+.share-by { display: block; color: var(--ink-muted); }

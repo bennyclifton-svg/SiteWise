@@ -30,7 +30,23 @@ type toolApp struct {
 func newToolApp(t *testing.T, extra ...func(*httpapi.Options)) *toolApp {
 	t.Helper()
 	ta := &toolApp{reply: func([]string) llm.Turn { return llm.Turn{Text: "ok"} }}
-	model := &scriptModel{script: func(n int, conv llm.Conversation) llm.Turn {
+	ta.model = ta.script()
+	synonyms, systems, err := httpapi.LoadChatWords(filepath.Join("..", "..", "knowledge"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	opts := append([]func(*httpapi.Options){withProfile(t), withChat(t, ta.model), func(o *httpapi.Options) { o.Chat.Synonyms, o.Chat.SystemTerms = synonyms, systems }}, extra...)
+	ta.a = newApp(t, opts...)
+	ta.m = ta.a.member(t, newUUID(t))
+	ta.m.modelSwitch(t, true, http.StatusOK)
+	ta.project = ta.m.createProject(t, "Tools")
+	return ta
+}
+
+// script is the stand-in model: the first round makes ta.calls, and a
+// round after tool results answers with ta.reply.
+func (ta *toolApp) script() *scriptModel {
+	return &scriptModel{script: func(n int, conv llm.Conversation) llm.Turn {
 		last := conv.History[len(conv.History)-1]
 		var msg struct {
 			Content []struct {
@@ -48,17 +64,6 @@ func newToolApp(t *testing.T, extra ...func(*httpapi.Options)) *toolApp {
 		}
 		return llm.Turn{Calls: ta.calls, StopReason: "tool_use"}
 	}}
-	ta.model = model
-	synonyms, systems, err := httpapi.LoadChatWords(filepath.Join("..", "..", "knowledge"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	opts := append([]func(*httpapi.Options){withProfile(t), withChat(t, model), func(o *httpapi.Options) { o.Chat.Synonyms, o.Chat.SystemTerms = synonyms, systems }}, extra...)
-	ta.a = newApp(t, opts...)
-	ta.m = ta.a.member(t, newUUID(t))
-	ta.m.modelSwitch(t, true, http.StatusOK)
-	ta.project = ta.m.createProject(t, "Tools")
-	return ta
 }
 
 func tool(name string, input map[string]any) llm.ToolCall {

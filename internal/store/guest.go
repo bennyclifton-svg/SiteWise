@@ -206,6 +206,12 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7::uuid[],NULLIF($8,'')::uuid,NULLI
 	if err != nil {
 		return GuestGrant{}, err
 	}
+	if g.Kind == GuestPackage {
+		// The firm's cell shows the link at once.
+		if err := invitationEvent(ctx, tx, s, org, project, g.PackageID, "linked"); err != nil {
+			return GuestGrant{}, err
+		}
+	}
 	return g, tx.Commit(ctx)
 }
 
@@ -265,6 +271,12 @@ func (s *Store) TouchGuestGrant(ctx context.Context, g GuestGrant, opened bool, 
 		add = 1
 	}
 	_, err := s.pool.Exec(ctx, `UPDATE guest_grants SET opens=opens+$3, last_opened_at=$4 WHERE org_id=$1::uuid AND id=$2::uuid`, g.OrgID, g.ID, add, now)
+	if err != nil || !opened || g.Kind != GuestPackage {
+		return err
+	}
+	// The PM's cell moves to "link opened" without a reload.
+	payload, _ := json.Marshal(map[string]string{"project_id": g.ProjectID, "package_id": g.PackageID, "state": "link_opened"})
+	_, err = appendEvent(ctx, s.q, g.OrgID, EventProcurement, "", string(payload))
 	return err
 }
 
@@ -337,7 +349,8 @@ func (s *Store) RevokeGuestGrant(ctx context.Context, org, project, id string, n
 	}
 	defer tx.Rollback(ctx)
 	var revoked *time.Time
-	err = tx.QueryRow(ctx, `SELECT revoked_at FROM guest_grants WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid FOR UPDATE`, org, project, id).Scan(&revoked)
+	var pkg string
+	err = tx.QueryRow(ctx, `SELECT revoked_at, COALESCE(package_id::text,'') FROM guest_grants WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid FOR UPDATE`, org, project, id).Scan(&revoked, &pkg)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return ShareView{}, ErrNotFound
 	}
@@ -347,6 +360,11 @@ func (s *Store) RevokeGuestGrant(ctx context.Context, org, project, id string, n
 	if revoked == nil {
 		if _, err := tx.Exec(ctx, `UPDATE guest_grants SET revoked_at=$3 WHERE org_id=$1::uuid AND id=$2::uuid`, org, id, now); err != nil {
 			return ShareView{}, err
+		}
+		if pkg != "" {
+			if err := invitationEvent(ctx, tx, s, org, project, pkg, "unlinked"); err != nil {
+				return ShareView{}, err
+			}
 		}
 	}
 	if err := tx.Commit(ctx); err != nil {

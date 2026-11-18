@@ -13,6 +13,7 @@ import { RfpStages } from "./PackageStages";
 import { ProjectPage, RfpReleaseDates, RfpIssue, RfpSectionEditor, SectionMarkers, controlSection, editableSections, type SettingChange, type Write } from "./RfpEditor";
 import "./reports.css";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { dialogOf } from "./chatView";
 import { InlineText } from "./InlineText";
 import { RfpScopePosition } from "./RfpScopePosition";
 import { RfpScopeTable, scopeTable } from "./RfpScopeTable";
@@ -265,7 +266,7 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
         {group && group.left.length > 0 && <div className="report-notice" role="status"><strong>{group.left.join(", ")} {group.left.length === 1 ? "has" : "have"} left this engagement.</strong><p>{group.left.length === 1 ? "Its part is" : "Their parts are"} dropped when you refresh the draft.</p></div>}
         {/* Program stage sync is for consultant stages; a trade RFT prices parts of the building. */}
         {view.rfp && view.rfp.kind !== "works" && <RfpStages reportId={reportId} tick={tick} onChanged={() => setReload(n => n + 1)} onSignedOut={onSignedOut} />}
-        {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports</h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${reportId}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
+        {!!view.issues?.length && <section className="report-notice" aria-label="Issued reports"><h3>Issued reports <button type="button" className="btn btn-small" onClick={() => dialogOf("share")?.open({ kind: "report", report: reportId, title: view.report.title })}>Share…</button></h3><ul>{view.issues.map(item => <li key={item.id}><a href={`/api/reports/${reportId}/versions/${item.id}/file`}>Download issue {item.number} — {item.reporting_date}</a></li>)}</ul><p>Issued PDFs retain their saved sources and wording.</p></section>}
         {!!view.changes_since_issue?.length && <details className="report-notice"><summary>Changes since last issue ({view.changes_since_issue.length})</summary><ul>{view.changes_since_issue.map(change => <li key={change.target_id}><strong>{change.kind}</strong>: {change.after || change.before}</li>)}</ul></details>}
         {draft && <div>
           <div className="rfp-draft">

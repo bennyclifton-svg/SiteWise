@@ -138,7 +138,11 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 		return agent.View{}, "The dialogs chat can open are award (fields package and column) and share (fields kind, then documents, report, or package and firm; shared_with and days if the PM said them)."
 	}
 	if in.Dialog == "share" {
-		return checkShareDialog(ctx, d, who, project, in.Fields)
+		fields, line, bad := checkShareDialog(ctx, d, who, project, in.Fields)
+		if bad != "" {
+			return agent.View{}, bad
+		}
+		return agent.View{Do: "open", Dialog: "share", Fields: fields, Line: line}, ""
 	}
 	pkgs, err := d.Store.ReadPackages(ctx, who.OrgID, project)
 	if err != nil {

@@ -31,6 +31,7 @@ import { Profile, type ProfileRunState } from "./Profile";
 import { Register } from "./Register";
 import { DocumentWorkspace } from "./DocumentWorkspace";
 import { Procurement } from "./Procurement";
+import { ShareHost } from "./ShareDialog";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
 import { newerAnnouncement, type RemoteProgram } from "./programApi";
@@ -819,6 +820,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
       }} />}
+      <ShareHost projectId={projectId} />
       <input
         ref={fileInput}
         type="file"

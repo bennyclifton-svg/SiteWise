@@ -156,6 +156,8 @@ func postGuestSession(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	if err := deps.Store.TouchGuestGrant(r.Context(), g, true, time.Now()); err != nil {
 		deps.Log.Printf("guest open not recorded share=%s: %v", g.ID, err)
+	} else if deps.Broker != nil && g.Kind == store.GuestPackage {
+		deps.Broker.Wake(g.OrgID)
 	}
 	http.SetCookie(w, &http.Cookie{Name: GuestCookie, Value: token, Path: guestPath, Expires: g.ExpiresAt, HttpOnly: true, Secure: deps.SecureCookie, SameSite: http.SameSiteStrictMode})
 	w.WriteHeader(http.StatusNoContent)

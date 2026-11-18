@@ -96,6 +96,13 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
     dialog.open({ package: pkg, column });
     return "";
   }
+  if (v.dialog === "share") {
+    // Share is the project's one dialog; chat opens it filled in, the PM presses Create link.
+    const dialog = await whenReady(() => dialogOf("share"));
+    if (!dialog) return "Share could not be opened. Use Share… on the document, report or invited firm.";
+    dialog.open(v.fields ?? {});
+    return "";
+  }
   const place = PLACE[v.table ?? ""];
   if (!place) return "";
   if (place === "documents") onShowDocuments(); else onShow(place);
