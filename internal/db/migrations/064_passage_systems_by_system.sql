@@ -1,0 +1,12 @@
+-- Chat's documents tool finds documents by what they are about
+-- (docs/plans/2026-11-18-chat-agency.md, Task 3). One of its signals counts
+-- the passages the profile labelled with a building system or a part of
+-- one. The only index here was (org_id, passage_id, system_id), so that
+-- count read every label in the table, every org's, on each call: 67 ms on
+-- 200,000 labels and growing with the whole database. This index finds one
+-- system's labels by a range, 13 ms on the same labels.
+--
+-- The column is indexed in the "C" collation, so the range "system" to
+-- "system/" holds the system and its parts ("system.part") whatever the
+-- database's own collation sorts punctuation as.
+CREATE INDEX passage_systems_by_system ON passage_systems (org_id, (system_id COLLATE "C"), passage_id);
