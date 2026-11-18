@@ -1,5 +1,6 @@
 import { Chevron } from "./Chevron";
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
+import { revealQuietly, showingLine, useChatTable } from "./chatView";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { RowHandle, startRowDrag } from "./table/RowHandle";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
@@ -72,6 +73,8 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
 }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
   const [selection, setSelection] = useState(emptySelection);
+  // Lines chat chose to show alone (agency plan, Task 2); null shows all.
+  const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
   const [drop, setDrop] = useState<{ id: string; after: boolean } | null>(null);
   const [menu, setMenu] = useState<(RowMenuAt & { ids: string[] }) | null>(null);
   const [assign, setAssign] = useState<{ ids: string[]; kind: string; x: number; y: number; value: string } | null>(null);
@@ -185,9 +188,29 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   // Children follow their group line; sorting applies within a level. Item
   // text is not indented (owner direction, 7 Nov 2026): a group line shows its
   // chevron in a slot every row keeps, so all item text starts at one edge.
+  // With a chat filter on, a line shows when it is chosen or holds one that is.
+  const holdsChosen = (id: string): boolean => !!only && (only.has(id) || (children.get(id) ?? []).some(c => holdsChosen(c.cost_item_id)));
   const tree = (list: CostItem[], depth: number): { item: CostItem; depth: number }[] =>
-    ordered(list).flatMap(i => [{ item: i, depth }, ...(collapsed.has(i.cost_item_id) ? [] : tree(children.get(i.cost_item_id) ?? [], depth + 1))]);
+    ordered(list).filter(i => !only || holdsChosen(i.cost_item_id)).flatMap(i => [{ item: i, depth }, ...(collapsed.has(i.cost_item_id) ? [] : tree(children.get(i.cost_item_id) ?? [], depth + 1))]);
   const visible = GROUPS.flatMap(g => tree(items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id))), 0)).map(r => r.item.cost_item_id);
+  // Chat moves the grid through the same selection the clicks use. A chosen
+  // line inside a closed group opens that group.
+  function openTo(ids: readonly string[]) {
+    const up = new Set<string>();
+    for (const id of ids) for (let p = byId.get(id)?.parent_item_id; p && !up.has(p); p = byId.get(p)?.parent_item_id) up.add(p);
+    if (up.size) setCollapsed(current => new Set([...current].filter(id => !up.has(id))));
+  }
+  const knownLines = (ids: readonly string[]) => ids.filter(id => byId.has(id));
+  useChatTable("cost_lines", "costs", {
+    select: ids => {
+      const keep = knownLines(ids);
+      openTo(keep); setOnly(null); setSelection(selectAll(keep));
+      if (keep[0]) requestAnimationFrame(() => revealQuietly(scroll.current?.querySelector(`tr[data-id="${CSS.escape(keep[0])}"]`)));
+    },
+    only: ids => { const keep = knownLines(ids); openTo(keep); setOnly(new Set(keep)); },
+    clear: () => setOnly(null),
+    open: id => { if (byId.has(id)) onOpen(id); },
+  }, selection.ids);
   function handleDown(e: ReactPointerEvent<HTMLElement>, item: CostItem) {
     if (!editable || busy || sort) return;
     const moving = selection.ids.includes(item.cost_item_id) ? visible.filter(id => selection.ids.includes(id)) : [item.cost_item_id];
@@ -217,10 +240,10 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   // One chevron in the Item head opens or closes every group line at once.
   const allOpen = !groupIds.some(id => collapsed.has(id));
   const masterToggle = groupIds.length > 0 && <button type="button" className="cost-disclosure-toggle cost-master-toggle" aria-label={allOpen ? "Collapse all" : "Expand all"} aria-expanded={allOpen} onClick={() => { setCollapsed(allOpen ? new Set(groupIds) : new Set()); setSelection(emptySelection); }}><Chevron open={allOpen} /></button>;
-  return <><div ref={scroll} className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
+  return <>{only && <p className="reg-filter">{showingLine("cost_lines", only.size)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}<div ref={scroll} className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
     if ((e.target as HTMLElement).closest("input,select,textarea,button,[popover]")) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setSelection(selectAll(visible)); }
-    if (e.key === "Escape") setSelection(emptySelection);
+    if (e.key === "Escape") { setSelection(emptySelection); setOnly(null); }
     if ((e.key === "Delete" || e.key === "Backspace") && selection.ids.length) { e.preventDefault(); removeMany(visible.filter(x => selection.ids.includes(x))); }
     if ((e.key === "ContextMenu" || (e.shiftKey && e.key === "F10")) && selection.ids.length) {
       e.preventDefault();

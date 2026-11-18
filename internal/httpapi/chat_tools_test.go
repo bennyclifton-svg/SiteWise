@@ -21,6 +21,7 @@ type toolApp struct {
 	a       *app
 	m       *member
 	project string
+	model   *scriptModel
 	calls   []llm.ToolCall
 	reply   func(results []string) llm.Turn
 	results []string
@@ -47,6 +48,7 @@ func newToolApp(t *testing.T) *toolApp {
 		}
 		return llm.Turn{Calls: ta.calls, StopReason: "tool_use"}
 	}}
+	ta.model = model
 	synonyms, systems, err := httpapi.LoadChatWords(filepath.Join("..", "..", "knowledge"))
 	if err != nil {
 		t.Fatal(err)

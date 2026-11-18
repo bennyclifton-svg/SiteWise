@@ -797,7 +797,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram)}
       profileFeedbackRef={setProfileFeedbackTarget}
       showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram}
-      chat={<Suspense fallback={null}><Chat projectId={projectId} onShow={showView} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
+      chat={<Suspense fallback={null}><Chat projectId={projectId} view={view} openDocument={viewingRow?.doc?.id ?? null} onShow={showView} onShowDocuments={() => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); }} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
       onDragEnter={onDragEnter}
       onDragOverCapture={e => { if ((e.target as HTMLElement).closest("[data-proposal-drop]")) { dragDepth.current = 0; setOver(false); } }}
       onDropCapture={() => { dragDepth.current = 0; setOver(false); }}

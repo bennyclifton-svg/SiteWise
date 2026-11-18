@@ -9,6 +9,7 @@ import { onCostSettingsRequest, takeCostSettingsRequest } from "./costSettingsRe
 import { InvoicesTab, VariationsTab } from "./Invoices";
 import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
 import { MoreMenu } from "./PageActions";
+import { registerHost } from "./chatView";
 import { IconDecimals, IconDownload, IconEye, IconLock, IconPrint, IconQuantity, IconUndo, IconUpload } from "./icons";
 import "./invoices.css";
 import "./reports.css";
@@ -67,6 +68,8 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   }, [projectId, tick, invoiceTick, ledgerReload]);
   const [reveal, setReveal] = useState<{ id: string }>();
   function showCostLine(id: string) { setTab("plan"); setReveal({ id }); }
+  // Chat naming cost lines brings the grid's tab forward first.
+  useEffect(() => registerHost("cost_lines", () => setTab("plan")));
   function showInvoices(line: string) { setFilter({ ...NO_FILTER, line }); setInvoice(""); setTab("invoices"); }
   // Files dropped anywhere on the cost plan are invoices for the ledger.
   const dropFiles = {

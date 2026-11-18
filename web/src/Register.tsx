@@ -11,6 +11,7 @@ import { IconBin, IconEye, IconEyeOff, IconMore, IconOpen, IconRename, IconRetry
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
 import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
+import { revealQuietly, showingLine, useChatTable } from "./chatView";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 import "./register-edit.css";
@@ -190,6 +191,8 @@ export function Register({
   const [confirm, setConfirm] = useState<string[] | null>(null);
   const [deleting, setDeleting] = useState(false);
   const readKinds = useMemo(() => catalog?.profile_read_kinds ?? [], [catalog]);
+  // Rows chat chose to show alone (agency plan, Task 2); null shows all.
+  const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
 
   const ordered = useMemo(() => {
     const uploads = rows.filter((r) => !r.doc);
@@ -203,9 +206,9 @@ export function Register({
       if (av && !bv) return -1;
       return av.localeCompare(bv, undefined, { numeric: true }) * dir;
     });
-    const shown = notReadOnly ? docs.filter((r) => !profileReads(r.doc!, readKinds)) : docs;
-    return [...(notReadOnly ? [] : uploads), ...shown];
-  }, [rows, sort, notReadOnly, readKinds]);
+    const shown = only ? docs.filter((r) => only.has(r.doc!.id)) : notReadOnly ? docs.filter((r) => !profileReads(r.doc!, readKinds)) : docs;
+    return [...(notReadOnly || only ? [] : uploads), ...shown];
+  }, [rows, sort, notReadOnly, readKinds, only]);
 
   const activity = ordered.map(row => {
     if (row.uploadError || row.interrupted) return null;
@@ -219,6 +222,16 @@ export function Register({
   // leave the selection.
   const docIds = useMemo(() => ordered.flatMap((r) => (r.doc ? [r.doc.id] : [])), [ordered]);
   useEffect(() => { setSelection(s => prune(s, docIds)); }, [docIds, setSelection]);
+
+  // Chat moves the register through the same selection the clicks use.
+  const known = (ids: readonly string[]) => ids.filter(id => rows.some(r => r.doc?.id === id));
+  const reveal = (id: string | undefined) => { if (id) requestAnimationFrame(() => revealQuietly(document.getElementById(`doc-${id}`))); };
+  useChatTable("documents", "documents", {
+    select: ids => { const keep = known(ids); if (notReadOnly) onClearFilter(); setOnly(null); setSelection(selectEveryRow(keep)); reveal(keep[0]); },
+    only: ids => { const keep = known(ids); setOnly(new Set(keep)); setSelection(emptySelection); },
+    clear: () => setOnly(null),
+    open: id => { if (known([id]).length) onOpen(id); },
+  }, selection.ids);
 
   const select = (id: string, e: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean }) => {
     if (fieldSaving.current) return;
@@ -339,7 +352,15 @@ export function Register({
       </div>
       {activity.length > 0 && <p className="reg-activity" role="status" aria-atomic="true"><Pending queued={!activeCount}>{[activeCount > 0 && `${activeCount} processing`, queuedCount > 0 && `${queuedCount} waiting`].filter(Boolean).join(" · ")}</Pending></p>}
       <p className="reg-notice" role="status">{notice}</p>
-      {notReadOnly && (
+      {only && (
+        <p className="reg-filter">
+          {showingLine("documents", only.size)} ·{" "}
+          <button type="button" className="cell-link" onClick={() => setOnly(null)}>
+            Clear
+          </button>
+        </p>
+      )}
+      {notReadOnly && !only && (
         <p className="reg-filter">
           Showing documents excluded from profile reading.{" "}
           <button type="button" className="cell-link" onClick={onClearFilter}>
@@ -356,7 +377,7 @@ export function Register({
           onKeyDown={e => {
             if ((e.target as HTMLElement).closest("input,select,textarea")) return;
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setNotice(""); setSelection(selectEveryRow(docIds)); }
-            else if (e.key === "Escape" && selected.size > 0) { setSelection(emptySelection); }
+            else if (e.key === "Escape" && (selected.size > 0 || only)) { setSelection(emptySelection); setOnly(null); }
           }}
         >
           <colgroup>

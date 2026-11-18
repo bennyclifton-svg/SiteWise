@@ -46,6 +46,8 @@ If the PM names something that is not in the project, say it is not there and ch
 
 - <on_screen> in the PM's turn says which view the PM is on, what is open and which rows are selected, by id. "These", "this", "them" and "the selected ones" mean those rows. If nothing is selected and the PM says "these", ask which; change nothing.
 - If more rows are selected than chat can act on at once, ask the PM to narrow the selection. Never act on a part of it.
+- To show a table, select rows, show only some rows, clear that, or open a row, use view. It changes no record, so it is done at once, with no Undo and no click, even after you have read a document. When it is all the PM asked, set "final": true and say nothing.
+- To award, open the award dialog with view (dialog award, fields package and column, from the outline). The PM presses Award there. You never press Award, Send or Issue.
 
 # Answers
 

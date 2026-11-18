@@ -91,6 +91,14 @@ type chatEvent struct {
 		Unchecked int    `json:"unchecked"`
 		Coverage  string `json:"coverage"`
 	} `json:"answer"`
+	View *struct {
+		Do     string            `json:"do"`
+		Table  string            `json:"table"`
+		IDs    []string          `json:"ids"`
+		Dialog string            `json:"dialog"`
+		Fields map[string]string `json:"fields"`
+		Line   string            `json:"line"`
+	} `json:"view"`
 	ConversationID string `json:"conversation_id"`
 	Rounds         int    `json:"rounds"`
 	CacheRead      int64  `json:"cache_read_tokens"`
@@ -197,7 +205,7 @@ func TestChatSimpleCommandAppliesInOneRound(t *testing.T) {
 	// The request: the operation list is in the cached system text, the
 	// outline and the message in the user turn, and the tools are fixed.
 	sent := model.sent[0]
-	if !strings.Contains(sent.System, "cost_plan.add_line") || !strings.Contains(sent.System, "Area guide: program") || len(sent.Tools) != 7 {
+	if !strings.Contains(sent.System, "cost_plan.add_line") || !strings.Contains(sent.System, "Area guide: program") || len(sent.Tools) != 8 {
 		t.Fatalf("system prompt or tools are wrong (%d tools)", len(sent.Tools))
 	}
 	if !strings.Contains(string(sent.History[0]), "project_outline") || !strings.Contains(string(sent.History[0]), "interiors (") {

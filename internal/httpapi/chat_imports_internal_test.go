@@ -55,7 +55,7 @@ func TestOnlyChatReachesTheModel(t *testing.T) {
 		})
 	}
 	// Inside this package.
-	agentFiles := map[string]bool{"chat.go": true, "chat_tools.go": true, "chat_read.go": true, "chat_docs.go": true, "chat_calc.go": true, "chat_prefetch.go": true}
+	agentFiles := map[string]bool{"chat.go": true, "chat_tools.go": true, "chat_read.go": true, "chat_docs.go": true, "chat_calc.go": true, "chat_prefetch.go": true, "chat_view.go": true}
 	llmFiles := map[string]bool{"chat.go": true, "chat_tools.go": true, "chat_prefetch.go": true, "server.go": true, "tender_reader.go": true}
 	chatFiles := map[string]bool{"chat.go": true, "chat_docs.go": true, "projects.go": true, "server.go": true, "tender_reader.go": true}
 	files, err := filepath.Glob("*.go")

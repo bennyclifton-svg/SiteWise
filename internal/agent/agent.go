@@ -92,6 +92,9 @@ type Output struct {
 	Facts    map[string]Fact
 	Coverage string
 	Cards    []Card
+	// Views are screen moves for the strip: they change no record, so they
+	// carry no Undo and never wait for a click.
+	Views []View
 	// Final: the tool did everything the PM asked and its card says so, so
 	// no further model call is needed (speed rule 1).
 	Final bool
@@ -110,6 +113,18 @@ type Card struct {
 	Undo     string   `json:"undo,omitempty"` // change | program | none
 	Prepared string   `json:"prepared_id,omitempty"`
 	Why      string   `json:"why,omitempty"`
+}
+
+// View is one move of the screen: show a table, select or show only some of
+// its rows, clear that, or open a row or a dialog. Ids are full ids Go has
+// checked against the project. Line says what was done, in plain words.
+type View struct {
+	Do     string            `json:"do"` // show | open | select | only | clear
+	Table  string            `json:"table,omitempty"`
+	IDs    []string          `json:"ids,omitempty"`
+	Dialog string            `json:"dialog,omitempty"`
+	Fields map[string]string `json:"fields,omitempty"`
+	Line   string            `json:"line"`
 }
 
 // Toolbox is the fixed set of tools.
@@ -150,10 +165,11 @@ type Prefetch struct {
 
 // Event is one thing sent to the strip while a turn runs.
 type Event struct {
-	Type string `json:"type"` // text | tool | change | prepared | answer | done | error
+	Type string `json:"type"` // text | tool | change | prepared | view | answer | done | error
 	Text string `json:"text,omitempty"`
 	Tool string `json:"tool,omitempty"`
 	Card *Card  `json:"card,omitempty"`
+	View *View  `json:"view,omitempty"`
 	// On an answer: the checked text and whether it is a question.
 	Answer *Answer `json:"answer,omitempty"`
 }
@@ -307,6 +323,10 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 				card := out.Cards[j]
 				res.Cards = append(res.Cards, card)
 				emit(Event{Type: card.Kind, Card: &card})
+			}
+			for j := range out.Views {
+				v := out.Views[j]
+				emit(Event{Type: "view", View: &v})
 			}
 		}
 		add(llm.ToolResults(results))

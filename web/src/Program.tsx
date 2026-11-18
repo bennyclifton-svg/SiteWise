@@ -36,6 +36,7 @@ import {
   type Viewport,
 } from "./program/layout";
 import { clickRow, emptySelection, prune, selectAll, type Selection } from "./table/selection";
+import { showingLine, useChatTable } from "./chatView";
 import { Grid, GRID_COLUMNS, type CellFocus, type CommitKey, type EditCol, type Editing } from "./program/grid/Grid";
 import { parseDuration, parsePredecessors } from "./program/grid/parse";
 import { SCALE_H, TimescaleGrid, TimescaleHeader } from "./program/chart/Timescale";
@@ -415,10 +416,33 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     return { groups, live, notes, marks, holdInfo, released, holds, imports, proposalReadings, orphans: orphanEvidence(groups) };
   }, [view, model]);
 
-  const rows: Row[] = useMemo(() => (view ? outlineRows(view.activities, expanded) : []), [view, expanded]);
+  // Rows chat chose to show alone (agency plan, Task 2), with their stages
+  // kept so each row stays under its own heading; null shows all.
+  const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
+  const rows: Row[] = useMemo(() => {
+    const all = view ? outlineRows(view.activities, expanded) : [];
+    if (!only || !view) return all;
+    const stages = new Set(view.activities.filter((a) => only.has(a.id) && a.parent_id).map((a) => a.parent_id as string));
+    return all.filter((r) => only.has(r.id) || stages.has(r.id));
+  }, [view, expanded, only]);
   const order = useMemo(() => rows.map((r) => r.id), [rows]);
   useEffect(() => setSel((s) => prune(s, order)), [order]);
   const selected = useMemo(() => new Set(sel.ids), [sel]);
+  // Chat moves the Program through the same selection the clicks use; a
+  // chosen row under a closed stage opens that stage.
+  const chatRows = (ids: readonly string[]) => {
+    const acts = view?.activities ?? [];
+    const keep = ids.filter((id) => acts.some((a) => a.id === id));
+    const parents = acts.filter((a) => keep.includes(a.id) && a.parent_id && !expanded.has(a.parent_id)).map((a) => a.parent_id as string);
+    if (parents.length) setOpen(new Set([...expanded, ...parents]));
+    return keep;
+  };
+  useChatTable("program", "program", {
+    select: (ids) => { const keep = chatRows(ids); setOnly(null); setSel(selectAll(keep)); },
+    only: (ids) => { setOnly(new Set(chatRows(ids))); },
+    clear: () => setOnly(null),
+    open: (id) => { const keep = chatRows([id]); if (keep.length) setSel(selectAll(keep)); },
+  }, sel.ids, !!view);
 
   // Fit to the typical bars, not the high-run finish: the program opens with
   // its bars filling the chart width (owner, 12 November 2026). The canvas
@@ -1033,6 +1057,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
     else if (k === "Escape") {
       setLinkPop(null);
       setSel(emptySelection);
+      setOnly(null);
     }
   }
 
@@ -1167,6 +1192,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         {sel.ids.length > 0 && <span className="pg-chip">{sel.ids.length} selected</span>}
         {dropping && <span className="pg-chip pg-drop-hint">Drop a PDF, DOCX or XLSX program to read its dates</span>}
       </header>
+      {only && <p className="reg-filter">{showingLine("program", only.size)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
 
       <div className="pg-toolbar" role="toolbar" aria-label="Program tools">
         {/* Left: what changes the program. Right: how it is viewed (owner, 2026-11-02). */}

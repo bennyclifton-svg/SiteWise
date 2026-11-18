@@ -77,7 +77,7 @@ func chatSystem(prompt string) string {
 		}
 		fmt.Fprintf(&b, "\n- %s%s: %s Fields: %s.", op.Name, click, op.About, op.Fields)
 	}
-	b.WriteString("\n\nAn operation marked as waiting for the PM's click, or one that cannot be undone from chat, is still sent with apply: SiteWise prepares it. Awards are made in the award dialog on Procurement.\n")
+	b.WriteString("\n\nAn operation marked as waiting for the PM's click, or one that cannot be undone from chat, is still sent with apply: SiteWise prepares it. Awards are made in the award dialog on Procurement; view opens it on the firm and the PM presses Award.\n")
 	b.WriteString("Not available from chat: uploading or re-reading a document, editing a report's wording, combining packages. Say \"I can't do that from chat yet\" and name the screen.\n")
 	b.WriteString("Never from chat: sign-in, billing, team and invitations, deleting or archiving a project, issuing anything.\n")
 	return b.String()
@@ -119,8 +119,8 @@ func chatUnavailable(ctx context.Context, d Deps, org string) string {
 }
 
 // postChat is POST /projects/{id}/chat {"conversation_id","text","screen"}.
-// It answers with a stream of events: text, tool, change, prepared, answer,
-// go, error and, last, done.
+// It answers with a stream of events: text, tool, change, prepared, view,
+// answer, go, error and, last, done.
 func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 	began := time.Now()
 	s, ok := deliverySession(w, r, d, true)

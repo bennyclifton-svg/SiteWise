@@ -22,7 +22,8 @@ import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
 import { MoreMenu, PageActions } from "./PageActions";
 import { InlineCellEditor } from "./table/InlineCellEditor";
-import { clickRow, emptySelection, prune } from "./table/selection";
+import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
+import { showingLine, useChatTable } from "./chatView";
 import "./reports.css";
 
 type View = { at: "table" } | { at: "report"; id: string } | { at: "prices"; pkg: string; report?: string };
@@ -63,6 +64,28 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   // November 2026). The open tab is a per-viewer convenience.
   const [tab, setTabState] = useState<ProcurementTab>(() => { try { return localStorage.getItem(TAB_KEY) === "trades" ? "trades" : "consultants"; } catch { return "consultants"; } });
   const setTab = (next: ProcurementTab) => { setTabState(next); setDraft(null); setSelection(emptySelection); try { localStorage.setItem(TAB_KEY, next); } catch { /* Storage is optional. */ } };
+  // Packages chat chose to show alone (agency plan, Task 2); null shows all.
+  const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
+  // Chat moves the table through the same selection the clicks use: it
+  // brings the table back from an open RFP or price table, and opens the tab
+  // that holds the first package it names.
+  const chatPackages = (ids: readonly string[]) => {
+    const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
+    const keep = ids.filter(id => live.some(p => p.id === id));
+    const first = live.find(p => p.id === keep[0]);
+    setView({ at: "table" });
+    if (first) { const next: ProcurementTab = first.kind === "services" ? "consultants" : "trades"; if (next !== tab) setTab(next); }
+    return keep;
+  };
+  useChatTable("procurement", "procurement", {
+    select: ids => { const keep = chatPackages(ids); setOnly(null); setSelection(selectAll(keep)); },
+    only: ids => { setOnly(new Set(chatPackages(ids))); },
+    clear: () => setOnly(null),
+    open: id => {
+      const pkg = data?.overview.items.find(p => p.id === id && !p.retired_at);
+      if (pkg) setView({ at: "prices", pkg: pkg.id, report: data?.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp")?.id });
+    },
+  }, selection.ids, !!data);
   const [combining, setCombining] = useState<{ members: PackageRecord[]; names: string[]; title: string; costLabels: string[]; submissionId?: string } | null>(null);
   // Members unticked on a combine prompt (slice 5): a prompt starts ticked.
   const [unticked, setUnticked] = useState<Record<string, string[]>>({});
@@ -342,7 +365,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   const trades = rows.filter(r => r.kind !== "services").sort(byTitle);
   const used = new Set(live.map(p => p.discipline_id).filter(Boolean));
   const options = (prefix: string) => disciplines.filter(d => d.id.startsWith(prefix) && !used.has(d.id));
-  const shown = tab === "consultants" ? consultants : trades;
+  const shown = (tab === "consultants" ? consultants : trades).filter(r => !only || (!!r.pkg && only.has(r.pkg.id)));
   const doc = tab === "consultants" ? "RFP" : "RFT";
 
   function rowView(row: Row) {
@@ -352,13 +375,13 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
     const selectable = combinable(row);
     return <tr key={row.key} className={[row.pkg ? "" : "row-suggested", dropping ? "row-drop" : ""].filter(Boolean).join(" ") || undefined}
       data-proposal-drop={row.pkg ? "true" : undefined} data-combinable={selectable || undefined}
-      aria-selected={selectable ? selection.ids.includes(row.pkg!.id) : undefined} onClick={e => pick(row, e)}
+      aria-selected={row.pkg && (selectable || selection.ids.includes(row.pkg.id)) ? selection.ids.includes(row.pkg.id) : undefined} onClick={e => pick(row, e)}
       onDragOver={row.pkg ? (e => { if (e.dataTransfer.types.includes("Files") || e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE)) { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = e.dataTransfer.types.includes(FILED_DOCUMENT_TYPE) ? "link" : "copy"; setDropRow(row.pkg!.id); } }) : undefined}
       onDragLeave={row.pkg ? (() => setDropRow("")) : undefined}
       onDrop={row.pkg ? (e => void dropOn(row.pkg!, e)) : undefined}>
       {/* Keyboard: Enter selects the row, Space adds or removes it. */}
       <th scope="row" className="discipline-cell" tabIndex={selectable ? 0 : undefined} style={row.member ? { paddingLeft: "2rem" } : undefined}
-        onKeyDown={selectable ? (e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(row, { ctrlKey: e.key === " ", metaKey: false, shiftKey: e.shiftKey, target: e.currentTarget }); } if (e.key === "Escape") setSelection(emptySelection); }) : undefined}>
+        onKeyDown={selectable ? (e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(row, { ctrlKey: e.key === " ", metaKey: false, shiftKey: e.shiftKey, target: e.currentTarget }); } if (e.key === "Escape") { setSelection(emptySelection); setOnly(null); } }) : undefined}>
         {row.group && row.pkg ? <GroupName group={row.pkg} onRename={title => rename(row.pkg!, title)} /> : row.label}
       </th>
       <FirmSlots row={row.label} busy={!!busyRow} onDetach={card => void detach(card)} cards={row.pkg ? data?.board.packages[row.pkg.id] ?? [] : []} droppable={!!row.pkg} uploading={!!row.pkg && uploadingRow === row.pkg.id}
@@ -458,6 +481,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         <button type="button" className="table-action" disabled={!!busyRow} onClick={() => void dismissPrompt(prompt)}>Dismiss</button>
       </div>;
     })}
+    {only && <p className="reg-filter">{showingLine("procurement", only.size)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
     {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll" role="tabpanel" id="procurement-panel" aria-labelledby={`procurement-tab-${tab}`}>
       <table className="procurement-table">
         <thead><tr><th scope="col">{tab === "consultants" ? "Consultant" : "Trade"}</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">{doc}</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>

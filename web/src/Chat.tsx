@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ApiError, request } from "./api";
 import type { WorkbenchView } from "./LeftNav";
+import { dialogOf, hostOf, screenSelection, tableOf, whenReady, type ChatPlace } from "./chatView";
 import "./chat.css";
 
 // The chat strip: one input at the foot of the middle panel. A typed
@@ -12,7 +13,9 @@ import "./chat.css";
 interface Mark { start: number; end: number; kind: "fact" | "quote" | "source" | "seen" | "check" | "verdict"; note?: string; document_id?: string; page?: number }
 interface Answer { text: string; marks?: Mark[]; question?: boolean; coverage?: string; unchecked?: number }
 interface Card { kind: "change" | "prepared"; area: string; lines: string[] | null; change_id?: string; undo?: string; prepared_id?: string; why?: string }
-interface ChatEvent { type: string; text?: string; tool?: string; card?: Card; answer?: Answer }
+/** A screen move from the view tool: ids are full ids Go checked against the project. */
+interface View { do: "show" | "open" | "select" | "only" | "clear"; table?: string; ids?: string[]; dialog?: string; fields?: Record<string, string>; line: string }
+interface ChatEvent { type: string; text?: string; tool?: string; card?: Card; answer?: Answer; view?: View }
 interface StoredTurn { id: string; text: string; status: string; answer?: { events?: ChatEvent[] } }
 
 interface Turn {
@@ -23,6 +26,8 @@ interface Turn {
   streamed: string;
   answer?: Answer;
   cards: CardState[];
+  /** What each screen move did, in Go's words. */
+  moved: string[];
   error?: string;
 }
 interface CardState { card: Card; state: "" | "busy" | "undone" | "dismissed"; note?: string }
@@ -31,12 +36,17 @@ const VIEW: Record<string, WorkbenchView> = { cost_plan: "costs", costs: "costs"
 const AREA: Record<string, string> = { cost_plan: "Cost Plan", profile: "Profile", program: "Program", procurement: "Procurement" };
 const DOING: Record<string, string> = {
   read: "Reading the records…", find: "Looking it up…", apply: "Making the change…", calc: "Working it out…",
-  documents: "Looking through the documents…", passages: "Reading the documents…", messages: "Checking the inbox…",
+  documents: "Looking through the documents…", passages: "Reading the documents…", messages: "Checking the inbox…", view: "Moving the screen…",
 };
+// Where each table chat can name lives (internal/httpapi/chat_screen.go).
+const PLACE: Record<string, ChatPlace> = { documents: "documents", cost_lines: "costs", program: "program", procurement: "procurement" };
+
 
 function fromStored(t: StoredTurn): Turn {
-  const turn: Turn = { key: t.id, text: t.text, status: t.status === "failed" ? "failed" : "done", doing: "", streamed: "", cards: [] };
+  const turn: Turn = { key: t.id, text: t.text, status: t.status === "failed" ? "failed" : "done", doing: "", streamed: "", cards: [], moved: [] };
   for (const e of t.answer?.events ?? []) {
+    // A stored move is shown, never made again: the screen is the PM's now.
+    if (e.type === "view" && e.view) turn.moved.push(e.view.line);
     if (e.card) turn.cards.push({ card: e.card, state: "" });
     if (e.type === "answer" && e.answer) turn.answer = e.answer;
     if (e.type === "error") turn.error = e.text;
@@ -69,7 +79,39 @@ function Marked({ answer, onOpenDocument }: { answer: Answer; onOpenDocument: (i
   return <p className="chat-answer">{out}</p>;
 }
 
-export default function Chat({ projectId, onShow, onOpenDocument }: { projectId: string; onShow: (view: WorkbenchView) => void; onOpenDocument: (id: string) => void }) {
+// moveScreen makes one view event happen: the table's view is shown first,
+// then its setter is called once the table has registered. It resolves with
+// a note when the move could not be made, or "".
+async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShowDocuments: () => void): Promise<string> {
+  if (v.dialog === "award") {
+    const pkg = v.fields?.package ?? "", column = v.fields?.column ?? "";
+    onShow("procurement");
+    const table = await whenReady(() => tableOf("procurement"));
+    table?.open?.(pkg);
+    const dialog = await whenReady(() => dialogOf(`award:${pkg}`));
+    if (!dialog) return "The award dialog could not be opened. Open the package's prices and press Award.";
+    dialog.open({ package: pkg, column });
+    return "";
+  }
+  const place = PLACE[v.table ?? ""];
+  if (!place) return "";
+  if (place === "documents") onShowDocuments(); else onShow(place);
+  hostOf(v.table ?? "")?.();
+  if (v.do === "show") return "";
+  const table = await whenReady(() => tableOf(v.table ?? ""));
+  if (!table) return "That table isn't on screen yet. Open it and ask again.";
+  const ids = v.ids ?? [];
+  if (v.do === "select") table.select(ids);
+  else if (v.do === "only") table.only(ids);
+  else if (v.do === "clear") table.clear();
+  else if (v.do === "open" && ids[0]) table.open?.(ids[0]);
+  return "";
+}
+
+export default function Chat({ projectId, view, openDocument, onShow, onShowDocuments, onOpenDocument }: {
+  projectId: string; view: WorkbenchView; openDocument: string | null;
+  onShow: (view: WorkbenchView) => void; onShowDocuments: () => void; onOpenDocument: (id: string) => void;
+}) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
@@ -112,12 +154,14 @@ export default function Chat({ projectId, onShow, onOpenDocument }: { projectId:
     const key = `new-${Date.now()}`;
     setText("");
     setBusy(true);
-    setTurns(all => [...all, { key, text: typed, status: "running", doing: "Thinking…", streamed: "", cards: [] }]);
+    setTurns(all => [...all, { key, text: typed, status: "running", doing: "Thinking…", streamed: "", cards: [], moved: [] }]);
     const fail = (message: string) => patch(key, t => ({ ...t, status: "failed", doing: "", error: message }));
+    // What is on screen as Enter is pressed: ids and counts only, never titles.
+    const screen = { view, open: openDocument ? { kind: "document", id: openDocument } : undefined, selected: screenSelection(view) };
     try {
       const res = await fetch(`/api${base}/chat`, {
         method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversation_id: conversation.current, text: typed }),
+        body: JSON.stringify({ conversation_id: conversation.current, text: typed, screen }),
       });
       if (!res.ok || !res.body) {
         fail(res.status === 404 ? "This conversation is no longer available. Nothing was changed." : "Chat is unavailable. Nothing was changed.");
@@ -138,6 +182,11 @@ export default function Chat({ projectId, onShow, onOpenDocument }: { projectId:
           else if (ev.type === "tool") patch(key, t => ({ ...t, doing: DOING[ev.tool ?? ""] ?? "Working…", streamed: "" }));
           else if (ev.card) patch(key, t => ({ ...t, doing: "", cards: [...t.cards, { card: ev.card!, state: "" }] }));
           else if (ev.type === "answer") patch(key, t => ({ ...t, doing: "", streamed: "", answer: ev.answer }));
+          else if (ev.type === "view" && ev.view) {
+            const v = ev.view;
+            patch(key, t => ({ ...t, doing: "", moved: [...t.moved, v.line] }));
+            void moveScreen(v, onShow, onShowDocuments).then(note => { if (note) patch(key, t => ({ ...t, error: note })); });
+          }
           else if (ev.type === "go") { const view = VIEW[ev.text ?? ""]; if (view) onShow(view); patch(key, t => ({ ...t, doing: "", answer: { text: `Opened ${AREA[ev.text ?? ""] ?? ev.text}.` } })); }
           else if (ev.type === "error") fail(ev.text ?? "Chat is unavailable. Nothing was changed.");
           else if (ev.type === "done") { conversation.current = ev.conversation_id ?? conversation.current; patch(key, t => t.status === "running" ? { ...t, status: "done", doing: "" } : t); }
@@ -148,7 +197,10 @@ export default function Chat({ projectId, onShow, onOpenDocument }: { projectId:
       fail("Can't reach SiteWise. Check the screen before trying again.");
     } finally {
       setBusy(false);
-      input.current?.focus();
+      // Back to the strip, unless the PM has moved on to a cell editor or
+      // another control while the turn ran: a view never takes focus.
+      const active = document.activeElement;
+      if (!active || active === document.body || active.closest(".chat")) input.current?.focus();
     }
   }
 
@@ -207,6 +259,7 @@ export default function Chat({ projectId, onShow, onOpenDocument }: { projectId:
                   </div>
                 </div>
               ))}
+              {t.moved.map((line, i) => <p key={`moved-${i}`} className="chat-answer">{line}</p>)}
               {t.doing && <p className="chat-doing">{t.doing}</p>}
               {t.streamed && !t.answer && <p className="chat-answer">{t.streamed}</p>}
               {t.answer?.text && <Marked answer={t.answer} onOpenDocument={onOpenDocument} />}

@@ -9,6 +9,7 @@ import { IconConfirmed, IconMore, IconUpdate } from "./icons";
 import { BackButton, PageActionsContext, PageSidePanel } from "./PageActions";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
+import { registerDialog } from "./chatView";
 import { ComparisonRowEditor } from "./ComparisonAlignment";
 import { fmt } from "./CostGrid";
 import { Chip } from "./Invoices";
@@ -66,6 +67,13 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     submissionApi.table(projectId, pkg).then(t => { if (!stopped) setTable(t); }).catch(e => { if (!stopped) fail(e); });
     return () => { stopped = true; };
   }, [projectId, pkg, tick, fail]);
+
+  // Chat opens the award dialog on one firm's column; the PM presses Award
+  // (agency plan, Task 2). It is offered only once the table has loaded.
+  useEffect(() => {
+    if (!table) return;
+    return registerDialog(`award:${pkg}`, { open: fields => { if (table.columns.some(c => c.submission.id === fields.column)) { setShowReport(false); setAwardFor(fields.column); } } });
+  }, [table, pkg]);
 
   async function run(action: () => Promise<PriceTable>) {
     setBusy(true); setError("");
