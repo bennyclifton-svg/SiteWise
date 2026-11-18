@@ -28,12 +28,14 @@ type Patch struct {
 	PackageID    *string         `json:"package_id"`
 	WorkItemID   *string         `json:"work_item_id"`
 	StageID      *string         `json:"stage_id"`
+	SystemID     *string         `json:"system_id"`
+	Determinant  *string         `json:"determinant_id"`
 	Details      json.RawMessage `json:"details"`
 	Retired      *bool           `json:"retired"`
 }
 
 func (p Patch) Apply(c *Content) {
-	for dst, src := range map[*string]*string{&c.Kind: p.Kind, &c.Title: p.Title, &c.OwnerText: p.OwnerText, &c.OwnerUserID: p.OwnerUserID, &c.Status: p.Status, &c.PackageID: p.PackageID, &c.WorkItemID: p.WorkItemID, &c.StageID: p.StageID} {
+	for dst, src := range map[*string]*string{&c.Kind: p.Kind, &c.Title: p.Title, &c.OwnerText: p.OwnerText, &c.OwnerUserID: p.OwnerUserID, &c.Status: p.Status, &c.PackageID: p.PackageID, &c.WorkItemID: p.WorkItemID, &c.StageID: p.StageID, &c.SystemID: p.SystemID, &c.DeterminantID: p.Determinant} {
 		if src != nil {
 			*dst = *src
 		}

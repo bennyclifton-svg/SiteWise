@@ -273,3 +273,27 @@ func TestCalendarLagBothPasses(t *testing.T) {
 		t.Errorf("a's float %d, but it can slip %d days without moving the finish", a.TF, slip)
 	}
 }
+
+func TestBusinessDayAfter(t *testing.T) {
+	christmas := Calendar{Days: []CalendarDay{{Day: "2026-12-25", Kind: DayPublicHoliday}, {Day: "2026-12-28", Kind: DayPublicHoliday}}}
+	for _, tc := range []struct {
+		cal  Calendar
+		from string
+		n    int
+		want string
+	}{
+		{Calendar{}, "2026-11-20", 5, "2026-11-27"}, // a Friday raise: the next Friday
+		{Calendar{}, "2026-11-21", 5, "2026-11-27"}, // a Saturday raise counts from Monday
+		{Calendar{}, "2026-11-18", 0, "2026-11-18"}, // no days: the same day
+		{christmas, "2026-12-23", 5, "2027-01-01"},  // 24, 29, 30, 31 Dec and 1 Jan: 25 and 28 are holidays
+		{Calendar{}, "2026-12-23", 5, "2026-12-30"}, // without the holidays
+	} {
+		got, ok := BusinessDayAfter(tc.cal, tc.from, tc.n)
+		if !ok || got != tc.want {
+			t.Errorf("BusinessDayAfter(%s, %d) = %q %v, want %q", tc.from, tc.n, got, ok, tc.want)
+		}
+	}
+	if _, ok := BusinessDayAfter(Calendar{}, "not a date", 5); ok {
+		t.Error("a malformed date was accepted")
+	}
+}

@@ -14,20 +14,25 @@ import (
 )
 
 type Content struct {
-	Kind         string          `json:"kind"`
-	Title        string          `json:"title"`
-	OwnerText    string          `json:"owner_text"`
-	OwnerUserID  string          `json:"owner_user_id,omitempty"`
-	BaselineDate *string         `json:"baseline_date"`
-	TargetDate   *string         `json:"target_date"`
-	ForecastDate *string         `json:"forecast_date"`
-	ActualDate   *string         `json:"actual_date"`
-	Status       string          `json:"status"`
-	AsOf         *string         `json:"as_of"`
-	PackageID    string          `json:"package_id,omitempty"`
-	WorkItemID   string          `json:"work_item_id,omitempty"`
-	StageID      string          `json:"stage_id,omitempty"`
-	Details      json.RawMessage `json:"details"`
+	Kind         string  `json:"kind"`
+	Title        string  `json:"title"`
+	OwnerText    string  `json:"owner_text"`
+	OwnerUserID  string  `json:"owner_user_id,omitempty"`
+	BaselineDate *string `json:"baseline_date"`
+	TargetDate   *string `json:"target_date"`
+	ForecastDate *string `json:"forecast_date"`
+	ActualDate   *string `json:"actual_date"`
+	Status       string  `json:"status"`
+	AsOf         *string `json:"as_of"`
+	PackageID    string  `json:"package_id,omitempty"`
+	WorkItemID   string  `json:"work_item_id,omitempty"`
+	StageID      string  `json:"stage_id,omitempty"`
+	// SystemID and DeterminantID put a register row on the building
+	// (knowledge/SCHEMA.md): a top-level system, and optionally one of its
+	// determinants. The store checks them against the catalogue.
+	SystemID      string          `json:"system_id,omitempty"`
+	DeterminantID string          `json:"determinant_id,omitempty"`
+	Details       json.RawMessage `json:"details"`
 }
 
 type Item struct {
@@ -41,6 +46,48 @@ type Item struct {
 	SourceProposalKey string          `json:"source_proposal_key,omitempty"`
 	RetiredAt         *time.Time      `json:"retired_at,omitempty"`
 	Version           int64           `json:"version"`
+	// Number is an RFI's number in its project (RFI-007), never reused.
+	Number *int `json:"number,omitempty"`
+	// With, LateDays and Readings are computed at read, never stored.
+	With     string    `json:"with,omitempty"`
+	LateDays *int      `json:"late_days,omitempty"`
+	Readings []Reading `json:"readings,omitempty"`
+}
+
+// Reading is a proposed answer to an open register row: a filed document
+// that may answer an RFI. A reading is a proposal; only the PM's edit
+// makes the RFI answered.
+type Reading struct {
+	ID          string   `json:"id"`
+	DocumentID  string   `json:"document_id"`
+	Document    string   `json:"document"`
+	DecidedBy   string   `json:"decided_by"`
+	Band        string   `json:"band"`
+	Probability *float64 `json:"probability,omitempty"`
+	Basis       string   `json:"basis,omitempty"`
+	FiledOn     string   `json:"filed_on,omitempty"`
+}
+
+// Numbered kinds carry a project number that belongs to that kind alone.
+func Numbered(kind string) bool { return kind == "rfi" }
+
+// CheckKindChange refuses a change to or from a numbered kind: RFI-007
+// must not become a risk and later an RFI again under another number.
+func CheckKindChange(from, to string) error {
+	if from != to && (Numbered(from) || Numbered(to)) {
+		return fmt.Errorf("an RFI stays an RFI; add a new record instead")
+	}
+	return nil
+}
+
+// With is who holds the row now (Procore's ball in court, in one column).
+// An answered RFI is with the PM, whose move it is to pass the answer on or
+// close it; otherwise it is with whoever the row names.
+func With(c Content) string {
+	if c.Kind == "rfi" && c.Status == "answered" {
+		return "You"
+	}
+	return c.OwnerText
 }
 
 func Statuses(kind string) []string {
@@ -57,6 +104,10 @@ func Statuses(kind string) []string {
 		return []string{"open", "decided", "superseded"}
 	case "approval":
 		return []string{"not_submitted", "submitted", "approved", "rejected", "withdrawn"}
+	case "rfi":
+		return []string{"draft", "open", "answered", "closed", "withdrawn"}
+	case "notice":
+		return []string{"open", "closed", "withdrawn"}
 	default:
 		return nil
 	}
@@ -84,6 +135,11 @@ func Open(kind, status string) bool {
 		return status != "decided" && status != "superseded"
 	case "approval":
 		return status != "approved" && status != "rejected" && status != "withdrawn"
+	case "rfi":
+		// Answered stays open until the PM closes it (owner decision 7).
+		return status == "draft" || status == "open" || status == "answered"
+	case "notice":
+		return status == "open"
 	default:
 		return true
 	}
@@ -95,6 +151,9 @@ func Validate(c Content) error {
 	}
 	if strings.TrimSpace(c.Title) == "" || !bounded(c.Title, 200) || !bounded(c.OwnerText, 200) {
 		return fmt.Errorf("invalid title or owner text")
+	}
+	if !bounded(c.SystemID, 200) || !bounded(c.DeterminantID, 200) || (c.DeterminantID != "" && c.SystemID == "") {
+		return fmt.Errorf("a determinant needs its system")
 	}
 	if c.StageID != "" && c.PackageID == "" {
 		return fmt.Errorf("stage requires its package")
@@ -118,6 +177,30 @@ type ApprovalDetails struct {
 	SubmittedOn  *string `json:"submitted_on"`
 	DeterminedOn *string `json:"determined_on"`
 }
+
+// RFIDetails is what is particular to an RFI. The subject is the title,
+// who it went to is owner_text and package_id, the response date is
+// target_date and the date answered is actual_date.
+type RFIDetails struct {
+	Question        string   `json:"question"`
+	Ref             string   `json:"ref"` // the sender's own number, shown as "Ref"
+	RaisedBy        string   `json:"raised_by"`
+	RaisedOn        *string  `json:"raised_on"`
+	Answer          string   `json:"answer"`
+	AnswerDocuments []string `json:"answer_documents"`
+	// DueTyped is true once the PM typed the response date, so a later
+	// change to the raised date keeps it.
+	DueTyped bool `json:"due_typed,omitempty"`
+}
+
+// NoticeDetails is what is particular to a notice. Its due date is the
+// date the PM typed (contract time bars are deferred).
+type NoticeDetails struct {
+	MessageID  string  `json:"message_id"`
+	Notice     string  `json:"notice"`
+	ReceivedOn *string `json:"received_on"`
+}
+
 type DecisionDetails struct {
 	Options []string `json:"options"`
 	Chosen  string   `json:"chosen"`
@@ -187,11 +270,66 @@ func validateDetails(c Content) error {
 		if c.Status == "decided" && d.Chosen == "" {
 			return fmt.Errorf("decided record requires a chosen option")
 		}
+	case "rfi":
+		var d RFIDetails
+		if err := decode(&d); err != nil {
+			return err
+		}
+		if !bounded(d.Question, 8000) || !bounded(d.Answer, 8000) || !bounded(d.Ref, 100) || !bounded(d.RaisedBy, 200) || len(d.AnswerDocuments) > 20 {
+			return fmt.Errorf("invalid RFI details")
+		}
+		if d.RaisedOn != nil && !date(*d.RaisedOn) {
+			return fmt.Errorf("invalid RFI raised date")
+		}
+		seen := map[string]bool{}
+		for _, id := range d.AnswerDocuments {
+			if !uuidLike(id) || seen[id] {
+				return fmt.Errorf("invalid or repeated answer document")
+			}
+			seen[id] = true
+		}
+	case "notice":
+		var d NoticeDetails
+		if err := decode(&d); err != nil {
+			return err
+		}
+		if !bounded(d.Notice, 200) || (d.MessageID != "" && !uuidLike(d.MessageID)) {
+			return fmt.Errorf("invalid notice details")
+		}
+		if d.ReceivedOn != nil && !date(*d.ReceivedOn) {
+			return fmt.Errorf("invalid notice received date")
+		}
 	default:
 		var d struct{}
 		return decode(&d)
 	}
 	return nil
+}
+
+// RFI reads an RFI's details; anything else reads as none.
+func RFI(c Content) RFIDetails {
+	var d RFIDetails
+	if c.Kind == "rfi" {
+		_ = json.Unmarshal(c.Details, &d)
+	}
+	return d
+}
+
+func uuidLike(s string) bool {
+	if len(s) != 36 {
+		return false
+	}
+	for i, r := range s {
+		switch {
+		case i == 8 || i == 13 || i == 18 || i == 23:
+			if r != '-' {
+				return false
+			}
+		case (r < '0' || r > '9') && (r < 'a' || r > 'f'):
+			return false
+		}
+	}
+	return true
 }
 
 func bounded(s string, n int) bool { return utf8.ValidString(s) && utf8.RuneCountInString(s) <= n }
