@@ -98,14 +98,14 @@ func TestAttentionRules(t *testing.T) {
 			}},
 			want: []string{
 				RulePackageInvitedNoQuote + ": Architect: 2 firms invited and no quote received",
-				RulePackageQuotesToCheck + ": Planner 100%: 1 quotes have readings to check",
+				RulePackageQuotesToCheck + ": Planner 100%: 1 quote has readings to check",
 			},
 			ids: [][]string{{"p1"}, {"p2"}},
 		},
 		{
-			name: "documents not filed (chat's plural kept); pending and filed are not",
+			name: "documents not filed; pending and filed are not",
 			in:   AttentionInput{Documents: []AttentionDocument{{ID: "d1", Status: "filed"}, {ID: "d2", Status: "not_filed"}, {ID: "d3", Status: "pending"}, {ID: "d4", Status: "split"}}},
-			want: []string{RuleDocumentNotFiled + ": 1 documents could not be filed or read"},
+			want: []string{RuleDocumentNotFiled + ": 1 document could not be filed or read"},
 			ids:  [][]string{{"d2"}},
 		},
 		{

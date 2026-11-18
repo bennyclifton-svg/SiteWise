@@ -323,11 +323,11 @@ func packageItems(pkgs []AttentionPackage) []AttentionItem {
 		invited, quoted, review := PackageQuotes(p.Firms)
 		if invited > 0 && quoted == 0 {
 			out = append(out, AttentionItem{Rule: RulePackageInvitedNoQuote, Source: "Procurement", Count: invited, IDs: []string{p.ID},
-				Words: fmt.Sprintf("%s: %d firms invited and no quote received", esc(p.Title), invited)})
+				Words: esc(p.Title) + ": " + plural(invited, "firm", "firms") + " invited and no quote received"})
 		}
 		if review > 0 {
 			out = append(out, AttentionItem{Rule: RulePackageQuotesToCheck, Source: "Procurement", Count: review, IDs: []string{p.ID},
-				Words: fmt.Sprintf("%s: %d quotes have readings to check", esc(p.Title), review)})
+				Words: esc(p.Title) + ": " + plural(review, "quote has", "quotes have") + " readings to check"})
 		}
 	}
 	return out
@@ -404,7 +404,7 @@ func documentItem(docs []AttentionDocument) AttentionItem {
 		}
 	}
 	return AttentionItem{Rule: RuleDocumentNotFiled, Source: "Documents", Count: len(ids), IDs: ids,
-		Words: fmt.Sprintf("%d documents could not be filed or read", len(ids))}
+		Words: plural(len(ids), "document", "documents") + " could not be filed or read"}
 }
 
 // ProgramNoDuration is an activity with no duration.
@@ -418,7 +418,7 @@ func programItem(acts []AttentionActivity) AttentionItem {
 		}
 	}
 	return AttentionItem{Rule: RuleProgramNoDuration, Source: "Program", Count: len(ids), IDs: ids,
-		Words: fmt.Sprintf("%d Program rows have no duration, so the finish date is a lower bound", len(ids))}
+		Words: plural(len(ids), "Program row has", "Program rows have") + " no duration, so the finish date is a lower bound"}
 }
 
 // approvalItem is approvals submitted, not yet determined, whose target
