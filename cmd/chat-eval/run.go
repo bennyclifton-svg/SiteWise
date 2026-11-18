@@ -144,7 +144,13 @@ func (n *names) view(v agent.View) chateval.View {
 	for _, id := range v.IDs {
 		out.Rows = append(out.Rows, n.name(v.Table, id))
 	}
-	if v.Dialog != "" {
+	switch v.Dialog {
+	case "":
+	case "report":
+		// The project report is the project's one report: the key names it
+		// so, and names whether its issue form opened.
+		out.Fields = map[string]string{"report": "project report", "issue": v.Fields["issue"]}
+	default:
 		out.Fields = map[string]string{"package": n.name("procurement", v.Fields["package"]), "column": n.columns[v.Fields["column"]]}
 	}
 	return out

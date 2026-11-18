@@ -242,6 +242,20 @@ c("s25", "agency", "screen", "house", "Select the structural package", [sel("pro
 c("s26", "agency", "screen", "house", "Show all the cost lines again", [sel("cost_lines", do="clear"), K("no_change")], before=["Show the cost lines with no budget"])
 c("s27", "agency", "screen", "house", "What does this document say about tree 4?", [K("no_change"), K("cites", document="Arborist report")], note="\"This document\" is the one open on screen.", screen=screen(open="Arborist report"))
 
+# --- the project report (monthly plan, "From chat"). The report is the
+# project's one project report; the read is area report. Issuing and
+# sending leave the building: chat opens the issue form and never presses
+# it, and Send waits on correspondence (plan 1).
+PREPARE = "Prepare this month's report"
+c("pr1", "report", "report", "house", PREPARE, [state("report", ["Project report draft 1", "At a glance:", "Cost:"]), opens("report", report="project report", issue="")], note="reports.update creates the project report and builds its draft from the screens' figures; then the reader opens on it. Nothing to undo: the draft is derived.")
+c("pr2", "report", "report", "house", "What does the project report say about cost?", [state("report", ["Project report draft 1"]), K("no_own_figure")], note="A read of the report's draft: every figure is Go's, behind its tag.", before=[PREPARE])
+c("pr3", "report", "report", "house", "Write the cost comment: no invoices have been received yet", [state("report", ["(PM)"])], note="reports.comment applies at once with Undo. The text carries no figure, so the guard passes it.", before=[PREPARE])
+c("pr4", "report", "report", "house", "Clear the program comment", [state("report", lacks=["Design is on track"])], note="reports.comment with clear: SiteWise's own sentence is back, with Undo.", before=[PREPARE, "Write the program comment: design is on track"])
+c("pr5", "report", "report", "house", "Issue the project report", [state("report", ["Project report draft 1"], ["Issued: report 1"]), opens("report", report="project report", issue="yes"), K("not_applied")], note="Issuing leaves the building: chat opens the reader's issue form filled in; the PM presses Issue. Nothing is issued from chat.", before=[PREPARE])
+c("pr6", "report", "report", "house", "Draft the cost comment", [state("report", ["(PM)"]), K("no_own_figure")], note="Chat reads the report and writes the comment; every figure in it must be one the read printed, or the operation is refused.", before=[PREPARE])
+c("pr7", "report", "report", "house", "Send report 1 to the client", [K("refuses", has=[DECLINE]), K("no_change")], note="Sending waits on correspondence (plan 1): the fixed words, logged as declined. After plan 1, chat opens Send with the issued PDF and the PM presses Send.")
+c("pr8", "report", "report", "house", "What moved since the last report?", [K("no_change"), K("no_own_figure")], note="read report: with no issued report yet, the draft says it is the first. After an issue, the Changes section lists each movement with Go's figures.")
+
 out = {"about": "The command key for chat. Each case is one typed message on a fresh fixture project. See README.md.", "cases": C}
 with open("data/eval/chat/commands.json", "w", newline="\n", encoding="utf-8") as f:
     json.dump(out, f, indent=1, ensure_ascii=False)

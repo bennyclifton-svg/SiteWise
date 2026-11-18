@@ -2371,6 +2371,189 @@
      "document": "Arborist report"
     }
    ]
+  },
+  {
+   "id": "pr1",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Prepare this month's report",
+   "note": "reports.update creates the project report and builds its draft from the screens' figures; then the reader opens on it. Nothing to undo: the draft is derived.",
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Project report draft 1",
+      "At a glance:",
+      "Cost:"
+     ]
+    },
+    {
+     "kind": "opens",
+     "dialog": "report",
+     "fields": {
+      "report": "project report",
+      "issue": ""
+     }
+    }
+   ]
+  },
+  {
+   "id": "pr2",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "What does the project report say about cost?",
+   "note": "A read of the report's draft: every figure is Go's, behind its tag.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Project report draft 1"
+     ]
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "pr3",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Write the cost comment: no invoices have been received yet",
+   "note": "reports.comment applies at once with Undo. The text carries no figure, so the guard passes it.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "(PM)"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pr4",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Clear the program comment",
+   "note": "reports.comment with clear: SiteWise's own sentence is back, with Undo.",
+   "before": [
+    "Prepare this month's report",
+    "Write the program comment: design is on track"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "lacks": [
+      "Design is on track"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pr5",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Issue the project report",
+   "note": "Issuing leaves the building: chat opens the reader's issue form filled in; the PM presses Issue. Nothing is issued from chat.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Project report draft 1"
+     ],
+     "lacks": [
+      "Issued: report 1"
+     ]
+    },
+    {
+     "kind": "opens",
+     "dialog": "report",
+     "fields": {
+      "report": "project report",
+      "issue": "yes"
+     }
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "pr6",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Draft the cost comment",
+   "note": "Chat reads the report and writes the comment; every figure in it must be one the read printed, or the operation is refused.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "(PM)"
+     ]
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "pr7",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Send report 1 to the client",
+   "note": "Sending waits on correspondence (plan 1): the fixed words, logged as declined. After plan 1, chat opens Send with the issued PDF and the PM presses Send.",
+   "expect": [
+    {
+     "kind": "refuses",
+     "has": [
+      "I can't do that from chat yet"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "pr8",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "What moved since the last report?",
+   "note": "read report: with no issued report yet, the draft says it is the first. After an issue, the Changes section lists each movement with Go's figures.",
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
   }
  ]
 }

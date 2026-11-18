@@ -79,6 +79,18 @@ question, unchecked figure, failed (anything else). A case marked
 The score sheet has one row per `group` and reports the share of turns that
 ended prepared (review change 7).
 
+## The report group
+
+`report` (draft, 8 cases, `pr1` to `pr8`) is the monthly plan's key
+(`docs/plans/2026-11-17-monthly-report.md`, "From chat"): prepare the
+project report (create, Update, open the reader), read it, write and clear
+a section's comment, draft a comment whose figures are the read's, open
+the issue form without issuing, and Send (not built until plan 1: the
+fixed words). The runner reads area `report` before and after each case,
+and names the report dialog's fields `report` ("project report") and
+`issue`. `TestScreenCasesScoredOffline` scores seven of them with the
+stand-in model; `pr7` is the model's words alone.
+
 ## The three fixtures
 
 Built by `cmd/chat-eval` from `cmd/chat-eval/fixtures.go`. Stage names are the seven common stages (Brief and concept, Schematic design, Planning, Design development, Tender documentation, Design finalisation, Delivery); "Design" alone names three of them, so a case that means one says which.
