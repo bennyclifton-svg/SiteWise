@@ -21,14 +21,16 @@ import "./register.css";
 const KIND: Record<string, [string, string]> = {
   rfi: ["RFI", "RFIs"], notice: ["Notice", "Notices"], action: ["Action", "Actions"], risk: ["Risk", "Risks"], issue: ["Issue", "Issues"],
   decision: ["Decision", "Decisions"], approval: ["Approval", "Approvals"], milestone: ["Hold point", "Hold points"],
+  condition: ["Condition", "Conditions"],
 };
 const STATUSES: Record<string, string[]> = {
   rfi: ["draft", "open", "answered", "closed", "withdrawn"], notice: ["open", "closed", "withdrawn"],
   action: ["not_started", "in_progress", "blocked", "complete", "cancelled"], risk: ["open", "mitigating", "closed"],
   issue: ["open", "in_progress", "resolved", "closed"], decision: ["open", "decided", "superseded"],
   approval: ["not_submitted", "submitted", "approved", "rejected", "withdrawn"], milestone: ["planned", "achieved", "cancelled"],
+  condition: ["open", "evidence_filed", "satisfied", "not_applicable"],
 };
-const CLOSED = new Set(["closed", "withdrawn", "complete", "cancelled", "resolved", "decided", "superseded", "approved", "rejected", "achieved"]);
+const CLOSED = new Set(["closed", "withdrawn", "complete", "cancelled", "resolved", "decided", "superseded", "approved", "rejected", "achieved", "satisfied", "not_applicable"]);
 const words = (s: string) => s.replaceAll("_", " ");
 type Field = "title" | "with" | "due" | "system" | "status";
 interface Edit { id: string; field: Field; many?: string[]; error?: string }

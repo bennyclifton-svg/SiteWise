@@ -66,6 +66,9 @@ type Reading struct {
 	Probability *float64 `json:"probability,omitempty"`
 	Basis       string   `json:"basis,omitempty"`
 	FiledOn     string   `json:"filed_on,omitempty"`
+	// Field is what the reading proposes: "answers" (a reply to an RFI) or
+	// "evidence" (a document that may show a consent condition is met).
+	Field string `json:"field,omitempty"`
 }
 
 // Numbered kinds carry a project number that belongs to that kind alone.
@@ -108,6 +111,8 @@ func Statuses(kind string) []string {
 		return []string{"draft", "open", "answered", "closed", "withdrawn"}
 	case "notice":
 		return []string{"open", "closed", "withdrawn"}
+	case "condition":
+		return []string{"open", "evidence_filed", "satisfied", "not_applicable"}
 	default:
 		return nil
 	}
@@ -140,6 +145,10 @@ func Open(kind, status string) bool {
 		return status == "draft" || status == "open" || status == "answered"
 	case "notice":
 		return status == "open"
+	case "condition":
+		// Only the PM marks a condition satisfied (owner decision 6); evidence
+		// filed is still open until then.
+		return status == "open" || status == "evidence_filed"
 	default:
 		return true
 	}
@@ -287,6 +296,14 @@ func validateDetails(c Content) error {
 				return fmt.Errorf("invalid or repeated answer document")
 			}
 			seen[id] = true
+		}
+	case "condition":
+		var d ConditionDetails
+		if err := decode(&d); err != nil {
+			return err
+		}
+		if err := d.check(); err != nil {
+			return err
 		}
 	case "notice":
 		var d NoticeDetails

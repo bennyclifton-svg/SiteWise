@@ -24,6 +24,10 @@ type DeliveryPatch struct {
 	// DismissReadings sets possible answers aside. On its own it leaves the
 	// row and its version as they are.
 	DismissReadings []string `json:"dismiss_readings"`
+	// LinkEvidence links a filed document of this project to a consent
+	// condition as its evidence; an open condition becomes evidence filed.
+	// Who linked it and when are Go's.
+	LinkEvidence string `json:"link_evidence"`
 }
 
 func (s *Store) PatchDelivery(ctx context.Context, org, project, id, actor string, patch DeliveryPatch) (delivery.Item, error) {
@@ -56,7 +60,7 @@ func (s *Store) PatchDelivery(ctx context.Context, org, project, id, actor strin
 	if len(patch.DismissReadings) > 100 {
 		return item, ErrInvalidDelivery
 	}
-	if patch.Empty() && patch.SourceRefs == nil && patch.AcceptReading == "" && len(patch.DismissReadings) > 0 {
+	if patch.Empty() && patch.SourceRefs == nil && patch.AcceptReading == "" && patch.LinkEvidence == "" && len(patch.DismissReadings) > 0 {
 		if err := dismissReadings(ctx, tx, org, project, id, patch.DismissReadings); err != nil {
 			return item, err
 		}
@@ -67,8 +71,9 @@ func (s *Store) PatchDelivery(ctx context.Context, org, project, id, actor strin
 	}
 	oldStatus, oldKind := item.Status, item.Kind
 	before := item.Content
+	evidenceDoc := patch.LinkEvidence
 	if patch.AcceptReading != "" {
-		if err := acceptReading(ctx, tx, org, project, &item, patch.AcceptReading, &patch.Patch); err != nil {
+		if err := acceptReading(ctx, tx, org, project, &item, patch.AcceptReading, &patch.Patch, &evidenceDoc); err != nil {
 			return item, err
 		}
 	}
@@ -81,6 +86,11 @@ func (s *Store) PatchDelivery(ctx context.Context, org, project, id, actor strin
 	}
 	if err := s.registerFill(ctx, tx, org, project, &item.Content, &before, patch.TargetDate.Present); err != nil {
 		return item, err
+	}
+	if evidenceDoc != "" {
+		if err := addEvidence(ctx, tx, org, project, actor, &item.Content, evidenceDoc); err != nil {
+			return item, err
+		}
 	}
 	// Closed historical records may retain retired targets. Reopening or choosing
 	// a new target must resolve every reference against live project records.
@@ -132,7 +142,7 @@ func (s *Store) PatchDelivery(ctx context.Context, org, project, id, actor strin
 // acceptReading turns one proposed reading into the fields an accepting
 // edit sets. The values come from the reading and the document, never
 // from the caller.
-func acceptReading(ctx context.Context, tx pgx.Tx, org, project string, item *delivery.Item, readingID string, p *delivery.Patch) error {
+func acceptReading(ctx context.Context, tx pgx.Tx, org, project string, item *delivery.Item, readingID string, p *delivery.Patch, evidence *string) error {
 	var uuid pgtype.UUID
 	if uuid.Scan(readingID) != nil {
 		return ErrInvalidDelivery
@@ -146,6 +156,13 @@ func acceptReading(ctx context.Context, tx pgx.Tx, org, project string, item *de
 	}
 	if err != nil {
 		return err
+	}
+	if item.Kind == "condition" {
+		// Possible evidence accepted: the document is linked as evidence
+		// after the edit is merged (addEvidence). It is never satisfied here
+		// (owner decision 6).
+		*evidence = doc
+		return nil
 	}
 	if item.Kind != "rfi" {
 		return fmt.Errorf("%w: only an RFI takes an answer", ErrInvalidDelivery)
@@ -169,10 +186,17 @@ func acceptReading(ctx context.Context, tx pgx.Tx, org, project string, item *de
 // settleReadings marks accepted every proposed reading whose document an
 // answered RFI now names as an answer, in the same transaction as the edit.
 func settleReadings(ctx context.Context, tx pgx.Tx, org, project string, item delivery.Item) error {
-	if item.Kind != "rfi" || item.Status != "answered" {
+	var docs []string
+	switch {
+	case item.Kind == "rfi" && item.Status == "answered":
+		docs = delivery.RFI(item.Content).AnswerDocuments
+	case item.Kind == "condition":
+		for _, e := range delivery.Condition(item.Content).Evidence {
+			docs = append(docs, e.DocumentID)
+		}
+	default:
 		return nil
 	}
-	docs := delivery.RFI(item.Content).AnswerDocuments
 	if len(docs) == 0 {
 		return nil
 	}

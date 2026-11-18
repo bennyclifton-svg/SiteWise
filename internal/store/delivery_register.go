@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -157,7 +158,7 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 		if delivery.Open(it.Kind, it.Status) {
 			k.Open++
 		}
-		if len(it.Readings) > 0 {
+		if delivery.ToCheck(*it) {
 			k.ToCheck++
 		}
 		if (q.Kind == "" || q.Kind == it.Kind) && (q.System == "" || q.System == it.SystemID) {
@@ -182,9 +183,9 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 	return view, tx.Commit(ctx)
 }
 
-// kindOrder puts RFIs and notices first, then the older kinds as they came.
+// kindOrder puts RFIs, notices and consent conditions first, then the older kinds as they came.
 func kindOrder(kinds []string) []string {
-	rank := map[string]int{"rfi": 0, "notice": 1, "action": 2, "risk": 3, "issue": 4, "decision": 5, "approval": 6, "milestone": 7}
+	rank := map[string]int{"rfi": 0, "notice": 1, "condition": 2, "action": 3, "risk": 4, "issue": 5, "decision": 6, "approval": 7, "milestone": 8}
 	out := append([]string(nil), kinds...)
 	for i := 1; i < len(out); i++ {
 		for j := i; j > 0 && rank[out[j]] < rank[out[j-1]]; j-- {
@@ -333,6 +334,30 @@ func (s *Store) registerFill(ctx context.Context, tx pgx.Tx, org, project string
 		c.OwnerText = firm
 	}
 	switch c.Kind {
+	case "condition":
+		d := delivery.Condition(*c)
+		if before != nil && before.Kind == "condition" {
+			// The number, heading and words are the instrument's; an edit
+			// changes who acts, the gate and evidence needed only.
+			d = delivery.MergeConditionEdit(delivery.Condition(*before), d)
+		} else {
+			if strings.TrimSpace(d.Number) == "" {
+				return fmt.Errorf("%w: a condition needs its number as printed on the consent", ErrInvalidDelivery)
+			}
+			// Evidence is linked and an RFP line is written by their own
+			// actions, never typed into a new row.
+			d.Evidence, d.RFP = nil, nil
+			if d.Source != nil {
+				if err := projectDocument(ctx, tx, org, project, d.Source.DocumentID); err != nil {
+					return err
+				}
+			}
+		}
+		raw, err := json.Marshal(d)
+		if err != nil {
+			return err
+		}
+		c.Details = raw
 	case "notice":
 		var d delivery.NoticeDetails
 		_ = json.Unmarshal(c.Details, &d)

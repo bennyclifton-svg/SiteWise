@@ -44,3 +44,6 @@ web/vite.config.js
 web/vitest.config.js
 web/playwright.config.js
 web/tsconfig.tsbuildinfo
+# Consent conditions answer key: per-condition labels of real councils'
+# notices (docs/plans/2026-11-17-consent-conditions.md). Never published.
+data/eval/consent/private/
