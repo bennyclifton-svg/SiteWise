@@ -270,6 +270,7 @@ func TestListAndCorrectionBudgets(t *testing.T) {
 type app struct {
 	url   string
 	store *store.Store
+	srv   *httpapi.Server
 	// jevHits counts evaluation calls that reached the fake provider.
 	jevHits atomic.Int64
 }
@@ -336,6 +337,7 @@ func newApp(t *testing.T, adjust ...func(*httpapi.Options)) *app {
 		_ = srv.Wait(ctx)
 	})
 	a.url = ts.URL
+	a.srv = srv
 	return a
 }
 

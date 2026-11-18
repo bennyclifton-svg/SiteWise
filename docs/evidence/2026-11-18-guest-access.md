@@ -57,15 +57,28 @@ check is `guest_open`'s).
 
 - A link is a bearer secret. Scope, expiry, revoke and the open count
   contain it; they do not prove who holds it (plan, risk 1).
+- A guest cannot reach the model or Jev directly, but a quote starts the
+  same background reads a PM's upload does: filing (Jev), the proposal read
+  (Jev) and, when the org has switched the model on, the tender pass. A
+  link therefore spends the org's reads; it is capped at 5 quotes an hour
+  and 10 for its whole life, and a guest never takes the org's last tenth
+  of its monthly documents or storage (review M3).
 - The rate limits are in memory, per process, as the account limits are:
-  a restart clears them. Exchanges and failed link checks share one
-  30-per-address window; a quote and a page read have their own per-link
-  windows.
-- A guest's quote is placed after its bytes land; a link revoked in that
-  window places nothing and its new document is deleted before filing. A
-  background worker that polls pending filings could, in principle, pick
-  the document up in the milliseconds between upload and the recheck; the
-  dev server runs with the backlog worker off and nothing was seen.
+  a restart clears them. Failed link checks (exchange or cookie) count 30
+  per address per 15 minutes, an IPv6 client keyed by its /64; a valid link
+  is never blocked by them (review L2). Reads are 300 per link an hour,
+  quotes 5, share creates 100 per org an hour. The limiter holds at most
+  50,000 keys and evicts at most 1,000 per insert (review L1).
+- A guest's upload lands held (not filed, reason `guest_hold`, no intake
+  job). Only `OpenGuestQuote`, after rechecking the link under the project
+  lock, releases it to filing in the transaction that places it. A crash
+  or a failed clean-up leaves a held document that neither the filer nor
+  `Server.Resume` will file; it shows as not filed in the register until
+  someone deletes it.
+- A corrected firm name keeps the link (the firm's id does not change). A
+  swap to a different firm withdraws the old firm's links first (review
+  M2); the foreign key keeps `ON UPDATE CASCADE` because a swap moves the
+  invitation's firm id and the withdrawn rows still reference it.
 - "Shared with" is a label the PM types; SiteWise sends no mail (plan 1
   owns sending). "Remind the firms" answers with the fixed words.
 - The 402 message tells the guest to let "the person who sent this link"
@@ -73,11 +86,20 @@ check is `guest_open`'s).
 
 ## 5. Threats
 
+After the security review of 18 November 2026 (no Critical or High; three
+Medium and five Low, all fixed, each test shown to fail without its fix).
+
 | Who | Can | Cannot | Held by |
 |---|---|---|---|
-| Holder of a leaked link | See and download the one shared thing until it ends or is withdrawn; a firm's link can drop a quote on that firm's own cell only | Reach any other document, an issue's draft, another firm's quote or price, another project or org, any member route, chat or Jev | `TestGuestReachesOnlyItsGrant` (a), (b), (c); `TestOpenGuestQuote` (another firm's bytes 409, B untouched) |
-| Someone guessing tokens | 30 tries per address per 15 minutes across the exchange and the cookie; 256-bit tokens | Learn whether a token was ever valid: wrong, expired, revoked and paused give one answer | `TestGuestReachesOnlyItsGrant` (d); `authLimits.blocked` |
-| Holder of a revoked or expired link | Nothing: the next request is 401 and the cookie is cleared; an upload in flight places nothing | Re-exchange the token; keep a cached page (no-store) | `TestGuestReachesOnlyItsGrant` (d), `TestGuestRevokedMidUpload`, `TestGuestGrantLife` (replaced link) |
-| Signed-in user of another org | Nothing on this project: share list, create and revoke give 404 | Make a link to another org's records | `TestGuestGrantScope`, `TestNextWaveRouteAccessSweep` |
+| Holder of a leaked link | See and download the one shared thing until it ends or is withdrawn; a firm's link can drop up to 10 quotes (5 an hour) on that firm's own cell only | Reach any other document (only the transmittal block's ids, review note), an issue's draft, another firm's quote or price, another project or org, any member route, chat; push the org's PMs to the plan cap | `TestGuestReachesOnlyItsGrant` (a), (b), (c); `TestOpenGuestQuote`; `TestGuestDownloadsOnlyTheTransmittal`; `TestGuestQuoteLifetime`; `TestGuestUploadLimits`; `TestGuestsAreNotSeatsAndCountTowardTheCap` |
+| A firm holding two links in one browser | Use whichever link its page was opened on | Upload to or download from the other link from a stale tab (409 "This page is for another link. Reload.") | `TestGuestPageIsTiedToItsLink` (M1) |
+| A firm whose cell was swapped to another firm | Nothing: its link is withdrawn in the swap | Upload as, or see the quotes of, the firm now in the cell | `TestGuestGrantLife` (M2) |
+| Someone guessing tokens | 30 misses per address (IPv6 per /64) per 15 minutes; 256-bit tokens | Learn whether a token was ever valid: wrong, expired, revoked, archived and retired give one 401 body; lock out a valid guest behind the same address | `TestGuestReachesOnlyItsGrant` (d), `TestGuestDeadLinksOneAnswer`, `TestGuestMissesBlockOnlyMisses` (L2), `TestLimitAddressKeysIPv6By64` |
+| Someone flooding the limiter with addresses | Fill it to its cap | Grow it without bound or slow sign-in | `TestLimiterHasAHardCap` (L1) |
+| Holder of a revoked or expired link | Nothing: the next request is 401 and the cookie is cleared; an upload in flight places nothing and is never filed, even after a crash | Re-exchange the token; keep a cached page (no-store) | `TestGuestRevokedMidUpload`, `TestGuestUploadIsHeldUntilTheRecheck`, `TestResumeLeavesAHeldGuestUpload` (L4), `TestGuestGrantLife` |
+| Holder of a link made by a removed team member | Nothing: the member's links are withdrawn with the membership | See the removed member's name on a live page | `TestRemovedMembersLinksStop` (L3) |
+| A firm whose tender was awarded on a combined row | Nothing more | Quote after the award stored on the group | `TestGuestQuoteRefusedAfterAGroupAward` (L5) |
+| Signed-in user of another org | Nothing on this project: share list, create and revoke give 404 | Make a link to another org's records; make more than 100 links an hour | `TestGuestGrantScope`, `TestNextWaveRouteAccessSweep`, `TestShareCreatesPerOrg` |
 | A PM's own browser with a guest cookie | Two cookie names; member routes read only `sitewise_session`, guest routes only `sitewise_guest` (Path=/api/guest) | Gain either side's access from the other | (a) of the sweep sends the guest cookie to every member route |
-| A cross-site page | Nothing: guest writes check Origin, the cookie is SameSite=Strict, pages cannot be framed | Post a quote or exchange a token from another origin | `TestGuestReachesOnlyItsGrant` (e) and its header checks |
+| A cross-site page or a network observer | Nothing: guest writes check Origin, the cookie is SameSite=Strict and, in production, Secure; pages cannot be framed | Post a quote or exchange a token from another origin; read the cookie over plain HTTP in production | `TestGuestReachesOnlyItsGrant` (e) and its header checks, `TestGuestCookieSecureInProduction` |
+| One link reading in a loop | 300 reads an hour | More | `TestGuestReadsPerLink` |

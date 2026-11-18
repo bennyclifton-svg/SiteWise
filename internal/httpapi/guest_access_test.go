@@ -182,13 +182,19 @@ func (f *guestFixture) issueRFT(t *testing.T, version string, ids []string) {
 	t.Helper()
 	sections, _ := json.Marshal([]map[string]any{{"id": "project", "title": "Project", "blocks": []map[string]any{
 		{"id": "rfp:project:information", "label": "Transmittal", "text": "", "basis": map[string]any{"document_ids": ids}}}}})
+	f.issueSections(t, version, string(sections))
+}
+
+// issueSections marks a draft issued with the given sections.
+func (f *guestFixture) issueSections(t *testing.T, version, sections string) {
+	t.Helper()
 	ctx := context.Background()
 	if _, err := f.conn.Exec(ctx, `UPDATE report_versions v SET status='issued', sections=$3::jsonb, snapshot='{}'::jsonb, snapshot_sha256=repeat('a',64),
  export_file_sha256=(SELECT export_file_sha256 FROM report_versions WHERE org_id=$1::uuid AND id=$5::uuid), issued_at=now(), issued_by=$4::uuid
- WHERE org_id=$1::uuid AND id=$2::uuid`, f.m.orgID, version, string(sections), f.user, f.pmpIssue); err != nil {
+ WHERE org_id=$1::uuid AND id=$2::uuid`, f.m.orgID, version, sections, f.user, f.pmpIssue); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := f.conn.Exec(ctx, `UPDATE reports SET current_draft_version_id=NULL WHERE org_id=$1::uuid AND id=$2::uuid`, f.m.orgID, f.rft); err != nil {
+	if _, err := f.conn.Exec(ctx, `UPDATE reports r SET current_draft_version_id=NULL FROM report_versions v WHERE v.org_id=r.org_id AND v.report_id=r.id AND r.org_id=$1::uuid AND v.id=$2::uuid`, f.m.orgID, version); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -235,6 +241,9 @@ type guest struct {
 	f      *guestFixture
 	client *http.Client
 	token  string
+	// share is the link id the page shows; it goes back on every request,
+	// as the guest page sends it (security review M1).
+	share string
 }
 
 func (f *guestFixture) guest(t *testing.T, token string) *guest {
@@ -248,6 +257,10 @@ func (f *guestFixture) guest(t *testing.T, token string) *guest {
 		body, _ := json.Marshal(map[string]string{"token": token})
 		if code, raw := g.raw(t, http.MethodPost, "/api/guest/session", body, true); code != http.StatusNoContent {
 			t.Fatalf("exchange = %d: %s", code, raw)
+		}
+		var page store.GuestPageView
+		if code, raw := g.raw(t, http.MethodGet, "/api/guest", nil, false); code == http.StatusOK && json.Unmarshal([]byte(raw), &page) == nil {
+			g.share = page.Share
 		}
 	}
 	return g
@@ -270,6 +283,9 @@ func (g *guest) send(t *testing.T, method, path string, body []byte, origin bool
 	}
 	if origin {
 		req.Header.Set("Origin", g.f.a.url)
+	}
+	if g.share != "" {
+		req.Header.Set("X-Guest-Share", g.share)
 	}
 	for k, v := range header {
 		req.Header[k] = v
@@ -641,13 +657,31 @@ VALUES ($1::uuid,gen_random_uuid(),$2::uuid,decode(repeat('ee',32),'hex'),'docum
 	if code, _ := acme.raw(t, http.MethodGet, "/api/guest", nil, false); code != 200 {
 		t.Fatalf("link after a correction = %d", code)
 	}
-	// Removing the invitation takes the link with it.
-	f.m.call(t, http.MethodDelete, base+inv.FirmID, nil, http.StatusNoContent, nil)
-	if n := f.count(t, `SELECT count(*) FROM guest_grants WHERE org_id=$1::uuid AND kind='package'`, f.m.orgID); n != 0 {
-		t.Fatalf("%d package links outlived their invitation", n)
+	// Swapping the cell to another directory firm withdraws Acme's link: it
+	// must never upload as, or list the quotes of, the firm now there (M2).
+	var other struct {
+		ID string `json:"id"`
 	}
-	if code, _ := acme.raw(t, http.MethodGet, "/api/guest", nil, false); code != 401 {
-		t.Fatalf("link after its invitation went = %d", code)
+	f.m.call(t, http.MethodPost, "/api/projects/"+f.project+"/procurement/rows", []byte(`{"discipline_id":"consultant.architect"}`), http.StatusCreated, &other)
+	var g2 struct {
+		FirmID string `json:"firm_id"`
+	}
+	f.m.call(t, http.MethodPost, "/api/projects/"+f.project+"/procurement/packages/"+other.ID+"/invitations", []byte(`{"name":"Gamma Design"}`), http.StatusCreated, &g2)
+	_, deadBody := (&guest{f: f, client: &http.Client{}}).raw(t, http.MethodPost, "/api/guest/session", []byte(`{"token":"`+strings.Repeat("cd", 32)+`"}`), true)
+	f.m.call(t, http.MethodPut, base+inv.FirmID, []byte(`{"firm_id":"`+g2.FirmID+`"}`), http.StatusOK, &inv)
+	if inv.FirmID != g2.FirmID {
+		t.Fatalf("the cell holds %s, want Gamma", inv.FirmID)
+	}
+	if n := f.count(t, `SELECT count(*) FROM guest_grants WHERE org_id=$1::uuid AND id=$2::uuid AND revoked_at IS NOT NULL`, f.m.orgID, replaced.Share.ID); n != 1 {
+		t.Fatal("swapping the firm left its link live")
+	}
+	if code, body := acme.raw(t, http.MethodGet, "/api/guest", nil, false); code != 401 || body != deadBody || strings.Contains(body, "Gamma") {
+		t.Fatalf("Acme's link after the swap = %d %q", code, body)
+	}
+	// Removing the invitation takes any link with it.
+	f.m.call(t, http.MethodDelete, base+inv.FirmID, nil, http.StatusNoContent, nil)
+	if n := f.count(t, `SELECT count(*) FROM guest_grants WHERE org_id=$1::uuid AND kind='package' AND firm_id=$2::uuid`, f.m.orgID, inv.FirmID); n != 0 {
+		t.Fatalf("%d package links outlived their invitation", n)
 	}
 	// An archived project pauses its links; unarchived, they work again.
 	docs, docToken := f.share(t, map[string]any{"kind": "documents", "document_ids": []string{f.d3}, "shared_with": "client@example.test"})
@@ -764,6 +798,14 @@ func TestOpenGuestQuote(t *testing.T) {
 	if c := boardCard(t, f, f.m, f.project, f.pkg, f.firmA); c == nil || c["submission_id"] != sub || c["firm_name"] != "Acme Planning" {
 		t.Fatalf("Acme's cell after its quote %+v", c)
 	}
+	// The upload landed held: its intake job was made by the transaction that
+	// placed the quote (same transaction time), never by the upload before
+	// the link was rechecked (security review L4).
+	var held bool
+	if err := f.conn.QueryRow(context.Background(), `SELECT bool_and(j.created_at = s.created_at) FROM submissions s JOIN jobs j ON j.org_id=s.org_id AND j.document_id=s.document_id AND j.kind='intake'
+WHERE s.org_id=$1::uuid AND s.id=$2::uuid`, f.m.orgID, sub).Scan(&held); err != nil || !held {
+		t.Fatalf("the quote's filing was claimable before the recheck: %v", err)
+	}
 	var change string
 	if err := f.conn.QueryRow(context.Background(), `SELECT id::text FROM project_changes WHERE org_id=$1::uuid AND project_id=$2::uuid AND via='guest' AND actor=$3::uuid AND area='procurement' AND ops->0->>'op'='guest_quote' AND ops->0->>'submission_id'=$4`, f.m.orgID, f.project, link.Share.ID, sub).Scan(&change); err != nil {
 		t.Fatalf("no change row: %v", err)
@@ -831,6 +873,7 @@ func TestGuestRevokedMidUpload(t *testing.T) {
 	pr, pw := io.Pipe()
 	req, _ := http.NewRequest(http.MethodPost, f.a.url+"/api/guest/quote?name=slow.pdf", pr)
 	req.Header.Set("Origin", f.a.url)
+	req.Header.Set("X-Guest-Share", acme.share)
 	done := make(chan *http.Response, 1)
 	go func() {
 		resp, err := acme.client.Do(req)
@@ -956,15 +999,15 @@ func TestGuestUploadLimits(t *testing.T) {
 		t.Fatal("a refused upload wrote a file row")
 	}
 	quote := psample.PDF(psample.Proposal{Firm: "Acme Planning", Lines: []psample.Line{{Label: "Fee", Cents: 100}}})
-	// Three uploads above counted toward the hour (the type is checked first,
-	// so only huge.pdf did); the same bytes again are the same quote.
-	for i := 1; i < 20; i++ {
+	// Of the uploads above only huge.pdf counted toward the hour (the type
+	// is checked first); the same bytes again are the same quote.
+	for i := 1; i < 5; i++ {
 		if code, body := acme.raw(t, http.MethodPost, "/api/guest/quote?name=quote.pdf", quote, true); code != http.StatusCreated {
 			t.Fatalf("upload %d = %d %s", i, code, body)
 		}
 	}
 	if code, _ := acme.raw(t, http.MethodPost, "/api/guest/quote?name=quote.pdf", quote, true); code != 429 {
-		t.Fatalf("21st upload in the hour = %d", code)
+		t.Fatalf("6th upload in the hour = %d", code)
 	}
 }
 

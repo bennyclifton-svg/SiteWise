@@ -89,7 +89,9 @@ func TestGuestsAreNotSeatsAndCountTowardTheCap(t *testing.T) {
 		t.Fatalf("team invite with 50 links = %d, before %d", got, inviteBefore)
 	}
 	acme := f.guest(t, token)
-	for usage().DocumentsThisMonth < 50 {
+	// A guest stops at 90% of the month's documents (45 of 50 on Free), so it
+	// never takes the last uploads from the org's own PMs (review M3).
+	for usage().DocumentsThisMonth < 45 {
 		if err := f.a.store.CountDocument(ctx, f.m.orgID, time.Now()); err != nil {
 			t.Fatal(err)
 		}

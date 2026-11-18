@@ -11,6 +11,8 @@ import { Wordmark } from "./Wordmark";
 interface GuestDocument { id: string; number: string; title: string; revision: string }
 interface GuestIssue { id: string; number: number; reporting_date: string }
 interface Page {
+  /** The link this page was opened on; sent back on every download and upload. */
+  share: string;
   kind: "documents" | "report" | "package";
   title: string;
   project: string;
@@ -30,11 +32,13 @@ function shown(iso: string) {
   return new Date(`${iso.slice(0, 10)}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" });
 }
 
-async function guestCall(method: string, path: string, body?: BodyInit, json = false): Promise<Response> {
-  const res = await fetch(`/api/guest${path}`, {
-    method, credentials: "same-origin", body,
-    headers: json ? { "Content-Type": "application/json" } : undefined,
-  });
+async function guestCall(method: string, path: string, body?: BodyInit, json = false, share = ""): Promise<Response> {
+  const headers: Record<string, string> = {};
+  if (json) headers["Content-Type"] = "application/json";
+  // A second link opened in another tab replaces the cookie; the server
+  // refuses an upload from a page opened on the first.
+  if (share) headers["X-Guest-Share"] = share;
+  const res = await fetch(`/api/guest${path}`, { method, credentials: "same-origin", body, headers });
   if (!res.ok) {
     const text = (await res.text()).trim();
     throw new Error(res.status === 401 ? GONE : text || "Something went wrong. Try again.");
@@ -75,7 +79,7 @@ export default function GuestPage() {
     if (file.size > MAX_QUOTE) { setStatus("The file is larger than 50 MB."); return; }
     setSending(true); setStatus("");
     try {
-      const res = await guestCall("POST", `/quote?name=${encodeURIComponent(file.name)}`, file);
+      const res = await guestCall("POST", `/quote?name=${encodeURIComponent(file.name)}`, file, false, page?.share ?? "");
       const got = await res.json() as { filename: string; received_on: string };
       setStatus(`Received ${got.filename}, ${shown(got.received_on)}.`);
       await load();
@@ -104,7 +108,7 @@ export default function GuestPage() {
               {page.issues.map((i, n) => <tr key={i.id}>
                 <th scope="row">Issue {i.number}{n === 0 && page.issues.length > 1 ? " (latest)" : ""}</th>
                 <td>{shown(i.reporting_date)}</td>
-                <td className="pl-num"><a className="btn btn-small" href={`/api/guest/issues/${i.id}/file`} download>Download</a></td>
+                <td className="pl-num"><a className="btn btn-small" href={`/api/guest/issues/${i.id}/file?share=${page.share}`} download>Download</a></td>
               </tr>)}
             </tbody></table>
           </section>}
@@ -114,7 +118,7 @@ export default function GuestPage() {
               <thead><tr><th scope="col">Number</th><th scope="col">Title</th><th scope="col">Revision</th><th scope="col"><span className="sr-only">Download</span></th></tr></thead>
               <tbody>{page.documents.map(d => <tr key={d.id}>
                 <th scope="row">{d.number}</th><td>{d.title}</td><td>{d.revision}</td>
-                <td className="pl-num"><a className="btn btn-small" href={`/api/guest/documents/${d.id}/file`} download>Download</a></td>
+                <td className="pl-num"><a className="btn btn-small" href={`/api/guest/documents/${d.id}/file?share=${page.share}`} download>Download</a></td>
               </tr>)}</tbody>
             </table>
           </section>}

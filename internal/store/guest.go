@@ -387,6 +387,10 @@ func (s *Store) RevokeGuestGrant(ctx context.Context, org, project, id string, n
 // the sharer and the guest, and only the shared thing: no price, no other
 // firm, no draft.
 type GuestPageView struct {
+	// Share is the link's id. The page sends it back on every download and
+	// upload, so a tab opened on one link never acts on another link whose
+	// cookie replaced it (security review M1). It is not a secret.
+	Share      string          `json:"share"`
 	Kind       string          `json:"kind"`
 	Title      string          `json:"title"`
 	Project    string          `json:"project"`
@@ -425,7 +429,7 @@ type GuestReceived struct {
 
 // GuestPage reads the page in one read-only transaction.
 func (s *Store) GuestPage(ctx context.Context, g GuestGrant) (GuestPageView, error) {
-	out := GuestPageView{Kind: g.Kind, To: g.SharedWith, WorksUntil: SydneyDate(g.ExpiresAt), Documents: []GuestDocument{}, Issues: []GuestIssue{}}
+	out := GuestPageView{Share: g.ID, Kind: g.Kind, To: g.SharedWith, WorksUntil: SydneyDate(g.ExpiresAt), Documents: []GuestDocument{}, Issues: []GuestIssue{}}
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
 	if err != nil {
 		return out, err
@@ -507,11 +511,19 @@ func guestDocumentRow(v reports.BriefValue) GuestDocument {
 	return row
 }
 
+// transmittalBlock is the RFP or RFT transmittal's block id (internal/rfp/sections.go).
+const transmittalBlock = "rfp:project:information"
+
 // transmittalIDs are the document ids an issue's transmittal block froze.
 func transmittalIDs(sections []reports.Section) []string {
 	var ids []string
 	for _, s := range sections {
 		for _, b := range s.Blocks {
+			// Only the transmittal block: a later block holding document ids
+			// must never widen what a package guest can download.
+			if b.ID != transmittalBlock {
+				continue
+			}
 			var basis struct {
 				DocumentIDs []string `json:"document_ids"`
 			}
@@ -528,7 +540,7 @@ func transmittalIDs(sections []reports.Section) []string {
 func guestQuoteBox(ctx context.Context, tx pgx.Tx, g GuestGrant) (GuestQuoteBox, error) {
 	box := GuestQuoteBox{Received: []GuestReceived{}}
 	var awarded bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM awards WHERE org_id=$1::uuid AND package_id=$2::uuid AND undone_at IS NULL)`, g.OrgID, g.PackageID).Scan(&awarded); err != nil {
+	if err := tx.QueryRow(ctx, awardedSQL, g.OrgID, g.PackageID).Scan(&awarded); err != nil {
 		return box, err
 	}
 	if awarded {
@@ -631,6 +643,27 @@ func (s *Store) GuestIssueFile(ctx context.Context, g GuestGrant, version string
 	return s.ReadIssuedReport(ctx, g.OrgID, report, version)
 }
 
+// awardedSQL: the package, or the group it was combined into, has a live
+// award. A firm invited on a member before the consultants were combined
+// holds a link to the member; the award is stored on the group.
+const awardedSQL = `SELECT EXISTS(SELECT 1 FROM awards a JOIN packages k ON k.org_id=a.org_id
+ WHERE a.org_id=$1::uuid AND k.id=$2::uuid AND a.package_id IN (k.id, k.group_id) AND a.undone_at IS NULL)`
+
+// GuestQuoteLifetime is how many quotes one link may place, ever (security
+// review M3): each starts filing and the proposal read, and counts toward
+// the org's allowance. The firm asks the sender for a new link after that.
+const GuestQuoteLifetime = 10
+
+// ErrGuestQuoteLimit refuses a quote past a link's lifetime cap.
+var ErrGuestQuoteLimit = errors.New("this link has taken all the quotes it can")
+
+// GuestQuotesPlaced is how many quotes this link has placed.
+func (s *Store) GuestQuotesPlaced(ctx context.Context, g GuestGrant) (int, error) {
+	var n int
+	err := s.pool.QueryRow(ctx, `SELECT count(*) FROM project_changes WHERE org_id=$1::uuid AND via='guest' AND actor=$2::uuid`, g.OrgID, g.ID).Scan(&n)
+	return n, err
+}
+
 // GuestHoldReason is the not-filed reason a guest's upload lands with. A
 // held document has no intake job, so no worker can claim it and Jev never
 // reads it; OpenGuestQuote releases it to filing only after rechecking the
@@ -675,7 +708,7 @@ func (s *Store) OpenGuestQuote(ctx context.Context, g GuestGrant, documentID str
 		return GuestQuote{}, err
 	}
 	var awarded bool
-	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM awards WHERE org_id=$1::uuid AND package_id=$2::uuid AND undone_at IS NULL)`, g.OrgID, g.PackageID).Scan(&awarded); err != nil {
+	if err := tx.QueryRow(ctx, awardedSQL, g.OrgID, g.PackageID).Scan(&awarded); err != nil {
 		return GuestQuote{}, err
 	}
 	if awarded {
@@ -699,6 +732,13 @@ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND d.id::text=$3`, g.OrgID, g
 		return GuestQuote{}, ErrConflict
 	}
 	if !mine {
+		var placed int
+		if err := tx.QueryRow(ctx, `SELECT count(*) FROM project_changes WHERE org_id=$1::uuid AND via='guest' AND actor=$2::uuid`, g.OrgID, g.ID).Scan(&placed); err != nil {
+			return GuestQuote{}, err
+		}
+		if placed >= GuestQuoteLifetime {
+			return GuestQuote{}, ErrGuestQuoteLimit
+		}
 		if q.SubmissionID, err = s.openSubmissionTx(ctx, tx, g.OrgID, g.ProjectID, documentID, g.PackageID, g.FirmID, now); err != nil {
 			return GuestQuote{}, err
 		}
@@ -775,6 +815,13 @@ ORDER BY COALESCE(k.group_id,g.package_id), g.firm_id, g.created_at DESC`, org, 
 		}
 	}
 	return rows.Err()
+}
+
+// revokeGrantsTx withdraws live links matching where (a SQL condition on
+// guest_grants g with $1 the org) in the caller's transaction.
+func revokeGrantsTx(ctx context.Context, tx pgx.Tx, where string, args ...any) error {
+	_, err := tx.Exec(ctx, `UPDATE guest_grants g SET revoked_at=now() WHERE g.org_id=$1::uuid AND g.revoked_at IS NULL AND `+where, args...)
+	return err
 }
 
 // ShareContext is what the Share dialog needs to know about one thing before

@@ -306,14 +306,17 @@ func uploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, session st
 		http.Error(w, "Confirm your email address to upload documents. Use the link we emailed you, or send a new one from the Account page.", http.StatusForbidden)
 		return false
 	}
-	return orgUploadAllowed(w, r, deps, session.OrgID, "")
+	return orgUploadAllowed(w, r, deps, session.OrgID, 0, "")
 }
 
 // orgUploadAllowed is the org's half of uploadAllowed: inside its monthly
 // documents and storage. A guest's quote counts toward the org as a PM drop
 // does (guest access, owner decision 7); full says so to a guest in its own
 // words, without the plan's name.
-func orgUploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, org, full string) bool {
+//
+// reserve is the share of the monthly documents and storage the caller may
+// not use: 0 for a PM; a guest leaves the last tenth to the org's own team.
+func orgUploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, org string, reserve float64, full string) bool {
 	if deps.Billing == nil {
 		return true
 	}
@@ -329,14 +332,16 @@ func orgUploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, org, fu
 		return false
 	}
 	plan := b.Effective()
-	if usage.DocumentsThisMonth >= plan.DocumentsPerMonth {
+	docCap := plan.DocumentsPerMonth - int(float64(plan.DocumentsPerMonth)*reserve)
+	storeCap := plan.StorageBytes - int64(float64(plan.StorageBytes)*reserve)
+	if usage.DocumentsThisMonth >= docCap {
 		if full == "" {
 			full = fmt.Sprintf("Your %s plan reads %d documents a month and this month's are used. Upgrade on the Account page to read more.", plan.Name, plan.DocumentsPerMonth)
 		}
 		http.Error(w, full, http.StatusPaymentRequired)
 		return false
 	}
-	if usage.StorageBytes >= plan.StorageBytes {
+	if usage.StorageBytes >= storeCap {
 		if full == "" {
 			full = fmt.Sprintf("Your %s plan stores %s and it is full. Delete documents or upgrade on the Account page.", plan.Name, sizeLabel(plan.StorageBytes))
 		}

@@ -39,7 +39,9 @@ const (
 	// Exchanges per client address; misses on any guest route count too.
 	guestPerIP     = 30
 	guestReadsHour = 300
-	guestQuoteHour = 20
+	// Quotes per link an hour (security review M3; the lifetime cap is
+	// store.GuestQuoteLifetime).
+	guestQuoteHour = 5
 	guestMaxQuote  = 50 << 20
 )
 
@@ -66,8 +68,17 @@ func guestHeaders(w http.ResponseWriter) {
 	h.Set("X-Robots-Tag", "noindex")
 }
 
+// guestCookie is the guest cookie: script cannot read it, it is never sent
+// cross-site, only the guest routes see it, and in production (SecureCookie,
+// set from SITEWISE_ENV=production) only over HTTPS.
+func guestCookie(deps Deps, token string, expires time.Time) *http.Cookie {
+	return &http.Cookie{Name: GuestCookie, Value: token, Path: guestPath, Expires: expires, HttpOnly: true, Secure: deps.SecureCookie, SameSite: http.SameSiteStrictMode}
+}
+
 func clearGuestCookie(w http.ResponseWriter, deps Deps) {
-	http.SetCookie(w, &http.Cookie{Name: GuestCookie, Value: "", Path: guestPath, MaxAge: -1, HttpOnly: true, Secure: deps.SecureCookie, SameSite: http.SameSiteStrictMode})
+	c := guestCookie(deps, "", time.Time{})
+	c.MaxAge = -1
+	http.SetCookie(w, c)
 }
 
 func guestGone(w http.ResponseWriter, deps Deps) {
@@ -79,6 +90,39 @@ func guestGone(w http.ResponseWriter, deps Deps) {
 // so a guessed token sent as a cookie is limited as an exchange is.
 func guestMissKey(r *http.Request) string { return "guest-miss:" + clientIP(r) }
 
+// guestMiss answers a token that found no live link, and counts it against
+// the address. Only misses count and only misses are blocked, so a valid
+// link behind a shared address keeps working (security review L2).
+func guestMiss(w http.ResponseWriter, r *http.Request, deps Deps) {
+	if !deps.limits.allow(guestMissKey(r), guestPerIP, limitWindow) {
+		tooMany(w)
+		return
+	}
+	guestGone(w, deps)
+}
+
+// msgOtherLink: the cookie now holds another link than the one this page
+// was opened on (a second link opened in another tab).
+const msgOtherLink = "This page is for another link. Reload."
+
+// guestShareHeader carries the link id the page was opened on.
+const guestShareHeader = "X-Guest-Share"
+
+// sameShare refuses a download or upload made by a page opened on another
+// link than the cookie's (security review M1). Downloads are plain links,
+// so they carry it as ?share=; an upload sends the header.
+func sameShare(w http.ResponseWriter, r *http.Request, g store.GuestGrant) bool {
+	share := r.Header.Get(guestShareHeader)
+	if share == "" {
+		share = r.URL.Query().Get("share")
+	}
+	if !strings.EqualFold(share, g.ID) {
+		http.Error(w, msgOtherLink, http.StatusConflict)
+		return false
+	}
+	return true
+}
+
 // guestGrant is the one check every guest route passes. It reads only the
 // guest cookie, hashes it and finds the live grant; the org, the project
 // and the shared thing come from the grant, never from the request. A
@@ -89,20 +133,14 @@ func guestGrant(w http.ResponseWriter, r *http.Request, deps Deps, write bool) (
 		http.Error(w, "origin rejected", http.StatusForbidden)
 		return store.GuestGrant{}, false
 	}
-	if deps.limits.blocked(guestMissKey(r), guestPerIP, limitWindow) {
-		tooMany(w)
-		return store.GuestGrant{}, false
-	}
 	cookie, err := r.Cookie(GuestCookie)
 	if err != nil || !tokenPattern.MatchString(cookie.Value) {
-		deps.limits.allow(guestMissKey(r), guestPerIP, limitWindow)
-		guestGone(w, deps)
+		guestMiss(w, r, deps)
 		return store.GuestGrant{}, false
 	}
 	g, err := deps.Store.GuestGrantByToken(r.Context(), auth.HashToken(cookie.Value), time.Now())
 	if errors.Is(err, store.ErrGuestGone) {
-		deps.limits.allow(guestMissKey(r), guestPerIP, limitWindow)
-		guestGone(w, deps)
+		guestMiss(w, r, deps)
 		return store.GuestGrant{}, false
 	}
 	if err != nil {
@@ -126,10 +164,6 @@ func postGuestSession(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "origin rejected", http.StatusForbidden)
 		return
 	}
-	if deps.limits.blocked(guestMissKey(r), guestPerIP, limitWindow) || !deps.limits.allow("guest-ip:"+clientIP(r), guestPerIP, limitWindow) {
-		tooMany(w)
-		return
-	}
 	var body struct {
 		Token string `json:"token"`
 	}
@@ -139,14 +173,12 @@ func postGuestSession(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	token := strings.TrimSpace(body.Token)
 	if !tokenPattern.MatchString(token) {
-		deps.limits.allow(guestMissKey(r), guestPerIP, limitWindow)
-		guestGone(w, deps)
+		guestMiss(w, r, deps)
 		return
 	}
 	g, err := deps.Store.GuestGrantByToken(r.Context(), auth.HashToken(token), time.Now())
 	if errors.Is(err, store.ErrGuestGone) {
-		deps.limits.allow(guestMissKey(r), guestPerIP, limitWindow)
-		guestGone(w, deps)
+		guestMiss(w, r, deps)
 		return
 	}
 	if err != nil {
@@ -159,7 +191,7 @@ func postGuestSession(w http.ResponseWriter, r *http.Request, deps Deps) {
 	} else if deps.Broker != nil && g.Kind == store.GuestPackage {
 		deps.Broker.Wake(g.OrgID)
 	}
-	http.SetCookie(w, &http.Cookie{Name: GuestCookie, Value: token, Path: guestPath, Expires: g.ExpiresAt, HttpOnly: true, Secure: deps.SecureCookie, SameSite: http.SameSiteStrictMode})
+	http.SetCookie(w, guestCookie(deps, token, g.ExpiresAt))
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -186,7 +218,7 @@ func getGuestPage(w http.ResponseWriter, r *http.Request, deps Deps) {
 
 func getGuestDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
 	g, ok := guestGrant(w, r, deps, false)
-	if !ok {
+	if !ok || !sameShare(w, r, g) {
 		return
 	}
 	f, err := deps.Store.GuestDocumentFile(r.Context(), g, r.PathValue("doc"))
@@ -204,7 +236,7 @@ func getGuestDocument(w http.ResponseWriter, r *http.Request, deps Deps) {
 
 func getGuestIssue(w http.ResponseWriter, r *http.Request, deps Deps) {
 	g, ok := guestGrant(w, r, deps, false)
-	if !ok {
+	if !ok || !sameShare(w, r, g) {
 		return
 	}
 	issue, err := deps.Store.GuestIssueFile(r.Context(), g, r.PathValue("version"))
@@ -244,6 +276,13 @@ func serveFile(w http.ResponseWriter, r *http.Request, deps Deps, sum []byte, me
 	_, _ = io.Copy(w, f)
 }
 
+// msgQuoteLimit: a link's lifetime of quotes is used up.
+var msgQuoteLimit = fmt.Sprintf("This link has taken its %d quotes. Ask the person who sent it for a new link.", store.GuestQuoteLifetime)
+
+// guestReserve is the share of the org's monthly allowance a guest's upload
+// never takes.
+const guestReserve = 0.10
+
 // guestQuoteTypes are what a firm may send (owner decision 7's default).
 var guestQuoteTypes = map[string]bool{".pdf": true, ".docx": true, ".xlsx": true}
 
@@ -255,7 +294,7 @@ var guestQuoteTypes = map[string]bool{".pdf": true, ".docx": true, ".xlsx": true
 // is made for it.
 func postGuestQuote(w http.ResponseWriter, r *http.Request, deps Deps) {
 	g, ok := guestGrant(w, r, deps, true)
-	if !ok {
+	if !ok || !sameShare(w, r, g) {
 		return
 	}
 	if g.Kind != store.GuestPackage {
@@ -272,7 +311,17 @@ func postGuestQuote(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "That is a lot of files for one link. Wait an hour and try again.", http.StatusTooManyRequests)
 		return
 	}
-	if !orgUploadAllowed(w, r, deps, g.OrgID, "The project team's upload allowance is used up. Let the person who sent this link know.") {
+	if placed, err := deps.Store.GuestQuotesPlaced(r.Context(), g); err != nil {
+		deps.Log.Printf("guest quote count share=%s: %v", g.ID, err)
+		http.Error(w, "upload failed", http.StatusInternalServerError)
+		return
+	} else if placed >= store.GuestQuoteLifetime {
+		http.Error(w, msgQuoteLimit, http.StatusConflict)
+		return
+	}
+	// A guest never takes the org's last tenth of its monthly allowance, so
+	// a link can never push the org's own PMs to the plan cap (M3).
+	if !orgUploadAllowed(w, r, deps, g.OrgID, guestReserve, "The project team's upload allowance is used up. Let the person who sent this link know.") {
 		return
 	}
 	limit := int64(guestMaxQuote)
@@ -312,6 +361,8 @@ func postGuestQuote(w http.ResponseWriter, r *http.Request, deps Deps) {
 		switch {
 		case errors.Is(err, store.ErrGuestGone):
 			guestGone(w, deps)
+		case errors.Is(err, store.ErrGuestQuoteLimit):
+			http.Error(w, msgQuoteLimit, http.StatusConflict)
 		case errors.Is(err, store.ErrGuestAwarded):
 			http.Error(w, "This tender has been awarded.", http.StatusConflict)
 		case errors.Is(err, store.ErrConflict):

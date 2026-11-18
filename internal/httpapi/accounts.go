@@ -258,10 +258,20 @@ func clientIP(r *http.Request) string {
 	if ip := net.ParseIP(host); ip != nil && ip.IsLoopback() {
 		if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
 			parts := strings.Split(fwd, ",")
-			return strings.TrimSpace(parts[len(parts)-1])
+			return limitAddress(strings.TrimSpace(parts[len(parts)-1]))
 		}
 	}
-	return host
+	return limitAddress(host)
+}
+
+// limitAddress keys an IPv6 client by its /64, the block one subscriber
+// holds, so rotating addresses inside it is one key (security review L1).
+func limitAddress(host string) string {
+	ip := net.ParseIP(host)
+	if ip == nil || ip.To4() != nil {
+		return host
+	}
+	return ip.Mask(net.CIDRMask(64, 128)).String() + "/64"
 }
 
 // authLimits counts attempts in fixed windows. One process serves every
@@ -285,12 +295,8 @@ func (l *authLimits) allow(key string, max int, span time.Duration) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	now := l.now()
-	if len(l.counts) > 100_000 {
-		for k, win := range l.counts {
-			if now.Sub(win.start) >= time.Hour {
-				delete(l.counts, k)
-			}
-		}
+	if _, known := l.counts[key]; !known && len(l.counts) >= limitKeysCap {
+		l.evict(now)
 	}
 	win := l.counts[key]
 	if win == nil || now.Sub(win.start) >= span {
@@ -304,11 +310,31 @@ func (l *authLimits) allow(key string, max int, span time.Duration) bool {
 	return true
 }
 
-// blocked reports whether key has used its attempts in the current window,
-// without counting one. A guest route checks it before looking a token up.
-func (l *authLimits) blocked(key string, max int, span time.Duration) bool {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	win := l.counts[key]
-	return win != nil && l.now().Sub(win.start) < span && win.n >= max
+// limitKeysCap bounds the limiter: a flood of new addresses can neither grow
+// it without bound nor make one request scan all of it (security review L1).
+const limitKeysCap = 50_000
+
+// evict makes room for a new key with bounded work: it drops up to
+// limitEvictBatch windows, expired ones first, then any (a map's order is
+// random, so which live windows go is not predictable to a client).
+func (l *authLimits) evict(now time.Time) {
+	dropped := 0
+	for k, win := range l.counts {
+		if dropped >= limitEvictBatch {
+			break
+		}
+		if now.Sub(win.start) >= time.Hour {
+			delete(l.counts, k)
+			dropped++
+		}
+	}
+	for k := range l.counts {
+		if dropped >= limitEvictBatch || len(l.counts) < limitKeysCap {
+			break
+		}
+		delete(l.counts, k)
+		dropped++
+	}
 }
+
+const limitEvictBatch = 1_000
