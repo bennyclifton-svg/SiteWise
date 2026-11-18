@@ -610,18 +610,19 @@ function InvitedFirm({ card: c, busy, uploading, onRemove, onEdit, onShare }: { 
   const opened = c.link_opened_on ? new Date(`${c.link_opened_on}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short" }) : "";
   const link = c.linked ? (opened ? ` · link opened ${opened}` : " · link not opened") : "";
   // The name leads: a long one is cut short in the cell.
-  const description = `${c.firm_name}. Invited${on ? ` ${on}` : ""}. Click to correct the name; drop the firm's quote on this cell.`;
+  // Until the row's RFP or RFT is issued there is nothing to share: the cell
+  // says so rather than showing a button that would sit over the name.
+  const description = `${c.firm_name}. Invited${on ? ` ${on}` : ""}${link}. Click to correct the name; drop the firm's quote on this cell.${c.tender_issued ? "" : " Issue the RFT first to share it by link."}`;
   return <div className="firm-card">
     <button type="button" className="firm-chip" data-status="invited" title={description} aria-label={`Change ${c.firm_name}`} aria-description={description}
       disabled={busy} onClick={onEdit}>
       <span className="firm-chip-name">{c.firm_name}</span>
       <span className="firm-chip-status">{uploading ? <Pending>Uploading…</Pending> : STATUS_WORDS.invited + link}</span>
     </button>
-    <button type="button" className="firm-detach firm-share" aria-label={`Share the RFT with ${c.firm_name}`}
-      title={c.tender_issued ? "Make a link for this firm to download the RFT and send its quote" : "Issue the RFT first"}
-      disabled={busy || !c.tender_issued} onClick={onShare}>
+    {c.tender_issued && <button type="button" className="firm-detach firm-share" aria-label={`Share the RFT with ${c.firm_name}`}
+      title="Make a link for this firm to download the RFT and send its quote" disabled={busy} onClick={onShare}>
       <IconLinks />
-    </button>
+    </button>}
     <button type="button" className="firm-detach" aria-label={`Remove invitation for ${c.firm_name}`} title="Remove the invitation; the firm stays in your directory"
       disabled={busy} onClick={onRemove}>
       <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" focusable="false"><path d="m4 4 8 8m0-8-8 8" /></svg>

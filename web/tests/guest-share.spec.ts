@@ -16,12 +16,12 @@ test("an invited firm gets a link, sends its quote to its own cell, and loses th
   const row = await (await page.request.post(`/api/projects/${project}/procurement/rows`, { headers: origin, data: { discipline_id: "consultant.town_planner" } })).json();
   await page.request.post(`/api/projects/${project}/procurement/packages/${row.id}/invitations`, { headers: origin, data: { name: "Acme Planning" } });
 
-  // Before the RFT is issued the link button says so.
+  // Before the RFT is issued there is nothing to share, and the cell says so.
   await page.getByRole("button", { name: "Procurement", exact: true }).click();
   const planner = page.getByRole("row", { name: /^Town Planner/ });
   const share = planner.getByRole("button", { name: "Share the RFT with Acme Planning" });
-  await expect(share).toBeDisabled();
-  await expect(share).toHaveAttribute("title", "Issue the RFT first");
+  await expect(planner.getByRole("button", { name: "Change Acme Planning" })).toHaveAttribute("title", /Issue the RFT first/);
+  await expect(share).toHaveCount(0);
 
   const report = await (await page.request.post(`/api/projects/${project}/reports`, { headers: origin, data: { kind: "rfp", package_id: row.id } })).json();
   await page.request.post(`/api/reports/${report.id}/draft`, { headers: origin, data: { use_last_completed: true } });
