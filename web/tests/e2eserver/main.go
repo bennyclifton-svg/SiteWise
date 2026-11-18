@@ -12,6 +12,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"log/slog"
 	"net"
@@ -324,6 +325,24 @@ func run(addr, data string, programFixture bool) error {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
+	// Consent conditions (plan 6): file a notice's text as a Statutory
+	// Instrument, and run the queued consent reads with a stand-in for Jev.
+	mux.HandleFunc("POST /__e2e/file-document", func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(io.LimitReader(r.Body, 1<<20))
+		q := r.URL.Query()
+		if _, err := chatfix.SeedDocuments(r.Context(), st, orgs["a"], q.Get("project"), []chatfix.Document{{Title: q.Get("title"), Kind: q.Get("kind"), Pages: []string{string(body)}}}); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})
+	mux.HandleFunc("POST /__e2e/run-consent", func(w http.ResponseWriter, r *http.Request) {
+		if err := runConsent(r.Context(), st, orgs["a"]); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})
 	mux.Handle("/", cut.wrap(srv))
 	hs := &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: 10 * time.Second}
 	hs.RegisterOnShutdown(srv.CloseStreams)
@@ -562,6 +581,52 @@ func registerReply(ctx context.Context, st *store.Store, org, project, text stri
 				return err
 			}
 			if kind == store.JobKindRegister {
+				if err := w.Perform(ctx, job); err != nil {
+					return err
+				}
+			}
+			if err := st.CompleteJob(ctx, job.OrgID, job.ID, job.Token, store.EventWrite{Kind: "job", DocumentID: job.DocumentID, Payload: `{"kind":"` + kind + `","status":"done"}`}); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// consentAsk is the browser suite's stand-in for Jev on a consent read: a
+// condition that names the arborist is the arborist's; every other party
+// is below the floor; evidence is needed; the system is the site.
+type consentAsk struct{}
+
+func (consentAsk) Ask(_ context.Context, call jev.Call) (jev.Result, error) {
+	state, _ := call.State.(map[string]any)
+	cond, _ := state["condition"].(map[string]any)
+	text, _ := cond["text"].(string)
+	conf := func(v float64) *float64 { return &v }
+	party, p := "applicant", 0.3
+	if strings.Contains(strings.ToLower(text), "arborist") {
+		party, p = "consultant.arborist", 0.8
+	}
+	return jev.Result{Answers: map[string]jev.Answer{
+		"party":    {Type: jev.TypeChoice, Choice: party, Confidence: conf(p)},
+		"system":   {Type: jev.TypeChoice, Choice: "site", Confidence: conf(0.8)},
+		"evidence": {Type: jev.TypeNoul, Noul: 0.9},
+		"timing":   {Type: jev.TypeChoice, Choice: "before_cc", Confidence: conf(0.8)},
+	}}, nil
+}
+
+func runConsent(ctx context.Context, st *store.Store, org string) error {
+	for _, kind := range []string{store.JobKindFullText, store.JobKindConsent} {
+		w := &jobs.Worker{Store: st, Ask: consentAsk{}}
+		for {
+			job, err := st.ClaimJobSince(ctx, org, time.Minute, []string{kind}, time.Time{})
+			if errors.Is(err, store.ErrIdle) {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			if kind == store.JobKindConsent {
 				if err := w.Perform(ctx, job); err != nil {
 					return err
 				}

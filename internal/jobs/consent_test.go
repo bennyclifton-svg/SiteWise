@@ -361,3 +361,117 @@ func TestConsentReadIsOneUndoableChange(t *testing.T) {
 		t.Fatalf("%d rows after undo", n)
 	}
 }
+
+// Task 8: plan 6's evidence step in the register's one post-filing job.
+type evidenceAsk struct {
+	mu    sync.Mutex
+	calls []jev.Call
+}
+
+func (a *evidenceAsk) Ask(_ context.Context, call jev.Call) (jev.Result, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.calls = append(a.calls, call)
+	out := jev.Result{Answers: map[string]jev.Answer{}}
+	for key := range call.Questions {
+		out.Answers[key] = jev.Answer{Type: jev.TypeNoul, Noul: 0.95}
+	}
+	return out, nil
+}
+
+func (r consentRun) fileFor(t *testing.T, kind, title, discipline, text string) string {
+	t.Helper()
+	ctx := context.Background()
+	doc := seedDoc(t, r.st, r.org, r.project, store.StatusFiled)
+	for field, value := range map[string]string{"kind": kind, "title": title, "discipline": discipline} {
+		if err := r.st.CreateDecision(ctx, r.org, store.Decision{ID: newID(t), DocumentID: doc, Field: field, Value: value, Band: "green", DecidedBy: "rule"}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := r.st.ReplaceSource(ctx, r.org, doc, store.DocumentSource{Source: []store.SourcePage{{Page: 1, Text: text}}, Units: []store.SourceUnit{{Body: text, Page: 1}}}); err != nil {
+		t.Fatal(err)
+	}
+	if err := r.st.QueueRegister(ctx, r.org, doc); err != nil {
+		t.Fatal(err)
+	}
+	return doc
+}
+
+func TestEvidenceRuleAndOneRequest(t *testing.T) {
+	r := consentProject(t)
+	r.notice(t, originalNotice)
+	if err := r.read(t, &jobs.Worker{Store: r.st, Ask: &consentAsk{}}); err != nil {
+		t.Fatal(err)
+	}
+	ask := &evidenceAsk{}
+	w := &jobs.Worker{Store: r.st, Ask: ask}
+	// A letter citing condition 3 is a rule reading, shown at once; the
+	// other open conditions are asked in one request.
+	cert := r.fileFor(t, "certificate", "Landscape certificate", "consultant.landscape", "We certify the landscape plan required by Condition 3 of DA/2016/00123.")
+	if err := r.run(t, w); err != nil {
+		t.Fatal(err)
+	}
+	rows := r.conditions(t)
+	three := rows["3"]
+	if len(three.Readings) != 1 || three.Readings[0].DecidedBy != "rule" || three.Readings[0].Field != "evidence" || three.Status != "open" {
+		t.Fatalf("condition 3 %+v %q", three.Readings, three.Status)
+	}
+	if len(ask.calls) != 1 {
+		t.Fatalf("%d requests", len(ask.calls))
+	}
+	q := ask.calls[0].Questions
+	for key := range q {
+		if !strings.HasPrefix(key, "register.evidence.c") {
+			t.Fatalf("unexpected question %s", key)
+		}
+	}
+	if len(q) != 3 {
+		t.Fatalf("%d evidence questions, want the 3 open conditions the rule left", len(q))
+	}
+	// No approved cut-off: Jev's picks are stored blank and never shown.
+	for n, it := range rows {
+		if n != "3" && len(it.Readings) != 0 {
+			t.Fatalf("a Jev evidence pick was shown on %s: %+v", n, it.Readings)
+		}
+	}
+	// Deleting the document removes its suggestions.
+	if _, err := r.st.DeleteDocuments(context.Background(), r.org, r.project, []string{cert}, r.user); err != nil {
+		t.Fatal(err)
+	}
+	if got := r.conditions(t)["3"].Readings; len(got) != 0 {
+		t.Fatalf("readings left after the document was deleted: %+v", got)
+	}
+}
+
+func TestEvidenceNotAskedWhenNothingIsOpen(t *testing.T) {
+	r := consentProject(t)
+	ask := &evidenceAsk{}
+	doc := r.fileFor(t, "report", "Arborist report", "consultant.arborist", "Tree protection installed.")
+	if err := r.st.QueueRegister(context.Background(), r.org, doc); err != nil {
+		t.Fatal(err)
+	}
+	// No open RFI or condition: no register job is even queued.
+	if _, err := r.st.ClaimJobSince(context.Background(), r.org, time.Minute, []string{store.JobKindRegister}, time.Time{}); !errors.Is(err, store.ErrIdle) {
+		t.Fatalf("a register job was queued with nothing open: %v", err)
+	}
+	if len(ask.calls) != 0 {
+		t.Fatal("Jev was asked")
+	}
+}
+
+func TestShortlistConditionsCapAndOrder(t *testing.T) {
+	var conds []store.RegisterCondition
+	for i := 1; i <= 20; i++ {
+		conds = append(conds, store.RegisterCondition{ID: fmt.Sprint(i), Number: fmt.Sprint(i), Heading: "Waste management", Discipline: "consultant.waste"})
+	}
+	conds = append(conds, store.RegisterCondition{ID: "land", Number: "21", Heading: "Landscape plan", Discipline: "consultant.landscape"},
+		store.RegisterCondition{ID: "tree", Number: "22", Heading: "Tree protection plan", Discipline: "consultant.arborist"})
+	got := jobs.ShortlistConditions(store.RegisterDocument{Title: "Tree protection plan", Discipline: "consultant.landscape"}, conds)
+	if len(got) != 12 || got[0].ID != "land" || got[1].ID != "tree" {
+		t.Fatalf("shortlist %v", got)
+	}
+	hits, left := jobs.ConditionRuleMatches("As required by Conditions 4 and 5, and condition 21.", conds)
+	if len(hits) != 3 || len(left) != len(conds)-3 {
+		t.Fatalf("hits %d left %d", len(hits), len(left))
+	}
+}

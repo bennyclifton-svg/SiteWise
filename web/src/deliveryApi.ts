@@ -10,14 +10,28 @@ export interface DeliveryContent {
   package_id: string; work_item_id: string; stage_id: string; system_id?: string;
   details: Record<string, unknown>;
 }
-export interface Reading { id: string; document_id: string; document: string; decided_by: string; band: string; basis?: string; filed_on?: string }
+export interface Reading { id: string; document_id: string; document: string; decided_by: string; band: string; basis?: string; filed_on?: string; field?: "answers" | "evidence" }
 export interface DeliveryRecord extends DeliveryContent {
   owner_user_id?: string;
   id: string; version: number; origin: string; review_status: string; meaning: string; source_proposal_key?: string;
   number?: number; with?: string; late_days?: number; readings?: Reading[];
   provenance: { actor?: string; at?: string; last_edited_by?: string; last_edited_at?: string; proposal?: { kind: string; draft: boolean; label: string };
     sources?: { document_id?: string; filename?: string; excerpt?: string; page?: number }[];
-    status_history?: { from: string; status: string; at: string }[] };
+    status_history?: { from: string; status: string; at: string }[];
+    // A consent condition's reading and the notices that wrote it (plan 6).
+    reading?: { fields?: Record<string, { value: string; band: string; decided_by: string }> };
+    flag?: string; deferred_commencement?: boolean };
+}
+/** A consent condition's details: the notice's own number and words, and what the PM edits. */
+export interface ConditionDetails {
+  consent_ref?: string; number?: string; heading?: string; text?: string; stage?: string; stage_heading?: string;
+  discipline?: string; evidence_needed?: boolean | null;
+  evidence?: { document_id: string; linked_by: string; linked_at: string }[] | null;
+  source?: { document_id: string; page: number } | null; rfp?: { report_id: string; stage: string; line_id: string } | null;
+}
+export interface ConsentRead {
+  document_id: string; title: string; status: "queued" | "reading" | "done" | "failed"; error?: string; rows: number;
+  notice?: { consent_ref: string; mod_ref?: string; determined?: string; conditions: number; gaps: string[] };
 }
 export interface RegisterKind { kind: string; rows: number; open: number; to_check: number }
 export interface AlsoOpen { system: string; label: string; spec_unknowns: number; exclusions: number; exclusion_packages: string[]; main_works_exclusions: number; main_works_package?: string }
@@ -25,7 +39,11 @@ export interface RegisterView {
   items: DeliveryRecord[]; kinds: RegisterKind[];
   response_days: number; response_typical: boolean; calendar: "program" | "weekdays"; today: string;
   systems: { id: string; label: string }[]; also_open?: AlsoOpen;
+  consents?: ConsentRead[]; consent?: { number?: string; date?: string; lapse_date?: string };
 }
+/** The register's gates in project order, and their Due words. */
+export const GATES: [string, string][] = [["before_cc", "Before CC"], ["before_work", "Before work starts"], ["during_works", "During works"],
+  ["before_occupation", "Before OC"], ["before_subdivision", "Before SC"], ["ongoing", "Ongoing after occupation"], ["throughout", "Throughout"]];
 export interface OpCall { op: string; fields: Record<string, unknown> }
 export interface OpsReply { change_id?: string; undo: { kind: string } }
 
@@ -33,6 +51,8 @@ export const deliveryApi = {
   view: (project: string, system = "") =>
     request<RegisterView>("GET", `/projects/${project}/delivery${system ? `?system=${encodeURIComponent(system)}` : ""}`),
   ops: (project: string, ops: OpCall[]) => request<OpsReply>("POST", `/projects/${project}/ops`, { area: "delivery", ops }),
+  /** Read conditions: queues the background read of a filed notice. */
+  readNotice: (project: string, documentId: string) => request<{ status: string }>("POST", `/projects/${project}/delivery/imports`, { document_id: documentId }),
   undo: (project: string, change: string) => request<{ undone: boolean }>("POST", `/projects/${project}/changes/${change}/undo`, {}),
 };
 

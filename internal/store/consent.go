@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"sitewise/internal/delivery"
 	"sitewise/internal/invoices"
+	"sitewise/internal/knowledge"
 	engine "sitewise/internal/program"
 )
 
@@ -120,7 +121,14 @@ func (s *Store) AddConditionScopeLine(ctx context.Context, org, project, actor, 
 	if state.Status != "draft" {
 		return out, ErrNoRFPDraft
 	}
-	out.ReportID, out.Stage = report, ScopeStage(d.Stage)
+	disc, _, _, _, err := s.storedRFP(state.SourceRevisions, settings)
+	if err != nil {
+		return out, err
+	}
+	if !disc.ScopeByStage || len(disc.Stages) == 0 {
+		return out, fmt.Errorf("%w: this RFP has no scope by stage to add a line to", ErrInvalidDelivery)
+	}
+	out.ReportID, out.Stage = report, rfpStage(disc.Stages, ScopeStage(d.Stage))
 	key := "custom:" + out.Stage
 	var lines []map[string]string
 	if set, ok := settings[key]; ok {
@@ -153,6 +161,26 @@ func (s *Store) AddConditionScopeLine(ctx context.Context, org, project, actor, 
 		return out, err
 	}
 	return out, s.finishDeliveryWrite(ctx, wtx, org, project)
+}
+
+// rfpStage is the RFP's own stage for a line: the wanted stage when the RFP
+// has it; else, for design finalisation, the last stage before delivery;
+// else the last stage.
+func rfpStage(stages []knowledge.RFPStage, want string) string {
+	last, beforeDelivery := "", ""
+	for _, st := range stages {
+		if st.Key == want {
+			return want
+		}
+		if st.Key == "delivery" && beforeDelivery == "" {
+			beforeDelivery = last
+		}
+		last = st.Key
+	}
+	if want == "design_finalisation" && beforeDelivery != "" {
+		return beforeDelivery
+	}
+	return last
 }
 
 // conditionLine is the RFP line's fixed template: the condition's number,

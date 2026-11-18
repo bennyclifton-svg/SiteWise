@@ -36,3 +36,11 @@
 .register-pair { display: flex; gap: 12px; }
 .register-reading { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
 .register-history { color: var(--sw-text-secondary); }
+
+/* Consent conditions (plan 6): the gate groups, the notice's own words and
+   how each value was decided. */
+.register-group th { text-align: left; font-weight: 600; padding-top: 10px; color: var(--ink-muted, inherit); }
+.register-consent p { margin: 2px 0; }
+.register-council { white-space: pre-wrap; max-height: 16em; overflow: auto; }
+.register-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.register-chip { padding: 0 6px; border-radius: 3px; border: 1px solid var(--rule, #ccc); }

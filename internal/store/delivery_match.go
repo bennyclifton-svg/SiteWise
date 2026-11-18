@@ -19,13 +19,15 @@ import (
 const JobKindRegister = "register"
 
 // queueRegister queues the job beside queueVisual, inside the filing
-// commit, and only when the project has an Open RFI: a project with none
-// files exactly as before.
+// commit, and only when the project has an Open RFI or an open consent
+// condition that may need evidence: a project with neither files exactly
+// as before (index agreement 2).
 func queueRegister(ctx context.Context, tx pgx.Tx, orgID, id string) error {
 	_, err := tx.Exec(ctx, `INSERT INTO jobs(org_id,id,document_id,kind,status)
  SELECT d.org_id,$2::uuid,d.id,'register','queued' FROM documents d
  WHERE d.org_id=$1::uuid AND d.id=$3::uuid AND d.status='filed'
- AND EXISTS(SELECT 1 FROM project_delivery_items i WHERE i.org_id=d.org_id AND i.project_id=d.project_id AND i.kind='rfi' AND i.status='open' AND i.retired_at IS NULL)
+ AND EXISTS(SELECT 1 FROM project_delivery_items i WHERE i.org_id=d.org_id AND i.project_id=d.project_id AND i.retired_at IS NULL
+  AND (i.kind='rfi' AND i.status='open' OR i.kind='condition' AND i.status='open' AND COALESCE(i.details->>'evidence_needed','')<>'false'))
  ON CONFLICT (org_id,document_id,kind) DO UPDATE SET status='queued',attempts=0,run_after=now(),locked_until=NULL,lease_token=NULL,last_error='' WHERE jobs.status IN ('done','failed')`, orgID, newID(), id)
 	return err
 }
@@ -41,10 +43,45 @@ type RegisterRFI struct {
 	Number                                            int
 }
 
-// RegisterReading is one possible answer the job found.
+// RegisterReading is one possible answer the job found, or (Field
+// "evidence") one possible piece of evidence for a consent condition.
 type RegisterReading struct {
 	ItemID, DecidedBy, Band, Basis, QuestionVersion string
 	Probability                                     *float64
+	Field                                           string // "answers" (the default) or "evidence"
+}
+
+// RegisterCondition is one open consent condition a document may evidence.
+type RegisterCondition struct {
+	ID, Number, ConsentRef, Heading, Text, Stage, Discipline string
+}
+
+// RegisterConditions are the project's open conditions whose evidence is
+// not known to be unneeded, leaving out ones the document already
+// evidences or the PM already decided for it.
+func (s *Store) RegisterConditions(ctx context.Context, org, project, document string) ([]RegisterCondition, error) {
+	rows, err := s.pool.Query(ctx, `SELECT i.id::text, COALESCE(i.details->>'number',''), COALESCE(i.details->>'consent_ref',''), COALESCE(i.details->>'heading',''),
+ left(COALESCE(i.details->>'text',''),400), COALESCE(i.details->>'stage',''), COALESCE(i.details->>'discipline','')
+ FROM project_delivery_items i
+ WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.kind='condition' AND i.status='open' AND i.retired_at IS NULL
+ AND COALESCE(i.details->>'evidence_needed','')<>'false'
+ AND NOT COALESCE(i.details->'evidence','[]'::jsonb) @> jsonb_build_array(jsonb_build_object('document_id',$3::text))
+ AND COALESCE(i.details->'source'->>'document_id','')<>$3::text
+ AND NOT EXISTS(SELECT 1 FROM delivery_readings r WHERE r.org_id=i.org_id AND r.item_id=i.id AND r.document_id=$3::uuid AND r.status<>'proposed')
+ ORDER BY i.details->>'number', i.id`, org, project, document)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []RegisterCondition
+	for rows.Next() {
+		var c RegisterCondition
+		if err := rows.Scan(&c.ID, &c.Number, &c.ConsentRef, &c.Heading, &c.Text, &c.Stage, &c.Discipline); err != nil {
+			return nil, err
+		}
+		out = append(out, c)
+	}
+	return out, rows.Err()
 }
 
 // RegisterCandidates reads the document and the Open RFIs it may answer,
@@ -117,14 +154,19 @@ func (s *Store) SaveRegisterReadings(ctx context.Context, job ClaimedJob, readin
 		case r.Band != "amber" && r.Band != "blank" && r.Band != "grey":
 			return fmt.Errorf("invalid reading band %q", r.Band)
 		}
-		// The item must be an RFI of this document's project: the item id
-		// came from RegisterCandidates, but the write checks it again.
+		field, kind := "answers", "rfi"
+		if r.Field == "evidence" {
+			field, kind = "evidence", "condition"
+		}
+		// The item must be an RFI (or, for evidence, a condition) of this
+		// document's project: the id came from the candidates, but the write
+		// checks it again.
 		_, err := tx.Exec(ctx, `INSERT INTO delivery_readings(org_id,id,project_id,item_id,document_id,field,decided_by,probability,band,basis,question_version)
- SELECT i.org_id,$3::uuid,i.project_id,i.id,$4::uuid,'answers',$5,$6,$7,$8,$9 FROM project_delivery_items i
- WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.id=$10::uuid AND i.kind='rfi'
+ SELECT i.org_id,$3::uuid,i.project_id,i.id,$4::uuid,$11,$5,$6,$7,$8,$9 FROM project_delivery_items i
+ WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.id=$10::uuid AND i.kind=$12
  ON CONFLICT (org_id,item_id,document_id,field) DO UPDATE SET decided_by=EXCLUDED.decided_by,probability=EXCLUDED.probability,band=EXCLUDED.band,basis=EXCLUDED.basis,question_version=EXCLUDED.question_version
  WHERE delivery_readings.status='proposed' AND NOT (delivery_readings.decided_by='rule' AND EXCLUDED.decided_by='jev')`,
-			job.OrgID, project, newID(), job.DocumentID, r.DecidedBy, r.Probability, r.Band, truncateRunes(r.Basis, 200), r.QuestionVersion, r.ItemID)
+			job.OrgID, project, newID(), job.DocumentID, r.DecidedBy, r.Probability, r.Band, truncateRunes(r.Basis, 200), r.QuestionVersion, r.ItemID, field, kind)
 		if err != nil {
 			return err
 		}

@@ -631,6 +631,12 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     [state.docs],
   );
 
+  // Filed documents for the register's Read conditions and Link evidence,
+  // statutory instruments first.
+  const registerDocuments = useMemo(() => Object.values(state.docs).filter(d => d.status === "filed").map(d => {
+    const field = (name: string) => d.fields.find(f => f.field === name)?.value ?? "";
+    return { id: d.id, title: field("title") || d.filename, kind: field("kind") };
+  }).sort((a, b) => Number(b.kind === "statutory_instrument") - Number(a.kind === "statutory_instrument") || a.title.localeCompare(b.title)), [state.docs]);
   const rows: RowModel[] = useMemo(
     () =>
       state.order.flatMap((key): RowModel[] => {
@@ -834,7 +840,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
       {registerOpened && <div className="project-reports" hidden={!!viewingRow || !showRegister}><Delivery projectId={projectId} tick={reportTick} raise={raiseRFI} onSignedOut={onSignedOut} onShowView={showView}
-        onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></div>}
+        onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} documents={registerDocuments} /></div>}
       {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={viewLabel(view)} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
