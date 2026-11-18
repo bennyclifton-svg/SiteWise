@@ -47,6 +47,67 @@ ORDER BY ts_rank(p.body_tsv,q.tsq) DESC, p.document_id, p.ordinal LIMIT $5`, org
 	return out, rows.Err()
 }
 
+// DocumentHits is what one document holds for a search by subject: how many
+// of its passages the full-text index matched, and how many the profile's
+// reading labelled with one of the subject's building systems.
+type DocumentHits struct {
+	Passages int
+	Labelled int
+}
+
+// ChatDocumentHits counts, for every document of the project, the passages
+// that match the query (websearch form, like ChatSearchPassages) and the
+// passages labelled with one of the systems or a part of one. It is one
+// round trip whatever the project's size: the two counts are grouped in the
+// database, so 200,000 passages never cross to Go. A document with neither
+// is not in the map. An empty query or no systems skips that count.
+//
+// The labels are found by a range on passage_systems_by_system (migration
+// 064): from "system" up to "system/" in the C collation, then kept only
+// when they are the system or "system.part" ("system-x" sorts inside the
+// range too). Without the range the count read every label in the table.
+//
+// A label on a wider system does not count: a passage labelled
+// "substructure" is about footings as often as about the basement, so only
+// the system itself or a part of it ("mechanical" finds
+// "mechanical.ventilation") says the passage is about the subject.
+func (s *Store) ChatDocumentHits(ctx context.Context, org, project, query string, systems []string) (map[string]DocumentHits, error) {
+	if systems == nil {
+		systems = []string{}
+	}
+	rows, err := s.pool.Query(ctx, `WITH q AS (SELECT websearch_to_tsquery('english',$3) AS tsq),
+hit AS (
+ SELECT p.document_id,count(*) AS n FROM passages p
+ JOIN documents d ON d.org_id=p.org_id AND d.id=p.document_id, q
+ WHERE $3<>'' AND p.org_id=$1::uuid AND d.project_id=$2::uuid AND p.body_tsv @@ q.tsq
+ GROUP BY p.document_id),
+lab AS (
+ SELECT p.document_id,count(DISTINCT p.id) AS n FROM unnest($4::text[]) want
+ JOIN passage_systems x ON x.org_id=$1::uuid
+  AND x.system_id COLLATE "C" >= want AND x.system_id COLLATE "C" < want||'/'
+  AND (x.system_id=want OR x.system_id LIKE want||'.%')
+ JOIN passages p ON p.org_id=x.org_id AND p.id=x.passage_id
+ JOIN documents d ON d.org_id=p.org_id AND d.id=p.document_id
+ WHERE d.project_id=$2::uuid
+ GROUP BY p.document_id)
+SELECT COALESCE(hit.document_id,lab.document_id)::text,COALESCE(hit.n,0),COALESCE(lab.n,0)
+FROM hit FULL JOIN lab ON lab.document_id=hit.document_id`, org, project, query, systems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	out := map[string]DocumentHits{}
+	for rows.Next() {
+		var id string
+		var h DocumentHits
+		if err := rows.Scan(&id, &h.Passages, &h.Labelled); err != nil {
+			return nil, err
+		}
+		out[id] = h
+	}
+	return out, rows.Err()
+}
+
 // ChatDocumentPassages reads one document of the project in order. With a
 // page range it returns the passages on those pages; a document whose
 // passages carry no page numbers is read whole.
@@ -125,24 +186,26 @@ WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.document_id IS NOT NULL`
 	return out, rows.Err()
 }
 
-// ChatPassageCounts is how many passages each document of the project has.
-// A filed document with none has no searchable text.
-func (s *Store) ChatPassageCounts(ctx context.Context, org, project string) (map[string]int, error) {
-	rows, err := s.pool.Query(ctx, `SELECT p.document_id::text,count(*) FROM passages p
-JOIN documents d ON d.org_id=p.org_id AND d.id=p.document_id
-WHERE p.org_id=$1::uuid AND d.project_id=$2::uuid GROUP BY p.document_id`, org, project)
+// ChatDocumentsWithText lists the documents of the project that have at
+// least one passage. A filed document with none has no searchable text. It
+// asks the passages index once per document rather than counting every
+// passage: on 200,000 passages the count took 100 ms and only "any or
+// none" was ever used.
+func (s *Store) ChatDocumentsWithText(ctx context.Context, org, project string) (map[string]bool, error) {
+	rows, err := s.pool.Query(ctx, `SELECT d.id::text FROM documents d
+WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid
+ AND EXISTS (SELECT 1 FROM passages p WHERE p.org_id=d.org_id AND p.document_id=d.id)`, org, project)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	out := map[string]int{}
+	out := map[string]bool{}
 	for rows.Next() {
 		var id string
-		var n int
-		if err := rows.Scan(&id, &n); err != nil {
+		if err := rows.Scan(&id); err != nil {
 			return nil, err
 		}
-		out[id] = n
+		out[id] = true
 	}
 	return out, rows.Err()
 }

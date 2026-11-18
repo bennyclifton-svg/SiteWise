@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"gopkg.in/yaml.v3"
 
@@ -66,7 +67,7 @@ func LoadChatWords(knowledgeDir string) (map[string][]string, map[string][]strin
 
 type docInfo struct {
 	ID, Title, Kind, Discipline, Number, Revision string
-	Pages, Passages                               int
+	Pages                                         int
 	NoText, Reading                               bool
 	SupersededBy                                  string // the newer document's title, or ""
 	Firm                                          store.DocumentFirm
@@ -107,7 +108,7 @@ func (b *chatBox) projectDocs(ctx context.Context) ([]docInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	counts, err := b.d.Store.ChatPassageCounts(ctx, b.who.OrgID, b.project)
+	withText, err := b.d.Store.ChatDocumentsWithText(ctx, b.who.OrgID, b.project)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +119,7 @@ func (b *chatBox) projectDocs(ctx context.Context) ([]docInfo, error) {
 	out := make([]docInfo, 0, len(views))
 	byID := map[string]int{}
 	for _, v := range views {
-		d := docInfo{ID: v.ID, Title: v.Filename, Number: v.Number, Revision: v.Revision, Pages: int(v.TextPages), Passages: counts[v.ID], Firm: firms[v.ID]}
+		d := docInfo{ID: v.ID, Title: v.Filename, Number: v.Number, Revision: v.Revision, Pages: int(v.TextPages), Firm: firms[v.ID]}
 		for _, f := range v.Fields {
 			switch f.Field {
 			case "title":
@@ -132,7 +133,7 @@ func (b *chatBox) projectDocs(ctx context.Context) ([]docInfo, error) {
 			}
 		}
 		d.Reading = v.Status == "pending" || v.Status == "received" || v.TextStatus == "pending"
-		d.NoText = d.Passages == 0 && !d.Reading
+		d.NoText = !withText[v.ID] && !d.Reading
 		byID[v.ID] = len(out)
 		out = append(out, d)
 	}
@@ -145,11 +146,21 @@ func (b *chatBox) projectDocs(ctx context.Context) ([]docInfo, error) {
 	return out, nil
 }
 
+// docsInput is the documents tool's input. About and Select are plan 0
+// Task 3; Superseded is there because a search by subject must leave old
+// revisions out unless the PM asks for them.
+type docsInput struct {
+	Words, Kind, Discipline string
+	About                   string
+	Select, Superseded      bool
+}
+
 func (b *chatBox) documents(ctx context.Context, input json.RawMessage) agent.Output {
-	var in struct {
-		Words, Kind, Discipline string
-	}
+	var in docsInput
 	_ = json.Unmarshal(input, &in)
+	if strings.TrimSpace(in.About) != "" {
+		return b.documentsAbout(ctx, in)
+	}
 	docs, err := b.projectDocs(ctx)
 	if err != nil {
 		b.d.Log.Printf("chat documents failed: %v", err)
@@ -208,6 +219,353 @@ func hasWords(text, words string) bool {
 	return true
 }
 
+// Finding documents by what they are about (plan 0 Task 3). Go ranks them,
+// not the model, by three signals: the words or a builder's synonym in the
+// title or number; passages the full-text index matched; and passages the
+// profile's reading labelled with the building system the words name. Each
+// row says which signals put it there, so a wrong one can be seen and
+// unticked. Words and labels, not understanding: nothing else is claimed.
+
+// maxAboutDocs is the most a set holds: the screen context carries 200 ids
+// (Task 1), so a larger set could not be acted on as "those".
+const maxAboutDocs = 200
+
+// docMatch is one document of a set with the signals that put it there.
+type docMatch struct {
+	Doc      docInfo
+	Title    bool
+	Passages int // passages the full-text index matched
+	Labelled int // passages labelled with the subject's system
+}
+
+func (m docMatch) signals() int {
+	n := 0
+	for _, on := range []bool{m.Title, m.Passages > 0, m.Labelled > 0} {
+		if on {
+			n++
+		}
+	}
+	return n
+}
+
+// docSet is the ranked result of a search by subject.
+type docSet struct {
+	Subject     string   // the PM's words, cleaned: "basement"
+	Terms       []string // the words and synonyms tried
+	SystemNames []string // the building systems the words name
+	Rows        []docMatch
+	Matched     int // documents that matched, before the cap
+	Searched    int // documents looked at (current, or all when asked)
+	Scans       []string
+	Reading     int
+	Superseded  int // superseded revisions that matched and were left out
+}
+
+// SelectIDs are the full document ids of the set, strongest first: what the
+// view event selects on screen.
+func (s docSet) SelectIDs() []string {
+	ids := make([]string, len(s.Rows))
+	for i, m := range s.Rows {
+		ids[i] = m.Doc.ID
+	}
+	return ids
+}
+
+// Summary is the one line chat says when it selects the set.
+func (s docSet) Summary() string {
+	byTitle := 0
+	for _, m := range s.Rows {
+		if m.Title {
+			byTitle++
+		}
+	}
+	line := fmt.Sprintf("Selected %s: %d by title, %d by what they say.", countOf(len(s.Rows), "document"), byTitle, len(s.Rows)-byTitle)
+	if s.Matched > len(s.Rows) {
+		line = fmt.Sprintf("Selected the first %d of %d matching documents: %d by title, %d by what they say.", len(s.Rows), s.Matched, byTitle, len(s.Rows)-byTitle)
+	}
+	if n := len(s.Scans); n > 0 {
+		line += fmt.Sprintf(" %s could be matched by title only.", countOf(n, "scan"))
+	}
+	return line
+}
+
+func countOf(n int, noun string) string {
+	if n == 1 {
+		return "1 " + noun
+	}
+	return strconv.Itoa(n) + " " + noun + "s"
+}
+
+// coverage says what the search covered, so "no match" is never read as
+// "not there": scans and documents still being read were matched by title
+// only, and labels exist only where the profile has read.
+func (s docSet) coverage() string {
+	what := "their text and building-system labels"
+	if len(s.SystemNames) == 0 {
+		what = "their text (the words name no building system, so no labels were used)"
+	}
+	line := fmt.Sprintf("Searched the titles of %s, and %s, for: %s.", countOf(s.Searched, "filed document"), what, strings.Join(s.Terms, ", "))
+	if n := len(s.Scans); n > 0 {
+		names := s.Scans
+		more := ""
+		if len(names) > 10 {
+			names, more = names[:10], fmt.Sprintf(" and %d more", len(s.Scans)-10)
+		}
+		inSet := 0
+		for _, m := range s.Rows {
+			if m.Doc.NoText {
+				inSet++
+			}
+		}
+		line += fmt.Sprintf(" %s no text (scans) and could be matched by title only, %d of them in this set: %s%s.", has(n), inSet, strings.Join(names, ", "), more)
+	}
+	if s.Reading > 0 {
+		line += fmt.Sprintf(" %s still being read, so matched by title only.", isAre(s.Reading))
+	}
+	if len(s.SystemNames) > 0 {
+		line += " Labels cover only documents the profile has read."
+	}
+	if s.Superseded > 0 {
+		line += fmt.Sprintf(" Left out %s; ask with superseded true to include them.", countOf(s.Superseded, "superseded revision"))
+	}
+	return line
+}
+
+func has(n int) string {
+	if n == 1 {
+		return "1 has"
+	}
+	return strconv.Itoa(n) + " have"
+}
+
+func isAre(n int) string {
+	if n == 1 {
+		return "1 is"
+	}
+	return strconv.Itoa(n) + " are"
+}
+
+// documentsAbout is the documents tool with about: the set, ranked, each
+// row with why it is in. One store query counts the passage signals, and it
+// runs beside the document list rather than after it: the two do not
+// depend on each other, and in series they broke chat_tool_read on 2,000
+// documents.
+func (b *chatBox) documentsAbout(ctx context.Context, in docsInput) agent.Output {
+	set := docSet{Terms: b.alternatives(aboutWords(in.About))}
+	if len(set.Terms) == 0 {
+		return toolError("Say what the documents are about, for example: the basement.")
+	}
+	set.Subject = strings.Join(strings.Split(aboutWords(in.About), ","), " or ")
+	systems := b.subjectSystems(set.Terms)
+	for _, id := range systems {
+		set.SystemNames = append(set.SystemNames, b.systemName(id))
+	}
+	type counted struct {
+		hits map[string]store.DocumentHits
+		err  error
+	}
+	done := make(chan counted, 1)
+	go func() {
+		hits, err := b.d.Store.ChatDocumentHits(ctx, b.who.OrgID, b.project, orQuery(set.Terms), systems)
+		done <- counted{hits, err}
+	}()
+	docs, err := b.projectDocs(ctx)
+	c := <-done
+	if err == nil {
+		err = c.err
+	}
+	if err != nil {
+		b.d.Log.Printf("chat documents about failed: %v", err)
+		return toolError("The documents could not be searched.")
+	}
+	set = rankAbout(set, docs, c.hits, in)
+	out := agent.Output{Coverage: set.coverage(), Outside: "the titles and text of filed documents"}
+	if len(set.Rows) == 0 {
+		out.Text = fmt.Sprintf("No document mentions %s. Tried in titles, text and labels: %s.\n%s\n", set.Subject, strings.Join(set.Terms, ", "), out.Coverage)
+		return out
+	}
+	var text strings.Builder
+	if in.Select {
+		// After the merge with the view tool (plan 0 Task 2), the view event
+		// is emitted here: {do: "select", table: "documents", ids:
+		// set.SelectIDs()}, stored with the turn, and Output.Final set so the
+		// turn ends with set.Summary(). Until then the ids go to the model.
+		short := make([]string, len(set.Rows))
+		for i, m := range set.Rows {
+			short[i] = shortID(m.Doc.ID)
+		}
+		fmt.Fprintf(&text, "select_ids: %s\nsummary: %s\n", strings.Join(short, " "), set.Summary())
+	}
+	fmt.Fprintf(&text, "%s\n", out.Coverage)
+	if set.Matched > len(set.Rows) {
+		fmt.Fprintf(&text, "[Capped: the strongest %d of %d matching documents are listed. Use narrower words, kind or discipline for the rest.]\n", len(set.Rows), set.Matched)
+	}
+	text.WriteString("Documents about " + set.Subject + ", strongest first (id | title | kind | why it is included | state):\n")
+	for _, m := range set.Rows {
+		text.WriteString(aboutLine(m, set.SystemNames) + "\n")
+	}
+	out.Text = capped(text.String(), "Use narrower words, kind or discipline.")
+	return out
+}
+
+func aboutLine(m docMatch, systems []string) string {
+	var why []string
+	if m.Title {
+		why = append(why, "title")
+	}
+	if m.Passages > 0 {
+		why = append(why, countOf(m.Passages, "passage"))
+	}
+	if m.Labelled > 0 {
+		why = append(why, "labelled "+strings.Join(systems, " or ")+" ("+countOf(m.Labelled, "passage")+")")
+	}
+	state := "current"
+	switch {
+	case m.Doc.SupersededBy != "":
+		state = "superseded by " + m.Doc.SupersededBy
+	case m.Doc.Reading:
+		state = "current, still being read"
+	case m.Doc.NoText:
+		state = "current, a scan with no text"
+	}
+	return strings.Join([]string{shortID(m.Doc.ID), m.Doc.name(), orDash(m.Doc.Kind), strings.Join(why, "; "), state}, " | ")
+}
+
+// rankAbout fills the set from the project's documents and the passage
+// counts. Kind, discipline and words narrow it as they narrow the plain
+// list. Only the project's documents can be in it: a count for any other
+// id has no document here to attach to.
+func rankAbout(set docSet, docs []docInfo, hits map[string]store.DocumentHits, in docsInput) docSet {
+	var all []docMatch
+	for _, d := range docs {
+		if !matches(d.Kind, in.Kind) || !matches(d.Discipline, in.Discipline) || !hasWords(d.Title+" "+d.Number, in.Words) {
+			continue
+		}
+		m := docMatch{Doc: d, Title: titleNames(d.Title+" "+d.Number, set.Terms), Passages: hits[d.ID].Passages, Labelled: hits[d.ID].Labelled}
+		if d.SupersededBy != "" && !in.Superseded {
+			if m.signals() > 0 {
+				set.Superseded++
+			}
+			continue
+		}
+		set.Searched++
+		switch {
+		case d.Reading:
+			set.Reading++
+		case d.NoText:
+			set.Scans = append(set.Scans, d.name())
+		}
+		if m.signals() > 0 {
+			all = append(all, m)
+		}
+	}
+	// More signals first, then a title match, then the most passages; a
+	// current revision before a superseded one; then by name, so the order
+	// is the same every time.
+	sort.SliceStable(all, func(i, j int) bool {
+		a, z := all[i], all[j]
+		if a.signals() != z.signals() {
+			return a.signals() > z.signals()
+		}
+		if a.Title != z.Title {
+			return a.Title
+		}
+		if a.Passages+a.Labelled != z.Passages+z.Labelled {
+			return a.Passages+a.Labelled > z.Passages+z.Labelled
+		}
+		if (a.Doc.SupersededBy == "") != (z.Doc.SupersededBy == "") {
+			return a.Doc.SupersededBy == ""
+		}
+		return a.Doc.name() < z.Doc.name()
+	})
+	set.Matched = len(all)
+	set.Rows = all[:min(len(all), maxAboutDocs)]
+	return set
+}
+
+// aboutFiller are words a PM puts around a subject that name no subject.
+var aboutFiller = map[string]bool{"the": true, "a": true, "an": true, "all": true, "any": true, "our": true, "about": true,
+	"documents": true, "document": true, "docs": true, "files": true}
+
+// aboutWords strips the filler from each comma-separated alternative:
+// "the basement documents" is "basement".
+func aboutWords(about string) string {
+	var alts []string
+	for _, alt := range strings.FieldsFunc(about, func(r rune) bool { return r == ',' || r == ';' || r == '\n' }) {
+		var keep []string
+		for _, w := range strings.Fields(strings.ToLower(alt)) {
+			if !aboutFiller[strings.Trim(w, ".?!\"'")] {
+				keep = append(keep, strings.Trim(w, ".?!\"'"))
+			}
+		}
+		if len(keep) > 0 {
+			alts = append(alts, strings.Join(keep, " "))
+		}
+	}
+	return strings.Join(alts, ",")
+}
+
+// titleNames reports whether a title or number names one of the terms:
+// every word of the term starts a word of the title. Word starts, not
+// substrings, so "pile" does not match "compiled"; a plural still matches.
+func titleNames(title string, terms []string) bool {
+	words := strings.FieldsFunc(strings.ToLower(title), func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) })
+	starts := func(w string) bool {
+		for _, t := range words {
+			// A short word ("acm", "bms") must be the whole word, or
+			// "acm" would find every "Acme" letterhead.
+			if t == w || len(w) > 3 && strings.HasPrefix(t, w) {
+				return true
+			}
+		}
+		return false
+	}
+	for _, term := range terms {
+		parts := strings.FieldsFunc(term, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsDigit(r) })
+		ok := len(parts) > 0
+		for _, p := range parts {
+			if !starts(strings.TrimSuffix(p, "s")) && !starts(p) {
+				ok = false
+				break
+			}
+		}
+		if ok {
+			return true
+		}
+	}
+	return false
+}
+
+// subjectSystems are the building systems the terms name, through
+// knowledge/works/system_terms.yaml.
+func (b *chatBox) subjectSystems(terms []string) []string {
+	if b.d.Chat == nil {
+		return nil
+	}
+	var out []string
+	seen := map[string]bool{}
+	for _, t := range terms {
+		for _, id := range b.d.Chat.SystemTerms[t] {
+			if !seen[id] {
+				seen[id] = true
+				out = append(out, id)
+			}
+		}
+	}
+	return out
+}
+
+// systemName is the catalogue's label for a system, or its id when the
+// catalogue is not loaded.
+func (b *chatBox) systemName(id string) string {
+	if b.d.Knowledge != nil {
+		if s, ok := b.d.Knowledge.System(id); ok && s.Label != "" {
+			return s.Label
+		}
+	}
+	return id
+}
+
 const (
 	maxPassages     = 14   // passages one call returns
 	maxPassageChars = 1200 // of each passage shown to the model
@@ -250,18 +608,11 @@ func (b *chatBox) passages(ctx context.Context, st *agent.State, input json.RawM
 	// query in one passage, so "tree arborist vegetation" would find
 	// nothing (review change 5).
 	alts := b.alternatives(in.Words)
-	quoted := make([]string, len(alts))
-	for i, a := range alts {
-		quoted[i] = a
-		if strings.Contains(a, " ") {
-			quoted[i] = `"` + a + `"`
-		}
-	}
 	docID := ""
 	if one != nil {
 		docID = one.ID
 	}
-	found, err := b.d.Store.ChatSearchPassages(ctx, b.who.OrgID, b.project, strings.Join(quoted, " or "), docID, 60)
+	found, err := b.d.Store.ChatSearchPassages(ctx, b.who.OrgID, b.project, orQuery(alts), docID, 60)
 	if err != nil {
 		b.d.Log.Printf("chat passages failed: %v", err)
 		return toolError("The search failed.")
@@ -404,6 +755,19 @@ func (b *chatBox) alternatives(words string) []string {
 		}
 	}
 	return out
+}
+
+// orQuery joins search alternatives in the index's websearch form. A phrase
+// is quoted so its words must sit together.
+func orQuery(alts []string) string {
+	quoted := make([]string, len(alts))
+	for i, a := range alts {
+		quoted[i] = a
+		if strings.Contains(a, " ") {
+			quoted[i] = `"` + a + `"`
+		}
+	}
+	return strings.Join(quoted, " or ")
 }
 
 func (b *chatBox) writePassage(text *strings.Builder, out *agent.Output, d docInfo, p store.ChatPassage) {

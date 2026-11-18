@@ -21,6 +21,9 @@ type Document struct {
 	Revision   string   `json:"revision,omitempty"`
 	Supersedes string   `json:"supersedes,omitempty"` // the title of the document this one replaces
 	Pages      []string `json:"pages"`
+	// Systems label every passage with these building systems, as the
+	// profile's reading would.
+	Systems []string `json:"systems,omitempty"`
 }
 
 // SeedDocuments files the documents in order and returns each one's id by
@@ -57,10 +60,29 @@ func SeedDocuments(ctx context.Context, st *store.Store, org, project string, do
 			if err := st.ReplaceSource(ctx, org, docID, src); err != nil {
 				return nil, fmt.Errorf("%s: text: %w", d.Title, err)
 			}
+			if err := label(ctx, st, org, project, docID, d.Systems); err != nil {
+				return nil, fmt.Errorf("%s: labels: %w", d.Title, err)
+			}
 		}
 		ids[d.Title] = docID
 	}
 	return ids, nil
+}
+
+func label(ctx context.Context, st *store.Store, org, project, docID string, systems []string) error {
+	if len(systems) == 0 {
+		return nil
+	}
+	passages, err := st.ChatDocumentPassages(ctx, org, project, docID, 0, 0)
+	if err != nil {
+		return err
+	}
+	for _, p := range passages {
+		if err := st.SetPassageSystems(ctx, org, p.ID, systems); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func paragraphs(page string) []string {

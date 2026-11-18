@@ -67,11 +67,14 @@ func chatTools() []llm.Tool {
 				"date":   str("shift_date: the date, YYYY-MM-DD"),
 				"span":   str("working_days and shift_date: the duration, e.g. \"2 weeks\""),
 			})},
-		{Name: "documents", Description: "List the project's filed documents: title, kind, discipline, number, revision, pages, whether current or superseded.",
+		{Name: "documents", Description: "List the project's filed documents: title, kind, discipline, number, revision, pages, whether current or superseded. With about, SiteWise finds the documents about a subject by title, text and building-system labels, strongest first, each with why it is included; superseded revisions are left out unless superseded is true.",
 			Schema: object(nil, map[string]any{
 				"words":      str("words in the title"),
 				"kind":       str("filing kind, e.g. specification, report, drawing, contract, correspondence"),
 				"discipline": str("discipline, e.g. mechanical"),
+				"about":      str("what the documents are about, e.g. the basement; separate alternatives with commas"),
+				"select":     map[string]any{"type": "boolean", "description": "true to select the documents found on screen"},
+				"superseded": map[string]any{"type": "boolean", "description": "true to include superseded revisions in an about search"},
 			})},
 		{Name: "passages", Description: "Search or read document text. With words it searches every filed document (or one): give alternatives separated by commas and each is tried. With a document id and pages it reads those pages. Each passage has an id like p4 to quote from.",
 			Schema: object(nil, map[string]any{
