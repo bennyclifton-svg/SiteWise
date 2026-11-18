@@ -2371,6 +2371,168 @@
      "document": "Arborist report"
     }
    ]
+  },
+  {
+   "id": "ga1",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Who has not opened the structural RFP?",
+   "note": "read(shares) or read(procurement): Hartwell Consulting holds a link it has never opened. The answer's words are the live run's to score.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "ga2",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Show the packages whose invited firm has not opened its link",
+   "note": "Named filter link_not_opened, computed in Go from the board's link state.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "procurement",
+     "do": "only",
+     "rows": [
+      "consultant.structural"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "ga3",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Who can see the arborist report?",
+   "note": "read(shares): the client holds a documents link to it. Live only.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "ga4",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Share the structural RFP with Hartwell",
+   "note": "Chat opens Share on Hartwell's invited cell; the PM presses Create link. No link is made, so the shares area does not change.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "opens",
+     "dialog": "share",
+     "fields": {
+      "kind": "package",
+      "package": "consultant.structural",
+      "firm": "Hartwell Consulting"
+     }
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "ga5",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Share the arborist report with the client",
+   "note": "Share opens on the document; no link is made.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "opens",
+     "dialog": "share",
+     "fields": {
+      "kind": "documents",
+      "documents": "Arborist report"
+     }
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "ga6",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Revoke Hartwell's link",
+   "note": "shares.revoke is Click: a withdrawn link cannot be put back, so it waits for the PM's click.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "ga7",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Share the cost plan with the client",
+   "note": "Only documents, an issued report or an issued RFP or RFT can be shared; Go refuses any other kind in Share's fields.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "refuses"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "ga8",
+   "source": "guests",
+   "group": "shares",
+   "fixture": "house",
+   "message": "Remind the firms who have not opened the structural RFP",
+   "note": "Sending waits on correspondence (plan 1): the fixed words until it is built.",
+   "needs": [
+    "shares"
+   ],
+   "expect": [
+    {
+     "kind": "refuses",
+     "has": [
+      "I can't do that from chat yet"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
   }
  ]
 }

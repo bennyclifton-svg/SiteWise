@@ -1,7 +1,10 @@
 # Guest access by link: implementation plan
 
 Date 17 November 2026; revised 18 November. Lane C (security), holding lane A's org-isolation
-rules. Status: plan only, nothing built.
+rules. Status: built 18 November 2026 on branch `wave/guests` (not merged, not
+deployed); what was built, measured and left open is in
+`docs/evidence/2026-11-18-guest-access.md`. Needs its security review before
+it ships (index, build order).
 
 **Revised 18 November** after the review in `2026-11-17-next-wave-index.md`.
 Three kinds of link only (documents, report, package): grants for RFI

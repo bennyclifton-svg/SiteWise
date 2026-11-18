@@ -31,6 +31,9 @@ var modelOnly = []string{
 	"s22", // the messages table: the model must say the fixed words
 	"s23", // the RFI table: the same
 	"s27", // "this document": the model must quote the open document
+	"ga1", // who has not opened: the answer's words
+	"ga3", // who can see a document: the answer's words
+	"ga8", // reminding firms waits on correspondence: the fixed words
 }
 
 // standIn answers each round with the call its script gives for the PM's
@@ -190,6 +193,17 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		"Read Polar Air's tender again":                                         apply("procurement", "procurement.read_tender_again", map[string]any{"package": strings.Join(mechanical, ""), "firm": "Polar Air"}),
 		"Select the structural package":                                         view(map[string]any{"do": "select", "table": "procurement", "ids": short("procurement", "consultant.structural")}),
 		"Show all the cost lines again":                                         view(map[string]any{"do": "clear", "table": "cost_lines"}),
+		// Guest links (docs/plans/2026-11-17-guest-access.md, "From chat").
+		"Show the packages whose invited firm has not opened its link": filter("only", "procurement", "link_not_opened"),
+		"Share the structural RFP with Hartwell":                       view(map[string]any{"do": "open", "dialog": "share", "fields": map[string]string{"kind": "package", "package": strings.Join(short("procurement", "consultant.structural"), ""), "firm": "Hartwell"}}),
+		"Share the arborist report with the client":                    view(map[string]any{"do": "open", "dialog": "share", "fields": map[string]string{"kind": "documents", "documents": strings.Join(short("documents", "Arborist report"), ",")}}),
+		"Revoke Hartwell's link":                                       apply("shares", "shares.revoke", map[string]any{"share": strings.Join(short("shares", "hartwell@example.test"), "")}),
+		"Share the cost plan with the client": func(_ llm.Conversation, round int) llm.Turn {
+			if round > 0 {
+				return say("Only documents, an issued report or an issued RFP or RFT can be shared.")
+			}
+			return call("view", map[string]any{"do": "open", "dialog": "share", "fields": map[string]string{"kind": "cost_plan"}})
+		},
 	}
 }
 
@@ -212,6 +226,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	l.dsn = dsn
 	defer done()
 	l.warmFor = 0
 	l.onSeed = func(c chateval.Case, n *names) {
@@ -232,7 +247,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	}
 	scored := 0
 	for _, c := range cases {
-		if c.Group != "screen" || slices.Contains(modelOnly, c.ID) {
+		if (c.Group != "screen" && c.Group != "shares") || slices.Contains(modelOnly, c.ID) {
 			continue
 		}
 		scored++
@@ -246,7 +261,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 			}
 		})
 	}
-	if scored < 20 {
-		t.Fatalf("%d screen cases scored offline, want at least 20", scored)
+	if scored < 25 {
+		t.Fatalf("%d screen and shares cases scored offline, want at least 25", scored)
 	}
 }

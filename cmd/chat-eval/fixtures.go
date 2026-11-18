@@ -19,6 +19,10 @@ type pkg struct {
 	Discipline string
 	Invited    []string
 	Tenders    []tenderFix
+	// Issued: the package's RFP or RFT has an issue; Links are the guest
+	// links its invited firms hold. Seeded only for cases that need shares.
+	Issued bool
+	Links  []linkFix
 }
 
 // tenderFix is one firm's synthetic tender, read by the stand-in tender
@@ -38,6 +42,8 @@ type fixture struct {
 	Packages    []pkg
 	Documents   []chatfix.Document
 	Implication bool // a pre-2004 building: the hazardous-materials prompt applies
+	// DocumentLinks are documents shared by link (cases that need shares).
+	DocumentLinks []docLinkFix
 }
 
 var fixtures = map[string]fixture{
@@ -60,7 +66,9 @@ var fixtures = map[string]fixture{
 			{Stage: "Delivery", Label: "Slab inspection", Duration: "1 day", Kind: "hold_point"},
 		},
 		Packages: []pkg{{Discipline: "consultant.structural", Invited: []string{"Hartwell Consulting"}, Tenders: []tenderFix{
-			{Firm: "Northline Structural", Total: 84000}, {Firm: "Brightwater Engineers", Total: 91500}, {Firm: "Corex Engineering", Total: 88000}}}},
+			{Firm: "Northline Structural", Total: 84000}, {Firm: "Brightwater Engineers", Total: 91500}, {Firm: "Corex Engineering", Total: 88000}},
+			Issued: true, Links: []linkFix{{Firm: "Hartwell Consulting", To: "hartwell@example.test"}}}},
+		DocumentLinks: []docLinkFix{{Document: "Arborist report", To: "client@example.test"}},
 		Documents: []chatfix.Document{
 			{Title: "Arborist report", Kind: "report", Discipline: "arborist", Pages: []string{
 				"Arboricultural impact assessment, 14 Wattle Street.\n\nEight trees were assessed on and next to the site.",

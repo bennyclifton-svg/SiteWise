@@ -60,7 +60,12 @@ is tighter.
 
 These paths do not call Jev: cost reads and writes, procurement row create,
 report create, specification direct edit, review, schedule and issue, the
-profile's run reads (progress, finds, next), and Accommodation schedule edits.
+profile's run reads (progress, finds, next), Accommodation schedule edits,
+and guest links: share create, list and revoke, the guest page open and
+guest downloads. A guest's quote is filing plus the existing proposal
+fan-out, exactly as a PM drop on that firm's cell
+(`docs/plans/2026-11-17-guest-access.md`). Only the `/guest` routes read
+the guest cookie, and they read nothing else.
 Specification import is a background job in the existing worker: one fan-out
 per candidate, cached by source. A reading is a proposal. Navigation and
 typing do not call Jev. An uploaded invoice is read with one interactive

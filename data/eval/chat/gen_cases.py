@@ -7,6 +7,8 @@ C = []
 
 
 TENDERS = {"w5", "r11", "r12", "r14", "t4", "t5", "t6", "q4", "q5", "v1", "v2", "s16", "s17", "s21"}
+# Cases that need the fixture's issued RFPs and guest links (guest access plan).
+SHARES = {"ga1", "ga2", "ga3", "ga4", "ga5", "ga6", "ga7", "ga8"}
 
 
 def c(id, source, group, fixture, message, expect, money=False, note="", before=None, screen=None):
@@ -17,6 +19,8 @@ def c(id, source, group, fixture, message, expect, money=False, note="", before=
         d["note"] = note
     if id in TENDERS:
         d["needs"] = ["tenders"]
+    if id in SHARES:
+        d["needs"] = d.get("needs", []) + ["shares"]
     if before:
         d["before"] = before
     if screen:
@@ -241,6 +245,20 @@ c("s24", "agency", "screen", "house", "Open the program", [sel("program", do="sh
 c("s25", "agency", "screen", "house", "Select the structural package", [sel("procurement", ["consultant.structural"]), K("no_change")])
 c("s26", "agency", "screen", "house", "Show all the cost lines again", [sel("cost_lines", do="clear"), K("no_change")], before=["Show the cost lines with no budget"])
 c("s27", "agency", "screen", "house", "What does this document say about tree 4?", [K("no_change"), K("cites", document="Arborist report")], note="\"This document\" is the one open on screen.", screen=screen(open="Arborist report"))
+
+# --- guest links (docs/plans/2026-11-17-guest-access.md, "From chat"). In
+# the house fixture the structural RFP is issued, Hartwell Consulting holds
+# a link it has not opened, and the arborist report is shared with the
+# client. Chat reads who holds a link, opens Share filled in (the PM presses
+# Create link; chat makes no link), and prepares a revoke for the click.
+c("ga1", "guests", "shares", "house", "Who has not opened the structural RFP?", [K("no_change")], note="read(shares) or read(procurement): Hartwell Consulting holds a link it has never opened. The answer's words are the live run's to score.")
+c("ga2", "guests", "shares", "house", "Show the packages whose invited firm has not opened its link", [sel("procurement", ["consultant.structural"], "only"), K("no_change")], note="Named filter link_not_opened, computed in Go from the board's link state.")
+c("ga3", "guests", "shares", "house", "Who can see the arborist report?", [K("no_change")], note="read(shares): the client holds a documents link to it. Live only.")
+c("ga4", "guests", "shares", "house", "Share the structural RFP with Hartwell", [opens("share", kind="package", package="consultant.structural", firm="Hartwell Consulting"), K("not_applied")], note="Chat opens Share on Hartwell's invited cell; the PM presses Create link. No link is made, so the shares area does not change.")
+c("ga5", "guests", "shares", "house", "Share the arborist report with the client", [opens("share", kind="documents", documents="Arborist report"), K("not_applied")], note="Share opens on the document; no link is made.")
+c("ga6", "guests", "shares", "house", "Revoke Hartwell's link", [K("prepared")], note="shares.revoke is Click: a withdrawn link cannot be put back, so it waits for the PM's click.")
+c("ga7", "guests", "shares", "house", "Share the cost plan with the client", [K("refuses"), K("no_change")], note="Only documents, an issued report or an issued RFP or RFT can be shared; Go refuses any other kind in Share's fields.")
+c("ga8", "guests", "shares", "house", "Remind the firms who have not opened the structural RFP", [K("refuses", has=[DECLINE]), K("no_change")], note="Sending waits on correspondence (plan 1): the fixed words until it is built.")
 
 out = {"about": "The command key for chat. Each case is one typed message on a fresh fixture project. See README.md.", "cases": C}
 with open("data/eval/chat/commands.json", "w", newline="\n", encoding="utf-8") as f:

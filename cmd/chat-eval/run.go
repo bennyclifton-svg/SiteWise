@@ -26,6 +26,7 @@ type names struct {
 	byName  map[string]map[string][]string // table to name to ids
 	columns map[string]string              // submission id to firm name
 	firms   map[string]string              // firm name to submission id
+	firmIDs map[string]string              // directory firm id to firm name, invited firms too
 }
 
 func (n *names) add(table, id, name string) {
@@ -60,7 +61,7 @@ func (n *names) ids(table string, rows []string) ([]string, error) {
 
 // names reads the project's rows with the session's own org.
 func (s *session) names(ctx context.Context) (*names, error) {
-	n := &names{byID: map[string]map[string]string{}, byName: map[string]map[string][]string{}, columns: map[string]string{}, firms: map[string]string{}}
+	n := &names{byID: map[string]map[string]string{}, byName: map[string]map[string][]string{}, columns: map[string]string{}, firms: map[string]string{}, firmIDs: map[string]string{}}
 	plan, err := s.l.st.ReadCostPlan(ctx, s.org, s.project, "")
 	if err != nil && !errors.Is(err, store.ErrNotFound) {
 		return nil, err
@@ -106,7 +107,18 @@ func (s *session) names(ctx context.Context) (*names, error) {
 			if c.SubmissionID != "" {
 				n.columns[c.SubmissionID], n.firms[c.FirmName] = c.FirmName, c.SubmissionID
 			}
+			if c.FirmID != "" {
+				n.firmIDs[c.FirmID] = c.FirmName
+			}
 		}
+	}
+	// Guest links by who they were shared with.
+	shares, err := s.l.st.ListGuestGrants(ctx, s.org, s.project, store.ShareFilter{}, time.Now())
+	if err != nil {
+		return nil, err
+	}
+	for _, g := range shares {
+		n.add("shares", g.ID, g.SharedWith)
 	}
 	return n, nil
 }
@@ -144,7 +156,29 @@ func (n *names) view(v agent.View) chateval.View {
 	for _, id := range v.IDs {
 		out.Rows = append(out.Rows, n.name(v.Table, id))
 	}
-	if v.Dialog != "" {
+	switch v.Dialog {
+	case "":
+	case "share":
+		// Share's fields by name: the package by discipline, the firm by
+		// name, documents by title; the rest as sent.
+		out.Fields = map[string]string{}
+		for k, val := range v.Fields {
+			out.Fields[k] = val
+		}
+		if id := v.Fields["package"]; id != "" {
+			out.Fields["package"] = n.name("procurement", id)
+		}
+		if id := v.Fields["firm"]; id != "" {
+			out.Fields["firm"] = n.firmIDs[id]
+		}
+		if ids := v.Fields["documents"]; ids != "" {
+			var titles []string
+			for _, id := range strings.Split(ids, ",") {
+				titles = append(titles, n.name("documents", id))
+			}
+			out.Fields["documents"] = strings.Join(titles, ",")
+		}
+	default:
 		out.Fields = map[string]string{"package": n.name("procurement", v.Fields["package"]), "column": n.columns[v.Fields["column"]]}
 	}
 	return out

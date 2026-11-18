@@ -349,6 +349,28 @@ func TestGuestReachesOnlyItsGrant(t *testing.T) {
 	}
 	hits := f.a.jevHits.Load()
 	before := f.snapshot(t)
+	// The exchange: a cookie only the guest routes see, never readable by
+	// script, never sent cross-site, and no token in the answer.
+	exchange := (&guest{f: f, client: &http.Client{}}).send(t, http.MethodPost, "/api/guest/session", []byte(`{"token":"`+tokenA+`"}`), true, nil)
+	exchange.Body.Close()
+	set := exchange.Header.Get("Set-Cookie")
+	for _, want := range []string{httpapi.GuestCookie + "=", "Path=/api/guest", "HttpOnly", "SameSite=Strict", "Expires="} {
+		if !strings.Contains(set, want) {
+			t.Fatalf("guest cookie %q lacks %q", set, want)
+		}
+	}
+	if exchange.StatusCode != http.StatusNoContent || exchange.Header.Get("Referrer-Policy") != "no-referrer" || exchange.Header.Get("Cache-Control") != "private, no-store" {
+		t.Fatalf("exchange %d %v", exchange.StatusCode, exchange.Header)
+	}
+	// The guest page itself sends no referrer and cannot be framed.
+	spa, err := http.Get(f.a.url + "/g")
+	if err != nil {
+		t.Fatal(err)
+	}
+	spa.Body.Close()
+	if spa.Header.Get("Referrer-Policy") != "no-referrer" || !strings.Contains(spa.Header.Get("Content-Security-Policy"), "frame-ancestors 'none'") {
+		t.Fatalf("guest page headers %v", spa.Header)
+	}
 	acme := f.guest(t, tokenA)
 
 	// (a) Every route outside /guest, with real ids and only the guest

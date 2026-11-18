@@ -71,6 +71,21 @@ are scored only by a live run. Whether the model makes the right call in
 any case is the live run's to score; no live run of this group has been
 made.
 
+## The shares group
+
+`shares` (draft, 8 cases, `ga1` to `ga8`) is the guest access plan's key
+(`docs/plans/2026-11-17-guest-access.md`, "From chat"). Its cases need
+`shares`: in the house fixture the structural RFP is issued, Hartwell
+Consulting holds a link it has not opened, and the arborist report is
+shared with the client. The runner reads the `shares` area before and
+after every case, so a link chat made would be a wrong change. Who has
+not opened (`ga1`), who can see a document (`ga3`) and reminding firms
+(`ga8`, the fixed words until correspondence is built) are the model's
+alone; `TestScreenCasesScoredOffline` scores the other five offline: the
+`link_not_opened` filter, Share opened on Hartwell's cell and on a
+document with no link made, the revoke prepared for the click, and the
+cost plan refused.
+
 A failing run has one class, the worst that applies: wrong change, missed
 question, unchecked figure, failed (anything else). A case marked
 `money_or_date` fails outright if any of its runs made a wrong change
