@@ -36,14 +36,41 @@ func getDelivery(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
-	items, err := deps.Store.ReadDelivery(r.Context(), session.OrgID, r.PathValue("id"))
+	q := store.RegisterQuery{Kind: r.URL.Query().Get("kind"), System: r.URL.Query().Get("system")}
+	if q.Kind != "" && len(delivery.Statuses(q.Kind)) == 0 {
+		http.Error(w, "unknown kind", http.StatusUnprocessableEntity)
+		return
+	}
+	view, err := deps.Store.ReadRegister(r.Context(), session.OrgID, r.PathValue("id"), q, todaySydney())
 	if err != nil {
 		deliveryError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, struct {
-		Items []delivery.Item `json:"items"`
-	}{items})
+	writeJSON(w, http.StatusOK, view)
+}
+
+// putDeliverySettings sets the project's RFI response time
+// (operation delivery.settings).
+func putDeliverySettings(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var body struct {
+		Days int `json:"rfi_response_days"`
+	}
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.SetDeliverySettings(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, body.Days); err != nil {
+		deliveryError(w, err)
+		return
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	writeJSON(w, http.StatusOK, body)
 }
 
 func postDelivery(w http.ResponseWriter, r *http.Request, deps Deps) {

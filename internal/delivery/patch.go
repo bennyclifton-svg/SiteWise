@@ -49,3 +49,19 @@ func (p Patch) Apply(c *Content) {
 		c.Details = p.Details
 	}
 }
+
+// Empty reports a patch that changes no field of the row itself, such as
+// one that only dismisses possible answers.
+func (p Patch) Empty() bool {
+	for _, v := range []*string{p.Kind, p.Title, p.OwnerText, p.OwnerUserID, p.Status, p.PackageID, p.WorkItemID, p.StageID, p.SystemID, p.Determinant} {
+		if v != nil {
+			return false
+		}
+	}
+	for _, d := range []DateChange{p.BaselineDate, p.TargetDate, p.ForecastDate, p.ActualDate, p.AsOf} {
+		if d.Present {
+			return false
+		}
+	}
+	return p.Details == nil && p.Retired == nil
+}

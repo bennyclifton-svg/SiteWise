@@ -353,6 +353,10 @@ var forwards = []forward{
 		Fields:  `item (id from read delivery); version; title; owner_text; target_date; forecast_date; actual_date; status; details; retired`,
 		Figures: map[string]string{"target_date": "date", "forecast_date": "date", "actual_date": "date", "baseline_date": "date"},
 		Route:   "PATCH /projects/{id}/delivery/{item}"},
+	{Name: "delivery.settings", Undo: true, About: "Set the project's RFI response time in working days.",
+		Fields: `rfi_response_days (a whole number of working days, 1 to 60, as the PM said it)`, Figures: map[string]string{"rfi_response_days": "number"},
+		Route: "PUT /projects/{id}/delivery/settings",
+		Done:  func(f map[string]any) string { return fmt.Sprintf("Set the RFI response time to %v working days.", f["rfi_response_days"]) }},
 	{Name: "delivery.verify", Click: true, About: "mark a delivery record as verified by you.",
 		Fields: `item (id); version`, Route: "PATCH /projects/{id}/delivery/{item}",
 		Send: func(_ context.Context, _ Deps, _ opActor, _ string, f map[string]any) (sent, error) {
