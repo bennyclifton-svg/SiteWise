@@ -6,16 +6,16 @@ import (
 	"sort"
 	"strings"
 
-	"sitewise/internal/costs"
 	"sitewise/internal/profile"
+	"sitewise/internal/reports"
 	"sitewise/internal/store"
 )
 
 // Named filters (docs/plans/2026-11-18-chat-agency.md, Task 4). For a set
 // that is a rule, not a judgement, the model names the filter and Go
-// computes the rows. Each rule is the one the screen or readAttention
-// already uses, called from here, so chat, the report and the screen
-// cannot disagree. The model supplies no amount and no date.
+// computes the rows. Where a filter is an attention rule it reads
+// reports.Attention itself (attentionRule), so chat, the report and the
+// screen cannot disagree. The model supplies no amount and no date.
 
 // namedFilter is one rule-based set on one table.
 type namedFilter struct {
@@ -58,45 +58,21 @@ func filterList() string {
 // Cost lines.
 
 // costNoBudget is the lines Summarize counts as having no budget amount:
-// readAttention's "N cost lines have no budget amount".
-func costNoBudget(ctx context.Context, d Deps, who opActor, project string) ([]string, error) {
-	p, err := d.Store.ReadCostPlan(ctx, who.OrgID, project, "")
-	if errors.Is(err, store.ErrNotFound) {
-		return nil, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	totals, err := costs.Summarize(p, "overall")
-	if err != nil {
-		return nil, err
-	}
-	return totals.NoBudget, nil
-}
+// attention's cost.no_budget rule, read from reports.Attention.
+var costNoBudget = attentionRule(attentionCosts, reports.RuleCostNoBudget)
 
 // costOverBudget is the rows the Cost Plan tags "over budget": claimed to
 // date (invoices, ex GST) above the budget, from the invoice ledger the grid
-// reads. A posting line's flag is its ledger line's, a group's is its
-// group summary's, as CostGrid's ClaimedCell shows them. A line with an
-// unknown budget is never over it.
+// reads. It is attention's cost.line_claimed_over_budget rule, not the
+// section rule (contract over budget), in the table's order.
 func costOverBudget(ctx context.Context, d Deps, who opActor, project string) ([]string, error) {
-	v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, todaySydney())
-	if errors.Is(err, store.ErrNotFound) {
-		return nil, nil
-	}
-	if err != nil {
+	ids, err := attentionRule(attentionLedger, reports.RuleLineClaimedOver)(ctx, d, who, project)
+	if err != nil || len(ids) == 0 {
 		return nil, err
 	}
 	over := map[string]bool{}
-	for i, l := range v.Summary.Lines {
-		if i < len(v.Lines) && !v.Lines[i].Group && !l.Archived && l.OverBudget {
-			over[l.ID] = true
-		}
-	}
-	for id, g := range v.Groups {
-		if g.OverBudget {
-			over[id] = true
-		}
+	for _, id := range ids {
+		over[id] = true
 	}
 	return inTableOrder(ctx, d, who, project, "cost_lines", over)
 }
@@ -120,10 +96,6 @@ func costExcluded(ctx context.Context, d Deps, who opActor, project string) ([]s
 }
 
 // Documents.
-
-// docNotFiled is a document filing gave up on, with a reason: the
-// register's "not filed" row, and part of readAttention's count.
-func docNotFiled(v store.DocumentView) bool { return v.Status == "not_filed" }
 
 // profileReadsDoc is whether the profile reads a document: the register's
 // "excluded from profile reading" filter and the Profile's "filed but not
@@ -158,8 +130,6 @@ func supersededBy(views []store.DocumentView) map[string]string {
 	return out
 }
 
-func isNotFiled(_ Deps, v store.DocumentView, _ map[string]string) bool { return docNotFiled(v) }
-
 func isNotRead(d Deps, v store.DocumentView, _ map[string]string) bool {
 	return !profileReadsDoc(d.ProfileReading, v)
 }
@@ -185,20 +155,6 @@ func docFilter(keep func(d Deps, v store.DocumentView, old map[string]string) bo
 }
 
 // Program rows.
-
-// programNoDuration is an activity with no duration: readAttention's
-// "Program rows have no duration".
-func programNoDuration(a store.ProgramActivity) bool {
-	return a.Kind == "activity" && a.DurationDays == nil
-}
-
-func programUndated(st store.ProgramState) (map[string]bool, error) {
-	set := map[string]bool{}
-	for _, a := range st.Activities {
-		set[a.ID] = programNoDuration(a)
-	}
-	return set, nil
-}
 
 func programFilter(keep func(st store.ProgramState) (map[string]bool, error)) func(context.Context, Deps, opActor, string) ([]string, error) {
 	return func(ctx context.Context, d Deps, who opActor, project string) ([]string, error) {
@@ -242,40 +198,18 @@ func programCritical(st store.ProgramState) (map[string]bool, error) {
 
 // Packages.
 
-// packageQuotes counts a package's firm cells on the procurement board:
-// firms invited with no quote, quotes received, and quotes with readings to
-// check. readAttention and the no_quote filter both count with it.
-func packageQuotes(cards []store.FirmCard) (invited, quoted, review int) {
-	for _, c := range cards {
-		if c.SubmissionID == "" {
-			invited++
-		} else {
-			quoted++
-		}
-		if c.NeedsReview {
-			review++
-		}
-	}
-	return invited, quoted, review
-}
-
 // packageNoQuote is the live packages with no quote received, whether or not
-// firms are invited.
+// firms are invited. It counts with attention's PackageQuotes, but it is a
+// wider set than attention's procurement.invited_no_quote, which needs a
+// firm invited.
 func packageNoQuote(ctx context.Context, d Deps, who opActor, project string) ([]string, error) {
-	pkgs, err := d.Store.ReadPackages(ctx, who.OrgID, project)
-	if err != nil {
-		return nil, err
-	}
-	board, _, err := d.Store.ProcurementBoard(ctx, who.OrgID, project)
+	in, err := loadAttention(ctx, d, who, project, attentionPackages)
 	if err != nil {
 		return nil, err
 	}
 	var ids []string
-	for _, p := range pkgs {
-		if p.RetiredAt != nil {
-			continue
-		}
-		if _, quoted, _ := packageQuotes(board[p.ID]); quoted == 0 {
+	for _, p := range in.Packages {
+		if _, quoted, _ := reports.PackageQuotes(p.Firms); quoted == 0 {
 			ids = append(ids, p.ID)
 		}
 	}

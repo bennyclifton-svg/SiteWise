@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"sitewise/internal/agent"
+	"sitewise/internal/reports"
 )
 
 // The view tool (docs/plans/2026-11-18-chat-agency.md, Task 2): chat moves
@@ -24,12 +25,12 @@ var viewFilters = map[string]map[string]namedFilter{
 		"excluded":    {rows: costExcluded, shown: "excluded from the totals", none: "No cost line is excluded."},
 	},
 	"documents": {
-		"not_filed":  {rows: docFilter(isNotFiled), shown: "not filed", none: "No document is marked not filed."},
+		"not_filed":  {rows: attentionRule(attentionDocuments, reports.RuleDocumentNotFiled), shown: "not filed", none: "No document is marked not filed."},
 		"not_read":   {rows: docFilter(isNotRead), shown: "the profile does not read", none: "The profile reads every document."},
 		"superseded": {rows: docFilter(isSuperseded), shown: "superseded by a newer revision", none: "No document has been superseded."},
 	},
 	"program": {
-		"no_duration": {rows: programFilter(programUndated), shown: "with no duration", none: "Every Program activity has a duration."},
+		"no_duration": {rows: attentionRule(attentionProgram, reports.RuleProgramNoDuration), shown: "with no duration", none: "Every Program activity has a duration."},
 		"critical":    {rows: programFilter(programCritical), shown: "on the critical path", none: "No Program row is on the critical path."},
 	},
 	"procurement": {
