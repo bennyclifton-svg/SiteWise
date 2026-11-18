@@ -30,9 +30,11 @@ const (
 	pathDeliveryWrite   = "delivery_write"
 	// The register read with a System filter and the also-open line.
 	pathDeliverySystemRead = "delivery_system_read"
-	pathReportRead         = "report_read"
-	pathReportWrite        = "report_write"
-	pathReportAssemble     = "report_assemble"
+	// Read conditions: checks a notice and queues the background read.
+	pathDeliveryImport = "delivery_import"
+	pathReportRead     = "report_read"
+	pathReportWrite    = "report_write"
+	pathReportAssemble = "report_assemble"
 	// A consultant RFP setting re-resolves from frozen drivers: no project
 	// reload and no Jev, so it shares report_write's budget.
 	pathReportSetting = "report_setting"

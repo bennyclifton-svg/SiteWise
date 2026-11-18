@@ -144,6 +144,11 @@ func publishReview(ctx context.Context, broker *events.Broker, lg *log.Logger, o
 // the program's inputs (Profile, planning values, work items, packages and
 // their stages), program writes, and opening the program.
 var programReviewRoutes = map[string]bool{
+	// Consent conditions place the Program's gate hold points (consent
+	// plan, Task 7). The background read writes rows too; opening the
+	// Program kicks the review for those.
+	"POST /projects/{id}/delivery":                       true,
+	"PATCH /projects/{id}/delivery/{item}":               true,
 	"PUT /projects/{id}/profile/{key}":                   true,
 	"PUT /projects/{id}/profile/scope":                   true,
 	"POST /projects/{id}/parts":                          true,

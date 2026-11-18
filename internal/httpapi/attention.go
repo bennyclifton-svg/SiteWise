@@ -114,6 +114,20 @@ func loadAttention(ctx context.Context, d Deps, who opActor, project string, par
 	})
 	run(attentionDelivery, func() error {
 		items, err := d.Store.ReadDelivery(ctx, who.OrgID, project)
+		if err != nil {
+			return err
+		}
+		// A consent condition's gate takes its date from the Program's gate
+		// hold point, computed in Go; no Program, no date.
+		var gates map[string]string
+		for _, it := range items {
+			if it.Kind == "condition" {
+				if gates, err = d.Store.ConsentGateDates(ctx, who.OrgID, project); err != nil {
+					return err
+				}
+				break
+			}
+		}
 		for _, it := range items {
 			if it.RetiredAt != nil {
 				continue
@@ -122,9 +136,11 @@ func loadAttention(ctx context.Context, d Deps, who opActor, project string, par
 			if it.TargetDate != nil {
 				target = *it.TargetDate
 			}
-			in.Delivery = append(in.Delivery, attentionRecord(it, target))
+			rec := attentionRecord(it, target)
+			rec.GateDate = gates[rec.Gate]
+			in.Delivery = append(in.Delivery, rec)
 		}
-		return err
+		return nil
 	})
 	wg.Wait()
 	return in, first
@@ -170,5 +186,6 @@ func attentionRecord(it delivery.Item, target string) reports.AttentionRecord {
 	if it.LateDays != nil {
 		late = *it.LateDays
 	}
-	return reports.AttentionRecord{ID: it.ID, Kind: it.Kind, Status: it.Status, TargetDate: target, LateDays: late, ToCheck: len(it.Readings) > 0}
+	return reports.AttentionRecord{ID: it.ID, Kind: it.Kind, Status: it.Status, TargetDate: target, LateDays: late, ToCheck: len(it.Readings) > 0,
+		Gate: delivery.Condition(it.Content).Stage}
 }

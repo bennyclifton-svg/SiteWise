@@ -89,7 +89,17 @@ type programInputs struct {
 	targets map[string]string
 	years   []int // years with a reviewed calendar for the project's state
 	cal     []ProgramCalendarDay
+	// consentOpen counts the open consent conditions per gate, for the
+	// consent_gate_open check.
+	consentOpen map[string]int
 }
+
+// programConsentSQL counts live, applicable consent conditions per gate:
+// every one (a gate hold point) and the open ones (the check). Proposed
+// rows count: acceptance gates nothing.
+const programConsentSQL = `SELECT COALESCE(details->>'stage',''), count(*)::int, (count(*) FILTER (WHERE status IN ('open','evidence_filed')))::int
+FROM project_delivery_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND kind='condition' AND retired_at IS NULL AND status<>'not_applicable'
+GROUP BY 1`
 
 const programProfileSQL = `SELECT r.key,COALESCE(r.value,''),r.band,r.origin,r.meaning,r.review_status,r.value_state,COALESCE(r.projection_hash,''),p.kind='whole'
 FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id
@@ -131,6 +141,7 @@ func readProgramGenInput(ctx context.Context, q programQuerier, org, project str
 	b.Queue(programProfileSQL, org, project)
 	b.Queue(programWorkSQL, org, project)
 	b.Queue(programPackageSQL, org, project)
+	b.Queue(programConsentSQL, org, project)
 	br := q.SendBatch(ctx, b)
 	defer br.Close()
 
@@ -226,6 +237,23 @@ func readProgramGenInput(ctx context.Context, q programQuerier, org, project str
 			p := &in.gi.Packages[len(in.gi.Packages)-1]
 			p.Stages = append(p.Stages, engine.PackageStage{ID: stageID, CatalogueStageID: catalogue, Label: label})
 		}
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return in, err
+	}
+	if rows, err = br.Query(); err != nil {
+		return in, err
+	}
+	in.gi.ConsentGates, in.consentOpen = map[string]int{}, map[string]int{}
+	for rows.Next() {
+		var gate string
+		var all, open int
+		if err := rows.Scan(&gate, &all, &open); err != nil {
+			rows.Close()
+			return in, err
+		}
+		in.gi.ConsentGates[gate], in.consentOpen[gate] = all, open
 	}
 	rows.Close()
 	if err := rows.Err(); err != nil {
@@ -582,6 +610,7 @@ func (s *Store) programExtras(ctx context.Context, q programQuerier, org, projec
 	// read skips the undo log.
 	ci.RemovedPackageRows = engine.RemovedPackageRows(engine.Diff(liveRows(st.Activities), liveLinks(st.Links), plan, engine.UserRetired{}))
 	ex.Checks = append(ex.Checks, engine.Checks(ci)...)
+	ex.Checks = append(ex.Checks, consentGateChecks(st, in.consentOpen)...)
 	ex.Targets = ownerTargets(st, in.targets)
 	for _, t := range ex.Targets {
 		if t.Status == "later" || t.Status == "longer" || t.Status == "shorter" {
@@ -937,4 +966,24 @@ func profileFloorArea(workTypes []string, scale map[string]string) string {
 		}
 	}
 	return strings.TrimSpace(scale["hdr.scale.gfa_sqm"])
+}
+
+// consentGateChecks flags a gate hold point released while its consent
+// conditions are still open.
+func consentGateChecks(st ProgramState, open map[string]int) []engine.Check {
+	var out []engine.Check
+	for _, a := range st.Activities {
+		gate := engine.ConsentGateOf(string(a.SourceKey))
+		if gate == "" || a.Retired || open[gate] == 0 {
+			continue
+		}
+		var source map[string]json.RawMessage
+		if json.Unmarshal(a.DurationSource, &source) != nil {
+			continue
+		}
+		if _, released := source["released"]; released {
+			out = append(out, engine.ConsentGateOpenCheck(a.ID, a.Label, open[gate]))
+		}
+	}
+	return out
 }

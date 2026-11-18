@@ -15,6 +15,7 @@ import (
 
 	"sitewise/internal/agent"
 	"sitewise/internal/chateval"
+	"sitewise/internal/delivery"
 	"sitewise/internal/store"
 )
 
@@ -105,6 +106,9 @@ func (s *session) names(ctx context.Context) (*names, error) {
 		name := it.Title
 		if it.Number != nil {
 			name = fmt.Sprintf("RFI-%03d", *it.Number)
+		}
+		if it.Kind == "condition" {
+			name = "Condition " + delivery.Condition(it.Content).Number
 		}
 		n.add("register", it.ID, name)
 	}

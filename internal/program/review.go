@@ -134,6 +134,8 @@ func SourceOf(key string) string {
 		return SourceWorkItems
 	case strings.HasPrefix(key, "skeleton:"):
 		return SourceProfile
+	case strings.HasPrefix(key, "consent:"):
+		return SourceConsent
 	}
 	return SourceLibrary
 }

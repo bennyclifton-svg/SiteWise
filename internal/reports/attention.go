@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"sitewise/internal/costs"
 	"sitewise/internal/figures"
@@ -39,7 +40,15 @@ const (
 	RuleApprovalPastTarget    = "approvals.submitted_past_target"
 	RuleRFIOverdue            = "register.rfi_overdue"
 	RuleRegisterToCheck       = "register.to_check"
+	// Plan 6: consent conditions still open when their Program gate is
+	// within the window, or already reached.
+	RuleConditionsDue    = "register.conditions_due"
+	RuleConditionsAtGate = "register.conditions_open_at_gate"
 )
+
+// ConditionWindowDays is the window "conditions due" looks ahead: four
+// weeks of calendar days from today to the gate's Program date.
+const ConditionWindowDays = 28
 
 // MaxAttentionShown is how many items a list shows before "and N more".
 const MaxAttentionShown = 10
@@ -50,7 +59,8 @@ const MaxAttentionShown = 10
 //   - plan 3 (variations and claims): payment schedules due or past due;
 //   - plan 4 (register): open RFIs past their due date;
 //   - plan 5 (monthly report): completion later than the last issued report;
-//   - plan 6 (consent conditions): conditions due in the window.
+//   - plan 6 (consent conditions): conditions due in the window, and
+//     conditions still open at a gate already reached.
 type AttentionInput struct {
 	// Today is the Sydney date, YYYY-MM-DD, for rules with a due date.
 	Today        string
@@ -126,6 +136,35 @@ type AttentionRecord struct {
 	LateDays int
 	// ToCheck is a row with a possible answer shown for the PM to check.
 	ToCheck bool
+	// Gate is a consent condition's gate (before_cc …), and GateDate the
+	// Program's date for that gate's hold point; "" when the Program has
+	// none. Dates are Go's; the register shows the gate, not a due date.
+	Gate     string
+	GateDate string
+}
+
+// ConditionOpenBefore is the one definition of "open before a gate",
+// shared by the register's named filters (open before the construction
+// certificate, open before occupation) and the rules below: a consent
+// condition at that gate that is open or has evidence filed but is not yet
+// satisfied or not applicable.
+func ConditionOpenBefore(r AttentionRecord, gate string) bool {
+	return r.Kind == "condition" && gate != "" && r.Gate == gate && (r.Status == "open" || r.Status == "evidence_filed")
+}
+
+// conditionDue is an open condition whose gate's Program date falls within
+// the window; conditionAtGate one whose gate date is today or past. A gate
+// with no Program date is never due: unknown stays unknown.
+func conditionDue(r AttentionRecord, today string) bool {
+	if !ConditionOpenBefore(r, r.Gate) || r.GateDate == "" || today == "" || r.GateDate <= today {
+		return false
+	}
+	t, err := time.Parse("2006-01-02", today)
+	return err == nil && r.GateDate <= t.AddDate(0, 0, ConditionWindowDays).Format("2006-01-02")
+}
+
+func conditionAtGate(r AttentionRecord, today string) bool {
+	return ConditionOpenBefore(r, r.Gate) && r.GateDate != "" && today != "" && r.GateDate <= today
 }
 
 // RFIOverdue is the one definition of an overdue register row, shared by
@@ -227,6 +266,8 @@ func Attention(in AttentionInput) []AttentionItem {
 	out = appendIf(out, approvalItem(in.Delivery, in.Today))
 	out = appendIf(out, rfiOverdueItem(in.Delivery))
 	out = appendIf(out, registerToCheckItem(in.Delivery))
+	out = appendIf(out, conditionItem(in.Delivery, in.Today, RuleConditionsAtGate, conditionAtGate, "consent condition is", "consent conditions are", " still open at a gate the Program has reached"))
+	out = appendIf(out, conditionItem(in.Delivery, in.Today, RuleConditionsDue, conditionDue, "consent condition is", "consent conditions are", fmt.Sprintf(" open before a gate in the next %d days", ConditionWindowDays)))
 	return out
 }
 
@@ -473,6 +514,17 @@ func registerToCheckItem(records []AttentionRecord) AttentionItem {
 	}
 	return AttentionItem{Rule: RuleRegisterToCheck, Source: "Register", Count: len(ids), IDs: ids,
 		Words: plural(len(ids), "register row has", "register rows have") + " a possible answer to check"}
+}
+
+// conditionItem is the conditions one of the two gate rules holds for.
+func conditionItem(records []AttentionRecord, today, rule string, holds func(AttentionRecord, string) bool, one, many, words string) AttentionItem {
+	var ids []string
+	for _, r := range records {
+		if holds(r, today) {
+			ids = append(ids, r.ID)
+		}
+	}
+	return AttentionItem{Rule: rule, Source: "Register", Count: len(ids), IDs: ids, Words: plural(len(ids), one, many) + esc(words)}
 }
 
 // plural is "1 cost line has" or "3 cost lines have".

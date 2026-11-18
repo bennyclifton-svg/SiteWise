@@ -62,6 +62,21 @@ Go's half only (nothing changed, no figure of the model's own), and the
 words of the answer are the live run's to judge. `s23` now asks chat to
 send an RFI, which is plan 1's and not built.
 
+## The conditions group
+
+`conditions` (draft, 7 cases, `cn1` to `cn7`) is plan 6's key
+(`docs/plans/2026-11-17-consent-conditions.md`, "From chat"): two reads
+(what is open before the construction certificate and who has it; which
+conditions need the arborist), the "nobody owns" filter, giving rows
+selected by hand to the landscape architect (at once, with Undo), and
+three that wait for the click: putting a condition on an RFP, marking one
+satisfied, and reading the notice again. The house fixture's consent
+DA-2026-0412 is read by the real route and background job; Jev is a
+stand-in answering from a table in `cmd/chat-eval/consent.go`, so the
+picks are synthetic, not an answer key. `TestScreenCasesScoredOffline`
+scores all seven with the stand-in model; the two reads are scored on Go's
+half only.
+
 ## The screen group
 
 `screen` (draft, 27 cases, `s1` to `s27`) is the chat agency plan's key

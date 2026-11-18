@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"sitewise/internal/agent"
+	"sitewise/internal/delivery"
 	"sitewise/internal/reports"
 )
 
@@ -39,7 +40,12 @@ var viewFilters = map[string]map[string]namedFilter{
 	"register": {
 		"overdue":  {rows: registerFilter(registerOverdue), shown: "past the response date", none: "No RFI is past its response date."},
 		"with_me":  {rows: registerFilter(registerWithMe), shown: "with you (answered, or your drafts)", none: "Nothing on the register is with you."},
-		"to_check": {rows: registerFilter(registerToCheck), shown: "with a possible answer to check", none: "No register row has a possible answer to check."},
+		"to_check": {rows: registerFilter(registerToCheck), shown: "to check (a possible answer or evidence, or a condition SiteWise read)", none: "No register row has anything to check."},
+		// Consent conditions (plan 6). Open before a gate is
+		// reports.ConditionOpenBefore, the definition the attention rules use.
+		"open_before_cc": {rows: registerFilter(conditionOpenBefore(delivery.GateConstructionCertificate)), shown: "consent conditions open before the construction certificate", none: "No consent condition is open before the construction certificate."},
+		"open_before_oc": {rows: registerFilter(conditionOpenBefore(delivery.GateOccupation)), shown: "consent conditions open before occupation", none: "No consent condition is open before occupation."},
+		"no_one":         {rows: registerFilter(conditionNoOne), shown: "consent conditions with no one to act", none: "Every open consent condition has someone to act."},
 	},
 }
 

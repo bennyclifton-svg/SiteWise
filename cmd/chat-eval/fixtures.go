@@ -44,6 +44,9 @@ type fixture struct {
 	Documents   []chatfix.Document
 	Implication bool // a pre-2004 building: the hazardous-materials prompt applies
 	Register    []registerRow
+	// Conditions are Jev's stand-in picks for the fixture's notice of
+	// determination, by condition number (consent.go).
+	Conditions map[string]conditionPick
 }
 
 var fixtures = map[string]fixture{
@@ -74,6 +77,7 @@ var fixtures = map[string]fixture{
 			{Title: "Window head flashing detail", Question: "Confirm the head flashing to the north windows.", With: "Arc Architects", System: "envelope", Status: "open", RaisedOn: "2026-10-01"},
 			{Title: "Retaining wall footing depth", Question: "Confirm the footing depth to the rear retaining wall.", With: "Northline Structural", System: "substructure", Status: "open"},
 		},
+		Conditions: houseConditions,
 		Documents: []chatfix.Document{
 			{Title: "Structural sketch SK-04", Kind: "drawing", Discipline: "structural", Number: "SK-04", Pages: []string{
 				"Revised footing detail issued in response to RFI-002. Footings 900 mm below natural ground level."}},

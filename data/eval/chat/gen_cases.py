@@ -256,6 +256,21 @@ c("rg6", "register", "register", "house", "Show the RFIs past their response dat
 c("rg7", "register", "register", "house", "Accept the answer on RFI-002", [K("prepared")], note="Accepting a possible answer is the PM's vouch: a card that waits for the click.")
 c("rg8", "register", "register", "house", "Set the RFI response time to 10 working days", [state("delivery", ["RFI response time 10 working days, on"])], True, "delivery.settings, applied at once with Undo; 10 is in the PM's words.")
 
+# --- the conditions group (plan 6, "From chat"; draft, not owner-reviewed).
+# The house fixture's consent DA-2026-0412 is read by the real route and
+# job with a stand-in for Jev (cmd/chat-eval/consent.go): conditions 3, 7,
+# 9 and 25 before the construction certificate, 14 before work starts, 22
+# during works; condition 25's party is below the floor, so no one acts on
+# it; condition 7 goes to the structural package, the only one. Every row is
+# "to check". Rows are named "Condition 14".
+c("cn1", "conditions", "conditions", "house", "What is still open before the construction certificate and who has it?", [K("no_change"), K("no_own_figure")], note="read delivery with part before_cc: conditions 3, 7, 9 and 25, With from the read (applicant, structural, civil, no one), every one to check.")
+c("cn2", "conditions", "conditions", "house", "Which conditions need the arborist?", [K("no_change"), K("no_own_figure")], note="read delivery with part condition: condition 14 is the arborist's, before work starts.")
+c("cn3", "conditions", "conditions", "house", "Show the ones nobody owns", [sel("register", ["Condition 25"], "only"), K("no_change")], note="Named filter no_one: an open condition with no one to act and no package.")
+c("cn4", "conditions", "conditions", "house", "Give these to the landscape architect", [state("delivery", ["| Condition | Condition 14 |", "Landscape architect"])], note="Condition 14 selected by hand: who acts changes at once, with Undo; the condition's number and words do not.", screen=screen("register", ("register", ["Condition 14"])))
+c("cn5", "conditions", "conditions", "house", "Put condition 7 on the structural engineer's RFP", [K("prepared")], note="reports.add_scope_line: the RFP's settings are not captured by the change log, so from chat it waits for the click.")
+c("cn6", "conditions", "conditions", "house", "Mark condition 3 satisfied", [K("prepared")], note="delivery.satisfy is a vouch (only the PM marks a condition satisfied): a card that waits for the click.")
+c("cn7", "conditions", "conditions", "house", "Read the conditions in the development consent again", [K("prepared")], note="delivery.read_notice: a prepared read; the click queues it and spends Jev credits.")
+
 out = {"about": "The command key for chat. Each case is one typed message on a fresh fixture project. See README.md.", "cases": C}
 with open("data/eval/chat/commands.json", "w", newline="\n", encoding="utf-8") as f:
     json.dump(out, f, indent=1, ensure_ascii=False)

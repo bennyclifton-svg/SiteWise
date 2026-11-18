@@ -19,7 +19,7 @@ type sender = func(ctx context.Context, d Deps, who opActor, project string, f m
 // forwardedOperations lists them by area.
 func forwardedOperations(area string) []operation {
 	var out []operation
-	for _, fw := range append(append([]forward{}, forwards...), readForwards...) {
+	for _, fw := range append(append(append([]forward{}, forwards...), readForwards...), consentForwards...) {
 		if opArea(fw.Name) == area {
 			out = append(out, fw.operation())
 		}
@@ -351,8 +351,8 @@ var forwards = []forward{
 		Figures: map[string]string{"target_date": "date", "forecast_date": "date", "actual_date": "date", "baseline_date": "date", "raised_on": "date"},
 		Route:   "POST /projects/{id}/delivery", Send: sendRegisterAdd,
 		Done: func(f map[string]any) string { return "Added " + quoted(fieldText(f, "title")) + " to the register." }},
-	{Name: "delivery.edit", Undo: true, About: "Change a register row: close, withdraw or reopen it, set who it is with, its due date or its system, edit an RFI's wording, or dismiss possible answers.",
-		Fields:  `item (a row id from read delivery, or an RFI number such as RFI-004); status (an RFI: draft|open|answered|closed|withdrawn; a notice: open|closed|withdrawn); title; owner_text; target_date; system; package; question; ref; raised_on; answer; dismiss_readings (reading ids from read delivery); retired`,
+	{Name: "delivery.edit", Undo: true, About: "Change a register row: close, withdraw or reopen it, set who it is with, its due date or its system, edit an RFI's wording, dismiss possible answers; for a consent condition set its gate, who acts and whether evidence is needed, link a document as its evidence, or mark it not applicable.",
+		Fields:  `item (a row id from read delivery, an RFI number such as RFI-004, or a condition number such as condition 46); status (an RFI: draft|open|answered|closed|withdrawn; a notice: open|closed|withdrawn; a condition: open|evidence_filed|not_applicable, never satisfied, which is delivery.satisfy); title; owner_text; target_date; system; package; question; ref; raised_on; answer; for a condition: gate (before_cc|before_work|during_works|before_occupation|before_subdivision|ongoing|throughout), discipline (who acts, a discipline id), evidence_needed (true|false), link_evidence (a document id from documents: its evidence); dismiss_readings (reading ids from read delivery); retired`,
 		Figures: map[string]string{"target_date": "date", "forecast_date": "date", "actual_date": "date", "baseline_date": "date", "raised_on": "date"},
 		Route:   "PATCH /projects/{id}/delivery/{item}", Send: sendRegisterEdit,
 		Done: func(f map[string]any) string { return "Changed the register row." }},

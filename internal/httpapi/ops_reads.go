@@ -254,6 +254,9 @@ var readForwards = []forward{
 			return sent{Body: map[string]any{"document_ids": ids, "setting": setting}}, card,
 				fmt.Sprintf("Profile reading set to %s for %s.", setting, which), nil
 		}),
+	readForward("delivery.read_notice",
+		"read a filed notice of determination into the register's consent conditions: Go splits it, and Jev reads who acts, the system and whether evidence is needed for each condition, as rows to check; it uses Jev credits and can't be undone.",
+		`document (id from documents)`, "POST /projects/{id}/delivery/imports", resolveReadNotice),
 	readForward("specifications.update",
 		"read the project's documents for the specification schedule (the Update button on Specifications); it uses Jev credits and can't be undone.",
 		`(none)`, "POST /projects/{id}/specifications/update",

@@ -42,6 +42,18 @@ type RegisterView struct {
 	// Systems are the top-level systems in building order, for the System filter.
 	Systems  []RegisterSystem `json:"systems"`
 	AlsoOpen *AlsoOpen        `json:"also_open,omitempty"`
+	// Consents are the project's consent reads (Read conditions), newest
+	// first, and Consent the Profile's consent number, date and lapse date
+	// for the conditions' header.
+	Consents []ConsentRead `json:"consents"`
+	Consent  ConsentFacts  `json:"consent"`
+}
+
+// ConsentFacts are the Profile's consent facts (knowledge/profile/project_facts.yaml).
+type ConsentFacts struct {
+	Number    string `json:"number,omitempty"`
+	Date      string `json:"date,omitempty"`
+	LapseDate string `json:"lapse_date,omitempty"`
 }
 
 type RegisterKind struct {
@@ -86,7 +98,7 @@ func (s *Store) ReadDelivery(ctx context.Context, org, project string) ([]delive
 
 // ReadRegister reads the register in one read-only snapshot.
 func (s *Store) ReadRegister(ctx context.Context, org, project string, q RegisterQuery, today string) (RegisterView, error) {
-	view := RegisterView{Items: []delivery.Item{}, Kinds: []RegisterKind{}, Systems: []RegisterSystem{}, Today: today}
+	view := RegisterView{Items: []delivery.Item{}, Kinds: []RegisterKind{}, Systems: []RegisterSystem{}, Consents: []ConsentRead{}, Today: today}
 	cat := s.workCatalog()
 	if q.System != "" && !topSystem(cat, q.System) {
 		return view, fmt.Errorf("%w: unknown system", ErrInvalidDelivery)
@@ -180,7 +192,42 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 		}
 		view.AlsoOpen = &also
 	}
-	return view, tx.Commit(ctx)
+	if view.Consent, err = consentFacts(ctx, tx, org, project); err != nil {
+		return view, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return view, err
+	}
+	view.Consents, err = s.ConsentReads(ctx, org, project)
+	return view, err
+}
+
+// consentFacts reads the Profile's consent number, date and lapse date as
+// it holds them (a value the PM or a read document stated).
+func consentFacts(ctx context.Context, tx pgx.Tx, org, project string) (ConsentFacts, error) {
+	var f ConsentFacts
+	rows, err := tx.Query(ctx, `SELECT r.key, COALESCE(r.value,'') FROM profile_rows r JOIN project_parts p ON p.org_id=r.org_id AND p.site_id=r.site_id AND p.id=r.part_id
+ WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND p.kind='whole' AND r.key IN ('fact.consent_number','fact.consent_date','fact.consent_lapse_date')
+ AND r.value_state NOT IN ('unknown','cleared') AND r.review_status<>'superseded'`, org, project)
+	if err != nil {
+		return f, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var key, value string
+		if err := rows.Scan(&key, &value); err != nil {
+			return f, err
+		}
+		switch key {
+		case "fact.consent_number":
+			f.Number = value
+		case "fact.consent_date":
+			f.Date = value
+		case "fact.consent_lapse_date":
+			f.LapseDate = value
+		}
+	}
+	return f, rows.Err()
 }
 
 // kindOrder puts RFIs, notices and consent conditions first, then the older kinds as they came.
@@ -251,7 +298,7 @@ func responseDays(ctx context.Context, tx pgx.Tx, org, project string) (int, boo
 func proposedReadings(ctx context.Context, tx pgx.Tx, org, project string) (map[string][]delivery.Reading, error) {
 	rows, err := tx.Query(ctx, `SELECT r.item_id::text, r.id::text, r.document_id::text,
  COALESCE((SELECT t.value FROM decisions t WHERE t.org_id=d.org_id AND t.document_id=d.id AND t.field='title' LIMIT 1), d.filename),
- r.decided_by, r.band, r.probability, r.basis, to_char(d.created_at AT TIME ZONE 'Australia/Sydney','YYYY-MM-DD')
+ r.decided_by, r.band, r.probability, r.basis, to_char(d.created_at AT TIME ZONE 'Australia/Sydney','YYYY-MM-DD'), r.field
  FROM delivery_readings r JOIN documents d ON d.org_id=r.org_id AND d.id=r.document_id
  WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.status='proposed' AND (r.decided_by='rule' OR r.band='amber')
  ORDER BY r.created_at, r.id`, org, project)
@@ -263,7 +310,7 @@ func proposedReadings(ctx context.Context, tx pgx.Tx, org, project string) (map[
 	for rows.Next() {
 		var item string
 		var r delivery.Reading
-		if err := rows.Scan(&item, &r.ID, &r.DocumentID, &r.Document, &r.DecidedBy, &r.Band, &r.Probability, &r.Basis, &r.FiledOn); err != nil {
+		if err := rows.Scan(&item, &r.ID, &r.DocumentID, &r.Document, &r.DecidedBy, &r.Band, &r.Probability, &r.Basis, &r.FiledOn, &r.Field); err != nil {
 			return nil, err
 		}
 		out[item] = append(out[item], r)

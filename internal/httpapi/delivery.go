@@ -2,7 +2,10 @@ package httpapi
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+
+	"sitewise/internal/consent"
 	"sitewise/internal/delivery"
 	"sitewise/internal/store"
 )
@@ -126,4 +129,68 @@ func deliveryError(w http.ResponseWriter, err error) {
 	default:
 		http.Error(w, "delivery operation failed", http.StatusInternalServerError)
 	}
+}
+
+// postDeliveryImport is Read conditions: POST /projects/{id}/delivery/imports
+// {document_id} (docs/plans/2026-11-17-consent-conditions.md, Task 5; index
+// agreement 4, the one read route into the register). Go checks the
+// document's stored text is a notice of determination and queues the
+// background read; nothing here calls Jev while the PM waits. It is the
+// operation delivery.read_notice, which chat prepares for the PM's click.
+func postDeliveryImport(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	var body struct {
+		DocumentID string `json:"document_id"`
+	}
+	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil || !uuidPattern.MatchString(body.DocumentID) {
+		http.Error(w, "invalid body", http.StatusBadRequest)
+		return
+	}
+	project := r.PathValue("id")
+	pages, err := deps.Store.ConsentDocument(r.Context(), session.OrgID, project, body.DocumentID)
+	if err != nil {
+		deliveryError(w, err)
+		return
+	}
+	if msg := consentRefusal(pages); msg != "" {
+		http.Error(w, msg, http.StatusUnprocessableEntity)
+		return
+	}
+	switch err := deps.Store.QueueConsent(r.Context(), session.OrgID, project, body.DocumentID, session.UserID); {
+	case errors.Is(err, store.ErrConsentBusy):
+		http.Error(w, err.Error(), http.StatusConflict)
+		return
+	case errors.Is(err, store.ErrNotFound):
+		http.Error(w, "Wait for the document to finish filing.", http.StatusUnprocessableEntity)
+		return
+	case err != nil:
+		deliveryError(w, err)
+		return
+	}
+	if deps.Broker != nil {
+		deps.Broker.Wake(session.OrgID)
+	}
+	writeJSON(w, http.StatusAccepted, map[string]string{"document_id": body.DocumentID, "status": "queued"})
+}
+
+// consentRefusal is why a document cannot be read for conditions, in one
+// plain line, or "".
+func consentRefusal(pages []store.SourcePage) string {
+	if len(pages) == 0 {
+		return "No text has been read from this document yet."
+	}
+	in := make([]consent.Page, len(pages))
+	for i, p := range pages {
+		in[i] = consent.Page{Page: p.Page, Text: p.Text}
+	}
+	if !consent.Detect(in) {
+		return "No numbered conditions found"
+	}
+	if n := len(consent.Split(in).Conditions); n > consent.MaxConditions {
+		return fmt.Sprintf("The notice has %d numbered conditions, more than %d; split the document.", n, consent.MaxConditions)
+	}
+	return ""
 }

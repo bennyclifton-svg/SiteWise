@@ -219,6 +219,18 @@
       "note": "background: a filed document's register job, claim to possible answer written (Go's cited-number rule; with correspondence, one Jev fan-out). Shared with plan 6's evidence step (plan 4, index agreement 2)"
     },
     {
+      "name": "delivery_import",
+      "p50_us": 300000,
+      "p90_us": 1000000,
+      "note": "Read conditions: POST /projects/{id}/delivery/imports checks the document is a notice (Go's split of its stored text) and queues the background read; no Jev while the PM waits (consent plan, Task 5; the report_assemble numbers)"
+    },
+    {
+      "name": "consent_read",
+      "p50_us": 5000000,
+      "p90_us": 10000000,
+      "note": "background: a 120-condition notice, job lease to last row written: Go's split and one Jev fan-out per condition, sixteen in flight; excludes queue wait, as visual_identity does (consent plan, Task 10). Measured by cmd/consent-eval -live, not yet run"
+    },
+    {
       "name": "package_scope_write",
       "p50_us": 100000,
       "p90_us": 250000

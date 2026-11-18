@@ -2517,6 +2517,125 @@
      ]
     }
    ]
+  },
+  {
+   "id": "cn1",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "What is still open before the construction certificate and who has it?",
+   "note": "read delivery with part before_cc: conditions 3, 7, 9 and 25, With from the read (applicant, structural, civil, no one), every one to check.",
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "cn2",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "Which conditions need the arborist?",
+   "note": "read delivery with part condition: condition 14 is the arborist's, before work starts.",
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "cn3",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "Show the ones nobody owns",
+   "note": "Named filter no_one: an open condition with no one to act and no package.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "register",
+     "do": "only",
+     "rows": [
+      "Condition 25"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "cn4",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "Give these to the landscape architect",
+   "note": "Condition 14 selected by hand: who acts changes at once, with Undo; the condition's number and words do not.",
+   "screen": {
+    "view": "register",
+    "selected": {
+     "table": "register",
+     "rows": [
+      "Condition 14"
+     ]
+    }
+   },
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| Condition | Condition 14 |",
+      "Landscape architect"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cn5",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "Put condition 7 on the structural engineer's RFP",
+   "note": "reports.add_scope_line: the RFP's settings are not captured by the change log, so from chat it waits for the click.",
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "cn6",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "Mark condition 3 satisfied",
+   "note": "delivery.satisfy is a vouch (only the PM marks a condition satisfied): a card that waits for the click.",
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "cn7",
+   "source": "conditions",
+   "group": "conditions",
+   "fixture": "house",
+   "message": "Read the conditions in the development consent again",
+   "note": "delivery.read_notice: a prepared read; the click queues it and spends Jev credits.",
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
   }
  ]
 }

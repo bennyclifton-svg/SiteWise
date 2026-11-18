@@ -129,6 +129,10 @@ type GenInput struct {
 	// Construction bar stands for the trades. False builds the detailed
 	// program, which sizes that bar (tradeChainDays).
 	Outline bool
+	// ConsentGates counts the live, applicable consent conditions per gate
+	// (before_cc, before_work, before_occupation, before_subdivision). A gate
+	// with any gets one hold point (consent plan, Task 7).
+	ConsentGates map[string]int
 }
 
 // Facts are the Profile facts generation reads.
@@ -333,10 +337,12 @@ func Generate(cat *knowledge.Catalog, in GenInput) (Plan, error) {
 	if !in.Outline {
 		g.holdPointRows()
 	}
+	g.consentGateRows()
 
 	g.stageLinks(choice.Skeleton)
 	g.fragmentLinks()
 	g.holdPointLinks()
+	g.consentGateLinks()
 	g.chainLinks()
 
 	g.durations()
@@ -363,6 +369,7 @@ type gen struct {
 
 	fragInstances []fragInstance
 	holds         []holdRow
+	gates         []gateRow
 	anchored      map[string]bool // rows with a placed predecessor
 	hasPred       map[string]bool
 }

@@ -120,7 +120,7 @@ func operations() []operation {
 	for _, area := range opAreas[3:] {
 		all = append(all, forwardedOperations(area)...)
 	}
-	return all
+	return append(all, consentOperations()...)
 }
 
 func operationNamed(name string) (operation, bool) {

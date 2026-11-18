@@ -518,7 +518,10 @@ func (s *session) seed(ctx context.Context, f fixture, needs []string) error {
 	if err != nil {
 		return err
 	}
-	return s.seedRegister(ctx, f.Register, docs)
+	if err := s.seedRegister(ctx, f.Register, docs); err != nil {
+		return err
+	}
+	return s.seedConditions(ctx, docs, f.Conditions)
 }
 
 // seedRegister adds the fixture's register rows through the screen's

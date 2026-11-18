@@ -184,6 +184,15 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		"Accept the answer on RFI-002":                 acceptFromRead("Structural sketch SK-04"),
 		"Set the RFI response time to 10 working days": apply("delivery", "delivery.settings", map[string]any{"rfi_response_days": 10}),
 
+		// The conditions group (plan 6).
+		"What is still open before the construction certificate and who has it?": read("before_cc"),
+		"Which conditions need the arborist?":                                    read("condition"),
+		"Show the ones nobody owns":                                              filter("only", "register", "no_one"),
+		"Give these to the landscape architect":                                  apply("delivery", "delivery.edit", map[string]any{"item": strings.Join(short("register", "Condition 14"), ""), "owner_text": "Landscape architect", "discipline": "consultant.landscape"}),
+		"Put condition 7 on the structural engineer's RFP":                       apply("reports", "reports.add_scope_line", map[string]any{"item": "condition 7"}),
+		"Mark condition 3 satisfied":                                             apply("delivery", "delivery.satisfy", map[string]any{"item": "condition 3"}),
+		"Read the conditions in the development consent again":                   apply("delivery", "delivery.read_notice", map[string]any{"document": strings.Join(short("documents", "Development consent DA-2026-0412"), "")}),
+
 		"Show the cost lines with no budget":                                    filter("only", "cost_lines", "no_budget"),
 		"Select the cost lines that are over budget":                            filter("select", "cost_lines", "over_budget"),
 		"Show only the superseded documents":                                    filter("only", "documents", "superseded"),
@@ -266,7 +275,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	}
 	scored := 0
 	for _, c := range cases {
-		if (c.Group != "screen" && c.Group != "register") || slices.Contains(modelOnly, c.ID) {
+		if (c.Group != "screen" && c.Group != "register" && c.Group != "conditions") || slices.Contains(modelOnly, c.ID) {
 			continue
 		}
 		scored++

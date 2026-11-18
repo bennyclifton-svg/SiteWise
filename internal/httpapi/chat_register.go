@@ -18,7 +18,7 @@ import (
 // "From chat"). The read prints Go's figures: numbers, due dates, days late
 // and who holds a row. The operations run the register's own routes.
 
-var kindWords = map[string]string{"rfi": "RFI", "notice": "Notice", "action": "Action", "risk": "Risk", "issue": "Issue", "decision": "Decision", "approval": "Approval", "milestone": "Hold point"}
+var kindWords = map[string]string{"rfi": "RFI", "notice": "Notice", "condition": "Condition", "action": "Action", "risk": "Risk", "issue": "Issue", "decision": "Decision", "approval": "Approval", "milestone": "Hold point"}
 
 // rfiNumber is "RFI-007".
 func rfiNumber(n *int) string {
@@ -32,11 +32,14 @@ func rfiNumber(n *int) string {
 // ("rfi"), a top-level system id ("envelope"), or "overdue".
 func readRegister(ctx context.Context, d Deps, who opActor, project, part string, r *reader) error {
 	q := store.RegisterQuery{}
-	overdue := false
+	overdue, gate := false, ""
 	switch {
 	case part == "":
 	case part == "overdue":
 		overdue = true
+	case delivery.GateWords[part] != "":
+		// A gate: the conditions met before it.
+		q.Kind, gate = "condition", part
 	case len(delivery.Statuses(part)) > 0:
 		q.Kind = part
 	default:
@@ -62,6 +65,7 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 		cal = "Monday to Friday (no Program)"
 	}
 	r.line("The register: what is owed on the project, from SiteWise's records. Today is %s. RFI response time %d working days%s, on %s. Numbers, due dates, days late and With are computed by SiteWise; With is who holds the row now (You when an RFI is answered).", view.Today, view.ResponseDays, typical, cal)
+	consentHeader(view, r)
 	if len(view.Kinds) == 0 {
 		r.line("Nothing is recorded as owed yet.")
 		return nil
@@ -81,6 +85,9 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 		if overdue && !reports.RFIOverdue(reports.AttentionRecord{Kind: it.Kind, Status: it.Status, LateDays: late}) {
 			continue
 		}
+		if gate != "" && delivery.Condition(it.Content).Stage != gate {
+			continue
+		}
 		shown++
 		due := "—"
 		if it.TargetDate != nil {
@@ -95,8 +102,14 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 			answers = append(answers, shortID(rd.ID)+": "+rd.Document)
 			r.outside = "the titles of filed documents offered as possible answers"
 		}
-		r.line("  %s| %s | %s | %s | %s | %s | %s | %s | %s | %s", r.id(it.ID), kindWords[it.Kind], orDash(rfiNumber(it.Number)), it.Title, orDash(it.With), due, lateText,
-			strings.ReplaceAll(it.Status, "_", " "), orDash(labels[it.SystemID]), orDash(strings.Join(answers, "; ")))
+		number, status := rfiNumber(it.Number), strings.ReplaceAll(it.Status, "_", " ")
+		if it.Kind == "condition" {
+			// The printed heading is the council's words.
+			r.outside = "consent conditions' printed headings"
+			number, due, status = conditionColumns(it)
+		}
+		r.line("  %s| %s | %s | %s | %s | %s | %s | %s | %s | %s", r.id(it.ID), kindWords[it.Kind], orDash(number), it.Title, orDash(it.With), due, lateText,
+			status, orDash(labels[it.SystemID]), orDash(strings.Join(answers, "; ")))
 	}
 	if shown == 0 {
 		r.line("No row matches.")
@@ -149,7 +162,20 @@ func registerWithMe(it delivery.Item, who opActor) bool {
 	return it.Status == "draft" && p.Actor == who.UserID
 }
 
-func registerToCheck(it delivery.Item, _ opActor) bool { return len(it.Readings) > 0 }
+func registerToCheck(it delivery.Item, _ opActor) bool { return delivery.ToCheck(it) }
+
+// conditionOpenBefore is the named filter for one gate, by the shared rule.
+func conditionOpenBefore(gate string) func(delivery.Item, opActor) bool {
+	return func(it delivery.Item, _ opActor) bool {
+		return reports.ConditionOpenBefore(attentionRecord(it, ""), gate)
+	}
+}
+
+// conditionNoOne is an open consent condition no one acts on: no party and
+// no package.
+func conditionNoOne(it delivery.Item, _ opActor) bool {
+	return it.Kind == "condition" && delivery.Open(it.Kind, it.Status) && strings.TrimSpace(it.OwnerText) == "" && it.PackageID == ""
+}
 
 // rfiRef is "RFI-007", "RFI 7" or "rfi#7".
 var rfiRef = regexp.MustCompile(`(?i)^\s*RFI[\s\-#]*0*(\d+)\s*$`)
@@ -247,9 +273,35 @@ func sendRegisterEdit(ctx context.Context, d Deps, who opActor, project string, 
 			return sent{}, refuse("accept_reading", "Accepting an answer is the PM's to confirm: use delivery.accept.")
 		}
 	}
-	it, err := registerItem(ctx, d, who, project, take(f, "item"))
+	ref := take(f, "item")
+	var it delivery.Item
+	var err error
+	if conditionRef.MatchString(ref) {
+		it, err = conditionItem(ctx, d, who, project, ref)
+	} else {
+		it, err = registerItem(ctx, d, who, project, ref)
+	}
 	if err != nil {
 		return sent{}, err
+	}
+	if it.Kind == "condition" {
+		if fieldText(f, "status") == "satisfied" {
+			// Only the PM marks a condition satisfied (owner decision 6): the
+			// screen's own click, or delivery.satisfy's card.
+			if c, marked := store.ChangeOf(ctx); !marked || c.Via != "screen" {
+				return sent{}, refuse("status", "Marking a condition satisfied is the PM's to confirm: use delivery.satisfy.")
+			}
+		}
+		if doc := fieldText(f, "link_evidence"); doc != "" {
+			v, _, err := projectDocument(ctx, d, who, project, doc)
+			if err != nil {
+				return sent{}, err
+			}
+			f["link_evidence"] = v.ID
+		}
+		if err := liftConditionFields(f, it.Details); err != nil {
+			return sent{}, err
+		}
 	}
 	if _, ok := f["version"]; !ok {
 		f["version"] = it.Version
@@ -280,6 +332,9 @@ func sendRegisterAccept(ctx context.Context, d Deps, who opActor, project string
 	it, rd, err := registerReading(ctx, d, who, project, f)
 	if err != nil {
 		return sent{}, err
+	}
+	if it.Kind == "condition" {
+		return sent{}, refuse("item", "That is a consent condition: use delivery.accept_evidence.")
 	}
 	return sent{Path: map[string]string{"item": it.ID}, Body: map[string]any{"version": it.Version, "accept_reading": rd}}, nil
 }
@@ -315,4 +370,57 @@ func registerAcceptCard(ctx context.Context, d Deps, who opActor, project string
 		}
 	}
 	return "", refuse("reading", "That possible answer is no longer there.")
+}
+
+// conditionColumns are a condition's No., Due and Status words: its printed
+// number, its gate, and what is needed ("open · evidence needed · to
+// check").
+func conditionColumns(it delivery.Item) (number, due, status string) {
+	d := delivery.Condition(it.Content)
+	due = delivery.GateWords[d.Stage]
+	if due == "" {
+		due = "gate not known"
+	}
+	status = strings.ReplaceAll(it.Status, "_", " ")
+	if d.EvidenceNeeded != nil && *d.EvidenceNeeded && delivery.Open(it.Kind, it.Status) && len(d.Evidence) == 0 {
+		status += " · evidence needed"
+	}
+	if len(it.Readings) > 0 {
+		status += " · possible evidence"
+	}
+	if it.ReviewStatus == "proposed" {
+		status += " · to check (read by SiteWise)"
+	}
+	var p struct {
+		Flag string `json:"flag"`
+	}
+	if json.Unmarshal(it.Provenance, &p) == nil && p.Flag != "" {
+		status += " · " + p.Flag
+	}
+	return "Condition " + d.Number, due, status
+}
+
+// consentHeader prints the consent's number, date and lapse date from the
+// Profile, and each notice read: how many conditions, which numbers are
+// missing.
+func consentHeader(view store.RegisterView, r *reader) {
+	c := view.Consent
+	if c.Number != "" || c.Date != "" || c.LapseDate != "" {
+		r.line("Development consent (from the Profile): number %s, date %s, lapses %s.", orDash(c.Number), orDash(c.Date), orDash(c.LapseDate))
+	}
+	for _, read := range view.Consents {
+		switch {
+		case read.Status == "queued" || read.Status == "reading":
+			r.line("Consent conditions of %s: %s.", read.Title, read.Status)
+		case read.Status == "failed":
+			r.line("Consent conditions of %s: the read stopped (%s).", read.Title, read.Error)
+		case read.Notice != nil:
+			n := read.Notice
+			line := fmt.Sprintf("Consent conditions of %s (consent %s): %d numbered, %d rows on the register", read.Title, orDash(n.ConsentRef), n.Conditions, read.Rows)
+			if len(n.Gaps) > 0 {
+				line += "; not found: " + strings.Join(n.Gaps, ", ")
+			}
+			r.line("%s.", line)
+		}
+	}
 }

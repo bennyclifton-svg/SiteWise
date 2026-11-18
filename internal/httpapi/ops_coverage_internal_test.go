@@ -81,8 +81,8 @@ func TestOperationsAreWellFormed(t *testing.T) {
 // the PM's click, it checks its fields before a card exists, and none of
 // its routes is still listed as one chat never does.
 func TestPreparedReadsWaitForTheClick(t *testing.T) {
-	if len(readForwards) != 9 {
-		t.Fatalf("%d prepared reads, want the nine read routes", len(readForwards))
+	if len(readForwards) != 10 {
+		t.Fatalf("%d prepared reads, want the ten read routes", len(readForwards))
 	}
 	for _, fw := range readForwards {
 		op, ok := operationNamed(fw.Name)
