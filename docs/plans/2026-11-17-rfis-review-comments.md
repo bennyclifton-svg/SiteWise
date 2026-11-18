@@ -1,7 +1,11 @@
 # The register and RFIs on the building: implementation plan
 
 Date 17 November 2026; revised 18 November. Lane A (records a user trusts:
-due dates, answer links, org isolation). Status: plan only, nothing built.
+due dates, answer links, org isolation). Status: built 18 November 2026 on
+branch `wave/register` (Tasks 1 to 7 and "From chat"; migration 066), not
+merged. What was built, measured and left open, and where the build
+differs from this text, is in `docs/evidence/2026-11-18-register-rfis.md`.
+The answer key for Question A is empty until the owner supplies it.
 
 **Revised 18 November** after the review in `2026-11-17-next-wave-index.md`.
 The register is one table with no kind tabs. "With" replaces "To". Review
