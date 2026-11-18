@@ -113,7 +113,7 @@ func TestMonthlyReportCreatesOnceAndIsScoped(t *testing.T) {
 			t.Errorf("%s: %q", id, b.Text)
 		}
 	}
-	if text := sectionText(d, "registers"); !strings.Contains(text, "No RFIs, notices, actions, risks, issues, decisions or approvals are recorded in SiteWise.") {
+	if text := sectionText(d, "registers"); !strings.Contains(text, "No RFIs, notices, consent conditions, actions, risks, issues, decisions or approvals are recorded in SiteWise.") {
 		t.Errorf("registers: %q", text)
 	}
 	view, err := s.ReadReport(ctx, orgA, a.ID, "test")
