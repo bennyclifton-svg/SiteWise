@@ -211,6 +211,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"ops_apply":                 {100_000, 250_000},
 		"chat_first_response":       {1_500_000, 3_000_000},
 		"chat_simple_command":       {1_500_000, 3_000_000},
+		"chat_screen_command":       {1_500_000, 3_000_000},
 		"chat_document_answer":      {8_000_000, 20_000_000},
 		"chat_tool_read":            {100_000, 250_000},
 		"price_table_tender":        {150_000, 300_000},

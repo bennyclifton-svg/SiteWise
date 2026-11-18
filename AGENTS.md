@@ -89,6 +89,13 @@ change's Apply and Dismiss, and the chat reads call neither Jev nor the LLM.
 A read chat prepares (`internal/httpapi/ops_reads.go`) is always a card for
 the user's click, never applied at once and never undone; its Apply runs the
 screen's own route, which only queues the background read.
+Chat sees what is on screen: the view, the open document and the selected
+rows, sent as ids only and checked against the project. Its `view` tool
+moves the screen (show, select, show only, clear, open); a move changes no
+record, so it has no Undo and no click. It finds documents by subject in Go,
+from titles, passages and the profile's labels, with no embeddings. "Undo
+that" is answered by Go without the LLM. Chat opens the award dialog filled
+in, but never presses Award, Send or Issue.
 An amount, a date or a duration in a chat operation must be in the user's
 message or in a tool result of the same turn, or the operation is refused. A
 turn that read a document, a tender's lines or a message prepares its changes
@@ -140,6 +147,8 @@ Before changing one of these surfaces, read its current note:
   `docs/plans/2026-11-15-chat-agent.md` (read "Amendments", "Progress" and
   "Deviations"), evidence in `docs/evidence/2026-11-15-chat-agent.md`. The
   command key is `data/eval/chat/`; it is draft and not owner-reviewed.
+  Chat that sees and moves the screen: `docs/plans/2026-11-18-chat-agency.md`,
+  evidence in `docs/evidence/2026-11-18-chat-agency.md`.
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`

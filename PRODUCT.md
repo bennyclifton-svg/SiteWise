@@ -142,9 +142,16 @@ The workbench, in navigation order:
   its own row, and a line saying what was searched. A change that follows
   reading a document, or that the user vouches for (freezing the plan,
   releasing a hold point, checking a tender column, a large delete), waits
-  for the user's click. Chat cannot yet change scope, accommodation,
-  packages, awards, specifications, reports or documents, and there is no
-  inbox. It never signs in, bills, deletes a project or issues a document.
+  for the user's click. Chat sees what is on screen: the view, the open
+  document and the selected rows, so "exclude these" acts on the rows the
+  user selected. It moves the screen too: it shows a table, selects rows or
+  shows only them (the cost lines with no budget, the documents about the
+  basement, found by their titles, text and labels), and opens a document.
+  A move changes nothing, so it has no Undo. "Undo that" undoes the last
+  change without asking the model. Chat opens the award dialog on the firm
+  the user names, and the user presses Award. Chat cannot yet change scope,
+  accommodation, packages, awards, specifications, reports or documents,
+  and there is no inbox. It never signs in, bills, deletes a project or issues a document.
 
 Delivery records and implication proposals stay on the project. They are not
 in the left nav. Consultant suggestions still appear on Procurement.

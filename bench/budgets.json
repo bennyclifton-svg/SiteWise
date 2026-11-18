@@ -18,6 +18,7 @@
 	{"name":"ops_apply","p50_us":100000,"p90_us":250000,"note":"the Go work of one operations call: five cost lines added, each the existing cost write, under one undoable change; no Jev and no model"},
 	{"name":"chat_first_response","p50_us":1500000,"p90_us":3000000,"note":"chat: Enter to the first word or card, one model round on a warm cache (plan 2026-11-15, measured by cmd/chat-eval and the chat bench)"},
 	{"name":"chat_simple_command","p50_us":1500000,"p90_us":3000000,"note":"chat: a simple command applied in one model round with final true, Enter to the change card; the bench fails when the median takes more than one round"},
+	{"name":"chat_screen_command","p50_us":1500000,"p90_us":3000000,"note":"chat: a command that only moves the screen (a named filter, a select by about, an open, a show) in one model round with final true, Enter to the view event; the chat_simple_command numbers. The bench and TestChatScreenCommandBudget fail when the median takes more than one round (agency plan, Task 8)"},
 	{"name":"chat_document_answer","p50_us":8000000,"p90_us":20000000,"note":"chat: find a document, read passages, answer with checked quotations"},
 	{"name":"chat_tool_read","p50_us":100000,"p90_us":250000,"note":"the Go work inside one chat read tool (read, find, documents, passages, messages, calc); no model and no Jev"},
 	{"name":"tender_reconcile","p50_us":100000,"p90_us":250000,"note":"Go work on one tender pass of 330 lines: checks, reconciling and cells; no model. Held by TestReconcileBudget in internal/tender and sampled by the bench"},

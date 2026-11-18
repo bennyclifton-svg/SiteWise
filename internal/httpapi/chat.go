@@ -107,6 +107,16 @@ func answerText(events []agent.Event) string {
 	return ""
 }
 
+// movedScreen reports whether a turn moved the screen (chat_screen_command).
+func movedScreen(events []agent.Event) bool {
+	for _, e := range events {
+		if e.Type == "view" {
+			return true
+		}
+	}
+	return false
+}
+
 // goTo answers a message that is exactly a known read with the screen, and
 // no model call (speed rule 7). The list is short and exact on purpose.
 var goTo = map[string]string{
@@ -237,6 +247,8 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 				d.Speed.Observe("chat_document_answer", time.Since(began))
 			case res.Rounds == 1 && len(res.Cards) > 0:
 				d.Speed.Observe("chat_simple_command", time.Since(began))
+			case res.Rounds == 1 && movedScreen(events):
+				d.Speed.Observe("chat_screen_command", time.Since(began))
 			}
 		}
 		send(chatDone{Type: "done", ConversationID: turn.ConversationID, TurnID: turn.ID, Rounds: res.Rounds, Millis: int64(turn.LatencyMS),
