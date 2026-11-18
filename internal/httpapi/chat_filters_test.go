@@ -16,8 +16,10 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"sitewise/internal/chatfix"
+	"sitewise/internal/httpapi"
 	"sitewise/internal/llm"
 	psample "sitewise/internal/proposals/sample"
+	"sitewise/internal/reports"
 )
 
 // The chat agency plan, Task 4: named filters. The model names the set and
@@ -272,6 +274,34 @@ func TestChatNamedFilters(t *testing.T) {
 				if !strings.Contains(ta.results[0], "not_filed, not_read, superseded") {
 					t.Errorf("wrong table: %s", ta.results[0])
 				}
+			}
+		}
+	})
+
+	// One fixture, two readers (the subtests above built it, so this runs
+	// after them): each attention rule a filter shares gives
+	// the filter's rows exactly (monthly report plan, Task 5).
+	t.Run("attention and filters agree", func(t *testing.T) {
+		items, err := httpapi.AttentionForTest(ctx, ta.a.store, ta.m.orgID, ta.project)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, c := range []struct{ rule, table, filter string }{
+			{reports.RuleCostNoBudget, "cost_lines", "no_budget"},
+			{reports.RuleLineClaimedOver, "cost_lines", "over_budget"},
+			{reports.RuleDocumentNotFiled, "documents", "not_filed"},
+			{reports.RuleProgramNoDuration, "program", "no_duration"},
+		} {
+			it, ok := reports.AttentionFor(items, c.rule)
+			rows, err := httpapi.FilterRowsForTest(ctx, ta.a.store, ta.m.orgID, ta.project, c.table, c.filter)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !ok || len(rows) == 0 || it.Count != len(rows) || !reflect.DeepEqual(sorted(it.IDs), sorted(rows)) {
+				t.Errorf("%s: attention %v (found %v, count %d), filter %s %v", c.rule, it.IDs, ok, it.Count, c.filter, rows)
+			}
+			if c.rule != reports.RuleLineClaimedOver && !reflect.DeepEqual(it.IDs, rows) {
+				t.Errorf("%s: order differs: attention %v, filter %v", c.rule, it.IDs, rows)
 			}
 		}
 	})
