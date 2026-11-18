@@ -31,6 +31,10 @@ type Totals struct {
 	// Budget compares the stated construction budget with the construction
 	// lines' budgets; nil when the profile states none.
 	Budget *BudgetCheck `json:"construction_budget,omitempty"`
+	// NoBudget are the lines Overall["budget"].Unknown counts, in plan
+	// order: recorded where that count is made, so chat's "no budget"
+	// filter and the count cannot disagree.
+	NoBudget []string `json:"-"`
 }
 
 // Derived figures are worked out here so the grid never sums money in the
@@ -155,7 +159,8 @@ func Summarize(plan Plan, by string) (Totals, error) {
 			if b, ok := item.Values["budget"]; ok && !item.Excluded {
 				// A group that keeps its budget: the budget counts once, here.
 				g := Item{Values: map[string]Value{"budget": b}}
-				for _, bucket := range []map[string]Total{out.Overall, out.Sections[out.SectionItems[item.ID]], kindBucket(&out, item.LineKind)} {
+				out.noteNoBudget(item.ID, func() { addOnly(out.Overall, "budget", g) })
+				for _, bucket := range []map[string]Total{out.Sections[out.SectionItems[item.ID]], kindBucket(&out, item.LineKind)} {
 					if bucket != nil {
 						addOnly(bucket, "budget", g)
 					}
@@ -169,7 +174,7 @@ func Summarize(plan Plan, by string) (Totals, error) {
 			continue
 		}
 		under := groups[item.ID] != ""
-		addMetrics(out.Overall, item, under)
+		out.noteNoBudget(item.ID, func() { addMetrics(out.Overall, item, under) })
 		addMetrics(out.Sections[out.SectionItems[item.ID]], item, under)
 		if b := kindBucket(&out, item.LineKind); b != nil {
 			addMetrics(b, item, under)
@@ -234,6 +239,16 @@ func Summarize(plan Plan, by string) (Totals, error) {
 	}
 	out.Budget = checkBudget(plan.Budget, out.Sections["construction"]["budget"])
 	return out, nil
+}
+
+// noteNoBudget runs add on the overall totals and records the line when
+// add counted its budget as unknown.
+func (out *Totals) noteNoBudget(id string, add func()) {
+	before := out.Overall["budget"].Unknown
+	add()
+	if out.Overall["budget"].Unknown > before {
+		out.NoBudget = append(out.NoBudget, id)
+	}
 }
 
 func kindBucket(out *Totals, kind string) map[string]Total {

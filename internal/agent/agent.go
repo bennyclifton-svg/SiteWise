@@ -131,6 +131,11 @@ type View struct {
 	Dialog string            `json:"dialog,omitempty"`
 	Fields map[string]string `json:"fields,omitempty"`
 	Line   string            `json:"line"`
+	// Filter names the rule that chose the ids ("no_budget"), and Shown is
+	// its words for the strip's "Showing N cost lines with no budget" line.
+	// Both are empty for rows picked by id.
+	Filter string `json:"filter,omitempty"`
+	Shown  string `json:"shown,omitempty"`
 }
 
 // Toolbox is the fixed set of tools.

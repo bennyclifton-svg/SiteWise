@@ -70,8 +70,8 @@ func TestChatViewMovesTheScreen(t *testing.T) {
 		t.Errorf("the history does not name the selection: %s", said)
 	}
 
-	// Another org's row, a made-up id, a bad table and a filter name are
-	// refused, and nothing moves.
+	// Another org's row, a made-up id, a bad table and an unknown filter
+	// name are refused, and nothing moves.
 	other := ta.a.member(t, newUUID(t))
 	theirs := other.createProject(t, "Theirs")
 	foreign := costLines(t, other, theirs, "Their line")[0]
@@ -79,14 +79,14 @@ func TestChatViewMovesTheScreen(t *testing.T) {
 		"another org's row": {"do": "select", "table": "cost_lines", "ids": []string{foreign}},
 		"a made-up id":      {"do": "only", "table": "cost_lines", "ids": []string{"deadbeef"}},
 		"a bad table":       {"do": "select", "table": "invoices", "ids": []string{ids[0]}},
-		"a filter":          {"do": "only", "table": "cost_lines", "filter": "no_budget"},
+		"a filter":          {"do": "only", "table": "cost_lines", "filter": "overdue"},
 		"a bad dialog":      {"do": "open", "dialog": "send", "fields": map[string]string{}},
 	} {
 		events := ta.run(t, "Move the screen", tool("view", input))
 		if viewOf(events) != nil || len(ta.results) != 1 {
 			t.Errorf("%s: a view was sent: %s", name, eventKinds(events))
 		}
-		if name == "a filter" && !strings.Contains(ta.results[0], `no named filter "no_budget"`) {
+		if name == "a filter" && !strings.Contains(ta.results[0], `no filter "overdue"`) {
 			t.Errorf("filter refusal: %s", ta.results[0])
 		}
 		if strings.Contains(ta.results[0], foreign[:8]) && name != "another org's row" {

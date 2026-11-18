@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -12,12 +13,29 @@ import (
 // The view tool (docs/plans/2026-11-18-chat-agency.md, Task 2): chat moves
 // the screen. A move changes no record, so it has no Undo and no click.
 
-// namedFilter computes, in Go, the rows of a set that is a rule, not a
-// judgement ("cost lines with no budget"). Task 4 of the agency plan fills
-// viewFilters; until then every filter name is refused.
-type namedFilter func(ctx context.Context, d Deps, who opActor, project string) ([]string, error)
-
-var viewFilters = map[string]map[string]namedFilter{}
+// viewFilters are the named filters per table (chat_filters.go): sets that
+// are a rule, not a judgement, computed in Go so the model picks them in
+// one round. A later plan adds its own here ("awaiting a reply", "overdue",
+// "to check"); the tool description lists whatever is in this map.
+var viewFilters = map[string]map[string]namedFilter{
+	"cost_lines": {
+		"no_budget":   {rows: costNoBudget, shown: "with no budget", none: "Every cost line in the totals has a budget."},
+		"over_budget": {rows: costOverBudget, shown: "over budget on claims to date", none: "No cost line has claimed more than its budget."},
+		"excluded":    {rows: costExcluded, shown: "excluded from the totals", none: "No cost line is excluded."},
+	},
+	"documents": {
+		"not_filed":  {rows: docFilter(isNotFiled), shown: "not filed", none: "No document is marked not filed."},
+		"not_read":   {rows: docFilter(isNotRead), shown: "the profile does not read", none: "The profile reads every document."},
+		"superseded": {rows: docFilter(isSuperseded), shown: "superseded by a newer revision", none: "No document has been superseded."},
+	},
+	"program": {
+		"no_duration": {rows: programFilter(programUndated), shown: "with no duration", none: "Every Program activity has a duration."},
+		"critical":    {rows: programFilter(programCritical), shown: "on the critical path", none: "No Program row is on the critical path."},
+	},
+	"procurement": {
+		"no_quote": {rows: packageNoQuote, shown: "with no quote", none: "Every package has at least one quote."},
+	},
+}
 
 // viewDialogs are the dialogs chat may open, filled in. It opens them; the
 // PM presses the button inside.
@@ -59,12 +77,10 @@ func checkView(ctx context.Context, d Deps, who opActor, project string, in view
 	if !ok {
 		return agent.View{}, "Tables are " + strings.Join(viewTableNames, ", ") + "."
 	}
-	v := agent.View{Do: in.Do, Table: in.Table}
 	if in.Filter != "" {
-		if _, ok := viewFilters[in.Table][in.Filter]; !ok {
-			return agent.View{}, fmt.Sprintf("There is no named filter %q for %s yet. Pick the rows by id from a read instead.", in.Filter, t.many)
-		}
+		return checkFilter(ctx, d, who, project, in, t)
 	}
+	v := agent.View{Do: in.Do, Table: in.Table}
 	switch in.Do {
 	case "show":
 		v.Line = "Showed the " + t.many + "."
@@ -154,4 +170,42 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 	}
 	return agent.View{Do: "open", Dialog: in.Dialog, Fields: map[string]string{"package": pkg, "column": col},
 		Line: fmt.Sprintf("Opened %s for %s on %s. Press Award there to award it.", what, firm[col], title[pkg])}, ""
+}
+
+// checkFilter turns a filter name into the move it makes.
+func checkFilter(ctx context.Context, d Deps, who opActor, project string, in viewIn, t viewTable) (agent.View, string) {
+	f, ok := viewFilters[in.Table][in.Filter]
+	if !ok {
+		return agent.View{}, fmt.Sprintf("There is no filter %q for %s. The filters for %s are %s. Any other set: pick the rows by id from a read.", in.Filter, t.many, t.many, strings.Join(filterNames(in.Table), ", "))
+	}
+	if in.Do != "select" && in.Do != "only" {
+		return agent.View{}, "A filter goes with do select or only."
+	}
+	if len(in.IDs) > 0 {
+		return agent.View{}, "Give a filter or ids, not both."
+	}
+	ids, err := f.rows(ctx, d, who, project)
+	var refusal filterRefusal
+	if errors.As(err, &refusal) {
+		return agent.View{}, refusal.Error() + " Nothing on screen was changed."
+	}
+	if err != nil {
+		d.Log.Printf("chat filter %s %s failed: %v", in.Table, in.Filter, err)
+		return agent.View{}, "The " + t.many + " could not be read."
+	}
+	if len(ids) == 0 {
+		// Nothing to select or show alone: the table is shown and the line
+		// says so, so the PM is not left with an empty table.
+		return agent.View{Do: "show", Table: in.Table, Line: f.none}, ""
+	}
+	if len(ids) > maxScreenIDs {
+		return agent.View{}, fmt.Sprintf("There are %s %s, more than chat can move at once (%d). Nothing on screen was changed; ask the PM to narrow it.", t.count(len(ids)), f.shown, maxScreenIDs)
+	}
+	v := agent.View{Do: in.Do, Table: in.Table, IDs: ids, Filter: in.Filter, Shown: f.shown}
+	if in.Do == "select" {
+		v.Line = "Selected " + t.count(len(ids)) + " " + f.shown + "."
+	} else {
+		v.Line = "Showing " + t.count(len(ids)) + " " + f.shown + "."
+	}
+	return v, ""
 }

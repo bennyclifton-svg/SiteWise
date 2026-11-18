@@ -42,15 +42,23 @@ func viewSaid(v agent.View) string {
 	case v.Dialog != "":
 		return "[Opened " + viewDialogs[v.Dialog] + ": package " + shortID(v.Fields["package"]) + ", column " + shortID(v.Fields["column"]) + "]"
 	case v.Do == "select":
-		return "[Selected " + t.count(len(v.IDs)) + ":" + idList(v.IDs) + "]"
+		return "[Selected " + t.count(len(v.IDs)) + filterWords(v) + ":" + idList(v.IDs) + "]"
 	case v.Do == "only":
-		return "[Showing only " + t.count(len(v.IDs)) + ":" + idList(v.IDs) + "]"
+		return "[Showing only " + t.count(len(v.IDs)) + filterWords(v) + ":" + idList(v.IDs) + "]"
 	case v.Do == "open" && len(v.IDs) > 0:
 		return "[Opened " + t.one + " " + shortID(v.IDs[0]) + "]"
 	case v.Do == "clear":
 		return "[Cleared the " + t.many + " back to all rows]"
 	}
 	return "[Showed the " + t.many + "]"
+}
+
+// filterWords are a named filter's words after the count, or "".
+func filterWords(v agent.View) string {
+	if v.Shown == "" {
+		return ""
+	}
+	return " " + v.Shown
 }
 
 // cardRefs are the row ids a batch's fields name: any string, or string in

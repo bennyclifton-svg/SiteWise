@@ -181,3 +181,27 @@ func TestGridFigures(t *testing.T) {
 		t.Fatal("overall variance with a range line must stay unknown", b)
 	}
 }
+
+// NoBudget is exactly the lines the overall budget count calls unknown:
+// chat's "no budget" filter reads it, the report reads the count.
+func TestNoBudgetMatchesTheUnknownCount(t *testing.T) {
+	p := Plan{Items: []Item{
+		{ID: "priced", Content: Content{Posting: true, LineKind: "works"}, Values: map[string]Value{"budget": val("100.00")}},
+		{ID: "blank", Content: Content{Posting: true, LineKind: "works"}, Values: map[string]Value{}},
+		{ID: "out", Content: Content{Posting: true, LineKind: "works", Excluded: true}, Values: map[string]Value{}},
+		{ID: "group", Content: Content{LineKind: "works"}, Values: map[string]Value{"budget": {ValueState: "unknown"}}},
+		{ID: "child", Content: Content{Posting: true, LineKind: "works", ParentItemID: "group"}, Values: map[string]Value{}},
+	}}
+	totals, err := Summarize(p, "overall")
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The excluded line is out of the totals, and the child's budget is its
+	// group's, so neither is counted.
+	if got := totals.NoBudget; len(got) != 2 || got[0] != "blank" || got[1] != "group" {
+		t.Fatalf("NoBudget %v", got)
+	}
+	if len(totals.NoBudget) != totals.Overall["budget"].Unknown {
+		t.Fatalf("NoBudget %v, unknown count %d", totals.NoBudget, totals.Overall["budget"].Unknown)
+	}
+}

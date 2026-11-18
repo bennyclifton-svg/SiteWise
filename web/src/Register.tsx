@@ -193,6 +193,7 @@ export function Register({
   const readKinds = useMemo(() => catalog?.profile_read_kinds ?? [], [catalog]);
   // Rows chat chose to show alone (agency plan, Task 2); null shows all.
   const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
+  const [onlyShown, setOnlyShown] = useState("");
 
   const ordered = useMemo(() => {
     const uploads = rows.filter((r) => !r.doc);
@@ -228,7 +229,7 @@ export function Register({
   const reveal = (id: string | undefined) => { if (id) requestAnimationFrame(() => revealQuietly(document.getElementById(`doc-${id}`))); };
   useChatTable("documents", "documents", {
     select: ids => { const keep = known(ids); if (notReadOnly) onClearFilter(); setOnly(null); setSelection(selectEveryRow(keep)); reveal(keep[0]); },
-    only: ids => { const keep = known(ids); setOnly(new Set(keep)); setSelection(emptySelection); },
+    only: (ids, shown) => { const keep = known(ids); setOnly(new Set(keep)); setOnlyShown(shown ?? ""); setSelection(emptySelection); },
     clear: () => setOnly(null),
     open: id => { if (known([id]).length) onOpen(id); },
   }, selection.ids);
@@ -354,7 +355,7 @@ export function Register({
       <p className="reg-notice" role="status">{notice}</p>
       {only && (
         <p className="reg-filter">
-          {showingLine("documents", only.size)} ·{" "}
+          {showingLine("documents", only.size, onlyShown)} ·{" "}
           <button type="button" className="cell-link" onClick={() => setOnly(null)}>
             Clear
           </button>
