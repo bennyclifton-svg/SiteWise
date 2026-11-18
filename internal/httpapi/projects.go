@@ -320,6 +320,14 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 	for pattern, h := range chatRoutes() {
 		routes[pattern] = h
 	}
+	// Guest links: the share routes are the PM's; the guest routes are the
+	// only ones that admit a link, and admit nothing else.
+	for pattern, h := range shareRoutes {
+		routes[pattern] = h
+	}
+	for pattern, h := range guestRoutes {
+		routes[pattern] = h
+	}
 	return routes
 }
 

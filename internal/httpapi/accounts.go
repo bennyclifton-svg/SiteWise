@@ -303,3 +303,12 @@ func (l *authLimits) allow(key string, max int, span time.Duration) bool {
 	win.n++
 	return true
 }
+
+// blocked reports whether key has used its attempts in the current window,
+// without counting one. A guest route checks it before looking a token up.
+func (l *authLimits) blocked(key string, max int, span time.Duration) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	win := l.counts[key]
+	return win != nil && l.now().Sub(win.start) < span && win.n >= max
+}

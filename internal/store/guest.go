@@ -688,6 +688,26 @@ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND d.id::text=$3`, g.OrgID, g
 // with the date the newest one was last opened. A grouped member's link
 // shows on its group's row, as its invitation does.
 func markGuestLinks(ctx context.Context, tx pgx.Tx, org, project string, board map[string][]FirmCard) error {
+	issued, err := tx.Query(ctx, `SELECT DISTINCT r.package_id::text FROM reports r
+WHERE r.org_id=$1::uuid AND r.project_id=$2::uuid AND r.kind IN ('rfp','rft') AND r.package_id IS NOT NULL
+  AND EXISTS(SELECT 1 FROM report_versions v WHERE v.org_id=r.org_id AND v.report_id=r.id AND v.status='issued')`, org, project)
+	if err != nil {
+		return err
+	}
+	for issued.Next() {
+		var pkg string
+		if err := issued.Scan(&pkg); err != nil {
+			issued.Close()
+			return err
+		}
+		for i := range board[pkg] {
+			board[pkg][i].TenderIssued = true
+		}
+	}
+	issued.Close()
+	if err := issued.Err(); err != nil {
+		return err
+	}
 	rows, err := tx.Query(ctx, `SELECT DISTINCT ON (COALESCE(k.group_id,g.package_id), g.firm_id) COALESCE(k.group_id,g.package_id)::text, g.firm_id::text, g.last_opened_at
 FROM guest_grants g JOIN packages k ON k.org_id=g.org_id AND k.project_id=g.project_id AND k.id=g.package_id AND k.retired_at IS NULL
 WHERE g.org_id=$1::uuid AND g.project_id=$3::uuid AND g.kind='package' AND g.revoked_at IS NULL AND g.expires_at > $2
@@ -712,4 +732,45 @@ ORDER BY COALESCE(k.group_id,g.package_id), g.firm_id, g.created_at DESC`, org, 
 		}
 	}
 	return rows.Err()
+}
+
+// ShareContext is what the Share dialog needs to know about one thing before
+// a link is made: whether it has an issue, whether the newest issue prints
+// the budget, and an invited firm's directory email.
+type ShareContext struct {
+	Issued          bool
+	BudgetDisclosed bool
+	SuggestTo       string
+}
+
+func (s *Store) ShareContext(ctx context.Context, org, project string, f ShareFilter) (ShareContext, error) {
+	var out ShareContext
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return out, err
+	}
+	defer tx.Rollback(ctx)
+	report := f.ReportID
+	if f.PackageID != "" {
+		if report, err = packageTenderReport(ctx, tx, org, project, f.PackageID); err != nil {
+			return out, err
+		}
+	}
+	if report != "" {
+		err := tx.QueryRow(ctx, `SELECT v.budget_disclosed FROM report_versions v JOIN reports r ON r.org_id=v.org_id AND r.id=v.report_id
+WHERE v.org_id=$1::uuid AND r.project_id=$2::uuid AND v.report_id::text=$3 AND v.status='issued' ORDER BY v.number DESC LIMIT 1`, org, project, report).Scan(&out.BudgetDisclosed)
+		switch {
+		case err == nil:
+			out.Issued = true
+		case !errors.Is(err, pgx.ErrNoRows):
+			return out, err
+		}
+	}
+	if f.FirmID != "" {
+		err := tx.QueryRow(ctx, `SELECT email FROM firms WHERE org_id=$1::uuid AND id::text=$2`, org, f.FirmID).Scan(&out.SuggestTo)
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return out, err
+		}
+	}
+	return out, nil
 }

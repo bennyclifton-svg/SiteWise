@@ -430,6 +430,9 @@ type FirmCard struct {
 	// (docs/plans/2026-11-17-guest-access.md, Task 6).
 	Linked       bool   `json:"linked,omitempty"`
 	LinkOpenedOn string `json:"link_opened_on,omitempty"`
+	// TenderIssued: the row's RFP or RFT has an issue, so the firm can be
+	// sent a link to it.
+	TenderIssued bool `json:"tender_issued,omitempty"`
 	// joined is when the card's firm took its place on the row.
 	joined time.Time
 }

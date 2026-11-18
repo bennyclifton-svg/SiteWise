@@ -28,7 +28,7 @@ type chatBox struct {
 	tags   atomic.Int64
 }
 
-var readAreas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention"}
+var readAreas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention", "shares"}
 
 func object(required []string, props map[string]any) map[string]any {
 	return map[string]any{"type": "object", "additionalProperties": false, "required": required, "properties": props}
@@ -84,14 +84,14 @@ func chatTools() []llm.Tool {
 			})},
 		{Name: "messages", Description: "The project's inbox: the latest messages, or one message's body by id.",
 			Schema: object(nil, map[string]any{"id": str("a message id, to read its body")})},
-		{Name: "view", Description: "Move the PM's screen: show a table, select rows, show only some rows, clear that, open a row, or open the award dialog on one firm. It changes no record, so it is done at once, even after reading a document; it never presses Award, Send or Issue. Use ids from the outline, a read or the screen line. Set final true when moving the screen is all the PM asked for.",
+		{Name: "view", Description: "Move the PM's screen: show a table, select rows, show only some rows, clear that, open a row, open the award dialog on one firm, or open Share filled in. It changes no record, so it is done at once, even after reading a document; it never presses Award, Send, Issue or Create link. Use ids from the outline, a read or the screen line. Set final true when moving the screen is all the PM asked for.",
 			Schema: object([]string{"do"}, map[string]any{
 				"do":     str("show, open (a row by its one id, or a dialog), select, only (hide the other rows) or clear (all rows back)", "show", "open", "select", "only", "clear"),
 				"table":  str("the table", viewTableNames...),
 				"ids":    map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "row ids, at most 200"},
 				"filter": str("with select or only, in place of ids: a set SiteWise computes by rule. " + filterList() + ". Any other set: pick ids from a read"),
-				"dialog": str("a dialog to open: award", "award"),
-				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id)"},
+				"dialog": str("a dialog to open: award, or share (a guest link to documents, an issued report, or an issued RFP or RFT for one invited firm)", "award", "share"),
+				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id). share: kind (documents, report or package); documents (ids, comma separated), report (an id), or package (an id) and firm (the invited firm's name); shared_with and days only when the PM said them"},
 				"final":  map[string]any{"type": "boolean"},
 			})},
 	}

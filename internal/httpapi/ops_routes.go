@@ -48,6 +48,9 @@ var noOperation = map[string]string{
 	"POST /team/invites":                                           "team and invitations are never done from chat",
 	"PUT /account/model":                                           "the org owner switches the model on or off on the Account page, not from chat",
 	"PUT /projects/{id}/archived":                                  "deleting or archiving a project is never done from chat",
+	"POST /projects/{id}/shares":                                   "sharing outside the org is the PM's press of Create link; chat opens Share filled in",
+	"POST /guest/session":                                          "a guest opening a link; chat never signs anyone in",
+	"POST /guest/quote":                                            "a guest's file upload; the guest page has no chat",
 }
 
 // pendingOperation: route to its area. Chat says "I can't do that from

@@ -38,6 +38,7 @@ var prefetchWords = map[string][]string{
 	"implications":  {"risk", "risks", "risky", "implication", "implications"},
 	"invoices":      {"invoice", "invoices", "paid"},
 	"accommodation": {"room", "rooms", "accommodation", "bedroom", "bedrooms"},
+	"shares":        {"link", "links", "shared", "guest", "guests", "opened", "can see"},
 }
 
 // questionStart is a first word that makes a message a question even

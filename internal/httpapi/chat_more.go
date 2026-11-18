@@ -22,6 +22,8 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 		return readImplications(ctx, d, who, project, r)
 	case "attention":
 		return readAttention(ctx, d, who, project, r)
+	case "shares":
+		return readShares(ctx, d, who, project, r)
 	case "gaps":
 		items, err := d.Store.ReadGaps(ctx, who.OrgID, project)
 		if err != nil {
@@ -365,8 +367,10 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 		err = readProgram(r.Context(), d, who, project, rd, false)
 	case "procurement":
 		err = readProcurement(r.Context(), d, who, project, rd)
+	case "shares":
+		err = readShares(r.Context(), d, who, project, rd)
 	default:
-		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement or outline", http.StatusUnprocessableEntity)
+		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, shares or outline", http.StatusUnprocessableEntity)
 		return
 	}
 	if err != nil {

@@ -500,6 +500,9 @@ func readProcurement(ctx context.Context, d Deps, who opActor, project string, r
 			switch {
 			case c.SubmissionID == "":
 				parts = append(parts, "invited")
+				if words := linkWords(c); words != "" {
+					parts = append(parts, words)
+				}
 			default:
 				total := c.BaseTotal
 				if total == nil {

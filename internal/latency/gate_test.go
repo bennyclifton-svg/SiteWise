@@ -226,6 +226,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"billing_session":           {800000, 1500000},
 		"stripe_webhook":            {100000, 250000},
 		"team":                      {100000, 250000},
+		"guest_open":                {100000, 250000},
 	}
 	if len(budgets.Paths) != len(want) {
 		t.Fatalf("paths = %d", len(budgets.Paths))

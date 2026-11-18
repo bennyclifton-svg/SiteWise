@@ -33,13 +33,14 @@ var viewFilters = map[string]map[string]namedFilter{
 		"critical":    {rows: programFilter(programCritical), shown: "on the critical path", none: "No Program row is on the critical path."},
 	},
 	"procurement": {
-		"no_quote": {rows: packageNoQuote, shown: "with no quote", none: "Every package has at least one quote."},
+		"no_quote":        {rows: packageNoQuote, shown: "with no quote", none: "Every package has at least one quote."},
+		"link_not_opened": {rows: packageLinkNotOpened, shown: "with an invited firm that has not opened its link", none: "Every firm sent a link has opened it, or none has a link."},
 	},
 }
 
 // viewDialogs are the dialogs chat may open, filled in. It opens them; the
 // PM presses the button inside.
-var viewDialogs = map[string]string{"award": "the award dialog"}
+var viewDialogs = map[string]string{"award": "the award dialog", "share": "Share"}
 
 // viewIn is the view tool's input.
 type viewIn struct {
@@ -134,7 +135,10 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 	}
 	what, ok := viewDialogs[in.Dialog]
 	if !ok {
-		return agent.View{}, "The dialog chat can open is award (fields package and column)."
+		return agent.View{}, "The dialogs chat can open are award (fields package and column) and share (fields kind, then documents, report, or package and firm; shared_with and days if the PM said them)."
+	}
+	if in.Dialog == "share" {
+		return checkShareDialog(ctx, d, who, project, in.Fields)
 	}
 	pkgs, err := d.Store.ReadPackages(ctx, who.OrgID, project)
 	if err != nil {
