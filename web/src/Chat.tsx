@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ApiError, request } from "./api";
 import type { WorkbenchView } from "./LeftNav";
-import { dialogOf, hostOf, screenSelection, tableOf, whenReady, type ChatPlace } from "./chatView";
+import { REPORT_PLACE, dialogOf, hostOf, screenSelection, tableOf, whenReady, type ChatPlace } from "./chatView";
 import "./chat.css";
 
 // The chat strip: one input at the foot of the middle panel. A typed
@@ -101,6 +101,20 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
     const dialog = await whenReady(() => dialogOf("share"));
     if (!dialog) return "Share could not be opened. Use Share… on the document, report or invited firm.";
     dialog.open(v.fields ?? {});
+    return "";
+  }
+  if (v.dialog === "report") {
+    // The project report opens in its reader; with issue, its issue form
+    // opens filled in and the PM presses Issue. Chat never issues.
+    const report = v.fields?.report ?? "";
+    onShow(REPORT_PLACE);
+    const entry = await whenReady(() => dialogOf("report"));
+    if (!entry) return "The project report could not be opened. Open it with Project report.";
+    entry.open({ report });
+    if (v.fields?.issue !== "yes") return "";
+    const form = await whenReady(() => dialogOf(`report-issue:${report}`));
+    if (!form) return "The issue form could not be opened. Press Issue report on the report.";
+    form.open({});
     return "";
   }
   const place = PLACE[v.table ?? ""];

@@ -33,6 +33,9 @@ var draftDependencies = map[string][]string{
 	"rfp": {"profile_inputs", "works", "packages", "delivery", "costs"},
 	"rft": {"profile_inputs", "works", "packages", "delivery", "costs"},
 	"pmp": {"profile_inputs", "works", "packages", "delivery", "costs"},
+	// The project report reads no works or scope; it reads the Program and
+	// the invoice ledger (monthly plan, Task 1).
+	KindMonthly: {"profile_inputs", "packages", "delivery", "costs", "program", "invoices"},
 }
 
 func StaleReasons(kind string, saved, current SourceState) []string {

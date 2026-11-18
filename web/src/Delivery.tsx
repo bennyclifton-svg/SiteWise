@@ -13,6 +13,8 @@ import { deliveryApi, rfiNumber, sydneyToday, type DeliveryRecord, type OpCall, 
 import { IconMore } from "./icons";
 import type { WorkbenchView } from "./LeftNav";
 import { MoreMenu } from "./PageActions";
+import { ProjectReportButton, useProjectReportDialog } from "./ProjectReportButton";
+import { Reports } from "./Reports";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 import { clickRow, emptySelection, prune, selectAll, type Selection } from "./table/selection";
@@ -33,10 +35,14 @@ const words = (s: string) => s.replaceAll("_", " ");
 type Field = "title" | "with" | "due" | "system" | "status";
 interface Edit { id: string; field: Field; many?: string[]; error?: string }
 
-export function Delivery({ projectId, tick, raise, onSignedOut, onShowView, onOpenDocument }: {
-  projectId: string; tick: number; raise: { documentId: string; title: string; n: number } | null;
+export function Delivery({ projectId, tick, readerTick = 0, raise, onSignedOut, onShowView, onOpenDocument }: {
+  projectId: string; tick: number; readerTick?: number; raise: { documentId: string; title: string; n: number } | null;
   onSignedOut: () => void; onShowView: (view: WorkbenchView) => void; onOpenDocument: (id: string) => void;
 }) {
+  // The project report opens here in the shared reader, from the toolbar or
+  // from chat (monthly plan, Task 7).
+  const [report, setReport] = useState<string | null>(null);
+  useProjectReportDialog(setReport);
   const [view, setView] = useState<RegisterView | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -189,6 +195,7 @@ export function Delivery({ projectId, tick, raise, onSignedOut, onShowView, onOp
 
   const also = view?.also_open;
   const filters = [kind && (KIND[kind]?.[1] ?? kind), system && `on ${systemLabel(system)}`].filter(Boolean).join(" ");
+  if (report) return <Reports key={report} reportId={report} tick={tick + readerTick} backTo="Register" surface="register" onBack={() => { setReport(null); setReload(n => n + 1); }} onSignedOut={onSignedOut} />;
   return <section className="register-screen" aria-label="Register" aria-busy={busy}>
     <div className="register-head section-band">
       <h2>Register</h2>
@@ -201,6 +208,7 @@ export function Delivery({ projectId, tick, raise, onSignedOut, onShowView, onOp
         {view.systems.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
       </select>}
       <label className="register-toggle"><input type="checkbox" checked={showClosed} onChange={e => setShowClosed(e.target.checked)} /> Show closed</label>
+      <ProjectReportButton projectId={projectId} onOpen={setReport} onSignedOut={onSignedOut} />
       <MoreMenu label="Register actions" items={[{ label: `RFI response time: ${view?.response_days ?? 5} working days${view?.response_typical ? " (typical)" : ""}…`, icon: null, onSelect: () => setDays(String(view?.response_days ?? 5)) }]} />
     </div>
     {days !== null && <form className="register-days" onSubmit={e => { e.preventDefault(); const n = Number(days); if (n >= 1 && n <= 60) { setDays(null); void run([{ op: "delivery.settings", fields: { rfi_response_days: n } }], `RFI response time set to ${n} working days.`); } }}>

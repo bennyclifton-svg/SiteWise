@@ -72,7 +72,7 @@ func (c *Catalog) loadReportTemplates(path string) error {
 	c.reportTemplates = map[string]ReportTemplate{}
 	idRE, sectionRE := regexp.MustCompile(`^tpl\.[a-z0-9-]+$`), regexp.MustCompile(`^[a-z][a-z0-9_]*$`)
 	for _, t := range file.Templates {
-		if !idRE.MatchString(t.ID) || t.Version < 1 || !slices.Contains([]string{"rfp", "rft", "pmp"}, t.Kind) || !slices.Contains([]string{"draft", "reviewed"}, t.Status) || len(t.Sources) == 0 || len(t.Sections) == 0 {
+		if !idRE.MatchString(t.ID) || t.Version < 1 || !slices.Contains([]string{"rfp", "rft", "pmp", "monthly"}, t.Kind) || !slices.Contains([]string{"draft", "reviewed"}, t.Status) || len(t.Sources) == 0 || len(t.Sections) == 0 {
 			return fmt.Errorf("%s: invalid template %q", path, t.ID)
 		}
 		if _, ok := c.reportTemplates[t.ID]; ok {

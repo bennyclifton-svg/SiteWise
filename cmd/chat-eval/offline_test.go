@@ -34,6 +34,36 @@ var modelOnly = []string{
 	"ga1", // who has not opened: the answer's words
 	"ga3", // who can see a document: the answer's words
 	"ga8", // reminding firms waits on correspondence: the fixed words
+	"pr7", // Send is not built: the model must say the fixed words
+}
+
+// steps is a script of several calls, one per round, then words.
+func steps(turns ...llm.Turn) func(llm.Conversation, int) llm.Turn {
+	return func(_ llm.Conversation, round int) llm.Turn {
+		if round < len(turns) {
+			return turns[round]
+		}
+		return say("Done.")
+	}
+}
+
+// reportScripts are the project report group's calls (monthly plan, "From
+// chat"): the operations, the read and the reader opened.
+func reportScripts() map[string]func(llm.Conversation, int) llm.Turn {
+	apply := func(op string, fields map[string]any, final bool) llm.Turn {
+		return call("apply", map[string]any{"area": "reports", "final": final, "ops": []map[string]any{{"op": op, "fields": fields}}})
+	}
+	read := call("read", map[string]any{"area": "report"})
+	return map[string]func(llm.Conversation, int) llm.Turn{
+		"Prepare this month's report":                                steps(apply("reports.update", map[string]any{}, false), call("view", map[string]any{"do": "open", "dialog": "report", "fields": map[string]string{}, "final": true})),
+		"What does the project report say about cost?":               steps(read, say("The cost section is in the report's table.")),
+		"Write the cost comment: no invoices have been received yet": steps(apply("reports.comment", map[string]any{"section": "cost", "text": "No invoices have been received yet."}, true)),
+		"Write the program comment: design is on track":              steps(apply("reports.comment", map[string]any{"section": "program", "text": "Design is on track."}, true)),
+		"Clear the program comment":                                  steps(apply("reports.comment", map[string]any{"section": "program", "clear": true}, true)),
+		"Issue the project report":                                   steps(call("view", map[string]any{"do": "open", "dialog": "report", "fields": map[string]string{"issue": "yes"}, "final": true})),
+		"Draft the cost comment":                                     steps(read, apply("reports.comment", map[string]any{"section": "cost", "text": "The cost plan and the invoices are as the table shows."}, true)),
+		"What moved since the last report?":                          steps(read, say("This is the first report, so nothing is compared yet.")),
+	}
 }
 
 // standIn answers each round with the call its script gives for the PM's
@@ -265,6 +295,9 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	l.warmFor = 0
 	l.onSeed = func(c chateval.Case, n *names) {
 		s := scripts(n)
+		for k, v := range reportScripts() {
+			s[k] = v
+		}
 		switch c.ID {
 		case "s11":
 			s["Now show only those"] = fromHistory("only", "documents")
@@ -281,7 +314,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	}
 	scored := 0
 	for _, c := range cases {
-		if (c.Group != "screen" && c.Group != "register" && c.Group != "shares") || slices.Contains(modelOnly, c.ID) {
+		if (c.Group != "screen" && c.Group != "register" && c.Group != "report" && c.Group != "shares") || slices.Contains(modelOnly, c.ID) {
 			continue
 		}
 		scored++
@@ -295,7 +328,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 			}
 		})
 	}
-	if scored < 25 {
-		t.Fatalf("%d screen and shares cases scored offline, want at least 25", scored)
+	if scored < 32 {
+		t.Fatalf("%d screen, register, report and shares cases scored offline, want at least 32", scored)
 	}
 }

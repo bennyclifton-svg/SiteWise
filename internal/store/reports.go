@@ -119,7 +119,7 @@ func (s *Store) reportTemplate(kind string) (knowledge.ReportTemplate, error) {
 	if s.workCatalog() == nil {
 		return knowledge.ReportTemplate{}, ErrInvalidReport
 	}
-	id := map[string]string{"rfp": "tpl.rfp-capex", "rft": "tpl.rft", "pmp": "tpl.pmp"}[kind]
+	id := map[string]string{"rfp": "tpl.rfp-capex", "rft": "tpl.rft", "pmp": "tpl.pmp", reports.KindMonthly: reports.MonthlyTemplateID}[kind]
 	t, ok := s.workCatalog().CurrentReportTemplate(id)
 	if !ok {
 		return t, ErrInvalidReport
@@ -127,13 +127,17 @@ func (s *Store) reportTemplate(kind string) (knowledge.ReportTemplate, error) {
 	return t, nil
 }
 
+// projectLevel is a report about the whole project, not one package: the
+// PMP and the project report. It has no package to read or retire.
+func projectLevel(kind string) bool { return kind == "pmp" || kind == reports.KindMonthly }
+
 func (s *Store) CreateReport(ctx context.Context, org, project, actor, kind, pkg string) (Report, error) {
 	var r Report
 	var uuid pgtype.UUID
 	if _, err := s.reportTemplate(kind); err != nil {
 		return r, err
 	}
-	if kind == "pmp" && pkg != "" || kind != "pmp" && uuid.Scan(pkg) != nil {
+	if projectLevel(kind) && pkg != "" || !projectLevel(kind) && uuid.Scan(pkg) != nil {
 		return r, ErrInvalidReport
 	}
 	tx, err := s.pool.Begin(ctx)
@@ -148,7 +152,14 @@ func (s *Store) CreateReport(ctx context.Context, org, project, actor, kind, pkg
 		return r, err
 	}
 	var name string
-	if kind == "pmp" {
+	if kind == reports.KindMonthly {
+		// One project report per project: a second create (a double click,
+		// chat and the screen together) returns the one there is.
+		if r, err = readMonthlyReport(ctx, tx, org, project); err == nil || !errors.Is(err, ErrNotFound) {
+			return r, err
+		}
+	}
+	if projectLevel(kind) {
 		err = tx.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, project).Scan(&name)
 	} else {
 		p, e := readPackage(ctx, tx, org, project, pkg)
@@ -179,7 +190,11 @@ func (s *Store) CreateReport(ctx context.Context, org, project, actor, kind, pkg
 func insertReport(ctx context.Context, tx pgx.Tx, org, project, kind, pkg, name string) (Report, error) {
 	var r Report
 	var raw []byte
-	err := tx.QueryRow(ctx, `INSERT INTO reports(org_id,id,project_id,kind,package_id,title) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,'')::uuid,left($6,200)) RETURNING to_jsonb(reports)`, org, newID(), project, kind, pkg, strings.ToUpper(kind)+" — "+name).Scan(&raw)
+	title := strings.ToUpper(kind) + " — " + name
+	if kind == reports.KindMonthly {
+		title = reports.MonthlyTitle
+	}
+	err := tx.QueryRow(ctx, `INSERT INTO reports(org_id,id,project_id,kind,package_id,title) VALUES($1::uuid,$2::uuid,$3::uuid,$4,NULLIF($5,'')::uuid,left($6,200)) RETURNING to_jsonb(reports)`, org, newID(), project, kind, pkg, title).Scan(&raw)
 	if err != nil {
 		return r, err
 	}
@@ -318,7 +333,7 @@ func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Re
 	var d ReportDraft
 	var err error
 	var pkg procurement.Package
-	if r.Kind != "pmp" {
+	if !projectLevel(r.Kind) {
 		pkg, err = readPackageRecord(ctx, tx, org, r.ProjectID, r.PackageID, true)
 		if err != nil {
 			return d, err
@@ -332,7 +347,7 @@ func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Re
 		return d, err
 	}
 	previous := ""
-	history, _, err := reportHistory(ctx, tx, org, r.ID)
+	history, prior, err := reportHistory(ctx, tx, org, r.ID)
 	if err != nil {
 		return d, err
 	}
@@ -368,7 +383,13 @@ func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Re
 	}
 	var sections []reports.Section
 	var state reports.SourceState
-	if pkg.IsGroup() {
+	if r.Kind == reports.KindMonthly {
+		number := d.Number
+		if number == 0 {
+			number = len(history) + 1
+		}
+		sections, state, err = s.monthlySectionsTx(ctx, tx, org, r, history, prior, number, edits, appBuild, template)
+	} else if pkg.IsGroup() {
 		sections, state, err = s.groupSectionsTx(ctx, tx, org, r, pkg, source, edits, appBuild, useLastCompleted, template)
 	} else {
 		sections, state, err = s.reportSectionsTx(ctx, tx, org, r, source, edits, appBuild, useLastCompleted, template)

@@ -153,6 +153,7 @@ func TestCommittedBudgets(t *testing.T) {
 		"report_read":               {100_000, 250_000},
 		"report_write":              {100_000, 250_000},
 		"report_assemble":           {300_000, 1_000_000},
+		"report_assemble_monthly":   {300_000, 1_000_000},
 		"report_setting":            {100_000, 250_000},
 		"report_fact":               {150_000, 400_000},
 		"delivery_write":            {100_000, 250_000},

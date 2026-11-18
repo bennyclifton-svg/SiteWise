@@ -56,7 +56,7 @@ func pick(cases []chateval.Case, only string) []chateval.Case {
 	return out
 }
 
-var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery", "shares"}
+var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery", "report", "shares"}
 
 // live runs each case through the real server: a fresh org and project, the
 // fixture seeded through the same routes and store a PM's work goes

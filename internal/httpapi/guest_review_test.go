@@ -306,3 +306,47 @@ func TestGuestDownloadsOnlyTheTransmittal(t *testing.T) {
 }
 
 var _ = fmt.Sprint
+
+// Agreement 6 of the wave index, with the project report (kind monthly, no
+// package): a report link shows every issued version newest first and
+// nothing of the draft or its comments, through the ordinary report link.
+func TestGuestSeesTheProjectReportsIssuesOnly(t *testing.T) {
+	f := newGuestFixture(t)
+	f.m.ops(t, f.project, "reports", http.StatusOK, op("reports.update", map[string]any{}))
+	report := projectReportID(t, f.m, f.project)
+	issue := func(t *testing.T) string {
+		t.Helper()
+		var view store.ReportView
+		f.m.getJSON(t, "/api/reports/"+report, &view)
+		body, _ := json.Marshal(store.IssueOptions{Version: view.Draft.Version, ReportingDate: "2026-11-18", AcceptStale: true, StaleReason: "Guest fixture with missing profile acknowledged"})
+		var issued store.IssuedReport
+		f.m.call(t, http.MethodPost, "/api/reports/"+report+"/issue", body, http.StatusCreated, &issued)
+		return issued.ID
+	}
+	first := issue(t)
+	f.m.ops(t, f.project, "reports", http.StatusOK, op("reports.update", map[string]any{}))
+	second := issue(t)
+	// The next draft, with a comment the PM has not issued.
+	f.m.ops(t, f.project, "reports", http.StatusOK, op("reports.update", map[string]any{}))
+	f.m.ops(t, f.project, "reports", http.StatusOK, op("reports.comment", map[string]any{"section": "cost", "text": "Unissued draft remark about the contingency."}))
+	var view store.ReportView
+	f.m.getJSON(t, "/api/reports/"+report, &view)
+	_, token := f.share(t, map[string]any{"kind": "report", "report_id": report, "shared_with": "client@example.test"})
+	client := f.guest(t, token)
+	code, raw := client.raw(t, http.MethodGet, "/api/guest", nil, false)
+	var page store.GuestPageView
+	if code != http.StatusOK || json.Unmarshal([]byte(raw), &page) != nil {
+		t.Fatalf("page %d %s", code, raw)
+	}
+	if page.Kind != "report" || len(page.Issues) != 2 || page.Issues[0].ID != second || page.Issues[1].ID != first || len(page.Documents) != 0 || page.Quote != nil {
+		t.Fatalf("project report page %+v", page)
+	}
+	if strings.Contains(raw, "Unissued draft remark") || strings.Contains(raw, view.Draft.ID) {
+		t.Fatalf("the page shows the draft: %s", raw)
+	}
+	for path, want := range map[string]int{"/api/guest/issues/" + first + "/file": 200, "/api/guest/issues/" + second + "/file": 200, "/api/guest/issues/" + view.Draft.ID + "/file": 404} {
+		if code, _ := client.raw(t, http.MethodGet, path, nil, false); code != want {
+			t.Fatalf("%s = %d, want %d", path, code, want)
+		}
+	}
+}

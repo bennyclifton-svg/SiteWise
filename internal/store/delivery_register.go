@@ -95,6 +95,17 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 		return view, err
 	}
 	defer tx.Rollback(ctx)
+	if view, err = s.readRegisterTx(ctx, tx, org, project, q, view); err != nil {
+		return view, err
+	}
+	return view, tx.Commit(ctx)
+}
+
+// readRegisterTx is the register on the caller's snapshot, so the project
+// report lists exactly the register's rows, with With, days late and
+// possible answers computed the same way.
+func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project string, q RegisterQuery, view RegisterView) (RegisterView, error) {
+	today, cat := view.Today, s.workCatalog()
 	var exists bool
 	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
 		return view, err
@@ -179,7 +190,7 @@ func (s *Store) ReadRegister(ctx context.Context, org, project string, q Registe
 		}
 		view.AlsoOpen = &also
 	}
-	return view, tx.Commit(ctx)
+	return view, nil
 }
 
 // kindOrder puts RFIs and notices first, then the older kinds as they came.

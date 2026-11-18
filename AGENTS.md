@@ -95,6 +95,15 @@ most 12) whose picks stay hidden until the owner approves a cut-off
 (`docs/plans/2026-11-17-rfis-review-comments.md`). A reading is a proposal;
 only the PM's edit makes an RFI answered.
 
+The project report (Register toolbar, one per project) calls neither Jev
+nor the LLM: Update, comments, issue and export are Go over saved records,
+and every figure comes from the screens' own rollups (`costs.Summarize`,
+the invoice ledger, the Program engine, the procurement board, the
+register, `reports.Attention`); unknown stays unknown. Chat may update it
+and write or clear its comments with Undo, and opens its issue form filled
+in, but never presses Issue
+(`docs/plans/2026-11-17-monthly-report.md`).
+
 Chat (`POST /projects/{id}/chat`) is the one path that waits on the LLM, and
 it never calls Jev. Its tools read through the same Go rollups as the
 screens and change records only through operations (`internal/httpapi/ops*.go`),

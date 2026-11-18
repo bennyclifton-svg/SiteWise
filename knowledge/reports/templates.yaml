@@ -138,3 +138,47 @@ templates:
         title: Changes and project evidence
         essential: true
         clauses: []
+
+  # The project report: what a client reads each period, from the screens'
+  # own figures (docs/plans/2026-11-17-monthly-report.md). Draft wording
+  # until the owner reviews it.
+  - id: tpl.monthly-report
+    version: 1
+    kind: monthly
+    status: draft
+    sources:
+      - {design: docs/plans/2026-11-17-monthly-report.md, anchor: "## Tasks"}
+      - {design: docs/design/2026-11-12-project-report.md, anchor: "## 4. What the report says"}
+    sections:
+      - id: glance
+        title: At a glance
+        essential: true
+        clauses: []
+      - id: attention
+        title: Needs attention
+        essential: true
+        clauses: []
+      - id: changes
+        title: Changes since the last report
+        essential: true
+        clauses: []
+      - id: cost
+        title: Cost
+        essential: true
+        clauses: []
+      - id: program
+        title: Program
+        essential: true
+        clauses: []
+      - id: procurement
+        title: Procurement
+        essential: true
+        clauses: []
+      - id: registers
+        title: Registers
+        essential: true
+        clauses: []
+      - id: next
+        title: Next period
+        essential: true
+        clauses: []

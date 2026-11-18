@@ -15,7 +15,7 @@ import (
 type capturedTable struct {
 	Key    []string // primary key columns
 	Ignore []string // the trigger's arguments: columns that may move without counting
-	Area   string   // which finisher runs after an undo: "costs", "profile" or "procurement"
+	Area   string   // which finisher runs after an undo: "costs", "profile", "procurement" or "reports"
 }
 
 // captured names every table that carries the capture_change trigger. It
@@ -34,6 +34,7 @@ var captured = map[string]capturedTable{
 	"tender_lines":               {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustments":         {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustment_amounts":  {Key: []string{"org_id", "adjustment_id", "submission_id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
+	"report_edits":               {Key: []string{"org_id", "report_version_id", "target_id"}, Ignore: []string{"version", "updated_at"}, Area: "reports"},
 	"project_delivery_items":     {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "delivery"},
 	"delivery_readings":          {Key: []string{"org_id", "id"}, Area: "delivery"},
 	"delivery_settings":          {Key: []string{"org_id", "project_id"}, Area: "delivery"},
@@ -218,6 +219,8 @@ func (s *Store) UndoChange(ctx context.Context, org, project, actor, id string) 
 			err = s.touchProfileAfterUndo(ctx, tx, org, project)
 		case "procurement":
 			err = s.refreshTenderAfterUndo(ctx, tx, org, project, log)
+		case "reports":
+			err = s.touchReportsAfterUndo(ctx, tx, org, project, log)
 		case "delivery":
 			err = s.touchDeliveryAfterUndo(ctx, tx, org, project)
 		}

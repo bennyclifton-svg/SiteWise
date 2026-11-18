@@ -24,8 +24,11 @@ const (
 	attentionDocuments
 	attentionProgram
 	attentionDelivery
+	// attentionReport is the planned completion the last issued project
+	// report printed; with attentionProgram it feeds the completion rule.
+	attentionReport
 
-	attentionAll = attentionImplications | attentionCosts | attentionLedger | attentionPackages | attentionDocuments | attentionProgram | attentionDelivery
+	attentionAll = attentionImplications | attentionCosts | attentionLedger | attentionPackages | attentionDocuments | attentionProgram | attentionDelivery | attentionReport
 )
 
 // loadAttention reads the records reports.Attention needs, each read at the
@@ -110,6 +113,14 @@ func loadAttention(ctx context.Context, d Deps, who opActor, project string, par
 		for _, a := range st.Activities {
 			in.Program = append(in.Program, reports.AttentionActivity{ID: a.ID, Kind: a.Kind, DurationDays: a.DurationDays})
 		}
+		if err == nil {
+			in.Completion = reports.CompletionOf(store.MonthlyProgramOf(st))
+		}
+		return err
+	})
+	run(attentionReport, func() error {
+		last, err := d.Store.LastReportCompletion(ctx, who.OrgID, project)
+		in.LastReport = last
 		return err
 	})
 	run(attentionDelivery, func() error {
@@ -165,10 +176,6 @@ func attentionRule(parts attentionPart, rule string) func(context.Context, Deps,
 }
 
 // attentionRecord is a register row as the attention rules read it.
-func attentionRecord(it delivery.Item, target string) reports.AttentionRecord {
-	late := 0
-	if it.LateDays != nil {
-		late = *it.LateDays
-	}
-	return reports.AttentionRecord{ID: it.ID, Kind: it.Kind, Status: it.Status, TargetDate: target, LateDays: late, ToCheck: len(it.Readings) > 0}
+func attentionRecord(it delivery.Item, _ string) reports.AttentionRecord {
+	return reports.AttentionRecordOf(it)
 }

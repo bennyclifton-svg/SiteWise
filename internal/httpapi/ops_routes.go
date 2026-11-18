@@ -56,7 +56,6 @@ var noOperation = map[string]string{
 // pendingOperation: route to its area. Chat says "I can't do that from
 // chat yet" for these.
 var pendingOperation = map[string]string{
-	"DELETE /reports/{r}/edits/{target}":                                            "reports",
 	"DELETE /reports/{r}/settings/{key}":                                            "reports",
 	"PATCH /projects/{id}/packages/{pkg}/scope/{scope}":                             "procurement",
 	"PATCH /projects/{id}/packages/{pkg}/stages/{stage}":                            "procurement",
@@ -78,14 +77,12 @@ var pendingOperation = map[string]string{
 	"POST /projects/{id}/program/update":                                            "program",
 	"POST /projects/{id}/submissions/{sub}/alignment":                               "procurement",
 	"POST /projects/{id}/works/{wi}/split":                                          "profile",
-	"POST /reports/{r}/draft":                                                       "reports",
 	"POST /reports/{r}/settings":                                                    "reports",
 	"POST /reports/{r}/stage-sync":                                                  "reports",
 	"PUT /projects/{id}/procurement/packages/{pkg}/comparison-row":                  "procurement",
 	"PUT /projects/{id}/procurement/packages/{pkg}/submissions/{sub}/ratings/{key}": "procurement",
 	"PUT /projects/{id}/submissions/{sub}/appointment-row":                          "procurement",
 	"PUT /projects/{id}/submissions/{sub}/cells/{key}":                              "procurement",
-	"PUT /reports/{r}/edits/{target}":                                               "reports",
 	"PUT /reports/{r}/facts/{fact}":                                                 "reports",
 	"PUT /reports/{r}/settings/{key}":                                               "reports",
 }

@@ -74,7 +74,14 @@ The workbench, in navigation order:
   makes it Answered, with Undo. A System filter adds what else is open on
   that part of the building. Its reads and writes call neither Jev nor the
   model; chat reads it, changes it with Undo, and leaves accepting an answer
-  to the PM's click.
+  to the PM's click. "Project report" on its toolbar opens the project
+  report: cost by section, Program completion and critical path,
+  procurement, the registers, what needs attention and what is due next,
+  each figure the one its screen shows, with what moved since the last
+  issue. The PM comments under any section and issues an A4 PDF, at most
+  four pages; issued versions are frozen. It calls neither Jev nor the
+  model; chat updates it and writes comments with Undo, and opens Issue
+  filled in but never presses it.
 - **Cost Plan.** Four sections: fees and charges, consultants, construction,
   contingency. Budget is the planning figure. The user enters the approved
   contract and the amount claimed. Forecast, variance and remaining are

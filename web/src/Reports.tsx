@@ -9,6 +9,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { ApiError } from "./api";
 import { reportApi, type ReportView, type ReportReference, type ReportBlock, type PageFit, type RfpControls, type RfpGroupMember } from "./reportApi";
 import { submissionApi } from "./submissionApi";
+import { registerDialog } from "./chatView";
 import { RfpStages } from "./PackageStages";
 import { ProjectPage, RfpReleaseDates, RfpIssue, RfpSectionEditor, SectionMarkers, controlSection, editableSections, type SettingChange, type Write } from "./RfpEditor";
 import "./reports.css";
@@ -22,7 +23,7 @@ import { AGREEMENT_BLOCK, RfpTermsTable } from "./RfpTerms";
 
 function localDate() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "Assumption" };
-export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { transmittal?: TransmittalSelection; reportId: string; tick: number; onBack: () => void; onSignedOut: () => void }) {
+export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, backTo = "Procurement", surface = "procurement" }: { transmittal?: TransmittalSelection; reportId: string; tick: number; onBack: () => void; onSignedOut: () => void; backTo?: string; /** The host view's page-action surface, where Back appears. */ surface?: string }) {
   const [issueDate, setIssueDate] = useState(localDate);
   // null until the user ticks or clears it: a consultant RFP prints the
   // budget by default (owner decision, 13 October 2026); a tender to
@@ -206,6 +207,12 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
     try { await reportApi.issue(reportId, { version, reporting_date: view.rfp ? String(view.rfp.groups.find(g => g.id === "issue")?.controls.find(c => c.key === "field:issued")?.value ?? "") : issueDate, budget_disclosed: discloseBudget(), accept_stale: acceptStale, stale_reason: staleReason }); setIssuing(false); setAcceptStale(false); setStaleReason(""); setReload(n => n + 1); }
     catch (e) { fail(e); } finally { setBusy(false); }
   }
+  // Chat opens this report's issue form filled in; the PM presses Issue
+  // (monthly plan, "From chat"). Opening it changes nothing.
+  const openIssue = useRef<() => void>(() => undefined);
+  openIssue.current = () => { const d = view?.draft; if (!d || view?.rfp || editor) return; setIssuing(true); setIssueVersion(d.version); setAcceptStale(false); setStaleReason(""); setDiscloseBudget(false); };
+  const ready = !!view?.draft && !view?.rfp;
+  useEffect(() => ready ? registerDialog(`report-issue:${reportId}`, { open: () => openIssue.current() }) : undefined, [reportId, ready]);
   const latestBlock = latest?.draft?.sections.flatMap(section => section.blocks).find(block => block.id === editor?.target);
   const draft = view?.draft;
   pageLimit.current = view?.page_fit?.limit ?? 2;
@@ -238,18 +245,18 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal }: { 
     {!view.rfp && <h3>Issue saved report</h3>}
     <p>Issuing freezes the wording, sources and PDF. Later changes belong to a new draft.</p>
     {!view.rfp && <><label htmlFor="issue-date">Reporting date</label><input id="issue-date" type="date" required value={issueDate} onChange={e => setIssueDate(e.target.value)} disabled={busy} /></>}
-    {view.report.kind !== "pmp" && <label><input type="checkbox" checked={discloseBudget()} onChange={e => setDiscloseBudget(e.target.checked)} disabled={busy} /> Include internal budget amounts in this external report</label>}
+    {view.report.kind !== "pmp" && view.report.kind !== "monthly" && <label><input type="checkbox" checked={discloseBudget()} onChange={e => setDiscloseBudget(e.target.checked)} disabled={busy} /> Include internal budget amounts in this external report</label>}
     {!!view.stale.length && <><label><input type="checkbox" checked={acceptStale} onChange={e => setAcceptStale(e.target.checked)} disabled={busy} /> Issue the saved state despite changed or incomplete sources</label>{acceptStale && <><label htmlFor="issue-reason">Reason for using saved state</label><textarea id="issue-reason" required maxLength={1000} value={staleReason} onChange={e => setStaleReason(e.target.value)} disabled={busy} /></>}</>}
     {version !== draft.version && <p role="alert">The draft changed while this issue form was open. Cancel and reopen it to review the current version.</p>}
     <button className="btn" disabled={busy || blocked || version !== draft.version || (!!view.stale.length && (!acceptStale || !staleReason.trim()))}>{busy ? <Pending delayed>Issuing…</Pending> : view.rfp ? "Issue report" : "Freeze and issue PDF"}</button>
   </form>;
   return <section className="reports report-view" aria-label="Report" aria-busy={busy}>
     <div className="report-reader" ref={reader}>
-      <PagePrimaryAction surface="procurement"><BackButton to="Procurement" className="report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} /></PagePrimaryAction>
+      <PagePrimaryAction surface={surface}><BackButton to={backTo} className="report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} /></PagePrimaryAction>
       {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
       {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
       {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
-        <header className="report-toolbar" data-version={draft?.version}><div><h2>{view.rfp ? <>{view.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ")}</> : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div>
+        <header className="report-toolbar" data-version={draft?.version}><div><h2>{view.rfp ? <>{view.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ")}</> : view.report.kind === "monthly" && draft ? `${view.report.title} No. ${draft.number}` : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div>
           {/* Actions sit on the title's line, flush with the page's right edge (owner, 7 Nov 2026). */}
           <div className="report-toolbar-actions">
           <UpdateButton title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Rebuild this draft from the project" : "Assemble the draft"} busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()} />

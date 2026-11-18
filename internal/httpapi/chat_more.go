@@ -3,13 +3,16 @@ package httpapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"sort"
 	"strings"
 	"time"
 
+	"sitewise/internal/figures"
 	"sitewise/internal/reports"
+	"sitewise/internal/store"
 )
 
 // The read areas beyond the four screens chat can change (review change 1):
@@ -22,6 +25,8 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 		return readImplications(ctx, d, who, project, r)
 	case "attention":
 		return readAttention(ctx, d, who, project, r)
+	case "report":
+		return readProjectReport(ctx, d, who, project, r)
 	case "shares":
 		return readShares(ctx, d, who, project, r)
 	case "gaps":
@@ -300,12 +305,14 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 		err = readProcurement(r.Context(), d, who, project, rd)
 	case "attention":
 		err = readAttention(r.Context(), d, who, project, rd)
+	case "report":
+		err = readProjectReport(r.Context(), d, who, project, rd)
 	case "delivery":
 		err = readRegister(r.Context(), d, who, project, r.URL.Query().Get("part"), rd)
 	case "shares":
 		err = readShares(r.Context(), d, who, project, rd)
 	default:
-		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, delivery, shares or outline", http.StatusUnprocessableEntity)
+		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, delivery, report, shares or outline", http.StatusUnprocessableEntity)
 		return
 	}
 	if err != nil {
@@ -315,4 +322,71 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	_, _ = w.Write([]byte(rd.b.String()))
+}
+
+// readProjectReport renders the project report's draft for chat: each
+// block in the report's order, the cost table's amounts behind their tags,
+// the movements since the last issue and which comments wait for review.
+// It reads the saved draft; it builds nothing and calls no model.
+func readProjectReport(ctx context.Context, d Deps, who opActor, project string, r *reader) error {
+	rep, err := d.Store.MonthlyReport(ctx, who.OrgID, project)
+	if errors.Is(err, store.ErrNotFound) {
+		r.line("There is no project report yet. apply reports.update creates it and builds its draft from the screens' figures.")
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	view, err := d.Store.ReadReport(ctx, who.OrgID, rep.ID, d.ReportBuild)
+	if err != nil {
+		return err
+	}
+	for _, issue := range view.Issues {
+		r.line("Issued: report %d on %s (frozen).", issue.Number, issue.ReportingDate)
+	}
+	if view.Draft == nil {
+		r.line("The project report has no draft. apply reports.update builds the next one.")
+		return nil
+	}
+	dr := view.Draft
+	r.line("Project report draft %d, figures as at %s. Every sentence is SiteWise's from the Cost Plan, Program, Procurement and register records; a comment marked PM is the PM's own words.", dr.Number, dr.ReportingDate)
+	if len(view.Stale) > 0 {
+		r.line("The draft's sources changed since it was built (%s): reports.update rebuilds it.", strings.Join(view.Stale, ", "))
+	}
+	for _, s := range dr.Sections {
+		r.line("%s:", s.Title)
+		for _, b := range s.Blocks {
+			mark := ""
+			switch {
+			case b.Conflict:
+				mark = " (PM comment, waiting for review: its figures or period changed; issue waits until it is kept, rewritten or cleared)"
+			case b.Edited:
+				mark = " (PM)"
+			}
+			label := b.Label
+			if label != "" {
+				label += ": "
+			}
+			r.line("  %s%s%s", label, b.Text, mark)
+			if b.Table == nil {
+				continue
+			}
+			r.line("    %s", strings.Join(b.Table.Columns, " | "))
+			for _, row := range b.Table.Rows {
+				cells := make([]string, len(row))
+				for i, cell := range row {
+					cells[i] = cell
+					if b.ID != "cost:table" || i == 0 {
+						continue
+					}
+					if plain, ok := figures.Amount(cell); ok {
+						cells[i] = r.fig(plain, cell, row[0]+", "+strings.ToLower(b.Table.Columns[i]), "Project report, cost")
+					}
+				}
+				r.line("    %s", strings.Join(cells, " | "))
+			}
+		}
+	}
+	r.line("Issuing is the PM's: open the report with view (dialog report, issue yes); the PM presses Issue.")
+	return nil
 }

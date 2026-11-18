@@ -101,3 +101,27 @@ func ApplyEdits(generated []Section, edits []Edit) ([]Section, error) {
 	}
 	return out, nil
 }
+
+// ReapplyEdits puts a draft's generated wording back under its current
+// protected edits: after an undo changed the edits, each block shows the
+// edit now saved for it, or its generated text when it has none.
+func ReapplyEdits(sections []Section, edits []Edit) ([]Section, error) {
+	generated := make([]Section, 0, len(sections))
+	for _, s := range sections {
+		if s.ID == "protected_edits" {
+			continue // ApplyEdits lists orphaned edits again from edits
+		}
+		out := s
+		out.Blocks = make([]Block, len(s.Blocks))
+		for i, b := range s.Blocks {
+			if b.GeneratedText != nil {
+				b.Text = *b.GeneratedText
+			}
+			b.GeneratedText, b.Edited, b.Conflict, b.SourceMissing = nil, false, false, false
+			b.EditUserID, b.EditUpdatedAt = "", time.Time{}
+			out.Blocks[i] = b
+		}
+		generated = append(generated, out)
+	}
+	return ApplyEdits(generated, edits)
+}

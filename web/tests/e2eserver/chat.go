@@ -22,6 +22,7 @@ import (
 //	                a view call on the rows the outline names (documents
 //	                are listed first with the documents tool)
 //	"screen award FIRM"  the award dialog on that firm's column
+//	"screen report [issue]"  the project report, with its issue form
 //	"exclude these" set_lines on the cost lines the screen line selects
 //	"filter DO TABLE NAME"  a view call with a named filter, final
 //	"show the cost lines with no budget"  filter only cost_lines no_budget
@@ -64,6 +65,13 @@ func (chatScript) Converse(_ context.Context, conv llm.Conversation, onText func
 		return call("view", map[string]any{"do": f[0], "table": f[1], "filter": f[2], "final": true})
 	}
 	if pm := pmMessage(conv); strings.HasPrefix(pm, "screen ") {
+		if strings.HasPrefix(pm, "screen report") {
+			fields := map[string]string{}
+			if strings.HasSuffix(pm, " issue") {
+				fields["issue"] = "yes"
+			}
+			return call("view", map[string]any{"do": "open", "dialog": "report", "fields": fields, "final": true})
+		}
 		if strings.HasPrefix(pm, "screen award ") {
 			return awardCall(pm, text)
 		}

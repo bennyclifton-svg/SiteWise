@@ -271,15 +271,25 @@ WHERE s.org_id=$1::uuid AND s.project_id=$2::uuid AND s.package_id IS NOT NULL
 // invoiceContext is the project's live packages and posting cost lines, the
 // lines' budgets and the plan's tax basis, read from the current draft.
 func (s *Store) invoiceContext(ctx context.Context, orgID, projectID string) (invoices.Context, invoicePlan, error) {
-	pc := invoices.Context{History: map[string][]string{}}
-	plan := invoicePlan{packageTitles: map[string]string{}, packageABN: map[string]string{}}
 	// One read-only snapshot. The draft is read directly: the ledger needs
 	// lines, budgets and each line's package, not the plan's suggestions.
 	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
 	if err != nil {
-		return pc, plan, err
+		return invoices.Context{}, invoicePlan{}, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
+	pc, plan, err := s.invoiceContextTx(ctx, tx, orgID, projectID)
+	if err != nil {
+		return pc, plan, err
+	}
+	return pc, plan, tx.Commit(ctx)
+}
+
+// invoiceContextTx reads the ledger's context on the caller's snapshot, so
+// the project report reads it with everything else it prints.
+func (s *Store) invoiceContextTx(ctx context.Context, tx pgx.Tx, orgID, projectID string) (invoices.Context, invoicePlan, error) {
+	pc := invoices.Context{History: map[string][]string{}}
+	plan := invoicePlan{packageTitles: map[string]string{}, packageABN: map[string]string{}}
 	rows, err := tx.Query(ctx, `
 SELECT id::text, title, kind, COALESCE(discipline_id,''), COALESCE(works_scope,''), COALESCE(supplier_abn,''), retired_at IS NOT NULL, role, COALESCE(group_id::text,'')
 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND lifecycle_status <> 'cancelled'
@@ -391,7 +401,7 @@ WHERE a.org_id=$1::uuid AND a.project_id=$2::uuid AND a.decided_by='user' AND a.
 	if err := hist.Err(); err != nil {
 		return pc, plan, err
 	}
-	return pc, plan, tx.Commit(ctx)
+	return pc, plan, nil
 }
 
 type invoicePlan struct {
@@ -626,23 +636,33 @@ type LedgerView struct {
 
 // InvoiceLedger reads the ledger and computes the summary and checks in Go.
 func (s *Store) InvoiceLedger(ctx context.Context, orgID, projectID string, today string) (LedgerView, error) {
+	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
+	if err != nil {
+		return LedgerView{}, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	v, err := s.invoiceLedgerTx(ctx, tx, orgID, projectID, today)
+	if err != nil {
+		return v, err
+	}
+	return v, tx.Commit(ctx)
+}
+
+// invoiceLedgerTx is the ledger on the caller's snapshot: its context, rows,
+// summary and checks all read in the one transaction.
+func (s *Store) invoiceLedgerTx(ctx context.Context, tx pgx.Tx, orgID, projectID string, today string) (LedgerView, error) {
 	var v LedgerView
-	if err := s.pool.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, projectID).Scan(&v.Project); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, projectID).Scan(&v.Project); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return v, ErrNotFound
 		}
 		return v, err
 	}
-	pc, plan, err := s.invoiceContext(ctx, orgID, projectID)
+	pc, plan, err := s.invoiceContextTx(ctx, tx, orgID, projectID)
 	if err != nil {
 		return v, err
 	}
 	v.Packages, v.Titles, v.TaxBasis = pc.Packages, plan.packageTitles, plan.taxBasis
-	tx, err := s.pool.BeginTx(ctx, pgx.TxOptions{IsoLevel: pgx.RepeatableRead, AccessMode: pgx.ReadOnly})
-	if err != nil {
-		return v, err
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
 	rows, err := tx.Query(ctx, `
 SELECT id::text, filename, status, not_read_reason, COALESCE(kind,''), COALESCE(number,''), COALESCE(to_char(invoice_date,'YYYY-MM-DD'),''),
  to_char(period,'YYYY-MM-DD'), COALESCE(package_id::text,''), COALESCE(issuer_abn,''), currency, ex_gst_cents, gst_cents, total_cents,
@@ -716,7 +736,7 @@ FROM invoice_allocations WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY 
 	for _, inv := range v.Invoices {
 		v.Status[inv.ID] = invoices.Status(inv, v.Flags[inv.ID])
 	}
-	return v, tx.Commit(ctx)
+	return v, nil
 }
 
 // InvoiceEdit is a user's change to one invoice: field values (an empty
