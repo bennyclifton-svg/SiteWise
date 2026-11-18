@@ -20,8 +20,8 @@ export interface ChatTable {
   place: ChatPlace;
   /** Selects exactly these rows (ids not in the table are ignored). */
   select(ids: readonly string[]): void;
-  /** Hides every other row under a "Showing N … · Clear" line. */
-  only(ids: readonly string[]): void;
+  /** Hides every other row under a "Showing N … · Clear" line; `shown` is the named filter's words, when one chose them. */
+  only(ids: readonly string[], shown?: string): void;
   /** Puts the table back: all rows, nothing hidden. */
   clear(): void;
   /** Opens one row as the table's own Open would. */
@@ -119,7 +119,7 @@ export function useChatTable(name: ChatTableName, place: ChatPlace, handlers: Om
   useEffect(() => ready ? registerTable(name, {
     place,
     select: ids => latest.current.handlers.select(ids),
-    only: ids => latest.current.handlers.only(ids),
+    only: (ids, shown) => latest.current.handlers.only(ids, shown),
     clear: () => latest.current.handlers.clear(),
     open: id => latest.current.handlers.open?.(id),
     selected: () => latest.current.selected,
@@ -136,9 +136,10 @@ export const ROW_WORDS: Record<ChatTableName, [string, string]> = {
   procurement: ["package", "packages"],
 };
 
-export function showingLine(name: ChatTableName, n: number) {
+/** The "Showing …" line. A named filter's words (Go writes them to follow the count) replace "chosen in chat". */
+export function showingLine(name: ChatTableName, n: number, shown?: string) {
   const [one, many] = ROW_WORDS[name];
-  return `Showing ${n} ${n === 1 ? one : many} chosen in chat.`;
+  return `Showing ${n} ${n === 1 ? one : many} ${shown || "chosen in chat"}.`;
 }
 
 /** Scrolls a row into view unless the PM is typing in an editor, so a view never pulls the page from under a cell being edited. */

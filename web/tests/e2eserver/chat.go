@@ -23,6 +23,8 @@ import (
 //	                are listed first with the documents tool)
 //	"screen award FIRM"  the award dialog on that firm's column
 //	"exclude these" set_lines on the cost lines the screen line selects
+//	"filter DO TABLE NAME"  a view call with a named filter, final
+//	"show the cost lines with no budget"  filter only cost_lines no_budget
 //	anything else   a question back
 type chatScript struct{}
 
@@ -50,6 +52,16 @@ func (chatScript) Converse(_ context.Context, conv llm.Conversation, onText func
 		if _, after, ok := strings.Cut(c.Text, "<pm_message>"); ok {
 			said, text = strings.ToLower(after), c.Text
 		}
+	}
+	if pm := pmMessage(conv); strings.HasPrefix(pm, "filter ") || pm == "show the cost lines with no budget" {
+		f := strings.Fields(strings.TrimPrefix(pm, "filter "))
+		if pm == "show the cost lines with no budget" {
+			f = []string{"only", "cost_lines", "no_budget"}
+		}
+		if len(f) != 3 {
+			return say("Which filter?", onText), nil
+		}
+		return call("view", map[string]any{"do": f[0], "table": f[1], "filter": f[2], "final": true})
 	}
 	if pm := pmMessage(conv); strings.HasPrefix(pm, "screen ") {
 		if strings.HasPrefix(pm, "screen award ") {

@@ -66,6 +66,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   const setTab = (next: ProcurementTab) => { setTabState(next); setDraft(null); setSelection(emptySelection); try { localStorage.setItem(TAB_KEY, next); } catch { /* Storage is optional. */ } };
   // Packages chat chose to show alone (agency plan, Task 2); null shows all.
   const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
+  const [onlyShown, setOnlyShown] = useState("");
   // Chat moves the table through the same selection the clicks use: it
   // brings the table back from an open RFP or price table, and opens the tab
   // that holds the first package it names.
@@ -79,7 +80,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   };
   useChatTable("procurement", "procurement", {
     select: ids => { const keep = chatPackages(ids); setOnly(null); setSelection(selectAll(keep)); },
-    only: ids => { setOnly(new Set(chatPackages(ids))); },
+    only: (ids, shown) => { setOnly(new Set(chatPackages(ids))); setOnlyShown(shown ?? ""); },
     clear: () => setOnly(null),
     open: id => {
       const pkg = data?.overview.items.find(p => p.id === id && !p.retired_at);
@@ -481,7 +482,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
         <button type="button" className="table-action" disabled={!!busyRow} onClick={() => void dismissPrompt(prompt)}>Dismiss</button>
       </div>;
     })}
-    {only && <p className="reg-filter">{showingLine("procurement", only.size)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
+    {only && <p className="reg-filter">{showingLine("procurement", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
     {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll" role="tabpanel" id="procurement-panel" aria-labelledby={`procurement-tab-${tab}`}>
       <table className="procurement-table">
         <thead><tr><th scope="col">{tab === "consultants" ? "Consultant" : "Trade"}</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">{doc}</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>

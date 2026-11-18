@@ -210,17 +210,7 @@ func readAttention(ctx context.Context, d Deps, who opActor, project string, r *
 			if p.RetiredAt != nil {
 				continue
 			}
-			invited, quoted, review := 0, 0, 0
-			for _, c := range board[p.ID] {
-				if c.SubmissionID == "" {
-					invited++
-				} else {
-					quoted++
-				}
-				if c.NeedsReview {
-					review++
-				}
-			}
+			invited, quoted, review := packageQuotes(board[p.ID])
 			if invited > 0 && quoted == 0 {
 				say("Procurement", "%s: %d firms invited and no quote received", p.Title, invited)
 			}
@@ -232,7 +222,7 @@ func readAttention(ctx context.Context, d Deps, who opActor, project string, r *
 	if views, err := d.Store.ProjectDocumentViews(ctx, who.OrgID, project); err == nil {
 		failed := 0
 		for _, v := range views {
-			if v.Status == "not_filed" || v.Status == "failed" {
+			if docNotFiled(v) || v.Status == "failed" {
 				failed++
 			}
 		}
@@ -243,7 +233,7 @@ func readAttention(ctx context.Context, d Deps, who opActor, project string, r *
 	if st, err := d.Store.LoadProgram(ctx, who.OrgID, project); err == nil {
 		unknown := 0
 		for _, a := range st.Activities {
-			if a.Kind == "activity" && a.DurationDays == nil {
+			if programNoDuration(a) {
 				unknown++
 			}
 		}

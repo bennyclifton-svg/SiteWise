@@ -419,6 +419,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   // Rows chat chose to show alone (agency plan, Task 2), with their stages
   // kept so each row stays under its own heading; null shows all.
   const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
+  const [onlyShown, setOnlyShown] = useState("");
   const rows: Row[] = useMemo(() => {
     const all = view ? outlineRows(view.activities, expanded) : [];
     if (!only || !view) return all;
@@ -439,7 +440,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   };
   useChatTable("program", "program", {
     select: (ids) => { const keep = chatRows(ids); setOnly(null); setSel(selectAll(keep)); },
-    only: (ids) => { setOnly(new Set(chatRows(ids))); },
+    only: (ids, shown) => { setOnly(new Set(chatRows(ids))); setOnlyShown(shown ?? ""); },
     clear: () => setOnly(null),
     open: (id) => { const keep = chatRows([id]); if (keep.length) setSel(selectAll(keep)); },
   }, sel.ids, !!view);
@@ -1192,7 +1193,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         {sel.ids.length > 0 && <span className="pg-chip">{sel.ids.length} selected</span>}
         {dropping && <span className="pg-chip pg-drop-hint">Drop a PDF, DOCX or XLSX program to read its dates</span>}
       </header>
-      {only && <p className="reg-filter">{showingLine("program", only.size)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
+      {only && <p className="reg-filter">{showingLine("program", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
 
       <div className="pg-toolbar" role="toolbar" aria-label="Program tools">
         {/* Left: what changes the program. Right: how it is viewed (owner, 2026-11-02). */}

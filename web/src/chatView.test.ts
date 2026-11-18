@@ -57,5 +57,8 @@ describe("chat view registry", () => {
   it("says what a filter shows in plain words", () => {
     expect(showingLine("cost_lines", 1)).toBe("Showing 1 cost line chosen in chat.");
     expect(showingLine("program", 6)).toBe("Showing 6 Program rows chosen in chat.");
+    // A named filter's words replace "chosen in chat".
+    expect(showingLine("cost_lines", 6, "with no budget")).toBe("Showing 6 cost lines with no budget.");
+    expect(showingLine("documents", 1, "the profile does not read")).toBe("Showing 1 document the profile does not read.");
   });
 });

@@ -14,7 +14,7 @@ interface Mark { start: number; end: number; kind: "fact" | "quote" | "source" |
 interface Answer { text: string; marks?: Mark[]; question?: boolean; coverage?: string; unchecked?: number }
 interface Card { kind: "change" | "prepared"; area: string; lines: string[] | null; change_id?: string; undo?: string; prepared_id?: string; why?: string; refs?: string[]; program_version?: number }
 /** A screen move from the view tool: ids are full ids Go checked against the project. */
-interface View { do: "show" | "open" | "select" | "only" | "clear"; table?: string; ids?: string[]; dialog?: string; fields?: Record<string, string>; line: string }
+interface View { do: "show" | "open" | "select" | "only" | "clear"; table?: string; ids?: string[]; dialog?: string; fields?: Record<string, string>; line: string; shown?: string }
 interface ChatEvent { type: string; text?: string; tool?: string; card?: Card; answer?: Answer; view?: View }
 interface StoredTurn { id: string; text: string; status: string; answer?: { events?: ChatEvent[] } }
 
@@ -105,7 +105,7 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
   if (!table) return "That table isn't on screen yet. Open it and ask again.";
   const ids = v.ids ?? [];
   if (v.do === "select") table.select(ids);
-  else if (v.do === "only") table.only(ids);
+  else if (v.do === "only") table.only(ids, v.shown);
   else if (v.do === "clear") table.clear();
   else if (v.do === "open" && ids[0]) table.open?.(ids[0]);
   return "";

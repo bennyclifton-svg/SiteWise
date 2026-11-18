@@ -137,10 +137,8 @@ func (b *chatBox) projectDocs(ctx context.Context) ([]docInfo, error) {
 		byID[v.ID] = len(out)
 		out = append(out, d)
 	}
-	for _, v := range views {
-		if i, ok := byID[v.SupersedesID]; ok && v.SupersedesID != "" {
-			out[i].SupersededBy = out[byID[v.ID]].name()
-		}
+	for old, newer := range supersededBy(views) {
+		out[byID[old]].SupersededBy = out[byID[newer]].name()
 	}
 	sort.SliceStable(out, func(i, j int) bool { return out[i].SupersededBy == "" && out[j].SupersededBy != "" })
 	return out, nil

@@ -65,6 +65,44 @@ test("cost lines: select, act on these, show only, clear, Escape, undo that", as
   await expect.poll(excluded).toEqual([]);
 });
 
+test("named filters: the cost lines with no budget, and the Clear line names the filter", async ({ page }) => {
+  await freshOwner(page, "chat-view-filter");
+  await modelSwitch(page, true);
+  const id = await newProject(page, "Chat filters cost lines");
+  const ops = await page.request.post(`/api/projects/${id}/ops`, { headers, data: { area: "cost_plan", ops: [
+    { op: "cost_plan.add_line", fields: { label: "Footings", section: "construction", system: "structure", amount: "1000" } },
+    { op: "cost_plan.add_line", fields: { labels: ["Slab", "Roof"], section: "construction", system: "structure" } },
+  ] } });
+  expect(ops.ok()).toBeTruthy();
+  await page.goto(`/projects/${id}?view=costs`);
+  const chat = page.getByRole("region", { name: "Chat" });
+  const row = (label: string) => page.locator("tr.cost-row", { hasText: label });
+  await expect(row("Footings")).toBeVisible();
+  const all = await page.locator("tr.cost-row").count();
+
+  await say(page, "Show the cost lines with no budget");
+  const line = page.locator(".reg-filter");
+  await expect(line).toContainText(/^Showing \d+ cost lines? with no budget\. · Clear$/);
+  await expect(line).not.toContainText("chosen in chat");
+  await expect(chat).toContainText(/Showing \d+ cost lines? with no budget\./);
+  await expect(row("Slab")).toBeVisible();
+  await expect(row("Roof")).toBeVisible();
+  await expect(row("Footings")).toHaveCount(0);
+  // The count on the line is the rows left on screen.
+  const shown = Number((await line.textContent())?.match(/Showing (\d+)/)?.[1]);
+  await expect(page.locator("tr.cost-row")).toHaveCount(shown);
+  await line.getByRole("button", { name: "Clear" }).click();
+  await expect(page.locator("tr.cost-row")).toHaveCount(all);
+
+  // Rows picked by id still say they were chosen in chat.
+  await say(page, "screen only cost_lines Footings");
+  await expect(line).toContainText("Showing 1 cost line chosen in chat.");
+
+  // A filter that matches nothing shows the table and says so.
+  await say(page, "filter select cost_lines over_budget");
+  await expect(chat).toContainText("No cost line has claimed more than its budget.");
+});
+
 test("a table not on screen is shown first, then moved", async ({ page }) => {
   await freshOwner(page, "chat-view-program");
   await modelSwitch(page, true);

@@ -75,6 +75,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   const [selection, setSelection] = useState(emptySelection);
   // Lines chat chose to show alone (agency plan, Task 2); null shows all.
   const [only, setOnly] = useState<ReadonlySet<string> | null>(null);
+  const [onlyShown, setOnlyShown] = useState("");
   const [drop, setDrop] = useState<{ id: string; after: boolean } | null>(null);
   const [menu, setMenu] = useState<(RowMenuAt & { ids: string[] }) | null>(null);
   const [assign, setAssign] = useState<{ ids: string[]; kind: string; x: number; y: number; value: string } | null>(null);
@@ -207,7 +208,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
       openTo(keep); setOnly(null); setSelection(selectAll(keep));
       if (keep[0]) requestAnimationFrame(() => revealQuietly(scroll.current?.querySelector(`tr[data-id="${CSS.escape(keep[0])}"]`)));
     },
-    only: ids => { const keep = knownLines(ids); openTo(keep); setOnly(new Set(keep)); },
+    only: (ids, shown) => { const keep = knownLines(ids); openTo(keep); setOnly(new Set(keep)); setOnlyShown(shown ?? ""); },
     clear: () => setOnly(null),
     open: id => { if (byId.has(id)) onOpen(id); },
   }, selection.ids);
@@ -240,7 +241,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   // One chevron in the Item head opens or closes every group line at once.
   const allOpen = !groupIds.some(id => collapsed.has(id));
   const masterToggle = groupIds.length > 0 && <button type="button" className="cost-disclosure-toggle cost-master-toggle" aria-label={allOpen ? "Collapse all" : "Expand all"} aria-expanded={allOpen} onClick={() => { setCollapsed(allOpen ? new Set(groupIds) : new Set()); setSelection(emptySelection); }}><Chevron open={allOpen} /></button>;
-  return <>{only && <p className="reg-filter">{showingLine("cost_lines", only.size)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}<div ref={scroll} className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
+  return <>{only && <p className="reg-filter">{showingLine("cost_lines", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}<div ref={scroll} className="cost-grid-scroll"><table className="cost-grid" tabIndex={0} onKeyDown={e => {
     if ((e.target as HTMLElement).closest("input,select,textarea,button,[popover]")) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setSelection(selectAll(visible)); }
     if (e.key === "Escape") { setSelection(emptySelection); setOnly(null); }

@@ -98,6 +98,8 @@ type chatEvent struct {
 		Dialog string            `json:"dialog"`
 		Fields map[string]string `json:"fields"`
 		Line   string            `json:"line"`
+		Filter string            `json:"filter"`
+		Shown  string            `json:"shown"`
 	} `json:"view"`
 	ConversationID string `json:"conversation_id"`
 	Rounds         int    `json:"rounds"`

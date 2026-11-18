@@ -89,7 +89,7 @@ func chatTools() []llm.Tool {
 				"do":     str("show, open (a row by its one id, or a dialog), select, only (hide the other rows) or clear (all rows back)", "show", "open", "select", "only", "clear"),
 				"table":  str("the table", viewTableNames...),
 				"ids":    map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "row ids, at most 200"},
-				"filter": str("a named set SiteWise computes, in place of ids"),
+				"filter": str("with select or only, in place of ids: a set SiteWise computes by rule. " + filterList() + ". Any other set: pick ids from a read"),
 				"dialog": str("a dialog to open: award", "award"),
 				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id)"},
 				"final":  map[string]any{"type": "boolean"},
