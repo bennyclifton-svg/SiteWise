@@ -75,7 +75,7 @@ func checkView(ctx context.Context, d Deps, who opActor, project string, in view
 	}
 	t, ok := viewTables[in.Table]
 	if !ok {
-		return agent.View{}, "Tables are " + strings.Join(viewTableNames, ", ") + "."
+		return agent.View{}, "Tables are " + strings.Join(viewTableNames, ", ") + ". If the PM asked for another table, say \"" + declineWords + "\" and name the screen; nothing on screen was changed."
 	}
 	if in.Filter != "" {
 		return checkFilter(ctx, d, who, project, in, t)

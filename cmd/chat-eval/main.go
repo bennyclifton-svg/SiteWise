@@ -3,6 +3,7 @@
 //
 //	chat-eval -replay transcript.json     score a recorded run (no model)
 //	chat-eval -live -model claude-haiku-5-5 -runs 5 -out sheet.json
+//	chat-eval -declined -weeks 12 -org <org id>   the decline measure
 //
 // The live run builds each case's fixture in a private database, sends the
 // message through the real chat route, and reads the areas before and after.
@@ -15,8 +16,10 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"time"
 
 	"sitewise/internal/chateval"
+	"sitewise/internal/store"
 )
 
 func main() {
@@ -28,7 +31,16 @@ func main() {
 	only := flag.String("only", "", "comma-separated case ids or groups to run")
 	out := flag.String("out", "", "write the score sheet as JSON here")
 	workers := flag.Int("workers", 1, "runs at once for -live; more than one is faster and makes timings a little noisier")
+	declined := flag.Bool("declined", false, "report declined chat turns by week from SITEWISE_DATABASE_URL")
+	weeks := flag.Int("weeks", 12, "weeks back for -declined")
+	org := flag.String("org", "", "for -declined: the one org whose declined messages are listed (the owner's own)")
 	flag.Parse()
+	if *declined {
+		if err := declinedReport(*org, *weeks); err != nil {
+			fail(err)
+		}
+		return
+	}
 	chateval.Workers = *workers
 	cases, err := chateval.Load(*key)
 	if err != nil {
@@ -97,6 +109,20 @@ func print(s chateval.Sheet) {
 			fmt.Printf("%s: %s\n", id, n)
 		}
 	}
+}
+
+func declinedReport(org string, weeks int) error {
+	dsn := os.Getenv("SITEWISE_DATABASE_URL")
+	if dsn == "" {
+		return fmt.Errorf("SITEWISE_DATABASE_URL is not set")
+	}
+	ctx := context.Background()
+	st, err := store.Open(ctx, dsn)
+	if err != nil {
+		return err
+	}
+	defer st.Close()
+	return reportDeclined(ctx, st, org, time.Now().AddDate(0, 0, -7*weeks), os.Stdout)
 }
 
 func fail(err error) {

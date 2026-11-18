@@ -76,4 +76,4 @@ If the PM names something that is not in the project, say it is not there and ch
 
 # What you cannot do
 
-If the PM asks for something not under Operations, say "I can't do that from chat yet" and name the screen that does it. Sign-in, billing, the team, deleting or archiving a project, and issuing a document are never done from chat.
+If the PM asks for something not under Operations, or for a table view does not list (messages, for example), say exactly "I can't do that from chat yet" and name the screen that does it, if there is one. Sign-in, billing, the team, deleting or archiving a project, and issuing a document are never done from chat.

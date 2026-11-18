@@ -13,21 +13,24 @@ import (
 // to the user who started it; every read and write below is scoped by org,
 // project and that user.
 type ChatTurn struct {
-	ID             string          `json:"id"`
-	ConversationID string          `json:"conversation_id"`
-	Text           string          `json:"text"`
-	Status         string          `json:"status"` // running | done | stopped | failed
-	Outside        bool            `json:"outside"`
-	Model          string          `json:"-"`
-	Rounds         int             `json:"-"`
-	InTokens       int64           `json:"-"`
-	OutTokens      int64           `json:"-"`
-	CacheRead      int64           `json:"-"`
-	CacheWrite     int64           `json:"-"`
-	FirstMS        int             `json:"-"`
-	LatencyMS      int             `json:"-"`
-	Answer         json.RawMessage `json:"answer"`
-	At             time.Time       `json:"at"`
+	ID             string `json:"id"`
+	ConversationID string `json:"conversation_id"`
+	Text           string `json:"text"`
+	Status         string `json:"status"` // running | done | stopped | failed
+	Outside        bool   `json:"outside"`
+	Model          string `json:"-"`
+	Rounds         int    `json:"-"`
+	InTokens       int64  `json:"-"`
+	OutTokens      int64  `json:"-"`
+	CacheRead      int64  `json:"-"`
+	CacheWrite     int64  `json:"-"`
+	FirstMS        int    `json:"-"`
+	LatencyMS      int    `json:"-"`
+	// Declined: the answer carried chat's fixed words for a request it
+	// cannot do yet (agency plan, Task 7).
+	Declined bool            `json:"-"`
+	Answer   json.RawMessage `json:"answer"`
+	At       time.Time       `json:"at"`
 }
 
 // ChatPrepared is a change that waits for the PM's click.
@@ -85,8 +88,8 @@ func (s *Store) FinishChatTurn(ctx context.Context, org string, t ChatTurn, bloc
 		answer = json.RawMessage(`{}`)
 	}
 	tag, err := tx.Exec(ctx, `UPDATE chat_turns SET status=$3,outside=$4,model=$5,rounds=$6,in_tokens=$7,out_tokens=$8,cache_read_tokens=$9,
-cache_write_tokens=$10,first_ms=$11,latency_ms=$12,answer=$13::jsonb WHERE org_id=$1::uuid AND id=$2::uuid`,
-		org, t.ID, t.Status, t.Outside, t.Model, t.Rounds, t.InTokens, t.OutTokens, t.CacheRead, t.CacheWrite, t.FirstMS, t.LatencyMS, string(answer))
+cache_write_tokens=$10,first_ms=$11,latency_ms=$12,answer=$13::jsonb,declined=$14 WHERE org_id=$1::uuid AND id=$2::uuid`,
+		org, t.ID, t.Status, t.Outside, t.Model, t.Rounds, t.InTokens, t.OutTokens, t.CacheRead, t.CacheWrite, t.FirstMS, t.LatencyMS, string(answer), t.Declined)
 	if err != nil {
 		return err
 	}

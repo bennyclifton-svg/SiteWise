@@ -78,9 +78,33 @@ func chatSystem(prompt string) string {
 		fmt.Fprintf(&b, "\n- %s%s: %s Fields: %s.", op.Name, click, op.About, op.Fields)
 	}
 	b.WriteString("\n\nAn operation marked as waiting for the PM's click, or one that cannot be undone from chat, is still sent with apply: SiteWise prepares it. Awards are made in the award dialog on Procurement; view opens it on the firm and the PM presses Award.\n")
-	b.WriteString("Not available from chat: uploading or re-reading a document, editing a report's wording, combining packages. Say \"I can't do that from chat yet\" and name the screen.\n")
+	b.WriteString("Not available from chat: uploading or re-reading a document, editing a report's wording, combining packages. Say \"" + declineWords + "\" and name the screen.\n")
 	b.WriteString("Never from chat: sign-in, billing, team and invitations, deleting or archiving a project, issuing anything.\n")
 	return b.String()
+}
+
+// declineWords are chat's fixed words for a request it cannot do yet. The
+// prompt (knowledge/chat/system.md) tells the model to use exactly these
+// words, and a turn whose answer carries them is stored as declined: the
+// share of such turns is the measure of what chat cannot do (agency plan,
+// Task 7). TestDeclineWordsAreThePrompts holds the two together.
+const declineWords = "I can't do that from chat yet"
+
+// declined reports whether an answer carries the fixed words, with either
+// apostrophe and in any case.
+func declined(answer string) bool {
+	answer = strings.ToLower(strings.ReplaceAll(answer, "’", "'"))
+	return strings.Contains(answer, strings.ToLower(declineWords))
+}
+
+// answerText is the checked answer among a turn's events, or "".
+func answerText(events []agent.Event) string {
+	for _, e := range events {
+		if e.Type == "answer" && e.Answer != nil {
+			return e.Answer.Text
+		}
+	}
+	return ""
 }
 
 // goTo answers a message that is exactly a known read with the screen, and
@@ -195,6 +219,7 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 		turn.InTokens, turn.OutTokens, turn.CacheRead, turn.CacheWrite = res.InTokens, res.OutTokens, res.CacheRead, res.CacheWrite
 		turn.FirstMS, turn.LatencyMS = int(firstOut.Milliseconds()), int(time.Since(began).Milliseconds())
 		turn.Answer, _ = json.Marshal(map[string]any{"events": events})
+		turn.Declined = declined(answerText(events))
 		// The turn is stored even if the PM has gone: the changes it made are real.
 		save, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
 		defer cancel()
