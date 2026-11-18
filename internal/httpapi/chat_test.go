@@ -99,7 +99,17 @@ type chatEvent struct {
 // chat sends one message and returns the events of the turn.
 func (m *member) chat(t *testing.T, project, conversation, text string) []chatEvent {
 	t.Helper()
-	body, _ := json.Marshal(map[string]string{"conversation_id": conversation, "text": text})
+	return m.chatOn(t, project, conversation, text, nil)
+}
+
+// chatOn sends one message with what the strip says is on screen.
+func (m *member) chatOn(t *testing.T, project, conversation, text string, screen map[string]any) []chatEvent {
+	t.Helper()
+	in := map[string]any{"conversation_id": conversation, "text": text}
+	if screen != nil {
+		in["screen"] = screen
+	}
+	body, _ := json.Marshal(in)
 	resp := m.do(t, http.MethodPost, "/api/projects/"+project+"/chat", body)
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK || !strings.HasPrefix(resp.Header.Get("Content-Type"), "text/event-stream") {

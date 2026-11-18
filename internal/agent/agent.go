@@ -131,8 +131,11 @@ type Request struct {
 	// last. Figures in any of them may be used in an operation.
 	Typed   []string
 	Outline string // Go's compact outline of the project, with ids
-	Think   bool   // let the model use hidden thinking (see llm.Conversation)
-	Today   time.Time
+	// Screen is Go's one line about what is on the PM's screen: the view,
+	// the open row and the selection, as ids and counts only.
+	Screen string
+	Think  bool // let the model use hidden thinking (see llm.Conversation)
+	Today  time.Time
 	// Prefetch is reads Go runs before the model is asked, because the
 	// PM's words already say which area a question is about. Their results
 	// go in the first turn, so the answer takes one model call, not two.
@@ -181,6 +184,15 @@ func UserMessage(outline, typed string) string {
 // userMessage puts what Go read ahead between the outline and the message.
 func userMessage(outline, read, typed string) string {
 	return "<project_outline>\n" + strings.TrimSpace(outline) + "\n</project_outline>\n\n" + read + "<pm_message>\n" + strings.TrimSpace(typed) + "\n</pm_message>"
+}
+
+// onScreen wraps the screen line. It sits in the turn's own message, after
+// the cache breakpoint, so a change of selection never changes the prefix.
+func onScreen(line string) string {
+	if strings.TrimSpace(line) == "" {
+		return ""
+	}
+	return "<on_screen>\n" + strings.TrimSpace(line) + "\n</on_screen>\n\n"
 }
 
 // prefetch runs the reads Go was asked to do ahead and returns them as the
@@ -239,7 +251,7 @@ func Run(ctx context.Context, m Model, box Toolbox, req Request, emit func(Event
 		history = append(history, msg)
 		res.Messages = append(res.Messages, msg)
 	}
-	add(llm.UserText(userMessage(req.Outline, prefetch(ctx, box, st, req.Prefetch), typed)))
+	add(llm.UserText(userMessage(req.Outline, onScreen(req.Screen)+prefetch(ctx, box, st, req.Prefetch), typed)))
 	tools := box.Tools()
 	refusals := 0
 	var said strings.Builder

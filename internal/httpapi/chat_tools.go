@@ -23,7 +23,9 @@ type chatBox struct {
 	who     opActor
 	project string
 	turn    string
-	tags    atomic.Int64
+	// screen is the selection the strip sent with this turn, checked.
+	screen *screenSel
+	tags   atomic.Int64
 }
 
 var readAreas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention"}
@@ -233,6 +235,9 @@ func (b *chatBox) apply(ctx context.Context, st *agent.State, input json.RawMess
 			where += ", " + e.Field
 		}
 		return agent.Output{Text: "Refused, nothing was changed. " + where + ": " + e.Message, IsError: true, Refused: true}
+	}
+	if why := tooManySelected(b.screen, in.Area, st.Asked); why != "" {
+		return agent.Output{Text: "Refused, nothing was changed. " + why, IsError: true, Refused: true}
 	}
 	in.opBatch.Clicked = true // check the shape as if clicked; clicks are judged below
 	ops, bad := checkBatch(in.opBatch)

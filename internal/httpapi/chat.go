@@ -118,8 +118,8 @@ func chatUnavailable(ctx context.Context, d Deps, org string) string {
 	return ""
 }
 
-// postChat is POST /projects/{id}/chat {"conversation_id","text"}. It
-// answers with a stream of events: text, tool, change, prepared, answer,
+// postChat is POST /projects/{id}/chat {"conversation_id","text","screen"}.
+// It answers with a stream of events: text, tool, change, prepared, answer,
 // go, error and, last, done.
 func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 	began := time.Now()
@@ -130,6 +130,8 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 	var in struct {
 		ConversationID string `json:"conversation_id"`
 		Text           string `json:"text"`
+		// Screen is what the strip says is on screen (agency plan, Task 1).
+		Screen *screenIn `json:"screen"`
 	}
 	if readProposalJSON(w, r, d.MaxBodyBytes, &in) != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
@@ -220,7 +222,8 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 		finish(agent.Result{}, "failed")
 		return
 	}
-	if area, ok := goTo[strings.ToLower(strings.TrimRight(in.Text, ".!? "))]; ok {
+	said := strings.ToLower(strings.TrimRight(in.Text, ".!? "))
+	if area, ok := goTo[said]; ok {
 		emit(agent.Event{Type: "go", Text: area})
 		finish(agent.Result{}, "done")
 		return
@@ -240,7 +243,9 @@ func postChat(w http.ResponseWriter, r *http.Request, d Deps) {
 	}
 	req.Typed = append(req.Typed, in.Text)
 	req.Prefetch = prefetchFor(in.Text)
-	box := &chatBox{d: d, who: who, project: project, turn: turn.ID}
+	var sel *screenSel
+	req.Screen, sel = readScreen(ctx, d, who, project, in.Screen)
+	box := &chatBox{d: d, who: who, project: project, turn: turn.ID, screen: sel}
 	// The turn runs to its end even if the PM closes the strip: a change
 	// half way through a batch must be finished or put back, and the card
 	// must be stored.
