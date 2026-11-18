@@ -393,3 +393,27 @@ func (c *Cal) DayLabel(i int) string {
 	n := c.count(off+1) - c.count(week*7)
 	return fmt.Sprintf("Week %d, day %d", week+1, n)
 }
+
+// BusinessDayAfter is the date n working days after from, on the given
+// working week and calendar days (holidays, shutdowns, overrides). It is
+// the one business-day helper the next wave shares (index, agreement 1):
+// an RFI's response date is n working days after it was raised, skipping
+// weekends and the Program's holidays. A from that is not a working day
+// counts from the next one, so a Saturday raise with n=5 lands on Friday.
+// ok is false for a malformed date or n < 0.
+func BusinessDayAfter(c Calendar, from string, n int) (string, bool) {
+	if _, ok := dayNumber(from); !ok || n < 0 {
+		return "", false
+	}
+	cal := NewCalendar(Calendar{Start: from, WorkingWeek: c.WorkingWeek, Days: c.Days})
+	// Index 0 is the first working day on or after from. When from is
+	// itself a working day it is index 0 and the nth day after is index n;
+	// otherwise index 0 is already the first day after it.
+	if i, _ := cal.IndexOnOrBefore(from); i == 0 {
+		return cal.DateOf(n), true
+	}
+	if n == 0 {
+		return from, true
+	}
+	return cal.DateOf(n - 1), true
+}

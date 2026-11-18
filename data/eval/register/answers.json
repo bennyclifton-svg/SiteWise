@@ -1,0 +1,7 @@
+{
+ "about": "The register's reply-match answer key (docs/plans/2026-11-17-rfis-review-comments.md, Question A). Status: draft and EMPTY. The owner supplies it: at least 60 filed documents (correspondence) with the project's Open RFIs at the time, and for each RFI whether the document answers it, negatives included. Sources the plan names: the private corpus RFI threads (data/eval/intake/private/folder-batches/034-camp-y-traffic/) and the owner's projects. Until it is reviewed and data/register/thresholds.json is approved, Jev's picks are stored blank and never shown; only Go's cited-number rule shows. jobs.ProposeRegisterCutoff turns a scored run into a proposed amber cut-off for the owner.",
+ "status": "draft",
+ "question_version": "register.answers/1",
+ "format": {"document": "a document title or path in the private corpus", "rfis": [{"number": "RFI-007", "ref": "the sender's number, if any", "subject": "", "question": "", "to": "", "answered": true}]},
+ "cases": []
+}

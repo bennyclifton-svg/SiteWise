@@ -87,8 +87,9 @@ WITH picked AS MATERIALIZED (
     WHERE c.org_id = $3::uuid
       AND c.kind = ANY($4::text[])
       AND c.kind <> 'intake'
-      -- A profile update can be requested before extraction finishes.
-      AND (c.kind <> 'label' OR NOT EXISTS (
+      -- A profile update can be requested before extraction finishes, and
+      -- the register's reply match reads the extracted text.
+      AND (c.kind NOT IN ('label', 'register') OR NOT EXISTS (
           SELECT 1 FROM jobs preparation
           WHERE preparation.org_id = c.org_id AND preparation.document_id = c.document_id
             AND preparation.kind = 'full_text' AND preparation.status <> 'done'

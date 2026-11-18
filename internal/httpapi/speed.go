@@ -28,9 +28,11 @@ const (
 	pathGapCheck        = "gap_check"
 	pathDeliveryRead    = "delivery_read"
 	pathDeliveryWrite   = "delivery_write"
-	pathReportRead      = "report_read"
-	pathReportWrite     = "report_write"
-	pathReportAssemble  = "report_assemble"
+	// The register read with a System filter and the also-open line.
+	pathDeliverySystemRead = "delivery_system_read"
+	pathReportRead         = "report_read"
+	pathReportWrite        = "report_write"
+	pathReportAssemble     = "report_assemble"
 	// A consultant RFP setting re-resolves from frozen drivers: no project
 	// reload and no Jev, so it shares report_write's budget.
 	pathReportSetting = "report_setting"

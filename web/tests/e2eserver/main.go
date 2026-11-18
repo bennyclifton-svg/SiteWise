@@ -31,6 +31,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	"sitewise/internal/auth"
+	"sitewise/internal/chatfix"
 	"sitewise/internal/config"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
@@ -39,6 +40,7 @@ import (
 	"sitewise/internal/invoices"
 	"sitewise/internal/invoices/sample"
 	"sitewise/internal/jev"
+	"sitewise/internal/jobs"
 	"sitewise/internal/knowledge"
 	"sitewise/internal/profile"
 	"sitewise/internal/proposals"
@@ -345,6 +347,15 @@ func run(addr, data string, programFixture bool) error {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
+	// A synthetic reply that cites an RFI, filed and matched as the
+	// register's post-filing job would match it (Go's rule; no Jev).
+	mux.HandleFunc("POST /__e2e/register-reply", func(w http.ResponseWriter, r *http.Request) {
+		if err := registerReply(r.Context(), st, orgs["a"], r.URL.Query().Get("project"), r.URL.Query().Get("text")); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})
 	mux.Handle("/", cut.wrap(srv))
 	hs := &http.Server{Addr: addr, Handler: mux, ReadHeaderTimeout: 10 * time.Second}
 	hs.RegisterOnShutdown(srv.CloseStreams)
@@ -557,4 +568,40 @@ func proposalThresholds() proposals.Thresholds {
 		th.Questions[f] = []proposals.Threshold{{Options: &lo, MaxOptions: &hi, Green: &g, Amber: &g}}
 	}
 	return th
+}
+
+func registerReply(ctx context.Context, st *store.Store, org, project, text string) error {
+	if _, err := chatfix.SeedDocuments(ctx, st, org, project, []chatfix.Document{{Title: "Engineer's reply", Kind: "drawing", Pages: []string{text}}}); err != nil {
+		return err
+	}
+	docs, err := st.ProjectDocumentViews(ctx, org, project)
+	if err != nil {
+		return err
+	}
+	for _, d := range docs {
+		if err := st.QueueRegister(ctx, org, d.ID); err != nil {
+			return err
+		}
+	}
+	for _, kind := range []string{store.JobKindFullText, store.JobKindRegister} {
+		w := &jobs.Worker{Store: st}
+		for {
+			job, err := st.ClaimJobSince(ctx, org, time.Minute, []string{kind}, time.Time{})
+			if errors.Is(err, store.ErrIdle) {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			if kind == store.JobKindRegister {
+				if err := w.Perform(ctx, job); err != nil {
+					return err
+				}
+			}
+			if err := st.CompleteJob(ctx, job.OrgID, job.ID, job.Token, store.EventWrite{Kind: "job", DocumentID: job.DocumentID, Payload: `{"kind":"` + kind + `","status":"done"}`}); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

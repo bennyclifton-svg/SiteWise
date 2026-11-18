@@ -83,8 +83,10 @@ type Worker struct {
 	// ProgramThresholds band hold-point release answers (plan 10.4). No
 	// cut-off proposes nothing.
 	ProgramThresholds programread.Thresholds
-	profileOnce       sync.Once
-	profileConfigured *store.Store
+	// RegisterThresholds band the register's reply picks. Zero shows none.
+	RegisterThresholds RegisterThresholds
+	profileOnce        sync.Once
+	profileConfigured  *store.Store
 }
 
 // Once leases and runs one full-text, label or evidence job.
@@ -95,7 +97,7 @@ func (w *Worker) Once(ctx context.Context, orgID string) error {
 	}
 	kinds := w.Kinds
 	if len(kinds) == 0 {
-		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification}
+		kinds = []string{store.JobKindFullText, store.JobKindLabel, store.JobKindEvidence, store.JobKindSpecification, store.JobKindRegister}
 	}
 	job, err := w.Store.ClaimJobSince(ctx, orgID, lease, kinds, w.Since)
 	if err != nil {
@@ -176,6 +178,8 @@ func (w *Worker) Perform(ctx context.Context, job store.ClaimedJob) error {
 		return w.label(ctx, job)
 	case store.JobKindEvidence:
 		return w.evidence(ctx, job)
+	case store.JobKindRegister:
+		return w.register(ctx, job)
 	default:
 		return errors.New("unknown background stage")
 	}

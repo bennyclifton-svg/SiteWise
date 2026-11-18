@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEve
 import type { Catalog, Doc, ReadSetting } from "./api";
 import { FIELDS, notFiledReason, type RowModel } from "./DocumentRow";
 import { ConfirmDialog } from "./ConfirmDialog";
-import { IconBin, IconEye, IconEyeOff, IconLinks, IconMore, IconOpen, IconRename, IconRetry, IconStored, IconSubdivide, IconTag, IconUndo, IconUpload } from "./icons";
+import { IconBin, IconEye, IconEyeOff, IconLinks, IconMore, IconOpen, IconPlus, IconRename, IconRetry, IconStored, IconSubdivide, IconTag, IconUndo, IconUpload } from "./icons";
 import { OCRStatus, ocrStage } from "./OCRStatus";
 import { documentActivity } from "./documentActivity";
 import { clickRow, emptySelection, prune, selectAll as selectEveryRow, type Selection } from "./table/selection";
@@ -39,6 +39,8 @@ interface Props {
   fileOver?: boolean;
   openKey: string | null;
   onOpen: (key: string | null) => void;
+  /** Adds a draft RFI on the register with this document as its source (Go only, no Jev). */
+  onRaiseRFI?: (documentId: string, title: string) => void;
 }
 
 const COLUMNS: { col: Col; label: string; className: string }[] = [
@@ -175,6 +177,7 @@ export function Register({
   fileOver = false,
   openKey,
   onOpen,
+  onRaiseRFI,
 }: Props) {
   const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
   const [localSelection, setLocalSelection] = useState<Selection>(emptySelection);
@@ -324,6 +327,7 @@ export function Register({
     if (one) items.push({ label: "Rename", icon: <IconRename />, disabled: !filed, onSelect: () => setRename(r => ({ id: docs[0].id, n: (r?.n ?? 0) + 1 })) });
     // Offered only where the automatic split stopped on an unconfirmed page.
     if (one && docs[0].expansion?.can_split) items.push({ label: "Split into pages", icon: <IconSubdivide />, onSelect: () => void onSplit(docs[0].id) });
+    if (one && filed && onRaiseRFI) items.push({ label: "Raise RFI from this document", icon: <IconPlus />, onSelect: () => onRaiseRFI(docs[0].id, fieldValue(docs[0], "title") || docs[0].filename) });
     // A link for someone outside the org to these documents (guest access).
     items.push({ label: "Share…", icon: <IconLinks />, disabled: !filed || m.ids.length > 200, onSelect: () => dialogOf("share")?.open({ kind: "documents", documents: m.ids.join(",") }) });
     items.push("sep", {

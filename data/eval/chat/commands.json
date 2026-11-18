@@ -2275,8 +2275,8 @@
    "source": "agency",
    "group": "screen",
    "fixture": "house",
-   "message": "Select the RFIs that are still open",
-   "note": "No RFI table yet: the fixed words, and the turn is logged as declined.",
+   "message": "Send RFI-002 to the structural engineer",
+   "note": "Sending is plan 1's and is not built: the fixed words, and the turn is logged as declined. (Until 18 November this case asked for the RFI table, which the register now is.)",
    "expect": [
     {
      "kind": "refuses",
@@ -2369,6 +2369,152 @@
     {
      "kind": "cites",
      "document": "Arborist report"
+    }
+   ]
+  },
+  {
+   "id": "rg1",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "What is open on the facade?",
+   "note": "read delivery with part envelope: RFI-001 and the also-open line, each from Go.",
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "rg2",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "What is with the structural engineer and how late is it?",
+   "note": "read delivery: RFI-002 is with Northline Structural and has no due date, so it is not late; the answer must not invent one.",
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "rg3",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Raise an RFI to the structural engineer about the basement wall waterproofing",
+   "money_or_date": true,
+   "note": "Saved as Draft with the next number and no date: none was given, so Due is blank. Applied at once with Undo.",
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| RFI | RFI-003 | Basement wall waterproofing |",
+      "| — | — | draft |"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rg4",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Close RFI-001",
+   "note": "An edit by RFI number, applied at once with Undo.",
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| RFI-001 | Window head flashing detail | Arc Architects | 2026-10-08 | — | closed |"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rg5",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Set these to the building envelope",
+   "note": "RFI-002 selected by hand: exactly that row moves; RFI-001 was already on the envelope.",
+   "screen": {
+    "view": "register",
+    "selected": {
+     "table": "register",
+     "rows": [
+      "RFI-002"
+     ]
+    }
+   },
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| RFI-002 | Retaining wall footing depth | Northline Structural | — | — | open | Building envelope |"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rg6",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Show the RFIs past their response date",
+   "note": "Named filter overdue, the same definition the attention list uses.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "register",
+     "do": "only",
+     "rows": [
+      "RFI-001"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "rg7",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Accept the answer on RFI-002",
+   "note": "Accepting a possible answer is the PM's vouch: a card that waits for the click.",
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "rg8",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Set the RFI response time to 10 working days",
+   "money_or_date": true,
+   "note": "delivery.settings, applied at once with Undo; 10 is in the PM's words.",
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "RFI response time 10 working days, on"
+     ]
     }
    ]
   },

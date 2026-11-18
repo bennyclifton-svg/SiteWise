@@ -172,7 +172,21 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		return view(map[string]any{"do": "open", "dialog": "award", "fields": map[string]string{"package": pkg[0], "column": col[:8]}})
 	}
 	mechanical := short("procurement", "trade.mechanical")
+	read := func(part string) func(llm.Conversation, int) llm.Turn {
+		return once("read", map[string]any{"area": "delivery", "part": part})
+	}
+	structural := short("procurement", "consultant.structural")
 	return map[string]func(llm.Conversation, int) llm.Turn{
+		// The register group (plan 4).
+		"What is open on the facade?":                                                   read("envelope"),
+		"What is with the structural engineer and how late is it?":                      read(""),
+		"Raise an RFI to the structural engineer about the basement wall waterproofing": apply("delivery", "delivery.add", map[string]any{"kind": "rfi", "title": "Basement wall waterproofing", "package": strings.Join(structural, ""), "system": "substructure", "question": "Confirm the waterproofing membrane and its laps to the basement wall."}),
+		"Close RFI-001":                                apply("delivery", "delivery.edit", map[string]any{"item": "RFI-001", "status": "closed"}),
+		"Set these to the building envelope":           apply("delivery", "delivery.edit", map[string]any{"item": strings.Join(short("register", "RFI-002"), ""), "system": "envelope"}),
+		"Show the RFIs past their response date":       filter("only", "register", "overdue"),
+		"Accept the answer on RFI-002":                 acceptFromRead("Structural sketch SK-04"),
+		"Set the RFI response time to 10 working days": apply("delivery", "delivery.settings", map[string]any{"rfi_response_days": 10}),
+
 		"Show the cost lines with no budget":                                    filter("only", "cost_lines", "no_budget"),
 		"Select the cost lines that are over budget":                            filter("select", "cost_lines", "over_budget"),
 		"Show only the superseded documents":                                    filter("only", "documents", "superseded"),
@@ -204,6 +218,26 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 			}
 			return call("view", map[string]any{"do": "open", "dialog": "share", "fields": map[string]string{"kind": "cost_plan"}})
 		},
+	}
+}
+
+// acceptFromRead reads the register, then accepts the possible answer the
+// read names for the document, as a model reading it would.
+func acceptFromRead(document string) func(llm.Conversation, int) llm.Turn {
+	reading := regexp.MustCompile(`([0-9a-f]{8}): ` + regexp.QuoteMeta(document))
+	return func(conv llm.Conversation, round int) llm.Turn {
+		switch round {
+		case 0:
+			return call("read", map[string]any{"area": "delivery"})
+		case 1:
+			for _, raw := range conv.History {
+				if m := reading.FindStringSubmatch(string(raw)); m != nil {
+					return call("apply", map[string]any{"area": "delivery", "final": true, "ops": []map[string]any{{"op": "delivery.accept", "fields": map[string]any{"item": "RFI-002", "reading": m[1]}}}})
+				}
+			}
+			return say("There is no possible answer to accept.")
+		}
+		return say("Done.")
 	}
 }
 
@@ -247,7 +281,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	}
 	scored := 0
 	for _, c := range cases {
-		if (c.Group != "screen" && c.Group != "shares") || slices.Contains(modelOnly, c.ID) {
+		if (c.Group != "screen" && c.Group != "register" && c.Group != "shares") || slices.Contains(modelOnly, c.ID) {
 			continue
 		}
 		scored++

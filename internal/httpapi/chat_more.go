@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"sitewise/internal/costs"
+	"sitewise/internal/reports"
 )
 
 // The read areas beyond the four screens chat can change (review change 1):
@@ -32,13 +32,7 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 		r.line("Package gap check: work items and who is responsible for them. A state of unassigned is a gap.")
 		return compact(r, items, 0)
 	case "delivery":
-		items, err := d.Store.ReadDelivery(ctx, who.OrgID, project)
-		if err != nil {
-			return err
-		}
-		r.outside = "delivery records, some of which were read from documents"
-		r.line("Delivery records: risks, approvals, decisions and actions. A record marked addressed means a document states it; say \"a document states…\".")
-		return compact(r, items, 0)
+		return readRegister(ctx, d, who, project, "", r)
 	case "invoices":
 		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, time.Now().Format("2006-01-02"))
 		if err != nil {
@@ -158,92 +152,29 @@ func readImplications(ctx context.Context, d Deps, who opActor, project string, 
 	return nil
 }
 
-// readAttention is one Go rollup of what needs attention, from explicit
-// states only (docs/design/2026-11-12-project-report.md, section 4 row 2):
-// open critical implications, cost sections where the contract exceeds the
-// budget, packages with firms invited and no quote, documents that could
-// not be read, and Program rows with no duration. Each line names its
-// source. It ranks nothing beyond the order below.
+// readAttention renders what needs attention from explicit states only
+// (docs/design/2026-11-12-project-report.md, section 4 row 2). The rules are
+// reports.Attention's; this loads the records and shows its list, each line
+// with its source, at most reports.MaxAttentionShown of them.
 func readAttention(ctx context.Context, d Deps, who opActor, project string, r *reader) error {
 	r.line("What needs attention, from SiteWise's records only, each with its source. This is a list of explicit states, not a judgment of risk.")
-	n := 0
-	say := func(source, format string, args ...any) {
-		n++
-		r.line("  %d. %s (source: %s)", n, fmt.Sprintf(format, args...), source)
+	in, err := loadAttention(ctx, d, who, project, attentionAll)
+	if err != nil {
+		// A record that could not be read leaves its rules silent, as
+		// before; the rest are still shown.
+		d.Log.Printf("chat attention read: %v", err)
 	}
-	if items, err := d.Store.ReadProposals(ctx, who.OrgID, project); err == nil {
-		sort.SliceStable(items, func(i, j int) bool { return items[i].Rank < items[j].Rank })
-		shown := 0
-		for _, it := range items {
-			if it.Decision != nil || shown == 8 {
-				continue
-			}
-			if it.Critical || it.Severity == "high" {
-				shown++
-				flag := "severity " + it.Severity
-				if it.Critical {
-					flag = "critical"
-				}
-				say("Implications, draft checklist", "Open implication, %s: %s", flag, it.Label)
-			}
-		}
+	shown, more := reports.AttentionShown(reports.Attention(in))
+	for i, it := range shown {
+		sentence := it.Sentence(func(f reports.AttentionFigure) string {
+			return r.fig(plainMoney(&f.Amount), dollars(f.Amount), f.Label, it.Source)
+		})
+		r.line("  %d. %s (source: %s)", i+1, sentence, it.Source)
 	}
-	if p, err := d.Store.ReadCostPlan(ctx, who.OrgID, project, ""); err == nil && len(p.Items) > 0 {
-		if totals, err := costs.Summarize(p, "overall"); err == nil {
-			for _, section := range sectionOrder {
-				t := totals.Sections[section]
-				b, c := t["budget"], t["commitment"]
-				if costs.Compare(c.KnownSubtotal, b.KnownSubtotal) > 0 && costs.Compare(b.KnownSubtotal, "0") > 0 {
-					over := costs.Sub(c.KnownSubtotal, b.KnownSubtotal)
-					say("Cost Plan", "%s: contract %s is over budget %s by %s", sectionNames[section],
-						r.fig(plainMoney(&c.KnownSubtotal), dollars(c.KnownSubtotal), sectionNames[section]+", contract", "Cost Plan"),
-						r.fig(plainMoney(&b.KnownSubtotal), dollars(b.KnownSubtotal), sectionNames[section]+", budget", "Cost Plan"),
-						r.fig(plainMoney(&over), dollars(over), sectionNames[section]+", contract less budget", "Cost Plan"))
-				}
-			}
-			if u := totals.Overall["budget"].Unknown; u > 0 {
-				say("Cost Plan", "%d cost lines have no budget amount", u)
-			}
-		}
+	if more > 0 {
+		r.line("  and %d more.", more)
 	}
-	if pkgs, err := d.Store.ReadPackages(ctx, who.OrgID, project); err == nil {
-		board, _, _ := d.Store.ProcurementBoard(ctx, who.OrgID, project)
-		for _, p := range pkgs {
-			if p.RetiredAt != nil {
-				continue
-			}
-			invited, quoted, review := packageQuotes(board[p.ID])
-			if invited > 0 && quoted == 0 {
-				say("Procurement", "%s: %d firms invited and no quote received", p.Title, invited)
-			}
-			if review > 0 {
-				say("Procurement", "%s: %d quotes have readings to check", p.Title, review)
-			}
-		}
-	}
-	if views, err := d.Store.ProjectDocumentViews(ctx, who.OrgID, project); err == nil {
-		failed := 0
-		for _, v := range views {
-			if docNotFiled(v) || v.Status == "failed" {
-				failed++
-			}
-		}
-		if failed > 0 {
-			say("Documents", "%d documents could not be filed or read", failed)
-		}
-	}
-	if st, err := d.Store.LoadProgram(ctx, who.OrgID, project); err == nil {
-		unknown := 0
-		for _, a := range st.Activities {
-			if programNoDuration(a) {
-				unknown++
-			}
-		}
-		if unknown > 0 {
-			say("Program", "%d Program rows have no duration, so the finish date is a lower bound", unknown)
-		}
-	}
-	if n == 0 {
+	if len(shown) == 0 {
 		r.line("  Nothing is flagged by the records. That is not a statement that the project is low risk: it means no explicit state is flagged.")
 	}
 	r.line("The Program holds no progress and there is no inbox, so nothing here says what is late or which emails are unanswered.")
@@ -367,10 +298,14 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 		err = readProgram(r.Context(), d, who, project, rd, false)
 	case "procurement":
 		err = readProcurement(r.Context(), d, who, project, rd)
+	case "attention":
+		err = readAttention(r.Context(), d, who, project, rd)
+	case "delivery":
+		err = readRegister(r.Context(), d, who, project, r.URL.Query().Get("part"), rd)
 	case "shares":
 		err = readShares(r.Context(), d, who, project, rd)
 	default:
-		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, shares or outline", http.StatusUnprocessableEntity)
+		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, delivery, shares or outline", http.StatusUnprocessableEntity)
 		return
 	}
 	if err != nil {

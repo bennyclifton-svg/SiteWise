@@ -212,6 +212,8 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["visual_identity"] = row{"org_id": org, "document_id": id(1900 + n)}
 		// A firm's link on its invited cell; the report key's control is a report link.
 		f["guest_grants"] = row{"org_id": org, "id": id(5000 + n), "project_id": p, "token_hash": "\\x" + strings.Repeat(fmt.Sprintf("%02d", 70+n), 32), "kind": "package", "shared_with": "firm@example.test", "package_id": pkg, "firm_id": firm, "created_by": u, "expires_at": "2026-12-01T00:00:00Z"}
+		f["delivery_readings"] = row{"org_id": org, "id": id(5000 + n), "project_id": p, "item_id": d, "document_id": id(1900 + n), "field": "answers", "decided_by": "rule", "band": "amber"}
+		f["delivery_settings"] = row{"org_id": org, "project_id": p, "rfi_response_days": 5}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)

@@ -34,6 +34,7 @@ import { Procurement } from "./Procurement";
 import { ShareHost } from "./ShareDialog";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
+import { Delivery } from "./Delivery";
 import { newerAnnouncement, type RemoteProgram } from "./programApi";
 import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
@@ -259,7 +260,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [profileRun, setProfileRun] = useState<ProfileRunState | null>(null);
   const [visitedSinceRun, setVisitedSinceRun] = useState<Partial<Record<WorkbenchView, boolean>>>({});
   const [profileFeedbackTarget, setProfileFeedbackTarget] = useState<HTMLDivElement | null>(null);
-  const [initialView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program"], "profile"));
+  const [initialView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program", "register"], "profile"));
   const [repositoryOpenRequest, setRepositoryOpenRequest] = useState(0);
   const [documentSelection, setDocumentSelection] = useState<Selection>(emptySelection);
   const [showReports, setShowReports] = useState(initialView === "procurement");
@@ -272,6 +273,11 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [reportsOpened, setReportsOpened] = useState(initialView === "procurement");
   const [showProgram, setShowProgram] = useState(initialView === "program");
   const [programOpened, setProgramOpened] = useState(initialView === "program");
+  const [showRegister, setShowRegister] = useState(initialView === "register");
+  const [registerOpened, setRegisterOpened] = useState(initialView === "register");
+  // "Raise RFI from this document" on the document register: the request
+  // the Register screen turns into a draft RFI.
+  const [raiseRFI, setRaiseRFI] = useState<{ documentId: string; title: string; n: number } | null>(null);
   // Newest program version announced on the stream (plan 8.3), with the
   // program it belongs to: a recreated program starts its versions again.
   const [programVersion, setProgramVersion] = useState<RemoteProgram>({ programId: "", version: 0 });
@@ -653,7 +659,9 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
 
   const viewingRow = rows.find(row => row.key === openDocument);
 
-  const view: WorkbenchView = showProgram
+  const view: WorkbenchView = showRegister
+    ? "register"
+    : showProgram
     ? "program"
     : showSpecifications
     ? "specifications"
@@ -667,6 +675,15 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     setVisitedSinceRun((seen) => ({ ...seen, [next]: true }));
     writeLocationChoice("view", next);
     setOpenDocument(null);
+    setShowRegister(next === "register");
+    if (next === "register") {
+      setRegisterOpened(true);
+      setShowProgram(false);
+      setShowSpecifications(false);
+      setShowCosts(false);
+      setShowReports(false);
+      return;
+    }
     setShowProgram(next === "program");
     if (next === "program") {
       setProgramOpened(true);
@@ -733,6 +750,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   );
   const repository = (
     <Register
+      onRaiseRFI={(documentId, title) => { setRaiseRFI(r => ({ documentId, title, n: (r?.n ?? 0) + 1 })); showView("register"); }}
       rows={rows}
       selection={documentSelection}
       onSelectionChange={setDocumentSelection}
@@ -789,15 +807,15 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   return (
     <CockpitFrame
       nav={nav}
-      actionSurface={viewingRow ? "document" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
+      actionSurface={viewingRow ? "document" : showRegister ? "register" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
       onRename={async name => { await request("PATCH", `/projects/${projectId}`, { name }); dispatch({ type: "renamed", name }); onRenamed(projectId, name); }}
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
       repositoryOpenRequest={repositoryOpenRequest}
-      wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram)}
+      wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram || showRegister)}
       profileFeedbackRef={setProfileFeedbackTarget}
-      showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram}
+      showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram && !showRegister}
       chat={<Suspense fallback={null}><Chat projectId={projectId} view={view} openDocument={viewingRow?.doc?.id ?? null} onShow={showView} onShowDocuments={() => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); }} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
       onDragEnter={onDragEnter}
       onDragOverCapture={e => { if ((e.target as HTMLElement).closest("[data-proposal-drop]")) { dragDepth.current = 0; setOver(false); } }}
@@ -808,7 +826,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDrop={onDrop}
     >
       <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
-      <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram}>
+      <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram || showRegister}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget}
           documentLabel={documentLabel} onRunState={setProfileRun} onOpenView={showView} />
       </section>
@@ -816,6 +834,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       {specificationsOpened && <div className="project-reports" hidden={!!viewingRow || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
+      {registerOpened && <div className="project-reports" hidden={!!viewingRow || !showRegister}><Delivery projectId={projectId} tick={reportTick} raise={raiseRFI} onSignedOut={onSignedOut} onShowView={showView}
+        onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></div>}
       {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={viewLabel(view)} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });

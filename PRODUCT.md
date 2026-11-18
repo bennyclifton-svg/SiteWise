@@ -64,7 +64,17 @@ The workbench, in navigation order:
   name with their levels, areas, capacities and requirements, and the
   card's counts. It is edited like the document register (select, right-
   click, add, copy, split, delete, drag) and the user's word is final.
-- **Project Plan.** A navigation placeholder.
+- **Register.** One table of what is owed on the project: RFIs, notices and
+  the older delivery kinds (actions, risks, issues, decisions, approvals,
+  accepted hold points), each with No., Item, With, Due, Status and System.
+  An RFI typed in the grey row is numbered (RFI-007) and due five working
+  days on (the Program's calendar; the PM sets the project's own in the
+  three-dot menu). With is who holds it now: the firm, or You once it is
+  answered. A filed reply that cites the RFI shows "Possible answer"; Accept
+  makes it Answered, with Undo. A System filter adds what else is open on
+  that part of the building. Its reads and writes call neither Jev nor the
+  model; chat reads it, changes it with Undo, and leaves accepting an answer
+  to the PM's click.
 - **Cost Plan.** Four sections: fees and charges, consultants, construction,
   contingency. Budget is the planning figure. The user enters the approved
   contract and the amount claimed. Forecast, variance and remaining are
@@ -153,8 +163,8 @@ The workbench, in navigation order:
   accommodation, packages, awards, specifications, reports or documents,
   and there is no inbox. It never signs in, bills, deletes a project or issues a document.
 
-Delivery records and implication proposals stay on the project. They are not
-in the left nav. Consultant suggestions still appear on Procurement.
+Implication proposals stay on the project. They are not in the left nav;
+accepted approvals and hold points land on the Register. Consultant suggestions still appear on Procurement.
 
 ## Positioning
 

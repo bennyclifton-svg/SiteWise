@@ -207,7 +207,7 @@ func TestChatReadsCalcAndFind(t *testing.T) {
 			t.Errorf("result %d lacks %q:\n%s", i, want, ta.results[i])
 		}
 	}
-	if !strings.Contains(ta.results[1], "1 cost lines have no budget amount (source: Cost Plan)") {
+	if !strings.Contains(ta.results[1], "1 cost line has no budget amount (source: Cost Plan)") {
 		t.Errorf("attention:\n%s", ta.results[1])
 	}
 	if a := events[len(events)-2].Answer; a == nil || a.Text != "The mechanical budget is $120,000." || a.Unchecked != 0 {

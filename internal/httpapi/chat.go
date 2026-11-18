@@ -124,6 +124,7 @@ var goTo = map[string]string{
 	"show the program": "program", "open the program": "program", "open program": "program", "show program": "program",
 	"open procurement": "procurement", "show procurement": "procurement", "open the profile": "profile", "show the profile": "profile",
 	"open specifications": "specifications", "show the documents": "documents", "open documents": "documents",
+	"open the register": "register", "show the register": "register", "open register": "register", "show register": "register",
 }
 
 type chatDone struct {
