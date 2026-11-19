@@ -51,6 +51,20 @@ or F2 edits a field in place; Kind, Discipline and Lifecycle use dropdowns.
 Opening a document is independent of bulk selection. Corrections retain user
 provenance and a failed save leaves the draft available to retry.
 
+Every project has its own private email address (random, never the
+project's name), shown at the repository's head when email intake is on.
+Mail a team member sends to it files like dropped files: the message as one
+document, each attachment as another. Mail from outside the team is held for
+the PM to accept or discard, unless it replies to something SiteWise sent or
+comes from a firm already on the project. Once the project has a message, a
+Documents | Messages toggle shows the correspondence record: In and Out,
+transmittal numbers (TR-001), threads, Replied, the package, and Jev's
+suggestion when a message may be an RFI, a claim or a notice (one button,
+only past an approved cut-off). Send… on documents, and Reply on a message,
+mail them out on a numbered transmittal sheet; only the PM's press sends. A
+message filed or sent is never edited or deleted, and a document shows who
+was sent it and who was sent an older revision.
+
 The workbench, in navigation order:
 
 - **Project Profile.** The determinants and project facts. An update shows

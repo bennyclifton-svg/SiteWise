@@ -132,6 +132,40 @@ counts, never the key or the document.
 the prices the pass reads. Leave it unset until the going-live checklist in
 `docs/evidence/2026-11-14-tender-comparison-slice8.md` has been run.
 
+## Project email (optional; off until set)
+
+Each project has a private address (`p-` and 32 random characters at the
+receiving domain); mail to it is filed, and SiteWise sends transmittals
+out (`docs/plans/2026-11-14-email-intake.md`,
+`docs/plans/2026-11-17-correspondence-transmittals.md`). It is off until
+both settings below are set: the webhook answers 404 and no address shows.
+**Run email intake's Task 0 first** (its "Task 0 findings" section lists
+what to record); nothing has been tried against real Mailgun.
+
+1. **DNS** at Crazy Domains: the MX records Mailgun's panel shows for the
+   receiving domain, recommended `in.sitewise.au` (the root domain stays free
+   for ordinary mailboxes).
+2. **Mailgun:** spam filtering on for that domain; one route,
+   `match_recipient(".*@in\.sitewise\.au")` with
+   `forward("https://sitewise.au/api/mail/inbound")` and `stop()`. To send
+   from the project's own address later, also verify `in.sitewise.au` for
+   sending; until then mail goes out from `SITEWISE_MAIL_FROM` with Reply-To
+   the PM and the project address.
+3. **Settings** in `/etc/sitewise/sitewise.env`, both or neither (one without
+   the other stops the server starting):
+   - `SITEWISE_MAIL_IN_DOMAIN=in.sitewise.au`
+   - `SITEWISE_MAILGUN_SIGNING_KEY=` the account's **HTTP webhook signing
+     key** (Mailgun: Sending → Webhooks), not the API key. Nothing reads the
+     API key. Never write the value anywhere else.
+   Restart. Sending uses the existing `SITEWISE_SMTP_*` and
+   `SITEWISE_MAIL_FROM`; without them Send says sending is not set up.
+4. **Check:** from the owner's mailbox send a message with a PDF to a
+   project's address (Copy beside "Email documents to"): it files. From an
+   address not on the team, send another: it is held; Accept it. Look for
+   `mail webhook org=… : filed` in `journalctl -u sitewise` (never the
+   subject, the addresses or the key). Caddy's 210 MB body limit is above the
+   webhook's 40 MB cap; nothing changes there.
+
 ## Known gaps
 
 - A tarball built on Windows loses the executable bit, hence the `chmod`

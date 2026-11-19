@@ -2,7 +2,13 @@
 
 Date 17 November 2026; revised 18 November. Lane A (a record of what was
 sent and received), with lane C's rules on the send path (mail leaves the
-server; untrusted input). Status: plan only, nothing built.
+server; untrusted input). Status: Tasks 1 to 7 and 9 built 19 November 2026
+on branch `wave/mail` (not merged, not deployed) against stand-ins: no mail
+has been sent through or received from Mailgun, and email intake's Task 0
+has not been run. Task 8 (links for large sends) is not built: a send over
+10 MB is refused with its size. The notice pick shows no chip until the
+owner approves a cut-off in `data/mail/thresholds.json`. Evidence:
+`docs/evidence/2026-11-19-mail.md`.
 
 **Revised 18 November** after the review in `2026-11-17-next-wave-index.md`.
 A message is a record; what is owed is a register row, so Notice, Due and

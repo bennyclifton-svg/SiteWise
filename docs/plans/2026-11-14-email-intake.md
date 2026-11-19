@@ -22,9 +22,12 @@ broker, React for one line and one list. No new dependency. No LLM.
 section 8, build-order step 3. Owner decisions, 14 November 2026: one address
 per project, created with the project; included in every plan.
 
-**Status:** written 14 November 2026 from reading `main` and Mailgun's
-documentation. Nothing in it has been compiled or run, and Task 0 has to
-confirm three things about Mailgun before any code is written.
+**Status:** Tasks 1 to 10 built 19 November 2026 on branch `wave/mail`
+(not merged, not deployed), to Mailgun's documentation and against
+stand-ins: **Task 0 has not been run** and nothing has been sent to or
+received from Mailgun. The feature stays off until both settings are set.
+See "Task 0 findings: not yet run" and "Result" below, and
+`docs/evidence/2026-11-19-mail.md`. Task 11 is the owner's.
 
 **Update, 15 November 2026 (owner):** messages are listed in the repository
 beside documents, behind a Documents | Messages toggle at its head. Task 9
@@ -153,6 +156,31 @@ built as written. Bring the owner the two choices: verify DKIM in Go from a
 raw-MIME route (a new dependency and a MIME parser), or accept the private
 address plus a member's `From` as enough (weaker: someone who knows both can
 forge a message).
+
+### Task 0 findings: not yet run
+
+Nothing below has been observed on a real Mailgun post. The code follows
+Mailgun's documentation, and each fact sits in one function, so a different
+finding changes that function and its tests and nothing else. Until the
+owner records these, a message whose SPF and DKIM headers are absent is
+held as "Could not confirm the sender" (fail closed), never filed.
+
+| # | What the owner records (Step 3's four messages) | Function it touches | Today's assumption |
+|---|---|---|---|
+| 1 | `X-Mailgun-Spf` and `X-Mailgun-Dkim-Check-Result` appear in `message-headers` on a forwarded post; their values for the forged message | `mailin.Authenticated` (`internal/mailin/authenticated.go`, alone in its file) | Both appear, values `Pass` and the like; absent is not a pass. If "no": replace this one function (DKIM verified in Go from a raw-MIME route, or the weaker rule) |
+| 2 | `body-plain` is filled for the HTML-only message | `mailin.PlainBody` | Filled; if empty, the text of `body-html` is used (tags dropped, nothing fetched) |
+| 3a | The largest message Mailgun accepts and posts | `mailin.MaxPostBytes` (40 MB) | Mailgun's documented 25 MB message limit, plus encoding |
+| 3b | How `recipient` is written when the address was in Bcc, and when two project addresses share one message | `mailin.RecipientLocalPart` | The address received for, comma-separated when several |
+| A5 | `message-headers` carries `In-Reply-To` and `References` | `mailin.ThreadHeaders` | Carried as written |
+| — | The signature: hex HMAC-SHA256 of timestamp then token with the HTTP webhook signing key; a retry reuses it | `mailin.VerifySignature`, `mailin.Fresh` (one day) | As documented on the securing-webhooks page |
+| — | A forwarded post's `Message-Id`, `To`, `Cc` and `Date` are in `message-headers` or as their own fields | `mailin.Read` | Either; the field wins |
+| — | Spam filtering is on for the receiving domain, so `X-Mailgun-Sflag` is present | `mailin.Dropped` | Present when on; absent is not spam |
+
+Also for the owner at Task 0: verify `in.sitewise.au` for **sending** in
+Mailgun (correspondence plan decision 2) if mail should go out from the
+project's address. Until then mail goes out from `SITEWISE_MAIL_FROM` as
+"<Org> via SiteWise", with Reply-To the PM and the project address
+(`fromAddress` in `internal/httpapi/transmittals.go`).
 
 ### Task 1: Worktree and baseline
 
@@ -616,6 +644,37 @@ and what could fail in production. Commit.
    another. It is held. Accept it.
 
 ---
+
+## Result (19 November 2026)
+
+Built on `wave/mail` in the worktree `sitewise-agency-docs`, from local
+`main` at 6f563f2; migrations 075 (this plan) and 076 (correspondence).
+Everything was run against a private schema of `sitewise_test`, hand-written
+posts in Mailgun's documented shape signed with a test key, a stand-in Jev
+and a mail sink. **Nothing was run against real Mailgun**; Task 0 and Task 11
+remain the owner's. Differences from this plan, each the smallest change
+that keeps its intent (the evidence note lists them with reasons):
+
+- The local part is `p-` and 32 random hex characters, not the project's
+  name: an address never names the org or project.
+- Every refusal (bad signature, stale or future timestamp, unreadable or
+  over 40 MB) answers the same 406 "not accepted", not 401 or 413: one
+  answer, and Mailgun does not retry a refusal.
+- Every signed token is recorded (`mail_webhook_tokens`), not only those of
+  stored messages: Mailgun signs only timestamp and token, so a captured
+  post could otherwise be replayed with another body.
+- Held reason `busy`: more than 60 filed messages a project an hour are held,
+  so a flood cannot spend Jev reads or the allowance.
+- The plan limit is checked once per message before it is recorded (as an
+  upload's is checked before its bytes); a message never goes from filed
+  back to held.
+- Accept is a prepared read for chat (A4, plan 0 decision 1); discard waits
+  for a click; rotate is the PM's on the screen.
+- `GET /projects/{id}/mail` returns `{address, held, messages}` (the 15
+  November update), not `{address, held: [...]}`.
+
+Timing is in the evidence note (`TestMailBudgets`). The bench binary
+(`cmd/intake-bench`) was not extended or run over the private corpus.
 
 ## Risks to watch
 

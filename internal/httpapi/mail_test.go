@@ -136,6 +136,13 @@ func (f *mailFixture) send(t *testing.T, p mailPost) int {
 
 func (f *mailFixture) sendFields(t *testing.T, fields map[string]string, attach []mailFile) int {
 	t.Helper()
+	ctype, body := encodePost(fields, attach)
+	return f.raw(t, ctype, body)
+}
+
+// encodePost writes a post as Mailgun does: urlencoded with no files, else
+// multipart.
+func encodePost(fields map[string]string, attach []mailFile) (string, *bytes.Buffer) {
 	var body bytes.Buffer
 	ctype := "application/x-www-form-urlencoded"
 	if len(attach) == 0 {
@@ -159,7 +166,7 @@ func (f *mailFixture) sendFields(t *testing.T, fields map[string]string, attach 
 		_ = w.Close()
 		ctype = w.FormDataContentType()
 	}
-	return f.raw(t, ctype, &body)
+	return ctype, &body
 }
 
 func (f *mailFixture) raw(t *testing.T, ctype string, body *bytes.Buffer) int {

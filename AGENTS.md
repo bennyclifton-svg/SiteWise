@@ -122,6 +122,21 @@ and write or clear its comments with Undo, and opens its issue form filled
 in, but never presses Issue
 (`docs/plans/2026-11-17-monthly-report.md`).
 
+Mail (`docs/plans/2026-11-14-email-intake.md`,
+`docs/plans/2026-11-17-correspondence-transmittals.md`; built 19 November
+2026 on branch `wave/mail` against stand-ins, Mailgun's Task 0 not run).
+The mail webhook, the held-mail list, accept, discard, rotating the address,
+the record's read and its two edits (package, the pick), Send and the sheet
+do not call Jev or the LLM; each filed document is filed as a dropped one
+is. Jev's one `notice` question joins an email body's own filing call (no
+second call); its pick is a proposal, never a record, shown only past an
+owner-approved cut-off (`data/mail/thresholds.json`). All mail leaves
+through `queueOutbound` and only on the PM's press of Send; chat opens Send
+filled in and never sends. A filed or sent message is never edited or
+deleted. The webhook is off unless `SITEWISE_MAIL_IN_DOMAIN` and
+`SITEWISE_MAILGUN_SIGNING_KEY` are both set; its sender check
+(`mailin.Authenticated`) fails closed.
+
 Chat (`POST /projects/{id}/chat`) is the one path that waits on the LLM, and
 it never calls Jev. Its tools read through the same Go rollups as the
 screens and change records only through operations (`internal/httpapi/ops*.go`),
@@ -194,6 +209,12 @@ Before changing one of these surfaces, read its current note:
 - Invoices (Cost Plan panel): `docs/plans/2026-10-15-invoice-intake.md`,
   `docs/plans/2026-10-16-invoice-intake-implementation.md`,
   `docs/evidence/2026-10-16-invoice-intake.md`
+- Mail (repository Messages, Send): `docs/plans/2026-11-14-email-intake.md`
+  (read "Task 0 findings: not yet run" first),
+  `docs/plans/2026-11-17-correspondence-transmittals.md`, evidence in
+  `docs/evidence/2026-11-19-mail.md`. Nothing has run against real
+  Mailgun; the notice key (`data/eval/notice/`) is empty until the owner
+  supplies about 50 messages.
 - Consent conditions (Register; built 18 November 2026 on branch
   `wave/conditions`): `docs/plans/2026-11-17-consent-conditions.md`,
   evidence in `docs/evidence/2026-11-18-consent-conditions.md`. The answer
