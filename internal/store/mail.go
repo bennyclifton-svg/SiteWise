@@ -68,6 +68,9 @@ type MailIn struct {
 	ReceivedAt                          time.Time
 	HeldReason                          string
 	Parts                               []MailPartIn
+	// Direction is "out" for a team member's own message copied to the
+	// project address (correspondence decision 7), else "in".
+	Direction string
 }
 
 // MailRecorded is what RecordMail did. Expired and Unkept are hashes whose
@@ -89,7 +92,11 @@ type MailPart struct {
 	Size        int64  `json:"byte_size"`
 	Skipped     string `json:"skipped"`
 	DocumentID  string `json:"document_id,omitempty"`
-	SHA256      []byte `json:"-"`
+	// What a sent document was when it went (correspondence, Task 5).
+	Number   string `json:"number,omitempty"`
+	Revision string `json:"revision,omitempty"`
+	Title    string `json:"title,omitempty"`
+	SHA256   []byte `json:"-"`
 }
 
 // MailMessage is one message as the screen and chat read it. Body is
@@ -109,6 +116,30 @@ type MailMessage struct {
 	Status     string     `json:"status"`
 	HeldReason string     `json:"reason"`
 	Parts      []MailPart `json:"parts"`
+	// The record (correspondence plan, Task 4). With is the sender for In
+	// and the recipients for Out. Replied is computed, never stored.
+	Direction  string     `json:"direction"`
+	Number     *int       `json:"number,omitempty"`
+	With       string     `json:"with"`
+	ThreadID   string     `json:"thread_id"`
+	FirmID     string     `json:"firm_id,omitempty"`
+	Firm       string     `json:"firm,omitempty"`
+	PackageID  string     `json:"package_id,omitempty"`
+	Package    string     `json:"package,omitempty"`
+	LinkedBy   string     `json:"linked_by,omitempty"`
+	Replied    bool       `json:"replied"`
+	SendStatus string     `json:"send_status,omitempty"`
+	SendError  string     `json:"send_error,omitempty"`
+	SentAt     *time.Time `json:"sent_at,omitempty"`
+	Version    int64      `json:"version"`
+	// Notice is Jev's pick shown as a chip: set only when the pick is amber
+	// past an approved cut-off and the PM has not acted on it. NoticeRead,
+	// NoticeBand and NoticeP are the raw pick, for chat's reads and the key.
+	Notice     string   `json:"notice,omitempty"`
+	PickState  string   `json:"pick_state,omitempty"`
+	NoticeRead string   `json:"-"`
+	NoticeBand string   `json:"-"`
+	NoticeP    *float64 `json:"-"`
 }
 
 // newMailLocalPart is "p-" and 32 random hex characters. It carries no
@@ -273,10 +304,19 @@ WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.status='held'`, org, in.
 	if received.IsZero() {
 		received = time.Now()
 	}
-	if _, err := tx.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,sender_name,subject,to_addrs,cc_addrs,in_reply_to,refs,body,received_at,status,held_reason)
-VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+	direction := in.Direction
+	if direction != "out" {
+		direction = "in"
+	}
+	link, err := recordLinks(ctx, tx, org, in.ProjectID, out.ID, direction, in.Sender, in.To+","+in.Cc, in.InReplyTo, in.References)
+	if err != nil {
+		return out, err
+	}
+	if _, err := tx.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,sender_name,subject,to_addrs,cc_addrs,in_reply_to,refs,body,received_at,status,held_reason,
+ direction,thread_id,firm_id,package_id,linked_by)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::uuid,NULLIF($19,'')::uuid,NULLIF($20,'')::uuid,$21)`,
 		org, out.ID, in.ProjectID, in.MessageID, in.Token, in.Sender, in.SenderName, in.Subject, in.To, in.Cc,
-		in.InReplyTo, in.References, in.Body, received, status, reason); err != nil {
+		in.InReplyTo, in.References, in.Body, received, status, reason, direction, link.Thread, link.Firm, link.Package, link.By); err != nil {
 		return out, err
 	}
 	for _, p := range in.Parts {
@@ -331,12 +371,49 @@ type MailFilter struct {
 	Held   bool
 	Before time.Time // paging: messages received before this
 	Limit  int
+	// Chat's named filters and ?unanswered=1 (correspondence, Task 4).
+	Unanswered bool   // no reply yet
+	NotSent    bool   // queued or failed
+	FirmID     string // from or to a firm
+	PackageID  string // on a package
 }
 
-const mailColumns = `m.id::text,m.message_id,m.sender,m.sender_name,m.subject,m.to_addrs,m.cc_addrs,m.in_reply_to,m.refs,m.received_at,m.status,m.held_reason`
+// mailColumns reads a message with its firm and package names and whether
+// it was answered: a later filed message from the other direction in its
+// thread. One query, no per-row lookups.
+const mailColumns = `m.id::text,m.message_id,m.sender,m.sender_name,m.subject,m.to_addrs,m.cc_addrs,m.in_reply_to,m.refs,m.received_at,m.status,m.held_reason,
+ m.direction,m.number,m.thread_id::text,COALESCE(m.firm_id::text,'') AS firm_ref,COALESCE(f.name,'') AS firm_name,COALESCE(m.package_id::text,'') AS package_ref,COALESCE(k.title,'') AS package_title,m.linked_by,
+ m.send_status,m.send_error,m.sent_at,m.version,m.notice_read,m.notice_band,m.notice_confidence::float8 AS notice_p,m.pick_state,
+ EXISTS(SELECT 1 FROM mail_messages r WHERE r.org_id=m.org_id AND r.project_id=m.project_id AND r.thread_id=m.thread_id
+  AND r.direction<>m.direction AND r.status='filed' AND r.received_at>m.received_at AND r.id<>m.id) AS replied`
+
+const mailFrom = ` FROM mail_messages m
+LEFT JOIN firms f ON f.org_id=m.org_id AND f.id=m.firm_id
+LEFT JOIN packages k ON k.org_id=m.org_id AND k.project_id=m.project_id AND k.id=m.package_id`
+
+func mailDest(m *MailMessage) []any {
+	return []any{&m.ID, &m.MessageID, &m.Sender, &m.SenderName, &m.Subject, &m.To, &m.Cc, &m.InReplyTo, &m.References, &m.ReceivedAt, &m.Status, &m.HeldReason,
+		&m.Direction, &m.Number, &m.ThreadID, &m.FirmID, &m.Firm, &m.PackageID, &m.Package, &m.LinkedBy,
+		&m.SendStatus, &m.SendError, &m.SentAt, &m.Version, &m.NoticeRead, &m.NoticeBand, &m.NoticeP, &m.PickState, &m.Replied}
+}
+
+// finish fills what the screen shows from the raw row.
+func (m *MailMessage) finish() {
+	m.With = m.Sender
+	if m.Direction == "out" {
+		m.With = m.To
+	}
+	if m.NoticeBand == "amber" && m.PickState == "" && m.NoticeRead != "" && m.NoticeRead != "none" {
+		m.Notice = m.NoticeRead
+	}
+}
 
 func scanMailMessage(row pgx.Row, m *MailMessage) error {
-	return row.Scan(&m.ID, &m.MessageID, &m.Sender, &m.SenderName, &m.Subject, &m.To, &m.Cc, &m.InReplyTo, &m.References, &m.ReceivedAt, &m.Status, &m.HeldReason)
+	if err := row.Scan(mailDest(m)...); err != nil {
+		return err
+	}
+	m.finish()
+	return nil
 }
 
 // MailMessages lists the project's messages, filed and held, newest first,
@@ -352,10 +429,13 @@ func (s *Store) MailMessages(ctx context.Context, org, project string, f MailFil
 	if !f.Before.IsZero() {
 		before = &f.Before
 	}
-	rows, err := s.pool.Query(ctx, `SELECT `+mailColumns+` FROM mail_messages m
+	rows, err := s.pool.Query(ctx, `SELECT * FROM (SELECT `+mailColumns+mailFrom+`
 WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND (NOT $3 OR m.status='held')
   AND ($4::timestamptz IS NULL OR m.received_at < $4)
-ORDER BY m.received_at DESC, m.id LIMIT $5`, org, project, f.Held, before, f.Limit)
+  AND ($6='' OR m.firm_id::text=$6) AND ($7='' OR m.package_id::text=$7)
+  AND (NOT $8 OR m.send_status IN ('queued','failed'))) x
+WHERE NOT $9 OR (NOT x.replied AND x.status='filed')
+ORDER BY x.received_at DESC, x.id LIMIT $5`, org, project, f.Held, before, f.Limit, f.FirmID, f.PackageID, f.NotSent, f.Unanswered)
 	if err != nil {
 		return nil, err
 	}
@@ -390,7 +470,7 @@ ORDER BY m.received_at DESC, m.id LIMIT $5`, org, project, f.Held, before, f.Lim
 }
 
 func (s *Store) mailParts(ctx context.Context, org string, ids []string) (map[string][]MailPart, error) {
-	rows, err := s.pool.Query(ctx, `SELECT message_id::text,n,filename,content_type,byte_size,skipped,COALESCE(document_id::text,''),sha256
+	rows, err := s.pool.Query(ctx, `SELECT message_id::text,n,filename,content_type,byte_size,skipped,COALESCE(document_id::text,''),doc_number,doc_revision,doc_title,sha256
 FROM mail_parts WHERE org_id=$1::uuid AND message_id::text = ANY($2::text[]) ORDER BY message_id,n`, org, ids)
 	if err != nil {
 		return nil, err
@@ -400,7 +480,7 @@ FROM mail_parts WHERE org_id=$1::uuid AND message_id::text = ANY($2::text[]) ORD
 	for rows.Next() {
 		var id string
 		var p MailPart
-		if err := rows.Scan(&id, &p.N, &p.Filename, &p.ContentType, &p.Size, &p.Skipped, &p.DocumentID, &p.SHA256); err != nil {
+		if err := rows.Scan(&id, &p.N, &p.Filename, &p.ContentType, &p.Size, &p.Skipped, &p.DocumentID, &p.Number, &p.Revision, &p.Title, &p.SHA256); err != nil {
 			return nil, err
 		}
 		out[id] = append(out[id], p)
@@ -414,15 +494,15 @@ func (s *Store) MailMessageByID(ctx context.Context, org, project, id string) (M
 	if !validUUID(org) || !validUUID(project) || !validUUID(id) {
 		return m, ErrNotFound
 	}
-	err := s.pool.QueryRow(ctx, `SELECT `+mailColumns+`,m.body FROM mail_messages m
-WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.id=$3::uuid`, org, project, id).Scan(
-		&m.ID, &m.MessageID, &m.Sender, &m.SenderName, &m.Subject, &m.To, &m.Cc, &m.InReplyTo, &m.References, &m.ReceivedAt, &m.Status, &m.HeldReason, &m.Body)
+	err := s.pool.QueryRow(ctx, `SELECT `+mailColumns+`,m.body`+mailFrom+`
+WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.id=$3::uuid`, org, project, id).Scan(append(mailDest(&m), &m.Body)...)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return m, ErrNotFound
 	}
 	if err != nil {
 		return m, err
 	}
+	m.finish()
 	parts, err := s.mailParts(ctx, org, []string{m.ID})
 	if err != nil {
 		return m, err

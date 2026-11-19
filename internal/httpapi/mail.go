@@ -194,7 +194,7 @@ func receiveMail(r *http.Request, deps Deps, token string, now time.Time) (outco
 		return dropMail(ctx, deps, token, "dropped: automatic, bulk or spam")
 	}
 	org, project = target.OrgID, target.ProjectID
-	reason, err := mailDecision(ctx, deps, target, m)
+	reason, member, err := mailDecision(ctx, deps, target, m)
 	if err != nil {
 		return "", org, project, 0, err
 	}
@@ -204,6 +204,17 @@ func receiveMail(r *http.Request, deps Deps, token string, now time.Time) (outco
 	in := store.MailIn{ProjectID: project, MessageID: m.MessageID, Token: token, Sender: m.FromAddress, SenderName: m.FromName,
 		Subject: m.Subject, To: m.To, Cc: m.Cc, InReplyTo: m.InReplyTo, References: m.References, Body: m.BodyPlain,
 		ReceivedAt: now, HeldReason: reason}
+	// A team member's own message copied to the project is Out; a forward
+	// is In, from the original sender when Go finds it (decision 7).
+	if member {
+		in.Direction = "out"
+		if addr, name, fwd := mailin.Forwarded(m.Subject, m.BodyPlain); fwd {
+			in.Direction = "in"
+			if addr != "" {
+				in.Sender, in.SenderName = addr, name
+			}
+		}
+	}
 	in.Parts, err = storeMailParts(ctx, r, deps, m, now)
 	if err != nil {
 		return "", org, project, 0, err
@@ -231,22 +242,39 @@ func receiveMail(r *http.Request, deps Deps, token string, now time.Time) (outco
 
 // mailDecision says whether a message files ("") or is held, and why, in
 // the plan's order: archived, then the sender, then the sender check, then
-// the project's hourly cap and the org's allowance.
-func mailDecision(ctx context.Context, deps Deps, target store.MailTarget, m mailin.Message) (string, error) {
+// the project's hourly cap and the org's allowance. member reports a
+// confirmed member of the org sent it.
+//
+// Someone outside the org is filed only when Mailgun authenticated them and
+// they reply to a message SiteWise sent for this project, or their address
+// is exactly a firm's on this project (correspondence plan, A1). They never
+// take the org's last tenth of its allowance.
+func mailDecision(ctx context.Context, deps Deps, target store.MailTarget, m mailin.Message) (reason string, member bool, err error) {
 	if target.Archived {
-		return store.MailArchived, nil
+		return store.MailArchived, false, nil
 	}
-	member, err := deps.Store.MailMember(ctx, target.OrgID, m.FromAddress)
+	user, err := deps.Store.MailMember(ctx, target.OrgID, m.FromAddress)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
-	if member == "" {
-		return store.MailUnknownSender, nil
+	if user != "" {
+		if !mailin.Authenticated(m) {
+			return store.MailUnverifiedSender, true, nil
+		}
+		reason, err := admitMail(ctx, deps, target, 0)
+		return reason, true, err
 	}
-	if !mailin.Authenticated(m) {
-		return store.MailUnverifiedSender, nil
+	known, err := deps.Store.MailOutsideAdmitted(ctx, target.OrgID, target.ProjectID, m.FromAddress, m.InReplyTo, m.References)
+	switch {
+	case err != nil:
+		return "", false, err
+	case !known:
+		return store.MailUnknownSender, false, nil
+	case !mailin.Authenticated(m):
+		return store.MailUnverifiedSender, false, nil
 	}
-	return admitMail(ctx, deps, target, 0)
+	reason, err = admitMail(ctx, deps, target, outsideReserve)
+	return reason, false, err
 }
 
 // admitMail is the last two checks for mail that would file: the project's

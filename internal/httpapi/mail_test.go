@@ -626,3 +626,64 @@ func TestMailAtThePlanLimit(t *testing.T) {
 		t.Fatalf("accept over the limit = %d", resp.StatusCode)
 	}
 }
+
+// Decision 7 and A1: a member's own message is Out, a forward is In from its
+// original sender, and an authenticated firm on the project is filed.
+func TestMailDirectionAndOutsideSenders(t *testing.T) {
+	ctx := context.Background()
+	f := newMailFixture(t)
+	own := f.memberPost("Our letter to the engineer")
+	f.send(t, own)
+	fwd := f.memberPost("FW: Retaining wall")
+	fwd.body = "For the record.\n\n---------- Forwarded message ---------\nFrom: Eng Smith <eng@consult.example>\nSubject: Retaining wall"
+	f.send(t, fwd)
+	read := func(messageID string) (direction, sender, status string) {
+		t.Helper()
+		if err := f.conn.QueryRow(ctx, `SELECT direction,sender,status FROM mail_messages WHERE message_id=$1`, messageID).Scan(&direction, &sender, &status); err != nil {
+			t.Fatal(err)
+		}
+		return
+	}
+	if d, _, _ := read(own.messageID); d != "out" {
+		t.Fatalf("own copy %s", d)
+	}
+	if d, s, _ := read(fwd.messageID); d != "in" || s != "eng@consult.example" {
+		t.Fatalf("forward %s %s", d, s)
+	}
+	// A firm invited on a package of this project, sending from its own
+	// address with SPF aligned, is filed; the same firm unauthenticated is not.
+	var pkg struct {
+		ID string `json:"id"`
+	}
+	f.m.call(t, http.MethodPost, "/api/projects/"+f.project+"/procurement/rows", []byte(`{"discipline_id":"consultant.structural"}`), http.StatusCreated, &pkg)
+	var inv struct {
+		FirmID string `json:"firm_id"`
+	}
+	f.m.call(t, http.MethodPost, "/api/projects/"+f.project+"/procurement/packages/"+pkg.ID+"/invitations", []byte(`{"name":"Consult Engineers"}`), http.StatusCreated, &inv)
+	if _, err := f.conn.Exec(ctx, `UPDATE firms SET email='eng@consult.example' WHERE org_id=$1::uuid AND id=$2::uuid`, f.m.orgID, inv.FirmID); err != nil {
+		t.Fatal(err)
+	}
+	firm := f.memberPost("Wall detail")
+	firm.from, firm.envelope = "Eng Smith <eng@consult.example>", "eng@consult.example"
+	f.send(t, firm)
+	if d, _, st := read(firm.messageID); d != "in" || st != "filed" {
+		t.Fatalf("firm on the project: %s %s", d, st)
+	}
+	var linkedFirm, linkedPkg string
+	_ = f.conn.QueryRow(ctx, `SELECT COALESCE(firm_id::text,''),COALESCE(package_id::text,'') FROM mail_messages WHERE message_id=$1`, firm.messageID).Scan(&linkedFirm, &linkedPkg)
+	if linkedFirm != inv.FirmID || linkedPkg != pkg.ID {
+		t.Fatalf("firm %q package %q", linkedFirm, linkedPkg)
+	}
+	spoofed := f.memberPost("Wall detail, unsigned")
+	spoofed.from, spoofed.envelope, spoofed.headers = "eng@consult.example", "eng@consult.example", nil
+	f.send(t, spoofed)
+	if _, _, st := read(spoofed.messageID); st != "held" {
+		t.Fatalf("unauthenticated firm address filed: %s", st)
+	}
+	colleague := f.memberPost("From the firm's other address")
+	colleague.from, colleague.envelope = "jo@consult.example", "jo@consult.example"
+	f.send(t, colleague)
+	if _, _, st := read(colleague.messageID); st != "held" {
+		t.Fatalf("a domain match admitted: %s", st)
+	}
+}

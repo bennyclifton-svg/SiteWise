@@ -38,6 +38,10 @@ var captured = map[string]capturedTable{
 	"project_delivery_items":     {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "delivery"},
 	"delivery_readings":          {Key: []string{"org_id", "id"}, Area: "delivery"},
 	"delivery_settings":          {Key: []string{"org_id", "project_id"}, Area: "delivery"},
+	// A message's package and the PM's answer to Jev's pick are the two
+	// edits; everything else on the row is the record's or the sender's.
+	"mail_messages": {Key: []string{"org_id", "id"}, Ignore: []string{"version", "status", "held_reason", "decided_by", "firm_id",
+		"notice_read", "notice_confidence", "notice_band", "send_status", "send_attempts", "send_error", "sent_at"}, Area: "mail"},
 }
 
 var (

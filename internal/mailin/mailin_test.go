@@ -267,3 +267,16 @@ func TestReadPost(t *testing.T) {
 		t.Fatal("no From accepted")
 	}
 }
+
+func TestForwarded(t *testing.T) {
+	addr, name, ok := Forwarded("FW: Wall", "See below.\n\n---------- Forwarded message ---------\nFrom: Eng Smith <eng@consult.example>\nDate: 1 Nov\nSubject: Wall")
+	if !ok || addr != "eng@consult.example" || name != "Eng Smith" {
+		t.Fatalf("%q %q %v", addr, name, ok)
+	}
+	if _, _, ok := Forwarded("Fwd: no header", "nothing here"); !ok {
+		t.Fatal("a forward without a header block is still a forward")
+	}
+	if _, _, ok := Forwarded("Re: Wall", "From: eng@consult.example"); ok {
+		t.Fatal("a reply read as a forward")
+	}
+}

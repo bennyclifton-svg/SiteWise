@@ -468,3 +468,24 @@ func sydney() *time.Location {
 	}
 	return time.FixedZone("AEST", 10*3600)
 }
+
+var (
+	forwardSubject = regexp.MustCompile(`(?i)^\s*(fwd?|fw)\s*:`)
+	forwardFrom    = regexp.MustCompile(`(?im)^[>\s*]*from:\s*(.+?)\s*$`)
+)
+
+// Forwarded reports a forward ("Fwd:" or "FW:" subject, correspondence
+// decision 7) and the original sender Go finds in its first forwarded
+// header block, if any. ok is true for a forward even when no original
+// sender is found.
+func Forwarded(subject, body string) (addr, name string, ok bool) {
+	if !forwardSubject.MatchString(subject) {
+		return "", "", false
+	}
+	if m := forwardFrom.FindStringSubmatch(body); m != nil {
+		if a, n, err := SenderAddress(strings.Trim(m[1], "*_ ")); err == nil {
+			return a, n, true
+		}
+	}
+	return "", "", true
+}
