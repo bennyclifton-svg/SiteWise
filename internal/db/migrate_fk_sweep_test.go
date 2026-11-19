@@ -217,7 +217,7 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		// Email intake: the project's address, a filed message and its part.
 		f["project_mail_addresses"] = row{"org_id": org, "project_id": p, "local_part": "p-" + strings.Repeat(fmt.Sprintf("%02d", 80+n), 16)}
 		f["mail_messages"] = row{"org_id": org, "id": id(5100 + n), "project_id": p, "message_id": fmt.Sprintf("<fk%d@example.test>", n), "webhook_token": fmt.Sprintf("fk-token-%d", n), "sender": "x@example.test", "status": "filed", "decided_by": u}
-		f["mail_parts"] = row{"org_id": org, "message_id": id(5100 + n), "n": 0, "filename": "a.pdf", "sha256": "\\x" +strings.Repeat("01", 32), "byte_size": 1, "document_id": id(1900 + n)}
+		f["mail_parts"] = row{"org_id": org, "message_id": id(5100 + n), "n": 0, "filename": "a.pdf", "sha256": "\\x" + strings.Repeat("01", 32), "byte_size": 1, "document_id": id(1900 + n)}
 		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns", "mail_messages"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
