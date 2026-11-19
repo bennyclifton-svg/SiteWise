@@ -239,7 +239,7 @@ func (s *Store) ProcurementCreate(ctx context.Context, org, project, actor, pack
 		return p, r, false, ErrInvalidReport
 	}
 	var raw []byte
-	err = tx.QueryRow(ctx, `SELECT to_jsonb(r) FROM reports r WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$3::uuid ORDER BY created_at,id LIMIT 1`, org, project, p.ID).Scan(&raw)
+	err = tx.QueryRow(ctx, `SELECT to_jsonb(r) FROM reports r WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id=$3::uuid AND kind IN ('rfp','rft') ORDER BY created_at,id LIMIT 1`, org, project, p.ID).Scan(&raw)
 	if err == nil {
 		if err := json.Unmarshal(raw, &r); err != nil {
 			return p, r, false, err

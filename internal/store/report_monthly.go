@@ -95,6 +95,10 @@ func (s *Store) monthlyInputTx(ctx context.Context, tx pgx.Tx, org, project stri
 	if err != nil {
 		return in, state, err
 	}
+	// The grid's Forecast Final Cost includes variations; so does the report.
+	if err := attachVariations(ctx, tx, org, project, &plan); err != nil {
+		return in, state, err
+	}
 	if len(plan.Items) > 0 {
 		overall, err := costs.Summarize(plan, "overall")
 		if err != nil {

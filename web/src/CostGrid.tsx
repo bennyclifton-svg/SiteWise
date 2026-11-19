@@ -40,13 +40,18 @@ const GROUPS = [
   { kind: "works", title: "Construction", bucket: "construction", category: "" },
   { kind: "project_wide", title: "Contingency", bucket: "contingency", category: "contingency" },
 ] as const;
-// Placeholder columns keep the cost report's shape until variations and monthly
-// claims are tracked; they never show a figure. Claimed to Date and Remaining
-// come from the invoice ledger (owner direction, 7 Nov 2026: one claimed
-// figure, from uploaded invoices; remaining is approved contract less it).
+// This Month keeps the cost report's shape until monthly claims are tracked;
+// it never shows a figure. The two variation columns come from the
+// contract's variations, worked out on the server (Variations and claims
+// tab). Claimed to Date and Remaining come from the invoice ledger (owner
+// direction, 7 Nov 2026: one claimed figure; remaining is the contract sum to
+// date, approved contract plus approved variations, less it).
 const COLUMNS = ["Budget", "Approved Contract", "Forecast Variations", "Approved Variations", "Forecast Final Cost", "Claimed to Date", "This Month", "Remaining"];
 const LEDGER_COLUMNS = new Set(["Claimed to Date", "Remaining"]);
-const PLACEHOLDER = new Set(["Forecast Variations", "Approved Variations", "This Month"]);
+const PLACEHOLDER = new Set(["This Month"]);
+// A line's open variations forecast at the claimed amount when the PM has
+// no estimate; the cell says so.
+const variationCell = (v?: CostValue) => <>{cell(v)}{v?.rationale?.includes("claimed amount") && <span className="cost-tag">claimed</span>}</>;
 type SortKey = "category" | "item";
 
 // Claimed to Date is invoiced to date from the ledger, computed on the server:
@@ -255,7 +260,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
   }}>
     <thead><tr><th scope="col" className="cost-sticky" data-col="code">No.</th>{header("category", "Category")}{header("item", "Item", masterToggle)}
       {quantities && ["Qty", "Unit", "Rate"].map(c => <th key={c} scope="col">{c}</th>)}
-      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : LEDGER_COLUMNS.has(c) ? <th key={c} scope="col" className="cost-num cost-ledger" title={c === "Remaining" ? "Approved contract less invoices to date, ex GST" : "From the uploaded invoices, ex GST"}>{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions">{editable && selection.ids.length > 0 ? <button type="button" className="cost-bin-many" disabled={busy} title={`Delete ${selection.ids.length} selected`} aria-label={`Delete ${selection.ids.length} selected ${selection.ids.length === 1 ? "line" : "lines"}`} onClick={() => removeMany(visible.filter(x => selection.ids.includes(x)))}><IconBin /><span aria-hidden="true">{selection.ids.length}</span></button> : <span className="sr-only">Actions</span>}</th></tr></thead>
+      {COLUMNS.map(c => PLACEHOLDER.has(c) ? <th key={c} scope="col" className="cost-num cost-placeholder" aria-disabled="true" title="Not tracked yet">{c}</th> : LEDGER_COLUMNS.has(c) ? <th key={c} scope="col" className="cost-num cost-ledger" title={c === "Remaining" ? "Contract sum to date (approved contract and approved variations) less claimed to date, ex GST" : "From the uploaded invoices and certified claims, ex GST"}>{c}</th> : <th key={c} scope="col" className="cost-num">{c}</th>)}<th scope="col" className="cost-actions">{editable && selection.ids.length > 0 ? <button type="button" className="cost-bin-many" disabled={busy} title={`Delete ${selection.ids.length} selected`} aria-label={`Delete ${selection.ids.length} selected ${selection.ids.length === 1 ? "line" : "lines"}`} onClick={() => removeMany(visible.filter(x => selection.ids.includes(x)))}><IconBin /><span aria-hidden="true">{selection.ids.length}</span></button> : <span className="sr-only">Actions</span>}</th></tr></thead>
     {GROUPS.map(g => {
       const top = items.filter(i => totals?.section_items[i.cost_item_id] === g.bucket && (!i.parent_item_id || !ids.has(i.parent_item_id)));
       const t = totals?.sections[g.bucket];
@@ -274,7 +279,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
             {!i.posting ? <>
               <td className="cost-num">{i.values.budget ? <MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /> : expanded ? null : subtotal(summary?.values.budget)}</td>
               <td className="cost-num">{expanded ? null : subtotal(summary?.values.commitment)}</td>
-              <td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td><td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td>
+              <td className="cost-num">{expanded ? null : subtotal(summary?.values.forecast_variations)}</td><td className="cost-num">{expanded ? null : subtotal(summary?.values.approved_variations)}</td>
               <td className="cost-num">{expanded ? null : subtotal(summary?.values.forecast)}</td>
               {expanded ? <td className="cost-ledger" /> : <ClaimedCell line={ledger?.groups?.[i.cost_item_id]} onInvoices={onInvoices} />}
               <td className={`cost-num${expanded ? "" : " cost-placeholder"}`}>{expanded ? null : "—"}</td>
@@ -282,7 +287,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
             </> : <>
               <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "budget", v)} metric="budget" item={i} editable={editable} onSave={a => onValue(i, "budget", a)} /></td>
               <td className="cost-num"><MoneyCell onDetailed={v => onDetailedValue(i, "commitment", v)} metric="commitment" item={i} editable={editable} onSave={a => onValue(i, "commitment", a)} /></td>
-              <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
+              <td className="cost-num">{variationCell(i.values.forecast_variations)}</td><td className="cost-num">{cell(i.values.approved_variations)}</td>
               <td className="cost-num">{cell(f?.forecast)}</td>
               <ClaimedCell line={ledgerLine.get(i.cost_item_id)} onInvoices={onInvoices} />
               <td className="cost-num cost-placeholder">—</td>
@@ -293,7 +298,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
         {editable && <GhostRow key={g.bucket} group={g} plan={plan} packages={packages} quantities={!!quantities} onSave={(c, values) => onItem(c, undefined, false, values)} />}
         <tr className="cost-subtotal"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">{g.title} subtotal</th>{quantities && <td colSpan={3} />}
           <td className="cost-num">{subtotal(t?.budget)}</td><td className="cost-num">{subtotal(t?.commitment)}</td>
-          <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
+          <td className="cost-num">{subtotal(t?.forecast_variations)}</td><td className="cost-num">{subtotal(t?.approved_variations)}</td>
           <td className="cost-num">{subtotal(t?.forecast)}</td>
           <td className="cost-num cost-ledger">{ledger ? money(ledger.summary.sections[g.bucket] ?? "0.00") : "—"}</td><td className="cost-num cost-placeholder">—</td>
           <td className="cost-num cost-ledger">{money(ledger?.summary.sections_contract_remaining?.[g.bucket])}</td><td /></tr>
@@ -302,7 +307,7 @@ export function CostGrid({ projectId, reveal, plan, totals, packages, editable, 
     <tbody className="cost-totals">
       <tr className="cost-subtotal cost-total"><th colSpan={3} scope="row" className="cost-sticky" data-col="subtotal">Total</th>{quantities && <td colSpan={3} />}
         <td className="cost-num">{subtotal(totals?.overall.budget)}</td><td className="cost-num">{subtotal(totals?.overall.commitment)}</td>
-        <td className="cost-num cost-placeholder">—</td><td className="cost-num cost-placeholder">—</td>
+        <td className="cost-num">{subtotal(totals?.overall.forecast_variations)}</td><td className="cost-num">{subtotal(totals?.overall.approved_variations)}</td>
         <td className="cost-num">{subtotal(totals?.overall.forecast)}</td>
         <td className="cost-num cost-ledger">{ledger ? money(ledger.summary.invoiced) : "—"}</td><td className="cost-num cost-placeholder">—</td>
         <td className="cost-num cost-ledger">{money(ledger?.summary.contract_remaining)}</td><td /></tr>

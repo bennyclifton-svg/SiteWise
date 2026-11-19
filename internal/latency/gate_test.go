@@ -232,6 +232,11 @@ func TestCommittedBudgets(t *testing.T) {
 		"stripe_webhook":            {100000, 250000},
 		"team":                      {100000, 250000},
 		"guest_open":                {100000, 250000},
+		"claim_intake":              {1_000_000, 2_000_000},
+		"variations_read":           {100_000, 250_000},
+		"variation_write":           {100_000, 250_000},
+		"claim_assess":              {100_000, 250_000},
+		"payment_schedule_issue":    {100_000, 250_000},
 	}
 	if len(budgets.Paths) != len(want) {
 		t.Fatalf("paths = %d", len(budgets.Paths))

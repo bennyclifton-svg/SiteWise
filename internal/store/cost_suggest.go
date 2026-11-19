@@ -101,6 +101,9 @@ func (s *Store) decorateCostPlan(ctx context.Context, tx pgx.Tx, org, project st
 	if e := s.attachConstructionBudget(ctx, tx, org, project, p); e != nil {
 		return e
 	}
+	if e := attachVariations(ctx, tx, org, project, p); e != nil {
+		return e
+	}
 	cat := s.workCatalog()
 	if cat == nil {
 		return nil

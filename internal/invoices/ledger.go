@@ -63,8 +63,11 @@ type BudgetLine struct {
 	PackageID string
 	Budget    *int64
 	// Contract is the line's approved contract; Remaining on the cost plan is
-	// this less what has been invoiced.
+	// the contract sum to date (this plus Approved) less what has been
+	// claimed.
 	Contract *int64
+	// Approved is the line's approved variations.
+	Approved int64
 	Archived bool
 	// Parent is the awarded group this line belongs to. The group holds the
 	// budget; the line's spend rolls up to it.
@@ -108,8 +111,9 @@ type LineSummary struct {
 	Percent    string `json:"percent_spent"`
 	OverBudget bool   `json:"over_budget"`
 	Invoices   int    `json:"invoices"`
-	// ContractRemaining is the approved contract less invoiced to date, nil
-	// while the contract is unknown or the plan's figures include GST.
+	// ContractRemaining is the contract sum to date (approved contract plus
+	// approved variations) less claimed to date, nil while the contract is
+	// unknown or the plan's figures include GST.
 	ContractRemaining *int64 `json:"-"`
 }
 
@@ -146,7 +150,12 @@ func Summarize(lines []BudgetLine, ledger []Invoice, taxBasis string) Summary {
 	index := map[string]int{}
 	for _, l := range lines {
 		index[l.ID] = len(s.Lines)
-		s.Lines = append(s.Lines, LineSummary{ID: l.ID, Label: l.Label, Section: l.Section, Category: l.Category, Archived: l.Archived, Budget: l.Budget, ContractRemaining: l.Contract})
+		var toDate *int64
+		if l.Contract != nil {
+			n := *l.Contract + l.Approved
+			toDate = &n
+		}
+		s.Lines = append(s.Lines, LineSummary{ID: l.ID, Label: l.Label, Section: l.Section, Category: l.Category, Archived: l.Archived, Budget: l.Budget, ContractRemaining: toDate})
 	}
 	s.Unallocated = LineSummary{ID: "", Label: "Unallocated", Section: "unallocated"}
 	var held int64

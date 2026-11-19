@@ -160,6 +160,9 @@ func renderPDF(s reports.IssueSnapshot, gate bool) (Result, error) {
 	if s.Kind == reports.KindMonthly {
 		head = "Issued " + reports.LongDate(s.ReportingDate)
 	}
+	if s.Kind == reports.KindPaymentSchedule {
+		head = "Payment schedule | Issued " + reports.LongDate(s.ReportingDate)
+	}
 	if err := appendText(head, BodySize, false, 10); err != nil {
 		return out, err
 	}

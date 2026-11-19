@@ -26,6 +26,12 @@ func GroupSummaries(items []costs.Item, ledger []Invoice, taxBasis string) map[s
 		}
 		if c := r.Values["commitment"].Amount; c != nil {
 			if n, ok, err := ParseCents(string(*c)); ok && err == nil {
+				// The contract sum to date: approved variations count too.
+				if a := r.Values[costs.MetricApprovedVariations].Amount; a != nil {
+					if v, ok, err := ParseCents(string(*a)); ok && err == nil {
+						n += v
+					}
+				}
 				g.ContractRemaining = &n
 			}
 		}

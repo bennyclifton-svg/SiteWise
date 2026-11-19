@@ -33,9 +33,10 @@ var viewTables = map[string]viewTable{
 	"program":     {"Program row", "Program rows", "program", "program"},
 	"procurement": {"package", "packages", "procurement", "procurement"},
 	"register":    {"register row", "register rows", "delivery", "register"},
+	"variations":  {"variation", "variations", "variations", "costs"},
 }
 
-var viewTableNames = []string{"documents", "cost_lines", "program", "procurement", "register"}
+var viewTableNames = []string{"documents", "cost_lines", "program", "procurement", "register", "variations"}
 
 func (t viewTable) count(n int) string {
 	if n == 1 {
@@ -100,6 +101,14 @@ func tableRows(ctx context.Context, d Deps, who opActor, project, table string) 
 		}
 		for _, it := range items {
 			ids = append(ids, it.ID)
+		}
+	case "variations":
+		_, vs, err := d.Store.VariationRegister(ctx, who.OrgID, project)
+		if err != nil {
+			return nil, err
+		}
+		for _, v := range vs {
+			ids = append(ids, v.ID)
 		}
 	default:
 		return nil, fmt.Errorf("no table %q", table)

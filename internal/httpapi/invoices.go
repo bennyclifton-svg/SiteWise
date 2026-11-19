@@ -575,6 +575,9 @@ type invoiceLedgerJSON struct {
 	Invoices []invoiceJSON               `json:"invoices"`
 	Packages []invoices.Package          `json:"packages"`
 	Lines    []invoiceLineJSON           `json:"lines"`
+	// The Variations and claims tab rides on this read.
+	Contracts  []contractJSON  `json:"contracts"`
+	Variations []variationJSON `json:"variations"`
 }
 
 type invoiceGroupJSON struct {
@@ -635,5 +638,6 @@ func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
 		out.Invoices = append(out.Invoices, j)
 	}
 	sort.SliceStable(out.Invoices, func(i, j int) bool { return out.Invoices[i].CreatedAt.After(out.Invoices[j].CreatedAt) })
+	out.Contracts, out.Variations = tabBody(v)
 	return out
 }

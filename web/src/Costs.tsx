@@ -6,7 +6,8 @@ import { costApi, type CostPlan, type CostItem, type CostSettings, type CostValu
 import { packageApi, type PackageRecord } from "./packageApi";
 import { CentsContext, CostGrid, editContent } from "./CostGrid";
 import { onCostSettingsRequest, takeCostSettingsRequest } from "./costSettingsRequest";
-import { InvoicesTab, VariationsTab } from "./Invoices";
+import { InvoicesTab } from "./Invoices";
+import { VariationsTab } from "./Variations";
 import { invoiceApi, type InvoiceFilter, type Ledger } from "./invoiceApi";
 import { MoreMenu } from "./PageActions";
 import { registerHost } from "./chatView";
@@ -70,6 +71,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   function showCostLine(id: string) { setTab("plan"); setReveal({ id }); }
   // Chat naming cost lines brings the grid's tab forward first.
   useEffect(() => registerHost("cost_lines", () => setTab("plan")));
+  useEffect(() => registerHost("variations", () => setTab("variations")));
   function showInvoices(line: string) { setFilter({ ...NO_FILTER, line }); setInvoice(""); setTab("invoices"); }
   // Files dropped anywhere on the cost plan are invoices for the ledger.
   const dropFiles = {
@@ -175,7 +177,7 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
   return <section className="costs" aria-label="Costs" aria-busy={busy} {...(tab === "invoices" ? {} : dropFiles)}>
     <div className="costs-head"><h1 className="sr-only">Cost Plan</h1>
       <div className="costs-tabs" role="tablist" aria-label="Cost plan views">
-        {([["plan", "Cost Plan"], ["invoices", "Invoices"], ["variations", "Variations"]] as [CostTab, string][]).map(([id, label]) =>
+        {([["plan", "Cost Plan"], ["invoices", "Invoices"], ["variations", "Variations and claims"]] as [CostTab, string][]).map(([id, label]) =>
           <button key={id} type="button" role="tab" id={`cost-tab-${id}`} aria-controls={`cost-panel-${id}`} aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
             onKeyDown={e => { const order: CostTab[] = ["plan", "invoices", "variations"]; const i = order.indexOf(tab); if (e.key === "ArrowRight") setTab(order[(i + 1) % 3]); if (e.key === "ArrowLeft") setTab(order[(i + 2) % 3]); }}
             onClick={() => setTab(id)}>{label}</button>)}
@@ -192,12 +194,12 @@ export function Costs({ projectId, tick, invoiceTick = 0, onSignedOut }: { proje
       }} /></div>
     {baseline && plan && <div className="report-notice"><p>Freeze this revision and continue in a new editable draft?</p><button className="btn" disabled={busy} onClick={() => { void save(async () => { const p = await costApi.baseline(projectId, plan); setBaseline(false); return p; }); }}>Confirm baseline</button><button className="btn" onClick={() => setBaseline(false)}>Cancel baseline</button></div>}
     {error && <div className="banner" role="alert"><p>{error}</p><button className="btn" disabled={busy} onClick={() => { setError(""); setReload(n => n + 1); }}>Reload cost plan</button></div>}
-    <p className="print-only">{ledger?.project ?? ""} · {tab === "invoices" ? "Invoices" : tab === "variations" ? "Variations" : "Cost plan"} · printed {new Date().toLocaleString("en-AU", { timeZone: "Australia/Sydney", dateStyle: "long", timeStyle: "short" })} · filters: {tab === "invoices" && (filter.supplier || filter.month || filter.line || filter.status) ? [filter.supplier && `supplier ${ledger?.packages.find(p => p.id === filter.supplier)?.title ?? ""}`, filter.month && `month ${filter.month}`, filter.line && `line ${filter.line === "unallocated" ? "Unallocated" : ledger?.lines.find(l => l.id === filter.line)?.label ?? ""}`, filter.status && `status ${filter.status.replace("_", " ")}`].filter(Boolean).join("; ") : "none"}</p>
+    <p className="print-only">{ledger?.project ?? ""} · {tab === "invoices" ? "Invoices" : tab === "variations" ? "Variations and claims" : "Cost plan"} · printed {new Date().toLocaleString("en-AU", { timeZone: "Australia/Sydney", dateStyle: "long", timeStyle: "short" })} · filters: {tab === "invoices" && (filter.supplier || filter.month || filter.line || filter.status) ? [filter.supplier && `supplier ${ledger?.packages.find(p => p.id === filter.supplier)?.title ?? ""}`, filter.month && `month ${filter.month}`, filter.line && `line ${filter.line === "unallocated" ? "Unallocated" : ledger?.lines.find(l => l.id === filter.line)?.label ?? ""}`, filter.status && `status ${filter.status.replace("_", " ")}`].filter(Boolean).join("; ") : "none"}</p>
     {ledgerError && <div className="banner" role="alert"><p>Could not load the invoice ledger. The cost plan is unaffected.</p><button className="btn" onClick={() => setLedgerReload(n => n + 1)}>Reload invoices</button></div>}
     <div role="tabpanel" id="cost-panel-invoices" aria-labelledby="cost-tab-invoices" hidden={tab !== "invoices"}>
       {tab === "invoices" && <InvoicesTab onCostLine={showCostLine} costLineIds={plan?.items.map(i => i.cost_item_id)} projectId={projectId} ledger={ledger} filter={filter} onFilter={setFilter} selected={invoice} onSelect={setInvoice} onLedger={setLedger} onSignedOut={onSignedOut} reload={() => setLedgerReload(n => n + 1)} incoming={incoming} onIncoming={() => setIncoming(null)} />}
     </div>
-    <div role="tabpanel" id="cost-panel-variations" aria-labelledby="cost-tab-variations" hidden={tab !== "variations"}><VariationsTab /></div>
+    <div role="tabpanel" id="cost-panel-variations" aria-labelledby="cost-tab-variations" hidden={tab !== "variations"}>{tab === "variations" && <VariationsTab projectId={projectId} ledger={ledger} reload={() => setLedgerReload(n => n + 1)} onSignedOut={onSignedOut} />}</div>
     <div role="tabpanel" id="cost-panel-plan" aria-labelledby="cost-tab-plan" hidden={tab !== "plan"}>
     {!plan ? !error && <p role="status"><Pending delayed>Loading cost plan…</Pending></p> : <CentsContext value={decimals}><CostGrid key={projectId} projectId={projectId} reveal={reveal} plan={plan} totals={totals} packages={packages} editable={!frozen && !editing} busy={busy} quantities={quantities} onOpen={choose} onValue={saveAmount}
         onSubdivide={item => { choose(item.cost_item_id); setSplit({ base: plan, item, names: ["", ""], amounts: ["", ""], metric: "budget", residual: "explicit" }); }}

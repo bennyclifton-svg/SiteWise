@@ -86,6 +86,10 @@ func deleteAward(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "An invoice is allocated to this award's lines, so it can no longer be undone. Re-map the invoice first.", http.StatusConflict)
 		return
 	}
+	if errors.Is(err, store.ErrAwardHasVariations) {
+		http.Error(w, "A variation or progress claim is recorded on this contract, so the award can no longer be undone.", http.StatusConflict)
+		return
+	}
 	if err != nil {
 		procurementError(w, deps, err)
 		return

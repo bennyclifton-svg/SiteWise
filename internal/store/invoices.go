@@ -632,6 +632,10 @@ type LedgerView struct {
 	Titles   map[string]string
 	TaxBasis string
 	Project  string
+	// Contracts are the live awards and Variations their registers, for
+	// the Variations and claims tab (it rides on this read).
+	Contracts  []Contract
+	Variations []invoices.Variation
 }
 
 // InvoiceLedger reads the ledger and computes the summary and checks in Go.
@@ -722,6 +726,16 @@ FROM invoice_allocations WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY 
 	for id, d := range decisions {
 		v.Invoices[index[id]].Decisions = d
 	}
+	if v.Contracts, err = readContracts(ctx, tx, orgID, projectID); err != nil {
+		return v, err
+	}
+	if v.Variations, err = readVariations(ctx, tx, orgID, projectID); err != nil {
+		return v, err
+	}
+	byLine := invoices.VariationsByLine(v.Variations)
+	for i := range plan.lines {
+		plan.lines[i].Approved = byLine[plan.lines[i].ID].Approved
+	}
 	v.Lines = append(v.Lines, plan.lines...)
 	for id, label := range archived {
 		if label == "" {
@@ -730,6 +744,7 @@ FROM invoice_allocations WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY 
 		v.Lines = append(v.Lines, invoices.BudgetLine{ID: id, Label: label, Archived: true})
 	}
 	v.Summary = invoices.Summarize(v.Lines, v.Invoices, plan.taxBasis)
+	applyVariations(plan.items, v.Variations)
 	v.Groups = invoices.GroupSummaries(plan.items, v.Invoices, plan.taxBasis)
 	v.Flags = invoices.Check(v.Invoices, plan.packageABN, today)
 	v.Status = map[string]string{}

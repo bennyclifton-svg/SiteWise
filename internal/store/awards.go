@@ -21,6 +21,10 @@ import (
 // award's lines: the ledger rests on them.
 var ErrAwardLocked = errors.New("an invoice is allocated to this award's lines")
 
+// ErrAwardHasVariations refuses an undo while a variation or a progress
+// claim names the award: its money would lose its contract.
+var ErrAwardHasVariations = errors.New("a variation or progress claim names this award")
+
 // AwardLine is one cost plan line the PM chose: the schedule items (or
 // offered extras, by price id, or the source's stages, by quoted fee id) it
 // holds and the name it carries.
@@ -687,6 +691,12 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 AND undone
 	}
 	if invoiced {
 		return ErrAwardLocked
+	}
+	if held, err := variationsHold(ctx, tx, org, awardID, pkg); err != nil || held {
+		if err != nil {
+			return err
+		}
+		return ErrAwardHasVariations
 	}
 	var before parentBefore
 	_ = json.Unmarshal(raw, &before)

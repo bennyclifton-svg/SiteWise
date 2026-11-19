@@ -18,13 +18,32 @@ export interface Invoice {
 export interface LedgerLine { id: string; label: string; section: string; category: string; archived: boolean; budget: Money; invoiced: Money; remaining: Money; percent_spent: string; over_budget: boolean; invoices: number; contract_remaining: Money }
 export interface LedgerSummary { lines: LedgerLine[]; unallocated: LedgerLine; invoiced: Money; budget: Money; budget_unknown: number; remaining: Money; percent_spent: string; counted: number; excluded: number; comparable: boolean; sections: Record<string, Money>; sections_contract_remaining: Record<string, Money>; contract_remaining: Money }
 export interface LedgerPackage { id: string; title: string; kind: string; discipline: string; abn: string }
-export interface Ledger { groups?: Record<string, LedgerLine & { line_ids: string[] }>; project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[] }
+export interface Ledger { groups?: Record<string, LedgerLine & { line_ids: string[] }>; project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[]; contracts?: Contract[]; variations?: Variation[] }
+/** A live contract (an award) as the Variations and claims tab shows it; every figure is the server's. */
+export interface Contract {
+  award_id: string; package_id: string; title: string; firm: string; claims: boolean;
+  lines: { id: string; label: string; amount: Money }[];
+  contract_sum: Money; approved_variations: Money; contract_sum_to_date: Money;
+  schedule_days: number | null; schedule_basis: "business" | "calendar"; payment_days: number | null; payment_basis: "business" | "calendar";
+}
+export type VariationStatus = "proposed" | "submitted" | "approved" | "rejected" | "withdrawn";
+export interface Variation {
+  id: string; package_id: string; line_id: string; line: string; number: string; title: string; details: string; status: VariationStatus;
+  claimed: Money; estimate: Money; approved: Money; forecast: Money; forecast_basis: "" | "estimate" | "claimed" | "unknown";
+  time_claimed_days: number | null; submitted_on: string; decided_on: string; documents: { id: string; name: string }[]; version: number;
+}
 export interface InvoiceFilter { supplier: string; month: string; line: string; status: string }
 export interface Uploaded { id: string; status: InvoiceStatus; created: boolean }
 
 const base = (p: string) => `/projects/${p}/invoices`;
 
+export interface OpCall { op: string; fields: Record<string, unknown> }
+export interface OpsReply { change_id?: string; undo: { kind: string } }
+
 export const invoiceApi = {
+  /** Variation and claim writes go through POST /ops, so each has one Undo. */
+  ops: (p: string, area: "variations" | "claims", ops: OpCall[]) => request<OpsReply>("POST", `/projects/${p}/ops`, { area, ops }),
+  undo: (p: string, change: string) => request<{ undone: boolean }>("POST", `/projects/${p}/changes/${change}/undo`, {}),
   ledger: (p: string) => request<Ledger>("GET", base(p)),
   edit: (p: string, id: string, fields: Record<string, string>, action = "", target = "") =>
     request<Ledger>("PATCH", `${base(p)}/${id}`, { fields, action, target }),
