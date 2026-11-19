@@ -6,6 +6,8 @@ import { BackButton, MoreMenu, type MenuItem } from "./PageActions";
 import { FIELDS, FieldCell, HeadState, notFiledReason, stateOf, type RowModel } from "./DocumentRow";
 import { OCRStatus } from "./OCRStatus";
 import { VisualIdentityReview } from "./VisualIdentityReview";
+import { dialogOf } from "./chatView";
+import { readDocumentSends, shortDay, transmittalNumber, type DocumentSends } from "./mailApi";
 import "./document-workspace.css";
 
 interface Props {
@@ -163,6 +165,7 @@ export function DocumentWorkspace({ row, catalog, backTo, priorLabel, onCorrect,
         {!doc && <p className="tb-note" role="status">The document will be available when its upload completes.</p>}
         {doc && !preview && <p className="tb-note">There is no preview for this file type yet. Download the original to open it.</p>}
         {doc && <OCRStatus doc={doc} onReprocess={onRetry} />}
+        {doc?.status === "filed" && <SentLine projectId={doc.project_id} documentId={doc.id} />}
         {doc?.source_id && (
           <p className="tb-note">
             Sheet {doc.sheet_page} of {doc.sheet_total} ·{" "}
@@ -249,4 +252,26 @@ function MarkdownPage({ doc }: { doc: Doc }) {
   </div>;
   if (text === null) return <p className="document-wait" role="status"><Pending delayed>Loading document…</Pending></p>;
   return <pre className="document-text" tabIndex={0}>{text}</pre>;
+}
+
+/**
+ * Who was sent this document, and who holds an older revision
+ * (correspondence plan, Task 5). "Sent", never "has": it is what SiteWise
+ * sent. Nothing shows for a document never sent.
+ */
+function SentLine({ projectId, documentId }: { projectId: string; documentId: string }) {
+  const [sends, setSends] = useState<DocumentSends | null>(null);
+  useEffect(() => { readDocumentSends(projectId, documentId).then(setSends).catch(() => setSends(null)); }, [projectId, documentId]);
+  if (!sends) return null;
+  const mine = sends.sends.filter(s => s.this && s.send_status !== "failed");
+  const holders = sends.holding_older;
+  if (!mine.length && !holders.length) return null;
+  const revs = [...new Set(holders.map(h => h.revision).filter(Boolean))];
+  return <div className="doc-sent">
+    {mine.map(s => <p key={s.message_id} className="tb-note">Sent: {transmittalNumber(s.number)} to {s.to.split(",")[0]}{s.to.includes(",") ? " and others" : ""}, {shortDay(s.sent_at)}</p>)}
+    {holders.length > 0 && <p className="tb-note">
+      {holders.length} {holders.length === 1 ? "address was" : "addresses were"} sent revision {revs.join(", ") || "an older one"} ·{" "}
+      <button type="button" className="cell-link" onClick={() => dialogOf("send")?.open({ documents: documentId, to: holders.map(h => h.firm ? `${h.firm} <${h.address}>` : h.address).join(", ") })}>Send…</button>
+    </p>}
+  </div>;
 }

@@ -34,6 +34,7 @@ import (
 	"sitewise/internal/auth"
 	"sitewise/internal/chatfix"
 	"sitewise/internal/config"
+	"sitewise/internal/correspondence"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
 	"sitewise/internal/identity"
@@ -163,7 +164,14 @@ func run(addr, data string, programFixture bool) error {
 	if err != nil {
 		return err
 	}
+	// Mail in and out (correspondence plan): a test signing key and a sink;
+	// nothing leaves this process.
+	mailSink := &correspondence.Sink{}
 	srv, err := httpapi.New(httpapi.Options{
+		Mail:           httpapi.NewMailIn("in.e2e.test", "e2e-test-signing-key"),
+		MailSender:     mailSink,
+		MailFrom:       "sitewise@e2e.test",
+		MailRetryDelay: 50 * time.Millisecond,
 		// Chat is answered by a stand-in that reads the PM's words only.
 		Chat:              chat,
 		Knowledge:         building,
@@ -203,6 +211,25 @@ func run(addr, data string, programFixture bool) error {
 	mux.HandleFunc("POST /__e2e/shutdown", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		stop()
+	})
+	// What the mail sink holds: recipients and subjects only.
+	mux.HandleFunc("GET /__e2e/mail-sent", func(w http.ResponseWriter, r *http.Request) {
+		var out []map[string]any
+		last := ""
+		for _, m := range mailSink.Kept() {
+			subject := ""
+			for _, line := range strings.Split(string(m.Msg), "\r\n") {
+				if s, ok := strings.CutPrefix(line, "Subject: "); ok {
+					subject = s
+				}
+				if s, ok := strings.CutPrefix(line, "Message-ID: "); ok {
+					last = s
+				}
+			}
+			out = append(out, map[string]any{"to": m.To, "subject": subject, "bytes": len(m.Msg)})
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{"sent": out, "message_id": last})
 	})
 	mux.HandleFunc("POST /__e2e/invite", func(w http.ResponseWriter, r *http.Request) {
 		invite(w, r, st)

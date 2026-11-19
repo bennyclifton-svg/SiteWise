@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ApiError, request } from "./api";
-import { registerDialog } from "./chatView";
+import { dialogOf, registerDialog } from "./chatView";
 import { ConfirmDialog } from "./ConfirmDialog";
 
 // Share: a link for one person outside the org to one thing — documents, an
@@ -130,6 +130,10 @@ export function ShareDialog({ projectId, fields, onClose }: { projectId: string;
           <div className="share-link-row">
             <input id="share-link" className="input" readOnly value={link} onFocus={e => e.currentTarget.select()} />
             <button type="button" className="btn btn-small" onClick={() => void copy()}>{copied ? "Copied" : "Copy"}</button>
+            {/* Emailing the link goes through the one send path; the PM presses Send. */}
+            <button type="button" className="btn btn-small" onClick={() => { dialogOf("send")?.open({ to: to.includes("@") ? to.trim() : "", subject: `Link to ${whatOf(fields)}`, note: `${link}
+
+The link works until ${shownDate(until)}.` }); onClose(); }}>Email it…</button>
           </div>
         </div> : <div className="share-fields">
           <label htmlFor="share-to">Shared with</label>

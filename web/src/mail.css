@@ -1,0 +1,35 @@
+/* The repository's head and Messages list (email intake Task 9,
+   correspondence Task 6). The table is the register's: these rules only add
+   the head line, the toggle, the reply indent and the opened message. */
+.mail-head { display: grid; gap: 4px; padding: 6px 12px 4px; }
+.mail-address { margin: 0; font-size: 12px; color: var(--muted, #667); overflow-wrap: anywhere; }
+.mail-address code { font-size: 12px; }
+.mail-toggle { display: flex; gap: 2px; }
+.mail-toggle button { border: 1px solid var(--line, #d6d9de); background: transparent; padding: 2px 10px; font: inherit; font-size: 12px; cursor: pointer; }
+.mail-toggle button[aria-selected="true"] { background: var(--row-selected, #eceef1); font-weight: 600; }
+.mail-table col.mail-dir { width: 38px; }
+.mail-table col.mail-no { width: 62px; }
+.mail-table col.mail-date { width: 58px; }
+.mail-table col.mail-with { width: 22%; }
+.mail-table col.mail-pkg { width: 18%; }
+.mail-row[data-reply="true"] .mail-subject { padding-left: 18px; }
+.mail-row[data-held="true"] .reg-line { color: var(--muted, #667); }
+.mail-subject span:first-child { overflow: hidden; text-overflow: ellipsis; }
+.mail-mark { margin-left: 8px; font-size: 11px; color: var(--muted, #667); white-space: nowrap; }
+.mail-mark[data-tone="alert"] { color: var(--alert, #b42318); }
+.mail-chip { display: inline-flex; gap: 6px; align-items: center; margin-left: 8px; font-size: 11px; color: var(--origin-amber, #8a5a00); }
+.mail-pkg-select { width: 100%; font-size: 12px; }
+.mail-open td { padding: 6px 12px 10px; }
+.mail-body { display: grid; gap: 6px; }
+.mail-meta { margin: 0; font-size: 12px; color: var(--muted, #667); overflow-wrap: anywhere; }
+.mail-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 13px; max-height: 320px; overflow: auto; }
+.mail-files { margin: 0; padding-left: 18px; font-size: 12px; }
+.mail-skipped { color: var(--muted, #667); }
+.mail-actions { margin: 0; }
+.send-dialog { display: grid; gap: 4px; min-width: min(480px, 80vw); }
+.send-dialog textarea { resize: vertical; }
+.send-docs-head { margin: 6px 0 0; font-size: 12px; color: var(--muted, #667); }
+.send-docs { margin: 0; padding-left: 18px; font-size: 12px; max-height: 160px; overflow: auto; }
+.send-docs li button { margin-left: 8px; }
+.send-error { margin: 4px 0 0; color: var(--alert, #b42318); font-size: 12px; }
+.doc-sent { margin: 4px 0; font-size: 12px; }

@@ -330,6 +330,8 @@ export function Register({
     if (one && filed && onRaiseRFI) items.push({ label: "Raise RFI from this document", icon: <IconPlus />, onSelect: () => onRaiseRFI(docs[0].id, fieldValue(docs[0], "title") || docs[0].filename) });
     // A link for someone outside the org to these documents (guest access).
     items.push({ label: "Share…", icon: <IconLinks />, disabled: !filed || m.ids.length > 200, onSelect: () => dialogOf("share")?.open({ kind: "documents", documents: m.ids.join(",") }) });
+    // Mail out on a numbered transmittal (correspondence plan, Task 6).
+    items.push({ label: "Send…", icon: <IconUpload />, disabled: !filed || m.ids.length > 200, onSelect: () => dialogOf("send")?.open({ documents: m.ids.join(",") }) });
     items.push("sep", {
       label: "Set discipline…", icon: <IconTag />, disabled: !filed || !catalog,
       onSelect: () => { setFieldChoice(null); setFieldEdit({ field: "discipline", ids: m.ids }); },

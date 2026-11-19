@@ -8,7 +8,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pending } from "./Activity";
 import { ApiError, request } from "./api";
-import { useChatTable, showingLine, revealQuietly } from "./chatView";
+import { dialogOf, useChatTable, showingLine, revealQuietly } from "./chatView";
 import { deliveryApi, GATES, rfiNumber, sydneyToday, type ConditionDetails, type DeliveryRecord, type OpCall, type RegisterView } from "./deliveryApi";
 import { IconMore } from "./icons";
 import type { WorkbenchView } from "./LeftNav";
@@ -166,6 +166,17 @@ export function Delivery({ projectId, tick, readerTick = 0, raise, onSignedOut, 
     const conditions = rs.every(r => r.kind === "condition");
     const out: MenuItem[] = [];
     if (rs.length === 1) out.push({ label: "Edit item", icon: null, disabled: busy, onSelect: () => setEdit({ id: rs[0].id, field: "title" }) });
+    // Send… (correspondence plan): an RFI goes out with its question and
+    // documents, and its reply threads back to it; a condition with its notice.
+    if (rs.length === 1 && rs[0].kind === "rfi") {
+      const r = rs[0], d = r.details as { question?: string; answer_documents?: string[] };
+      const docs = (r.provenance.sources ?? []).flatMap(s => s.document_id ? [s.document_id] : []);
+      out.push({ label: "Send…", icon: null, onSelect: () => dialogOf("send")?.open({ rfi: r.id, subject: `RFI-${String(r.number ?? 0).padStart(3, "0")} ${r.title}`, note: d.question ?? "", documents: docs.join(",") }) });
+    }
+    if (rs.length === 1 && rs[0].kind === "condition") {
+      const c = cond(rs[0]);
+      out.push({ label: "Send…", icon: null, onSelect: () => dialogOf("send")?.open({ subject: `Condition ${c.number ?? ""} ${c.heading ?? ""}`.trim(), note: c.text ?? "", documents: c.source?.document_id ?? "" }) });
+    }
     out.push({ label: rs.length === 1 ? "Set system" : `Set system for ${rs.length} rows`, icon: null, disabled: busy, onSelect: () => setEdit({ id: rs[0].id, field: "system", many: rs.length > 1 ? ids : undefined }) });
     if (owed) {
       out.push("sep");

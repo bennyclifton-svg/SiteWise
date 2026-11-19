@@ -39,7 +39,7 @@ const DOING: Record<string, string> = {
   documents: "Looking through the documents…", passages: "Reading the documents…", messages: "Checking the inbox…", view: "Moving the screen…",
 };
 // Where each table chat can name lives (internal/httpapi/chat_screen.go).
-const PLACE: Record<string, ChatPlace> = { documents: "documents", cost_lines: "costs", program: "program", procurement: "procurement", register: "register" };
+const PLACE: Record<string, ChatPlace> = { documents: "documents", messages: "documents", cost_lines: "costs", program: "program", procurement: "procurement", register: "register" };
 
 /** The key Go's undo names a change by: its change id, or the Program version it left. */
 const undoKey = (c: Card) => c.undo === "program" ? `program:${c.program_version ?? ""}` : c.change_id ?? "";
@@ -100,6 +100,13 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
     // Share is the project's one dialog; chat opens it filled in, the PM presses Create link.
     const dialog = await whenReady(() => dialogOf("share"));
     if (!dialog) return "Share could not be opened. Use Share… on the document, report or invited firm.";
+    dialog.open(v.fields ?? {});
+    return "";
+  }
+  if (v.dialog === "send") {
+    // Send is the project's one dialog; chat opens it filled in, the PM presses Send.
+    const dialog = await whenReady(() => dialogOf("send"));
+    if (!dialog) return "Send could not be opened. Use Send… on the documents.";
     dialog.open(v.fields ?? {});
     return "";
   }

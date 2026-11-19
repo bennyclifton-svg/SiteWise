@@ -262,7 +262,7 @@ export function upload(
   return { done, abort: () => xhr.abort() };
 }
 
-export const EVENT_KINDS = ["visual", "filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery", "costs", "specification", "invoices", "procurement", "program.changed", "program.review", "program.readings"] as const;
+export const EVENT_KINDS = ["visual", "filing", "correction", "not_filed", "filing_failed", "sheets", "profile", "job", "ocr", "deleted", "report", "works", "packages", "delivery", "costs", "specification", "invoices", "procurement", "program.changed", "program.review", "program.readings", "mail"] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
 export interface StreamEvent {

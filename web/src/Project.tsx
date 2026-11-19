@@ -32,6 +32,8 @@ import { Register } from "./Register";
 import { DocumentWorkspace } from "./DocumentWorkspace";
 import { Procurement } from "./Procurement";
 import { ShareHost } from "./ShareDialog";
+import { MailRepository } from "./MailIn";
+import { SendHost } from "./SendDialog";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
 import { Delivery } from "./Delivery";
@@ -269,6 +271,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [specificationsOpened, setSpecificationsOpened] = useState(initialView === "specifications");
   const [specificationTick, setSpecificationTick] = useState(0);
   const [invoiceTick, setInvoiceTick] = useState(0);
+  // Moves on a mail event: the repository's Messages list reads again.
+  const [mailTick, setMailTick] = useState(0);
   const [costsOpened, setCostsOpened] = useState(initialView === "costs");
   const [reportsOpened, setReportsOpened] = useState(initialView === "procurement");
   const [showProgram, setShowProgram] = useState(initialView === "program");
@@ -374,6 +378,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
           const ev = JSON.parse((msg as MessageEvent<string>).data) as StreamEvent;
           if (ev.id <= lastId.current) return;
           lastId.current = ev.id;
+          if (ev.kind === "mail") {
+            if (ev.payload?.project_id === projectId) setMailTick(n => n + 1);
+            return;
+          }
           if (ev.kind === "invoices") {
             // The project report prints claimed to date from the ledger.
             if (ev.payload?.project_id === projectId) { setInvoiceTick(n => n + 1); setReaderTick(n => n + 1); }
@@ -760,7 +768,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const nav = (
     <LeftNav projects={projects} currentId={projectId} navigate={navigate} view={view} onView={showView} marks={navMarks} />
   );
-  const repository = (
+  const register = (
     <Register
       onRaiseRFI={(documentId, title) => { setRaiseRFI(r => ({ documentId, title, n: (r?.n ?? 0) + 1 })); showView("register"); }}
       rows={rows}
@@ -779,6 +787,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       openKey={openDocument}
       onOpen={setOpenDocument}
     />
+  );
+  const repository = (
+    <MailRepository projectId={projectId} tick={mailTick} documents={register}
+      onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} />
   );
 
   if (state.phase === "loading") {
@@ -853,6 +865,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
       }} />}
       <ShareHost projectId={projectId} />
+      <SendHost projectId={projectId} projectName={state.projectName || "Project"} onSent={() => setMailTick(n => n + 1)}
+        documentOf={id => { const d = state.docs[id]; return d ? { id, name: d.fields.find(f => f.field === "title")?.value || d.filename } : undefined; }} />
       <input
         ref={fileInput}
         type="file"

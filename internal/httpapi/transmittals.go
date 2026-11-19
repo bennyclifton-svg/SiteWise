@@ -337,10 +337,12 @@ func containsAddress(list []mail.Address, addr string) bool {
 	return false
 }
 
+// formatAll writes addresses for a header and the record: a bare address
+// alone, a named one as "Name <address>" (quoted and encoded by net/mail).
 func formatAll(list []mail.Address) []string {
 	out := make([]string, len(list))
 	for i, a := range list {
-		out[i] = a.String()
+		out[i] = addressWords(a)
 	}
 	return out
 }
