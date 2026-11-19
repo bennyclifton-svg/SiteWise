@@ -92,6 +92,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	profileReading := fs.String("profile-reading", "data/profile/reading.json", "document kinds the project profile reads automatically")
 	proposalPolicy := fs.String("proposal-policy", "data/profile/proposals.json", "proposal visibility policy")
 	invoiceData := fs.String("invoice-data", "data/invoice", "invoice question thresholds directory")
+	claimData := fs.String("claim-data", "data/claim", "progress claim (claim-1) question thresholds directory")
 	proposalData := fs.String("proposal-data", "data/proposal", "fee proposal question thresholds directory")
 	programData := fs.String("program-data", "data/program", "program file reading thresholds directory")
 	registerData := fs.String("register-data", "data/register", "register reply-match thresholds directory")
@@ -184,6 +185,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	invoiceTh, err := invoices.LoadThresholds(*invoiceData)
 	if err != nil {
 		fmt.Fprintln(stderr, "invoice thresholds: "+err.Error())
+		return 1
+	}
+	claimTh, err := invoices.LoadClaimThresholds(*claimData)
+	if err != nil {
+		fmt.Fprintln(stderr, "claim thresholds: "+err.Error())
 		return 1
 	}
 	client, err := jev.New(jev.Options{APIKey: cfg.JevAPIKey, Model: cfg.JevModel, Logger: slog.New(slog.NewJSONHandler(stderr, nil)), CompressRequests: true})
@@ -299,6 +305,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		ProfileReading:     reading,
 		ProposalShowCount:  proposals.ShowCount,
 		InvoiceThresholds:  invoiceTh,
+		ClaimThresholds:    claimTh,
 		ProposalThresholds: proposalTh,
 		ProgramThresholds:  programTh,
 	})

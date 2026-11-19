@@ -28,7 +28,7 @@ type chatBox struct {
 	tags   atomic.Int64
 }
 
-var readAreas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention", "report", "shares"}
+var readAreas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "implications", "delivery", "gaps", "invoices", "specifications", "attention", "report", "shares", "variations"}
 
 func object(required []string, props map[string]any) map[string]any {
 	return map[string]any{"type": "object", "additionalProperties": false, "required": required, "properties": props}
@@ -88,14 +88,14 @@ func chatTools() []llm.Tool {
 				"filter":   str("no_reply, not_sent or held", "no_reply", "not_sent", "held"),
 				"document": str("a document id: who was sent it, and who holds an older revision"),
 			})},
-		{Name: "view", Description: "Move the PM's screen: show a table, select rows, show only some rows, clear that, open a row, open the award dialog on one firm, open Share filled in, or open the project report (with its issue form when the PM asks to issue it). It changes no record, so it is done at once, even after reading a document; it never presses Award, Send, Issue or Create link. Use ids from the outline, a read or the screen line. Set final true when moving the screen is all the PM asked for.",
+		{Name: "view", Description: "Move the PM's screen: show a table, select rows, show only some rows, clear that, open a row, open the award dialog on one firm, open Share filled in, open the project report (with its issue form when the PM asks to issue it), or open a progress claim's panel (when the PM asks to issue its payment schedule). It changes no record, so it is done at once, even after reading a document; it never presses Award, Send, Issue or Create link. Use ids from the outline, a read or the screen line. Set final true when moving the screen is all the PM asked for.",
 			Schema: object([]string{"do"}, map[string]any{
 				"do":     str("show, open (a row by its one id, or a dialog), select, only (hide the other rows) or clear (all rows back)", "show", "open", "select", "only", "clear"),
 				"table":  str("the table", viewTableNames...),
 				"ids":    map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "row ids, at most 200"},
 				"filter": str("with select or only, in place of ids: a set SiteWise computes by rule. " + filterList() + ". Any other set: pick ids from a read"),
-				"dialog": str("a dialog to open: award, share (a guest link to documents, an issued report, or an issued RFP or RFT for one invited firm), report (the project report), or send (Send or Reply, filled in; the PM presses Send)", "award", "share", "report", "send"),
-				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id). share: kind (documents, report or package); documents (ids, comma separated), report (an id), or package (an id) and firm (the invited firm's name); shared_with and days only when the PM said them. report: issue (yes opens its issue form). send: documents (ids, comma separated), to and cc (addresses, or firm ids or names), subject, note (words you may draft), reply_to (a message id), issue (an issued report version id)"},
+				"dialog": str("a dialog to open: award, share (a guest link to documents, an issued report, or an issued RFP or RFT for one invited firm), report (the project report), send (Send or Reply, filled in; the PM presses Send), or claim (a progress claim's panel)", "award", "share", "report", "send", "claim"),
+				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id). share: kind (documents, report or package); documents (ids, comma separated), report (an id), or package (an id) and firm (the invited firm's name); shared_with and days only when the PM said them. report: issue (yes opens its issue form). send: documents (ids, comma separated), to and cc (addresses, or firm ids or names), subject, note (words you may draft), reply_to (a message id), issue (an issued report version id). claim: claim (its id or number)"},
 				"final":  map[string]any{"type": "boolean"},
 			})},
 	}

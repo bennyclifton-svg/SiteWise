@@ -353,6 +353,7 @@ func run(addr, data string, programFixture bool) error {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	})
+	contractRoutes(mux, st, dsn)
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()
 		w.WriteHeader(http.StatusNoContent)

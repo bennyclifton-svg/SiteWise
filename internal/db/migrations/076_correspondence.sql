@@ -86,4 +86,4 @@ CREATE TRIGGER capture_change AFTER UPDATE ON mail_messages
 -- sibling migration that rewrites this check must keep 'mail' too.
 ALTER TABLE project_changes DROP CONSTRAINT project_changes_area_check;
 ALTER TABLE project_changes ADD CONSTRAINT project_changes_area_check
- CHECK (area IN ('cost_plan','profile','procurement','delivery','reports','mail'));
+ CHECK (area IN ('cost_plan','profile','procurement','delivery','reports','variations','claims','mail'));

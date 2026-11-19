@@ -26,7 +26,7 @@ export interface Find {
   at: string;
 }
 /** What the other surfaces now propose or flag: each is that surface's own count. */
-export interface Next { procurement: number; costs: number; program: number; drafts: number }
+export interface Next { procurement: number; costs: number; program: number; drafts: number; schedules_overdue: number; schedules_due: number }
 
 async function get<T>(path: string): Promise<T> {
   let res: Response;

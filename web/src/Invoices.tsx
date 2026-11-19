@@ -289,7 +289,3 @@ function centsToDecimal(c: string): string {
   const neg = c.startsWith("-"), digits = (neg ? c.slice(1) : c).padStart(3, "0");
   return `${neg ? "-" : ""}${digits.slice(0, -2)}.${digits.slice(-2)}`;
 }
-
-export function VariationsTab() {
-  return <section className="inv-empty" aria-label="Variations"><h2>Variations are coming</h2><p>Approved variations will adjust each line's budget here. This tab holds no data yet; invoices and the cost plan are unaffected.</p></section>;
-}

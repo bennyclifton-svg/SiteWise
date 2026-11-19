@@ -523,5 +523,55 @@ class ProgramLibraryTests(unittest.TestCase):
             self.assertTrue(report.errors, pred)
 
 
+class ContractTests(unittest.TestCase):
+    """knowledge/contracts/security_of_payment.yaml (plan Task 1)."""
+    ROW = """version: 1
+status: draft
+acts:
+  - id: sop.nsw
+    state: NSW
+    act: An Act
+    business_day_excludes: {weekdays: [sat, sun], public_holidays: true, spans: [{from: "12-27", to: "12-31"}]}
+    schedule: {section: s 14(4), business_days: "10"}
+    payment: {section: s 11(1A)(a), business_days: "15"}
+    other_payments: []
+    verified: false
+    primary_source: ""
+    secondary_source: guidance
+    checked_on: ""
+    status: draft
+    notes: n
+"""
+
+    def run_check(self, body):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'security_of_payment.yaml'
+            path.write_text(body, encoding='utf-8')
+            report = checker.Report()
+            checker.check_contracts(report, path)
+            return report
+
+    def test_the_row_passes(self):
+        self.assertEqual(self.run_check(self.ROW).errors, [])
+
+    def test_refusals(self):
+        cases = {
+            "primary_source": ('verified: false', 'verified: true'),
+            "quoted whole number": ('business_days: "10"', 'business_days: 10'),
+            "unknown state": ('state: NSW', 'state: XX'),
+        }
+        for needle, (old, new) in cases.items():
+            with self.subTest(needle=needle):
+                report = self.run_check(self.ROW.replace(old, new, 1))
+                self.assertTrue(any(needle in e for e in report.errors), report.errors)
+
+    def test_the_real_file_passes_and_is_unverified(self):
+        report = checker.Report()
+        checker.check_contracts(report)
+        self.assertEqual(report.errors, [])
+        doc = yaml.safe_load((checker.KNOWLEDGE / 'contracts' / 'security_of_payment.yaml').read_text(encoding='utf-8'))
+        self.assertTrue(all(a['verified'] is False for a in doc['acts']))
+
+
 if __name__ == '__main__':
     unittest.main()

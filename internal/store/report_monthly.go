@@ -95,6 +95,10 @@ func (s *Store) monthlyInputTx(ctx context.Context, tx pgx.Tx, org, project stri
 	if err != nil {
 		return in, state, err
 	}
+	// The grid's Forecast Final Cost includes variations; so does the report.
+	if err := attachVariations(ctx, tx, org, project, &plan); err != nil {
+		return in, state, err
+	}
 	if len(plan.Items) > 0 {
 		overall, err := costs.Summarize(plan, "overall")
 		if err != nil {
@@ -114,7 +118,8 @@ func (s *Store) monthlyInputTx(ctx context.Context, tx pgx.Tx, org, project stri
 	if err != nil {
 		return in, state, err
 	}
-	in.Ledger = &reports.AttentionLedger{Invoices: ledger.Invoices, Status: ledger.Status, Summary: ledger.Summary, Lines: ledger.Lines, Groups: ledger.Groups}
+	in.Ledger = &reports.AttentionLedger{Invoices: ledger.Invoices, Status: ledger.Status, Summary: ledger.Summary, Lines: ledger.Lines, Groups: ledger.Groups,
+		Claims: AttentionClaims(ledger), Variations: ledger.Variations}
 	in.Attention.Ledger = in.Ledger
 	for _, inv := range ledger.Invoices {
 		in.Received[inv.ID] = inv.CreatedAt.In(sydney).Format("2006-01-02")

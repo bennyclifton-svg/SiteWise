@@ -18,13 +18,50 @@ export interface Invoice {
 export interface LedgerLine { id: string; label: string; section: string; category: string; archived: boolean; budget: Money; invoiced: Money; remaining: Money; percent_spent: string; over_budget: boolean; invoices: number; contract_remaining: Money }
 export interface LedgerSummary { lines: LedgerLine[]; unallocated: LedgerLine; invoiced: Money; budget: Money; budget_unknown: number; remaining: Money; percent_spent: string; counted: number; excluded: number; comparable: boolean; sections: Record<string, Money>; sections_contract_remaining: Record<string, Money>; contract_remaining: Money }
 export interface LedgerPackage { id: string; title: string; kind: string; discipline: string; abn: string }
-export interface Ledger { groups?: Record<string, LedgerLine & { line_ids: string[] }>; project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[] }
+export interface Ledger { groups?: Record<string, LedgerLine & { line_ids: string[] }>; project: string; tax_basis: string; summary: LedgerSummary; invoices: Invoice[]; packages: LedgerPackage[]; lines: LedgerLine[]; contracts?: Contract[]; variations?: Variation[]; claims?: Claim[] }
+/** A live contract (an award) as the Variations and claims tab shows it; every figure is the server's. */
+export interface Contract {
+  award_id: string; package_id: string; title: string; firm: string; claims: boolean;
+  lines: { id: string; label: string; amount: Money }[];
+  contract_sum: Money; approved_variations: Money; contract_sum_to_date: Money; certified_to_date: Money; retention_held: Money;
+  schedule_days: number | null; schedule_basis: "business" | "calendar"; payment_days: number | null; payment_basis: "business" | "calendar";
+}
+export type VariationStatus = "proposed" | "submitted" | "approved" | "rejected" | "withdrawn";
+export interface Variation {
+  id: string; package_id: string; line_id: string; line: string; number: string; title: string; details: string; status: VariationStatus;
+  claimed: Money; estimate: Money; approved: Money; forecast: Money; forecast_basis: "" | "estimate" | "claimed" | "unknown";
+  time_claimed_days: number | null; submitted_on: string; decided_on: string; documents: { id: string; name: string }[]; version: number;
+}
 export interface InvoiceFilter { supplier: string; month: string; line: string; status: string }
 export interface Uploaded { id: string; status: InvoiceStatus; created: boolean }
 
 const base = (p: string) => `/projects/${p}/invoices`;
 
+/** A date Go worked out, with how: never settled while to_check is true. */
+export interface DueDate { date: string; words: string; section: string; source: string; to_check: boolean; notes: string[] }
+export interface ClaimRow {
+  id: string; ordinal: number; kind: "contract" | "variation" | "retention"; label: string; line_id: string; line: string; variation_id: string; variation: string;
+  mapped_by: string; band: InvoiceBand; to_date: Money; previous: Money; this_claim: Money; certified_before: Money; claimed: Money;
+  assessed_to_date: Money; scheduled: Money; below_claimed: boolean; reason: string; version: number;
+}
+export interface Claim {
+  invoice_id: string; package_id: string; number: string; served_on: string; served_confirmed: boolean; reference_date: string; schedule_served_on: string;
+  claimed: Money; scheduled: Money; retention: Money; net: Money; gst: Money; payable: Money; unassessed: number; missing_reasons: number;
+  counts: boolean; late: boolean; alert: "" | "overdue" | "soon" | "check"; schedule_due: DueDate; payment_due: DueDate;
+  issued: { report_id: string; version_id: string; number: number; issued_on: string; snapshot_sha256: string; file: string }[];
+  settled_by: string[]; flags: InvoiceFlag[]; rows: ClaimRow[];
+}
+export interface OpCall { op: string; fields: Record<string, unknown> }
+export interface OpsReply { change_id?: string; undo: { kind: string } }
+
 export const invoiceApi = {
+  /** Variation and claim writes go through POST /ops, so each has one Undo. */
+  ops: (p: string, area: "variations" | "claims", ops: OpCall[]) => request<OpsReply>("POST", `/projects/${p}/ops`, { area, ops }),
+  undo: (p: string, change: string) => request<{ undone: boolean }>("POST", `/projects/${p}/changes/${change}/undo`, {}),
+  /** Issue is the PM's press only; chat never calls it. */
+  issueSchedule: (p: string, inv: string) => request<{ report_id: string; version_id: string; number: number }>("POST", `${base(p)}/${inv}/schedule`, {}),
+  periods: (p: string, pkg: string, body: { schedule_days: number | null; schedule_basis: string; payment_days: number | null; payment_basis: string }) =>
+    request<Ledger>("PATCH", `/projects/${p}/procurement/packages/${pkg}/award`, body),
   ledger: (p: string) => request<Ledger>("GET", base(p)),
   edit: (p: string, id: string, fields: Record<string, string>, action = "", target = "") =>
     request<Ledger>("PATCH", `${base(p)}/${id}`, { fields, action, target }),
@@ -40,10 +77,12 @@ export const invoiceApi = {
 };
 
 /** upload streams one file as the raw body, reporting progress. */
-export function uploadInvoice(projectId: string, file: File, onProgress: (fraction: number) => void): { done: Promise<Uploaded>; abort: () => void } {
+export function uploadInvoice(projectId: string, file: File, onProgress: (fraction: number) => void, claimPackage = ""): { done: Promise<Uploaded>; abort: () => void } {
   const xhr = new XMLHttpRequest();
   const done = new Promise<Uploaded>((resolve, reject) => {
-    xhr.open("POST", `/api${base(projectId)}?name=${encodeURIComponent(file.name)}`);
+    // A file dropped on a contract is that contract's progress claim.
+    const claim = claimPackage ? `&kind=progress_claim&package=${encodeURIComponent(claimPackage)}` : "";
+    xhr.open("POST", `/api${base(projectId)}?name=${encodeURIComponent(file.name)}${claim}`);
     xhr.withCredentials = true;
     xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
     xhr.onload = () => {

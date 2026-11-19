@@ -207,7 +207,18 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		return once("read", map[string]any{"area": "delivery", "part": part})
 	}
 	structural := short("procurement", "consultant.structural")
+	variations := func() func(llm.Conversation, int) llm.Turn { return once("read", map[string]any{"area": "variations"}) }
 	return map[string]func(llm.Conversation, int) llm.Turn{
+		// The claims group (plan 3).
+		"What is the contract sum to date on Main Works?":                                  variations(),
+		"When is the payment schedule due on claim 4 and how was that worked out?":         variations(),
+		"Add a variation on the substructure for rock excavation, $12,400 claimed, 3 days": apply("variations", "variations.add", map[string]any{"package": "Main Works", "line": "Substructure", "title": "Rock excavation", "claimed": "12400", "time_claimed_days": "3"}),
+		// A claimed amount nobody gave: the figure check must refuse it.
+		"Add a variation on the superstructure for the extra steel": apply("variations", "variations.add", map[string]any{"package": "Main Works", "line": "Superstructure", "title": "Extra steel", "claimed": "9750"}),
+		"Show the rows I have not assessed":                         filter("only", "claim_rows", "unassessed"),
+		"Approve V01 at $11,000":                                    apply("variations", "variations.decide", map[string]any{"variation": "V01", "decision": "approve", "approved": "11000"}),
+		"Issue the schedule for claim 4":                            view(map[string]any{"do": "open", "dialog": "claim", "fields": map[string]string{"claim": "4"}}),
+		"On claim 4 assess the superstructure row at $8,000 to date because the frame is not complete": apply("claims", "claims.assess", map[string]any{"claim": "4", "row": "Superstructure", "assessed_to_date": "8000", "reason": "the frame is not complete"}),
 		// The register group (plan 4).
 		"What is open on the facade?":                                                   read("envelope"),
 		"What is with the structural engineer and how late is it?":                      read(""),
@@ -341,7 +352,7 @@ func TestScreenCasesScoredOffline(t *testing.T) {
 	}
 	scored := 0
 	for _, c := range cases {
-		if (c.Group != "screen" && c.Group != "register" && c.Group != "report" && c.Group != "shares" && c.Group != "conditions" && c.Group != "mail") || slices.Contains(modelOnly, c.ID) {
+		if (c.Group != "screen" && c.Group != "register" && c.Group != "report" && c.Group != "shares" && c.Group != "conditions" && c.Group != "mail" && c.Group != "claims") || slices.Contains(modelOnly, c.ID) {
 			continue
 		}
 		scored++

@@ -44,7 +44,7 @@ func main() {
 
 type options struct {
 	key, recording, data, out, corpusRoot string
-	live, fit, show                       bool
+	live, fit, show, claims               bool
 	deadline                              time.Duration
 }
 
@@ -65,9 +65,20 @@ func run(args []string, getenv func(string) string, stdout, stderr io.Writer) in
 	fs.BoolVar(&o.live, "live", false, "call System One and record every exchange")
 	fs.BoolVar(&o.fit, "fit", false, "write cut-offs fitted on the calibration split")
 	fs.BoolVar(&o.show, "show", false, "print each wrong or blank field (private values; terminal only)")
+	fs.BoolVar(&o.claims, "claims", false, "check the progress claim key (data/eval/claim/private/answer-key.json) instead")
 	fs.DurationVar(&o.deadline, "deadline", 10*time.Second, "per-call deadline; accuracy is not truncated by the interactive budget")
 	if err := fs.Parse(args); err != nil {
 		return 2
+	}
+	if o.claims {
+		if o.key == "data/eval/invoice/private/answer-key.json" {
+			o.key = "data/eval/claim/private/answer-key.json"
+		}
+		if err := evaluateClaims(o, stdout); err != nil {
+			fmt.Fprintln(stderr, "invoice-eval:", err)
+			return 1
+		}
+		return 0
 	}
 	if err := evaluate(context.Background(), o, getenv, stdout); err != nil {
 		fmt.Fprintln(stderr, "invoice-eval:", err)

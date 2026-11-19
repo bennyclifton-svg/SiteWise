@@ -390,6 +390,12 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 AND undone
 	if invoiced {
 		return ErrAwardLocked
 	}
+	if held, err := variationsHold(ctx, tx, org, awardID, group); err != nil || held {
+		if err != nil {
+			return err
+		}
+		return ErrAwardHasVariations
+	}
 	if err := deleteCostLines(ctx, tx, org, p.ID, children); err != nil {
 		return err
 	}

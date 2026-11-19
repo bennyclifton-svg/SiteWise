@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+
+	"sitewise/internal/invoices"
+	"sitewise/internal/reports"
 )
 
 // ProfileReadingDocument is one document in a profile update.
@@ -205,6 +208,11 @@ type ProfileNext struct {
 	Program int `json:"program"`
 	// Drafts: RFP and RFT drafts built from an earlier profile.
 	Drafts int `json:"drafts"`
+	// Payment schedules past due and not served, and due within two
+	// business days or with a date to check: the Cost Plan's mark, from the
+	// same records as reports.Attention's claims rules.
+	SchedulesOverdue int `json:"schedules_overdue"`
+	SchedulesDue     int `json:"schedules_due"`
 }
 
 func (s *Store) ProfileNext(ctx context.Context, org, project string) (ProfileNext, error) {
@@ -225,8 +233,12 @@ func (s *Store) ProfileNext(ctx context.Context, org, project string) (ProfileNe
 	}
 	// The two proposal reads are independent; side by side they cost the slower one.
 	var wg sync.WaitGroup
-	var packagesErr, costsErr error
-	wg.Add(2)
+	var packagesErr, costsErr, claimsErr error
+	wg.Add(3)
+	go func() {
+		defer wg.Done()
+		out.SchedulesOverdue, out.SchedulesDue, claimsErr = s.scheduleMarks(ctx, org, project)
+	}()
 	go func() {
 		defer wg.Done()
 		o, err := s.ReadPackageProposals(ctx, org, project)
@@ -241,5 +253,31 @@ func (s *Store) ProfileNext(ctx context.Context, org, project string) (ProfileNe
 	if packagesErr != nil {
 		return out, packagesErr
 	}
+	if claimsErr != nil {
+		return out, claimsErr
+	}
 	return out, costsErr
+}
+
+// scheduleMarks counts the claims whose schedule needs a look. The ledger is
+// read only when the project has a claim with no schedule served.
+func (s *Store) scheduleMarks(ctx context.Context, org, project string) (overdue, due int, err error) {
+	var open bool
+	if err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM invoices i WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.kind='progress_claim'
+ AND i.status NOT IN ('void','superseded') AND NOT EXISTS(SELECT 1 FROM invoice_decisions d WHERE d.org_id=i.org_id AND d.invoice_id=i.id AND d.field='schedule_served_on' AND d.value IS NOT NULL))`, org, project).Scan(&open); err != nil || !open {
+		return 0, 0, err
+	}
+	v, err := s.InvoiceLedger(ctx, org, project, time.Now().In(invoices.Sydney).Format("2006-01-02"))
+	if err != nil {
+		return 0, 0, err
+	}
+	for _, c := range AttentionClaims(v) {
+		switch {
+		case c.Alert == invoices.AlertOverdue:
+			overdue++
+		case reports.ScheduleDue(c):
+			due++
+		}
+	}
+	return overdue, due, nil
 }

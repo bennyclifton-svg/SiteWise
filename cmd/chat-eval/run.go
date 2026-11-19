@@ -127,6 +127,20 @@ func (s *session) names(ctx context.Context) (*names, error) {
 			}
 		}
 	}
+	// Variations by number, claims by number ("4"), claim rows by label.
+	ledger, err := s.l.st.InvoiceLedger(ctx, s.org, s.project, time.Now().Format("2006-01-02"))
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range ledger.Variations {
+		n.add("variations", v.ID, v.Number)
+	}
+	for _, c := range ledger.Claims {
+		n.add("claims", c.InvoiceID, c.Number)
+		for _, r := range c.Rows {
+			n.add("claim_rows", r.ID, r.Label)
+		}
+	}
 	// Guest links by who they were shared with.
 	shares, err := s.l.st.ListGuestGrants(ctx, s.org, s.project, store.ShareFilter{}, time.Now())
 	if err != nil {
@@ -218,6 +232,8 @@ func (n *names) view(v agent.View) chateval.View {
 		if id := v.Fields["reply_to"]; id != "" {
 			out.Fields["reply_to"] = n.name("messages", id)
 		}
+	case "claim":
+		out.Fields = map[string]string{"claim": n.name("claims", v.Fields["claim"])}
 	case "report":
 		// The project report is the project's one report: the key names it
 		// so, and names whether its issue form opened.

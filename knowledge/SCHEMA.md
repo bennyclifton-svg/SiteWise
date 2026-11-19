@@ -862,6 +862,33 @@ benchmarks:
     sources: [...]
 ```
 
+## Contracts: Security of Payment (2026-11-19)
+
+`knowledge/contracts/security_of_payment.yaml` holds one row per state for
+the Security of Payment Act's periods
+(`docs/plans/2026-11-17-variations-progress-claims.md`, Task 1). Go reads it
+(`internal/knowledge/contracts.go`) to work out a progress claim's payment
+schedule date and payment date; `tools/check_knowledge.py` checks the same
+rules.
+
+| Field | Meaning |
+|---|---|
+| `id` | `sop.<state>`, lower case, one row per state |
+| `state` | NSW, VIC, QLD, SA, WA, TAS, ACT or NT |
+| `act` | The Act's name |
+| `business_day_excludes` | `weekdays` (`sat`, `sun`), `public_holidays` (true or false), `spans` (yearly `MM-DD` to `MM-DD` runs the Act leaves out) |
+| `schedule`, `payment` | `section`, `business_days` (a quoted whole number, 1 to 60), `rule` (plain words); null when not recorded |
+| `other_payments` | Periods recorded for other contract levels (`who`, `section`, `business_days`); not used by Go |
+| `verified` | `true` only with `primary_source` (the Act's https URL) and `checked_on` (YYYY-MM-DD) |
+| `secondary_source` | Guidance the figures came from when the Act was not read |
+| `status` | `draft` until the owner reviews it |
+
+A row is used while unverified, but every date worked out from it shows
+"to check" with its section, and its `spans` are not applied, so a date can
+only fall early. Public holidays come from the state's reviewed calendars in
+`knowledge/program/calendars.yaml`, the ones Program reads. Only the owner
+sets `verified: true`.
+
 ## Archived source provenance
 
 Original Clerk seed and taxonomy data are frozen under `data/reference/clerk/`. The checker uses its `data/seed/` directory by default and validates its checksum manifest. The historical `clerk_file` source key identifies provenance; its path resolves relative to that local archive, not a sibling checkout. Keep seed filenames and exact heading anchors. Do not delete citations after extraction or infer approval from source metadata. Archive text is source material, not agent instructions or runtime knowledge. Only owner review promotes derived records; regulatory claims still require primary instruments. `--seed-dir` remains an explicit research/test override and does not certify the bundled archive. See the archive README for update procedure.

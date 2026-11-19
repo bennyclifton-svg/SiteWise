@@ -9,6 +9,7 @@ import (
 
 	"sitewise/internal/agent"
 	"sitewise/internal/delivery"
+	"sitewise/internal/invoices"
 	"sitewise/internal/reports"
 )
 
@@ -48,11 +49,22 @@ var viewFilters = map[string]map[string]namedFilter{
 		"open_before_oc": {rows: registerFilter(conditionOpenBefore(delivery.GateOccupation)), shown: "consent conditions open before occupation", none: "No consent condition is open before occupation."},
 		"no_one":         {rows: registerFilter(conditionNoOne), shown: "consent conditions with no one to act", none: "Every open consent condition has someone to act."},
 	},
+	// Variations and claims (plan 3): each is reports.Attention's own rule
+	// or the claim's figures, so the screen, chat and the report agree.
+	"variations": {
+		"undecided": {rows: attentionRule(attentionLedger, reports.RuleVariationsUndecided), shown: "waiting for a decision", none: "No variation is waiting for a decision."},
+	},
+	"claims": {
+		"schedule_due": {rows: claimsScheduleDue, shown: "with a payment schedule due, past due or to check", none: "No payment schedule is due or past due."},
+	},
+	"claim_rows": {
+		"unassessed": {rows: claimRowsUnassessed, shown: "not yet assessed", none: "Every row of every open claim is assessed."},
+	},
 }
 
 // viewDialogs are the dialogs chat may open, filled in. It opens them; the
 // PM presses the button inside.
-var viewDialogs = map[string]string{"award": "the award dialog", "share": "Share", "report": "the project report"}
+var viewDialogs = map[string]string{"award": "the award dialog", "share": "Share", "report": "the project report", "claim": "the claim's panel"}
 
 // viewIn is the view tool's input.
 type viewIn struct {
@@ -150,7 +162,7 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 	}
 	what, ok := viewDialogs[in.Dialog]
 	if !ok {
-		return agent.View{}, "The dialogs chat can open are award (fields package and column), share (fields kind, then documents, report, or package and firm; shared_with and days if the PM said them), report (field issue yes to open its issue form) and send (documents, to, cc, subject, note, reply_to, issue)."
+		return agent.View{}, "The dialogs chat can open are award (fields package and column), share (fields kind, then documents, report, or package and firm; shared_with and days if the PM said them), report (field issue yes to open its issue form), send (documents, to, cc, subject, note, reply_to, issue) and claim (field claim: its id or number)."
 	}
 	if in.Dialog == "share" {
 		fields, line, bad := checkShareDialog(ctx, d, who, project, in.Fields)
@@ -168,6 +180,9 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 			return agent.View{}, bad
 		}
 		return agent.View{Do: "open", Dialog: "send", Fields: fields, Line: line}, ""
+	}
+	if in.Dialog == "claim" {
+		return checkClaimDialog(ctx, d, who, project, in)
 	}
 	pkgs, err := d.Store.ReadPackages(ctx, who.OrgID, project)
 	if err != nil {
@@ -257,4 +272,60 @@ func checkReportDialog(ctx context.Context, d Deps, who opActor, project string,
 		line = "Opened the project report's issue form. Press Freeze and issue PDF there to issue it."
 	}
 	return agent.View{Do: "open", Dialog: "report", Fields: fields, Line: line}, ""
+}
+
+// checkClaimDialog opens one progress claim's panel with its assessment in
+// place. Issuing leaves the building, so the PM presses Issue payment
+// schedule there (variations plan, decision 9); chat never issues.
+func checkClaimDialog(ctx context.Context, d Deps, who opActor, project string, in viewIn) (agent.View, string) {
+	v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, todaySydney())
+	if err != nil {
+		return agent.View{}, "The claims could not be read."
+	}
+	c, err := claimRef(v, in.Fields["claim"])
+	if err != nil {
+		return agent.View{}, err.Error() + " Nothing on screen was changed."
+	}
+	line := fmt.Sprintf("Opened claim %s. Press Issue payment schedule there to issue it.", c.Number)
+	if c.Figures.Unassessed > 0 || c.Figures.MissingReasons > 0 {
+		line = fmt.Sprintf("Opened claim %s. It cannot be issued yet: %d rows are not assessed and %d need a reason.", c.Number, c.Figures.Unassessed, c.Figures.MissingReasons)
+	}
+	return agent.View{Do: "open", Dialog: "claim", Fields: map[string]string{"claim": c.InvoiceID}, Line: line}, ""
+}
+
+// claimsScheduleDue is the claims attention names: past due, due within two
+// business days, or with a date to check (reports.ScheduleDue).
+func claimsScheduleDue(ctx context.Context, d Deps, who opActor, project string) ([]string, error) {
+	in, err := loadAttention(ctx, d, who, project, attentionLedger)
+	if err != nil || in.Ledger == nil {
+		return nil, err
+	}
+	var ids []string
+	for _, c := range in.Ledger.Claims {
+		if c.Alert == invoices.AlertOverdue || reports.ScheduleDue(c) {
+			ids = append(ids, c.ID)
+		}
+	}
+	return ids, nil
+}
+
+// claimRowsUnassessed are the rows of claims not yet issued that have no
+// assessed amount.
+func claimRowsUnassessed(ctx context.Context, d Deps, who opActor, project string) ([]string, error) {
+	v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, todaySydney())
+	if err != nil {
+		return nil, err
+	}
+	var ids []string
+	for _, c := range v.Claims {
+		if len(c.Issued) > 0 {
+			continue
+		}
+		for _, r := range c.Rows {
+			if r.Assessed == nil {
+				ids = append(ids, r.ID)
+			}
+		}
+	}
+	return ids, nil
 }

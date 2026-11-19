@@ -40,6 +40,8 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 		return compact(r, items, 0)
 	case "delivery":
 		return readRegister(ctx, d, who, project, "", r)
+	case "variations":
+		return readVariationsArea(ctx, d, who, project, r)
 	case "invoices":
 		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, time.Now().Format("2006-01-02"))
 		if err != nil {
@@ -315,8 +317,10 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 		err = readShares(r.Context(), d, who, project, rd)
 	case "mail":
 		err = readMessages(r.Context(), d, who, project, "", rd)
+	case "variations":
+		err = readVariationsArea(r.Context(), d, who, project, rd)
 	default:
-		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, delivery, report, shares, mail or outline", http.StatusUnprocessableEntity)
+		http.Error(w, "area is cost_plan, profile, accommodation, program, procurement, attention, delivery, report, shares, mail, variations or outline", http.StatusUnprocessableEntity)
 		return
 	}
 	if err != nil {

@@ -216,9 +216,13 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["delivery_settings"] = row{"org_id": org, "project_id": p, "rfi_response_days": 5}
 		// Email intake: the project's address, a filed message and its part.
 		f["project_mail_addresses"] = row{"org_id": org, "project_id": p, "local_part": "p-" + strings.Repeat(fmt.Sprintf("%02d", 80+n), 16)}
-		f["mail_messages"] = row{"org_id": org, "id": id(5100 + n), "project_id": p, "message_id": fmt.Sprintf("<fk%d@example.test>", n), "webhook_token": fmt.Sprintf("fk-token-%d", n), "sender": "x@example.test", "status": "filed", "decided_by": u, "thread_id": id(5100 + n), "firm_id": firm, "package_id": pkg}
-		f["mail_parts"] = row{"org_id": org, "message_id": id(5100 + n), "n": 0, "filename": "a.pdf", "sha256": "\\x" + strings.Repeat("01", 32), "byte_size": 1, "document_id": id(1900 + n)}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns", "mail_messages"} {
+		f["mail_messages"] = row{"org_id": org, "id": id(5300 + n), "project_id": p, "message_id": fmt.Sprintf("<fk%d@example.test>", n), "webhook_token": fmt.Sprintf("fk-token-%d", n), "sender": "x@example.test", "status": "filed", "decided_by": u, "thread_id": id(5300 + n), "firm_id": firm, "package_id": pkg}
+		f["mail_parts"] = row{"org_id": org, "message_id": id(5300 + n), "n": 0, "filename": "a.pdf", "sha256": "\\x" + strings.Repeat("01", 32), "byte_size": 1, "document_id": id(1900 + n)}
+		variation := id(5100 + n)
+		f["variations"] = row{"org_id": org, "id": variation, "project_id": p, "package_id": pkg, "award_id": award, "cost_item_id": costID, "number": "V01", "title": "Rock", "status": "submitted", "created_by": u}
+		f["variation_documents"] = row{"org_id": org, "project_id": p, "variation_id": variation, "document_id": id(1900 + n)}
+		f["progress_claim_lines"] = row{"org_id": org, "id": id(5200 + n), "project_id": p, "invoice_id": invoice, "ordinal": 0, "kind": "contract", "cost_item_id": costID, "mapped_by": "rule", "band": "green"}
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "variations", "variation_documents", "progress_claim_lines", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns", "mail_messages"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
@@ -342,6 +346,22 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				if strings.Contains(f.definition, "superseded_by") {
 					base["superseded_by"] = fixtures[0]["invoices"]["id"]
 					base["status"] = "superseded"
+				}
+				if strings.Contains(f.definition, "settles_claim_id") {
+					base["settles_claim_id"] = fixtures[0]["invoices"]["id"]
+				}
+			case "reports":
+				if strings.Contains(f.definition, "invoice_id") {
+					base["kind"], base["invoice_id"] = "payment_schedule", fixtures[0]["invoices"]["id"]
+				}
+			case "variations":
+				base["number"] = "V02"
+			case "variation_documents":
+				base["document_id"] = id(1951)
+			case "progress_claim_lines":
+				base["ordinal"] = 1
+				if strings.Contains(f.definition, "variation_id") {
+					base["kind"], base["cost_item_id"], base["variation_id"] = "variation", nil, fixtures[0]["variations"]["id"]
 				}
 			case "invoice_allocations":
 				base["ordinal"] = 1

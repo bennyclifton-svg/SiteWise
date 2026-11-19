@@ -76,6 +76,9 @@ type Options struct {
 	// InvoiceThresholds band Jev's invoice answers (data/invoice). The zero
 	// value applies none: every Jev answer stays blank for review.
 	InvoiceThresholds invoices.Thresholds
+	// ClaimThresholds band a progress claim's claim-1 answers (data/claim).
+	// The zero value is no calibration: every claim pick stays blank.
+	ClaimThresholds invoices.Thresholds
 	// InvoiceJev answers invoice questions; nil uses Jev. The bench sets a
 	// latency model here because its recordings hold filing calls only.
 	InvoiceJev invoices.Asker
@@ -223,6 +226,10 @@ func New(opts Options) (*Server, error) {
 	}
 	if reader.thresholds.QuestionVersion == "" {
 		reader.thresholds.QuestionVersion = invoices.QuestionVersion
+	}
+	reader.claims = opts.ClaimThresholds
+	if reader.claims.QuestionVersion == "" {
+		reader.claims.QuestionVersion = invoices.ClaimQuestionVersion
 	}
 	preader := &proposalReader{
 		ocr:        opts.ProposalOCR,

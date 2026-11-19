@@ -72,18 +72,56 @@ func lineFigures(item Item) Figures {
 
 // Forecast keeps estimate in its order so a baseline frozen before estimate was
 // retired keeps the forecast it was frozen with. Drafts no longer hold one.
+//
+// A contract line's forecast adds its variations (owner decision 5 in
+// docs/plans/2026-11-17-variations-progress-claims.md): approved, then open
+// ones at the PM's estimate or the claimed amount. Only a draft carries the
+// two variation values (the store attaches them at read), so a frozen
+// baseline keeps the forecast it was frozen with. An open variation with no
+// figure leaves the line's forecast unknown, so totals show what is known.
 func Forecast(item Item) (Value, string) {
 	for _, m := range []string{"commitment", "estimate", "budget"} {
 		v := item.Values[m]
 		if v.ValueState == "known" && (v.Amount != nil || v.Low != nil) {
+			if m == "commitment" {
+				return withVariations(v, item), m
+			}
 			return v, m
 		}
 	}
 	return Value{ValueState: "unknown"}, "unknown"
 }
+
+// Variation metrics: present on a draft line only when it has variations.
+const (
+	MetricApprovedVariations = "approved_variations"
+	MetricForecastVariations = "forecast_variations"
+)
+
+func withVariations(contract Value, item Item) Value {
+	approved, hasA := item.Values[MetricApprovedVariations]
+	forecast, hasF := item.Values[MetricForecastVariations]
+	if !hasA && !hasF || contract.Amount == nil {
+		return contract
+	}
+	sum := *contract.Amount
+	for _, v := range []struct {
+		v   Value
+		has bool
+	}{{approved, hasA}, {forecast, hasF}} {
+		if !v.has {
+			continue
+		}
+		if v.v.ValueState != "known" || v.v.Amount == nil {
+			return Value{ValueState: "unknown", Origin: "calculation"}
+		}
+		sum = Add(sum, *v.v.Amount)
+	}
+	return Value{ValueState: "known", Amount: &sum, Origin: "calculation", Meaning: "stated"}
+}
 func emptyTotals() map[string]Total {
 	out := map[string]Total{}
-	for _, m := range append(append([]string{}, Metrics...), "forecast") {
+	for _, m := range append(append([]string{}, Metrics...), "forecast", MetricApprovedVariations, MetricForecastVariations) {
 		zero := Money("0.00")
 		out[m] = Total{Amount: &zero, KnownSubtotal: zero, Low: &zero, High: &zero, Complete: true, Basis: map[string]int{}}
 	}
@@ -100,7 +138,12 @@ func addMetrics(out map[string]Total, item Item, noBudget bool) {
 		if noBudget && m == "budget" {
 			continue
 		}
-		v := item.Values[m]
+		v, present := item.Values[m]
+		if !present && (m == MetricApprovedVariations || m == MetricForecastVariations) {
+			// A line without variations adds nothing to these columns and
+			// does not make them unknown.
+			continue
+		}
 		basis := m
 		if m == "forecast" {
 			v, basis = Forecast(item)

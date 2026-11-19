@@ -370,7 +370,7 @@ func (m monthly) invoicesThisPeriod(l AttentionLedger) Block {
 			continue
 		}
 		n++
-		ex += *inv.Ex
+		ex += invoices.CountedEx(inv)
 		if l.Status[inv.ID] == invoices.StatusNeedsReview {
 			review++
 		}

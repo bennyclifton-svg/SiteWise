@@ -200,6 +200,7 @@ type Catalog struct {
 	program         programData
 	rfp             rfpData
 	layout          layoutData
+	sopActs         []SOPAct
 }
 
 // Load reads knowledge/ (or a fixture with the same layout).
@@ -318,6 +319,9 @@ func Load(root string) (*Catalog, error) {
 	}
 	// After the RFP skeleton: the layout places its detail flags.
 	if err := c.loadLayout(filepath.Join(root, "profile")); err != nil {
+		return nil, err
+	}
+	if err := c.loadContracts(root); err != nil {
 		return nil, err
 	}
 	sort.Slice(c.evidence, func(i, j int) bool { return c.evidence[i].ID < c.evidence[j].ID })

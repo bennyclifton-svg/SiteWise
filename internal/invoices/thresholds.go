@@ -82,7 +82,13 @@ func (q Threshold) shape() (lo, hi int) {
 //	https://docs.typesafe.ai/confidence
 //	https://docs.typesafe.ai/patterns/confidence-routing
 func (t Thresholds) Band(field string, confidence *float64, options int) (band string, apply bool) {
-	if t.QuestionVersion != QuestionVersion || confidence == nil {
+	return t.BandFor(QuestionVersion, field, confidence, options)
+}
+
+// BandFor is Band for a named question version: the claim-1 questions are
+// banded only with claim-1 cut-offs.
+func (t Thresholds) BandFor(version, field string, confidence *float64, options int) (band string, apply bool) {
+	if t.QuestionVersion != version || confidence == nil {
 		return BandBlank, false
 	}
 	for _, q := range t.Questions[field] {

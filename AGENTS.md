@@ -96,6 +96,20 @@ most 12) whose picks stay hidden until the owner approves a cut-off
 (`docs/plans/2026-11-17-rfis-review-comments.md`). A reading is a proposal;
 only the PM's edit makes an RFI answered.
 
+Variations and progress claims sit on the Cost Plan's Variations and claims
+tab (`docs/plans/2026-11-17-variations-progress-claims.md`). Variation
+writes, assessments, Accept claimed, a contract's periods, the tab's read
+(it rides on `GET /invoices`) and Issue call neither Jev nor the LLM; every
+figure and date is Go's (`invoices.ClaimLedger`, `invoices.ScheduleDue`).
+A progress claim is an invoice of kind `progress_claim`; dropped on a
+contract it is read with one interactive fan-out (`claim-1`) for the rows
+rules leave open, and those picks stay blank until a claim answer key is
+fitted. Security of Payment periods come from
+`knowledge/contracts/security_of_payment.yaml`; no row is verified, so every
+date from one is "to check" with its section, and only the owner sets
+`verified: true`. Issuing a payment schedule is never an operation: chat
+opens the claim's panel and the PM presses Issue.
+
 Consent conditions are a kind in the same table
 (`docs/plans/2026-11-17-consent-conditions.md`). A notice of determination
 is read into rows by a background `consent` job: Go splits it by its
@@ -215,6 +229,11 @@ Before changing one of these surfaces, read its current note:
   `docs/evidence/2026-11-19-mail.md`. Nothing has run against real
   Mailgun; the notice key (`data/eval/notice/`) is empty until the owner
   supplies about 50 messages.
+- Variations and claims (Cost Plan; built 19 November 2026 on branch
+  `wave/claims`): `docs/plans/2026-11-17-variations-progress-claims.md`,
+  evidence in `docs/evidence/2026-11-19-variations-progress-claims.md`. The
+  Act rows are draft and unverified; the claim key
+  (`data/eval/claim/private/`) is empty.
 - Consent conditions (Register; built 18 November 2026 on branch
   `wave/conditions`): `docs/plans/2026-11-17-consent-conditions.md`,
   evidence in `docs/evidence/2026-11-18-consent-conditions.md`. The answer

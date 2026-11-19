@@ -28,6 +28,7 @@ const (
 	pathInvoicesRead  = "invoices_read"
 	pathInvoiceWrite  = "invoice_write"
 	pathInvoiceExport = "invoice_export"
+	pathClaimIntake   = "claim_intake"
 )
 
 // invoiceReader reads stored invoices outside the upload request, one
@@ -38,13 +39,15 @@ type invoiceReader struct {
 	blobs      *files.Store
 	ask        invoices.Asker
 	thresholds invoices.Thresholds
-	broker     *events.Broker
-	log        *log.Logger
-	observe    func(string, time.Duration)
-	timeout    time.Duration
-	slots      chan struct{}
-	now        func() time.Time
-	wg         sync.WaitGroup
+	// claims band a progress claim's answers: claim-1 cut-offs only.
+	claims  invoices.Thresholds
+	broker  *events.Broker
+	log     *log.Logger
+	observe func(string, time.Duration)
+	timeout time.Duration
+	slots   chan struct{}
+	now     func() time.Time
+	wg      sync.WaitGroup
 
 	mu       sync.Mutex
 	inflight map[string]struct{}
@@ -73,30 +76,35 @@ func (r *invoiceReader) Start(orgID, invoiceID string, began time.Time, recheck 
 		defer func() { <-r.slots }()
 		ctx, cancel := context.WithTimeout(context.Background(), r.timeout)
 		defer cancel()
-		committed, err := r.read(ctx, orgID, invoiceID, recheck)
+		committed, claim, err := r.read(ctx, orgID, invoiceID, recheck)
 		if err != nil {
 			r.log.Printf("invoice read stopped org=%s invoice=%s: %v", orgID, invoiceID, err)
 		}
 		r.broker.Wake(orgID)
 		if committed && !recheck && !began.IsZero() && r.observe != nil {
-			r.observe(pathInvoiceIntake, time.Since(began))
+			path := pathInvoiceIntake
+			if claim {
+				path = pathClaimIntake
+			}
+			r.observe(path, time.Since(began))
 		}
 	}()
 }
 
-func (r *invoiceReader) read(ctx context.Context, orgID, invoiceID string, recheck bool) (bool, error) {
+func (r *invoiceReader) read(ctx context.Context, orgID, invoiceID string, recheck bool) (committed, claim bool, err error) {
 	in, err := r.store.InvoiceForReading(ctx, orgID, invoiceID, recheck)
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
 	if !recheck && in.Status != invoices.StatusReading {
-		return false, nil
+		return false, false, nil
 	}
 	out, err := r.outcome(ctx, in, recheck)
 	if err != nil {
-		return false, err
+		return false, false, err
 	}
-	return r.store.CommitInvoiceRead(ctx, orgID, invoiceID, out, recheck, r.now())
+	committed, err = r.store.CommitInvoiceRead(ctx, orgID, invoiceID, out, recheck, r.now())
+	return committed, out.Claim != nil || in.Keep[invoices.FieldKind].Value == invoices.KindProgressClaim, err
 }
 
 func (r *invoiceReader) outcome(ctx context.Context, in store.InvoiceReadInput, recheck bool) (invoices.Outcome, error) {
@@ -126,7 +134,7 @@ func (r *invoiceReader) outcome(ctx context.Context, in store.InvoiceReadInput, 
 	if recheck {
 		priority = jev.PriorityBackground
 	}
-	return invoices.Read(ctx, r.ask, r.thresholds, in.Filename, text, in.Context, in.Keep, in.CreatedAt, priority)
+	return invoices.Read(ctx, r.ask, r.thresholds, in.Filename, text, in.Context, in.Keep, in.CreatedAt, priority, r.claims)
 }
 
 // RunInvoiceRechecks re-asks grey questions in the background until ctx
@@ -185,6 +193,16 @@ func uploadInvoice(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	up := store.InvoiceUpload{SHA256: blob.SHA256, Size: blob.Size, MediaType: invoiceMediaType(name), Filename: name, UserID: session.UserID}
+	// A file dropped on a contract on the Variations and claims tab is that
+	// contract's progress claim, decided before the read.
+	if kind := r.URL.Query().Get("kind"); kind != "" {
+		pkg := r.URL.Query().Get("package")
+		if kind != invoices.KindProgressClaim || !uuidPattern.MatchString(pkg) {
+			http.Error(w, "kind is progress_claim, with the contract's package", http.StatusBadRequest)
+			return
+		}
+		up.ClaimPackage = pkg
+	}
 	if invoices.FormatOf(name) == "" {
 		up.NotRead = invoices.NotReadUnsupported
 	} else if blob.Size == 0 {
@@ -541,30 +559,34 @@ type invoiceRowJSON struct {
 }
 
 type invoiceJSON struct {
-	ID            string                      `json:"id"`
-	Filename      string                      `json:"filename"`
-	Status        string                      `json:"status"`
-	NotReadReason string                      `json:"not_read_reason,omitempty"`
-	Kind          string                      `json:"kind"`
-	Number        string                      `json:"number"`
-	Date          string                      `json:"date"`
-	Period        string                      `json:"period"`
-	SupplierID    string                      `json:"supplier_id"`
-	Supplier      string                      `json:"supplier"`
-	ABN           string                      `json:"abn"`
-	Currency      string                      `json:"currency"`
-	Ex            moneyField                  `json:"ex_gst"`
-	GST           moneyField                  `json:"gst"`
-	Total         moneyField                  `json:"total"`
-	InvoiceCount  int                         `json:"invoice_count"`
-	SupersededBy  string                      `json:"superseded_by,omitempty"`
-	DuplicateOK   bool                        `json:"duplicate_ok"`
-	Counted       bool                        `json:"counted"`
-	CreatedAt     time.Time                   `json:"created_at"`
-	Flags         []invoices.Flag             `json:"flags"`
-	Fields        map[string]invoiceFieldJSON `json:"fields"`
-	Allocations   []invoiceAllocationJSON     `json:"allocations"`
-	Rows          []invoiceRowJSON            `json:"rows"`
+	ID            string     `json:"id"`
+	Filename      string     `json:"filename"`
+	Status        string     `json:"status"`
+	NotReadReason string     `json:"not_read_reason,omitempty"`
+	Kind          string     `json:"kind"`
+	Number        string     `json:"number"`
+	Date          string     `json:"date"`
+	Period        string     `json:"period"`
+	SupplierID    string     `json:"supplier_id"`
+	Supplier      string     `json:"supplier"`
+	ABN           string     `json:"abn"`
+	Currency      string     `json:"currency"`
+	Ex            moneyField `json:"ex_gst"`
+	GST           moneyField `json:"gst"`
+	Total         moneyField `json:"total"`
+	InvoiceCount  int        `json:"invoice_count"`
+	SupersededBy  string     `json:"superseded_by,omitempty"`
+	DuplicateOK   bool       `json:"duplicate_ok"`
+	Counted       bool       `json:"counted"`
+	// SettlesClaim is the progress claim this tax invoice is for, linked
+	// by "user" or by "rule" (SettlesBy).
+	SettlesClaim string                      `json:"settles_claim,omitempty"`
+	SettlesBy    string                      `json:"settles_by,omitempty"`
+	CreatedAt    time.Time                   `json:"created_at"`
+	Flags        []invoices.Flag             `json:"flags"`
+	Fields       map[string]invoiceFieldJSON `json:"fields"`
+	Allocations  []invoiceAllocationJSON     `json:"allocations"`
+	Rows         []invoiceRowJSON            `json:"rows"`
 }
 
 type invoiceLedgerJSON struct {
@@ -575,6 +597,10 @@ type invoiceLedgerJSON struct {
 	Invoices []invoiceJSON               `json:"invoices"`
 	Packages []invoices.Package          `json:"packages"`
 	Lines    []invoiceLineJSON           `json:"lines"`
+	// The Variations and claims tab rides on this read.
+	Contracts  []contractJSON  `json:"contracts"`
+	Variations []variationJSON `json:"variations"`
+	Claims     []claimJSON     `json:"claims"`
 }
 
 type invoiceGroupJSON struct {
@@ -616,7 +642,7 @@ func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
 		j := invoiceJSON{ID: inv.ID, Filename: inv.Filename, Status: v.Status[inv.ID], NotReadReason: inv.NotReadReason, Kind: inv.Kind, Number: inv.Number,
 			Date: inv.Date, Period: inv.Period, SupplierID: inv.PackageID, Supplier: n.supplier(inv.PackageID), ABN: inv.ABN, Currency: inv.Currency,
 			Ex: cents(inv.Ex), GST: cents(inv.GST), Total: cents(inv.Total), InvoiceCount: inv.InvoiceCount, SupersededBy: inv.SupersededBy,
-			DuplicateOK: inv.DuplicateOK, Counted: invoices.Counted(inv), CreatedAt: inv.CreatedAt, Flags: v.Flags[inv.ID], Fields: map[string]invoiceFieldJSON{}}
+			DuplicateOK: inv.DuplicateOK, Counted: invoices.Counted(inv), SettlesClaim: inv.SettlesClaim, SettlesBy: inv.SettlesBy, CreatedAt: inv.CreatedAt, Flags: v.Flags[inv.ID], Fields: map[string]invoiceFieldJSON{}}
 		if j.Flags == nil {
 			j.Flags = []invoices.Flag{}
 		}
@@ -635,5 +661,7 @@ func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
 		out.Invoices = append(out.Invoices, j)
 	}
 	sort.SliceStable(out.Invoices, func(i, j int) bool { return out.Invoices[i].CreatedAt.After(out.Invoices[j].CreatedAt) })
+	out.Contracts, out.Variations = tabBody(v)
+	out.Claims = claimsBody(v)
 	return out
 }

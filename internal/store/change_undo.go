@@ -15,7 +15,7 @@ import (
 type capturedTable struct {
 	Key    []string // primary key columns
 	Ignore []string // the trigger's arguments: columns that may move without counting
-	Area   string   // which finisher runs after an undo: "costs", "profile", "procurement" or "reports"
+	Area   string   // which finisher runs after an undo: "costs", "profile", "procurement", "reports", "delivery" or "claims"
 }
 
 // captured names every table that carries the capture_change trigger. It
@@ -42,6 +42,9 @@ var captured = map[string]capturedTable{
 	// edits; everything else on the row is the record's or the sender's.
 	"mail_messages": {Key: []string{"org_id", "id"}, Ignore: []string{"version", "status", "held_reason", "decided_by", "firm_id",
 		"notice_read", "notice_confidence", "notice_band", "send_status", "send_attempts", "send_error", "sent_at", "send_tried_at"}, Area: "mail"},
+	"variations":           {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "claims"},
+	"variation_documents":  {Key: []string{"org_id", "variation_id", "document_id"}, Area: "claims"},
+	"progress_claim_lines": {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "claims"},
 }
 
 var (
@@ -227,6 +230,8 @@ func (s *Store) UndoChange(ctx context.Context, org, project, actor, id string) 
 			err = s.touchReportsAfterUndo(ctx, tx, org, project, log)
 		case "delivery":
 			err = s.touchDeliveryAfterUndo(ctx, tx, org, project)
+		case "claims":
+			err = s.touchClaims(ctx, tx, org, project)
 		}
 		if err != nil {
 			var pg *pgconn.PgError

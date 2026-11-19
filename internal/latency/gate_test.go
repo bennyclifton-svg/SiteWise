@@ -237,6 +237,11 @@ func TestCommittedBudgets(t *testing.T) {
 		"mail_decide":               {100000, 250000},
 		"transmittal_send":          {100000, 250000},
 		"mail_send":                 {3000000, 10000000},
+		"claim_intake":              {1_000_000, 2_000_000},
+		"variations_read":           {100_000, 250_000},
+		"variation_write":           {100_000, 250_000},
+		"claim_assess":              {100_000, 250_000},
+		"payment_schedule_issue":    {100_000, 250_000},
 	}
 	if len(budgets.Paths) != len(want) {
 		t.Fatalf("paths = %d", len(budgets.Paths))

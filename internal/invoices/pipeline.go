@@ -42,11 +42,18 @@ type Outcome struct {
 	NotRead string
 	Grey    bool
 	Asked   bool
+	// Claim is a progress claim's table, read as printed; nil for an
+	// invoice.
+	Claim *ClaimReading
 }
 
 // Read files one invoice's text: rules first, then at most one Jev fan-out
 // for what is still open, then code arithmetic. Users' decisions stay.
-func Read(ctx context.Context, ask Asker, th Thresholds, filename string, text identity.Text, pc Context, users map[string]Decision, uploaded time.Time, priority jev.Priority) (Outcome, error) {
+//
+// A progress claim (dropped on its contract, or "progress claim" printed
+// with the supplier settled by rule to a live works contract) is read by
+// ReadClaim instead, against claim, the claim-1 cut-offs.
+func Read(ctx context.Context, ask Asker, th Thresholds, filename string, text identity.Text, pc Context, users map[string]Decision, uploaded time.Time, priority jev.Priority, claim ...Thresholds) (Outcome, error) {
 	if !text.TextLayer {
 		return Outcome{NotRead: NotReadNoText}, nil
 	}
@@ -55,6 +62,13 @@ func Read(ctx context.Context, ask Asker, th Thresholds, filename string, text i
 		return Outcome{NotRead: NotReadUnreadable}, nil
 	}
 	d := NewDraft(ev, pc, users)
+	if c, ok := d.claimContract(); ok {
+		cth := Thresholds{QuestionVersion: ClaimQuestionVersion}
+		if len(claim) > 0 {
+			cth = claim[0]
+		}
+		return readClaim(ctx, ask, cth, d, text, c, uploaded, priority)
+	}
 	out := Outcome{}
 	if call, ok := d.Call(); ok {
 		if priority != "" {

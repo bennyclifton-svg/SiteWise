@@ -252,3 +252,29 @@ func TestAttentionSentence(t *testing.T) {
 		t.Errorf("negative cents %s", c)
 	}
 }
+
+// Plan 3's rules: payment schedules past due, due or to check, and
+// variations waiting for a decision. A served schedule says nothing.
+func TestAttentionClaimRules(t *testing.T) {
+	l := &AttentionLedger{
+		Claims:     []AttentionClaim{{ID: "c1", Number: "4", Alert: invoices.AlertOverdue}, {ID: "c2", Alert: invoices.AlertSoon}, {ID: "c3", Alert: invoices.AlertCheck}, {ID: "c4", Alert: ""}},
+		Variations: []invoices.Variation{{ID: "v1", Status: invoices.VariationSubmitted}, {ID: "v2", Status: invoices.VariationApproved}, {ID: "v3", Status: invoices.VariationProposed}},
+	}
+	items := Attention(AttentionInput{Ledger: l})
+	want := map[string][]string{RuleScheduleOverdue: {"c1"}, RuleScheduleDue: {"c2", "c3"}, RuleVariationsUndecided: {"v1", "v3"}}
+	for rule, ids := range want {
+		it, ok := AttentionFor(items, rule)
+		if !ok || !reflect.DeepEqual(it.IDs, ids) {
+			t.Errorf("%s: %+v", rule, it)
+		}
+	}
+	got := strings.Join(rulesOf(items), "\n")
+	for _, s := range []string{"1 payment schedule is past its due date and not served: the claimed amount counts", "2 payment schedules are due within two business days, or with dates to check", "2 variations are waiting for a decision"} {
+		if !strings.Contains(got, s) {
+			t.Errorf("missing %q in\n%s", s, got)
+		}
+	}
+	if items := Attention(AttentionInput{Ledger: &AttentionLedger{Claims: []AttentionClaim{{ID: "c4"}}}}); len(items) != 0 {
+		t.Errorf("nothing due: %v", rulesOf(items))
+	}
+}

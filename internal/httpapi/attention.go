@@ -83,7 +83,8 @@ func loadAttention(ctx context.Context, d Deps, who opActor, project string, par
 	run(attentionLedger, func() error {
 		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, todaySydney())
 		if err == nil {
-			in.Ledger = &reports.AttentionLedger{Invoices: v.Invoices, Status: v.Status, Summary: v.Summary, Lines: v.Lines, Groups: v.Groups}
+			in.Ledger = &reports.AttentionLedger{Invoices: v.Invoices, Status: v.Status, Summary: v.Summary, Lines: v.Lines, Groups: v.Groups,
+				Claims: store.AttentionClaims(v), Variations: v.Variations}
 		}
 		return err
 	})
