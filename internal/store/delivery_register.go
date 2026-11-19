@@ -434,6 +434,12 @@ func (s *Store) registerFill(ctx context.Context, tx pgx.Tx, org, project string
 				return err
 			}
 		}
+		// The message an RFI went out on is Go's (LinkRFIMessage); an edit
+		// keeps it as it was.
+		d.SentMessageID = ""
+		if before != nil && before.Kind == "rfi" {
+			d.SentMessageID = delivery.RFI(*before).SentMessageID
+		}
 		if dueEdited {
 			d.DueTyped = c.TargetDate != nil
 		} else if before != nil && delivery.RFI(*before).DueTyped {

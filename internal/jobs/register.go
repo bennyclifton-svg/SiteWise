@@ -214,6 +214,9 @@ func RuleMatches(text string, rfis []store.RegisterRFI) ([]store.RegisterReading
 			hits = append(hits, store.RegisterReading{ItemID: r.ID, DecidedBy: "rule", Band: "amber", Basis: fmt.Sprintf("cites RFI-%03d", r.Number)})
 		case citesRef(text, r.Ref):
 			hits = append(hits, store.RegisterReading{ItemID: r.ID, DecidedBy: "rule", Band: "amber", Basis: "cites ref " + r.Ref})
+		case r.Threaded:
+			// A reply in the thread of the email the RFI went out on.
+			hits = append(hits, store.RegisterReading{ItemID: r.ID, DecidedBy: "rule", Band: "amber", Basis: fmt.Sprintf("replies to the email RFI-%03d went out on", r.Number)})
 		default:
 			left = append(left, r)
 		}

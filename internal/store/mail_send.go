@@ -445,3 +445,32 @@ func (s *Store) MailFirm(ctx context.Context, org, ref string) (Firm, error) {
 	}
 	return f, nil
 }
+
+// RFIToSend is an RFI of this project, for Send: its number and title.
+func (s *Store) RFIToSend(ctx context.Context, org, project, item string) (int, string, error) {
+	if !validUUID(org) || !validUUID(project) || !validUUID(item) {
+		return 0, "", ErrNotFound
+	}
+	var n int
+	var title string
+	err := s.pool.QueryRow(ctx, `SELECT number, title FROM project_delivery_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid AND kind='rfi' AND retired_at IS NULL`, org, project, item).Scan(&n, &title)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return 0, "", ErrNotFound
+	}
+	return n, title, err
+}
+
+// LinkRFIMessage records the message an RFI went out on, so a reply in its
+// thread answers it by rule. The RFI's status stays the PM's.
+func (s *Store) LinkRFIMessage(ctx context.Context, org, project, item, message string) error {
+	tag, err := s.pool.Exec(ctx, `UPDATE project_delivery_items SET details = details || jsonb_build_object('sent_message_id', $4::text), version = version + 1
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid AND kind='rfi'
+  AND EXISTS(SELECT 1 FROM mail_messages m WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.id=$4::uuid AND m.direction='out')`, org, project, item, message)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() != 1 {
+		return ErrNotFound
+	}
+	return nil
+}

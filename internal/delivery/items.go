@@ -200,6 +200,10 @@ type RFIDetails struct {
 	// DueTyped is true once the PM typed the response date, so a later
 	// change to the raised date keeps it.
 	DueTyped bool `json:"due_typed,omitempty"`
+	// SentMessageID is the message the RFI went out on (correspondence plan:
+	// Send for an RFI). Go's: set when the PM's Send queues it, never typed.
+	// A reply in that message's thread answers the RFI by rule.
+	SentMessageID string `json:"sent_message_id,omitempty"`
 }
 
 // NoticeDetails is what is particular to a notice. Its due date is the

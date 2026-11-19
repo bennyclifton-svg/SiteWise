@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/mail"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -234,6 +235,12 @@ type transmittalBody struct {
 	PackageID   string   `json:"package_id"`
 	// Retry sends a message that was not sent again; nothing else is read.
 	Retry string `json:"retry"`
+	// Issue attaches an issued version of this project's report, its frozen
+	// PDF as issued (the report plan's Send issue N…).
+	Issue string `json:"issue"`
+	// RFI is the register's RFI this message sends; a reply in its thread
+	// then answers it by rule.
+	RFI string `json:"rfi"`
 }
 
 // sendError is a refusal in the PM's words, with its status.
@@ -426,10 +433,31 @@ func postTransmittal(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	in := store.Outbound{To: body.To, Cc: body.Cc, Subject: subject, Body: body.Note, DocumentIDs: body.DocumentIDs,
 		InReplyTo: body.InReplyTo, PackageID: body.PackageID}
+	if body.Issue != "" {
+		f, err := issueFile(r.Context(), deps, session.OrgID, project, body.Issue)
+		if err != nil {
+			writeSendError(w, deps, err)
+			return
+		}
+		in.Files = append(in.Files, f)
+	}
+	if body.RFI != "" {
+		if _, _, err := deps.Store.RFIToSend(r.Context(), session.OrgID, project, body.RFI); err != nil {
+			writeSendError(w, deps, err)
+			return
+		}
+	}
 	m, err := queueOutbound(r.Context(), deps, session, project, in, true, body.Note)
 	if err != nil {
 		writeSendError(w, deps, err)
 		return
+	}
+	if body.RFI != "" {
+		if err := deps.Store.LinkRFIMessage(r.Context(), session.OrgID, project, body.RFI, m.ID); err != nil {
+			deps.Log.Printf("transmittal org=%s: the RFI was not linked to its message: %v", session.OrgID, err)
+		} else if deps.Broker != nil {
+			deps.Broker.Wake(session.OrgID)
+		}
 	}
 	writeJSON(w, http.StatusAccepted, m)
 }
@@ -513,4 +541,41 @@ func getMailPart(w http.ResponseWriter, r *http.Request, deps Deps) {
 		}
 	}
 	http.NotFound(w, r)
+}
+
+// issueFile is an issued report version's frozen PDF as a file to send. Its
+// size is read from the stored bytes so the 10 MB limit holds.
+func issueFile(ctx context.Context, deps Deps, org, project, version string) (store.OutboundFile, error) {
+	v, err := deps.Store.IssuedVersionOf(ctx, org, project, version)
+	if err != nil {
+		return store.OutboundFile{}, err
+	}
+	path, err := deps.Blobs.Path(v.SHA256)
+	if err != nil {
+		return store.OutboundFile{}, err
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		return store.OutboundFile{}, err
+	}
+	return store.OutboundFile{Name: fmt.Sprintf("%s issue %d.pdf", cleanFileTitle(v.Title), v.Number), ContentType: "application/pdf", SHA256: v.SHA256, Size: info.Size()}, nil
+}
+
+// cleanFileTitle keeps a title safe as a file name: no path or control
+// characters.
+func cleanFileTitle(s string) string {
+	s = strings.Map(func(r rune) rune {
+		if r < 0x20 || r == 0x7f || strings.ContainsRune(`/\:*?"<>|`, r) {
+			return ' '
+		}
+		return r
+	}, s)
+	s = strings.Join(strings.Fields(s), " ")
+	if s == "" {
+		return "Report"
+	}
+	if len([]rune(s)) > 120 {
+		s = string([]rune(s)[:120])
+	}
+	return s
 }

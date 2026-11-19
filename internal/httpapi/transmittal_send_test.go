@@ -195,6 +195,8 @@ func TestTransmittalRefusals(t *testing.T) {
 		"LF in subject":          {map[string]any{"to": to, "subject": "Hi\nBcc: victim@example.net"}, http.StatusBadRequest},
 		"21 addresses":           {map[string]any{"to": manyAddresses(21)}, http.StatusBadRequest},
 		"foreign reply":          {map[string]any{"to": to, "in_reply_to": newUUID(t)}, http.StatusBadRequest},
+		"unknown issue":          {map[string]any{"to": to, "issue": newUUID(t)}, http.StatusBadRequest},
+		"unknown RFI":            {map[string]any{"to": to, "rfi": newUUID(t)}, http.StatusBadRequest},
 	} {
 		if status, _, text := f.send(t, c.body); status != c.want {
 			t.Fatalf("%s = %d %s", name, status, text)
@@ -328,5 +330,53 @@ func TestTransmittalOffWithoutASender(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != http.StatusServiceUnavailable || f.messages(t) != 0 {
 		t.Fatalf("no sender = %d", resp.StatusCode)
+	}
+}
+
+// Send for an RFI (the register's wait on plan 1): the RFI keeps the message
+// it went out on, and a reply in that thread is a candidate the rule step
+// matches without the RFI's number in its text.
+func TestRFISendThreadsItsReply(t *testing.T) {
+	ctx := context.Background()
+	f := newSendFixture(t)
+	body, _ := json.Marshal(map[string]any{"kind": "rfi", "title": "Footing depth", "status": "open", "details": map[string]any{"question": "Confirm the footing depth.", "raised_on": "2026-11-10"}})
+	var rfi struct {
+		ID string `json:"id"`
+	}
+	f.m.call(t, http.MethodPost, "/api/projects/"+f.project+"/delivery", body, http.StatusCreated, &rfi)
+	status, m, text := f.send(t, map[string]any{"to": []string{"eng@consult.example"}, "subject": "RFI-001 Footing depth", "note": "Confirm the footing depth.", "rfi": rfi.ID})
+	if status != http.StatusAccepted {
+		t.Fatalf("send = %d %s", status, text)
+	}
+	var sent string
+	if err := f.conn.QueryRow(ctx, `SELECT details->>'sent_message_id' FROM project_delivery_items WHERE id=$1::uuid`, rfi.ID).Scan(&sent); err != nil || sent != m.ID {
+		t.Fatalf("sent message %q %v", sent, err)
+	}
+	reply := f.memberPost("Re: footing")
+	reply.from, reply.envelope, reply.body = "eng@consult.example", "eng@consult.example", "It is 1.2 m."
+	reply.headers = append(reply.headers, [2]string{"In-Reply-To", sentMessageID(t, f.mailFixture, m.ID)})
+	f.mailFixture.send(t, reply)
+	var doc string
+	if err := f.conn.QueryRow(ctx, `SELECT p.document_id::text FROM mail_parts p JOIN mail_messages x ON x.org_id=p.org_id AND x.id=p.message_id WHERE x.message_id=$1 AND p.n=0`, reply.messageID).Scan(&doc); err != nil {
+		t.Fatal(err)
+	}
+	var rfis []store.RegisterRFI
+	var err error
+	for deadline := time.Now().Add(10 * time.Second); time.Now().Before(deadline); time.Sleep(50 * time.Millisecond) {
+		if _, rfis, err = f.a.store.RegisterCandidates(ctx, f.m.orgID, doc); err == nil {
+			break
+		}
+	}
+	if err != nil || len(rfis) != 1 || !rfis[0].Threaded {
+		t.Fatalf("candidates %+v %v", rfis, err)
+	}
+	// An RFI of another project is refused.
+	other := f.m.createProject(t, "Other")
+	var foreignRFI struct {
+		ID string `json:"id"`
+	}
+	f.m.call(t, http.MethodPost, "/api/projects/"+other+"/delivery", body, http.StatusCreated, &foreignRFI)
+	if status, _, _ := f.send(t, map[string]any{"to": []string{"eng@consult.example"}, "rfi": foreignRFI.ID}); status != http.StatusBadRequest {
+		t.Fatalf("another project's RFI = %d", status)
 	}
 }

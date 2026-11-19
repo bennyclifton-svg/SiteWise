@@ -41,6 +41,9 @@ type RegisterDocument struct {
 type RegisterRFI struct {
 	ID, Subject, Question, Ref, OwnerText, Discipline string
 	Number                                            int
+	// Threaded: the document is the body of a message received in the
+	// thread of the message this RFI went out on (correspondence plan).
+	Threaded bool
 }
 
 // RegisterReading is one possible answer the job found, or (Field
@@ -101,7 +104,11 @@ func (s *Store) RegisterCandidates(ctx context.Context, org, document string) (R
 	if err != nil {
 		return doc, nil, err
 	}
-	rows, err := s.pool.Query(ctx, `SELECT i.id::text, i.number, i.title, COALESCE(i.details->>'question',''), COALESCE(i.details->>'ref',''), i.owner_text, COALESCE(p.discipline_id,'')
+	rows, err := s.pool.Query(ctx, `SELECT i.id::text, i.number, i.title, COALESCE(i.details->>'question',''), COALESCE(i.details->>'ref',''), i.owner_text, COALESCE(p.discipline_id,''),
+ EXISTS(SELECT 1 FROM mail_parts mp JOIN mail_messages m ON m.org_id=mp.org_id AND m.id=mp.message_id
+   JOIN mail_messages sent ON sent.org_id=m.org_id AND sent.project_id=m.project_id AND sent.thread_id=m.thread_id
+  WHERE mp.org_id=i.org_id AND mp.document_id=$3::uuid AND mp.n=0 AND m.direction='in'
+   AND sent.id::text=COALESCE(i.details->>'sent_message_id',''))
  FROM project_delivery_items i LEFT JOIN packages p ON p.org_id=i.org_id AND p.project_id=i.project_id AND p.id=i.package_id
  WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.kind='rfi' AND i.status='open' AND i.retired_at IS NULL
  AND NOT COALESCE(i.provenance->'sources','[]'::jsonb) @> jsonb_build_array(jsonb_build_object('document_id',$3::text))
@@ -115,7 +122,7 @@ func (s *Store) RegisterCandidates(ctx context.Context, org, document string) (R
 	var out []RegisterRFI
 	for rows.Next() {
 		var r RegisterRFI
-		if err := rows.Scan(&r.ID, &r.Number, &r.Subject, &r.Question, &r.Ref, &r.OwnerText, &r.Discipline); err != nil {
+		if err := rows.Scan(&r.ID, &r.Number, &r.Subject, &r.Question, &r.Ref, &r.OwnerText, &r.Discipline, &r.Threaded); err != nil {
 			return doc, nil, err
 		}
 		out = append(out, r)
