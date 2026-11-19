@@ -23,11 +23,11 @@ func TestVerifyDKIM(t *testing.T) {
 	ctx := context.Background()
 	keys := mailintest.NewKeys()
 	signed := keys.Sign(member().Build(), "victim.example")
-	if !mailin.Verify(ctx, signed, "pm@victim.example", keys.Lookup) {
+	if !verified(mailin.Verify(ctx, signed, "pm@victim.example", keys.Lookup)) {
 		t.Fatal("an aligned, valid signature did not verify")
 	}
 	sub := keys.Sign(member().Build(), "mail.victim.example")
-	if !mailin.Verify(ctx, sub, "pm@victim.example", keys.Lookup) {
+	if !verified(mailin.Verify(ctx, sub, "pm@victim.example", keys.Lookup)) {
 		t.Fatal("a subdomain of the From domain is aligned")
 	}
 	// The review's probe: a valid d=evil.test signature beside a forged
@@ -36,22 +36,22 @@ func TestVerifyDKIM(t *testing.T) {
 	forged.Headers = [][2]string{{"X-Mailgun-Spf", "Pass"}, {"X-Mailgun-Dkim-Check-Result", "Pass"},
 		{"DKIM-Signature", "v=1; a=rsa-sha256; d=victim.example; s=t; h=from; bh=AAAA; b=AAAA"}}
 	probe := keys.Sign(forged.Build(), "evil.test")
-	if mailin.Verify(ctx, probe, "pm@victim.example", keys.Lookup) {
+	if verified(mailin.Verify(ctx, probe, "pm@victim.example", keys.Lookup)) {
 		t.Fatal("a forged From was authenticated by another domain's signature")
 	}
 	// Tampering after signing breaks it.
 	tampered := bytes.Replace(signed, []byte("See attached."), []byte("Pay this now."), 1)
-	if mailin.Verify(ctx, tampered, "pm@victim.example", keys.Lookup) {
+	if verified(mailin.Verify(ctx, tampered, "pm@victim.example", keys.Lookup)) {
 		t.Fatal("a changed body verified")
 	}
 	// A body length tag leaves content unsigned: never trusted.
 	withL := bytes.Replace(signed, []byte("DKIM-Signature: "), []byte("DKIM-Signature: l=3; "), 1)
-	if mailin.Verify(ctx, withL, "pm@victim.example", keys.Lookup) {
+	if verified(mailin.Verify(ctx, withL, "pm@victim.example", keys.Lookup)) {
 		t.Fatal("a signature with l= was trusted")
 	}
 	// DNS failure or a slow resolver: not authenticated.
 	fail := func(context.Context, string) ([]string, error) { return nil, errors.New("SERVFAIL") }
-	if mailin.Verify(ctx, signed, "pm@victim.example", fail) {
+	if verified(mailin.Verify(ctx, signed, "pm@victim.example", fail)) {
 		t.Fatal("a failed lookup authenticated")
 	}
 	slow := func(ctx context.Context, d string) ([]string, error) {
@@ -63,10 +63,10 @@ func TestVerifyDKIM(t *testing.T) {
 		}
 	}
 	start := time.Now()
-	if mailin.Verify(ctx, signed, "pm@victim.example", slow) || time.Since(start) > mailin.DNSTimeout+500*time.Millisecond {
+	if verified(mailin.Verify(ctx, signed, "pm@victim.example", slow)) || time.Since(start) > mailin.DNSTimeout+500*time.Millisecond {
 		t.Fatal("a slow lookup authenticated or was waited for")
 	}
-	if mailin.Verify(ctx, nil, "pm@victim.example", keys.Lookup) {
+	if verified(mailin.Verify(ctx, nil, "pm@victim.example", keys.Lookup)) {
 		t.Fatal("no raw message authenticated")
 	}
 	// A public suffix never aligns.
@@ -106,5 +106,47 @@ func TestParseRawReadsBodyAndFiles(t *testing.T) {
 	b, _ := io.ReadAll(rc)
 	if string(b) != "%PDF dummy" || mailin.SkipPart(got, files[1], files[1].Name) != mailin.SkipInline {
 		t.Fatalf("file %q, logo %q", b, mailin.SkipPart(got, files[1], files[1].Name))
+	}
+}
+
+func verified(_ mailin.Signed, ok bool) bool { return ok }
+
+// Review HIGH-1: a header prepended above a genuinely signed message is
+// refused; headers the signature did not sign are not trusted.
+func TestTrustOnlyWhatIsSigned(t *testing.T) {
+	ctx := context.Background()
+	keys := mailintest.NewKeys()
+	m := member()
+	m.InReplyTo = "<rfi7@in.example.test>"
+	signed := keys.Sign(m.Build(), "victim.example")
+	for _, h := range []string{"Subject: Pay this now", "Message-ID: <other@victim.example>", "In-Reply-To: <rfi9@in.example.test>", "Content-Type: text/html", "To: x@evil.test"} {
+		forged := append([]byte(h+"\r\n"), signed...)
+		if _, _, err := mailin.ParseRaw(forged); !errors.Is(err, mailin.ErrDuplicateHeader) {
+			t.Fatalf("prepended %q: %v", h, err)
+		}
+	}
+	// Signed over From, Subject, Message-ID and Date only: To and In-Reply-To
+	// are blanked; without Subject signed it is not trusted.
+	narrow := keys.SignHeaders(m.Build(), "victim.example", []string{"From", "Subject", "Message-ID", "Date", "MIME-Version", "Content-Type"})
+	got, _, err := mailin.ParseRaw(narrow)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s, ok := mailin.Verify(ctx, narrow, got.FromAddress, keys.Lookup)
+	now := time.Date(2026, 11, 15, 0, 0, 0, 0, time.UTC)
+	if !ok || !mailin.Trust(&got, s, now) || got.InReplyTo != "" || got.To != "" {
+		t.Fatalf("narrow: ok %v in-reply-to %q to %q", ok, got.InReplyTo, got.To)
+	}
+	noSubject := keys.SignHeaders(m.Build(), "victim.example", []string{"From", "Message-ID", "Date", "Content-Type"})
+	got, _, _ = mailin.ParseRaw(noSubject)
+	s, ok = mailin.Verify(ctx, noSubject, got.FromAddress, keys.Lookup)
+	if !ok || mailin.Trust(&got, s, now) {
+		t.Fatal("an unsigned Subject was trusted")
+	}
+	// An old genuine message is not trusted as new.
+	got, _, _ = mailin.ParseRaw(signed)
+	s, _ = mailin.Verify(ctx, signed, got.FromAddress, keys.Lookup)
+	if mailin.Trust(&got, s, time.Now().Add(8*24*time.Hour)) {
+		t.Fatal("a signature over a week old was trusted")
 	}
 }

@@ -35,9 +35,25 @@ func newSendFixture(t *testing.T, adjust ...func(*httpapi.Options)) *sendFixture
 	t.Helper()
 	sink := &correspondence.Sink{}
 	opts := append([]func(*httpapi.Options){func(o *httpapi.Options) {
-		o.MailSender, o.MailFrom, o.MailRetryDelay = sink, mailTestFrom, 5*time.Millisecond
+		o.MailSender, o.MailFrom, o.MailRetryDelay, o.MailSendOn = sink, mailTestFrom, 5*time.Millisecond, true
 	}}, adjust...)
-	return &sendFixture{mailFixture: newMailFixture(t, opts...), sink: sink}
+	f := &sendFixture{mailFixture: newMailFixture(t, opts...), sink: sink}
+	// Without billing every org is free, and a free account sends after a
+	// week (review MEDIUM-3): the fixture's member is a week and a day old.
+	if _, err := f.conn.Exec(context.Background(), `UPDATE users SET created_at=now()-interval '8 days' WHERE org_id=$1::uuid`, f.m.orgID); err != nil {
+		t.Fatal(err)
+	}
+	return f
+}
+
+// paid puts the fixture's org on a paid plan, billing on.
+func withPaidBilling(o *httpapi.Options) { o.Billing = &httpapi.Billing{} }
+
+func (f *sendFixture) paid(t *testing.T) {
+	t.Helper()
+	if err := f.a.store.SetPlan(context.Background(), f.m.orgID, "team"); err != nil {
+		t.Fatal(err)
+	}
 }
 
 // doc stores a filed document with real bytes and no filing call.
@@ -382,10 +398,11 @@ func TestRFISendThreadsItsReply(t *testing.T) {
 }
 
 // H3: From is SiteWise only; the org and the member are named in a fixed
-// footer. Every org together has a daily cap.
+// footer. Every paid org together has a daily cap.
 func TestTransmittalFromAndGlobalCap(t *testing.T) {
 	ctx := context.Background()
-	f := newSendFixture(t, func(o *httpapi.Options) { o.MailGlobalPerDay = 2 })
+	f := newSendFixture(t, withPaidBilling, func(o *httpapi.Options) { o.MailGlobalPerDay = 2 })
+	f.paid(t)
 	if _, err := f.conn.Exec(ctx, `UPDATE orgs SET name='Acme <attacker@evil.test> Pty' WHERE id=$1::uuid`, f.m.orgID); err != nil {
 		t.Fatal(err)
 	}
@@ -409,9 +426,8 @@ func TestTransmittalFromAndGlobalCap(t *testing.T) {
 	}
 	// Another org's send counts toward the same cap.
 	other := newSendFixture(t, func(o *httpapi.Options) { o.MailGlobalPerDay = 2 })
-	_ = other
-	if _, err := f.conn.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,sender,to_addrs,status,direction,thread_id,number,send_status)
-VALUES ($1::uuid, gen_random_uuid(), $2::uuid, '<g@x>', 'x@example.test', 'a@b.example', 'filed', 'out', gen_random_uuid(), 99, 'sent')`, other.m.orgID, other.project); err != nil {
+	if _, err := f.conn.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,sender,to_addrs,status,direction,thread_id,number,send_status,send_pool)
+VALUES ($1::uuid, gen_random_uuid(), $2::uuid, '<g@x>', 'x@example.test', 'a@b.example', 'filed', 'out', gen_random_uuid(), 99, 'sent', 'paid')`, other.m.orgID, other.project); err != nil {
 		t.Fatal(err)
 	}
 	if status, _, text := f.send(t, map[string]any{"to": []string{"eng@consult.example"}, "subject": "Three"}); status != http.StatusTooManyRequests || !strings.Contains(text, "SiteWise has sent") {
@@ -425,6 +441,9 @@ func TestTransmittalFreePlan(t *testing.T) {
 	ctx := context.Background()
 	f := newSendFixture(t, func(o *httpapi.Options) { o.Billing = &httpapi.Billing{} })
 	to := []string{"eng@consult.example"}
+	if _, err := f.conn.Exec(ctx, `UPDATE users SET created_at=now() WHERE org_id=$1::uuid`, f.m.orgID); err != nil {
+		t.Fatal(err)
+	}
 	if status, _, text := f.send(t, map[string]any{"to": to}); status != http.StatusForbidden || !strings.Contains(text, "7 days") {
 		t.Fatalf("new free account = %d %s", status, text)
 	}
@@ -439,5 +458,32 @@ func TestTransmittalFreePlan(t *testing.T) {
 	}
 	if status, _, _ := f.send(t, map[string]any{"to": to}); status != http.StatusTooManyRequests {
 		t.Fatalf("the 11th free send = %d", status)
+	}
+}
+
+// MEDIUM-3: free orgs draw on their own global pool, so they can never use
+// up paid capacity; without SITEWISE_MAIL_SEND nothing is sent.
+func TestTransmittalPools(t *testing.T) {
+	ctx := context.Background()
+	f := newSendFixture(t, func(o *httpapi.Options) { o.MailFreeGlobalPerDay = 1; o.MailGlobalPerDay = 5 })
+	to := []string{"eng@consult.example"}
+	if status, _, text := f.send(t, map[string]any{"to": to, "subject": "Free one"}); status != http.StatusAccepted {
+		t.Fatalf("first free send = %d %s", status, text)
+	}
+	if status, _, text := f.send(t, map[string]any{"to": to, "subject": "Free two"}); status != http.StatusTooManyRequests || !strings.Contains(text, "SiteWise has sent") {
+		t.Fatalf("the free pool's second = %d %s", status, text)
+	}
+	paid := newSendFixture(t, withPaidBilling, func(o *httpapi.Options) { o.MailFreeGlobalPerDay = 1; o.MailGlobalPerDay = 5 })
+	paid.paid(t)
+	if status, _, text := paid.send(t, map[string]any{"to": to, "subject": "Paid"}); status != http.StatusAccepted {
+		t.Fatalf("a paid send after the free pool ran out = %d %s", status, text)
+	}
+	_ = ctx
+	off := newMailFixture(t, func(o *httpapi.Options) { o.MailSender, o.MailFrom = &correspondence.Sink{}, mailTestFrom })
+	raw, _ := json.Marshal(map[string]any{"to": to})
+	resp := off.m.do(t, http.MethodPost, "/api/projects/"+off.project+"/transmittals", raw)
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusServiceUnavailable {
+		t.Fatalf("SMTP set but sending not switched on = %d", resp.StatusCode)
 	}
 }

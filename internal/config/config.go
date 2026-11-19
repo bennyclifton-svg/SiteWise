@@ -47,9 +47,13 @@ type Config struct {
 	// and no project address is shown).
 	MailInDomain      string
 	MailgunSigningKey string
-	// MailSendDailyCap is every org's sends together in a day
-	// (SITEWISE_MAIL_SEND_DAILY_CAP); zero is the server's default, 2,000.
-	MailSendDailyCap int
+	// MailSendDailyCap is every paid org's sends together in a day
+	// (SITEWISE_MAIL_SEND_DAILY_CAP); zero is the default, 2,000.
+	// MailSendFreeDailyCap is every free org's (…_FREE_DAILY_CAP; 200).
+	MailSendDailyCap, MailSendFreeDailyCap int
+	// MailSend is SITEWISE_MAIL_SEND=1: sending mail out is on. Off by
+	// default; it stays off while Stripe is in test mode.
+	MailSend bool
 }
 
 // MailInEnabled reports whether email intake is configured.
@@ -227,12 +231,21 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, err
 	}
 	cfg.MailInDomain, cfg.MailgunSigningKey = mailDomainIn, mailKey
-	if v := strings.TrimSpace(getenv("SITEWISE_MAIL_SEND_DAILY_CAP")); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < 1 || n > 1000000 {
-			return Config{}, fmt.Errorf("SITEWISE_MAIL_SEND_DAILY_CAP must be a whole number from 1")
+	for key, into := range map[string]*int{"SITEWISE_MAIL_SEND_DAILY_CAP": &cfg.MailSendDailyCap, "SITEWISE_MAIL_SEND_FREE_DAILY_CAP": &cfg.MailSendFreeDailyCap} {
+		if v := strings.TrimSpace(getenv(key)); v != "" {
+			n, err := strconv.Atoi(v)
+			if err != nil || n < 1 || n > 1000000 {
+				return Config{}, fmt.Errorf("%s must be a whole number from 1", key)
+			}
+			*into = n
 		}
-		cfg.MailSendDailyCap = n
+	}
+	switch v := strings.TrimSpace(getenv("SITEWISE_MAIL_SEND")); v {
+	case "", "0", "false":
+	case "1", "true":
+		cfg.MailSend = true
+	default:
+		return Config{}, fmt.Errorf("SITEWISE_MAIL_SEND must be 1 or 0")
 	}
 	stripe, err := loadStripe(getenv, env == "production")
 	if err != nil {

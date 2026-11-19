@@ -262,16 +262,18 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		}
 	}
 	srv, err := httpapi.New(httpapi.Options{
-		TenderLLM:           tenderLLM,
-		Chat:                chat,
-		Mail:                httpapi.NewMailIn(cfg.MailInDomain, cfg.MailgunSigningKey),
-		NoticeThresholds:    noticeTh,
-		MailSender:          mailSender(cfg),
-		MailFrom:            cfg.MailFrom,
-		MailGlobalPerDay:    cfg.MailSendDailyCap,
-		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
-		TenderModel:         cfg.TenderModel,
-		TenderRender:        tenderRender,
+		TenderLLM:            tenderLLM,
+		Chat:                 chat,
+		Mail:                 httpapi.NewMailIn(cfg.MailInDomain, cfg.MailgunSigningKey),
+		NoticeThresholds:     noticeTh,
+		MailSender:           mailSender(cfg),
+		MailFrom:             cfg.MailFrom,
+		MailGlobalPerDay:     cfg.MailSendDailyCap,
+		MailFreeGlobalPerDay: cfg.MailSendFreeDailyCap,
+		MailSendOn:           cfg.MailSend,
+		TenderSkipJevPrices:  cfg.TenderSkipJevPrices,
+		TenderModel:          cfg.TenderModel,
+		TenderRender:         tenderRender,
 		TenderOCR: func(ctx context.Context, path string, text identity.Text) (identity.Text, error) {
 			if ocrErr != nil {
 				return text, identity.ErrOCRUnavailable

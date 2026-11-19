@@ -32,7 +32,14 @@ var (
 	ErrTooManyHeaders = errors.New("too many headers")
 	// ErrFromCount: not exactly one From header.
 	ErrFromCount = errors.New("not exactly one From header")
+	// ErrDuplicateHeader: a header the record or MIME reads appears twice.
+	ErrDuplicateHeader = errors.New("a header appears twice")
 )
+
+// singleHeaders appear at most once, or the message is held: DKIM signs
+// the last instance of a header, a reader may take the first, and a sender
+// could prepend one above a genuinely signed message (review HIGH-1).
+var singleHeaders = []string{"From", "Subject", "Message-Id", "In-Reply-To", "References", "To", "Cc", "Date", "Content-Type", "Mime-Version", "Reply-To"}
 
 // Attachment is one file of a message: a form file of Mailgun's parsed post,
 // or a part of the raw message.
@@ -53,9 +60,10 @@ func FileAttachment(field string, fh *multipart.FileHeader) Attachment {
 }
 
 // ParseRaw reads the raw message: its headers (at most MaxHeaders, exactly
-// one From), the text body, and its attachments. Everything the webhook
-// records comes from here when the raw message is posted, so the record is
-// exactly what DKIM verified.
+// one From, and no second instance of a header the record or MIME reads),
+// the text body, and its attachments. The webhook records what this reads
+// from a raw post; which of those headers count is Trust's to decide, by
+// what the verifying signature signed.
 func ParseRaw(raw []byte) (Message, []Attachment, error) {
 	msg, err := mail.ReadMessage(bytes.NewReader(raw))
 	if err != nil {
@@ -70,6 +78,11 @@ func ParseRaw(raw []byte) (Message, []Attachment, error) {
 	}
 	if len(msg.Header["From"]) != 1 {
 		return Message{}, nil, ErrFromCount
+	}
+	for _, h := range singleHeaders {
+		if len(msg.Header[h]) > 1 {
+			return Message{}, nil, ErrDuplicateHeader
+		}
 	}
 	dec := new(mime.WordDecoder)
 	decode := func(v string) string {

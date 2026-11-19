@@ -156,8 +156,10 @@ what to record); nothing has been tried against real Mailgun.
    - The webhook signing key signs only a timestamp and a token, not the
      message. **Use this Mailgun account's signing key for this webhook
      only**: no other service may receive posts signed with it.
-   - **Caddy:** limit `/api/mail/inbound*` to Mailgun's published webhook
-     source addresses. Read the current ranges from Mailgun's own
+   - **Caddy (a go-live gate, email intake Task 11):** limit
+     `/api/mail/inbound*` to Mailgun's published webhook source addresses.
+     Mail does not go live until this rule is in place and a post from
+     elsewhere answers 404. Read the current ranges from Mailgun's own
      documentation page on the day (they are not copied here, and must not
      be guessed), and add to `/etc/caddy/Caddyfile` inside the site block:
      ```
@@ -172,10 +174,15 @@ what to record); nothing has been tried against real Mailgun.
    - `SITEWISE_MAILGUN_SIGNING_KEY=` the account's **HTTP webhook signing
      key** (Mailgun: Sending → Webhooks), not the API key. Nothing reads the
      API key. Never write the value anywhere else.
-   Restart. Sending uses the existing `SITEWISE_SMTP_*` and
-   `SITEWISE_MAIL_FROM`; without them Send says sending is not set up.
-   `SITEWISE_MAIL_SEND_DAILY_CAP` (optional, default 2,000) caps every org's
-   sends together in a day.
+   Restart. Sending needs `SITEWISE_MAIL_SEND=1` as well as the existing
+   `SITEWISE_SMTP_*` and `SITEWISE_MAIL_FROM`; without all three Send says
+   sending is not set up. **Leave `SITEWISE_MAIL_SEND` off while Stripe is in
+   test mode**: every org is then on the free plan in practice, and a
+   free sign-up must not send mail as SiteWise. Paid orgs' sends together
+   are capped by `SITEWISE_MAIL_SEND_DAILY_CAP` (optional, default 2,000) and
+   free orgs' by `SITEWISE_MAIL_SEND_FREE_DAILY_CAP` (optional, default 200),
+   so free orgs can never use up paid capacity. Without billing configured
+   every org counts as free.
 4. **Check:** from the owner's mailbox send a message with a PDF to a
    project's address (Copy beside "Email documents to"): it files. From an
    address not on the team, send another: it is held; Accept it. Look for

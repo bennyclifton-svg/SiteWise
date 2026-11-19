@@ -1,0 +1,8 @@
+{
+  "about": "Domains where anyone can have an address (free mail) or that many organisations send through (shared sending). A sender at one of these is matched to a firm only by its exact address, never by its domain (security review LOW-2). An entry ending in a dot (\"gmx.\") matches any domain that starts with it; every entry also matches its subdomains.",
+  "free": ["gmail.com", "googlemail.com", "outlook.com", "outlook.com.au", "hotmail.com", "hotmail.com.au", "hotmail.co.uk", "live.com", "live.com.au", "msn.com",
+    "yahoo.com", "yahoo.com.au", "yahoo.co.uk", "ymail.com", "icloud.com", "me.com", "mac.com", "aol.com", "bigpond.com", "bigpond.net.au", "bigpond.com.au",
+    "optusnet.com.au", "iinet.net.au", "tpg.com.au", "internode.on.net", "dodo.com.au", "westnet.com.au", "protonmail.com", "proton.me", "pm.me", "gmx.",
+    "mail.com", "zoho.com", "fastmail.com", "fastmail.fm", "qq.com"],
+  "shared": ["onmicrosoft.com", "amazonses.com", "mailgun.org", "sendgrid.net"]
+}

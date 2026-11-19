@@ -200,3 +200,14 @@ func TestMailReplyAdmitsOnlyItsRecipients(t *testing.T) {
 		}
 	}
 }
+
+// LOW-2: free-mail and shared sending domains match a firm by exact address
+// only.
+func TestExactOnlyDomains(t *testing.T) {
+	for d, want := range map[string]bool{"gmail.com": true, "hotmail.co.uk": true, "gmx.de": true, "gmx.net": true, "contoso.onmicrosoft.com": true,
+		"bounce.amazonses.com": true, "pm.me": true, "qq.com": true, "acme.example": false, "gmxconsulting.com.au": false} {
+		if got := store.FreeMail(d); got != want {
+			t.Errorf("%s: %v", d, got)
+		}
+	}
+}

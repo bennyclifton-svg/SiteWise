@@ -178,9 +178,11 @@ tests and nothing else.
 | 4 | Whether a retry reuses its first signature or is signed afresh | `mailin.FreshFor` (9 h) | Reused; if signed afresh, 15 minutes |
 | 5 | Where the small fields sit relative to file parts in a multipart post | `readMailPost` | Signature fields first; otherwise files are spooled, then checked |
 | — | Spam filtering is on for the receiving domain, so `X-Mailgun-Sflag` is present | `mailin.Dropped` | Present when on; any "Yes" drops |
+| 6 | Whether the raw route's `body-mime` carries `X-Mailgun-Sflag` (Mailgun may add it to the parsed fields only) | `mailin.Dropped`, `readMessage` | Carried in `body-mime`. If not, spam is not dropped but still never filed unless DKIM-authenticated; a sender writing the header can only drop its own mail |
+| 7 | A DKIM-signed member message (Gmail, the work mailbox) signs From, Subject, Message-ID, Date and Content-Type, and In-Reply-To on a reply | `mailin.Trust` | Gmail and Microsoft 365 sign all of them; a signature without them holds the message, without In-Reply-To the reply does not thread |
 
 Also for the owner: the Caddy source-address limit on `/api/mail/inbound*`
-from Mailgun's published ranges, and a signing key used for this webhook
+from Mailgun's published ranges (a go-live gate in Task 11), and a signing key used for this webhook
 only (`docs/deployment.md`, "Project email"). Mail goes out from
 `SITEWISE_MAIL_FROM` as "SiteWise" (`fromAddress`), with Reply-To the PM and
 the project address.
@@ -639,10 +641,15 @@ and what could fail in production. Commit.
    receiving domain.
 2. Mailgun: spam filtering on for that domain; one route,
    `match_recipient(".*@in\.sitewise\.au")` with
-   `forward("https://sitewise.au/api/mail/inbound")` and `stop()`.
-3. `/etc/sitewise/sitewise.env`: `SITEWISE_MAIL_IN_DOMAIN` and
-   `SITEWISE_MAILGUN_SIGNING_KEY`. Restart.
-4. From the owner's mailbox, send a message with a PDF to a project's
+   `forward("https://sitewise.au/api/mail/inbound/mime")` and `stop()`.
+3. **Gate:** the Caddy rule limiting `/api/mail/inbound*` to Mailgun's
+   published source ranges is in place (`docs/deployment.md`, "Project
+   email"), and a post from any other address answers 404. Mail does not
+   go live without it.
+4. `/etc/sitewise/sitewise.env`: `SITEWISE_MAIL_IN_DOMAIN` and
+   `SITEWISE_MAILGUN_SIGNING_KEY`. Restart. `SITEWISE_MAIL_SEND` stays off
+   while Stripe is in test mode.
+5. From the owner's mailbox, send a message with a PDF to a project's
    address. It files. From a personal address that is not on the team, send
    another. It is held. Accept it.
 

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -28,6 +29,9 @@ const (
 	// MailBusy: more mail for this project in the last hour than the webhook
 	// files; the rest is held so a flood cannot spend the org's reads.
 	MailBusy = "busy"
+	// MailDuplicate: the Message-ID of a message already recorded, with
+	// other bytes. Held for the PM, never a silent drop (review HIGH-1).
+	MailDuplicate = "duplicate"
 )
 
 // Held mail is capped per project and expires (plan, Task 5).
@@ -72,6 +76,12 @@ type MailIn struct {
 	// Direction is "out" for a team member's own message copied to the
 	// project address (correspondence decision 7), else "in".
 	Direction string
+	// RawSHA256 is the hash of the raw message (or of the parsed post), so
+	// a later message with the same Message-ID and other bytes is held.
+	RawSHA256 []byte
+	// NoRuleLinks: link no firm or package by rule (a rewritten forward;
+	// review LOW-1). The thread still links.
+	NoRuleLinks bool
 }
 
 // MailRecorded is what RecordMail did. Expired and Unkept are hashes whose
@@ -275,12 +285,18 @@ func (s *Store) RecordMail(ctx context.Context, org string, in MailIn) (MailReco
 		return out, tx.Commit(ctx)
 	}
 	var existing string
-	err = tx.QueryRow(ctx, `SELECT id::text FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND message_id=$3`, org, in.ProjectID, in.MessageID).Scan(&existing)
-	if err == nil {
+	var existingRaw []byte
+	err = tx.QueryRow(ctx, `SELECT id::text, raw_sha256 FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND message_id=$3`, org, in.ProjectID, in.MessageID).Scan(&existing, &existingRaw)
+	switch {
+	case err == nil && (in.RawSHA256 == nil || bytes.Equal(existingRaw, in.RawSHA256)):
 		out.Repeat, out.ID = true, existing
 		return out, tx.Commit(ctx)
-	}
-	if !errors.Is(err, pgx.ErrNoRows) {
+	case err == nil:
+		// The same Message-ID with other bytes: held for the PM under its
+		// own id, never a silent drop of the later, real one.
+		in.HeldReason = MailDuplicate
+		in.MessageID = cut(in.MessageID, 900) + " (repeat " + cut(in.Token, 24) + ")"
+	case !errors.Is(err, pgx.ErrNoRows):
 		return out, err
 	}
 	status, reason := "filed", in.HeldReason
@@ -314,11 +330,14 @@ WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.status='held'`, org, in.
 	if err != nil {
 		return out, err
 	}
+	if in.NoRuleLinks {
+		link.Firm, link.Package, link.By = "", "", ""
+	}
 	if _, err := tx.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,sender_name,subject,to_addrs,cc_addrs,in_reply_to,refs,body,received_at,status,held_reason,
- direction,thread_id,firm_id,package_id,linked_by)
-VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::uuid,NULLIF($19,'')::uuid,NULLIF($20,'')::uuid,$21)`,
+ direction,thread_id,firm_id,package_id,linked_by,raw_sha256)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::uuid,NULLIF($19,'')::uuid,NULLIF($20,'')::uuid,$21,$22)`,
 		org, out.ID, in.ProjectID, in.MessageID, in.Token, in.Sender, in.SenderName, in.Subject, in.To, in.Cc,
-		in.InReplyTo, in.References, in.Body, received, status, reason, direction, link.Thread, link.Firm, link.Package, link.By); err != nil {
+		in.InReplyTo, in.References, in.Body, received, status, reason, direction, link.Thread, link.Firm, link.Package, link.By, in.RawSHA256); err != nil {
 		return out, err
 	}
 	for _, p := range in.Parts {
@@ -717,43 +736,68 @@ func deref(s *string) string {
 // lock is RecordMail's; this read only spares the bytes (review H2).
 type MailPrecheck struct{ Repeat, HeldFull bool }
 
-func (s *Store) MailPrecheck(ctx context.Context, org, project, token, messageID string) (MailPrecheck, error) {
+func (s *Store) MailPrecheck(ctx context.Context, org, project, token, messageID string, raw []byte) (MailPrecheck, error) {
 	var out MailPrecheck
 	if !validUUID(org) || !validUUID(project) {
 		return out, ErrNotFound
 	}
 	var count int
 	var held int64
+	// A repeat is the same token, or the same Message-ID with the same
+	// bytes; the same Message-ID with other bytes is recorded and held.
 	err := s.pool.QueryRow(ctx, `SELECT
  EXISTS(SELECT 1 FROM mail_webhook_tokens WHERE token=$3)
-  OR EXISTS(SELECT 1 FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND message_id=$4),
+  OR EXISTS(SELECT 1 FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND message_id=$4 AND ($5::bytea IS NULL OR raw_sha256=$5)),
  (SELECT count(*) FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND status='held'),
  (SELECT COALESCE(sum(p.byte_size),0)::bigint FROM mail_messages m JOIN mail_parts p ON p.org_id=m.org_id AND p.message_id=m.id
-   WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.status='held')`, org, project, token, messageID).Scan(&out.Repeat, &count, &held)
+   WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.status='held')`, org, project, token, messageID, raw).Scan(&out.Repeat, &count, &held)
 	out.HeldFull = count >= MailHeldMax || held >= MailHeldBytes
 	return out, err
 }
 
-// StageMailBlob notes bytes the mail code stored before a part names them.
-func (s *Store) StageMailBlob(ctx context.Context, sum []byte) error {
-	_, err := s.pool.Exec(ctx, `INSERT INTO mail_staged_blobs(sha256) VALUES ($1) ON CONFLICT (sha256) DO UPDATE SET staged_at=now()`, sum)
+// StageMailBlob notes bytes one request stored before a part names them.
+func (s *Store) StageMailBlob(ctx context.Context, sum []byte, request string) error {
+	_, err := s.pool.Exec(ctx, `INSERT INTO mail_blob_stages(sha256,request) VALUES ($1,$2) ON CONFLICT (sha256,request) DO UPDATE SET staged_at=now()`, sum, request)
 	return err
 }
 
-// UnstageMailBlob clears a staged hash.
-func (s *Store) UnstageMailBlob(ctx context.Context, sum []byte) error {
-	_, err := s.pool.Exec(ctx, `DELETE FROM mail_staged_blobs WHERE sha256=$1`, sum)
+// UnstageMailBlob clears one request's staging of a hash, never another's.
+func (s *Store) UnstageMailBlob(ctx context.Context, sum []byte, request string) error {
+	_, err := s.pool.Exec(ctx, `DELETE FROM mail_blob_stages WHERE sha256=$1 AND request=$2`, sum, request)
 	return err
 }
 
-// StaleMailBlobs are hashes staged before cutoff. Not a tenant read: a hash
+// StagedBlob is one staging row.
+type StagedBlob struct {
+	SHA256  []byte
+	Request string
+}
+
+// StaleMailBlobs are stagings older than cutoff. Not a tenant read: a hash
 // names no org.
-func (s *Store) StaleMailBlobs(ctx context.Context, cutoff time.Time) ([][]byte, error) {
-	rows, err := s.pool.Query(ctx, `SELECT sha256 FROM mail_staged_blobs WHERE staged_at < $1 ORDER BY staged_at LIMIT 500`, cutoff)
+func (s *Store) StaleMailBlobs(ctx context.Context, cutoff time.Time) ([]StagedBlob, error) {
+	rows, err := s.pool.Query(ctx, `SELECT sha256, request FROM mail_blob_stages WHERE staged_at < $1 ORDER BY staged_at LIMIT 500`, cutoff)
 	if err != nil {
 		return nil, err
 	}
-	return scanHashes(rows)
+	defer rows.Close()
+	var out []StagedBlob
+	for rows.Next() {
+		var b StagedBlob
+		if err := rows.Scan(&b.SHA256, &b.Request); err != nil {
+			return nil, err
+		}
+		out = append(out, b)
+	}
+	return out, rows.Err()
+}
+
+// MailBlobStagedByOthers reports whether a request other than this one
+// still stages a hash.
+func (s *Store) MailBlobStagedByOthers(ctx context.Context, sum []byte, request string) (bool, error) {
+	var ok bool
+	err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM mail_blob_stages WHERE sha256=$1 AND request<>$2)`, sum, request).Scan(&ok)
+	return ok, err
 }
 
 // MailAttachment reports whether the document came attached to an email

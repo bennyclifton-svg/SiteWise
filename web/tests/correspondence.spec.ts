@@ -17,13 +17,15 @@ async function mailgun(request: APIRequestContext, recipient: string, sender: st
   const timestamp = String(Math.floor(Date.now() / 1000));
   const token = randomUUID();
   const signature = createHmac("sha256", KEY).update(timestamp + token).digest("hex");
-  return request.post("/api/mail/inbound/mime", { form: { recipient, sender, from: raw.From, subject: raw.Subject, "body-mime": body, timestamp, token, signature } });
+  return request.post("/api/mail/inbound/mime", { multipart: { recipient, sender, from: raw.From, subject: raw.Subject, "body-mime": body, timestamp, token, signature } });
 }
 
 test("the project's address, a held message accepted, and a transmittal sent and replied to", async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
+  // A free account sends after a week (review MEDIUM-3).
+  await page.request.post("/__e2e/age-accounts");
   await page.getByLabel("New project").fill("Mail house");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);

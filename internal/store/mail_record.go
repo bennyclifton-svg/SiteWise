@@ -2,11 +2,13 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/mail"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
+	maildata "sitewise/data/mail"
 	"sitewise/internal/mailin"
 )
 
@@ -14,19 +16,38 @@ import (
 // (docs/plans/2026-11-17-correspondence-transmittals.md, Task 1): its
 // thread, and the firm and package it belongs to. Go only; no Jev.
 
-// freeMailDomains never link a firm by domain: everyone has an address
-// there. A free-mail sender matches a firm only by its exact address.
-var freeMailDomains = map[string]bool{
-	"gmail.com": true, "googlemail.com": true, "outlook.com": true, "outlook.com.au": true, "hotmail.com": true,
-	"hotmail.com.au": true, "live.com": true, "live.com.au": true, "msn.com": true, "yahoo.com": true,
-	"yahoo.com.au": true, "ymail.com": true, "icloud.com": true, "me.com": true, "mac.com": true, "aol.com": true,
-	"bigpond.com": true, "bigpond.net.au": true, "bigpond.com.au": true, "optusnet.com.au": true, "iinet.net.au": true,
-	"tpg.com.au": true, "internode.on.net": true, "dodo.com.au": true, "westnet.com.au": true, "protonmail.com": true,
-	"proton.me": true, "gmx.com": true, "mail.com": true, "zoho.com": true, "fastmail.com": true, "fastmail.fm": true,
-}
+// exactOnly are free-mail and shared sending domains (data/mail/
+// domains.json): a sender there matches a firm only by its exact address,
+// never by its domain (review LOW-2).
+var exactOnly = func() []string {
+	var f struct{ Free, Shared []string }
+	if err := json.Unmarshal(maildata.Domains, &f); err != nil {
+		panic("data/mail/domains.json: " + err.Error())
+	}
+	return append(f.Free, f.Shared...)
+}()
 
-// FreeMail reports a domain anyone can have an address at.
-func FreeMail(domain string) bool { return freeMailDomains[strings.ToLower(strings.TrimSpace(domain))] }
+// FreeMail reports a domain where an address says nothing about a firm:
+// free mail, or a shared sending service. Each entry matches its
+// subdomains; one ending in a dot matches every domain it starts.
+func FreeMail(domain string) bool {
+	domain = strings.ToLower(strings.TrimSpace(domain))
+	if domain == "" {
+		return false
+	}
+	for _, e := range exactOnly {
+		if strings.HasSuffix(e, ".") {
+			if strings.HasPrefix(domain, e) {
+				return true
+			}
+			continue
+		}
+		if domain == e || strings.HasSuffix(domain, "."+e) {
+			return true
+		}
+	}
+	return false
+}
 
 type mailLink struct {
 	Thread, Firm, Package, By string
@@ -221,4 +242,33 @@ WHERE org_id=$1::uuid AND project_id=$2::uuid AND direction='out' AND number IS 
 		}
 	}
 	return false, rows.Err()
+}
+
+// MailContact is a firm of this project with an email, as the project's own
+// records hold it.
+type MailContact struct{ Name, Email string }
+
+// ProjectMailContacts are the firms invited, quoted or awarded on this
+// project that have an email (review MEDIUM-4).
+func (s *Store) ProjectMailContacts(ctx context.Context, org, project string) ([]MailContact, error) {
+	if !validUUID(org) || !validUUID(project) {
+		return nil, ErrNotFound
+	}
+	rows, err := s.pool.Query(ctx, `SELECT DISTINCT f.name, lower(f.email) FROM firms f
+WHERE f.org_id=$1::uuid AND f.email<>''
+  AND (EXISTS(SELECT 1 FROM package_invitations i WHERE i.org_id=f.org_id AND i.project_id=$2::uuid AND i.firm_id=f.id)
+    OR EXISTS(SELECT 1 FROM submissions u WHERE u.org_id=f.org_id AND u.project_id=$2::uuid AND u.firm_id=f.id))`, org, project)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []MailContact
+	for rows.Next() {
+		var c MailContact
+		if err := rows.Scan(&c.Name, &c.Email); err != nil {
+			return nil, err
+		}
+		out = append(out, c)
+	}
+	return out, rows.Err()
 }

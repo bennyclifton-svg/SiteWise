@@ -112,11 +112,19 @@ func (k *Keys) key(domain string) ed25519.PrivateKey {
 	return p
 }
 
+// Signed is the header list Sign signs, as a mail service would.
+var Signed = []string{"From", "To", "Cc", "Subject", "Date", "Message-ID", "In-Reply-To", "References", "MIME-Version", "Content-Type"}
+
 // Sign signs raw as domain (selector "t"), publishing the key in the stub.
 func (k *Keys) Sign(raw []byte, domain string) []byte {
+	return k.SignHeaders(raw, domain, Signed)
+}
+
+// SignHeaders signs raw as domain over the named headers only.
+func (k *Keys) SignHeaders(raw []byte, domain string, headers []string) []byte {
 	var out bytes.Buffer
 	err := dkim.Sign(&out, bytes.NewReader(raw), &dkim.SignOptions{Domain: domain, Selector: "t", Signer: k.key(domain),
-		HeaderKeys: []string{"From", "To", "Subject", "Date", "Message-ID", "In-Reply-To", "References"}})
+		HeaderKeys: headers})
 	if err != nil {
 		panic(err)
 	}

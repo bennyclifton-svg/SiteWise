@@ -118,9 +118,12 @@ type Options struct {
 	// MailRetryDelay replaces the outbox's backoff between tries; zero is
 	// the default (5 s, 30 s, 2 min, 10 min). Tests shorten it.
 	MailRetryDelay time.Duration
-	// MailGlobalPerDay caps every org's sends together in a day
-	// (SITEWISE_MAIL_SEND_DAILY_CAP); zero is store.MailGlobalPerDay.
-	MailGlobalPerDay int
+	// MailGlobalPerDay caps every paid org's sends together in a day
+	// (SITEWISE_MAIL_SEND_DAILY_CAP), MailFreeGlobalPerDay every free org's
+	// (SITEWISE_MAIL_SEND_FREE_DAILY_CAP); zero is the store's default.
+	MailGlobalPerDay, MailFreeGlobalPerDay int
+	// MailSendOn is SITEWISE_MAIL_SEND: sending needs it as well as SMTP.
+	MailSendOn bool
 	// NoticeThresholds band Jev's notice pick on an email body
 	// (data/mail); the zero value is no cut-off and no pick is shown.
 	NoticeThresholds correspondence.NoticeThresholds
@@ -315,9 +318,15 @@ func New(opts Options) (*Server, error) {
 		importer.Filed(orgID, documentID, text)
 	}
 	closing := make(chan struct{})
-	outbox := NewOutbox(opts.Store, opts.Blobs, opts.MailSender, opts.MailFrom, broker, opts.Log)
+	outbox := NewOutbox(opts.Store, opts.Blobs, opts.MailSender, opts.MailFrom, opts.MailSendOn, broker, opts.Log)
+	// Temporary files a post left when the process last stopped.
+	if opts.Mail != nil {
+		if n := RemoveMailTemps(); n > 0 {
+			opts.Log.Printf("mail: removed %d temporary files left by an earlier run", n)
+		}
+	}
 	if outbox != nil {
-		outbox.GlobalPerDay = opts.MailGlobalPerDay
+		outbox.GlobalPerDay, outbox.FreeGlobalPerDay = opts.MailGlobalPerDay, opts.MailFreeGlobalPerDay
 		if opts.MailRetryDelay > 0 {
 			outbox.backoff = []time.Duration{opts.MailRetryDelay}
 		}

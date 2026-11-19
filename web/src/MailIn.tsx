@@ -151,7 +151,8 @@ function Messages({ projectId, list, reload, onOpenDocument }: { projectId: stri
               <td className="mail-dir">{m.direction === "out" ? "Out" : "In"}</td>
               <td className="mail-no">{transmittalNumber(m.number)}</td>
               <td className="mail-date">{shortDay(m.received_at)}</td>
-              <td className="mail-with" title={m.with}>{m.firm || m.sender_name || m.with}</td>
+              <td className="mail-with" title={m.with}>{/* The address always; a name only beside it, as plain words (review LOW-3). */}
+                {m.with}{m.direction === "in" && m.sender_name ? <span className="mail-skipped"> {m.sender_name}</span> : null}{m.firm ? <span className="mail-skipped"> · {m.firm}</span> : null}</td>
               <td className="mail-subject" title={m.subject}>
                 <span>{m.subject || "(no subject)"}</span>
                 {m.replied && <span className="mail-mark">Replied</span>}

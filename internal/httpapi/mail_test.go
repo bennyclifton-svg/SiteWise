@@ -16,6 +16,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -115,8 +116,28 @@ func (f *mailFixture) memberPost(subject string, files ...mailFile) mailPost {
 		body: "Please file the attached.", messageID: fmt.Sprintf("<m%d-%s@example.test>", f.seq, newUUIDString()), files: files}
 }
 
-// rawOf is the post's raw message, signed as the post says.
+// rawOf is the post's raw message, signed as the post says. The same post
+// gives the same bytes, as Mailgun's retry does: a repeated Message-ID with
+// other bytes is held (review HIGH-1).
 func rawOf(p mailPost) []byte {
+	p.token, p.timestamp = "", time.Time{}
+	key := fmt.Sprintf("%#v", p)
+	rawMu.Lock()
+	defer rawMu.Unlock()
+	if raw, ok := rawCache[key]; ok {
+		return raw
+	}
+	raw := buildRaw(p)
+	rawCache[key] = raw
+	return raw
+}
+
+var (
+	rawMu    sync.Mutex
+	rawCache = map[string][]byte{}
+)
+
+func buildRaw(p mailPost) []byte {
 	m := mailintest.Message{From: p.from, To: p.to, Subject: p.subject, MessageID: p.messageID, Body: p.body, Headers: p.headers}
 	inline := map[string]string{}
 	for cid, field := range p.inline {
@@ -171,8 +192,8 @@ func (f *mailFixture) fields(p mailPost) map[string]string {
 	return out
 }
 
-// send posts as Mailgun would: the raw message in body-mime, urlencoded;
-// a parsed-only post carries its files as multipart.
+// send posts as Mailgun would, multipart: the raw message in body-mime, or
+// for a parsed-only post the parsed fields and the files.
 func (f *mailFixture) send(t *testing.T, p mailPost) int {
 	t.Helper()
 	if !p.parsedOnly {
@@ -187,33 +208,32 @@ func (f *mailFixture) sendFields(t *testing.T, fields map[string]string, attach 
 	return f.raw(t, ctype, body)
 }
 
-// encodePost writes a post as Mailgun does: urlencoded with no files, else
-// multipart.
+// encodePost writes a post as Mailgun's raw route does: always multipart
+// (an urlencoded post is refused, review MEDIUM-2).
 func encodePost(fields map[string]string, attach []mailFile) (string, *bytes.Buffer) {
 	var body bytes.Buffer
-	ctype := "application/x-www-form-urlencoded"
-	if len(attach) == 0 {
-		v := url.Values{}
-		for k, val := range fields {
-			v.Set(k, val)
-		}
-		body.WriteString(v.Encode())
-	} else {
-		w := multipart.NewWriter(&body)
-		for k, val := range fields {
-			_ = w.WriteField(k, val)
-		}
-		for _, a := range attach {
-			h := textproto.MIMEHeader{}
-			h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, a.field, a.name))
-			h.Set("Content-Type", a.ctype)
-			part, _ := w.CreatePart(h)
-			_, _ = part.Write(a.body)
-		}
-		_ = w.Close()
-		ctype = w.FormDataContentType()
+	w := multipart.NewWriter(&body)
+	for k, val := range fields {
+		_ = w.WriteField(k, val)
 	}
-	return ctype, &body
+	for _, a := range attach {
+		h := textproto.MIMEHeader{}
+		h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, a.field, a.name))
+		h.Set("Content-Type", a.ctype)
+		part, _ := w.CreatePart(h)
+		_, _ = part.Write(a.body)
+	}
+	_ = w.Close()
+	return w.FormDataContentType(), &body
+}
+
+// encodeForm writes an urlencoded post, which the webhook refuses.
+func encodeForm(fields map[string]string) (string, *bytes.Buffer) {
+	v := url.Values{}
+	for k, val := range fields {
+		v.Set(k, val)
+	}
+	return "application/x-www-form-urlencoded", bytes.NewBufferString(v.Encode())
 }
 
 func (f *mailFixture) raw(t *testing.T, ctype string, body *bytes.Buffer) int {
@@ -407,6 +427,11 @@ func TestMailInboundRefusesAndDrops(t *testing.T) {
 	unsigned := f.fields(f.memberPost("Unsigned"))
 	delete(unsigned, "signature")
 	refused("unsigned", f.sendFields(t, unsigned, nil))
+	// An urlencoded post, even a genuine one, is not Mailgun's raw route:
+	// 415, counted (review MEDIUM-2).
+	if got := f.form(t, f.fields(f.memberPost("Form"))); got != http.StatusUnsupportedMediaType {
+		t.Fatalf("urlencoded = %d, want 415", got)
+	}
 	if f.messages(t) != 0 {
 		t.Fatal("a refused post was stored")
 	}
@@ -496,7 +521,9 @@ func TestMailInboundParts(t *testing.T) {
 func TestMailInboundCapsTheBody(t *testing.T) {
 	f := newMailFixture(t)
 	p := f.memberPost("Huge", mailFile{field: "attachment-1", name: "huge.pdf", ctype: "application/pdf", body: bytes.Repeat([]byte("x"), 41<<20)})
-	if got := f.send(t, p); got != http.StatusNotAcceptable {
+	// Too large answers 503, which Mailgun retries, and is not counted
+	// toward the lockout (review LOW-4).
+	if got := f.send(t, p); got != http.StatusServiceUnavailable {
 		t.Fatalf("41 MB post = %d", got)
 	}
 	if f.messages(t) != 0 {
@@ -504,19 +531,43 @@ func TestMailInboundCapsTheBody(t *testing.T) {
 	}
 }
 
-// Refusals from one address stop being read after 30 in 15 minutes; the
-// answer stays the same.
+// Refusals from one address stop being read after 30 in 15 minutes. A bad
+// signature answers 406; the lockout answers 503 so a genuine post is
+// retried later (review LOW-4).
 func TestMailInboundLimitsRefusals(t *testing.T) {
 	f := newMailFixture(t)
 	bad := f.fields(f.memberPost("Bad"))
 	bad["signature"] = strings.Repeat("0", 64)
-	for i := 0; i < 31; i++ {
+	for i := 0; i < 30; i++ {
 		if got := f.sendFields(t, bad, nil); got != http.StatusNotAcceptable {
 			t.Fatalf("refusal %d = %d", i, got)
 		}
 	}
-	if got := f.send(t, f.memberPost("Now genuine")); got != http.StatusNotAcceptable {
+	if got := f.send(t, f.memberPost("Now genuine")); got != http.StatusServiceUnavailable {
 		t.Fatalf("after 30 refusals a post was read: %d", got)
+	}
+}
+
+// Review LOW-4: size failures do not count toward the lockout.
+func TestMailSizeFailuresDoNotLockOut(t *testing.T) {
+	f := newMailFixture(t)
+	// 29 counted refusals, one short of the lockout...
+	bad := f.fields(f.memberPost("Bad"))
+	bad["signature"] = strings.Repeat("0", 64)
+	for i := 0; i < 29; i++ {
+		if got := f.sendFields(t, bad, nil); got != http.StatusNotAcceptable {
+			t.Fatalf("refusal %d = %d", i, got)
+		}
+	}
+	// ...then size failures, which would reach it if they counted.
+	huge := mailFile{field: "attachment-1", name: "huge.pdf", ctype: "application/pdf", body: bytes.Repeat([]byte("x"), 41<<20)}
+	for i := 0; i < 2; i++ {
+		if got := f.send(t, f.memberPost("Huge", huge)); got != http.StatusServiceUnavailable {
+			t.Fatalf("huge %d = %d", i, got)
+		}
+	}
+	if got := f.send(t, f.memberPost("Fine")); got != http.StatusOK {
+		t.Fatalf("a genuine post after size failures = %d", got)
 	}
 }
 
@@ -879,10 +930,10 @@ func TestMailLeavesNoOrphanBlobs(t *testing.T) {
 	first := f.memberPost("Once", pdfFile(1, "A.pdf"))
 	f.send(t, first)
 	before := count()
+	// Mailgun's retries: the same bytes under new tokens.
 	for i := 0; i < 5; i++ {
-		again := f.memberPost("Once", mailFile{field: "attachment-1", name: "B.pdf", ctype: "application/pdf", body: []byte(fmt.Sprintf("%%PDF other bytes %d", i))})
-		again.messageID = first.messageID
-		f.send(t, again)
+		first.token = ""
+		f.send(t, first)
 	}
 	if got := count(); got != before {
 		t.Fatalf("five repeats changed the blob count %d → %d", before, got)

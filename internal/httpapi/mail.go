@@ -24,8 +24,8 @@ const (
 	pathMailInbound = "mail_inbound_accept"
 	pathMailRead    = "mail_read"
 	pathMailDecide  = "mail_decide"
-	// Two posts are parsed at once; a third waits for Mailgun's retry.
-	mailSlots = 2
+	// Four posts are read at once; a fifth waits for Mailgun's retry.
+	mailSlots = 4
 	// Refused posts per address per 15 minutes before the webhook stops
 	// reading their bodies. Only refusals count, so Mailgun's own posts are
 	// never blocked by someone else's bad ones.

@@ -175,6 +175,7 @@ func run(addr, data string, programFixture bool) error {
 		Mail:           httpapi.NewMailIn("in.e2e.test", "e2e-test-signing-key").WithDKIMLookup(mailKeys.Lookup),
 		MailSender:     mailSink,
 		MailFrom:       "sitewise@e2e.test",
+		MailSendOn:     true,
 		MailRetryDelay: 50 * time.Millisecond,
 		// Chat is answered by a stand-in that reads the PM's words only.
 		Chat:              chat,
@@ -354,6 +355,21 @@ func run(addr, data string, programFixture bool) error {
 		w.WriteHeader(http.StatusNoContent)
 	})
 	contractRoutes(mux, st, dsn)
+	// Without billing every org is free, and a free account sends after a
+	// week (review MEDIUM-3): the spec ages its accounts before it sends.
+	mux.HandleFunc("POST /__e2e/age-accounts", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := pgx.Connect(r.Context(), dsn)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		defer conn.Close(r.Context())
+		if _, err := conn.Exec(r.Context(), `UPDATE users SET created_at=now()-interval '8 days'`); err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})
 	mux.HandleFunc("POST /__e2e/drop-streams", func(w http.ResponseWriter, r *http.Request) {
 		cut.dropAll()
 		w.WriteHeader(http.StatusNoContent)

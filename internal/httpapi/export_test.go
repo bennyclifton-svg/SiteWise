@@ -12,3 +12,7 @@ func RoutePatterns() []string {
 	sort.Strings(out)
 	return out
 }
+
+// SettleStaged is the webhook's settling of one request's staged blob, for
+// the two-request staging test (review LOW-5).
+var SettleStaged = settleStaged

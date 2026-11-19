@@ -3,12 +3,13 @@ package httpapi
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"errors"
 	"io"
 	"mime"
 	"net/http"
-	"net/url"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -76,18 +77,52 @@ const mailReadDeadline = 60 * time.Second
 // discarded. A body beyond it is cut anyway (mailin.MaxBodyRunes).
 const mailFieldMax = 1 << 20
 
-// refuseMail is the answer to every refused post, whatever the reason: a bad
-// signature, a stale or malformed timestamp, an unreadable or oversized
-// body. 406 tells Mailgun not to retry. The refusal counts against the
-// address.
-func refuseMail(w http.ResponseWriter, r *http.Request, deps Deps, why string) {
-	deps.limits.allow("mail-miss:"+clientIP(r), mailMissesPerIP, limitWindow)
-	deps.Log.Printf("mail webhook: refused (%s)", why)
-	// The rest of a refused post is never read: the answer goes at once and
-	// the connection closes.
+// Refusal kinds (review LOW-4). A bad signature or timestamp is refused for
+// good: 406, which Mailgun does not retry, and it counts against the
+// address. A lockout, a deadline or a size or read failure answers 503, so a
+// genuine post Mailgun retries later; those do not count. A post that is not
+// multipart (Mailgun's raw route always is) answers 415 and counts.
+type refusal struct {
+	why    string
+	status int
+	count  bool
+}
+
+var (
+	refuseSignature = refusal{"signature", http.StatusNotAcceptable, true}
+	refuseTimestamp = refusal{"timestamp", http.StatusNotAcceptable, true}
+	refuseFormat    = refusal{"not multipart", http.StatusUnsupportedMediaType, true}
+	refuseRead      = refusal{"unreadable, too large or too slow", http.StatusServiceUnavailable, false}
+	refuseLockout   = refusal{"too many refusals from this address", http.StatusServiceUnavailable, false}
+)
+
+// refuseMail answers a refused post with the one plain body, whatever the
+// reason, and never reads the rest of it.
+func refuseMail(w http.ResponseWriter, r *http.Request, deps Deps, why refusal) {
+	if why.count {
+		deps.limits.allow("mail-miss:"+clientIP(r), mailMissesPerIP, limitWindow)
+	}
+	deps.Log.Printf("mail webhook: refused (%s)", why.why)
 	w.Header().Set("Connection", "close")
-	http.Error(w, msgMailRefused, http.StatusNotAcceptable)
+	if why.status == http.StatusServiceUnavailable {
+		w.Header().Set("Retry-After", "300")
+	}
+	http.Error(w, msgMailRefused, why.status)
 	_ = http.NewResponseController(w).Flush()
+}
+
+// RemoveMailTemps deletes temporary files a post left behind when the
+// process stopped mid-request (review MEDIUM-2). The server runs it once at
+// start.
+func RemoveMailTemps() int {
+	names, _ := filepath.Glob(filepath.Join(os.TempDir(), "sitewise-mail-*"))
+	n := 0
+	for _, f := range names {
+		if os.Remove(f) == nil {
+			n++
+		}
+	}
+	return n
 }
 
 // mailInbound is Mailgun's forward() to POST /api/mail/inbound. It reads no
@@ -101,7 +136,7 @@ func mailInbound(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	if deps.limits.full("mail-miss:"+clientIP(r), mailMissesPerIP, limitWindow) {
-		refuseMail(w, r, deps, "too many refusals from this address")
+		refuseMail(w, r, deps, refuseLockout)
 		return
 	}
 	// The deadline is set before a slot is taken, so a slow post can hold
@@ -119,8 +154,8 @@ func mailInbound(w http.ResponseWriter, r *http.Request, deps Deps) {
 	now := cfg.clock()
 	post, why := readMailPost(r, cfg.SigningKey, now)
 	defer post.close()
-	if why != "" {
-		refuseMail(w, r, deps, why)
+	if why != nil {
+		refuseMail(w, r, deps, *why)
 		return
 	}
 	outcome, org, project, parts, err := receiveMail(r.Context(), deps, post, now)
@@ -140,10 +175,11 @@ func mailInbound(w http.ResponseWriter, r *http.Request, deps Deps) {
 // mailPost is one verified post: its small fields, its file parts (on disk)
 // and the raw message when Mailgun sent it.
 type mailPost struct {
-	fields map[string]string
-	files  []mailin.Attachment
-	raw    []byte
-	temps  []string
+	fields  map[string]string
+	files   []mailin.Attachment
+	raw     []byte
+	rawFile string // the raw message spooled before the signature arrived
+	temps   []string
 }
 
 func (p *mailPost) field(name string) string { return p.fields[name] }
@@ -154,61 +190,38 @@ func (p *mailPost) close() {
 	}
 }
 
-// readMailPost reads the post in order and checks the signature as soon as
-// timestamp, token and signature have arrived. A part after a bad signature
-// is never read. Where Mailgun puts a file part before those fields (Task 0
-// records the order), the part is spooled to a temporary file, capped by
-// the post's limit, and removed when the request ends. It returns a word
-// for a refusal, or "".
-func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, string) {
+// readMailPost reads a multipart post in order and checks the signature as
+// soon as timestamp, token and signature have arrived. A part after a bad
+// signature is never read. A part that comes before them (Task 0 records
+// Mailgun's order), the raw message included, is spooled to a temporary
+// file rather than held in memory, and removed when the request ends.
+func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, *refusal) {
 	post := &mailPost{fields: map[string]string{}}
 	verified := false
-	check := func() string {
+	check := func() *refusal {
 		if verified {
-			return ""
+			return nil
 		}
 		ts, token, sig := post.fields["timestamp"], post.fields["token"], post.fields["signature"]
 		if ts == "" || token == "" || sig == "" {
-			return ""
+			return nil
 		}
 		if len(token) > 256 || !mailin.VerifySignature(key, ts, token, sig) {
-			return "signature"
+			return &refuseSignature
 		}
 		if !mailin.Fresh(ts, now) {
-			return "timestamp"
+			return &refuseTimestamp
 		}
 		verified = true
-		return ""
+		return nil
 	}
 	ctype, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
 	if ctype != "multipart/form-data" {
-		raw, err := io.ReadAll(r.Body)
-		if err != nil {
-			return post, "unreadable or too large"
-		}
-		values, err := url.ParseQuery(string(raw))
-		if err != nil {
-			return post, "unreadable"
-		}
-		for k, v := range values {
-			if len(v) > 0 {
-				post.fields[k] = v[0]
-			}
-		}
-		if why := check(); why != "" {
-			return post, why
-		}
-		if !verified {
-			return post, "signature"
-		}
-		if v := post.fields[mailin.RawField]; v != "" {
-			post.raw = []byte(v)
-		}
-		return post, ""
+		return post, &refuseFormat
 	}
 	mr, err := r.MultipartReader()
 	if err != nil {
-		return post, "unreadable"
+		return post, &refuseFormat
 	}
 	for {
 		part, err := mr.NextPart()
@@ -216,24 +229,34 @@ func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, string
 			break
 		}
 		if err != nil {
-			return post, "unreadable or too large"
+			return post, &refuseRead
 		}
 		name, filename := part.FormName(), part.FileName()
 		switch {
-		case name == mailin.RawField:
+		case name == mailin.RawField && verified:
 			raw, err := io.ReadAll(part)
 			if err != nil {
-				return post, "unreadable or too large"
+				return post, &refuseRead
 			}
 			post.raw = raw
+		case name == mailin.RawField:
+			a, temp, err := spool(name, "", "", part)
+			if temp != "" {
+				post.temps = append(post.temps, temp)
+			}
+			if err != nil {
+				return post, &refuseRead
+			}
+			_ = a
+			post.rawFile = temp
 		case filename == "" && !strings.HasPrefix(name, "attachment-"):
 			v, err := io.ReadAll(io.LimitReader(part, mailFieldMax))
 			if err != nil {
-				return post, "unreadable or too large"
+				return post, &refuseRead
 			}
 			_, _ = io.Copy(io.Discard, part)
 			post.fields[name] = string(v)
-			if why := check(); why != "" {
+			if why := check(); why != nil {
 				return post, why
 			}
 		default:
@@ -242,21 +265,28 @@ func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, string
 				post.temps = append(post.temps, temp)
 			}
 			if err != nil {
-				return post, "unreadable or too large"
+				return post, &refuseRead
 			}
 			post.files = append(post.files, a)
 		}
 	}
-	if why := check(); why != "" {
+	if why := check(); why != nil {
 		return post, why
 	}
 	if !verified {
-		return post, "signature"
+		return post, &refuseSignature
+	}
+	if post.rawFile != "" {
+		raw, err := os.ReadFile(post.rawFile)
+		if err != nil {
+			return post, &refuseRead
+		}
+		post.raw = raw
 	}
 	sort.SliceStable(post.files, func(i, j int) bool {
 		return attachmentNumber(post.files[i].Field) < attachmentNumber(post.files[j].Field)
 	})
-	return post, ""
+	return post, nil
 }
 
 func attachmentNumber(field string) int {
@@ -293,19 +323,20 @@ func dropMail(ctx context.Context, deps Deps, token, outcome string) (string, st
 }
 
 // readMessage reads the message from the raw message when Mailgun sent it,
-// and from the parsed fields otherwise. Only a raw message can be
-// authenticated; one that is ambiguous (not exactly one From, too many
-// headers) is read from the fields for the PM to see, and never trusted.
-func readMessage(ctx context.Context, deps Deps, post *mailPost) (mailin.Message, []mailin.Attachment, bool, error) {
+// and from the parsed fields otherwise; it makes no DNS lookup. raw is true
+// when the message came from an unambiguous raw message (only that can be
+// authenticated). A raw message with a duplicated header, two From headers
+// or too many headers is read from the fields for the PM to see and is never
+// trusted.
+func readMessage(post *mailPost) (m mailin.Message, files []mailin.Attachment, raw bool, err error) {
 	recipient, envelope := post.field("recipient"), strings.ToLower(strings.TrimSpace(post.field("sender")))
 	if len(post.raw) > 0 {
-		m, files, err := mailin.ParseRaw(post.raw)
-		if err == nil {
+		if m, files, err := mailin.ParseRaw(post.raw); err == nil {
 			m.Recipient, m.EnvelopeSender = recipient, envelope
-			return m, files, mailin.Verify(ctx, post.raw, m.FromAddress, deps.Mail.Lookup), nil
+			return m, files, true, nil
 		}
 	}
-	m, err := mailin.Read(post.field)
+	m, err = mailin.Read(post.field)
 	if err != nil {
 		return m, nil, false, err
 	}
@@ -313,11 +344,25 @@ func readMessage(ctx context.Context, deps Deps, post *mailPost) (mailin.Message
 	return m, post.files, false, nil
 }
 
-// receiveMail decides and records one verified post. It returns a word for
-// the log line (never the subject, the addresses or the key).
+// rawHash is the hash a repeated Message-ID is compared by: the raw message,
+// or the parsed post's own words.
+func rawHash(post *mailPost, m mailin.Message) []byte {
+	h := sha256.New()
+	if len(post.raw) > 0 {
+		h.Write(post.raw)
+	} else {
+		h.Write([]byte(m.FromAddress + "\x00" + m.Subject + "\x00" + m.BodyPlain))
+	}
+	return h.Sum(nil)
+}
+
+// receiveMail decides and records one verified post. The project is found
+// before any DNS lookup, so mail to no project costs nothing (review
+// MEDIUM-1). It returns a word for the log line (never the subject, the
+// addresses or the key).
 func receiveMail(ctx context.Context, deps Deps, post *mailPost, now time.Time) (outcome, org, project string, n int, err error) {
 	token := post.field("token")
-	m, atts, authenticated, err := readMessage(ctx, deps, post)
+	m, atts, fromRaw, err := readMessage(post)
 	if err != nil {
 		return dropMail(ctx, deps, token, "dropped: no From address")
 	}
@@ -335,6 +380,17 @@ func receiveMail(ctx context.Context, deps Deps, post *mailPost, now time.Time) 
 	if mailin.Dropped(m) {
 		return dropMail(ctx, deps, token, "dropped: automatic, bulk or spam")
 	}
+	authenticated := false
+	if fromRaw {
+		// Only what the verifying signature signed counts (review HIGH-1).
+		if signed, ok := mailin.Verify(ctx, post.raw, m.FromAddress, deps.Mail.Lookup); ok {
+			authenticated = mailin.Trust(&m, signed, now)
+		}
+	}
+	if !authenticated {
+		// Words no signature vouched for never thread, link or admit.
+		m.InReplyTo, m.References = "", ""
+	}
 	org, project = target.OrgID, target.ProjectID
 	reason, member, err := mailDecision(ctx, deps, target, m, authenticated)
 	if err != nil {
@@ -345,7 +401,8 @@ func receiveMail(ctx context.Context, deps Deps, post *mailPost, now time.Time) 
 	}
 	// Nothing is stored for a repeat, and nothing kept for held mail that
 	// is full (security review H2).
-	pre, err := deps.Store.MailPrecheck(ctx, org, project, token, m.MessageID)
+	hash := rawHash(post, m)
+	pre, err := deps.Store.MailPrecheck(ctx, org, project, token, m.MessageID, hash)
 	if err != nil {
 		return "", org, project, 0, err
 	}
@@ -356,11 +413,12 @@ func receiveMail(ctx context.Context, deps Deps, post *mailPost, now time.Time) 
 	keep := reason == "" || !pre.HeldFull
 	in := store.MailIn{ProjectID: project, MessageID: m.MessageID, Token: token, Sender: m.FromAddress, SenderName: m.FromName,
 		Subject: m.Subject, To: m.To, Cc: m.Cc, InReplyTo: m.InReplyTo, References: m.References, Body: m.BodyPlain,
-		ReceivedAt: now, HeldReason: reason}
+		ReceivedAt: now, HeldReason: reason, RawSHA256: hash}
 	// A confirmed member's own authenticated message copied to the project
 	// is Out. A forward is In, from the original sender Go finds, shown as
-	// forwarded by the member. Nothing but an authenticated member's mail
-	// is ever rewritten (decision 7; security review C1).
+	// forwarded by the member. Nothing but an authenticated member's mail,
+	// its Subject signed (Trust), is ever rewritten (decision 7; reviews C1,
+	// HIGH-1); a rewritten forward links no firm or package by rule (LOW-1).
 	if member && authenticated {
 		in.Direction = "out"
 		if addr, name, fwd := mailin.Forwarded(m.Subject, m.BodyPlain); fwd {
@@ -371,12 +429,13 @@ func receiveMail(ctx context.Context, deps Deps, post *mailPost, now time.Time) 
 					shown = addr
 				}
 				in.Sender, in.SenderName = addr, mailin.OneLine(shown+" (forwarded by "+m.FromAddress+")", 200)
+				in.NoRuleLinks = true
 			}
 		}
 	}
 	var staged [][]byte
-	defer func() { finishStaged(deps, staged) }()
-	in.Parts, staged, err = storeMailParts(ctx, deps, m, atts, now, keep)
+	defer func() { finishStaged(deps, staged, token) }()
+	in.Parts, staged, err = storeMailParts(ctx, deps, m, atts, now, keep, token)
 	if err != nil {
 		return "", org, project, 0, err
 	}
@@ -457,7 +516,7 @@ func admitMail(ctx context.Context, deps Deps, target store.MailTarget, reserve 
 // hash, staging every hash it puts (finishStaged clears them). keep false
 // records every part by name only. The hash comes from this put, never from
 // the post.
-func storeMailParts(ctx context.Context, deps Deps, m mailin.Message, atts []mailin.Attachment, now time.Time, keep bool) ([]store.MailPartIn, [][]byte, error) {
+func storeMailParts(ctx context.Context, deps Deps, m mailin.Message, atts []mailin.Attachment, now time.Time, keep bool, request string) ([]store.MailPartIn, [][]byte, error) {
 	var parts []store.MailPartIn
 	var staged [][]byte
 	put := func(r io.Reader) (files.Blob, error) {
@@ -466,7 +525,7 @@ func storeMailParts(ctx context.Context, deps Deps, m mailin.Message, atts []mai
 			return blob, err
 		}
 		staged = append(staged, blob.SHA256)
-		return blob, deps.Store.StageMailBlob(ctx, blob.SHA256)
+		return blob, deps.Store.StageMailBlob(ctx, blob.SHA256, request)
 	}
 	if strings.TrimSpace(m.BodyPlain) != "" {
 		name, body := mailin.BodyDocument(m, now)
@@ -504,47 +563,71 @@ func storeMailParts(ctx context.Context, deps Deps, m mailin.Message, atts []mai
 	return parts, staged, nil
 }
 
-// finishStaged removes staged bytes nothing references, at once, and clears
-// their staging. Referenced bytes stay; the sweep catches anything a crash
-// left staged.
-func finishStaged(deps Deps, sums [][]byte) {
+// finishStaged settles one request's staged bytes: removed at once when
+// nothing references them and no other request stages them; the staging
+// row is cleared only when the bytes were removed or a part now names them,
+// so one request never clears another's (review LOW-5). Anything left is
+// the sweep's.
+func finishStaged(deps Deps, sums [][]byte, request string) {
 	if len(sums) == 0 {
 		return
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	for _, sum := range sums {
-		if _, err := deps.Blobs.RemoveNow(sum, func() (bool, error) { return deps.Store.BlobReferenced(ctx, sum) }); err != nil {
-			deps.Log.Printf("mail: stored file kept: %v", err)
-			continue
-		}
-		if err := deps.Store.UnstageMailBlob(ctx, sum); err != nil {
-			deps.Log.Printf("mail: staging not cleared: %v", err)
-		}
+		settleStaged(ctx, deps.Store, deps.Blobs, sum, request, deps.Log.Printf)
 	}
 }
 
-// sweepStagedBlobs removes bytes staged more than an hour ago that nothing
-// references: a crash between a put and its record, or a sheet whose send
-// was never recorded (security review H2, L6).
+// settleStaged removes or keeps one staged blob, and clears this request's
+// staging only when it is settled: the bytes removed or already gone, named
+// by a part, or still staged by another request, whose own row then keeps
+// them until that request settles (review LOW-5). A blob just reused by a
+// concurrent put stays staged for the sweep.
+func settleStaged(ctx context.Context, st *store.Store, blobs *files.Store, sum []byte, request string, logf func(string, ...any)) bool {
+	used, others := false, false
+	removed, err := blobs.RemoveNow(sum, func() (bool, error) {
+		var err error
+		if used, err = st.BlobReferenced(ctx, sum); err != nil || used {
+			return used, err
+		}
+		others, err = st.MailBlobStagedByOthers(ctx, sum, request)
+		return others, err
+	})
+	if err != nil {
+		logf("mail: stored file kept: %v", err)
+		return false
+	}
+	if !removed && !used && !others {
+		// RemoveNow did not ask: the bytes are gone, or a put just reused them.
+		path, err := blobs.Path(sum)
+		if err != nil {
+			return false
+		}
+		if _, err := os.Lstat(path); !errors.Is(err, os.ErrNotExist) {
+			return false
+		}
+	}
+	if err := st.UnstageMailBlob(ctx, sum, request); err != nil {
+		logf("mail: staging not cleared: %v", err)
+		return false
+	}
+	return true
+}
+
+// sweepStagedBlobs settles stagings more than an hour old: a crash between
+// a put and its record, or a sheet whose send was never recorded (reviews
+// H2, L6).
 func sweepStagedBlobs(ctx context.Context, st *store.Store, blobs *files.Store, logf func(string, ...any)) int {
-	sums, err := st.StaleMailBlobs(ctx, time.Now().Add(-time.Hour))
+	stale, err := st.StaleMailBlobs(ctx, time.Now().Add(-time.Hour))
 	if err != nil {
 		logf("mail sweep: %v", err)
 		return 0
 	}
 	n := 0
-	for _, sum := range sums {
-		removed, err := blobs.RemoveNow(sum, func() (bool, error) { return st.BlobReferenced(ctx, sum) })
-		if err != nil {
-			logf("mail sweep: %v", err)
-			continue
-		}
-		if removed {
+	for _, b := range stale {
+		if settleStaged(ctx, st, blobs, b.SHA256, b.Request, logf) {
 			n++
-		}
-		if err := st.UnstageMailBlob(ctx, sum); err != nil {
-			logf("mail sweep: %v", err)
 		}
 	}
 	return n

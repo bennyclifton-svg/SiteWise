@@ -418,19 +418,27 @@ func issuedReportVersion(ctx context.Context, d Deps, who opActor, project, ref 
 const msgSendAfterOutside = "Filled in after reading a message or a document; check who it goes to."
 
 // guardSendFields keeps, in a Send opened after the turn read outside text,
-// only the recipients the PM's own message names (by address or by name),
-// and adds the warning line. Words an email or a document holds can then
-// never choose who a message goes to.
-func guardSendFields(f map[string]string, asked string) {
+// only recipients the PM chose (review MEDIUM-4): an address that is
+// itself in the PM's own message, or the address the project's own records
+// hold for a firm the PM's message names. An address from the outside text
+// is never kept because a name beside it matches. The warning line is
+// added.
+func guardSendFields(f map[string]string, asked string, contacts []store.MailContact) {
 	asked = strings.ToLower(asked)
+	named := map[string]bool{}
+	for _, c := range contacts {
+		if n := strings.ToLower(strings.TrimSpace(c.Name)); n != "" && strings.Contains(asked, n) {
+			named[strings.ToLower(c.Email)] = true
+		}
+	}
 	for _, key := range []string{"to", "cc"} {
 		var keep []string
 		for _, part := range splitAddresses(f[key]) {
-			name, addr := part, part
+			addr := strings.ToLower(part)
 			if a, err := mail.ParseAddress(part); err == nil {
-				name, addr = a.Name, a.Address
+				addr = strings.ToLower(a.Address)
 			}
-			if (addr != "" && strings.Contains(asked, strings.ToLower(addr))) || (strings.TrimSpace(name) != "" && strings.Contains(asked, strings.ToLower(strings.TrimSpace(name)))) {
+			if addr != "" && (strings.Contains(asked, addr) || named[addr]) {
 				keep = append(keep, part)
 			}
 		}

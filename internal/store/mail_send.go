@@ -23,9 +23,11 @@ const (
 	// A free plan's day (security review H3; the owner's to change).
 	MailFreeSendPerDay       = 10
 	MailFreeRecipientsPerDay = 50
-	// MailGlobalPerDay is every org's sends together in a day, unless the
-	// setting names another (security review H3).
+	// MailGlobalPerDay is every paid org's sends together in a day, and
+	// MailFreeGlobalPerDay every free org's, unless the settings name others
+	// (reviews H3, MEDIUM-3).
 	MailGlobalPerDay      = 2000
+	MailFreeGlobalPerDay  = 200
 	MailMaxRecipients     = 20
 	MailSendAttempts      = 5
 	mailSendErrorMaxBytes = 300
@@ -79,8 +81,10 @@ type Outbound struct {
 	PackageID         string
 	MessageIDDomain   string
 	// Limits for this org's day; zero values are MailSendPerDay and
-	// MailRecipientsPerDay. Global is every org's sends together.
+	// MailRecipientsPerDay. Global caps the sends of every org in Pool
+	// ("free" or "paid") together (review MEDIUM-3).
 	PerDay, RecipientsPerDay, Global int
+	Pool                             string
 	// Sheet renders the transmittal sheet once the number is known, inside
 	// the project lock, and returns its stored bytes. Nil sends no sheet.
 	Sheet func(number int, docs []SentDocument) (OutboundFile, error)
@@ -136,16 +140,23 @@ FROM mail_messages WHERE org_id=$1::uuid AND number IS NOT NULL AND received_at 
 	}
 	if global <= 0 {
 		global = MailGlobalPerDay
+		if in.Pool != "paid" {
+			global = MailFreeGlobalPerDay
+		}
 	}
 	if sentToday >= perDay || recipientsToday+len(in.To)+len(in.Cc) > recipients {
 		return MailMessage{}, ErrMailCap
 	}
 	// Every org together: SiteWise is one sending domain (review H3).
-	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('mail-send/all', 0))`); err != nil {
+	pool := in.Pool
+	if pool != "paid" {
+		pool = "free"
+	}
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('mail-send/' || $1, 0))`, pool); err != nil {
 		return MailMessage{}, err
 	}
 	var all int
-	if err := tx.QueryRow(ctx, `SELECT count(*) FROM mail_messages WHERE number IS NOT NULL AND received_at > $1::timestamptz - interval '1 day'`, now).Scan(&all); err != nil {
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM mail_messages WHERE number IS NOT NULL AND send_pool=$2 AND received_at > $1::timestamptz - interval '1 day'`, now, pool).Scan(&all); err != nil {
 		return MailMessage{}, err
 	}
 	if all >= global {
@@ -225,10 +236,10 @@ FROM mail_messages WHERE org_id=$1::uuid AND number IS NOT NULL AND received_at 
 		pkg, by = in.PackageID, "user"
 	}
 	if _, err := tx.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,subject,to_addrs,cc_addrs,in_reply_to,refs,body,received_at,status,
- direction,thread_id,firm_id,package_id,linked_by,number,send_status,decided_by,send_tried_at,reply_to)
-VALUES ($1::uuid,$2::uuid,$3::uuid,$4,NULL,$5,$6,$7,$8,$9,$10,$11,$12,'filed','out',$13::uuid,NULLIF($14,'')::uuid,NULLIF($15,'')::uuid,$16,$17,'queued',NULLIF($18,'')::uuid,$12,$19)`,
+ direction,thread_id,firm_id,package_id,linked_by,number,send_status,decided_by,send_tried_at,reply_to,send_pool)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4,NULL,$5,$6,$7,$8,$9,$10,$11,$12,'filed','out',$13::uuid,NULLIF($14,'')::uuid,NULLIF($15,'')::uuid,$16,$17,'queued',NULLIF($18,'')::uuid,$12,$19,$20)`,
 		org, id, in.ProjectID, messageID, in.From, in.Subject, to, cc, inReplyTo, refs, in.Body, now,
-		link.Thread, link.Firm, pkg, by, number, in.SentBy, strings.Join(in.ReplyTo, ", ")); err != nil {
+		link.Thread, link.Firm, pkg, by, number, in.SentBy, strings.Join(in.ReplyTo, ", "), pool); err != nil {
 		return MailMessage{}, err
 	}
 	n := 0

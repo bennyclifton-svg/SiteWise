@@ -18,12 +18,10 @@ ALTER TABLE mail_messages
  ADD COLUMN notice_band text NOT NULL DEFAULT '' CHECK (notice_band IN ('','amber','blank','grey')),
  ADD COLUMN pick_state text NOT NULL DEFAULT '' CHECK (pick_state IN ('','used','dismissed')),
  ADD COLUMN number integer CHECK (number > 0),      -- TR-001; sent by SiteWise only
- ADD COLUMN reply_to text NOT NULL DEFAULT '' CHECK (length(reply_to) <= 1000),  -- what a sent message's replies go to
  ADD COLUMN send_status text NOT NULL DEFAULT '' CHECK (send_status IN ('','queued','sent','failed')),
  ADD COLUMN send_attempts integer NOT NULL DEFAULT 0 CHECK (send_attempts >= 0),
  ADD COLUMN send_error text NOT NULL DEFAULT '' CHECK (length(send_error) <= 300),
  ADD COLUMN sent_at timestamptz,
- ADD COLUMN send_tried_at timestamptz,     -- the last attempt, for the sweep
  ADD COLUMN version bigint NOT NULL DEFAULT 1 CHECK (version > 0),
  ADD CONSTRAINT mail_sent_shape CHECK ((webhook_token IS NULL) = (number IS NOT NULL)
   AND (number IS NULL OR direction = 'out')
@@ -38,7 +36,7 @@ ALTER TABLE mail_messages ENABLE TRIGGER protect_mail_message;
 ALTER TABLE mail_messages ALTER COLUMN thread_id SET NOT NULL;
 CREATE UNIQUE INDEX mail_number_uq ON mail_messages(org_id,project_id,number) WHERE number IS NOT NULL;
 CREATE INDEX mail_thread ON mail_messages(org_id,project_id,thread_id);
-CREATE INDEX mail_queued ON mail_messages(send_tried_at) WHERE send_status = 'queued';
+CREATE INDEX mail_queued ON mail_messages(received_at) WHERE send_status = 'queued';
 CREATE INDEX mail_parts_document ON mail_parts(org_id,document_id) WHERE document_id IS NOT NULL;
 CREATE INDEX firms_email ON firms(org_id, lower(email)) WHERE email <> '';
 
@@ -54,7 +52,7 @@ ALTER TABLE mail_parts
 -- decision and send state, and Jev's pick may move.
 CREATE OR REPLACE FUNCTION protect_mail_message() RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE movable text[] := ARRAY['status','held_reason','decided_by','firm_id','package_id','linked_by',
- 'notice_read','notice_confidence','notice_band','pick_state','send_status','send_attempts','send_error','sent_at','send_tried_at','version'];
+ 'notice_read','notice_confidence','notice_band','pick_state','send_status','send_attempts','send_error','sent_at','version'];
 BEGIN
  IF TG_OP='DELETE' AND NOT EXISTS(SELECT 1 FROM orgs WHERE id=OLD.org_id) THEN RETURN OLD; END IF;
  IF TG_OP='DELETE' AND current_setting('sitewise.deleting_project', true)='1' THEN RETURN OLD; END IF;
@@ -75,15 +73,13 @@ BEGIN
 END $$;
 
 -- The PM's two edits (package, the pick) are captured for Undo, as 063
--- does for other tables; the record's own columns (and version) moving
--- does not count as a change.
+-- does for other tables; a later bump of version does not count.
 CREATE TRIGGER capture_change AFTER UPDATE ON mail_messages
- FOR EACH ROW EXECUTE FUNCTION capture_change('version','status','held_reason','decided_by','firm_id',
-  'notice_read','notice_confidence','notice_band','send_status','send_attempts','send_error','sent_at','send_tried_at');
+ FOR EACH ROW EXECUTE FUNCTION capture_change('version');
 
 -- The change log may name the mail area. Every area allowed before stays
 -- (066 delivery, 070 reports); migrations are applied per file, so a
 -- sibling migration that rewrites this check must keep 'mail' too.
 ALTER TABLE project_changes DROP CONSTRAINT project_changes_area_check;
 ALTER TABLE project_changes ADD CONSTRAINT project_changes_area_check
- CHECK (area IN ('cost_plan','profile','procurement','delivery','reports','variations','claims','mail'));
+ CHECK (area IN ('cost_plan','profile','procurement','delivery','reports','mail'));

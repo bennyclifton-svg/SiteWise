@@ -90,7 +90,11 @@ func (b *chatBox) view(ctx context.Context, st *agent.State, input json.RawMessa
 		return toolError("%s", bad)
 	}
 	if v.Dialog == "send" && st != nil && st.Outside {
-		guardSendFields(v.Fields, st.Asked)
+		contacts, err := b.d.Store.ProjectMailContacts(ctx, b.who.OrgID, b.project)
+		if err != nil {
+			return toolError("The project's firms could not be read.")
+		}
+		guardSendFields(v.Fields, st.Asked, contacts)
 	}
 	return agent.Output{Text: "Done on the PM's screen: " + v.Line, Views: []agent.View{v}, Final: in.Final}
 }

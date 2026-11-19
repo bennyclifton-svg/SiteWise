@@ -21,7 +21,8 @@ import (
 // once, so it measures this process, not a mail service.
 func TestMailBudgets(t *testing.T) {
 	ctx := context.Background()
-	f := newSendFixture(t)
+	f := newSendFixture(t, withPaidBilling)
+	f.paid(t)
 	budgets, err := latency.LoadBudgets(filepath.Join("..", "..", "bench", "budgets.json"))
 	if err != nil {
 		t.Fatal(err)

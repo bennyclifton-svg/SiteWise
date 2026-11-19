@@ -78,14 +78,6 @@ CREATE TABLE mail_webhook_tokens (
 );
 CREATE INDEX mail_webhook_tokens_seen ON mail_webhook_tokens(seen_at);
 
--- Bytes the mail code stored and no part names yet: a part's bytes before
--- its message is recorded, a sheet before its send is. Cleared once named;
--- a sweep removes what a crash left behind (security review H2).
-CREATE TABLE mail_staged_blobs (
- sha256 bytea PRIMARY KEY CHECK (octet_length(sha256)=32),
- staged_at timestamptz NOT NULL DEFAULT now()
-);
-
 -- Frozen means frozen: a filed message's received fields never change and
 -- it is never deleted, except with its project or org. Held mail may be
 -- discarded or expire. Only the decision columns move.

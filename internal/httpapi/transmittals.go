@@ -56,11 +56,11 @@ type Outbox struct {
 	log    *log.Logger
 	// From is the address mail leaves from (SITEWISE_MAIL_FROM).
 	From string
-	// GlobalPerDay caps every org's sends together; zero is
-	// store.MailGlobalPerDay.
-	GlobalPerDay int
-	backoff      []time.Duration
-	now          func() time.Time
+	// GlobalPerDay caps every paid org's sends together, FreeGlobalPerDay
+	// every free org's; zero is the store's default.
+	GlobalPerDay, FreeGlobalPerDay int
+	backoff                        []time.Duration
+	now                            func() time.Time
 
 	mu       sync.Mutex
 	inflight map[string]bool
@@ -69,8 +69,10 @@ type Outbox struct {
 
 // NewOutbox returns nil when there is nothing to send with: no message is
 // ever queued without a sender.
-func NewOutbox(st *store.Store, blobs *files.Store, sender correspondence.Sender, from string, broker *events.Broker, logger *log.Logger) *Outbox {
-	if sender == nil || from == "" {
+// on is SITEWISE_MAIL_SEND: sending stays off without it, whatever SMTP
+// holds (review MEDIUM-3).
+func NewOutbox(st *store.Store, blobs *files.Store, sender correspondence.Sender, from string, on bool, broker *events.Broker, logger *log.Logger) *Outbox {
+	if !on || sender == nil || from == "" {
 		return nil
 	}
 	return &Outbox{store: st, blobs: blobs, sender: sender, From: from, broker: broker, log: logger,
@@ -274,18 +276,24 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 	}
 	// A free plan sends only from an account a week old, and less a day
 	// (security review H3; the owner's numbers to change).
-	in.Global = deps.Outbox.GlobalPerDay
+	// Without billing, every org is free (review MEDIUM-3): free orgs draw
+	// on their own daily pool, so they can never use up paid capacity.
+	paid := false
 	if deps.Billing != nil {
 		b, err := deps.Store.OrgBilling(ctx, session.OrgID)
 		if err != nil {
 			return store.MailMessage{}, err
 		}
-		if b.Effective().MonthlyCents == 0 {
-			if time.Since(who.UserSince) < mailFreeAccountAge {
-				return store.MailMessage{}, &sendError{http.StatusForbidden, "Sending mail needs a paid plan, or an account at least 7 days old. Upgrade on the Account page, or send from your own email for now."}
-			}
-			in.PerDay, in.RecipientsPerDay = store.MailFreeSendPerDay, store.MailFreeRecipientsPerDay
+		paid = b.Effective().MonthlyCents > 0
+	}
+	if paid {
+		in.Pool, in.Global = "paid", deps.Outbox.GlobalPerDay
+	} else {
+		if time.Since(who.UserSince) < mailFreeAccountAge {
+			return store.MailMessage{}, &sendError{http.StatusForbidden, "Sending mail needs a paid plan, or an account at least 7 days old. Upgrade on the Account page, or send from your own email for now."}
 		}
+		in.Pool, in.Global = "free", deps.Outbox.FreeGlobalPerDay
+		in.PerDay, in.RecipientsPerDay = store.MailFreeSendPerDay, store.MailFreeRecipientsPerDay
 	}
 	for _, v := range append([]string{in.Subject}, append(in.To, in.Cc...)...) {
 		if correspondence.CleanHeader(v) != nil {
@@ -318,9 +326,11 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 	in.Body = strings.TrimRight(in.Body, "\n") + "\n\n--\n" + sentByLine(who) + "\n"
 	in.To, in.Cc, in.ReplyTo = formatAll(to), formatAll(cc), formatAll(replyTo)
 	in.MessageIDDomain = messageDomain(deps)
+	// One id for this send's staged bytes (review LOW-5).
+	request := store.NewChangeID()
 	if sheet {
 		in.Sheet = func(number int, docs []store.SentDocument) (store.OutboundFile, error) {
-			return transmittalSheet(ctx, deps, who, number, from, to, cc, in.Subject, note, docs)
+			return transmittalSheet(ctx, deps, who, number, from, to, cc, in.Subject, note, docs, request)
 		}
 	}
 	var sheetSum []byte
@@ -334,7 +344,7 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 	}
 	m, err := deps.Store.QueueOutbound(ctx, session.OrgID, in, time.Now())
 	if sheetSum != nil {
-		finishStaged(deps, [][]byte{sheetSum})
+		finishStaged(deps, [][]byte{sheetSum}, request)
 	}
 	if err != nil {
 		return m, err
@@ -399,7 +409,7 @@ func messageDomain(deps Deps) string {
 
 // transmittalSheet is the numbered one-page sheet in the house style:
 // project, number, date, from, to, the documents as they go, the note.
-func transmittalSheet(ctx context.Context, deps Deps, who store.MailSender, number int, from mail.Address, to, cc []mail.Address, subject, note string, docs []store.SentDocument) (store.OutboundFile, error) {
+func transmittalSheet(ctx context.Context, deps Deps, who store.MailSender, number int, from mail.Address, to, cc []mail.Address, subject, note string, docs []store.SentDocument, request string) (store.OutboundFile, error) {
 	date := time.Now().In(sydneyLocation())
 	rows := make([]export.Row, 0, len(docs))
 	for _, d := range docs {
@@ -440,7 +450,7 @@ func transmittalSheet(ctx context.Context, deps Deps, who store.MailSender, numb
 	}
 	// Staged until the send is recorded; the mail sweep takes it if the
 	// queue never commits (security review L6).
-	if err := deps.Store.StageMailBlob(ctx, blob.SHA256); err != nil {
+	if err := deps.Store.StageMailBlob(ctx, blob.SHA256, request); err != nil {
 		return store.OutboundFile{}, err
 	}
 	return store.OutboundFile{Name: "Transmittal " + TransmittalNumber(number) + ".pdf", ContentType: "application/pdf", SHA256: blob.SHA256, Size: blob.Size}, nil
