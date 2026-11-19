@@ -746,6 +746,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
     mark("procurement", runNext.procurement + runNext.drafts, "proposed since the profile update");
     mark("costs", runNext.costs, "cost lines proposed since the profile update");
     mark("program", runNext.program, "program changes waiting for review");
+    // A payment schedule due or past due marks the Cost Plan from any
+    // screen until it is served; visiting does not clear it.
+    const overdue = runNext.schedules_overdue ?? 0, due = runNext.schedules_due ?? 0;
+    if (overdue + due > 0 && view !== "costs") navMarks.costs = <span className="nav-count" data-alert={overdue ? "overdue" : "due"} title={overdue ? `${overdue} payment ${overdue === 1 ? "schedule" : "schedules"} past due` : `${due} payment ${due === 1 ? "schedule" : "schedules"} due soon or to check`}>{overdue + due}<span className="sr-only"> payment schedules {overdue ? "past due" : "due soon or to check"}</span></span>;
   }
   // While the profile reads, the tab says so, for a user working in another tab.
   const reading = !!profileRun?.reading, readDocs = profileRun?.read ?? 0, runDocs = profileRun?.total ?? 0;

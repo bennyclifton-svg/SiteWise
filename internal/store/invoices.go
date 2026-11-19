@@ -35,6 +35,9 @@ type InvoiceUpload struct {
 	UserID    string
 	// NotRead stores the file without reading it (unsupported format).
 	NotRead string
+	// ClaimPackage is set when the PM dropped the file on a live works
+	// contract: it is that contract's progress claim, decided before the read.
+	ClaimPackage string
 }
 
 // InvoiceCreated is the ledger row an upload made, or the one it already had.
@@ -115,6 +118,16 @@ AND NOT EXISTS (SELECT 1 FROM invoice_allocations a WHERE a.org_id=$1::uuid AND 
 	if !errors.Is(err, pgx.ErrNoRows) {
 		return InvoiceCreated{}, err
 	}
+	if in.ClaimPackage != "" {
+		var live bool
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM awards a JOIN packages p ON p.org_id=a.org_id AND p.id=a.package_id
+WHERE a.org_id=$1::uuid AND a.project_id=$2::uuid AND a.package_id::text=$3 AND a.undone_at IS NULL AND p.kind='works')`, orgID, projectID, in.ClaimPackage).Scan(&live); err != nil {
+			return InvoiceCreated{}, err
+		}
+		if !live {
+			return InvoiceCreated{}, ErrNotFound
+		}
+	}
 	out = InvoiceCreated{ID: newID(), Status: invoices.StatusReading, Created: true}
 	if in.NotRead != "" {
 		out.Status = invoices.StatusNotRead
@@ -129,12 +142,29 @@ VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5, $6, $7, $8::date, $9::uuid, 
 		orgID, out.ID, projectID, fileID, in.Filename, out.Status, in.NotRead, invoices.PeriodOf(now), user, now); err != nil {
 		return InvoiceCreated{}, err
 	}
+	if in.ClaimPackage != "" {
+		// The drop is the PM's word: kind and supplier are theirs.
+		for field, value := range map[string]string{invoices.FieldKind: invoices.KindProgressClaim, invoices.FieldSupplier: in.ClaimPackage} {
+			if _, err := tx.Exec(ctx, `INSERT INTO invoice_decisions (org_id, project_id, invoice_id, field, value, band, decided_by) VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,'green','user')`, orgID, projectID, out.ID, field, value); err != nil {
+				return InvoiceCreated{}, err
+			}
+		}
+	}
 	if out.Status == invoices.StatusNotRead {
 		if _, err := tx.Exec(ctx, `INSERT INTO invoice_decisions (org_id, project_id, invoice_id, field, value, band, decided_by) VALUES ($1::uuid,$2::uuid,$3::uuid,'period',$4,'green','rule')`, orgID, projectID, out.ID, invoices.PeriodOf(now)); err != nil {
 			return InvoiceCreated{}, err
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO invoice_allocations (org_id, id, project_id, invoice_id, decided_by, band) VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,'rule','blank')`, orgID, newID(), projectID, out.ID); err != nil {
 			return InvoiceCreated{}, err
+		}
+		if in.ClaimPackage != "" {
+			// Not read: the contract's lines, amounts unknown, for the PM.
+			if err := s.applyInvoiceTx(ctx, tx, orgID, projectID, out.ID); err != nil {
+				return InvoiceCreated{}, err
+			}
+			if err := s.commitClaimRows(ctx, tx, orgID, projectID, out.ID, invoices.Outcome{}); err != nil {
+				return InvoiceCreated{}, err
+			}
 		}
 	}
 	if err := invoiceEvent(ctx, tx, s, orgID, projectID, out.ID, out.Status); err != nil {
@@ -381,6 +411,9 @@ ORDER BY title, id`, orgID, projectID)
 		}
 		plan.lines = append(plan.lines, invoices.BudgetLine{ID: it.ID, Label: it.Label, Section: line.Section, Category: category, PackageID: pkg, Budget: budget, Contract: contract, Parent: parent})
 	}
+	if pc.Contracts, err = claimContexts(ctx, tx, orgID, projectID); err != nil {
+		return pc, plan, err
+	}
 	hist, err := tx.Query(ctx, `
 SELECT DISTINCT i.package_id::text, a.cost_item_id::text
 FROM invoice_allocations a JOIN invoices i ON i.org_id=a.org_id AND i.project_id=a.project_id AND i.id=a.invoice_id
@@ -446,6 +479,9 @@ func (s *Store) CommitInvoiceRead(ctx context.Context, orgID, invoiceID string, 
 		if err := s.applyInvoiceTx(ctx, tx, orgID, projectID, invoiceID); err != nil {
 			return false, err
 		}
+		if err := s.commitClaimRows(ctx, tx, orgID, projectID, invoiceID, out); err != nil {
+			return false, err
+		}
 		return true, s.finishInvoiceWrite(ctx, tx, orgID, projectID, invoiceID)
 	}
 	for _, d := range out.Decisions {
@@ -466,7 +502,19 @@ WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, invoiceID, out.InvoiceCount, retr
 	if err := s.applyInvoiceTx(ctx, tx, orgID, projectID, invoiceID); err != nil {
 		return false, err
 	}
+	if err := s.commitClaimRows(ctx, tx, orgID, projectID, invoiceID, out); err != nil {
+		return false, err
+	}
 	return true, s.finishInvoiceWrite(ctx, tx, orgID, projectID, invoiceID)
+}
+
+// commitClaimRows writes a claim's rows in the read's transaction.
+func (s *Store) commitClaimRows(ctx context.Context, tx pgx.Tx, orgID, projectID, invoiceID string, out invoices.Outcome) error {
+	contracts, err := claimContexts(ctx, tx, orgID, projectID)
+	if err != nil {
+		return err
+	}
+	return writeClaimRows(ctx, tx, orgID, projectID, invoiceID, out, contracts)
 }
 
 // upsertMachineDecision writes a rule or Jev decision. A user's decision is
@@ -636,6 +684,8 @@ type LedgerView struct {
 	// the Variations and claims tab (it rides on this read).
 	Contracts  []Contract
 	Variations []invoices.Variation
+	// Claims are the live progress claims with their figures and dates.
+	Claims []ClaimView
 }
 
 // InvoiceLedger reads the ledger and computes the summary and checks in Go.
@@ -670,18 +720,23 @@ func (s *Store) invoiceLedgerTx(ctx context.Context, tx pgx.Tx, orgID, projectID
 	rows, err := tx.Query(ctx, `
 SELECT id::text, filename, status, not_read_reason, COALESCE(kind,''), COALESCE(number,''), COALESCE(to_char(invoice_date,'YYYY-MM-DD'),''),
  to_char(period,'YYYY-MM-DD'), COALESCE(package_id::text,''), COALESCE(issuer_abn,''), currency, ex_gst_cents, gst_cents, total_cents,
- invoice_count, COALESCE(superseded_by::text,''), duplicate_ok, created_at
+ invoice_count, COALESCE(superseded_by::text,''), duplicate_ok, created_at, COALESCE(settles_claim_id::text,'')
 FROM invoices WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY created_at DESC, id DESC`, orgID, projectID)
 	if err != nil {
 		return v, err
 	}
 	index := map[string]int{}
+	settles := map[string]string{}
 	for rows.Next() {
 		var inv invoices.Invoice
+		var settle string
 		if err := rows.Scan(&inv.ID, &inv.Filename, &inv.Status, &inv.NotReadReason, &inv.Kind, &inv.Number, &inv.Date, &inv.Period, &inv.PackageID, &inv.ABN, &inv.Currency,
-			&inv.Ex, &inv.GST, &inv.Total, &inv.InvoiceCount, &inv.SupersededBy, &inv.DuplicateOK, &inv.CreatedAt); err != nil {
+			&inv.Ex, &inv.GST, &inv.Total, &inv.InvoiceCount, &inv.SupersededBy, &inv.DuplicateOK, &inv.CreatedAt, &settle); err != nil {
 			rows.Close()
 			return v, err
+		}
+		if settle != "" {
+			settles[inv.ID] = settle
 		}
 		index[inv.ID] = len(v.Invoices)
 		v.Invoices = append(v.Invoices, inv)
@@ -743,10 +798,14 @@ FROM invoice_allocations WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY 
 		}
 		v.Lines = append(v.Lines, invoices.BudgetLine{ID: id, Label: label, Archived: true})
 	}
+	if err := s.claimLedger(ctx, tx, orgID, projectID, today, &v, settles); err != nil {
+		return v, err
+	}
 	v.Summary = invoices.Summarize(v.Lines, v.Invoices, plan.taxBasis)
 	applyVariations(plan.items, v.Variations)
 	v.Groups = invoices.GroupSummaries(plan.items, v.Invoices, plan.taxBasis)
 	v.Flags = invoices.Check(v.Invoices, plan.packageABN, today)
+	claimInvoiceFlags(&v)
 	v.Status = map[string]string{}
 	for _, inv := range v.Invoices {
 		v.Status[inv.ID] = invoices.Status(inv, v.Flags[inv.ID])
@@ -759,7 +818,8 @@ FROM invoice_allocations WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY 
 type InvoiceEdit struct {
 	Fields map[string]*string `json:"fields"`
 	// Action is "", "void", "restore", "replaces" (this invoice supersedes
-	// Target) or "keep_both" (a flagged duplicate stays).
+	// Target), "keep_both" (a flagged duplicate stays), "settles" (this
+	// tax invoice is for the progress claim Target) or "unsettle".
 	Action string `json:"action"`
 	Target string `json:"target"`
 }
@@ -869,6 +929,25 @@ func (s *Store) invoiceAction(ctx context.Context, tx pgx.Tx, orgID, projectID, 
 	case "keep_both":
 		_, err := tx.Exec(ctx, `UPDATE invoices SET duplicate_ok=true WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, invoiceID)
 		return err
+	case "settles":
+		// The PM links a tax invoice to the progress claim it is for: the
+		// claim already counts, so the invoice does not.
+		if e.Target == "" || e.Target == invoiceID {
+			return invoices.ErrInvalid
+		}
+		tag, err := tx.Exec(ctx, `UPDATE invoices SET settles_claim_id=c.id FROM invoices c
+WHERE invoices.org_id=$1::uuid AND invoices.project_id=$2::uuid AND invoices.id=$3::uuid AND COALESCE(invoices.kind,'')<>'progress_claim'
+  AND c.org_id=$1::uuid AND c.project_id=$2::uuid AND c.id::text=$4 AND c.kind='progress_claim'`, orgID, projectID, invoiceID, e.Target)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() != 1 {
+			return ErrNotFound
+		}
+		return nil
+	case "unsettle":
+		_, err := tx.Exec(ctx, `UPDATE invoices SET settles_claim_id=NULL WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, invoiceID)
+		return err
 	case "replaces":
 		if e.Target == "" || e.Target == invoiceID {
 			return invoices.ErrInvalid
@@ -906,7 +985,7 @@ func (s *Store) cleanInvoiceValue(ctx context.Context, tx pgx.Tx, orgID, project
 	switch field {
 	case invoices.FieldKind:
 		switch v {
-		case "invoice", "credit_note", "quote", "statement", "remittance", "receipt", "payment_schedule", "other":
+		case "invoice", "credit_note", "quote", "statement", "remittance", "receipt", "payment_schedule", "other", invoices.KindProgressClaim:
 			return v, nil
 		}
 	case invoices.FieldNumber:
@@ -928,7 +1007,11 @@ func (s *Store) cleanInvoiceValue(ctx context.Context, tx pgx.Tx, orgID, project
 		if d := invoices.NormalizeABN(v); d != "" {
 			return d, nil
 		}
-	case invoices.FieldTotal, invoices.FieldGST, invoices.FieldExGST:
+	case invoices.FieldReferenceDate, invoices.FieldServedOn, invoices.FieldScheduleServedOn:
+		if t, err := time.Parse("2006-01-02", v); err == nil && t.Year() >= 2000 && t.Year() <= 2099 {
+			return v, nil
+		}
+	case invoices.FieldTotal, invoices.FieldGST, invoices.FieldExGST, invoices.FieldRetention:
 		if c, ok, err := invoices.ParseCents(v); err == nil && ok {
 			return strconv.FormatInt(c, 10), nil
 		}

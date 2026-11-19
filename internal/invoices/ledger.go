@@ -51,6 +51,11 @@ type Invoice struct {
 	CreatedAt      time.Time
 	Allocations    []Allocation
 	Decisions      map[string]Decision
+	// Claim is a progress claim's figures (ClaimLedger); nil otherwise.
+	Claim *ClaimFigures
+	// SettlesClaim is the progress claim this tax invoice is for, linked by
+	// the PM or by rule (SettlesBy): the claim already counts, so it does not.
+	SettlesClaim, SettlesBy string
 }
 
 // BudgetLine is a cost plan line invoices can be charged to. Archived lines
@@ -78,17 +83,40 @@ type BudgetLine struct {
 
 // Counted reports whether an invoice is in the ledger totals: read, an
 // invoice or credit note, in AUD, with a known ex-GST amount.
+//
+// A progress claim counts once its schedule is issued, or its due date has
+// passed unserved (ClaimFigures.Counts), whatever was read: the PM types a
+// claim that could not be read. A tax invoice that settles a claim does not
+// count again.
 func Counted(inv Invoice) bool {
 	switch inv.Status {
-	case StatusVoid, StatusSuperseded, StatusReading, StatusNotRead:
+	case StatusVoid, StatusSuperseded, StatusReading:
+		return false
+	}
+	if inv.Kind == KindProgressClaim {
+		return inv.Claim != nil && inv.Claim.Counts && (inv.Currency == "" || inv.Currency == "AUD")
+	}
+	if inv.Status == StatusNotRead || inv.SettlesClaim != "" {
 		return false
 	}
 	return (inv.Kind == "invoice" || inv.Kind == "credit_note") && (inv.Currency == "" || inv.Currency == "AUD") && inv.Ex != nil
 }
 
+// CountedEx is what a counted invoice adds to the ledger total: its ex GST,
+// or a claim's certified amount.
+func CountedEx(inv Invoice) int64 {
+	if inv.Claim != nil {
+		return inv.Claim.Ex
+	}
+	return *inv.Ex
+}
+
 // Shares are the invoice's amounts per line: one allocation with no amount
-// is the whole ex-GST amount.
+// is the whole ex-GST amount. A claim's are its scheduled rows.
 func Shares(inv Invoice) []Allocation {
+	if inv.Claim != nil {
+		return inv.Claim.Shares
+	}
 	if len(inv.Allocations) == 1 && inv.Allocations[0].Amount == nil && inv.Ex != nil {
 		a := inv.Allocations[0]
 		v := *inv.Ex
@@ -165,7 +193,7 @@ func Summarize(lines []BudgetLine, ledger []Invoice, taxBasis string) Summary {
 			continue
 		}
 		s.Counted++
-		s.Total += *inv.Ex
+		s.Total += CountedEx(inv)
 		seen := map[string]bool{}
 		for _, a := range Shares(inv) {
 			i, ok := index[a.LineID]
@@ -392,6 +420,15 @@ func Check(ledger []Invoice, packageABN map[string]string, today string) map[str
 		if inv.Status != StatusNotRead && inv.Ex == nil {
 			add(id, "amount_unknown", "Amount unknown: out of totals", false)
 		}
+		if inv.Kind == KindProgressClaim {
+			// A claim's rows carry its lines; its own checks are its figures'.
+			if inv.Claim != nil {
+				for _, f := range inv.Claim.Flags {
+					add(id, f.Code, f.Reason, f.Info)
+				}
+			}
+			continue
+		}
 		unmapped := len(inv.Allocations) == 0
 		for _, a := range inv.Allocations {
 			if a.LineID == "" {
@@ -436,6 +473,9 @@ func Status(inv Invoice, flags []Flag) string {
 		}
 	}
 	for _, f := range required {
+		if f == FieldLine && inv.Kind == KindProgressClaim {
+			continue // each row carries its line
+		}
 		d, ok := inv.Decisions[f]
 		if !ok || d.Value == "" && d.DecidedBy != DecidedByUser {
 			return StatusNeedsReview

@@ -91,6 +91,8 @@ type contractJSON struct {
 	Sum           moneyField         `json:"contract_sum"`
 	Approved      moneyField         `json:"approved_variations"`
 	SumToDate     moneyField         `json:"contract_sum_to_date"`
+	Certified     moneyField         `json:"certified_to_date"`
+	RetentionHeld moneyField         `json:"retention_held"`
 	ScheduleDays  *int               `json:"schedule_days"`
 	ScheduleBasis string             `json:"schedule_basis"`
 	PaymentDays   *int               `json:"payment_days"`
@@ -147,6 +149,8 @@ func tabBody(v store.LedgerView) ([]contractJSON, []variationJSON) {
 		}
 		sum, approved, toDate := invoices.ContractTotals(amounts, current)
 		j.Sum, j.Approved, j.SumToDate = cents(sum), centsValue(approved), cents(toDate)
+		certified, held := invoices.ContractClaims(claimFigures(v, c.PackageID))
+		j.Certified, j.RetentionHeld = centsValue(certified), centsValue(held)
 		contracts = append(contracts, j)
 	}
 	vars := []variationJSON{}

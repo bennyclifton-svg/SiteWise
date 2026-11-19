@@ -34,9 +34,11 @@ var viewTables = map[string]viewTable{
 	"procurement": {"package", "packages", "procurement", "procurement"},
 	"register":    {"register row", "register rows", "delivery", "register"},
 	"variations":  {"variation", "variations", "variations", "costs"},
+	"claims":      {"progress claim", "progress claims", "claims", "costs"},
+	"claim_rows":  {"claim row", "claim rows", "claims", "costs"},
 }
 
-var viewTableNames = []string{"documents", "cost_lines", "program", "procurement", "register", "variations"}
+var viewTableNames = []string{"documents", "cost_lines", "program", "procurement", "register", "variations", "claims", "claim_rows"}
 
 func (t viewTable) count(n int) string {
 	if n == 1 {
@@ -109,6 +111,20 @@ func tableRows(ctx context.Context, d Deps, who opActor, project, table string) 
 		}
 		for _, v := range vs {
 			ids = append(ids, v.ID)
+		}
+	case "claims", "claim_rows":
+		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, todaySydney())
+		if err != nil {
+			return nil, err
+		}
+		for _, c := range v.Claims {
+			if table == "claims" {
+				ids = append(ids, c.InvoiceID)
+				continue
+			}
+			for _, r := range c.Rows {
+				ids = append(ids, r.ID)
+			}
 		}
 	default:
 		return nil, fmt.Errorf("no table %q", table)

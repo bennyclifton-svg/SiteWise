@@ -67,7 +67,6 @@ func contractFixture(t *testing.T, s *store.Store, amounts ...string) (string, [
 	return pkg.ID, lines
 }
 
-
 // lineFigures are a line's figures as the grid shows them: Approved and
 // Forecast Variations and Forecast Final Cost from the totals, Remaining
 // from the ledger.

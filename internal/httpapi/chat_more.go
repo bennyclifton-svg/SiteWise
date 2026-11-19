@@ -38,6 +38,8 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 		return compact(r, items, 0)
 	case "delivery":
 		return readRegister(ctx, d, who, project, "", r)
+	case "variations":
+		return readVariationsArea(ctx, d, who, project, r)
 	case "invoices":
 		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, time.Now().Format("2006-01-02"))
 		if err != nil {

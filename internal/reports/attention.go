@@ -46,6 +46,12 @@ const (
 	// within the window, or already reached.
 	RuleConditionsDue    = "register.conditions_due"
 	RuleConditionsAtGate = "register.conditions_open_at_gate"
+	// Plan 3: a payment schedule past its due date and not served (the
+	// claimed amount counts), one due within two business days or with a
+	// date to check, and variations waiting for a decision.
+	RuleScheduleOverdue     = "claims.schedule_overdue"
+	RuleScheduleDue         = "claims.schedule_due"
+	RuleVariationsUndecided = "variations.undecided"
 )
 
 // ConditionWindowDays is the window "conditions due" looks ahead: four
@@ -129,6 +135,23 @@ type AttentionLedger struct {
 	// Lines are the budget lines in Summary.Lines' order.
 	Lines  []invoices.BudgetLine
 	Groups map[string]invoices.GroupSummary
+	// Claims are the live progress claims and their schedule alerts;
+	// Variations the variation register.
+	Claims     []AttentionClaim
+	Variations []invoices.Variation
+}
+
+// AttentionClaim is one progress claim's payment schedule alert
+// (invoices.ScheduleAlert, worked out with the ledger).
+type AttentionClaim struct {
+	ID, Number, Alert, Due string
+}
+
+// ScheduleDue is the one definition of a claim with its schedule due, shared
+// by this rule, the banner and the claims named filter: not yet served and
+// due within two business days, or with a date to check or unknown.
+func ScheduleDue(c AttentionClaim) bool {
+	return c.Alert == invoices.AlertSoon || c.Alert == invoices.AlertCheck
 }
 
 // AttentionDocument is one document on the register.
@@ -279,6 +302,11 @@ func Attention(in AttentionInput) []AttentionItem {
 	if in.Ledger != nil {
 		out = appendIf(out, invoiceReviewItem(*in.Ledger))
 		out = appendIf(out, invoiceUnallocatedItem(*in.Ledger))
+		out = appendIf(out, scheduleItem(in.Ledger.Claims, RuleScheduleOverdue, func(c AttentionClaim) bool { return c.Alert == invoices.AlertOverdue },
+			" past its due date and not served: the claimed amount counts", " past their due dates and not served: the claimed amounts count"))
+		out = appendIf(out, scheduleItem(in.Ledger.Claims, RuleScheduleDue, ScheduleDue,
+			" due within two business days, or with a date to check", " due within two business days, or with dates to check"))
+		out = appendIf(out, variationsItem(in.Ledger.Variations))
 	}
 	out = appendIf(out, documentItem(in.Documents))
 	out = appendIf(out, programItem(in.Program))
@@ -289,6 +317,31 @@ func Attention(in AttentionInput) []AttentionItem {
 	out = appendIf(out, conditionItem(in.Delivery, in.Today, RuleConditionsAtGate, conditionAtGate, "consent condition is", "consent conditions are", " still open at a gate the Program has reached"))
 	out = appendIf(out, conditionItem(in.Delivery, in.Today, RuleConditionsDue, conditionDue, "consent condition is", "consent conditions are", fmt.Sprintf(" open before a gate in the next %d days", ConditionWindowDays)))
 	return out
+}
+
+func scheduleItem(claims []AttentionClaim, rule string, match func(AttentionClaim) bool, one, many string) AttentionItem {
+	var ids []string
+	for _, c := range claims {
+		if match(c) {
+			ids = append(ids, c.ID)
+		}
+	}
+	words := "1 payment schedule is" + one
+	if len(ids) != 1 {
+		words = fmt.Sprintf("%d payment schedules are", len(ids)) + many
+	}
+	return AttentionItem{Rule: rule, Source: "Cost Plan, variations and claims", Count: len(ids), IDs: ids, Words: words}
+}
+
+func variationsItem(vs []invoices.Variation) AttentionItem {
+	var ids []string
+	for _, v := range vs {
+		if v.Open() {
+			ids = append(ids, v.ID)
+		}
+	}
+	return AttentionItem{Rule: RuleVariationsUndecided, Source: "Cost Plan, variations and claims", Count: len(ids), IDs: ids,
+		Words: plural(len(ids), "variation is", "variations are") + " waiting for a decision"}
 }
 
 func appendIf(out []AttentionItem, it AttentionItem) []AttentionItem {
@@ -457,7 +510,7 @@ func invoiceUnallocatedItem(l AttentionLedger) AttentionItem {
 				held += *a.Amount
 			}
 		}
-		if held != *inv.Ex {
+		if held != invoices.CountedEx(inv) {
 			ids = append(ids, inv.ID)
 		}
 	}

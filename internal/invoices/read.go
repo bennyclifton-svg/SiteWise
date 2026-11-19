@@ -61,7 +61,7 @@ func LedgerKind(v string) string {
 	switch v {
 	case "":
 		return ""
-	case "invoice", "credit_note":
+	case "invoice", "credit_note", KindProgressClaim:
 		return v
 	default:
 		return "not_invoice"
@@ -129,6 +129,9 @@ type Context struct {
 	Packages []Package
 	Lines    []Line
 	History  map[string][]string
+	// Contracts are the live works contracts a progress claim may be on,
+	// by package id.
+	Contracts map[string]ClaimContract
 }
 
 type choice struct {

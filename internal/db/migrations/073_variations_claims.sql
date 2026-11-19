@@ -8,7 +8,7 @@
 ALTER TABLE invoices DROP CONSTRAINT invoices_kind_check;
 ALTER TABLE invoices ADD CONSTRAINT invoices_kind_check CHECK (kind IN ('invoice','credit_note','not_invoice','progress_claim'));
 ALTER TABLE invoices ADD COLUMN settles_claim_id uuid;
-ALTER TABLE invoices ADD CONSTRAINT invoices_settles_claim_fk FOREIGN KEY (org_id, project_id, settles_claim_id) REFERENCES invoices(org_id, project_id, id);
+ALTER TABLE invoices ADD CONSTRAINT invoices_settles_claim_fk FOREIGN KEY (org_id, project_id, settles_claim_id) REFERENCES invoices(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE invoices ADD CONSTRAINT invoices_settles_not_self CHECK (settles_claim_id IS DISTINCT FROM id);
 
 -- The contract's own periods, typed once per contract; null is not entered.
@@ -43,9 +43,11 @@ CREATE TABLE variations (
  PRIMARY KEY (org_id, id),
  UNIQUE (org_id, project_id, id),
  FOREIGN KEY (org_id, project_id) REFERENCES projects(org_id, id) ON DELETE CASCADE,
- FOREIGN KEY (org_id, project_id, package_id) REFERENCES packages(org_id, project_id, id),
- FOREIGN KEY (org_id, project_id, award_id) REFERENCES awards(org_id, project_id, id),
- FOREIGN KEY (org_id, project_id, cost_item_id) REFERENCES cost_items(org_id, project_id, id),
+ -- Deferred: a project's cost rows, awards and packages go in one
+ -- transaction with its variations, in whichever order the cascade takes.
+ FOREIGN KEY (org_id, project_id, package_id) REFERENCES packages(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id, project_id, award_id) REFERENCES awards(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id, project_id, cost_item_id) REFERENCES cost_items(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED,
  FOREIGN KEY (org_id, created_by) REFERENCES users(org_id, id) DEFERRABLE INITIALLY DEFERRED,
  CHECK ((status = 'approved') = (approved_cents IS NOT NULL))
 );
@@ -88,8 +90,8 @@ CREATE TABLE progress_claim_lines (
  PRIMARY KEY (org_id, id),
  UNIQUE (org_id, invoice_id, ordinal),
  FOREIGN KEY (org_id, project_id, invoice_id) REFERENCES invoices(org_id, project_id, id) ON DELETE CASCADE,
- FOREIGN KEY (org_id, project_id, cost_item_id) REFERENCES cost_items(org_id, project_id, id),
- FOREIGN KEY (org_id, project_id, variation_id) REFERENCES variations(org_id, project_id, id),
+ FOREIGN KEY (org_id, project_id, cost_item_id) REFERENCES cost_items(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED,
+ FOREIGN KEY (org_id, project_id, variation_id) REFERENCES variations(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED,
  CHECK (cost_item_id IS NULL OR variation_id IS NULL),
  CHECK (kind <> 'retention' OR (cost_item_id IS NULL AND variation_id IS NULL))
 );
@@ -100,7 +102,7 @@ CREATE INDEX progress_claim_lines_project_idx ON progress_claim_lines (org_id, p
 ALTER TABLE reports DROP CONSTRAINT reports_kind_check;
 ALTER TABLE reports ADD CONSTRAINT reports_kind_check CHECK (kind IN ('pmp','rfp','rft','monthly','payment_schedule'));
 ALTER TABLE reports ADD COLUMN invoice_id uuid;
-ALTER TABLE reports ADD CONSTRAINT reports_invoice_fk FOREIGN KEY (org_id, project_id, invoice_id) REFERENCES invoices(org_id, project_id, id);
+ALTER TABLE reports ADD CONSTRAINT reports_invoice_fk FOREIGN KEY (org_id, project_id, invoice_id) REFERENCES invoices(org_id, project_id, id) DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE reports ADD CONSTRAINT reports_invoice_check CHECK ((kind = 'payment_schedule') = (invoice_id IS NOT NULL));
 CREATE UNIQUE INDEX reports_one_schedule ON reports (org_id, invoice_id) WHERE kind = 'payment_schedule';
 
@@ -123,7 +125,7 @@ DECLARE
  o uuid := COALESCE(NEW.org_id, OLD.org_id);
  inv uuid := COALESCE(NEW.invoice_id, OLD.invoice_id);
 BEGIN
- IF pg_trigger_depth() > 1 THEN
+ IF pg_trigger_depth() > 1 OR current_setting('sitewise.deleting_project', true) = '1' THEN
   IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
   RETURN NEW;
  END IF;

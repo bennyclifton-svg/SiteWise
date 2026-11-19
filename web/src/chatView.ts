@@ -11,7 +11,7 @@ import type { WorkbenchView } from "./LeftNav";
 // keeps it while the selection changes under it.
 
 /** The tables chat can name. They match viewTables in internal/httpapi/chat_screen.go. */
-export type ChatTableName = "documents" | "cost_lines" | "program" | "procurement" | "register" | "variations" | "claim_rows";
+export type ChatTableName = "documents" | "cost_lines" | "program" | "procurement" | "register" | "variations" | "claims" | "claim_rows";
 
 /** Where a table lives: a workbench view, or the repository panel beside every view. */
 export type ChatPlace = WorkbenchView | "documents";
@@ -139,6 +139,7 @@ export const ROW_WORDS: Record<ChatTableName, [string, string]> = {
   procurement: ["package", "packages"],
   register: ["register row", "register rows"],
   variations: ["variation", "variations"],
+  claims: ["claim", "claims"],
   claim_rows: ["claim row", "claim rows"],
 };
 

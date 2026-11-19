@@ -145,3 +145,16 @@
 .var-table input.field-plain { width: 100%; min-width: 0; border: 0; background: transparent; font: inherit; }
 .var-table input.num, .var-table td.num input { text-align: right; }
 .var-contract select { margin-left: 6px; }
+
+.var-periods { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 12px 8px; }
+.var-periods input { width: 4em; }
+.var-due p { margin: 2px 0 0; font-size: var(--fs-xs, .75rem); color: var(--sw-text-secondary); max-width: 40ch; }
+.var-panel-body { overflow: auto; padding: 0 0 18px; }
+.var-issued { margin: 8px 12px; padding-left: 18px; }
+.var-served { display: block; margin: 6px 12px; }
+.var-claims[data-over] { outline: 2px dashed var(--sw-border-default); outline-offset: -4px; }
+/* The one banner for payment schedules: red past due, amber due soon or to check. */
+.claim-banner { margin: 0 0 0 12px; padding: 4px 10px; border-radius: 4px; font-size: var(--fs-sm, .875rem); }
+.claim-banner[data-alert="overdue"], .nav-count[data-alert="overdue"], .cost-tag[data-alert="overdue"] { background: var(--sw-danger-bg); color: var(--sw-danger-text); box-shadow: inset 0 0 0 1px var(--sw-danger-border); }
+.claim-banner[data-alert="due"], .nav-count[data-alert="due"], .cost-tag[data-alert="soon"], .cost-tag[data-alert="check"] { background: var(--sw-warning-bg); color: var(--sw-warning-text); box-shadow: inset 0 0 0 1px var(--sw-warning-border); }
+.costs-tab .nav-count { margin-left: 6px; }

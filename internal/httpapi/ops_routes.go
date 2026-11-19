@@ -41,6 +41,7 @@ var noOperation = map[string]string{
 	"POST /projects/{id}/program/undo":                             "Program's own undo and redo; the change card calls them",
 	"POST /projects/{id}/specifications/imports":                   "a file upload; chat does not receive files",
 	"POST /reports/{r}/issue":                                      "issuing leaves the building; the PM clicks Issue on the screen (design 4.3)",
+	"POST /projects/{id}/invoices/{inv}/schedule":                  "issuing leaves the building; the PM clicks Issue (variations plan, decision 9): chat opens the claim's panel filled in",
 	"POST /session":                                                "signing in, signing up and passwords are never done from chat",
 	"POST /signin":                                                 "signing in, signing up and passwords are never done from chat",
 	"POST /signup":                                                 "signing in, signing up and passwords are never done from chat",
