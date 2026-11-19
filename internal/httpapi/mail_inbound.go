@@ -253,7 +253,9 @@ func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, string
 	if !verified {
 		return post, "signature"
 	}
-	sort.SliceStable(post.files, func(i, j int) bool { return attachmentNumber(post.files[i].Field) < attachmentNumber(post.files[j].Field) })
+	sort.SliceStable(post.files, func(i, j int) bool {
+		return attachmentNumber(post.files[i].Field) < attachmentNumber(post.files[j].Field)
+	})
 	return post, ""
 }
 
