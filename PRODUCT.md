@@ -104,7 +104,17 @@ The workbench, in navigation order:
   from that ledger, with an Unallocated row so the totals always add up.
   Both views export to Excel and CSV and print. Lines are selected as in the
   document register; right-click sets a category or package, excludes,
-  copies or deletes the selection in one save. Variations is a placeholder.
+  copies or deletes the selection in one save. A Variations and claims tab
+  shows each live contract's sum, approved variations, sum to date,
+  certified to date and retention held, a variation register (approve,
+  reject, Undo) and its progress claims: a claim dropped on the contract is
+  read in about a second, assessed row by row (or Accept claimed), and its
+  payment schedule issued as a frozen PDF. Approved and forecast variations
+  fill two grid columns and the forecast; certified claims fill Claimed to
+  Date. Payment schedule and payment dates are worked out in Go from the
+  contract's periods and the state's Security of Payment row, marked "to
+  check" while that row is unverified; a schedule due or past due is the
+  Cost Plan's one banner and a mark on its nav entry.
 - **Program.** One program per project: stages and their activities, built
   from the Profile, included work items, Procurement packages and the
   reviewed library, shown collapsed or expanded as a grid beside a Gantt

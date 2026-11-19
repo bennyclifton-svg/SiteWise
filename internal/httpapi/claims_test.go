@@ -276,7 +276,9 @@ func TestVariationsBudget(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		d := func(f, v string) invoices.Decision { return invoices.Decision{Field: f, Value: v, Band: "green", DecidedBy: "rule"} }
+		d := func(f, v string) invoices.Decision {
+			return invoices.Decision{Field: f, Value: v, Band: "green", DecidedBy: "rule"}
+		}
 		out := invoices.Outcome{Asked: true, Reading: invoices.Reading{Decisions: []invoices.Decision{d(invoices.FieldNumber, name), d(invoices.FieldDate, "2026-10-14"),
 			d(invoices.FieldTotal, "110000"), d(invoices.FieldGST, "10000"), d(invoices.FieldPeriod, "2026-10-01"), d(invoices.FieldCurrency, "AUD")}}}
 		if claim {

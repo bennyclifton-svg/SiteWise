@@ -1,7 +1,7 @@
 # Variations, progress claims and payment schedules: implementation plan
 
 Date 17 November 2026; revised 18 November. Lane A (cost figures, and dates a PM relies on).
-Status: plan only, nothing built.
+Status: built 19 November 2026 on branch `wave/claims` (not merged, not pushed): Tasks 1 to 12, with the deviations in `docs/evidence/2026-11-19-variations-progress-claims.md`. No Act row is verified and the claim answer key is empty.
 
 Money after award. It fills the Cost Plan's Variations tab
 (`web/src/Invoices.tsx:293`, a placeholder) and two placeholder grid columns

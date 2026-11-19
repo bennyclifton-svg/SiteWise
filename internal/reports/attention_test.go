@@ -257,7 +257,7 @@ func TestAttentionSentence(t *testing.T) {
 // variations waiting for a decision. A served schedule says nothing.
 func TestAttentionClaimRules(t *testing.T) {
 	l := &AttentionLedger{
-		Claims: []AttentionClaim{{ID: "c1", Number: "4", Alert: invoices.AlertOverdue}, {ID: "c2", Alert: invoices.AlertSoon}, {ID: "c3", Alert: invoices.AlertCheck}, {ID: "c4", Alert: ""}},
+		Claims:     []AttentionClaim{{ID: "c1", Number: "4", Alert: invoices.AlertOverdue}, {ID: "c2", Alert: invoices.AlertSoon}, {ID: "c3", Alert: invoices.AlertCheck}, {ID: "c4", Alert: ""}},
 		Variations: []invoices.Variation{{ID: "v1", Status: invoices.VariationSubmitted}, {ID: "v2", Status: invoices.VariationApproved}, {ID: "v3", Status: invoices.VariationProposed}},
 	}
 	items := Attention(AttentionInput{Ledger: l})
