@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"sitewise/internal/store"
@@ -113,11 +114,7 @@ func heldMessage(ctx context.Context, d Deps, who opActor, project, ref string) 
 	if ref == "" {
 		return store.MailMessage{}, refuse("message", "message is needed.")
 	}
-	list, err := d.Store.MailMessages(ctx, who.OrgID, project, store.MailFilter{})
-	if err != nil {
-		return store.MailMessage{}, err
-	}
-	m, err := byRef(list, func(m store.MailMessage) string { return m.ID }, ref, "message")
+	m, err := messageRef(ctx, d, who, project, ref)
 	if err != nil {
 		return store.MailMessage{}, err
 	}
@@ -132,11 +129,7 @@ func recordMessage(ctx context.Context, d Deps, who opActor, project, ref string
 	if ref == "" {
 		return store.MailMessage{}, refuse("message", "message is needed.")
 	}
-	list, err := d.Store.MailMessages(ctx, who.OrgID, project, store.MailFilter{})
-	if err != nil {
-		return store.MailMessage{}, err
-	}
-	m, err := byRef(list, func(m store.MailMessage) string { return m.ID }, ref, "message")
+	m, err := messageRef(ctx, d, who, project, ref)
 	if err != nil {
 		return store.MailMessage{}, err
 	}
@@ -152,4 +145,13 @@ func direction(m store.MailMessage) string {
 		return "to"
 	}
 	return "from"
+}
+
+// messageRef reads one message of this project by id or short id, in SQL.
+func messageRef(ctx context.Context, d Deps, who opActor, project, ref string) (store.MailMessage, error) {
+	m, err := d.Store.MailMessageByRef(ctx, who.OrgID, project, ref)
+	if errors.Is(err, store.ErrNotFound) {
+		return m, refuse("message", "There is no message with id %q here, or it names more than one. Use an id from a read.", ref)
+	}
+	return m, err
 }

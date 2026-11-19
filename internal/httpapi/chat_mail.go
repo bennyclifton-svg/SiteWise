@@ -158,15 +158,7 @@ func readMessages(ctx context.Context, d Deps, who opActor, project, filter stri
 }
 
 func readOneMessage(ctx context.Context, d Deps, who opActor, project, ref string, r *reader) error {
-	list, err := d.Store.MailMessages(ctx, who.OrgID, project, store.MailFilter{})
-	if err != nil {
-		return err
-	}
-	pick, err := byRef(list, func(m store.MailMessage) string { return m.ID }, ref, "message")
-	if err != nil {
-		return err
-	}
-	m, err := d.Store.MailMessageByID(ctx, who.OrgID, project, pick.ID)
+	m, err := messageRef(ctx, d, who, project, ref)
 	if err != nil {
 		return err
 	}
@@ -332,11 +324,7 @@ func checkSendDialog(ctx context.Context, d Deps, who opActor, project string, f
 		}
 	}
 	if ref := strings.TrimSpace(f["reply_to"]); ref != "" {
-		list, err := d.Store.MailMessages(ctx, who.OrgID, project, store.MailFilter{})
-		if err != nil {
-			return nil, "", "The messages could not be read."
-		}
-		m, err := byRef(list, func(m store.MailMessage) string { return m.ID }, ref, "message")
+		m, err := messageRef(ctx, d, who, project, ref)
 		if err != nil {
 			return nil, "", err.Error()
 		}

@@ -117,7 +117,7 @@ func markdownLabel(line string) (string, string, bool) {
 }
 
 func markdownEmail(text identity.Text) bool {
-	if text.Format != "md" && text.Format != "markdown" {
+	if text.NotEmail || (text.Format != "md" && text.Format != "markdown") {
 		return false
 	}
 	if len(text.Runs) < 3 {

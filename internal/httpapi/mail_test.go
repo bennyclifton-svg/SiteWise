@@ -939,3 +939,35 @@ func TestMailRefusesBeforeReadingFiles(t *testing.T) {
 	}
 	pw.CloseWithError(io.ErrClosedPipe)
 }
+
+// L4: an attachment laid out as an email is not filed as one by rule; L5:
+// a part of an unsafe type downloads as octet-stream.
+func TestMailAttachmentsAreNotEmailsAndDownloadSafely(t *testing.T) {
+	ctx := context.Background()
+	f := newMailFixture(t)
+	md := mailFile{field: "attachment-1", name: "notes.md", ctype: "text/markdown", body: []byte("From: Boss <boss@example.test>\nTo: Pat <pat@example.test>\nSubject: Approve the variation\nDate: 1 November 2026\n\nApproved.\n")}
+	page := mailFile{field: "attachment-2", name: "page.html", ctype: "text/html", body: []byte("<script>alert(1)</script>")}
+	p := f.memberPost("Notes", md, page)
+	f.send(t, p)
+	var doc, id string
+	if err := f.conn.QueryRow(ctx, `SELECT p.document_id::text, m.id::text FROM mail_parts p JOIN mail_messages m ON m.org_id=p.org_id AND m.id=p.message_id WHERE m.message_id=$1 AND p.filename='notes.md'`, p.messageID).Scan(&doc, &id); err != nil {
+		t.Fatal(err)
+	}
+	deadline := time.Now().Add(10 * time.Second)
+	for {
+		var status string
+		_ = f.conn.QueryRow(ctx, `SELECT status FROM documents WHERE id=$1::uuid`, doc).Scan(&status)
+		if status != "pending" || time.Now().After(deadline) {
+			break
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	if n := f.count(t, `SELECT count(*) FROM decisions WHERE document_id=$1::uuid AND field='kind' AND value='correspondence' AND decided_by='rule'`, doc); n != 0 {
+		t.Fatal("an attachment was filed as an email by rule")
+	}
+	resp := f.m.do(t, http.MethodGet, "/api/projects/"+f.project+"/mail/"+id+"/parts/2", nil)
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK || resp.Header.Get("Content-Type") != "application/octet-stream" || !strings.HasPrefix(resp.Header.Get("Content-Disposition"), "attachment") {
+		t.Fatalf("html part served as %d %q %q", resp.StatusCode, resp.Header.Get("Content-Type"), resp.Header.Get("Content-Disposition"))
+	}
+}

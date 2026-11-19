@@ -67,6 +67,13 @@ func (s *Service) file(ctx context.Context, orgID, documentID string, text ident
 	if err != nil {
 		return Filed{}, err
 	}
+	// An attachment of an email is never an email body by rule, whatever
+	// its layout (mail review L4): only part 0, the body SiteWise wrote, is.
+	if attached, err := s.store.MailAttachment(ctx, orgID, documentID); err != nil {
+		return Filed{}, err
+	} else if attached {
+		text.NotEmail = true
+	}
 	if doc.Status == store.StatusNotFiled {
 		return Filed{}, errors.New("document is not filed")
 	}

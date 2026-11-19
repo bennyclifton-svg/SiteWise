@@ -755,3 +755,45 @@ func (s *Store) StaleMailBlobs(ctx context.Context, cutoff time.Time) ([][]byte,
 	}
 	return scanHashes(rows)
 }
+
+// MailAttachment reports whether the document came attached to an email
+// (a part after the body).
+func (s *Store) MailAttachment(ctx context.Context, org, document string) (bool, error) {
+	if !validUUID(org) || !validUUID(document) {
+		return false, nil
+	}
+	var ok bool
+	err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM mail_parts WHERE org_id=$1::uuid AND document_id=$2::uuid AND n>0)`, org, document).Scan(&ok)
+	return ok, err
+}
+
+// MailMessageByRef finds one message of this project by its id, or a short
+// id of six or more characters that names exactly one, in SQL (review L7).
+func (s *Store) MailMessageByRef(ctx context.Context, org, project, ref string) (MailMessage, error) {
+	ref = strings.ToLower(strings.TrimSpace(ref))
+	if !validUUID(org) || !validUUID(project) || len(ref) < 6 || len(ref) > 36 || strings.Trim(ref, "0123456789abcdef-") != "" {
+		return MailMessage{}, ErrNotFound
+	}
+	rows, err := s.pool.Query(ctx, `SELECT id::text FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid
+ AND (id::text=$3 OR id::text LIKE $3 || '%') LIMIT 2`, org, project, ref)
+	if err != nil {
+		return MailMessage{}, err
+	}
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			rows.Close()
+			return MailMessage{}, err
+		}
+		ids = append(ids, id)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return MailMessage{}, err
+	}
+	if len(ids) != 1 {
+		return MailMessage{}, ErrNotFound
+	}
+	return s.MailMessageByID(ctx, org, project, ids[0])
+}

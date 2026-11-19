@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime"
 	"net/http"
 	"net/mail"
 	"net/url"
@@ -581,11 +582,7 @@ func getMailPart(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	for _, p := range m.Parts {
 		if fmt.Sprint(p.N) == r.PathValue("n") && p.SHA256 != nil {
-			ctype := p.ContentType
-			if ctype == "" || strings.HasPrefix(strings.ToLower(ctype), "text/html") {
-				ctype = "application/octet-stream"
-			}
-			serveFile(w, r, deps, p.SHA256, ctype, p.Filename)
+			serveFile(w, r, deps, p.SHA256, safePartType(p.ContentType), p.Filename)
 			return
 		}
 	}
@@ -627,4 +624,21 @@ func cleanFileTitle(s string) string {
 		s = string([]rune(s)[:120])
 	}
 	return s
+}
+
+// safePartType is a part's type when it is on a short safe list, else
+// application/octet-stream (mail review L5). Every part downloads as an
+// attachment either way: a sender's file is never shown in the app's origin.
+func safePartType(ctype string) string {
+	t, _, err := mime.ParseMediaType(ctype)
+	if err != nil {
+		return "application/octet-stream"
+	}
+	switch t {
+	case "application/pdf", "image/png", "image/jpeg":
+		return t
+	case "text/plain":
+		return "text/plain; charset=utf-8"
+	}
+	return "application/octet-stream"
 }

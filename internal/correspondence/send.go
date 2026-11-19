@@ -2,9 +2,11 @@ package correspondence
 
 import (
 	"context"
+	"crypto/tls"
 	"net"
 	"net/smtp"
 	"sync"
+	"time"
 )
 
 // Sender hands one built message to the mail service. "Sent" means the
@@ -14,27 +16,77 @@ type Sender interface {
 }
 
 // SMTP sends through the configured relay (SITEWISE_SMTP_*: Mailgun on 587
-// in production). net/smtp upgrades to TLS when the server offers it, and
-// refuses to send a password over a plain connection to another host.
+// in production). Every step is bounded: the dial, and the whole exchange
+// by a deadline on the connection (mail review L3), so a hung relay fails
+// the attempt, which the outbox retries. TLS is taken when the server
+// offers it; a password is never sent without it.
 type SMTP struct {
 	Addr, User, Password string
+	// Timeout bounds one send; zero is SendTimeout.
+	Timeout time.Duration
 }
 
-// Send delivers msg. The context bounds the dial only; net/smtp has no
-// per-call deadline, so the outbox runs each send in its own goroutine.
+// SendTimeout bounds one message's whole SMTP exchange.
+const SendTimeout = 2 * time.Minute
+
+// Send delivers msg.
 func (s SMTP) Send(ctx context.Context, from string, to []string, msg []byte) error {
-	var a smtp.Auth
-	if s.User != "" {
-		host, _, err := net.SplitHostPort(s.Addr)
-		if err != nil {
-			return err
-		}
-		a = smtp.PlainAuth("", s.User, s.Password, host)
-	}
-	if err := ctx.Err(); err != nil {
+	host, _, err := net.SplitHostPort(s.Addr)
+	if err != nil {
 		return err
 	}
-	return smtp.SendMail(s.Addr, a, from, to, msg)
+	timeout := s.Timeout
+	if timeout <= 0 {
+		timeout = SendTimeout
+	}
+	deadline := time.Now().Add(timeout)
+	if d, ok := ctx.Deadline(); ok && d.Before(deadline) {
+		deadline = d
+	}
+	dialer := net.Dialer{Deadline: deadline}
+	conn, err := dialer.DialContext(ctx, "tcp", s.Addr)
+	if err != nil {
+		return err
+	}
+	if err := conn.SetDeadline(deadline); err != nil {
+		conn.Close()
+		return err
+	}
+	c, err := smtp.NewClient(conn, host)
+	if err != nil {
+		conn.Close()
+		return err
+	}
+	defer c.Close()
+	if ok, _ := c.Extension("STARTTLS"); ok {
+		if err := c.StartTLS(&tls.Config{ServerName: host, MinVersion: tls.VersionTLS12}); err != nil {
+			return err
+		}
+	}
+	if s.User != "" {
+		if err := c.Auth(smtp.PlainAuth("", s.User, s.Password, host)); err != nil {
+			return err
+		}
+	}
+	if err := c.Mail(from); err != nil {
+		return err
+	}
+	for _, r := range to {
+		if err := c.Rcpt(r); err != nil {
+			return err
+		}
+	}
+	w, err := c.Data()
+	if err != nil {
+		return err
+	}
+	if _, err := w.Write(msg); err != nil {
+		return err
+	}
+	if err := w.Close(); err != nil {
+		return err
+	}
+	return c.Quit()
 }
 
 // Sink keeps what it was given, for tests and the bench (as auth.Sink).

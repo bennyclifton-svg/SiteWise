@@ -119,6 +119,9 @@ type Text struct {
 	Format     string
 	TextLayer  bool
 	Runs       []Run
+	// NotEmail: the file came attached to an email, so a From/To/Subject
+	// layout in it is never read as an email by rule (mail review L4).
+	NotEmail bool
 }
 
 // Extract reads identity text from a PDF, DOCX, XLSX, or Markdown file.
