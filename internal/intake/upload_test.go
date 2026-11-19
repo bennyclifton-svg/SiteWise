@@ -556,3 +556,33 @@ func blobRoot(t *testing.T, blobs *files.Store, sha []byte) string {
 	}
 	return filepath.Dir(filepath.Dir(path))
 }
+
+// File commits bytes the mail webhook already stored, as Upload would.
+func TestFileStoredBlob(t *testing.T) {
+	ctx := context.Background()
+	st, blobs, up := openIntake(t)
+	seedProject(t, st, orgA, projectA)
+	blob, err := blobs.Put(ctx, bytes.NewReader([]byte("stored first")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	filed, err := up.File(ctx, orgA, projectA, "report.pdf", blob)
+	if err != nil || !filed.Created || filed.Status != store.StatusPending {
+		t.Fatalf("%+v %v", filed, err)
+	}
+	again, err := up.Upload(ctx, orgA, projectA, intake.Upload{Filename: "report.pdf", Body: bytes.NewReader([]byte("stored first"))})
+	if err != nil || again.Created || again.DocumentID != filed.DocumentID {
+		t.Fatalf("upload of the same bytes %+v %v", again, err)
+	}
+	other, err := blobs.Put(ctx, bytes.NewReader([]byte("MZ not a pdf")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	exe, err := up.File(ctx, orgA, projectA, "setup.exe", other)
+	if err != nil || exe.Status != store.StatusNotFiled || exe.Reason != intake.ReasonFor("setup.exe") {
+		t.Fatalf("unsupported %+v %v", exe, err)
+	}
+	if _, err := up.File(ctx, orgA, projectA, " ", blob); !errors.Is(err, intake.ErrFilename) {
+		t.Fatalf("empty name: %v", err)
+	}
+}

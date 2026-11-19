@@ -72,6 +72,26 @@ func (u *Uploader) Upload(ctx context.Context, orgID, projectID string, up Uploa
 	if err != nil {
 		return Filing{}, err
 	}
+	return u.commit(ctx, orgID, projectID, name, reason, blob)
+}
+
+// File commits bytes that are already stored, as Upload does after its put:
+// a message part the mail webhook stored before deciding to file it (email
+// intake, Task 4). The type is checked by name with ReasonFor, so an
+// unsupported file is committed not filed exactly as a dropped one is. The
+// blob comes from this server's own put, never from a request.
+func (u *Uploader) File(ctx context.Context, orgID, projectID, filename string, blob files.Blob) (Filing, error) {
+	if u.blobs == nil || u.db == nil {
+		return Filing{}, errors.New("upload storage is not configured")
+	}
+	name, err := cleanFilename(filename)
+	if err != nil {
+		return Filing{}, err
+	}
+	return u.commit(ctx, orgID, projectID, name, ReasonFor(name), blob)
+}
+
+func (u *Uploader) commit(ctx context.Context, orgID, projectID, name, reason string, blob files.Blob) (Filing, error) {
 	if blob.Size == 0 && reason == "" {
 		reason = "empty"
 	}
