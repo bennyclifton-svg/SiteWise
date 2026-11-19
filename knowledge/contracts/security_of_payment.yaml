@@ -1,0 +1,79 @@
+# Security of Payment periods, one row per state
+# (docs/plans/2026-11-17-variations-progress-claims.md, Task 1; SCHEMA.md
+# "Contracts"). Go computes a progress claim's payment schedule date and
+# payment date from these rows and the contract's own periods: the earlier of
+# the two. A row with verified: false is still used, and every date worked
+# out from it shows "to check" with its section; its excluded spans are not
+# applied, so a date can only fall early.
+#
+# Nothing here has been read in an Act by anyone on this project. Counts are
+# quoted so a YAML reader cannot turn them into anything else. Only the owner
+# sets verified: true, with the Act's URL and the date it was read.
+version: 1
+status: draft
+acts:
+  - id: sop.nsw
+    state: NSW
+    act: Building and Construction Industry Security of Payment Act 1999 (NSW)
+    business_day_excludes:
+      weekdays: [sat, sun]
+      public_holidays: true
+      # s 4 as the guidance describes it; not applied while unverified.
+      spans:
+        - {from: "12-27", to: "12-31"}
+    schedule:
+      section: s 14(4)
+      business_days: "10"
+      rule: after the payment claim is served, or earlier if the contract says so; reasons when less than claimed (s 14(3))
+    payment:
+      section: s 11(1A)(a)
+      business_days: "15"
+      rule: principal to head contractor, after the payment claim is made; a contract may set an earlier date, a term allowing a later one has no effect
+    other_payments:
+      - {who: head contractor to subcontractor (non-residential), section: s 11(1B)(a), business_days: "20"}
+      - {who: head contractor to subcontractor (residential), section: s 11(1C)(b), business_days: "10"}
+    verified: false
+    primary_source: ""
+    secondary_source: NSW Government guidance table "Making a payment claim" (nsw.gov.au, NSW Fair Trading) for the payment periods; commentary for the payment schedule period (s 14(4)). Not the Act.
+    checked_on: ""
+    status: draft
+    notes: >-
+      legislation.nsw.gov.au served a browser check page, not the Act, on 17
+      November 2026; ss 4, 11, 13 and 14 are unread. On 19 November 2026 the
+      owner said payment is 15 business days head contractor to subcontractor
+      and 10 business days principal to head contractor. That does not match
+      the guidance table above (15 principal to head contractor; 20 head
+      contractor to subcontractor, non-residential). It may be the owner's own
+      contract terms, which can be earlier than the Act's, or a slip. Open
+      question for the owner; the contract's own periods are typed per
+      contract and the earlier date wins.
+  - id: sop.qld
+    state: QLD
+    act: Building Industry Fairness (Security of Payment) Act 2017 (Qld)
+    business_day_excludes:
+      weekdays: [sat, sun]
+      public_holidays: true
+      # sch 2 as the plan records it; not applied while unverified.
+      spans:
+        - {from: "12-22", to: "12-24"}
+        - {from: "12-27", to: "12-31"}
+        - {from: "01-02", to: "01-10"}
+    schedule:
+      section: s 76(1)
+      business_days: "15"
+      rule: the earlier of the contract's period or this, after the claim is given; reasons when less (s 69(c)); none given, the respondent is liable for the claimed amount (s 77)
+    payment:
+      section: s 73(1)
+      business_days: "10"
+      rule: the contract's date, else this after the claim; a commercial building contract paying later than 15 business days falls back to 10 (s 73(4)(c))
+    other_payments: []
+    verified: false
+    primary_source: https://www.legislation.qld.gov.au/view/whole/html/inforce/current/act-2017-043
+    secondary_source: ""
+    checked_on: "2026-11-17"
+    status: draft
+    notes: >-
+      The plan records a reading of the Act on 17 November 2026. It was not
+      re-read for this file, so it stays unverified until the owner confirms
+      it. VIC, SA, TAS, ACT, WA and NT have no row: their periods are to read,
+      and a claim on a project there shows the contract's date only.

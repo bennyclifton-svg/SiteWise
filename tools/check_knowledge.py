@@ -142,9 +142,10 @@ def load_files(report: Report) -> list[tuple[Path, str, list[dict]]]:
         parts = path.relative_to(KNOWLEDGE).parts[:-1]
         # RFP discipline files have their own shape and check (check_rfp).
         if path.parent.name in ("tables", PROFILE_DIR) or WORKS_DIR in parts or set(CATALOGUE_DIRS) & set(parts) or "rfp" in parts \
-                or PROGRAM_DIR in parts or "chat" in parts:
+                or PROGRAM_DIR in parts or "chat" in parts or "contracts" in parts:
             # knowledge/chat holds the chat agent's prompt and search words,
             # not building knowledge; the Go loader reads it (LoadChatWords).
+            # knowledge/contracts has its own shape and check (check_contracts).
             continue
         if path.name in CLUSTER_WORKS_FILES and path.parent.parent.name == "clusters":
             continue
@@ -1513,6 +1514,73 @@ def check_trades(report: Report, known: dict) -> None:
             report.error(f"{rel} [bundle {b.get('id', '?') if isinstance(b, dict) else '?'}]", "needs two or more listed trades, never Main Works")
 
 
+def check_contracts(report: Report, path: Path | None = None) -> None:
+    """knowledge/contracts/security_of_payment.yaml (SCHEMA.md "Contracts").
+    The Go loader (internal/knowledge/contracts.go) enforces the same rules:
+    a row per state, counts quoted, and verified only with the Act's URL and
+    the date it was read."""
+    path = path or KNOWLEDGE / "contracts" / "security_of_payment.yaml"
+    if not path.is_file():
+        return
+    try:
+        rel = path.relative_to(ROOT).as_posix()
+    except ValueError:
+        rel = path.as_posix()
+    try:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as e:
+        report.error(rel, f"invalid YAML: {e}")
+        return
+    if doc.get("version") != 1 or doc.get("status") not in {"draft", "reviewed"}:
+        report.error(rel, "needs version 1 and status draft or reviewed")
+    states = {"NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"}
+    fields = {"id", "state", "act", "business_day_excludes", "schedule", "payment", "other_payments", "verified",
+              "primary_source", "secondary_source", "checked_on", "status", "notes"}
+    seen: set = set()
+
+    def period(where: str, p) -> None:
+        if p is None:
+            return
+        if not isinstance(p, dict) or not str(p.get("section", "")).strip():
+            report.error(where, "a period needs its section")
+            return
+        n = p.get("business_days")
+        if not isinstance(n, str) or not n.isdigit() or not 1 <= int(n) <= 60:
+            report.error(where, "business_days is a quoted whole number from 1 to 60")
+
+    for a in doc.get("acts") or []:
+        aid = a.get("id", "") if isinstance(a, dict) else ""
+        where = f"{rel} [{aid or '?'}]"
+        if not isinstance(a, dict):
+            report.error(where, "a row is a mapping")
+            continue
+        if set(a) - fields:
+            report.error(where, f"unknown fields {sorted(set(a) - fields)}")
+        state = a.get("state")
+        if state not in states:
+            report.error(where, f"unknown state {state!r}")
+        elif aid != f"sop.{state.lower()}":
+            report.error(where, "the id is sop.<state>")
+        if state in seen:
+            report.error(where, f"two rows for {state}")
+        seen.add(state)
+        if a.get("status") not in {"draft", "reviewed"} or not isinstance(a.get("verified"), bool) or not a.get("act"):
+            report.error(where, "needs act, verified and status")
+        if a.get("verified") is True:
+            if not str(a.get("primary_source", "")).startswith("https://"):
+                report.error(where, "verified needs the Act's URL as primary_source")
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(a.get("checked_on", ""))):
+                report.error(where, "verified needs checked_on")
+        ex = a.get("business_day_excludes") or {}
+        for s in ex.get("spans") or []:
+            if not all(re.fullmatch(r"(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])", str(s.get(k, ""))) for k in ("from", "to")) or str(s["to"]) < str(s["from"]):
+                report.error(where, "a span is MM-DD to a later MM-DD")
+        period(where + " schedule", a.get("schedule"))
+        period(where + " payment", a.get("payment"))
+        for p in a.get("other_payments") or []:
+            period(where + " other payment", p)
+
+
 def check_cost_structure(report: Report, seed_dir: Path, cache: dict) -> None:
     systems = {}
     for _, kind, items in load_files(Report()):
@@ -2124,6 +2192,7 @@ def main() -> int:
     check_catalogues(report, args.seed_dir, cache, determinants)
     check_rfp(report)
     check_trades(report, known)
+    check_contracts(report)
     check_cost_structure(report, args.seed_dir, cache)
     check_program(report, args.seed_dir, cache, refs)
     check_replacements(deprecated, known, report)
