@@ -101,6 +101,14 @@ func tableRows(ctx context.Context, d Deps, who opActor, project, table string) 
 		for _, it := range items {
 			ids = append(ids, it.ID)
 		}
+	case "messages":
+		list, err := d.Store.MailMessages(ctx, who.OrgID, project, store.MailFilter{})
+		if err != nil {
+			return nil, err
+		}
+		for _, m := range list {
+			ids = append(ids, m.ID)
+		}
 	default:
 		return nil, fmt.Errorf("no table %q", table)
 	}

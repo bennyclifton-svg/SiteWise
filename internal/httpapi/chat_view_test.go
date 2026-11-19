@@ -80,7 +80,7 @@ func TestChatViewMovesTheScreen(t *testing.T) {
 		"a made-up id":      {"do": "only", "table": "cost_lines", "ids": []string{"deadbeef"}},
 		"a bad table":       {"do": "select", "table": "invoices", "ids": []string{ids[0]}},
 		"a filter":          {"do": "only", "table": "cost_lines", "filter": "overdue"},
-		"a bad dialog":      {"do": "open", "dialog": "send", "fields": map[string]string{}},
+		"a bad dialog":      {"do": "open", "dialog": "invoice", "fields": map[string]string{}},
 	} {
 		events := ta.run(t, "Move the screen", tool("view", input))
 		if viewOf(events) != nil || len(ta.results) != 1 {

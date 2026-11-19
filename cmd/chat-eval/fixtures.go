@@ -53,6 +53,8 @@ type fixture struct {
 	// Conditions are Jev's stand-in picks for the fixture's notice of
 	// determination, by condition number (consent.go).
 	Conditions map[string]conditionPick
+	// Messages are the project's correspondence record (mail.go).
+	Messages []messageFix
 }
 
 var fixtures = map[string]fixture{
@@ -81,6 +83,7 @@ var fixtures = map[string]fixture{
 		// RFI-001 was raised long ago and is past its response date; RFI-002
 		// has no raised date, so it has no due date and is never late, and
 		// the structural sketch answers it by citing its number.
+		Messages: houseMessages,
 		Register: []registerRow{
 			{Title: "Window head flashing detail", Question: "Confirm the head flashing to the north windows.", With: "Arc Architects", System: "envelope", Status: "open", RaisedOn: "2026-10-01"},
 			{Title: "Retaining wall footing depth", Question: "Confirm the footing depth to the rear retaining wall.", With: "Northline Structural", System: "substructure", Status: "open"},

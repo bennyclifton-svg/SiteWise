@@ -135,6 +135,14 @@ func (s *session) names(ctx context.Context) (*names, error) {
 	for _, g := range shares {
 		n.add("shares", g.ID, g.SharedWith)
 	}
+	// Messages by subject.
+	msgs, err := s.l.st.MailMessages(ctx, s.org, s.project, store.MailFilter{})
+	if err != nil {
+		return nil, err
+	}
+	for _, m := range msgs {
+		n.add("messages", m.ID, m.Subject)
+	}
 	return n, nil
 }
 
@@ -192,6 +200,23 @@ func (n *names) view(v agent.View) chateval.View {
 				titles = append(titles, n.name("documents", id))
 			}
 			out.Fields["documents"] = strings.Join(titles, ",")
+		}
+	case "send":
+		// Send's fields by name: documents by title, a reply by its subject;
+		// addresses and words as sent.
+		out.Fields = map[string]string{}
+		for k, val := range v.Fields {
+			out.Fields[k] = val
+		}
+		if ids := v.Fields["documents"]; ids != "" {
+			var titles []string
+			for _, id := range strings.Split(ids, ",") {
+				titles = append(titles, n.name("documents", id))
+			}
+			out.Fields["documents"] = strings.Join(titles, ",")
+		}
+		if id := v.Fields["reply_to"]; id != "" {
+			out.Fields["reply_to"] = n.name("messages", id)
 		}
 	case "report":
 		// The project report is the project's one report: the key names it

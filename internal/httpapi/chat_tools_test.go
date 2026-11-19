@@ -202,7 +202,7 @@ func TestChatReadsCalcAndFind(t *testing.T) {
 	if len(ta.results) != 8 {
 		t.Fatalf("%d results", len(ta.results))
 	}
-	for i, want := range []string{"Total: budget 210000", "What needs attention", "mplications", "Program", "Procurement", "plan.site_area | Site area", "gap", "This project has no inbox yet."} {
+	for i, want := range []string{"Total: budget 210000", "What needs attention", "mplications", "Program", "Procurement", "plan.site_area | Site area", "gap", "Messages: none yet."} {
 		if !strings.Contains(ta.results[i], want) {
 			t.Errorf("result %d lacks %q:\n%s", i, want, ta.results[i])
 		}

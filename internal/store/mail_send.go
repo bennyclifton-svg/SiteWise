@@ -391,3 +391,57 @@ WHERE o.id=$1::uuid`, org, project, user).Scan(&out.OrgName, &out.ProjectName, &
 	}
 	return out, err
 }
+
+// IssuedVersion is an issued version of one of this project's reports, for
+// Send: its frozen PDF goes as it was issued (the report plan's Send issue
+// N…). ErrNotFound for anything else.
+type IssuedVersion struct {
+	ID, ReportID, Title string
+	Number              int
+	SHA256              []byte
+}
+
+func (s *Store) IssuedVersionOf(ctx context.Context, org, project, version string) (IssuedVersion, error) {
+	var v IssuedVersion
+	if !validUUID(org) || !validUUID(project) || !validUUID(version) {
+		return v, ErrNotFound
+	}
+	err := s.pool.QueryRow(ctx, `SELECT v.id::text, r.id::text, r.title, v.number, v.export_file_sha256 FROM report_versions v
+JOIN reports r ON r.org_id=v.org_id AND r.id=v.report_id AND r.project_id=$2::uuid
+WHERE v.org_id=$1::uuid AND v.id=$3::uuid AND v.status='issued' AND v.export_file_sha256 IS NOT NULL`, org, project, version).Scan(&v.ID, &v.ReportID, &v.Title, &v.Number, &v.SHA256)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return v, ErrNotFound
+	}
+	return v, err
+}
+
+// MailFirm finds one of the org's firms by its id, an id prefix of six or
+// more characters, or its exact name, for chat's Send. Two matches or none
+// is ErrNotFound.
+func (s *Store) MailFirm(ctx context.Context, org, ref string) (Firm, error) {
+	var f Firm
+	ref = strings.TrimSpace(ref)
+	if !validUUID(org) || ref == "" {
+		return f, ErrNotFound
+	}
+	rows, err := s.pool.Query(ctx, `SELECT id::text,name,email FROM firms WHERE org_id=$1::uuid
+ AND (id::text=lower($2) OR (length($2)>=6 AND id::text LIKE lower($2)||'%') OR lower(name)=lower($2)) LIMIT 2`, org, ref)
+	if err != nil {
+		return f, err
+	}
+	defer rows.Close()
+	n := 0
+	for rows.Next() {
+		if err := rows.Scan(&f.ID, &f.Name, &f.Email); err != nil {
+			return f, err
+		}
+		n++
+	}
+	if err := rows.Err(); err != nil {
+		return f, err
+	}
+	if n != 1 {
+		return Firm{}, ErrNotFound
+	}
+	return f, nil
+}

@@ -404,7 +404,7 @@ func Load(path string) ([]Case, error) {
 }
 
 // Tables are the tables a screen move or a selection names.
-var Tables = []string{"cost_lines", "documents", "program", "procurement", "register"}
+var Tables = []string{"cost_lines", "documents", "program", "procurement", "register", "messages"}
 
 func checkScreen(c Case) error {
 	for _, m := range c.Before {
