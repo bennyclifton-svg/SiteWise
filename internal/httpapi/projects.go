@@ -75,7 +75,9 @@ type Deps struct {
 	Billing *Billing
 	// Chat is the chat strip's model and prompt; nil is off for every org.
 	// Only chat.go and chat_tools.go use it.
-	Chat   *Chat
+	Chat *Chat
+	// Mail switches email intake on; nil is off (mail.go).
+	Mail   *MailIn
 	limits *authLimits
 }
 
@@ -107,6 +109,9 @@ func Handler(deps Deps) http.Handler {
 	}
 	if deps.MaxUploadBytes <= 0 {
 		deps.MaxUploadBytes = 200 << 20
+	}
+	if deps.Mail != nil && deps.Mail.slots == nil {
+		deps.Mail.slots = make(chan struct{}, mailSlots)
 	}
 	if deps.AccountMail == nil {
 		if m, ok := deps.ResetMail.(auth.AccountMailer); ok {
@@ -333,6 +338,10 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 		routes[pattern] = h
 	}
 	for pattern, h := range guestRoutes {
+		routes[pattern] = h
+	}
+	// Email intake: the one webhook and the project's mail.
+	for pattern, h := range mailRoutes {
 		routes[pattern] = h
 	}
 	return routes

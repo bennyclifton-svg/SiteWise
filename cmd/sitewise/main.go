@@ -251,6 +251,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	srv, err := httpapi.New(httpapi.Options{
 		TenderLLM:           tenderLLM,
 		Chat:                chat,
+		Mail:                httpapi.NewMailIn(cfg.MailInDomain, cfg.MailgunSigningKey),
 		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
 		TenderModel:         cfg.TenderModel,
 		TenderRender:        tenderRender,

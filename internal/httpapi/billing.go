@@ -317,38 +317,46 @@ func uploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, session st
 // reserve is the share of the monthly documents and storage the caller may
 // not use: 0 for a PM; a guest leaves the last tenth to the org's own team.
 func orgUploadAllowed(w http.ResponseWriter, r *http.Request, deps Deps, org string, reserve float64, full string) bool {
-	if deps.Billing == nil {
-		return true
-	}
-	ctx := r.Context()
-	b, err := deps.Store.OrgBilling(ctx, org)
+	ok, msg, err := orgUploadAllowance(r.Context(), deps, org, reserve)
 	if err != nil {
 		readFailed(w, deps, "upload allowance", err)
 		return false
 	}
-	usage, err := deps.Store.Usage(ctx, org, deps.Billing.now())
-	if err != nil {
-		readFailed(w, deps, "upload allowance", err)
-		return false
-	}
-	plan := b.Effective()
-	docCap := plan.DocumentsPerMonth - int(float64(plan.DocumentsPerMonth)*reserve)
-	storeCap := plan.StorageBytes - int64(float64(plan.StorageBytes)*reserve)
-	if usage.DocumentsThisMonth >= docCap {
+	if !ok {
 		if full == "" {
-			full = fmt.Sprintf("Your %s plan reads %d documents a month and this month's are used. Upgrade on the Account page to read more.", plan.Name, plan.DocumentsPerMonth)
-		}
-		http.Error(w, full, http.StatusPaymentRequired)
-		return false
-	}
-	if usage.StorageBytes >= storeCap {
-		if full == "" {
-			full = fmt.Sprintf("Your %s plan stores %s and it is full. Delete documents or upgrade on the Account page.", plan.Name, sizeLabel(plan.StorageBytes))
+			full = msg
 		}
 		http.Error(w, full, http.StatusPaymentRequired)
 		return false
 	}
 	return true
+}
+
+// orgUploadAllowance is the org's allowance without an HTTP answer, for the
+// mail webhook, which holds a message rather than refusing it (email intake,
+// Task 6). msg is the plan's words when it is used up.
+func orgUploadAllowance(ctx context.Context, deps Deps, org string, reserve float64) (ok bool, msg string, err error) {
+	if deps.Billing == nil {
+		return true, "", nil
+	}
+	b, err := deps.Store.OrgBilling(ctx, org)
+	if err != nil {
+		return false, "", err
+	}
+	usage, err := deps.Store.Usage(ctx, org, deps.Billing.now())
+	if err != nil {
+		return false, "", err
+	}
+	plan := b.Effective()
+	docCap := plan.DocumentsPerMonth - int(float64(plan.DocumentsPerMonth)*reserve)
+	storeCap := plan.StorageBytes - int64(float64(plan.StorageBytes)*reserve)
+	if usage.DocumentsThisMonth >= docCap {
+		return false, fmt.Sprintf("Your %s plan reads %d documents a month and this month's are used. Upgrade on the Account page to read more.", plan.Name, plan.DocumentsPerMonth), nil
+	}
+	if usage.StorageBytes >= storeCap {
+		return false, fmt.Sprintf("Your %s plan stores %s and it is full. Delete documents or upgrade on the Account page.", plan.Name, sizeLabel(plan.StorageBytes)), nil
+	}
+	return true, "", nil
 }
 
 // projectAllowed is checked before a project is created.

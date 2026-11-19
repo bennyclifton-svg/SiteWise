@@ -40,6 +40,35 @@ type Config struct {
 	// TenderSkipJevPrices stops asking Jev the prices the tender pass reads.
 	// Off until the owner has used the new tables on a live package.
 	TenderSkipJevPrices bool
+	// MailInDomain and MailgunSigningKey switch on email intake: the domain
+	// Mailgun receives project mail for, and the account's HTTP webhook
+	// signing key. Both or neither; neither is off (the webhook answers 404
+	// and no project address is shown).
+	MailInDomain      string
+	MailgunSigningKey string
+}
+
+// MailInEnabled reports whether email intake is configured.
+func (c Config) MailInEnabled() bool { return c.MailInDomain != "" && c.MailgunSigningKey != "" }
+
+var mailDomain = regexp.MustCompile(`^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$`)
+
+// loadMailIn reads the two email intake settings. The key's value never
+// appears in an error.
+func loadMailIn(getenv func(string) string) (domain, key string, err error) {
+	domain = strings.ToLower(strings.TrimSpace(getenv("SITEWISE_MAIL_IN_DOMAIN")))
+	key = strings.TrimSpace(getenv("SITEWISE_MAILGUN_SIGNING_KEY"))
+	switch {
+	case domain == "" && key == "":
+		return "", "", nil
+	case domain == "":
+		return "", "", fmt.Errorf("missing configuration: SITEWISE_MAIL_IN_DOMAIN (SITEWISE_MAILGUN_SIGNING_KEY is set)")
+	case key == "":
+		return "", "", fmt.Errorf("missing configuration: SITEWISE_MAILGUN_SIGNING_KEY (SITEWISE_MAIL_IN_DOMAIN is set)")
+	case !mailDomain.MatchString(domain):
+		return "", "", fmt.Errorf("SITEWISE_MAIL_IN_DOMAIN must be a domain name such as in.example.com")
+	}
+	return domain, key, nil
 }
 
 // DefaultTenderModel reads tenders unless SITEWISE_TENDER_MODEL names another.
@@ -189,6 +218,11 @@ func Load(getenv func(string) string) (Config, error) {
 			return Config{}, fmt.Errorf("missing configuration: %s", strings.Join(missing, ", "))
 		}
 	}
+	mailDomainIn, mailKey, err := loadMailIn(getenv)
+	if err != nil {
+		return Config{}, err
+	}
+	cfg.MailInDomain, cfg.MailgunSigningKey = mailDomainIn, mailKey
 	stripe, err := loadStripe(getenv, env == "production")
 	if err != nil {
 		return Config{}, err

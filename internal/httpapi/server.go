@@ -104,6 +104,8 @@ type Options struct {
 	TenderSkipJevPrices bool
 	// TenderTimeout bounds one pass; zero is 150 seconds.
 	TenderTimeout time.Duration
+	// Mail switches email intake on (NewMailIn); nil is off.
+	Mail *MailIn
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -321,6 +323,7 @@ func New(opts Options) (*Server, error) {
 		ResetMail:         opts.ResetMail,
 		Billing:           opts.Billing,
 		Chat:              opts.Chat,
+		Mail:              opts.Mail,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})

@@ -51,6 +51,8 @@ var noOperation = map[string]string{
 	"POST /projects/{id}/shares":                                   "sharing outside the org is the PM's press of Create link; chat opens Share filled in",
 	"POST /guest/session":                                          "a guest opening a link; chat never signs anyone in",
 	"POST /guest/quote":                                            "a guest's file upload; the guest page has no chat",
+	"POST /mail/inbound":                                           "a provider webhook: Mailgun posts mail here, signed; no session and no chat",
+	"POST /projects/{id}/mail/address":                             "rotating the project's address stops replies to earlier sends; the PM does it on the screen (A6)",
 }
 
 // pendingOperation: route to its area. Chat says "I can't do that from

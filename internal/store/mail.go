@@ -51,6 +51,8 @@ type MailTarget struct {
 // MailPartIn is one part of an inbound message, bytes already stored.
 // Skipped parts have no hash.
 type MailPartIn struct {
+	// N is 0 for the body document and 1 on for attachments in order.
+	N                     int
 	Filename, ContentType string
 	SHA256                []byte
 	Size                  int64
@@ -277,7 +279,7 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16
 		in.InReplyTo, in.References, in.Body, received, status, reason); err != nil {
 		return out, err
 	}
-	for n, p := range in.Parts {
+	for _, p := range in.Parts {
 		sum, skipped := p.SHA256, p.Skipped
 		if reason == MailHeldFull && skipped == "" {
 			out.Unkept = append(out.Unkept, sum)
@@ -287,7 +289,7 @@ VALUES ($1::uuid,$2::uuid,$3::uuid,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16
 			sum = nil
 		}
 		if _, err := tx.Exec(ctx, `INSERT INTO mail_parts(org_id,message_id,n,filename,content_type,sha256,byte_size,skipped)
-VALUES ($1::uuid,$2::uuid,$3,$4,$5,$6,$7,$8)`, org, out.ID, n, p.Filename, p.ContentType, sum, p.Size, skipped); err != nil {
+VALUES ($1::uuid,$2::uuid,$3,$4,$5,$6,$7,$8)`, org, out.ID, p.N, p.Filename, p.ContentType, sum, p.Size, skipped); err != nil {
 			return out, err
 		}
 	}
@@ -512,4 +514,18 @@ func (s *Store) DiscardMail(ctx context.Context, org, project, id string) ([][]b
 		return nil, err
 	}
 	return sums, tx.Commit(ctx)
+}
+
+// ProjectArchived reports whether the project is archived; ErrNotFound when
+// it is not this org's.
+func (s *Store) ProjectArchived(ctx context.Context, org, project string) (bool, error) {
+	if !validUUID(org) || !validUUID(project) {
+		return false, ErrNotFound
+	}
+	var archived bool
+	err := s.pool.QueryRow(ctx, `SELECT archived_at IS NOT NULL FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, project).Scan(&archived)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, ErrNotFound
+	}
+	return archived, err
 }

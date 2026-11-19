@@ -178,3 +178,34 @@ func TestTenderSettings(t *testing.T) {
 		t.Fatalf("a moving model id must be refused without printing the key: %v", err)
 	}
 }
+
+// Email intake is on only with both settings; one without the other is a
+// load error that never prints the key.
+func TestMailInSettings(t *testing.T) {
+	const canaryKey = "CANARY_MAILGUN_SIGNING_KEY"
+	off, err := Load(getenvFrom(fullEnv()))
+	if err != nil || off.MailInEnabled() {
+		t.Fatalf("off by default: %+v %v", off.MailInEnabled(), err)
+	}
+	vals := fullEnv()
+	vals["SITEWISE_MAIL_IN_DOMAIN"] = "In.Example.Test"
+	vals["SITEWISE_MAILGUN_SIGNING_KEY"] = canaryKey
+	on, err := Load(getenvFrom(vals))
+	if err != nil || !on.MailInEnabled() || on.MailInDomain != "in.example.test" || on.MailgunSigningKey != canaryKey {
+		t.Fatalf("on: %v %v", on.MailInDomain, err)
+	}
+	for _, drop := range []string{"SITEWISE_MAIL_IN_DOMAIN", "SITEWISE_MAILGUN_SIGNING_KEY"} {
+		half := fullEnv()
+		half["SITEWISE_MAIL_IN_DOMAIN"], half["SITEWISE_MAILGUN_SIGNING_KEY"] = "in.example.test", canaryKey
+		delete(half, drop)
+		_, err := Load(getenvFrom(half))
+		if err == nil || !strings.Contains(err.Error(), drop) || strings.Contains(err.Error(), canaryKey) {
+			t.Fatalf("without %s: %v", drop, err)
+		}
+	}
+	bad := fullEnv()
+	bad["SITEWISE_MAIL_IN_DOMAIN"], bad["SITEWISE_MAILGUN_SIGNING_KEY"] = "in example/test", canaryKey
+	if _, err := Load(getenvFrom(bad)); err == nil || strings.Contains(err.Error(), canaryKey) {
+		t.Fatalf("bad domain: %v", err)
+	}
+}

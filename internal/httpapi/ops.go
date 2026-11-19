@@ -104,7 +104,7 @@ func refuse(field, format string, args ...any) error {
 
 const maxOpsPerBatch = 50
 
-var opAreas = []string{"cost_plan", "profile", "program", "procurement", "invoices", "delivery", "specifications", "reports", "documents", "shares"}
+var opAreas = []string{"cost_plan", "profile", "program", "procurement", "invoices", "delivery", "specifications", "reports", "documents", "shares", "mail"}
 
 // operations is the registry. The order is the order the agent reads.
 func operations() []operation {

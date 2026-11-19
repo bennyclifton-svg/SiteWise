@@ -119,6 +119,24 @@
       "note": "a guest link: token exchange, or the guest page read (grant check plus page) on a package link with a 50-document transmittal; no Jev, no model. Held by TestGuestOpenBudget and sampled by the bench"
     },
     {
+      "name": "mail_inbound_accept",
+      "p50_us": 300000,
+      "p90_us": 1000000,
+      "note": "signed Mailgun post of a 5 MB message with two PDFs, to the 200 response; filing of each document runs after and keeps its own budget; no Jev here (docs/plans/2026-11-14-email-intake.md)"
+    },
+    {
+      "name": "mail_read",
+      "p50_us": 100000,
+      "p90_us": 250000,
+      "note": "the project's messages (1,000), one message, or one document's transmittals; no Jev, no model"
+    },
+    {
+      "name": "mail_decide",
+      "p50_us": 100000,
+      "p90_us": 250000,
+      "note": "accept a held message with three attachments (filing runs after), discard, rotate, or a record edit (package, dismiss the pick); no Jev, no model"
+    },
+    {
       "name": "health_speed",
       "p50_us": 25000,
       "p90_us": 100000

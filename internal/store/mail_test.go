@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -76,13 +77,19 @@ func TestRotateMailAddress(t *testing.T) {
 	}
 }
 
+// runToken makes a webhook token unique to this run: tokens are kept for
+// two days across every org.
+var runNonce = strconv.FormatInt(time.Now().UnixNano(), 36)
+
+func runToken(s string) string { return s + "-" + runNonce }
+
 func mailIn(token, messageID, reason string, parts ...store.MailPartIn) store.MailIn {
-	return store.MailIn{ProjectID: projectA, MessageID: messageID, Token: token, Sender: "someone@example.net",
+	return store.MailIn{ProjectID: projectA, MessageID: messageID, Token: runToken(token), Sender: "someone@example.net",
 		Subject: "Drawings", Body: "See attached.", ReceivedAt: time.Now(), HeldReason: reason, Parts: parts}
 }
 
 func part(name string, b byte, size int64) store.MailPartIn {
-	return store.MailPartIn{Filename: name, ContentType: "application/pdf", SHA256: bytes32(b), Size: size}
+	return store.MailPartIn{N: 1, Filename: name, ContentType: "application/pdf", SHA256: bytes32(b), Size: size}
 }
 
 func TestRecordMailIsIdempotent(t *testing.T) {
@@ -105,7 +112,7 @@ func TestRecordMailIsIdempotent(t *testing.T) {
 		t.Fatalf("list %+v %v", list, err)
 	}
 	// A token seen by the webhook for a post that stored nothing is also a repeat.
-	seen, err := st.SeenWebhookToken(ctx, "tok-3")
+	seen, err := st.SeenWebhookToken(ctx, runToken("tok-3"))
 	if err != nil || seen {
 		t.Fatalf("first sight %v %v", seen, err)
 	}
@@ -132,7 +139,7 @@ func TestHeldMailCaps(t *testing.T) {
 		t.Fatalf("parts %+v %v", m, err)
 	}
 	// Bytes past 500 MB are held full too, on a project with room for messages.
-	big, err := st.RecordMail(ctx, orgB, store.MailIn{ProjectID: projectB, MessageID: "<big@example.net>", Token: "big", Sender: "x@example.net",
+	big, err := st.RecordMail(ctx, orgB, store.MailIn{ProjectID: projectB, MessageID: "<big@example.net>", Token: runToken("big"), Sender: "x@example.net",
 		HeldReason: store.MailUnknownSender, Parts: []store.MailPartIn{{Filename: "huge.pdf", SHA256: bytes32(0x74), Size: store.MailHeldBytes + 1}}})
 	if err != nil || big.HeldReason != store.MailHeldFull {
 		t.Fatalf("bytes cap %+v %v", big, err)

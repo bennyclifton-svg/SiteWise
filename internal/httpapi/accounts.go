@@ -310,6 +310,15 @@ func (l *authLimits) allow(key string, max int, span time.Duration) bool {
 	return true
 }
 
+// full reports whether key's window is used up, without counting: a route
+// that counts only its misses checks this before doing any work.
+func (l *authLimits) full(key string, max int, span time.Duration) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	win := l.counts[key]
+	return win != nil && l.now().Sub(win.start) < span && win.n >= max
+}
+
 // limitKeysCap bounds the limiter: a flood of new addresses can neither grow
 // it without bound nor make one request scan all of it (security review L1).
 const limitKeysCap = 50_000
