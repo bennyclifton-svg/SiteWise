@@ -345,3 +345,39 @@ func (b *bounded) Read(p []byte) (int, error) {
 	}
 	return n, err
 }
+
+// reuseHold is how long a blob another request just put by the same hash
+// is never removed: its commit may still be on its way.
+const reuseHold = 10 * time.Minute
+
+// RemoveNow deletes a blob nothing references, whatever its age: bytes the
+// mail webhook stored for a message it then did not keep. A blob another
+// request put again in the last ten minutes stays (its commit may be on its
+// way); the mail sweep tries it again later.
+func (s *Store) RemoveNow(sum []byte, referenced func() (bool, error)) (bool, error) {
+	path, err := s.Path(sum)
+	if err != nil {
+		return false, err
+	}
+	lock := &s.publish[sum[0]]
+	lock.Lock()
+	defer lock.Unlock()
+	if _, err := os.Lstat(path); errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	key := hex.EncodeToString(sum)
+	if at, ok := s.reused.Load(key); ok && time.Since(at.(time.Time)) < reuseHold {
+		return false, nil
+	}
+	used, err := referenced()
+	if err != nil || used {
+		return false, err
+	}
+	if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return false, err
+	}
+	s.reused.Delete(key)
+	return true, nil
+}

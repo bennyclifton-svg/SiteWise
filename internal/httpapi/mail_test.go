@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -19,9 +20,11 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"net/mail"
 	"sitewise/internal/correspondence"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
+	"sitewise/internal/mailin/mailintest"
 	"sitewise/internal/store"
 )
 
@@ -46,7 +49,13 @@ type mailFixture struct {
 	signWith string
 }
 
-func withMail(o *httpapi.Options) { o.Mail = httpapi.NewMailIn(mailTestDomain, mailTestKey) }
+// testKeys is the stub DNS of DKIM keys every mail test signs with: no
+// test reaches the network.
+var testKeys = mailintest.NewKeys()
+
+func withMail(o *httpapi.Options) {
+	o.Mail = httpapi.NewMailIn(mailTestDomain, mailTestKey).WithDKIMLookup(testKeys.Lookup)
+}
 
 func newMailFixture(t *testing.T, adjust ...func(*httpapi.Options)) *mailFixture {
 	t.Helper()
@@ -91,14 +100,42 @@ type mailPost struct {
 	inline                                       map[string]string
 	timestamp                                    time.Time
 	token                                        string
+	// The raw message is DKIM-signed by the From address's domain unless
+	// unsigned, or by signAs. parsedOnly posts Mailgun's parsed fields with
+	// no raw message (which is never authenticated).
+	unsigned, parsedOnly bool
+	signAs               string
 }
 
-// memberPost is a message from the fixture's member with SPF aligned.
+// memberPost is a message from the fixture's member, DKIM-signed by the
+// member's own domain.
 func (f *mailFixture) memberPost(subject string, files ...mailFile) mailPost {
 	f.seq++
 	return mailPost{to: f.address, from: "Pat Member <" + f.email + ">", envelope: f.email, subject: subject,
-		body: "Please file the attached.", messageID: fmt.Sprintf("<m%d-%s@example.test>", f.seq, newUUIDString()),
-		headers: [][2]string{{"X-Mailgun-Spf", "Pass"}}, files: files}
+		body: "Please file the attached.", messageID: fmt.Sprintf("<m%d-%s@example.test>", f.seq, newUUIDString()), files: files}
+}
+
+// rawOf is the post's raw message, signed as the post says.
+func rawOf(p mailPost) []byte {
+	m := mailintest.Message{From: p.from, To: p.to, Subject: p.subject, MessageID: p.messageID, Body: p.body, Headers: p.headers}
+	inline := map[string]string{}
+	for cid, field := range p.inline {
+		inline[field] = strings.Trim(cid, "<>")
+	}
+	for _, f := range p.files {
+		m.Files = append(m.Files, mailintest.File{Name: f.name, Type: f.ctype, Body: f.body, Inline: inline[f.field] != "", ContentID: inline[f.field]})
+	}
+	raw := m.Build()
+	if p.unsigned {
+		return raw
+	}
+	domain := p.signAs
+	if domain == "" {
+		if a, err := mail.ParseAddress(p.from); err == nil {
+			_, domain, _ = strings.Cut(a.Address, "@")
+		}
+	}
+	return testKeys.Sign(raw, domain)
 }
 
 var uuidSeq int
@@ -121,16 +158,26 @@ func (f *mailFixture) fields(p mailPost) map[string]string {
 	headers := append([][2]string{{"Message-Id", p.messageID}, {"To", p.to}, {"Date", "Fri, 14 Nov 2026 09:15:00 +1100"}}, p.headers...)
 	raw, _ := json.Marshal(headers)
 	cid, _ := json.Marshal(p.inline)
-	return map[string]string{
-		"recipient": p.to, "sender": p.envelope, "from": p.from, "subject": p.subject, "body-plain": p.body,
-		"message-headers": string(raw), "content-id-map": string(cid), "attachment-count": strconv.Itoa(len(p.files)),
+	out := map[string]string{
+		"recipient": p.to, "sender": p.envelope, "from": p.from, "subject": p.subject,
 		"timestamp": ts, "token": p.token, "signature": hex.EncodeToString(mac.Sum(nil)),
 	}
+	if p.parsedOnly {
+		out["body-plain"], out["message-headers"], out["content-id-map"], out["attachment-count"] = p.body, string(raw), string(cid), strconv.Itoa(len(p.files))
+		return out
+	}
+	// Mailgun's raw-MIME route (forward URL ending in "mime").
+	out["body-mime"] = string(rawOf(p))
+	return out
 }
 
-// send posts as Mailgun would: urlencoded with no files, else multipart.
+// send posts as Mailgun would: the raw message in body-mime, urlencoded;
+// a parsed-only post carries its files as multipart.
 func (f *mailFixture) send(t *testing.T, p mailPost) int {
 	t.Helper()
+	if !p.parsedOnly {
+		return f.sendFields(t, f.fields(p), nil)
+	}
 	return f.sendFields(t, f.fields(p), p.files)
 }
 
@@ -284,10 +331,10 @@ func TestMailInboundHoldsWhatItCannotTrust(t *testing.T) {
 	stranger.from, stranger.envelope = "Someone <someone@outside.test>", "someone@outside.test"
 	otherOrg := f.memberPost("From another org")
 	otherOrg.from, otherOrg.envelope = otherEmail, otherEmail
-	unverified := f.memberPost("No SPF or DKIM")
-	unverified.headers = nil
-	misaligned := f.memberPost("SPF for another domain")
-	misaligned.envelope = "bounce@attacker.test"
+	unverified := f.memberPost("No DKIM signature")
+	unverified.unsigned = true
+	misaligned := f.memberPost("Signed by another domain")
+	misaligned.signAs = "attacker.test"
 	for name, c := range map[string]struct {
 		post   mailPost
 		reason string
@@ -376,7 +423,9 @@ func TestMailInboundRefusesAndDrops(t *testing.T) {
 	list.headers = append(list.headers, [2]string{"List-Id", "<news.example.test>"})
 	bounce := f.memberPost("Undeliverable")
 	bounce.envelope = ""
-	for name, d := range map[string]mailPost{"unknown": unknown, "elsewhere": elsewhere, "spam": spam, "auto-reply": auto, "list": list, "bounce": bounce} {
+	sflag := f.memberPost("Spam, the sender's No first")
+	sflag.headers = append(sflag.headers, [2]string{"X-Mailgun-Sflag", "No"}, [2]string{"X-Mailgun-Sflag", "Yes"})
+	for name, d := range map[string]mailPost{"unknown": unknown, "elsewhere": elsewhere, "spam": spam, "auto-reply": auto, "list": list, "bounce": bounce, "spam flag second": sflag} {
 		if got := f.send(t, d); got != http.StatusOK {
 			t.Fatalf("%s = %d", name, got)
 		}
@@ -683,7 +732,7 @@ func TestMailDirectionAndOutsideSenders(t *testing.T) {
 		t.Fatalf("firm %q package %q", linkedFirm, linkedPkg)
 	}
 	spoofed := f.memberPost("Wall detail, unsigned")
-	spoofed.from, spoofed.envelope, spoofed.headers = "eng@consult.example", "eng@consult.example", nil
+	spoofed.from, spoofed.envelope, spoofed.unsigned = "eng@consult.example", "eng@consult.example", true
 	f.send(t, spoofed)
 	if _, _, st := read(spoofed.messageID); st != "held" {
 		t.Fatalf("unauthenticated firm address filed: %s", st)
@@ -733,4 +782,160 @@ func TestMailNoticePickLandsOnItsMessage(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Security review C1: the probe that filed a forged From. A valid
+// signature by evil.test beside a garbage one claiming the victim's domain,
+// with Mailgun-looking headers the sender wrote, is held, never filed or Out.
+func TestMailForgedFromIsHeld(t *testing.T) {
+	ctx := context.Background()
+	f := newMailFixture(t)
+	_, memberDomain, _ := strings.Cut(f.email, "@")
+	reason := func(messageID string) (string, string) {
+		t.Helper()
+		var why, dir string
+		if err := f.conn.QueryRow(ctx, `SELECT held_reason, direction FROM mail_messages WHERE message_id=$1`, messageID).Scan(&why, &dir); err != nil {
+			t.Fatal(err)
+		}
+		return why, dir
+	}
+	probe := f.memberPost("Pay this invoice")
+	probe.signAs = "evil.test"
+	probe.headers = [][2]string{{"X-Mailgun-Spf", "Pass"}, {"X-Mailgun-Dkim-Check-Result", "Pass"}, {"X-Mailgun-Sflag", "No"},
+		{"DKIM-Signature", "v=1; a=rsa-sha256; d=" + memberDomain + "; s=t; h=from; bh=AAAA; b=AAAA"}}
+	f.send(t, probe)
+	if why, dir := reason(probe.messageID); why != store.MailUnverifiedSender || dir != "in" {
+		t.Fatalf("forged From: %q %q", why, dir)
+	}
+	// No raw message: never authenticated, even with Mailgun's fields saying Pass.
+	parsed := f.memberPost("Parsed only")
+	parsed.parsedOnly = true
+	parsed.headers = [][2]string{{"X-Mailgun-Spf", "Pass"}, {"X-Mailgun-Dkim-Check-Result", "Pass"}}
+	f.send(t, parsed)
+	if why, _ := reason(parsed.messageID); why != store.MailUnverifiedSender {
+		t.Fatalf("no raw message: %q", why)
+	}
+	// Two From headers, or over 500 headers: held, never cut and trusted.
+	two := f.memberPost("Two From headers")
+	two.headers = [][2]string{{"From", "boss@" + memberDomain}}
+	f.send(t, two)
+	padded := f.memberPost("Padded")
+	for i := 0; i < 501; i++ {
+		padded.headers = append(padded.headers, [2]string{"X-Pad", "x"})
+	}
+	f.send(t, padded)
+	for _, p := range []mailPost{two, padded} {
+		var status string
+		if err := f.conn.QueryRow(ctx, `SELECT status FROM mail_messages WHERE org_id=$1::uuid AND subject=$2`, f.m.orgID, p.subject).Scan(&status); err != nil || status != "held" {
+			t.Fatalf("%s: %q %v", p.subject, status, err)
+		}
+	}
+	if f.documents(t) != 0 {
+		t.Fatalf("forged mail filed %d documents", f.documents(t))
+	}
+}
+
+// C1: a forward is rewritten only for an authenticated member, and shows
+// who forwarded it; an outsider's body cannot name a sender.
+func TestMailForwardRewriteIsTheMembersOnly(t *testing.T) {
+	ctx := context.Background()
+	f := newMailFixture(t)
+	body := "See below.\n\n---------- Forwarded message ---------\nFrom: Eng Smith <eng@consult.example>\nSubject: Wall"
+	fwd := f.memberPost("FW: Wall")
+	fwd.body = body
+	f.send(t, fwd)
+	var sender, name, dir string
+	if err := f.conn.QueryRow(ctx, `SELECT sender, sender_name, direction FROM mail_messages WHERE message_id=$1`, fwd.messageID).Scan(&sender, &name, &dir); err != nil {
+		t.Fatal(err)
+	}
+	if sender != "eng@consult.example" || dir != "in" || !strings.Contains(name, "forwarded by "+f.email) {
+		t.Fatalf("member forward: %q %q %q", sender, name, dir)
+	}
+	unsigned := f.memberPost("FW: Wall again")
+	unsigned.body, unsigned.unsigned = body, true
+	f.send(t, unsigned)
+	outsider := f.memberPost("FW: from outside")
+	outsider.body = body
+	outsider.from, outsider.envelope = "x@outside.test", "x@outside.test"
+	f.send(t, outsider)
+	for _, p := range []mailPost{unsigned, outsider} {
+		if err := f.conn.QueryRow(ctx, `SELECT sender FROM mail_messages WHERE message_id=$1`, p.messageID).Scan(&sender); err != nil || sender == "eng@consult.example" {
+			t.Fatalf("%s rewritten to %q %v", p.subject, sender, err)
+		}
+	}
+}
+
+// H2: nothing stored is left behind by a repeat or by held mail that is full.
+func TestMailLeavesNoOrphanBlobs(t *testing.T) {
+	f := newMailFixture(t)
+	count := func() int {
+		t.Helper()
+		l, err := f.blobs.List()
+		if err != nil {
+			t.Fatal(err)
+		}
+		return len(l)
+	}
+	first := f.memberPost("Once", pdfFile(1, "A.pdf"))
+	f.send(t, first)
+	before := count()
+	for i := 0; i < 5; i++ {
+		again := f.memberPost("Once", mailFile{field: "attachment-1", name: "B.pdf", ctype: "application/pdf", body: []byte(fmt.Sprintf("%%PDF other bytes %d", i))})
+		again.messageID = first.messageID
+		f.send(t, again)
+	}
+	if got := count(); got != before {
+		t.Fatalf("five repeats changed the blob count %d → %d", before, got)
+	}
+	// Fill held mail, then one more: held full keeps no bytes.
+	if _, err := f.conn.Exec(context.Background(), `INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,status,held_reason,thread_id)
+SELECT $1::uuid, g.id, $2::uuid, '<full-'||g.n||'@x.test>', 'full-'||g.id, 'x@outside.test', 'held', 'unknown_sender', g.id
+FROM (SELECT gen_random_uuid() AS id, n FROM generate_series(1,50) n) g`, f.m.orgID, f.project); err != nil {
+		t.Fatal(err)
+	}
+	before = count()
+	full := f.memberPost("Full", mailFile{field: "attachment-1", name: "C.pdf", ctype: "application/pdf", body: []byte("%PDF held full")})
+	full.from, full.envelope = "x@outside.test", "x@outside.test"
+	f.send(t, full)
+	if got := count(); got != before {
+		t.Fatalf("held full stored bytes %d → %d", before, got)
+	}
+}
+
+// H1: the signature is checked as soon as its fields arrive, before any
+// file part is read: a bad post is refused while its sender is still
+// sending.
+func TestMailRefusesBeforeReadingFiles(t *testing.T) {
+	f := newMailFixture(t)
+	pr, pw := io.Pipe()
+	w := multipart.NewWriter(pw)
+	go func() {
+		for k, v := range map[string]string{"timestamp": strconv.FormatInt(time.Now().Unix(), 10), "token": "tok-" + newUUIDString(), "signature": strings.Repeat("0", 64)} {
+			_ = w.WriteField(k, v)
+		}
+		part, _ := w.CreateFormFile("attachment-1", "big.pdf")
+		_, _ = part.Write([]byte("%PDF start"))
+		// The sender stalls here and never finishes.
+	}()
+	req, _ := http.NewRequest(http.MethodPost, f.a.url+"/api/mail/inbound", pr)
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	done := make(chan int, 1)
+	go func() {
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			done <- 0
+			return
+		}
+		resp.Body.Close()
+		done <- resp.StatusCode
+	}()
+	select {
+	case code := <-done:
+		if code != http.StatusNotAcceptable {
+			t.Fatalf("refused with %d", code)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("the webhook waited for the file part of a post with a bad signature")
+	}
+	pw.CloseWithError(io.ErrClosedPipe)
 }

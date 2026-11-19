@@ -302,7 +302,19 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 			return transmittalSheet(ctx, deps, who, number, from, to, cc, in.Subject, note, docs)
 		}
 	}
+	var sheetSum []byte
+	if in.Sheet != nil {
+		render := in.Sheet
+		in.Sheet = func(number int, docs []store.SentDocument) (store.OutboundFile, error) {
+			f, err := render(number, docs)
+			sheetSum = f.SHA256
+			return f, err
+		}
+	}
 	m, err := deps.Store.QueueOutbound(ctx, session.OrgID, in, time.Now())
+	if sheetSum != nil {
+		finishStaged(deps, [][]byte{sheetSum})
+	}
 	if err != nil {
 		return m, err
 	}
@@ -396,6 +408,11 @@ func transmittalSheet(ctx context.Context, deps Deps, who store.MailSender, numb
 	}
 	blob, err := deps.Blobs.Put(ctx, bytes.NewReader(pdf))
 	if err != nil {
+		return store.OutboundFile{}, err
+	}
+	// Staged until the send is recorded; the mail sweep takes it if the
+	// queue never commits (security review L6).
+	if err := deps.Store.StageMailBlob(ctx, blob.SHA256); err != nil {
 		return store.OutboundFile{}, err
 	}
 	return store.OutboundFile{Name: "Transmittal " + TransmittalNumber(number) + ".pdf", ContentType: "application/pdf", SHA256: blob.SHA256, Size: blob.Size}, nil

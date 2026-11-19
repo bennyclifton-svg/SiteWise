@@ -44,6 +44,7 @@ import (
 	"sitewise/internal/jev"
 	"sitewise/internal/jobs"
 	"sitewise/internal/knowledge"
+	"sitewise/internal/mailin/mailintest"
 	"sitewise/internal/profile"
 	"sitewise/internal/proposals"
 	sample2 "sitewise/internal/proposals/sample"
@@ -167,8 +168,11 @@ func run(addr, data string, programFixture bool) error {
 	// Mail in and out (correspondence plan): a test signing key and a sink;
 	// nothing leaves this process.
 	mailSink := &correspondence.Sink{}
+	// DKIM keys in a stub DNS: the spec asks for a signed raw message and
+	// posts it to the real webhook; nothing reaches the network.
+	mailKeys := mailintest.NewKeys()
 	srv, err := httpapi.New(httpapi.Options{
-		Mail:           httpapi.NewMailIn("in.e2e.test", "e2e-test-signing-key"),
+		Mail:           httpapi.NewMailIn("in.e2e.test", "e2e-test-signing-key").WithDKIMLookup(mailKeys.Lookup),
 		MailSender:     mailSink,
 		MailFrom:       "sitewise@e2e.test",
 		MailRetryDelay: 50 * time.Millisecond,
@@ -211,6 +215,21 @@ func run(addr, data string, programFixture bool) error {
 	mux.HandleFunc("POST /__e2e/shutdown", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		stop()
+	})
+	// A raw message signed by its From domain (?unsigned=1 leaves it
+	// unsigned), for the spec to post as Mailgun's body-mime.
+	mux.HandleFunc("POST /__e2e/mail-raw", func(w http.ResponseWriter, r *http.Request) {
+		var m mailintest.Message
+		if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		raw := m.Build()
+		if r.URL.Query().Get("unsigned") != "1" {
+			_, domain, _ := strings.Cut(strings.Trim(m.From[strings.LastIndex(m.From, "<")+1:], "<> "), "@")
+			raw = mailKeys.Sign(raw, domain)
+		}
+		_, _ = w.Write(raw)
 	})
 	// What the mail sink holds: recipients and subjects only.
 	mux.HandleFunc("GET /__e2e/mail-sent", func(w http.ResponseWriter, r *http.Request) {

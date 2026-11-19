@@ -4,12 +4,14 @@ go 1.27.1
 
 require (
 	github.com/anthropics/anthropic-sdk-go/v2 v2.9.0
+	github.com/emersion/go-msgauth v0.7.0
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/klippa-app/go-pdfium v1.18.0
 	github.com/signintech/gopdf v0.38.1
 	github.com/tetratelabs/wazero v1.11.0
 	golang.org/x/crypto v0.48.0
 	golang.org/x/image v0.38.0
+	golang.org/x/net v0.51.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -38,7 +40,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.33.0 // indirect
 	go.opentelemetry.io/otel/trace v1.33.0 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
-	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.35.0 // indirect

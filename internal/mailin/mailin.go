@@ -8,7 +8,8 @@
 // findings: not yet run" section:
 //
 //   - the signature and its freshness: VerifySignature, Fresh
-//   - SPF and DKIM headers in message-headers: Authenticated (authenticated.go)
+//   - the raw message's field, and bytes DKIM can verify: RawField, Verify
+//     (authenticated.go); no header the sender can write is trusted
 //   - body-plain for an HTML-only message: PlainBody
 //   - how recipient is written (Bcc, several addresses): RecipientLocalPart
 //   - In-Reply-To and References in message-headers: ThreadHeaders
@@ -27,7 +28,6 @@ import (
 	"errors"
 	"fmt"
 	"html"
-	"mime/multipart"
 	"net/mail"
 	"path/filepath"
 	"regexp"
@@ -47,10 +47,13 @@ const MaxPostBytes = 40 << 20
 // document; the rest is cut with a note.
 const MaxBodyRunes = 20000
 
-// FreshFor is how old a signed timestamp may be. Mailgun retries a failed
-// post for 8 hours with the same signature, so a day leaves room; the token
-// record (store.SeenWebhookToken) refuses a second use inside it.
-const FreshFor = 24 * time.Hour
+// FreshFor is how old a signed timestamp may be: the one constant for it
+// (security review M2). Mailgun retries a failed post for 8 hours; this
+// build assumes a retry reuses its first signature, so 9 hours is the
+// shortest window that still takes every retry. Task 0 records whether a
+// retry is signed afresh; if it is, this becomes 15 minutes. The token
+// record (store.SeenWebhookToken, kept two days) refuses a second use.
+const FreshFor = 9 * time.Hour
 
 // VerifySignature checks Mailgun's hex HMAC-SHA256 of timestamp then token,
 // keyed with the account's HTTP webhook signing key, in constant time.
@@ -328,8 +331,12 @@ func OneLine(s string, max int) string {
 // automatic reply, a bounce, bulk or mailing-list mail. Dropping these is
 // what stops a mail loop.
 func Dropped(m Message) bool {
-	if strings.EqualFold(m.Header("X-Mailgun-Sflag"), "Yes") {
-		return true
+	// Any spam flag drops it: a sender can write a "No" of its own, but
+	// can never undo Mailgun's "Yes" (security review L1).
+	for _, v := range m.HeaderValues("X-Mailgun-Sflag") {
+		if strings.EqualFold(strings.TrimSpace(v), "Yes") {
+			return true
+		}
 	}
 	if a := strings.ToLower(strings.TrimSpace(m.Header("Auto-Submitted"))); a != "" && a != "no" {
 		return true
@@ -364,31 +371,21 @@ const (
 // inlineImageMax: an inline image under this is a signature logo.
 const inlineImageMax = 100 << 10
 
-// SkipPart says why an attachment is not kept, or "" to keep it. Field is
-// the attachment's form field name ("attachment-1"). A file of an unknown
-// type is kept and stored not filed, as a dropped one is.
-func SkipPart(m Message, field *multipart.FileHeader, name string) string {
-	ctype := strings.ToLower(field.Header.Get("Content-Type"))
+// SkipPart says why an attachment is not kept, or "" to keep it. An inline
+// image is one the body shows: marked inline in the raw message, or named in
+// Mailgun's content-id-map. A file of an unknown type is kept and stored not
+// filed, as a dropped one is.
+func SkipPart(m Message, a Attachment, name string) string {
+	ctype := strings.ToLower(a.ContentType)
 	ext := strings.ToLower(filepath.Ext(name))
+	inline := (a.Field != "" && m.InlineIDs[a.Field]) || (a.ContentID != "" && m.InlineIDs[a.ContentID])
 	switch {
 	case strings.EqualFold(name, "winmail.dat") || strings.Contains(ctype, "ms-tnef"):
 		return SkipWinmail
 	case ext == ".ics" || strings.HasPrefix(ctype, "text/calendar"):
 		return SkipCalendar
-	case strings.HasPrefix(ctype, "image/") && field.Size < inlineImageMax && m.InlineIDs[formName(field)]:
+	case strings.HasPrefix(ctype, "image/") && a.Size < inlineImageMax && inline:
 		return SkipInline
-	}
-	return ""
-}
-
-// formName is the form field an attachment came in.
-func formName(f *multipart.FileHeader) string {
-	_, params, _ := strings.Cut(f.Header.Get("Content-Disposition"), ";")
-	for _, p := range strings.Split(params, ";") {
-		k, v, ok := strings.Cut(strings.TrimSpace(p), "=")
-		if ok && strings.EqualFold(k, "name") {
-			return strings.Trim(v, `"`)
-		}
 	}
 	return ""
 }

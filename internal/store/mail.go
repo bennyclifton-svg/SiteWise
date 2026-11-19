@@ -711,3 +711,47 @@ func deref(s *string) string {
 	}
 	return *s
 }
+
+// MailPrecheck is what RecordMail would refuse or cap, read before any byte
+// is stored: a repeat token or Message-Id, and held mail already full. The
+// lock is RecordMail's; this read only spares the bytes (review H2).
+type MailPrecheck struct{ Repeat, HeldFull bool }
+
+func (s *Store) MailPrecheck(ctx context.Context, org, project, token, messageID string) (MailPrecheck, error) {
+	var out MailPrecheck
+	if !validUUID(org) || !validUUID(project) {
+		return out, ErrNotFound
+	}
+	var count int
+	var held int64
+	err := s.pool.QueryRow(ctx, `SELECT
+ EXISTS(SELECT 1 FROM mail_webhook_tokens WHERE token=$3)
+  OR EXISTS(SELECT 1 FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND message_id=$4),
+ (SELECT count(*) FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND status='held'),
+ (SELECT COALESCE(sum(p.byte_size),0)::bigint FROM mail_messages m JOIN mail_parts p ON p.org_id=m.org_id AND p.message_id=m.id
+   WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.status='held')`, org, project, token, messageID).Scan(&out.Repeat, &count, &held)
+	out.HeldFull = count >= MailHeldMax || held >= MailHeldBytes
+	return out, err
+}
+
+// StageMailBlob notes bytes the mail code stored before a part names them.
+func (s *Store) StageMailBlob(ctx context.Context, sum []byte) error {
+	_, err := s.pool.Exec(ctx, `INSERT INTO mail_staged_blobs(sha256) VALUES ($1) ON CONFLICT (sha256) DO UPDATE SET staged_at=now()`, sum)
+	return err
+}
+
+// UnstageMailBlob clears a staged hash.
+func (s *Store) UnstageMailBlob(ctx context.Context, sum []byte) error {
+	_, err := s.pool.Exec(ctx, `DELETE FROM mail_staged_blobs WHERE sha256=$1`, sum)
+	return err
+}
+
+// StaleMailBlobs are hashes staged before cutoff. Not a tenant read: a hash
+// names no org.
+func (s *Store) StaleMailBlobs(ctx context.Context, cutoff time.Time) ([][]byte, error) {
+	rows, err := s.pool.Query(ctx, `SELECT sha256 FROM mail_staged_blobs WHERE staged_at < $1 ORDER BY staged_at LIMIT 500`, cutoff)
+	if err != nil {
+		return nil, err
+	}
+	return scanHashes(rows)
+}

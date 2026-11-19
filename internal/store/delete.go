@@ -235,6 +235,9 @@ func (s *Store) BlobReferenced(ctx context.Context, sum []byte) (bool, error) {
 	var used bool
 	// A message part keeps its bytes until it is filed or discarded, and a
 	// sent message keeps what it sent (email intake, Task 2).
-	err := s.pool.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM files WHERE sha256 = $1) OR EXISTS (SELECT 1 FROM mail_parts WHERE sha256 = $1)`, sum).Scan(&used)
+	// Issued reports and specification issues keep their frozen PDFs by
+	// hash too; the mail sweep must never take one.
+	err := s.pool.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM files WHERE sha256 = $1) OR EXISTS (SELECT 1 FROM mail_parts WHERE sha256 = $1)
+ OR EXISTS (SELECT 1 FROM report_versions WHERE export_file_sha256 = $1) OR EXISTS (SELECT 1 FROM specification_issues WHERE export_sha256 = $1)`, sum).Scan(&used)
 	return used, err
 }

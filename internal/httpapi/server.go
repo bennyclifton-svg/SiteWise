@@ -312,6 +312,22 @@ func New(opts Options) (*Server, error) {
 		}
 		go outbox.Loop(closing)
 	}
+	// Bytes mail stored and no part named (a crash between a put and its
+	// record, a sheet whose send was never recorded) go after an hour.
+	if opts.Mail != nil || outbox != nil {
+		go func() {
+			t := time.NewTicker(10 * time.Minute)
+			defer t.Stop()
+			for {
+				select {
+				case <-closing:
+					return
+				case <-t.C:
+					sweepStagedBlobs(context.Background(), opts.Store, opts.Blobs, opts.Log.Printf)
+				}
+			}
+		}()
+	}
 	var review *programReviewer
 	if opts.Knowledge != nil {
 		review = newProgramReviewer(opts.Store, opts.Knowledge, broker, opts.Log, opts.ProgramReviewDelay)

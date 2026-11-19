@@ -4,8 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
-	"mime/multipart"
-	"net/textproto"
 	"strings"
 	"testing"
 	"time"
@@ -44,8 +42,8 @@ func TestFresh(t *testing.T) {
 	now := time.Unix(1763510400, 0)
 	for ts, want := range map[string]bool{
 		"1763510400": true,
-		"1763424001": true,  // 23:59:59 old
-		"1763423999": false, // over a day old
+		"1763478001": true,  // 8:59:59 old
+		"1763477999": false, // over 9 hours old
 		"1763510700": true,  // five minutes ahead
 		"1763511000": false, // ten minutes ahead
 		"soon":       false,
@@ -77,38 +75,6 @@ func headers(pairs ...string) [][2]string {
 	return out
 }
 
-func TestAuthenticated(t *testing.T) {
-	cases := []struct {
-		spf, envelope, dkim, d string
-		want                   bool
-	}{
-		{"Pass", "pm@example.com", "", "", true},
-		{"Pass", "bounce@mail.example.com", "", "", true},
-		{"Pass", "x@attacker.net", "", "", false},
-		{"Fail", "pm@example.com", "Pass", "example.com", true},
-		{"", "pm@example.com", "Pass", "attacker.net", false},
-		{"", "pm@example.com", "", "", false},
-		{"SoftFail", "pm@example.com", "Fail", "example.com", false},
-		{"Neutral", "pm@example.com", "", "", false},
-		{"Pass", "x@com", "", "", false},
-	}
-	for i, c := range cases {
-		m := Message{FromAddress: "pm@example.com", EnvelopeSender: c.envelope}
-		if c.spf != "" {
-			m.Headers = append(m.Headers, [2]string{"X-Mailgun-Spf", c.spf})
-		}
-		if c.dkim != "" {
-			m.Headers = append(m.Headers, [2]string{"X-Mailgun-Dkim-Check-Result", c.dkim})
-		}
-		if c.d != "" {
-			m.Headers = append(m.Headers, [2]string{"DKIM-Signature", "v=1; a=rsa-sha256; d=" + c.d + "; s=sel; b=abc"})
-		}
-		if got := Authenticated(m); got != c.want {
-			t.Errorf("case %d %+v: got %v", i, c, got)
-		}
-	}
-}
-
 func TestDropped(t *testing.T) {
 	base := func(h ...string) Message {
 		return Message{FromAddress: "pm@example.com", EnvelopeSender: "pm@example.com", Headers: headers(h...)}
@@ -137,30 +103,24 @@ func TestDropped(t *testing.T) {
 	}
 }
 
-func fileHeader(field, name, ctype string, size int64) *multipart.FileHeader {
-	h := textproto.MIMEHeader{}
-	h.Set("Content-Disposition", `form-data; name="`+field+`"; filename="`+name+`"`)
-	h.Set("Content-Type", ctype)
-	return &multipart.FileHeader{Filename: name, Header: h, Size: size}
-}
-
 func TestSkipPart(t *testing.T) {
-	m := Message{InlineIDs: map[string]bool{"attachment-1": true, "attachment-2": true}}
+	m := Message{InlineIDs: map[string]bool{"attachment-1": true, "attachment-2": true, "logo@x": true}}
 	cases := []struct {
-		f    *multipart.FileHeader
+		a    Attachment
 		want string
 	}{
-		{fileHeader("attachment-1", "logo.png", "image/png", 20<<10), SkipInline},
-		{fileHeader("attachment-2", "photo.jpg", "image/jpeg", 2<<20), ""},
-		{fileHeader("attachment-3", "small.png", "image/png", 10<<10), ""}, // attached, not inline
-		{fileHeader("attachment-4", "invite.ics", "application/octet-stream", 1000), SkipCalendar},
-		{fileHeader("attachment-5", "meeting", "text/calendar", 1000), SkipCalendar},
-		{fileHeader("attachment-6", "winmail.dat", "application/ms-tnef", 1000), SkipWinmail},
-		{fileHeader("attachment-7", "A-101.pdf", "application/pdf", 1<<20), ""},
+		{Attachment{Field: "attachment-1", Name: "logo.png", ContentType: "image/png", Size: 20 << 10}, SkipInline},
+		{Attachment{Name: "logo2.png", ContentType: "image/png", Size: 20 << 10, ContentID: "logo@x", Inline: true}, SkipInline},
+		{Attachment{Field: "attachment-2", Name: "photo.jpg", ContentType: "image/jpeg", Size: 2 << 20}, ""},
+		{Attachment{Field: "attachment-3", Name: "small.png", ContentType: "image/png", Size: 10 << 10}, ""}, // attached, not inline
+		{Attachment{Name: "invite.ics", ContentType: "application/octet-stream", Size: 1000}, SkipCalendar},
+		{Attachment{Name: "meeting", ContentType: "text/calendar", Size: 1000}, SkipCalendar},
+		{Attachment{Name: "winmail.dat", ContentType: "application/ms-tnef", Size: 1000}, SkipWinmail},
+		{Attachment{Name: "A-101.pdf", ContentType: "application/pdf", Size: 1 << 20}, ""},
 	}
 	for _, c := range cases {
-		if got := SkipPart(m, c.f, c.f.Filename); got != c.want {
-			t.Errorf("%s: got %q want %q", c.f.Filename, got, c.want)
+		if got := SkipPart(m, c.a, c.a.Name); got != c.want {
+			t.Errorf("%s: got %q want %q", c.a.Name, got, c.want)
 		}
 	}
 }
@@ -254,12 +214,12 @@ func TestReadPost(t *testing.T) {
 	}
 	if m.FromAddress != "jo@example.com" || m.EnvelopeSender != "bounce@mail.example.com" || m.MessageID != "<m2@example.com>" ||
 		m.InReplyTo != "<tr1@in.example.test>" || m.References != "<a@x> <tr1@in.example.test>" || m.To != "p-abc@in.example.test" ||
-		m.Date.IsZero() || !m.InlineIDs["attachment-1"] || !Authenticated(m) {
+		m.Date.IsZero() || !m.InlineIDs["attachment-1"] {
 		t.Fatalf("%+v", m)
 	}
 	form["message-headers"] = "not json"
 	m, err = Read(func(k string) string { return form[k] })
-	if err != nil || len(m.Headers) != 0 || Authenticated(m) {
+	if err != nil || len(m.Headers) != 0 {
 		t.Fatalf("bad headers read as %+v %v", m, err)
 	}
 	form["from"] = ""

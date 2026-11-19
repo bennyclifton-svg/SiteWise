@@ -8,11 +8,16 @@ import { expect, test, type APIRequestContext } from "@playwright/test";
 const origin = { Origin: "http://127.0.0.1:4173" };
 const KEY = "e2e-test-signing-key";
 
-async function mailgun(request: APIRequestContext, fields: Record<string, string>) {
+interface Raw { From: string; To: string; Subject: string; Body: string; MessageID: string; InReplyTo?: string }
+
+// mailgun posts as Mailgun's raw-MIME route does: the message in body-mime,
+// DKIM-signed by its From domain through the e2e server's stub DNS.
+async function mailgun(request: APIRequestContext, recipient: string, sender: string, raw: Raw) {
+  const body = await (await request.post("/__e2e/mail-raw", { data: raw })).text();
   const timestamp = String(Math.floor(Date.now() / 1000));
   const token = randomUUID();
   const signature = createHmac("sha256", KEY).update(timestamp + token).digest("hex");
-  return request.post("/api/mail/inbound", { form: { ...fields, timestamp, token, signature } });
+  return request.post("/api/mail/inbound", { form: { recipient, sender, from: raw.From, subject: raw.Subject, "body-mime": body, timestamp, token, signature } });
 }
 
 test("the project's address, a held message accepted, and a transmittal sent and replied to", async ({ page }) => {
@@ -34,9 +39,8 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await expect(page.getByRole("tab", { name: "Messages" })).toHaveCount(0);
 
   // Someone outside the team: held, with its reason in plain words.
-  const held = await mailgun(page.request, {
-    recipient: address, sender: "someone@outside.test", from: "Someone <someone@outside.test>", subject: "Wall detail",
-    "body-plain": "Please see the detail.", "message-headers": JSON.stringify([["Message-Id", `<${randomUUID()}@outside.test>`], ["X-Mailgun-Spf", "Pass"]]),
+  const held = await mailgun(page.request, address, "someone@outside.test", {
+    From: "Someone <someone@outside.test>", To: address, Subject: "Wall detail", Body: "Please see the detail.", MessageID: `<${randomUUID()}@outside.test>`,
   });
   expect(held.status()).toBe(200);
   await expect(line).toContainText("1 held", { timeout: 10_000 });
@@ -74,9 +78,9 @@ test("the project's address, a held message accepted, and a transmittal sent and
   const tr = record.messages.find((m: { subject: string }) => m.subject === "TR Wall detail");
   const one = await (await page.request.get(`/api/projects/${project}/mail/${tr.id}`)).json();
   expect(one.direction).toBe("out");
-  const reply = await mailgun(page.request, {
-    recipient: address, sender: "engineer@consult.test", from: "engineer@consult.test", subject: "Re: TR Wall detail", "body-plain": "Received.",
-    "message-headers": JSON.stringify([["Message-Id", `<${randomUUID()}@consult.test>`], ["In-Reply-To", await messageID(page.request, project, tr.id)], ["X-Mailgun-Spf", "Pass"]]),
+  const reply = await mailgun(page.request, address, "engineer@consult.test", {
+    From: "engineer@consult.test", To: address, Subject: "Re: TR Wall detail", Body: "Received.", MessageID: `<${randomUUID()}@consult.test>`,
+    InReplyTo: await messageID(page.request, project, tr.id),
   });
   expect(reply.status()).toBe(200);
   await expect(out).toContainText("Replied", { timeout: 10_000 });
