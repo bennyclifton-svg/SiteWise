@@ -41,7 +41,7 @@ var captured = map[string]capturedTable{
 	// A message's package and the PM's answer to Jev's pick are the two
 	// edits; everything else on the row is the record's or the sender's.
 	"mail_messages": {Key: []string{"org_id", "id"}, Ignore: []string{"version", "status", "held_reason", "decided_by", "firm_id",
-		"notice_read", "notice_confidence", "notice_band", "send_status", "send_attempts", "send_error", "sent_at"}, Area: "mail"},
+		"notice_read", "notice_confidence", "notice_band", "send_status", "send_attempts", "send_error", "sent_at", "send_tried_at"}, Area: "mail"},
 }
 
 var (

@@ -260,6 +260,8 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		Chat:                chat,
 		Mail:                httpapi.NewMailIn(cfg.MailInDomain, cfg.MailgunSigningKey),
 		NoticeThresholds:    noticeTh,
+		MailSender:          mailSender(cfg),
+		MailFrom:            cfg.MailFrom,
 		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
 		TenderModel:         cfg.TenderModel,
 		TenderRender:        tenderRender,
@@ -457,6 +459,16 @@ func runBootstrap(args []string, getenv func(string) string, stderr, stdout io.W
 	}
 	fmt.Fprintln(stdout, raw)
 	return 0
+}
+
+// mailSender is the one send path's relay (correspondence plan, Task 3):
+// the same SMTP settings as account mail. Without them nothing is sent and
+// Send says so.
+func mailSender(cfg config.Config) correspondence.Sender {
+	if cfg.SMTPAddr == "" || cfg.MailFrom == "" {
+		return nil
+	}
+	return correspondence.SMTP{Addr: cfg.SMTPAddr, User: cfg.SMTPUser, Password: cfg.SMTPPassword}
 }
 
 func smtpMail(cfg config.Config) auth.SMTP {

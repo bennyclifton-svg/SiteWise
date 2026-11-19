@@ -137,6 +137,18 @@
       "note": "accept a held message with three attachments (filing runs after), discard, rotate, or a record edit (package, dismiss the pick); no Jev, no model"
     },
     {
+      "name": "transmittal_send",
+      "p50_us": 100000,
+      "p90_us": 250000,
+      "note": "the PM's press of Send to the 202: checks, the sheet rendered, stored and queued; the send runs after (docs/plans/2026-11-17-correspondence-transmittals.md); no Jev, no model"
+    },
+    {
+      "name": "mail_send",
+      "p50_us": 3000000,
+      "p90_us": 10000000,
+      "note": "background: queued to accepted by the mail service, 10 MB attached; benched on a local sink"
+    },
+    {
       "name": "health_speed",
       "p50_us": 25000,
       "p90_us": 100000

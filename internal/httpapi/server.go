@@ -107,6 +107,14 @@ type Options struct {
 	TenderTimeout time.Duration
 	// Mail switches email intake on (NewMailIn); nil is off.
 	Mail *MailIn
+	// MailSender sends mail out and MailFrom is the address it leaves from
+	// (SITEWISE_SMTP_*, SITEWISE_MAIL_FROM). Either blank sends nothing:
+	// Send answers that sending is not set up.
+	MailSender correspondence.Sender
+	MailFrom   string
+	// MailRetryDelay replaces the outbox's backoff between tries; zero is
+	// the default (5 s, 30 s, 2 min, 10 min). Tests shorten it.
+	MailRetryDelay time.Duration
 	// NoticeThresholds band Jev's notice pick on an email body
 	// (data/mail); the zero value is no cut-off and no pick is shown.
 	NoticeThresholds correspondence.NoticeThresholds
@@ -127,6 +135,8 @@ type Server struct {
 	review    *programReviewer
 	closing   chan struct{}
 	closeOnce sync.Once
+	// outbox sends queued mail; nil when no sender is configured.
+	outbox *Outbox
 }
 
 // New composes the upload, filing and event path. Nothing here starts a
@@ -295,6 +305,13 @@ func New(opts Options) (*Server, error) {
 		importer.Filed(orgID, documentID, text)
 	}
 	closing := make(chan struct{})
+	outbox := NewOutbox(opts.Store, opts.Blobs, opts.MailSender, opts.MailFrom, broker, opts.Log)
+	if outbox != nil {
+		if opts.MailRetryDelay > 0 {
+			outbox.backoff = []time.Duration{opts.MailRetryDelay}
+		}
+		go outbox.Loop(closing)
+	}
 	var review *programReviewer
 	if opts.Knowledge != nil {
 		review = newProgramReviewer(opts.Store, opts.Knowledge, broker, opts.Log, opts.ProgramReviewDelay)
@@ -329,6 +346,7 @@ func New(opts Options) (*Server, error) {
 		Billing:           opts.Billing,
 		Chat:              opts.Chat,
 		Mail:              opts.Mail,
+		Outbox:            outbox,
 	})
 	mux := http.NewServeMux()
 	mux.Handle("/healthz", &publicHealth{checker: checker, backlog: opts.Store.Backlog, log: opts.Log, observe: speed.Observe})
@@ -341,7 +359,7 @@ func New(opts Options) (*Server, error) {
 		app = localAppSession(app, opts.Store, opts.SecureCookie, opts.Log)
 	}
 	mux.Handle("/", app)
-	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, proposalPrograms: stages, tenders: tenders, review: review, closing: closing}, nil
+	return &Server{handler: secureHeaders(mux), store: opts.Store, filer: f, invoices: reader, proposals: preader, imports: importer, proposalPrograms: stages, tenders: tenders, review: review, closing: closing, outbox: outbox}, nil
 }
 
 // CloseStreams ends open event streams. Clients reconnect from their cursor.
@@ -399,6 +417,10 @@ func (s *Server) Resume(ctx context.Context) (int, error) {
 			s.tenders.Start(p.OrgID, p.SubmissionID, time.Time{})
 		}
 	}
+	// Mail queued when the process stopped is sent now, once each.
+	if s.outbox != nil {
+		s.outbox.Sweep(ctx, time.Time{})
+	}
 	programs, err := s.store.PendingProposalPrograms(ctx)
 	if err != nil {
 		return len(pending) + len(expansions) + len(unread) + len(reading), err
@@ -433,6 +455,9 @@ func (s *Server) Wait(ctx context.Context) error {
 		s.proposalPrograms.wg.Wait()
 		if s.tenders != nil {
 			s.tenders.wg.Wait()
+		}
+		if s.outbox != nil {
+			s.outbox.wg.Wait()
 		}
 		s.review.Stop()
 		close(done)

@@ -77,7 +77,10 @@ type Deps struct {
 	// Only chat.go and chat_tools.go use it.
 	Chat *Chat
 	// Mail switches email intake on; nil is off (mail.go).
-	Mail   *MailIn
+	Mail *MailIn
+	// Outbox sends queued mail (transmittals.go); nil is no sender
+	// configured, and nothing is ever queued.
+	Outbox *Outbox
 	limits *authLimits
 }
 
@@ -342,6 +345,9 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 	}
 	// Email intake: the one webhook and the project's mail.
 	for pattern, h := range mailRoutes {
+		routes[pattern] = h
+	}
+	for pattern, h := range transmittalRoutes {
 		routes[pattern] = h
 	}
 	return routes

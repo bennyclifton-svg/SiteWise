@@ -111,6 +111,7 @@ type MailMessage struct {
 	Cc         string     `json:"cc"`
 	InReplyTo  string     `json:"-"`
 	References string     `json:"-"`
+	ReplyTo    string     `json:"-"`
 	Body       string     `json:"body,omitempty"`
 	ReceivedAt time.Time  `json:"received_at"`
 	Status     string     `json:"status"`
@@ -383,7 +384,7 @@ type MailFilter struct {
 // thread. One query, no per-row lookups.
 const mailColumns = `m.id::text,m.message_id,m.sender,m.sender_name,m.subject,m.to_addrs,m.cc_addrs,m.in_reply_to,m.refs,m.received_at,m.status,m.held_reason,
  m.direction,m.number,m.thread_id::text,COALESCE(m.firm_id::text,'') AS firm_ref,COALESCE(f.name,'') AS firm_name,COALESCE(m.package_id::text,'') AS package_ref,COALESCE(k.title,'') AS package_title,m.linked_by,
- m.send_status,m.send_error,m.sent_at,m.version,m.notice_read,m.notice_band,m.notice_confidence::float8 AS notice_p,m.pick_state,
+ m.send_status,m.send_error,m.sent_at,m.version,m.reply_to,m.notice_read,m.notice_band,m.notice_confidence::float8 AS notice_p,m.pick_state,
  EXISTS(SELECT 1 FROM mail_messages r WHERE r.org_id=m.org_id AND r.project_id=m.project_id AND r.thread_id=m.thread_id
   AND r.direction<>m.direction AND r.status='filed' AND r.received_at>m.received_at AND r.id<>m.id) AS replied`
 
@@ -394,7 +395,7 @@ LEFT JOIN packages k ON k.org_id=m.org_id AND k.project_id=m.project_id AND k.id
 func mailDest(m *MailMessage) []any {
 	return []any{&m.ID, &m.MessageID, &m.Sender, &m.SenderName, &m.Subject, &m.To, &m.Cc, &m.InReplyTo, &m.References, &m.ReceivedAt, &m.Status, &m.HeldReason,
 		&m.Direction, &m.Number, &m.ThreadID, &m.FirmID, &m.Firm, &m.PackageID, &m.Package, &m.LinkedBy,
-		&m.SendStatus, &m.SendError, &m.SentAt, &m.Version, &m.NoticeRead, &m.NoticeBand, &m.NoticeP, &m.PickState, &m.Replied}
+		&m.SendStatus, &m.SendError, &m.SentAt, &m.Version, &m.ReplyTo, &m.NoticeRead, &m.NoticeBand, &m.NoticeP, &m.PickState, &m.Replied}
 }
 
 // finish fills what the screen shows from the raw row.
