@@ -4,6 +4,7 @@ import { dialogOf, registerHost, showingLine, useChatTable } from "./chatView";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { HELD_WORDS, NOTICE_WORDS, readMail, readMessage, shortDay, transmittalNumber, type MailList, type MailMessage } from "./mailApi";
 import { packageApi } from "./packageApi";
+import { invoiceApi, uploadInvoice, type Contract } from "./invoiceApi";
 import { sendState } from "./SendDialog";
 import { clickRow, emptySelection, selectAll, type Selection } from "./table/selection";
 import "./mail.css";
@@ -15,23 +16,32 @@ import "./mail.css";
 // one that is filed or sent. Bodies are shown as text, never as HTML.
 
 /**
- * The chip's buttons (agreement 9). "Add to register" is built here. Plan 3
- * (variations and progress claims) implements the other two; until it does
- * each returns NOT_YET and its button is not drawn.
+ * The chip's buttons (agreement 9). "Add to register" posts a notice row;
+ * the other two are plan 3's, through its own routes, each started only by
+ * the PM's click: Read as progress claim sends a filed attachment's bytes to
+ * POST /invoices as the picked contract's progress claim (the one claim
+ * fan-out already budgeted); Add variation posts the variation with the
+ * message's body document linked.
  */
-export const NOT_YET = "This isn't available yet.";
 export type ChipAction = "register" | "claim" | "variation";
 export function chipAction(pick: string): ChipAction {
   if (pick === "payment_claim") return "claim";
   if (pick === "variation_claim") return "variation";
   return "register";
 }
-/** Plan 3: read the message's attachment as a progress claim. */
-export async function readAsProgressClaim(_projectId: string, _m: MailMessage): Promise<string> { return NOT_YET; }
-/** Plan 3: add a variation with the message as its source. */
-export async function addVariation(_projectId: string, _m: MailMessage): Promise<string> { return NOT_YET; }
-/** Which chip actions exist on this build; plan 3 switches its two on. */
-export const CHIP_ACTIONS: Record<ChipAction, boolean> = { register: true, claim: false, variation: false };
+/** Plan 3: read a filed attachment as the contract's progress claim. */
+export async function readAsProgressClaim(projectId: string, documentId: string, filename: string, contractPackage: string): Promise<void> {
+  const res = await fetch(`/api/documents/${documentId}/file`, { credentials: "same-origin" });
+  if (!res.ok) throw new ApiError(res.status, "The attachment could not be read. Open it and try again.");
+  const file = new File([await res.blob()], filename);
+  await uploadInvoice(projectId, file, () => undefined, contractPackage).done;
+}
+/** Plan 3: add a variation on a contract line with the message's body linked. */
+export async function addVariation(projectId: string, m: MailMessage, contractPackage: string, line: string): Promise<void> {
+  const body = m.parts.find(p => p.n === 0)?.document_id;
+  await request("POST", `/projects/${projectId}/variations`, { package: contractPackage, line, title: m.subject || "Variation", link_documents: body ? [body] : [] });
+}
+export const CHIP_ACTIONS: Record<ChipAction, boolean> = { register: true, claim: true, variation: true };
 
 const CHIP_LABEL: Record<ChipAction, string> = { register: "Add to register", claim: "Read as progress claim", variation: "Add variation" };
 
@@ -120,13 +130,10 @@ function Messages({ projectId, list, reload, onOpenDocument }: { projectId: stri
     kind: "notice", title: m.subject || "Notice", status: "open",
     details: { message_id: m.id, notice: NOTICE_WORDS[m.notice ?? ""] ?? "", received_on: m.received_at.slice(0, 10) },
   }), "Added to the register.");
-  const runChip = (m: MailMessage) => {
-    const a = chipAction(m.notice ?? "");
+  const [pick, setPick] = useState<{ m: MailMessage; action: "claim" | "variation" } | null>(null);
+  const runChip = (m: MailMessage, a: ChipAction = chipAction(m.notice ?? "")) => {
     if (a === "register") return addToRegister(m);
-    return act(async () => {
-      const said = a === "claim" ? await readAsProgressClaim(projectId, m) : await addVariation(projectId, m);
-      if (said === NOT_YET) throw new ApiError(0, NOT_YET);
-    }, "Done.");
+    setPick({ m, action: a });
   };
   return (
     <div className="mail-messages">
@@ -168,19 +175,21 @@ function Messages({ projectId, list, reload, onOpenDocument }: { projectId: stri
               onAccept={() => void act(() => request("POST", `/projects/${projectId}/mail/${m.id}/accept`), "Accepted. Its files are filing.")}
               onDiscard={() => setDiscard(m)}
               onRetry={() => void act(() => request("POST", `/projects/${projectId}/transmittals`, { retry: m.id }), "Sending again.")}
-              onAddToRegister={() => void addToRegister(m)} /></td></tr>}
+              onAddToRegister={() => void addToRegister(m)} onAction={a => void runChip(m, a)} /></td></tr>}
           </tbody>;
         })}
       </table>
+      {pick && <ContractPicker projectId={projectId} message={pick.m} action={pick.action} onClose={() => setPick(null)}
+        onDone={words => { setPick(null); setNotice(words); void reload(); }} />}
       {discard && <ConfirmDialog title="Discard held message" message={`Discard the message from ${discard.sender} and its files? It can't be put back.`} confirmLabel="Discard" busy={busy}
         onConfirm={() => { const m = discard; setDiscard(null); void act(() => request("POST", `/projects/${projectId}/mail/${m.id}/discard`), "Discarded."); }} onCancel={() => setDiscard(null)} />}
     </div>
   );
 }
 
-function MessageBody({ projectId, message, busy, onOpenDocument, onAccept, onDiscard, onRetry, onAddToRegister }: {
+function MessageBody({ projectId, message, busy, onOpenDocument, onAccept, onDiscard, onRetry, onAddToRegister, onAction }: {
   projectId: string; message: MailMessage; busy: boolean; onOpenDocument: (id: string) => boolean;
-  onAccept: () => void; onDiscard: () => void; onRetry: () => void; onAddToRegister: () => void;
+  onAccept: () => void; onDiscard: () => void; onRetry: () => void; onAddToRegister: () => void; onAction: (a: ChipAction) => void;
 }) {
   const [m, setM] = useState<MailMessage>(message);
   useEffect(() => { readMessage(projectId, message.id).then(setM).catch(() => undefined); }, [projectId, message.id, message.version, message.send_status, message.status]);
@@ -204,9 +213,78 @@ function MessageBody({ projectId, message, busy, onOpenDocument, onAccept, onDis
         </> : <>
           <button type="button" className="btn btn-small" onClick={reply}>Reply</button>{" "}
           {m.send_status === "failed" && <button type="button" className="btn btn-small" disabled={busy} onClick={onRetry}>Retry</button>}{" "}
-          {m.pick_state && <button type="button" className="cell-link" disabled={busy} onClick={onAddToRegister}>Add to register</button>}
+          {/* The message's own actions, with or without a chip. */}
+          {m.direction === "in" && <>
+            <button type="button" className="cell-link" disabled={busy} onClick={onAddToRegister}>Add to register</button>{" · "}
+            <button type="button" className="cell-link" disabled={busy || !m.parts.some(p => p.n > 0 && p.document_id)} onClick={() => onAction("claim")}>Read as progress claim…</button>{" · "}
+            <button type="button" className="cell-link" disabled={busy} onClick={() => onAction("variation")}>Add variation…</button>
+          </>}
         </>}
       </p>
     </div>
+  );
+}
+
+/** Picks the contract (and the line, or the attachment) for plan 3's two
+ * actions. Nothing happens until the PM presses the button. */
+function ContractPicker({ projectId, message, action, onClose, onDone }: {
+  projectId: string; message: MailMessage; action: "claim" | "variation"; onClose: () => void; onDone: (words: string) => void;
+}) {
+  const [contracts, setContracts] = useState<Contract[] | null>(null);
+  const [m, setM] = useState<MailMessage>(message);
+  const [pkg, setPkg] = useState("");
+  const [line, setLine] = useState("");
+  const [file, setFile] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    invoiceApi.ledger(projectId).then(l => setContracts(l.contracts ?? [])).catch(() => setContracts([]));
+    readMessage(projectId, message.id).then(setM).catch(() => undefined);
+  }, [projectId, message.id]);
+  const files = m.parts.filter(p => p.n > 0 && p.document_id);
+  const contract = contracts?.find(c => c.package_id === pkg);
+  const ready = !!pkg && (action === "claim" ? !!file : !!line || (contract?.lines.length ?? 0) === 1);
+  const go = async () => {
+    setBusy(true); setError("");
+    try {
+      if (action === "claim") {
+        const part = files.find(p => p.document_id === file)!;
+        await readAsProgressClaim(projectId, file, part.filename, pkg);
+        onDone("Reading it as a progress claim.");
+      } else {
+        await addVariation(projectId, m, pkg, line || contract?.lines[0]?.id || "");
+        onDone("Variation added.");
+      }
+    } catch (e) { setError(e instanceof ApiError ? e.message : "That could not be done."); }
+    finally { setBusy(false); }
+  };
+  return (
+    <ConfirmDialog tone="plain" title={action === "claim" ? "Read as progress claim" : "Add variation"}
+      message={action === "claim" ? "The attachment is read as this contract's progress claim." : "The variation is added to this contract with the message linked."}
+      confirmLabel={action === "claim" ? "Read" : "Add"} busy={busy} busyLabel="Working…" confirmDisabled={!ready} onConfirm={() => void go()} onCancel={onClose}>
+      <div className="send-dialog">
+        {contracts && contracts.length === 0 && <p className="send-error">There is no live contract to put it on.</p>}
+        <label htmlFor="pick-contract">Contract</label>
+        <select id="pick-contract" className="select" value={pkg} onChange={e => { setPkg(e.target.value); setLine(""); }}>
+          <option value="" disabled>Choose…</option>
+          {(contracts ?? []).map(c => <option key={c.package_id} value={c.package_id}>{c.title}{c.firm ? ` · ${c.firm}` : ""}</option>)}
+        </select>
+        {action === "variation" && contract && contract.lines.length > 1 && <>
+          <label htmlFor="pick-line">Contract line</label>
+          <select id="pick-line" className="select" value={line} onChange={e => setLine(e.target.value)}>
+            <option value="" disabled>Choose…</option>
+            {contract.lines.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
+          </select>
+        </>}
+        {action === "claim" && <>
+          <label htmlFor="pick-file">Attachment</label>
+          <select id="pick-file" className="select" value={file} onChange={e => setFile(e.target.value)}>
+            <option value="" disabled>Choose…</option>
+            {files.map(p => <option key={p.n} value={p.document_id}>{p.filename}</option>)}
+          </select>
+        </>}
+        {error && <p className="send-error" role="alert">{error}</p>}
+      </div>
+    </ConfirmDialog>
   );
 }

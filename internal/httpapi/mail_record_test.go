@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"sitewise/internal/httpapi"
 	"sitewise/internal/store"
@@ -217,5 +219,52 @@ func TestRegisterNoticeFromAMessage(t *testing.T) {
 	}
 	if after := f.message(t, p.messageID); after.PickState != "used" {
 		t.Fatalf("pick state %q", after.PickState)
+	}
+}
+
+// Plan 3's two chip actions, through their own routes: a filed attachment
+// read as the contract's progress claim, and a variation that links the
+// message's body document.
+func TestMailChipActionsReachPlan3(t *testing.T) {
+	ctx := context.Background()
+	f := newMailFixture(t)
+	pkg, lines, _ := liveContract(t, f.m, f.project)
+	claim := mailFile{field: "attachment-1", name: "pc04.md", ctype: "text/markdown", body: []byte("# Progress claim 4\n\nSubstructure $10,000\n")}
+	p := f.memberPost("Progress claim 4", claim)
+	f.send(t, p)
+	var body, attached string
+	if err := f.conn.QueryRow(ctx, `SELECT max(CASE WHEN p.n=0 THEN p.document_id::text END), max(CASE WHEN p.n=1 THEN p.document_id::text END)
+FROM mail_parts p JOIN mail_messages m ON m.org_id=p.org_id AND m.id=p.message_id WHERE m.message_id=$1`, p.messageID).Scan(&body, &attached); err != nil {
+		t.Fatal(err)
+	}
+	for _, doc := range []string{body, attached} {
+		deadline := time.Now().Add(10 * time.Second)
+		for {
+			var status string
+			_ = f.conn.QueryRow(ctx, `SELECT status FROM documents WHERE id=$1::uuid`, doc).Scan(&status)
+			if status != "pending" || time.Now().After(deadline) {
+				break
+			}
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
+	// Read as progress claim: the attachment's own bytes, on the contract.
+	resp := f.m.do(t, http.MethodGet, "/api/documents/"+attached+"/file", nil)
+	raw, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("file = %d", resp.StatusCode)
+	}
+	f.m.call(t, http.MethodPost, "/api/projects/"+f.project+"/invoices?name=pc04.md&kind=progress_claim&package="+pkg, raw, http.StatusCreated, nil)
+	if n := f.count(t, `SELECT count(*) FROM invoice_decisions WHERE org_id=$1::uuid AND field='kind' AND value='progress_claim'`, f.m.orgID); n != 1 {
+		t.Fatalf("claims %d", n)
+	}
+	// Add variation: the message's body document linked.
+	vb, _ := json.Marshal(map[string]any{"package": pkg, "line": lines[0], "title": "Progress claim 4", "link_documents": []string{body}})
+	if got := f.m.status(t, http.MethodPost, "/api/projects/"+f.project+"/variations", vb); got >= 300 {
+		t.Fatalf("variation = %d", got)
+	}
+	if n := f.count(t, `SELECT count(*) FROM variation_documents WHERE org_id=$1::uuid AND document_id=$2::uuid`, f.m.orgID, body); n != 1 {
+		t.Fatalf("linked %d", n)
 	}
 }
