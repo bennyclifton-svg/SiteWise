@@ -2981,6 +2981,175 @@
      "kind": "prepared"
     }
    ]
+  },
+  {
+   "id": "cl1",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "What is the contract sum to date on Main Works?",
+   "note": "read variations: contract sum, approved variations and the sum to date, each from Go behind its tag.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "cl2",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "When is the payment schedule due on claim 4 and how was that worked out?",
+   "note": "read variations: the date is unknown (no state on the Profile) and the read says what to enter; the answer must not invent a date.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "cl3",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Add a variation on the substructure for rock excavation, $12,400 claimed, 3 days",
+   "money_or_date": true,
+   "note": "variations.add at once with Undo; the amount and the days are in the PM's words. (The plan's wording says three days: digits keep the figure check exact.)",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "variations",
+     "has": [
+      "variation V02 Rock excavation",
+      "submitted",
+      "claimed 12400",
+      "time claimed 3 days"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cl4",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Show the rows I have not assessed",
+   "note": "Named filter unassessed on the claim rows.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "claim_rows",
+     "do": "only",
+     "rows": [
+      "Substructure",
+      "Superstructure",
+      "Retention"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "cl5",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Approve V01 at $11,000",
+   "note": "variations.decide: approving is the PM's decision for the client, so from chat it waits for the click (screen: at once with Undo).",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "prepared"
+    }
+   ]
+  },
+  {
+   "id": "cl6",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Issue the schedule for claim 4",
+   "note": "Issuing leaves the building: chat opens the claim's panel; the PM presses Issue. Nothing is issued and nothing changes.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "opens",
+     "dialog": "claim",
+     "fields": {
+      "claim": "4"
+     }
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "cl7",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "On claim 4 assess the superstructure row at $8,000 to date because the frame is not complete",
+   "money_or_date": true,
+   "note": "claims.assess at once with Undo: the amount is the PM's, the reason the PM's words.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "variations",
+     "has": [
+      "row 2 Superstructure",
+      "assessed to date 8000",
+      "reason: the frame is not complete"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cl8",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Add a variation on the superstructure for the extra steel",
+   "note": "The stand-in sends a claimed amount the PM never gave: Go's figure check refuses the operation and nothing changes.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "refuses"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
   }
  ]
 }

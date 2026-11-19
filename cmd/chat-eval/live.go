@@ -56,7 +56,7 @@ func pick(cases []chateval.Case, only string) []chateval.Case {
 	return out
 }
 
-var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery", "report", "shares"}
+var areas = []string{"cost_plan", "profile", "accommodation", "program", "procurement", "delivery", "report", "shares", "variations"}
 
 // live runs each case through the real server: a fresh org and project, the
 // fixture seeded through the same routes and store a PM's work goes
@@ -529,6 +529,11 @@ func (s *session) seed(ctx context.Context, f fixture, needs []string) error {
 	}
 	if err := s.seedRegister(ctx, f.Register, docs); err != nil {
 		return err
+	}
+	if slices.Contains(needs, "claims") {
+		if err := s.seedClaims(ctx); err != nil {
+			return fmt.Errorf("claims: %w", err)
+		}
 	}
 	return s.seedConditions(ctx, docs, f.Conditions)
 }

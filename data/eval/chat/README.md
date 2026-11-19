@@ -77,6 +77,21 @@ picks are synthetic, not an answer key. `TestScreenCasesScoredOffline`
 scores all seven with the stand-in model; the two reads are scored on Go's
 half only.
 
+## The claims group
+
+`claims` (draft, 8 cases, `cl1` to `cl8`) is plan 3's key
+(`docs/plans/2026-11-17-variations-progress-claims.md`, "From chat"): two
+reads (the contract sum to date; when claim 4's payment schedule is due and
+how that was worked out), recording a variation with the PM's amount and
+days and typing an assessment (both at once, with Undo), the unassessed
+rows filter, approving a variation (prepared for the click), opening claim
+4's panel to issue it (chat never issues), and a claimed amount the PM
+never gave (refused by Go's figure check). The house fixture's Main Works
+contract, V01 and claim 4 are seeded by `cmd/chat-eval/claims.go` for
+cases that need `claims`; the project has no state, so every date is
+unknown. `TestScreenCasesScoredOffline` scores all eight with the stand-in
+model; the two reads are scored on Go's half only.
+
 ## The screen group
 
 `screen` (draft, 27 cases, `s1` to `s27`) is the chat agency plan's key

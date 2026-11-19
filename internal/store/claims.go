@@ -340,6 +340,14 @@ func (s *Store) AssessClaim(ctx context.Context, org, project, actor, invoiceID 
 	if err != nil {
 		return err
 	}
+	var issued bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM reports r JOIN report_versions v ON v.org_id=r.org_id AND v.report_id=r.id AND v.status='issued'
+WHERE r.org_id=$1::uuid AND r.kind='payment_schedule' AND r.invoice_id=$2::uuid)`, org, invoiceID).Scan(&issued); err != nil {
+		return err
+	}
+	if issued {
+		return ErrClaimIssued
+	}
 	rows, err := readClaimRows(ctx, tx, org, project)
 	if err != nil {
 		return err
