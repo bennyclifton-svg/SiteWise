@@ -171,3 +171,32 @@ func TestMailOutsideAdmitted(t *testing.T) {
 		t.Fatal("admitted through another org")
 	}
 }
+
+// Security review M1: a reply to a send admits only someone it was sent to:
+// the exact address, or its registrable domain when that is not free mail.
+func TestMailReplyAdmitsOnlyItsRecipients(t *testing.T) {
+	ctx := context.Background()
+	st := profileStore(t)
+	sent, err := st.QueueOutbound(ctx, orgA, store.Outbound{ProjectID: projectA, SentBy: userA, From: "SiteWise <s@example.test>",
+		To: []string{"eng@consult.example", "solo@gmail.com"}, Subject: "TR", MessageIDDomain: "in.example.test"}, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	pool := rawPool(t)
+	var mid string
+	if err := pool.QueryRow(ctx, `SELECT message_id FROM mail_messages WHERE id=$1::uuid`, sent.ID).Scan(&mid); err != nil {
+		t.Fatal(err)
+	}
+	for sender, want := range map[string]bool{
+		"eng@consult.example":      true,  // sent to
+		"jo@mail.consult.example":  true,  // same registrable domain
+		"stranger@nowhere.example": false, // has the id, was never sent it
+		"other@gmail.com":          false, // free mail: exact address only
+		"solo@gmail.com":           true,
+	} {
+		ok, err := st.MailOutsideAdmitted(ctx, orgA, projectA, sender, mid, "")
+		if err != nil || ok != want {
+			t.Errorf("%s: got %v %v", sender, ok, err)
+		}
+	}
+}

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
+	"sitewise/internal/mailin"
 )
 
 // Record fields worked out when a message is recorded
@@ -175,21 +176,49 @@ ORDER BY 1 LIMIT 3`, org, project, firm)
 }
 
 // MailOutsideAdmitted reports whether mail from someone outside the org is
-// filed rather than held (correspondence plan, A1 and owner decision 1): it
-// replies to a message SiteWise sent for this project (In-Reply-To or
-// References names one), or the sender's address is exactly a firm's on this
-// project (invited, quoted or awarded). A domain match links a firm but
-// never admits. The caller has already checked the sender is authenticated.
+// filed rather than held (correspondence plan, A1 and owner decision 1): the
+// sender's address is exactly a firm's on this project (invited, quoted or
+// awarded), or the message replies (In-Reply-To or References) to one
+// SiteWise sent for this project AND that send went to this sender: its
+// exact address, or failing that its registrable domain when that is not a
+// free-mail domain (security review M1). A firm's domain alone never admits.
+// The caller has already checked the sender is authenticated.
 func (s *Store) MailOutsideAdmitted(ctx context.Context, org, project, sender, inReplyTo, references string) (bool, error) {
 	if !validUUID(org) || !validUUID(project) {
 		return false, ErrNotFound
 	}
-	ids := append(strings.Fields(inReplyTo), strings.Fields(references)...)
-	var ok bool
-	err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND direction='out' AND number IS NOT NULL AND message_id = ANY($3::text[]))
- OR EXISTS(SELECT 1 FROM firms f WHERE f.org_id=$1::uuid AND f.email<>'' AND lower(f.email)=lower($4)
+	sender = strings.ToLower(strings.TrimSpace(sender))
+	var firm bool
+	if err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM firms f WHERE f.org_id=$1::uuid AND f.email<>'' AND lower(f.email)=$3
   AND (EXISTS(SELECT 1 FROM package_invitations i WHERE i.org_id=f.org_id AND i.project_id=$2::uuid AND i.firm_id=f.id)
     OR EXISTS(SELECT 1 FROM submissions u WHERE u.org_id=f.org_id AND u.project_id=$2::uuid AND u.firm_id=f.id)))`,
-		org, project, ids, sender).Scan(&ok)
-	return ok, err
+		org, project, sender).Scan(&firm); err != nil || firm {
+		return firm, err
+	}
+	ids := append(strings.Fields(inReplyTo), strings.Fields(references)...)
+	if len(ids) == 0 {
+		return false, nil
+	}
+	rows, err := s.pool.Query(ctx, `SELECT to_addrs || ',' || cc_addrs FROM mail_messages
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND direction='out' AND number IS NOT NULL AND message_id = ANY($3::text[])`, org, project, ids)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	domain := domainOf(sender)
+	for rows.Next() {
+		var to string
+		if err := rows.Scan(&to); err != nil {
+			return false, err
+		}
+		for _, a := range addressList(to) {
+			if a == sender {
+				return true, nil
+			}
+			if !FreeMail(domain) && mailin.SameRegistrable(domainOf(a), domain) {
+				return true, nil
+			}
+		}
+	}
+	return false, rows.Err()
 }

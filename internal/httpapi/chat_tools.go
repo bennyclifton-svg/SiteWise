@@ -126,7 +126,7 @@ func (b *chatBox) Run(ctx context.Context, st *agent.State, call llm.ToolCall) a
 	case "passages":
 		out = b.passages(ctx, st, call.Input)
 	case "view":
-		out = b.view(ctx, call.Input)
+		out = b.view(ctx, st, call.Input)
 	case "messages":
 		out = b.messages(ctx, call.Input)
 	default:

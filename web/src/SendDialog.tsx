@@ -23,6 +23,8 @@ export interface SendFields {
   issue?: string;
   /** The register's RFI this message sends. */
   rfi?: string;
+  /** Set by Go when chat filled this in after reading outside text. */
+  warning?: string;
 }
 
 export interface SendDocument { id: string; name: string; size?: number }
@@ -83,6 +85,7 @@ export function SendDialog({ projectId, projectName, fields, documentOf, onSent,
       confirmLabel="Send" busy={busy} busyLabel="Sending…" confirmDisabled={recipients.length === 0 || tooBig}
       onConfirm={() => void send()} onCancel={onClose}>
       <div className="send-dialog">
+        {fields.warning && <p className="send-error" role="note">{fields.warning}</p>}
         <label htmlFor="send-to">To</label>
         <input id="send-to" className="input" list="send-firms" value={to} placeholder="name@example.com, another@example.com" onChange={e => setTo(e.target.value)} />
         <label htmlFor="send-cc">Cc</label>

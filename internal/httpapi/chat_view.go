@@ -68,7 +68,7 @@ type viewIn struct {
 // view is the tool that moves the screen. It checks the table, every id and
 // the dialog, and returns the move as a view event. It writes nothing, so
 // it is done at once even in a turn that read a document.
-func (b *chatBox) view(ctx context.Context, input json.RawMessage) agent.Output {
+func (b *chatBox) view(ctx context.Context, st *agent.State, input json.RawMessage) agent.Output {
 	var in viewIn
 	if err := json.Unmarshal(input, &in); err != nil {
 		return toolError("The view input is not valid.")
@@ -76,6 +76,9 @@ func (b *chatBox) view(ctx context.Context, input json.RawMessage) agent.Output 
 	v, bad := checkView(ctx, b.d, b.who, b.project, in)
 	if bad != "" {
 		return toolError("%s", bad)
+	}
+	if v.Dialog == "send" && st != nil && st.Outside {
+		guardSendFields(v.Fields, st.Asked)
 	}
 	return agent.Output{Text: "Done on the PM's screen: " + v.Line, Views: []agent.View{v}, Final: in.Final}
 }

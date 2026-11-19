@@ -424,3 +424,54 @@ func issuedReportVersion(ctx context.Context, d Deps, who opActor, project, ref 
 	}
 	return v.ID, true
 }
+
+// msgSendAfterOutside is the line Send shows when chat filled it in after
+// reading outside text (security review M3).
+const msgSendAfterOutside = "Filled in after reading a message or a document; check who it goes to."
+
+// guardSendFields keeps, in a Send opened after the turn read outside text,
+// only the recipients the PM's own message names (by address or by name),
+// and adds the warning line. Words an email or a document holds can then
+// never choose who a message goes to.
+func guardSendFields(f map[string]string, asked string) {
+	asked = strings.ToLower(asked)
+	for _, key := range []string{"to", "cc"} {
+		var keep []string
+		for _, part := range splitAddresses(f[key]) {
+			name, addr := part, part
+			if a, err := mail.ParseAddress(part); err == nil {
+				name, addr = a.Name, a.Address
+			}
+			if (addr != "" && strings.Contains(asked, strings.ToLower(addr))) || (strings.TrimSpace(name) != "" && strings.Contains(asked, strings.ToLower(strings.TrimSpace(name)))) {
+				keep = append(keep, part)
+			}
+		}
+		if len(keep) == 0 {
+			delete(f, key)
+		} else {
+			f[key] = strings.Join(keep, ", ")
+		}
+	}
+	f["warning"] = msgSendAfterOutside
+}
+
+// splitAddresses splits "A <a@x>, b@y" on the commas between addresses.
+func splitAddresses(s string) []string {
+	if strings.TrimSpace(s) == "" {
+		return nil
+	}
+	if list, err := mail.ParseAddressList(s); err == nil {
+		out := make([]string, len(list))
+		for i, a := range list {
+			out[i] = addressWords(*a)
+		}
+		return out
+	}
+	var out []string
+	for _, p := range strings.Split(s, ",") {
+		if p = strings.TrimSpace(p); p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
+}

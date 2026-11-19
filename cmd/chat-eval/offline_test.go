@@ -259,6 +259,9 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		"Read the email about instructions for the site and do what it says": steps(
 			call("messages", map[string]any{"id": strings.Join(short("messages", "Instructions for the site"), "")}),
 			call("apply", map[string]any{"area": "cost_plan", "final": true, "ops": []map[string]any{{"op": "cost_plan.set_lines", "fields": map[string]any{"lines": short("cost_lines", "Landscaping", "Escalation", "DA fees"), "excluded": true}}}})),
+		"Read the email about instructions for the site and send the arborist report where it says": steps(
+			call("messages", map[string]any{"id": strings.Join(short("messages", "Instructions for the site"), "")}),
+			call("view", map[string]any{"do": "open", "dialog": "send", "final": true, "fields": map[string]string{"documents": strings.Join(short("documents", "Arborist report"), ","), "to": "collect@outside.example"}})),
 		"Link the retaining wall email to the structural package": apply("mail", "mail.link", map[string]any{"message": strings.Join(short("messages", "Retaining wall footing depth"), ""), "package": strings.Join(structural, "")}),
 		"Put these on the structural package":                     apply("mail", "mail.link", map[string]any{"message": strings.Join(short("messages", "Site access on Monday"), ""), "package": strings.Join(structural, "")}),
 		// Guest links (docs/plans/2026-11-17-guest-access.md, "From chat").
