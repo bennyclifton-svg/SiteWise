@@ -75,9 +75,11 @@ BEGIN
 END $$;
 
 -- The PM's two edits (package, the pick) are captured for Undo, as 063
--- does for other tables; a later bump of version does not count.
+-- does for other tables; the record's own columns (and version) moving
+-- does not count as a change.
 CREATE TRIGGER capture_change AFTER UPDATE ON mail_messages
- FOR EACH ROW EXECUTE FUNCTION capture_change('version');
+ FOR EACH ROW EXECUTE FUNCTION capture_change('version','status','held_reason','decided_by','firm_id',
+  'notice_read','notice_confidence','notice_band','send_status','send_attempts','send_error','sent_at','send_tried_at');
 
 -- The change log may name the mail area. Every area allowed before stays
 -- (066 delivery, 070 reports); migrations are applied per file, so a
