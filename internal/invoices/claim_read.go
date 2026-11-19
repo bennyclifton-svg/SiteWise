@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"sitewise/internal/identity"
@@ -132,6 +134,7 @@ func readClaim(ctx context.Context, ask Asker, th Thresholds, d *Draft, text ide
 	} else {
 		rows = ContractRows(c)
 	}
+	d.claimNumberRule(text)
 	out := Outcome{}
 	if call, asked, ok := d.claimCall(rows, c); ok {
 		if priority != "" {
@@ -216,4 +219,25 @@ func LoadClaimThresholds(dir string) (Thresholds, error) {
 		return Thresholds{}, fmt.Errorf("claim threshold version %q, want %q", t.QuestionVersion, ClaimQuestionVersion)
 	}
 	return t, nil
+}
+
+var claimNumberLabel = regexp.MustCompile(`(?i)^\s*(?:progress\s+|payment\s+)?claim\s*(?:no\.?|number|#)\s*:?\s*$`)
+
+// claimNumberRule reads the claim's number from a cell labelled "Claim no"
+// (the invoice rule looks for "Invoice no"), so Jev is not asked for it.
+func (d *Draft) claimNumberRule(text identity.Text) {
+	if _, done := d.by[FieldNumber]; done {
+		return
+	}
+	for _, r := range claimGrid(text) {
+		for i := 0; i+1 < len(r.cells); i++ {
+			if claimNumberLabel.MatchString(r.cells[i].text) {
+				if v := strings.TrimSpace(r.cells[i+1].text); v != "" && len(v) <= 30 {
+					d.by[FieldNumber] = Decision{Field: FieldNumber, Value: v, Band: BandGreen, DecidedBy: DecidedByRule}
+					delete(d.questions, FieldNumber)
+					return
+				}
+			}
+		}
+	}
 }

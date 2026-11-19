@@ -690,6 +690,10 @@ func readable(rows []row) bool {
 			switch {
 			case ch == ' ' || ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9' || strings.ContainsRune(",.$:/-()&%'@#", ch):
 				plain++
+			case ch == '|' && r.selfContained:
+				// A Markdown table's bars are layout, not glyph codes: a
+				// progress claim is mostly table.
+				plain++
 			default:
 				other++
 			}
