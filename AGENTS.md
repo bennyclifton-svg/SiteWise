@@ -149,7 +149,9 @@ through `queueOutbound` and only on the PM's press of Send; chat opens Send
 filled in and never sends. A filed or sent message is never edited or
 deleted. The webhook is off unless `SITEWISE_MAIL_IN_DOMAIN` and
 `SITEWISE_MAILGUN_SIGNING_KEY` are both set; its sender check
-(`mailin.Authenticated`) fails closed.
+(`mailin.Verify`: DKIM verified in Go over the raw message, no sender-written
+header trusted) fails closed. A new dependency, `go-msgauth/dkim`, does the
+verification.
 
 Chat (`POST /projects/{id}/chat`) is the one path that waits on the LLM, and
 it never calls Jev. Its tools read through the same Go rollups as the

@@ -17,7 +17,7 @@ async function mailgun(request: APIRequestContext, recipient: string, sender: st
   const timestamp = String(Math.floor(Date.now() / 1000));
   const token = randomUUID();
   const signature = createHmac("sha256", KEY).update(timestamp + token).digest("hex");
-  return request.post("/api/mail/inbound", { form: { recipient, sender, from: raw.From, subject: raw.Subject, "body-mime": body, timestamp, token, signature } });
+  return request.post("/api/mail/inbound/mime", { form: { recipient, sender, from: raw.From, subject: raw.Subject, "body-mime": body, timestamp, token, signature } });
 }
 
 test("the project's address, a held message accepted, and a transmittal sent and replied to", async ({ page }) => {

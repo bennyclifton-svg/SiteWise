@@ -159,28 +159,31 @@ forge a message).
 
 ### Task 0 findings: not yet run
 
-Nothing below has been observed on a real Mailgun post. The code follows
-Mailgun's documentation, and each fact sits in one function, so a different
-finding changes that function and its tests and nothing else. Until the
-owner records these, a message whose SPF and DKIM headers are absent is
-held as "Could not confirm the sender" (fail closed), never filed.
+Nothing below has been observed on a real Mailgun post. Since the security
+review of 19 November 2026 the sender check no longer reads any header the
+sender can write (SPF and `X-Mailgun-*` results are not trusted): a sender
+is authenticated only by a DKIM signature that verifies in Go over the raw
+message and is aligned with the From domain's registrable domain. Anything
+else is held as "Could not confirm the sender", never filed. Each fact sits
+in one function, so a different finding changes that function and its
+tests and nothing else.
 
-| # | What the owner records (Step 3's four messages) | Function it touches | Today's assumption |
+| # | What the owner records (Step 3's messages: Gmail with a PDF, the work mailbox with its logo, HTML-only, a forged From) | Function it touches | Today's assumption |
 |---|---|---|---|
-| 1 | `X-Mailgun-Spf` and `X-Mailgun-Dkim-Check-Result` appear in `message-headers` on a forwarded post; their values for the forged message | `mailin.Authenticated` (`internal/mailin/authenticated.go`, alone in its file) | Both appear, values `Pass` and the like; absent is not a pass. If "no": replace this one function (DKIM verified in Go from a raw-MIME route, or the weaker rule) |
-| 2 | `body-plain` is filled for the HTML-only message | `mailin.PlainBody` | Filled; if empty, the text of `body-html` is used (tags dropped, nothing fetched) |
+| 1 | The route's forward URL ends in `mime` (`https://sitewise.au/api/mail/inbound/mime`) and the post carries the raw message in `body-mime` | `mailin.RawField`, `readMailPost` | As Mailgun documents the mime variant |
+| 1b | The raw bytes are exact enough for DKIM to verify: the Gmail and work messages are filed (authenticated), the forged one held | `mailin.Verify` | Verifies; if not, members' mail is held until fixed |
+| 2 | `body-plain` is filled for the HTML-only message (parsed route only) | `mailin.PlainBody` | The raw message is read first; HTML's text is the fallback |
 | 3a | The largest message Mailgun accepts and posts | `mailin.MaxPostBytes` (40 MB) | Mailgun's documented 25 MB message limit, plus encoding |
 | 3b | How `recipient` is written when the address was in Bcc, and when two project addresses share one message | `mailin.RecipientLocalPart` | The address received for, comma-separated when several |
-| A5 | `message-headers` carries `In-Reply-To` and `References` | `mailin.ThreadHeaders` | Carried as written |
-| — | The signature: hex HMAC-SHA256 of timestamp then token with the HTTP webhook signing key; a retry reuses it | `mailin.VerifySignature`, `mailin.Fresh` (one day) | As documented on the securing-webhooks page |
-| — | A forwarded post's `Message-Id`, `To`, `Cc` and `Date` are in `message-headers` or as their own fields | `mailin.Read` | Either; the field wins |
-| — | Spam filtering is on for the receiving domain, so `X-Mailgun-Sflag` is present | `mailin.Dropped` | Present when on; absent is not spam |
+| 4 | Whether a retry reuses its first signature or is signed afresh | `mailin.FreshFor` (9 h) | Reused; if signed afresh, 15 minutes |
+| 5 | Where the small fields sit relative to file parts in a multipart post | `readMailPost` | Signature fields first; otherwise files are spooled, then checked |
+| — | Spam filtering is on for the receiving domain, so `X-Mailgun-Sflag` is present | `mailin.Dropped` | Present when on; any "Yes" drops |
 
-Also for the owner at Task 0: verify `in.sitewise.au` for **sending** in
-Mailgun (correspondence plan decision 2) if mail should go out from the
-project's address. Until then mail goes out from `SITEWISE_MAIL_FROM` as
-"<Org> via SiteWise", with Reply-To the PM and the project address
-(`fromAddress` in `internal/httpapi/transmittals.go`).
+Also for the owner: the Caddy source-address limit on `/api/mail/inbound*`
+from Mailgun's published ranges, and a signing key used for this webhook
+only (`docs/deployment.md`, "Project email"). Mail goes out from
+`SITEWISE_MAIL_FROM` as "SiteWise" (`fromAddress`), with Reply-To the PM and
+the project address.
 
 ### Task 1: Worktree and baseline
 
@@ -678,7 +681,8 @@ Timing is in the evidence note (`TestMailBudgets`). The bench binary
 
 ## Risks to watch
 
-- **Sender checking rests on Mailgun's SPF and DKIM headers.** Task 0
+- **(Superseded 19 November 2026: the sender check is now DKIM verified in
+  Go over the raw message; see "Task 0 findings".)** Sender checking rested on Mailgun's SPF and DKIM headers. Task 0
   settles whether they arrive. They report one DKIM result for a message
   that may carry several signatures, so an aligned pass is strong evidence,
   not proof. The address is private, held mail is never filed or read, and

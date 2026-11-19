@@ -44,7 +44,9 @@ const (
 const outsideReserve = 0.10
 
 var mailRoutes = map[string]func(http.ResponseWriter, *http.Request, Deps){
-	"POST /mail/inbound":                         mailInbound,
+	"POST /mail/inbound": mailInbound,
+	// Mailgun's raw-MIME route forwards to a URL ending in "mime".
+	"POST /mail/inbound/mime":                    mailInbound,
 	"GET /projects/{id}/mail":                    getMail,
 	"GET /projects/{id}/mail/{message}":          getMailMessage,
 	"POST /projects/{id}/mail/{message}/accept":  acceptMail,
@@ -55,6 +57,7 @@ var mailRoutes = map[string]func(http.ResponseWriter, *http.Request, Deps){
 
 func init() {
 	routePaths["POST /mail/inbound"] = pathMailInbound
+	routePaths["POST /mail/inbound/mime"] = pathMailInbound
 	routePaths["GET /projects/{id}/mail"] = pathMailRead
 	routePaths["GET /projects/{id}/mail/{message}"] = pathMailRead
 	routePaths["POST /projects/{id}/mail/{message}/accept"] = pathMailDecide

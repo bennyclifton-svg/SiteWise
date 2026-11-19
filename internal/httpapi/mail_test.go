@@ -218,7 +218,7 @@ func encodePost(fields map[string]string, attach []mailFile) (string, *bytes.Buf
 
 func (f *mailFixture) raw(t *testing.T, ctype string, body *bytes.Buffer) int {
 	t.Helper()
-	req, err := http.NewRequest(http.MethodPost, f.a.url+"/api/mail/inbound", body)
+	req, err := http.NewRequest(http.MethodPost, f.a.url+"/api/mail/inbound/mime", body)
 	if err != nil {
 		t.Fatal(err)
 	}

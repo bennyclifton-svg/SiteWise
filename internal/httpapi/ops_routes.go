@@ -54,6 +54,7 @@ var noOperation = map[string]string{
 	"POST /guest/quote":                                            "a guest's file upload; the guest page has no chat",
 	"POST /projects/{id}/transmittals":                             "sending leaves the building; the PM presses Send on the screen (design 4.3); chat opens Send filled in",
 	"POST /mail/inbound":                                           "a provider webhook: Mailgun posts mail here, signed; no session and no chat",
+	"POST /mail/inbound/mime":                                      "a provider webhook: Mailgun posts mail here, signed; no session and no chat",
 	"POST /projects/{id}/mail/address":                             "rotating the project's address stops replies to earlier sends; the PM does it on the screen (A6)",
 }
 

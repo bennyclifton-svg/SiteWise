@@ -147,10 +147,25 @@ what to record); nothing has been tried against real Mailgun.
    for ordinary mailboxes).
 2. **Mailgun:** spam filtering on for that domain; one route,
    `match_recipient(".*@in\.sitewise\.au")` with
-   `forward("https://sitewise.au/api/mail/inbound")` and `stop()`. To send
-   from the project's own address later, also verify `in.sitewise.au` for
-   sending; until then mail goes out from `SITEWISE_MAIL_FROM` with Reply-To
-   the PM and the project address.
+   `forward("https://sitewise.au/api/mail/inbound/mime")` and `stop()`. The
+   URL must end in `mime`: Mailgun then posts the raw message (`body-mime`),
+   which is what SiteWise verifies the sender's DKIM signature over; without
+   it every message is held as "Could not confirm the sender". Mail goes out
+   from `SITEWISE_MAIL_FROM` as "SiteWise", with Reply-To the PM and the
+   project address.
+   - The webhook signing key signs only a timestamp and a token, not the
+     message. **Use this Mailgun account's signing key for this webhook
+     only**: no other service may receive posts signed with it.
+   - **Caddy:** limit `/api/mail/inbound*` to Mailgun's published webhook
+     source addresses. Read the current ranges from Mailgun's own
+     documentation page on the day (they are not copied here, and must not
+     be guessed), and add to `/etc/caddy/Caddyfile` inside the site block:
+     ```
+     @mailgun_not path /api/mail/inbound*
+     @mailgun_not not remote_ip <ranges from Mailgun's page>
+     respond @mailgun_not 404
+     ```
+     then `systemctl reload caddy`. The app still checks every signature.
 3. **Settings** in `/etc/sitewise/sitewise.env`, both or neither (one without
    the other stops the server starting):
    - `SITEWISE_MAIL_IN_DOMAIN=in.sitewise.au`
@@ -159,6 +174,8 @@ what to record); nothing has been tried against real Mailgun.
      API key. Never write the value anywhere else.
    Restart. Sending uses the existing `SITEWISE_SMTP_*` and
    `SITEWISE_MAIL_FROM`; without them Send says sending is not set up.
+   `SITEWISE_MAIL_SEND_DAILY_CAP` (optional, default 2,000) caps every org's
+   sends together in a day.
 4. **Check:** from the owner's mailbox send a message with a PDF to a
    project's address (Copy beside "Email documents to"): it files. From an
    address not on the team, send another: it is held; Accept it. Look for
