@@ -16,7 +16,9 @@ test("cost grid keeps unknowns, edits budget in place and keeps the ledger mecha
   await expect(page.getByRole("button",{name:"Actions for Escalation",exact:true})).toBeVisible();
   await page.getByLabel('New Contingency item',{exact:true}).fill('Unallocated allowance');await page.getByLabel('New Contingency item',{exact:true}).press('Enter');
   const grid=page.getByRole('table');
-  for (const h of ['Forecast Variations','Approved Variations','This Month']) await expect(grid.getByRole('columnheader',{name:h})).toHaveAttribute('aria-disabled','true');
+  // The two variation columns hold figures now (variations plan, Task 4); This Month stays a placeholder.
+  await expect(grid.getByRole('columnheader',{name:'This Month'})).toHaveAttribute('aria-disabled','true');
+  for (const h of ['Forecast Variations','Approved Variations']) await expect(grid.getByRole('columnheader',{name:h})).not.toHaveAttribute('aria-disabled','true');
   const rowOf=(label:string)=>grid.getByRole('row').filter({has:page.locator('[data-col="item"]').getByText(label,{exact:true})});
   const row=rowOf('Unallocated allowance');
   const budget=row.getByRole('button',{name:'Budget for Unallocated allowance'});
