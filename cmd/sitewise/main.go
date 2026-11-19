@@ -21,6 +21,7 @@ import (
 	"sitewise/internal/auth"
 	"sitewise/internal/billing"
 	"sitewise/internal/config"
+	"sitewise/internal/correspondence"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
 	"sitewise/internal/identity"
@@ -94,6 +95,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 	proposalData := fs.String("proposal-data", "data/proposal", "fee proposal question thresholds directory")
 	programData := fs.String("program-data", "data/program", "program file reading thresholds directory")
 	registerData := fs.String("register-data", "data/register", "register reply-match thresholds directory")
+	mailData := fs.String("mail-data", "data/mail", "email notice-pick thresholds directory")
 	provisional := fs.Bool("profile-provisional", false, "apply provisional profile thresholds the owner has not approved yet")
 	backlog := fs.Bool("background-backlog", true, "resume profile reading queued before this start; text extraction always resumes")
 	if err := fs.Parse(args); err != nil {
@@ -170,6 +172,11 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		return 1
 	}
 	registerTh, err := jobs.LoadRegisterThresholds(*registerData)
+	if err != nil {
+		fmt.Fprintln(stderr, err.Error())
+		return 1
+	}
+	noticeTh, err := correspondence.LoadNoticeThresholds(*mailData)
 	if err != nil {
 		fmt.Fprintln(stderr, err.Error())
 		return 1
@@ -252,6 +259,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		TenderLLM:           tenderLLM,
 		Chat:                chat,
 		Mail:                httpapi.NewMailIn(cfg.MailInDomain, cfg.MailgunSigningKey),
+		NoticeThresholds:    noticeTh,
 		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
 		TenderModel:         cfg.TenderModel,
 		TenderRender:        tenderRender,

@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"sitewise/internal/correspondence"
 	"sitewise/internal/files"
 	"sitewise/internal/httpapi"
 	"sitewise/internal/store"
@@ -685,5 +686,44 @@ func TestMailDirectionAndOutsideSenders(t *testing.T) {
 	f.send(t, colleague)
 	if _, _, st := read(colleague.messageID); st != "held" {
 		t.Fatalf("a domain match admitted: %s", st)
+	}
+}
+
+// The notice pick lands on the message whose body was filed, in the filing
+// commit; with no cut-off it is stored blank and no chip shows.
+func TestMailNoticePickLandsOnItsMessage(t *testing.T) {
+	ctx := context.Background()
+	for _, c := range []struct {
+		name   string
+		amber  float64
+		band   string
+		notice string
+	}{{"no cut-off", 0, "blank", ""}, {"past a cut-off", 0.4, "amber", "direction"}} {
+		t.Run(c.name, func(t *testing.T) {
+			f := newMailFixture(t, func(o *httpapi.Options) { o.NoticeThresholds = correspondence.NoticeThresholds{Amber: c.amber} })
+			p := f.memberPost("Please proceed")
+			f.send(t, p)
+			other := f.memberPost("Another")
+			f.send(t, other)
+			var band, read string
+			deadline := time.Now().Add(10 * time.Second)
+			for time.Now().Before(deadline) {
+				_ = f.conn.QueryRow(ctx, `SELECT notice_band, notice_read FROM mail_messages WHERE message_id=$1`, p.messageID).Scan(&band, &read)
+				if band != "" {
+					break
+				}
+				time.Sleep(50 * time.Millisecond)
+			}
+			// The fake Jev picks the first option by name at 0.5.
+			if band != c.band || read != "direction" {
+				t.Fatalf("band %q read %q", band, read)
+			}
+			l := f.list(t)
+			for _, m := range l.Messages {
+				if m.Subject == "Please proceed" && m.Notice != c.notice {
+					t.Fatalf("chip %q", m.Notice)
+				}
+			}
+		})
 	}
 }

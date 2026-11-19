@@ -3,6 +3,7 @@ package intake
 import (
 	"time"
 
+	"sitewise/internal/correspondence"
 	"sitewise/internal/identity"
 	"sitewise/internal/jev"
 	"sitewise/internal/store"
@@ -33,6 +34,9 @@ type Draft struct {
 	by        map[string]Decision
 	priors    []store.NumberedDocument
 	questions []builtQuestion
+	// notice: this is an email body, so the one notice question joins the
+	// filing call (correspondence plan, Task 2). It is never a decision.
+	notice bool
 }
 
 // NewDraft applies the deterministic rules to harvested candidates. users are
@@ -69,26 +73,49 @@ func NewDraft(cat Catalog, filename string, text identity.Text, harvested []Cand
 func (d *Draft) Plan(project []store.NumberedDocument, self string) {
 	d.priors = seriesPriors(d.harvested, project, self)
 	d.questions = d.open()
+	d.notice = markdownEmail(d.text)
 	if len(d.priors)+1 > jev.MaxChoiceOptions && d.by[FieldSupersedes].DecidedBy != DecidedByUser {
 		d.by[FieldSupersedes] = Decision{Field: FieldSupersedes, Band: BandBlank, DecidedBy: DecidedByRule}
 	}
 }
 
 // Call is the one fan-out for this filing, or false when nothing is open.
+//
+// An email body adds the notice question to this same call: no second
+// call, the speculative fan-out of https://docs.typesafe.ai/patterns, as the
+// hold-point question joins its read.
 func (d *Draft) Call() (jev.Call, bool) {
-	if len(d.questions) == 0 {
+	if len(d.questions) == 0 && !d.notice {
 		return jev.Call{}, false
 	}
 	call := callFrom(filingStateOf(d.filename, d.text, d.harvested), d.questions)
+	if d.notice {
+		call.Questions[correspondence.NoticeField] = correspondence.NoticeQuestion()
+	}
 	call.QuestionVersion = d.questionVersion()
 	return call, true
 }
 
 func (d *Draft) questionVersion() string {
+	v := QuestionVersion
 	if d.text.Format == "md" || d.text.Format == "markdown" {
-		return QuestionVersion + "+markdown-3"
+		v += "+markdown-3"
 	}
-	return QuestionVersion
+	if d.notice {
+		v += "+" + correspondence.NoticeVersion
+	}
+	return v
+}
+
+// Notice is Jev's raw notice pick, banded, or nil when the question was not
+// asked. It never reaches decisions: Apply and Choices read only the filing
+// questions.
+func (d *Draft) Notice(result jev.Result, err error, t correspondence.NoticeThresholds) *store.NoticeWrite {
+	if !d.notice {
+		return nil
+	}
+	r := t.Read(result, err != nil)
+	return &store.NoticeWrite{Pick: r.Pick, Confidence: r.Confidence, Band: r.Band}
 }
 
 // Apply records the answers. A non-nil err is the degraded path: every open

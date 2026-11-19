@@ -14,6 +14,7 @@ import (
 
 	"sitewise/bench"
 	"sitewise/internal/auth"
+	"sitewise/internal/correspondence"
 	"sitewise/internal/events"
 	"sitewise/internal/files"
 	"sitewise/internal/identity"
@@ -106,6 +107,9 @@ type Options struct {
 	TenderTimeout time.Duration
 	// Mail switches email intake on (NewMailIn); nil is off.
 	Mail *MailIn
+	// NoticeThresholds band Jev's notice pick on an email body
+	// (data/mail); the zero value is no cut-off and no pick is shown.
+	NoticeThresholds correspondence.NoticeThresholds
 }
 
 // Server is the API under /api, the event stream, and the embedded SPA.
@@ -147,6 +151,7 @@ func New(opts Options) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	svc.SetNoticeThresholds(opts.NoticeThresholds)
 	budgets, err := bench.Budgets()
 	if err != nil {
 		return nil, err

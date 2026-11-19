@@ -59,6 +59,17 @@ type CommitFiling struct {
 	// the ids differ, and the existing chain does not already reach this one.
 	PriorID  string
 	RetryJev bool
+	// Notice is Jev's notice pick on an email body (correspondence plan,
+	// Task 2). It lands on the message whose part 0 is this document, in the
+	// filing transaction; a dropped .md has no message and writes nothing.
+	Notice *NoticeWrite
+}
+
+// NoticeWrite is one notice pick and its band.
+type NoticeWrite struct {
+	Pick       string
+	Confidence *float64
+	Band       string
 }
 
 // FilingOutcome is what the transaction committed, or the filing already stored.
@@ -299,6 +310,9 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 	if err := queueRegister(ctx, tx, orgID, documentID); err != nil {
 		return FilingOutcome{}, err
 	}
+	if err := writeNotice(ctx, tx, orgID, documentID, in.Notice); err != nil {
+		return FilingOutcome{}, err
+	}
 	if in.RetryJev {
 		if err := enqueueKind(ctx, q, orgID, documentID, JobKindJevRetry); err != nil {
 			return FilingOutcome{}, err
@@ -498,4 +512,22 @@ func confidencePtr(v pgtype.Float8) *float64 {
 	}
 	c := v.Float64
 	return &c
+}
+
+// writeNotice puts the notice pick on the message whose body document this
+// is. A retry's grey never clears an earlier answer.
+func writeNotice(ctx context.Context, tx pgx.Tx, org, document string, n *NoticeWrite) error {
+	if n == nil {
+		return nil
+	}
+	pick := n.Pick
+	if pick != "" && pick != "none" && pick != "rfi" && pick != "direction" && pick != "variation_claim" && pick != "eot_delay" &&
+		pick != "payment_claim" && pick != "dispute" && pick != "other_notice" {
+		pick, n = "", &NoticeWrite{Band: "grey"}
+	}
+	_, err := tx.Exec(ctx, `UPDATE mail_messages m SET notice_read=$3, notice_confidence=$4, notice_band=$5
+FROM mail_parts p
+WHERE p.org_id=$1::uuid AND p.document_id=$2::uuid AND p.n=0 AND m.org_id=p.org_id AND m.id=p.message_id
+  AND NOT ($5='grey' AND m.notice_band IN ('amber','blank'))`, org, document, pick, n.Confidence, n.Band)
+	return err
 }

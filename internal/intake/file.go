@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"sitewise/internal/correspondence"
 	"sitewise/internal/identity"
 	"sitewise/internal/jev"
 	"sitewise/internal/store"
@@ -27,7 +28,13 @@ type Service struct {
 	catalog    Catalog
 	thresholds Thresholds
 	observer   Observer
+	// notice bands the notice pick on an email body; zero is no cut-off.
+	notice correspondence.NoticeThresholds
 }
+
+// SetNoticeThresholds sets the owner-approved cut-off for the notice pick
+// (data/mail/thresholds.json). Set it before the first filing.
+func (s *Service) SetNoticeThresholds(t correspondence.NoticeThresholds) { s.notice = t }
 
 // Filed is the durable result of one intake pass.
 type Filed struct {
@@ -100,6 +107,7 @@ func (s *Service) file(ctx context.Context, orgID, documentID string, text ident
 	}
 
 	grey := false
+	var notice *store.NoticeWrite
 	if call, ok := draft.Call(); ok {
 		start = time.Now()
 		if text.OCR {
@@ -111,6 +119,7 @@ func (s *Service) file(ctx context.Context, orgID, documentID string, text ident
 			return Filed{}, ctx.Err()
 		}
 		grey = draft.Apply(result, err, s.thresholds)
+		notice = draft.Notice(result, err, s.notice)
 	}
 
 	links, err := s.store.OrgSupersessions(ctx, orgID)
@@ -147,6 +156,7 @@ func (s *Service) file(ctx context.Context, orgID, documentID string, text ident
 		PDFPages:  text.PageCount,
 		PriorID:   priorID,
 		RetryJev:  grey,
+		Notice:    notice,
 	})
 	s.observe(PathCommit, time.Since(start))
 	if err != nil {
