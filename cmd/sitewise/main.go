@@ -262,6 +262,7 @@ func runServe(args []string, getenv func(string) string, stderr, stdout io.Write
 		NoticeThresholds:    noticeTh,
 		MailSender:          mailSender(cfg),
 		MailFrom:            cfg.MailFrom,
+		MailGlobalPerDay:    cfg.MailSendDailyCap,
 		TenderSkipJevPrices: cfg.TenderSkipJevPrices,
 		TenderModel:         cfg.TenderModel,
 		TenderRender:        tenderRender,

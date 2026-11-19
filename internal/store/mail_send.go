@@ -17,9 +17,15 @@ import (
 
 // Send limits (owner decisions 3 and 6).
 const (
-	MailSendMaxBytes      = 10 << 20
-	MailSendPerDay        = 100
-	MailRecipientsPerDay  = 500
+	MailSendMaxBytes     = 10 << 20
+	MailSendPerDay       = 100
+	MailRecipientsPerDay = 500
+	// A free plan's day (security review H3; the owner's to change).
+	MailFreeSendPerDay       = 10
+	MailFreeRecipientsPerDay = 50
+	// MailGlobalPerDay is every org's sends together in a day, unless the
+	// setting names another (security review H3).
+	MailGlobalPerDay      = 2000
 	MailMaxRecipients     = 20
 	MailSendAttempts      = 5
 	mailSendErrorMaxBytes = 300
@@ -28,8 +34,10 @@ const (
 var (
 	// ErrMailTooLarge: the documents and files add up to more than 10 MB.
 	ErrMailTooLarge = errors.New("the documents are larger than 10 MB")
-	// ErrMailCap: the org sent its 100 messages or 500 recipients today.
+	// ErrMailCap: the org sent its messages or recipients for today.
 	ErrMailCap = errors.New("daily send cap reached")
+	// ErrMailGlobalCap: SiteWise sent all it sends in a day, every org together.
+	ErrMailGlobalCap = errors.New("global daily send cap reached")
 	// ErrProjectArchived: an archived project sends nothing.
 	ErrProjectArchived = errors.New("project is archived")
 	// ErrMailNotRetryable: retry named a message that is not failed.
@@ -70,6 +78,9 @@ type Outbound struct {
 	InReplyTo         string // a message of this project, by its id
 	PackageID         string
 	MessageIDDomain   string
+	// Limits for this org's day; zero values are MailSendPerDay and
+	// MailRecipientsPerDay. Global is every org's sends together.
+	PerDay, RecipientsPerDay, Global int
 	// Sheet renders the transmittal sheet once the number is known, inside
 	// the project lock, and returns its stored bytes. Nil sends no sheet.
 	Sheet func(number int, docs []SentDocument) (OutboundFile, error)
@@ -84,7 +95,7 @@ func (s *Store) QueueOutbound(ctx context.Context, org string, in Outbound, now 
 	if !validUUID(org) || !validUUID(in.ProjectID) {
 		return MailMessage{}, ErrNotFound
 	}
-	if n := len(in.To) + len(in.Cc); len(in.To) == 0 || n > MailMaxRecipients {
+	if n := len(in.To) + len(in.Cc); len(in.To) == 0 || n > MailMaxRecipients+1 { // the PM is copied in beside the 20
 		return MailMessage{}, fmt.Errorf("%w: send to between 1 and %d addresses", ErrInvalidInput, MailMaxRecipients)
 	}
 	tx, err := s.pool.Begin(ctx)
@@ -116,8 +127,29 @@ func (s *Store) QueueOutbound(ctx context.Context, org string, in Outbound, now 
 FROM mail_messages WHERE org_id=$1::uuid AND number IS NOT NULL AND received_at > $2::timestamptz - interval '1 day'`, org, now).Scan(&sentToday, &recipientsToday); err != nil {
 		return MailMessage{}, err
 	}
-	if sentToday >= MailSendPerDay || recipientsToday+len(in.To)+len(in.Cc) > MailRecipientsPerDay {
+	perDay, recipients, global := in.PerDay, in.RecipientsPerDay, in.Global
+	if perDay <= 0 {
+		perDay = MailSendPerDay
+	}
+	if recipients <= 0 {
+		recipients = MailRecipientsPerDay
+	}
+	if global <= 0 {
+		global = MailGlobalPerDay
+	}
+	if sentToday >= perDay || recipientsToday+len(in.To)+len(in.Cc) > recipients {
 		return MailMessage{}, ErrMailCap
+	}
+	// Every org together: SiteWise is one sending domain (review H3).
+	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('mail-send/all', 0))`); err != nil {
+		return MailMessage{}, err
+	}
+	var all int
+	if err := tx.QueryRow(ctx, `SELECT count(*) FROM mail_messages WHERE number IS NOT NULL AND received_at > $1::timestamptz - interval '1 day'`, now).Scan(&all); err != nil {
+		return MailMessage{}, err
+	}
+	if all >= global {
+		return MailMessage{}, ErrMailGlobalCap
 	}
 	docs, err := sentDocuments(ctx, tx, org, in.ProjectID, in.DocumentIDs)
 	if err != nil {
@@ -374,6 +406,8 @@ func (m MailMessage) OutboundThread() (inReplyTo string, references []string) {
 type MailSender struct {
 	OrgName, ProjectName, Email string
 	Verified                    bool
+	// UserSince is when the sending user's account was made.
+	UserSince time.Time
 }
 
 // MailSenderContext reads the sender's names in one query.
@@ -382,10 +416,10 @@ func (s *Store) MailSenderContext(ctx context.Context, org, project, user string
 	if !validUUID(org) || !validUUID(project) || !validUUID(user) {
 		return out, ErrNotFound
 	}
-	err := s.pool.QueryRow(ctx, `SELECT o.name, p.name, u.email, u.email_verified FROM orgs o
+	err := s.pool.QueryRow(ctx, `SELECT o.name, p.name, u.email, u.email_verified, u.created_at FROM orgs o
 JOIN projects p ON p.org_id=o.id AND p.id=$2::uuid
 JOIN users u ON u.org_id=o.id AND u.id=$3::uuid
-WHERE o.id=$1::uuid`, org, project, user).Scan(&out.OrgName, &out.ProjectName, &out.Email, &out.Verified)
+WHERE o.id=$1::uuid`, org, project, user).Scan(&out.OrgName, &out.ProjectName, &out.Email, &out.Verified, &out.UserSince)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return out, ErrNotFound
 	}

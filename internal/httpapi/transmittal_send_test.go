@@ -107,7 +107,7 @@ func TestTransmittalSendsOneMIMEMessage(t *testing.T) {
 		t.Fatal(err)
 	}
 	h := msg.Header
-	if !strings.Contains(h.Get("From"), "via SiteWise") || !strings.Contains(h.Get("Reply-To"), f.email) || !strings.Contains(h.Get("Reply-To"), f.address) ||
+	if h.Get("From") != `"SiteWise" <`+mailTestFrom+`>` && h.Get("From") != "SiteWise <"+mailTestFrom+">" || !strings.Contains(h.Get("Reply-To"), f.email) || !strings.Contains(h.Get("Reply-To"), f.address) ||
 		!strings.Contains(h.Get("Cc"), f.email) || !strings.HasPrefix(h.Get("Message-ID"), "<") || h.Get("X-Auto-Response-Suppress") == "" {
 		t.Fatalf("headers %v", h)
 	}
@@ -378,5 +378,66 @@ func TestRFISendThreadsItsReply(t *testing.T) {
 	f.m.call(t, http.MethodPost, "/api/projects/"+other+"/delivery", body, http.StatusCreated, &foreignRFI)
 	if status, _, _ := f.send(t, map[string]any{"to": []string{"eng@consult.example"}, "rfi": foreignRFI.ID}); status != http.StatusBadRequest {
 		t.Fatalf("another project's RFI = %d", status)
+	}
+}
+
+// H3: From is SiteWise only; the org and the member are named in a fixed
+// footer. Every org together has a daily cap.
+func TestTransmittalFromAndGlobalCap(t *testing.T) {
+	ctx := context.Background()
+	f := newSendFixture(t, func(o *httpapi.Options) { o.MailGlobalPerDay = 2 })
+	if _, err := f.conn.Exec(ctx, `UPDATE orgs SET name='Acme <attacker@evil.test> Pty' WHERE id=$1::uuid`, f.m.orgID); err != nil {
+		t.Fatal(err)
+	}
+	_, m, text := f.send(t, map[string]any{"to": []string{"eng@consult.example"}, "subject": "One", "note": "Hello"})
+	if m.ID == "" {
+		t.Fatal(text)
+	}
+	f.waitStatus(t, m.ID, "sent")
+	msg, err := mail.ReadMessage(bytes.NewReader(f.sink.Kept()[0].Msg))
+	if err != nil {
+		t.Fatal(err)
+	}
+	from, _ := mail.ParseAddress(msg.Header.Get("From"))
+	if from == nil || from.Name != "SiteWise" || from.Address != mailTestFrom {
+		t.Fatalf("From %q", msg.Header.Get("From"))
+	}
+	var body string
+	_ = f.conn.QueryRow(ctx, `SELECT body FROM mail_messages WHERE id=$1::uuid`, m.ID).Scan(&body)
+	if !strings.Contains(body, "Sent by "+f.email+" of Acme") {
+		t.Fatalf("footer %q", body)
+	}
+	// Another org's send counts toward the same cap.
+	other := newSendFixture(t, func(o *httpapi.Options) { o.MailGlobalPerDay = 2 })
+	_ = other
+	if _, err := f.conn.Exec(ctx, `INSERT INTO mail_messages(org_id,id,project_id,message_id,sender,to_addrs,status,direction,thread_id,number,send_status)
+VALUES ($1::uuid, gen_random_uuid(), $2::uuid, '<g@x>', 'x@example.test', 'a@b.example', 'filed', 'out', gen_random_uuid(), 99, 'sent')`, other.m.orgID, other.project); err != nil {
+		t.Fatal(err)
+	}
+	if status, _, text := f.send(t, map[string]any{"to": []string{"eng@consult.example"}, "subject": "Three"}); status != http.StatusTooManyRequests || !strings.Contains(text, "SiteWise has sent") {
+		t.Fatalf("global cap = %d %s", status, text)
+	}
+}
+
+// H3: on a free plan, sending needs an account a week old, then 10 messages
+// and 50 recipients a day.
+func TestTransmittalFreePlan(t *testing.T) {
+	ctx := context.Background()
+	f := newSendFixture(t, func(o *httpapi.Options) { o.Billing = &httpapi.Billing{} })
+	to := []string{"eng@consult.example"}
+	if status, _, text := f.send(t, map[string]any{"to": to}); status != http.StatusForbidden || !strings.Contains(text, "7 days") {
+		t.Fatalf("new free account = %d %s", status, text)
+	}
+	if _, err := f.conn.Exec(ctx, `UPDATE users SET created_at=now()-interval '8 days' WHERE org_id=$1::uuid`, f.m.orgID); err != nil {
+		t.Fatal(err)
+	}
+	if status, _, text := f.send(t, map[string]any{"to": manyAddresses(20)}); status != http.StatusAccepted {
+		t.Fatalf("a week-old free account = %d %s", status, text)
+	}
+	for i := 0; i < 9; i++ {
+		f.send(t, map[string]any{"to": to, "subject": fmt.Sprintf("n%d", i)})
+	}
+	if status, _, _ := f.send(t, map[string]any{"to": to}); status != http.StatusTooManyRequests {
+		t.Fatalf("the 11th free send = %d", status)
 	}
 }

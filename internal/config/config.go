@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -46,6 +47,9 @@ type Config struct {
 	// and no project address is shown).
 	MailInDomain      string
 	MailgunSigningKey string
+	// MailSendDailyCap is every org's sends together in a day
+	// (SITEWISE_MAIL_SEND_DAILY_CAP); zero is the server's default, 2,000.
+	MailSendDailyCap int
 }
 
 // MailInEnabled reports whether email intake is configured.
@@ -223,6 +227,13 @@ func Load(getenv func(string) string) (Config, error) {
 		return Config{}, err
 	}
 	cfg.MailInDomain, cfg.MailgunSigningKey = mailDomainIn, mailKey
+	if v := strings.TrimSpace(getenv("SITEWISE_MAIL_SEND_DAILY_CAP")); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 || n > 1000000 {
+			return Config{}, fmt.Errorf("SITEWISE_MAIL_SEND_DAILY_CAP must be a whole number from 1")
+		}
+		cfg.MailSendDailyCap = n
+	}
 	stripe, err := loadStripe(getenv, env == "production")
 	if err != nil {
 		return Config{}, err

@@ -54,9 +54,12 @@ type Outbox struct {
 	broker *events.Broker
 	log    *log.Logger
 	// From is the address mail leaves from (SITEWISE_MAIL_FROM).
-	From    string
-	backoff []time.Duration
-	now     func() time.Time
+	From string
+	// GlobalPerDay caps every org's sends together; zero is
+	// store.MailGlobalPerDay.
+	GlobalPerDay int
+	backoff      []time.Duration
+	now          func() time.Time
 
 	mu       sync.Mutex
 	inflight map[string]bool
@@ -268,6 +271,21 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 	if !who.Verified {
 		return store.MailMessage{}, &sendError{http.StatusForbidden, "Confirm your email address to send mail. Use the link we emailed you, or send a new one from the Account page."}
 	}
+	// A free plan sends only from an account a week old, and less a day
+	// (security review H3; the owner's numbers to change).
+	in.Global = deps.Outbox.GlobalPerDay
+	if deps.Billing != nil {
+		b, err := deps.Store.OrgBilling(ctx, session.OrgID)
+		if err != nil {
+			return store.MailMessage{}, err
+		}
+		if b.Effective().MonthlyCents == 0 {
+			if time.Since(who.UserSince) < mailFreeAccountAge {
+				return store.MailMessage{}, &sendError{http.StatusForbidden, "Sending mail needs a paid plan, or an account at least 7 days old. Upgrade on the Account page, or send from your own email for now."}
+			}
+			in.PerDay, in.RecipientsPerDay = store.MailFreeSendPerDay, store.MailFreeRecipientsPerDay
+		}
+	}
 	for _, v := range append([]string{in.Subject}, append(in.To, in.Cc...)...) {
 		if correspondence.CleanHeader(v) != nil {
 			return store.MailMessage{}, &sendError{http.StatusBadRequest, "A line break is not allowed in an address or the subject."}
@@ -293,8 +311,10 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 	if address, err := mailAddress(ctx, deps, session.OrgID, project); err == nil && address != "" {
 		replyTo = append(replyTo, mail.Address{Address: address})
 	}
-	from := fromAddress(who.OrgName, deps.Outbox.From)
+	from := fromAddress(deps.Outbox.From)
 	in.ProjectID, in.SentBy, in.From = project, session.UserID, from.String()
+	// Who sent it is said in a fixed footer, never in From's name.
+	in.Body = strings.TrimRight(in.Body, "\n") + "\n\n--\n" + sentByLine(who) + "\n"
 	in.To, in.Cc, in.ReplyTo = formatAll(to), formatAll(cc), formatAll(replyTo)
 	in.MessageIDDomain = messageDomain(deps)
 	if sheet {
@@ -323,21 +343,28 @@ func queueOutbound(ctx context.Context, deps Deps, session store.Session, projec
 	return m, nil
 }
 
-// fromAddress is decision 2's fallback: "<Org> via SiteWise" at
-// SITEWISE_MAIL_FROM. Sending from the project's own address needs the
-// owner's DNS step to verify the receiving domain for sending; until then
-// replies reach the project through Reply-To.
-func fromAddress(org, from string) mail.Address {
-	name := strings.TrimSpace(strings.Map(func(r rune) rune {
-		if r < 0x20 || r == 0x7f {
-			return ' '
-		}
-		return r
-	}, org))
-	if name == "" {
-		return mail.Address{Name: "SiteWise", Address: from}
+// fromAddress is always "SiteWise" at SITEWISE_MAIL_FROM: an org's own
+// words never reach From (security review H3). The org and the member who
+// sent it are named in the footer and on the sheet. Replies reach the PM
+// and the project through Reply-To.
+func fromAddress(from string) mail.Address {
+	return mail.Address{Name: "SiteWise", Address: from}
+}
+
+// mailFreeAccountAge: a free plan's account sends after a week.
+const mailFreeAccountAge = 7 * 24 * time.Hour
+
+// sentByLine is the fixed footer naming the sender and the org.
+func sentByLine(who store.MailSender) string {
+	clean := func(s string) string {
+		return strings.Join(strings.Fields(strings.Map(func(r rune) rune {
+			if r < 0x20 || r == 0x7f {
+				return ' '
+			}
+			return r
+		}, s)), " ")
 	}
-	return mail.Address{Name: name + " via SiteWise", Address: from}
+	return "Sent by " + clean(who.Email) + " of " + clean(who.OrgName) + " using SiteWise."
 }
 
 func containsAddress(list []mail.Address, addr string) bool {
@@ -383,7 +410,7 @@ func transmittalSheet(ctx context.Context, deps Deps, who store.MailSender, numb
 			{Runs: []export.Run{{Text: orDash(d.Number)}}}, {Runs: []export.Run{{Text: title}}}, {Runs: []export.Run{{Text: orDash(d.Revision)}}},
 		}})
 	}
-	details := fmt.Sprintf("Project: %s\nNumber: %s\nDate: %s\nFrom: %s\nTo: %s", who.ProjectName, TransmittalNumber(number), date.Format("2 January 2006"), from.String(), strings.Join(formatAll(to), ", "))
+	details := fmt.Sprintf("Project: %s\nNumber: %s\nDate: %s\nFrom: %s\nTo: %s", who.ProjectName, TransmittalNumber(number), date.Format("2 January 2006"), sentByLine(who), strings.Join(formatAll(to), ", "))
 	if len(cc) > 0 {
 		details += "\nCc: " + strings.Join(formatAll(cc), ", ")
 	}
@@ -520,9 +547,12 @@ func writeSendError(w http.ResponseWriter, deps Deps, err error) {
 		http.Error(w, "A document or message named is not in this project.", http.StatusBadRequest)
 	case errors.Is(err, store.ErrProjectArchived):
 		http.Error(w, "This project is archived. Restore it on the Projects page to send mail.", http.StatusConflict)
+	case errors.Is(err, store.ErrMailGlobalCap):
+		w.Header().Set("Retry-After", "3600")
+		http.Error(w, "SiteWise has sent all the mail it sends in a day. Try again tomorrow, or send from your own email.", http.StatusTooManyRequests)
 	case errors.Is(err, store.ErrMailCap):
 		w.Header().Set("Retry-After", "3600")
-		http.Error(w, fmt.Sprintf("Your team has sent its %d messages or %d recipients for today. Try again tomorrow.", store.MailSendPerDay, store.MailRecipientsPerDay), http.StatusTooManyRequests)
+		http.Error(w, "Your team has sent all the messages or recipients it sends in a day. Try again tomorrow.", http.StatusTooManyRequests)
 	case errors.Is(err, store.ErrInvalidInput):
 		http.Error(w, strings.TrimPrefix(err.Error(), store.ErrInvalidInput.Error()+": "), http.StatusBadRequest)
 	default:
