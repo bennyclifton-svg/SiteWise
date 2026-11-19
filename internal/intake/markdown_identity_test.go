@@ -1,11 +1,14 @@
 package intake_test
 
 import (
+	"bytes"
 	"context"
 	"sitewise/internal/identity"
 	"sitewise/internal/intake"
+	"sitewise/internal/mailin"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestMarkdownOwnIdentity(t *testing.T) {
@@ -67,5 +70,34 @@ func TestMarkdownIdentityKeepsUserCorrectionsAndLiteralSpans(t *testing.T) {
 		if want, ok := users[d.Field]; ok && (d.Value != want.Value || d.DecidedBy != "user") {
 			t.Fatalf("user correction overwritten: %+v", d)
 		}
+	}
+}
+
+// The body document the mail webhook writes files as an email with no new
+// question: its subject is the title, its header date the date, and a
+// forwarded thread's latest header date wins (email intake, Task 8).
+func TestMailBodyDocumentFilesAsEmail(t *testing.T) {
+	cases := []struct{ name, body, date string }{
+		{"one message", "Please find the drawings attached.", "14 November 2026"},
+		{"forwarded thread", "FYI below.\n---\nFrom: Engineer <e@example.net>\nTo: Pat <pat@example.test>\nSubject: Wall\nDate: 2 November 2026 4:00 PM\nOlder text.", "14 November 2026"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			m := mailin.Message{FromAddress: "pat@example.test", FromName: "Pat Member", To: "p-0@in.example.test",
+				Subject: "Basement wall drawings", Date: time.Date(2026, 11, 14, 9, 15, 0, 0, time.FixedZone("AEDT", 11*3600)), BodyPlain: c.body}
+			name, body := mailin.BodyDocument(m, time.Now())
+			text, err := identity.Extract(context.Background(), "md", bytes.NewReader(body), int64(len(body)), identity.Limits{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			draft := intake.NewDraft(draftCatalog(t), name, text, intake.Harvest(name, text), nil)
+			got := map[string]string{}
+			for _, d := range draft.Decisions() {
+				got[d.Field] = d.Value
+			}
+			if got["title"] != "Basement wall drawings" || got["date"] != c.date || got["kind"] != "correspondence" {
+				t.Fatalf("title %q date %q kind %q", got["title"], got["date"], got["kind"])
+			}
+		})
 	}
 }
