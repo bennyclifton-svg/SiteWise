@@ -214,7 +214,11 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		f["guest_grants"] = row{"org_id": org, "id": id(5000 + n), "project_id": p, "token_hash": "\\x" + strings.Repeat(fmt.Sprintf("%02d", 70+n), 32), "kind": "package", "shared_with": "firm@example.test", "package_id": pkg, "firm_id": firm, "created_by": u, "expires_at": "2026-12-01T00:00:00Z"}
 		f["delivery_readings"] = row{"org_id": org, "id": id(5000 + n), "project_id": p, "item_id": d, "document_id": id(1900 + n), "field": "answers", "decided_by": "rule", "band": "amber"}
 		f["delivery_settings"] = row{"org_id": org, "project_id": p, "rfi_response_days": 5}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns"} {
+		// Email intake: the project's address, a filed message and its part.
+		f["project_mail_addresses"] = row{"org_id": org, "project_id": p, "local_part": "p-" + strings.Repeat(fmt.Sprintf("%02d", 80+n), 16)}
+		f["mail_messages"] = row{"org_id": org, "id": id(5100 + n), "project_id": p, "message_id": fmt.Sprintf("<fk%d@example.test>", n), "webhook_token": fmt.Sprintf("fk-token-%d", n), "sender": "x@example.test", "status": "filed", "decided_by": u}
+		f["mail_parts"] = row{"org_id": org, "message_id": id(5100 + n), "n": 0, "filename": "a.pdf", "sha256": "\\x" +strings.Repeat("01", 32), "byte_size": 1, "document_id": id(1900 + n)}
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns", "mail_messages"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
@@ -387,6 +391,13 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 			case "proposals":
 				base["record_id"] = "ic.sweep"
 				base["key"] = "ic.sweep||||0"
+			case "project_mail_addresses":
+				// One address per project: the control is the spare project's.
+				base["project_id"], base["local_part"] = id(9901), "p-"+strings.Repeat("ee", 16)
+			case "mail_messages":
+				base["message_id"], base["webhook_token"] = "<sweep@example.test>", "sweep-token"
+			case "mail_parts":
+				base["n"] = 1
 			case "guest_grants":
 				base["token_hash"] = "\\x" + strings.Repeat("ed", 32)
 				if strings.Contains(f.definition, "report_id") {

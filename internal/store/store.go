@@ -256,6 +256,10 @@ func (s *Store) CreateProject(ctx context.Context, orgID, projectID, name string
 	if _, err := tx.Exec(ctx, `INSERT INTO project_revisions(org_id,project_id) VALUES($1::uuid,$2::uuid)`, orgID, projectID); err != nil {
 		return err
 	}
+	// Every project has its own private address (email intake, Task 2).
+	if _, err := tx.Exec(ctx, `INSERT INTO project_mail_addresses(org_id,project_id,local_part) VALUES($1::uuid,$2::uuid,$3)`, orgID, projectID, newMailLocalPart()); err != nil {
+		return err
+	}
 	return tx.Commit(ctx)
 }
 

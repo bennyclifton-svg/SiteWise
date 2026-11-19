@@ -175,6 +175,18 @@ SELECT site_id::text FROM projects WHERE org_id = $1::uuid AND id = $2::uuid FOR
 	if err := rows.Err(); err != nil {
 		return res, err
 	}
+	// The bytes of the project's mail parts go with it when nothing else
+	// holds them.
+	mail, err := tx.Query(ctx, `SELECT p.sha256 FROM mail_parts p JOIN mail_messages m ON m.org_id=p.org_id AND m.id=p.message_id
+WHERE m.org_id = $1::uuid AND m.project_id = $2::uuid AND p.sha256 IS NOT NULL`, orgID, projectID)
+	if err != nil {
+		return res, err
+	}
+	sums, err := scanHashes(mail)
+	if err != nil {
+		return res, err
+	}
+	res.Unreferenced = append(res.Unreferenced, sums...)
 	// Cost rows reference the project without ON DELETE CASCADE, and a frozen
 	// baseline refuses an ordinary delete. They go before the project row.
 	for _, q := range []string{
@@ -221,6 +233,8 @@ WHERE s.org_id = $1::uuid AND s.id = $2::uuid
 // decides whether bytes stay on disk.
 func (s *Store) BlobReferenced(ctx context.Context, sum []byte) (bool, error) {
 	var used bool
-	err := s.pool.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM files WHERE sha256 = $1)`, sum).Scan(&used)
+	// A message part keeps its bytes until it is filed or discarded, and a
+	// sent message keeps what it sent (email intake, Task 2).
+	err := s.pool.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM files WHERE sha256 = $1) OR EXISTS (SELECT 1 FROM mail_parts WHERE sha256 = $1)`, sum).Scan(&used)
 	return used, err
 }
