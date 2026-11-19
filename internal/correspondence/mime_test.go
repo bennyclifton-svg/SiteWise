@@ -28,7 +28,12 @@ func TestBuildRefusesHeaderInjection(t *testing.T) {
 			t.Errorf("%q parsed", bad)
 		}
 	}
-	raw, err := Build(func() Outgoing { x := base; x.Subject = "Éclairage — TR-001"; x.Body = "Line one\nLine two"; return x }())
+	raw, err := Build(func() Outgoing {
+		x := base
+		x.Subject = "Éclairage — TR-001"
+		x.Body = "Line one\nLine two"
+		return x
+	}())
 	if err != nil {
 		t.Fatal(err)
 	}
