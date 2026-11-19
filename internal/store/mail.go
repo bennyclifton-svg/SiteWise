@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -609,4 +610,104 @@ func (s *Store) ProjectArchived(ctx context.Context, org, project string) (bool,
 		return false, ErrNotFound
 	}
 	return archived, err
+}
+
+// useMessagePick checks a register row's message is a filed message of
+// this project, and marks its pick used. A message whose pick was used or
+// dismissed can still be added again from its menu (plan, edge cases).
+func useMessagePick(ctx context.Context, tx pgx.Tx, org, project, message string) error {
+	if !validUUID(message) {
+		return fmt.Errorf("%w: the message is not a filed message of this project", ErrInvalidDelivery)
+	}
+	tag, err := tx.Exec(ctx, `UPDATE mail_messages SET pick_state = CASE WHEN pick_state='' THEN 'used' ELSE pick_state END
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid AND status='filed'`, org, project, message)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() != 1 {
+		return fmt.Errorf("%w: the message is not a filed message of this project", ErrInvalidDelivery)
+	}
+	return nil
+}
+
+// MailEdit is the PM's two edits to a message (correspondence plan, Task
+// 4): its package and what was done with Jev's pick. Nothing else on a
+// message can change. Version is the message's version as read.
+type MailEdit struct {
+	Version   int64   `json:"version"`
+	PackageID *string `json:"package_id"`
+	PickState *string `json:"pick_state"`
+}
+
+// ErrMailHeld: a held message is not part of the record yet.
+var ErrMailHeld = errors.New("a held message can't be edited; accept or discard it")
+
+// EditMail applies one edit at the message's version. A package edit is the
+// user's (linked_by user) and survives later replies. A held message is not
+// editable. With a change mark on ctx it is captured for Undo.
+func (s *Store) EditMail(ctx context.Context, org, project, id string, e MailEdit) (MailMessage, error) {
+	if !validUUID(org) || !validUUID(project) || !validUUID(id) {
+		return MailMessage{}, ErrNotFound
+	}
+	if e.PackageID == nil && e.PickState == nil {
+		return MailMessage{}, fmt.Errorf("%w: name the package or the pick", ErrInvalidInput)
+	}
+	if e.PickState != nil && *e.PickState != "" && *e.PickState != "used" && *e.PickState != "dismissed" {
+		return MailMessage{}, fmt.Errorf("%w: the pick is used, dismissed or blank", ErrInvalidInput)
+	}
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return MailMessage{}, err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return MailMessage{}, err
+	}
+	var status string
+	var version int64
+	err = tx.QueryRow(ctx, `SELECT status, version FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid FOR UPDATE`, org, project, id).Scan(&status, &version)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return MailMessage{}, ErrNotFound
+	}
+	if err != nil {
+		return MailMessage{}, err
+	}
+	if status != "filed" {
+		return MailMessage{}, ErrMailHeld
+	}
+	if e.Version != version {
+		return MailMessage{}, ErrVersionConflict
+	}
+	if e.PackageID != nil && *e.PackageID != "" {
+		var ok bool
+		if !validUUID(*e.PackageID) {
+			return MailMessage{}, ErrNotFound
+		}
+		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM packages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid)`, org, project, *e.PackageID).Scan(&ok); err != nil {
+			return MailMessage{}, err
+		}
+		if !ok {
+			return MailMessage{}, ErrNotFound
+		}
+	}
+	if _, err := tx.Exec(ctx, `UPDATE mail_messages SET
+ package_id = CASE WHEN $4::boolean THEN NULLIF($5,'')::uuid ELSE package_id END,
+ linked_by = CASE WHEN $4::boolean THEN (CASE WHEN $5='' THEN '' ELSE 'user' END) ELSE linked_by END,
+ pick_state = CASE WHEN $6::boolean THEN $7 ELSE pick_state END,
+ version = version + 1
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid`, org, project, id,
+		e.PackageID != nil, deref(e.PackageID), e.PickState != nil, deref(e.PickState)); err != nil {
+		return MailMessage{}, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return MailMessage{}, err
+	}
+	return s.MailMessageByID(ctx, org, project, id)
+}
+
+func deref(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
 }

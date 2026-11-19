@@ -420,9 +420,12 @@ func (s *Store) registerFill(ctx context.Context, tx pgx.Tx, org, project string
 		var d delivery.NoticeDetails
 		_ = json.Unmarshal(c.Details, &d)
 		if d.MessageID != "" {
-			// Messages are plan 1's. Until they exist there is nothing a
-			// message id can be checked against, so none is stored.
-			return fmt.Errorf("%w: messages are not recorded yet", ErrInvalidDelivery)
+			// A notice from a message (correspondence plan, the chip's Add to
+			// register): the message must be a filed message of this project.
+			// Its pick is then used, in this transaction, so the chip goes.
+			if err := useMessagePick(ctx, tx, org, project, d.MessageID); err != nil {
+				return err
+			}
 		}
 	case "rfi":
 		d := delivery.RFI(*c)

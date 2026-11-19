@@ -14,6 +14,53 @@ import (
 // Rotating the address is never chat's (ops_routes.go). No card or summary
 // carries a message's subject or body: those are outside text.
 var mailForwards = []forward{
+	{
+		Name:   "mail.link",
+		About:  "set the package a message belongs to (or clear it); it applies at once and Undo puts it back.",
+		Fields: `message (id from read messages), package (id or title from read procurement; "" clears it)`,
+		Route:  "PATCH /projects/{id}/mail/{message}",
+		Undo:   true,
+		Send: func(ctx context.Context, d Deps, who opActor, project string, f map[string]any) (sent, error) {
+			m, err := recordMessage(ctx, d, who, project, fieldText(f, "message"))
+			if err != nil {
+				return sent{}, err
+			}
+			pkg, title := "", ""
+			if fieldText(f, "package") != "" {
+				p, err := pkgOf(ctx, d, who, project, f)
+				if err != nil {
+					return sent{}, err
+				}
+				pkg, title = p.ID, p.Title
+			}
+			if title == "" {
+				f["_done"] = fmt.Sprintf("Cleared the package of the message %s %s.", direction(m), m.With)
+			} else {
+				f["_done"] = fmt.Sprintf("Linked the message %s %s to %s.", direction(m), m.With, title)
+			}
+			return sent{Path: map[string]string{"message": m.ID}, Body: map[string]any{"version": m.Version, "package_id": pkg}}, nil
+		},
+		Done: func(f map[string]any) string { return fieldText(f, "_done") },
+	},
+	{
+		Name:   "mail.dismiss_pick",
+		About:  "say a message is not the notice, claim or RFI Jev's chip suggests (\"Not one\"); the chip goes, and Undo brings it back.",
+		Fields: `message (id from read messages)`,
+		Route:  "PATCH /projects/{id}/mail/{message}",
+		Undo:   true,
+		Send: func(ctx context.Context, d Deps, who opActor, project string, f map[string]any) (sent, error) {
+			m, err := recordMessage(ctx, d, who, project, fieldText(f, "message"))
+			if err != nil {
+				return sent{}, err
+			}
+			if m.Notice == "" {
+				return sent{}, refuse("message", "The message %s %s has no suggestion to dismiss.", direction(m), m.With)
+			}
+			f["_done"] = fmt.Sprintf("Dismissed the suggestion on the message %s %s.", direction(m), m.With)
+			return sent{Path: map[string]string{"message": m.ID}, Body: map[string]any{"version": m.Version, "pick_state": "dismissed"}}, nil
+		},
+		Done: func(f map[string]any) string { return fieldText(f, "_done") },
+	},
 	readForward("mail.accept",
 		"file a message held for the team (from someone outside the team, or unconfirmed); Jev reads each of its files, which uses credits and can't be undone.",
 		`message (id from read messages)`, "POST /projects/{id}/mail/{message}/accept",
@@ -78,4 +125,31 @@ func heldMessage(ctx context.Context, d Deps, who opActor, project, ref string) 
 		return store.MailMessage{}, refuse("message", "That message is filed. A filed message is part of the record: it can't be accepted again, edited or deleted.")
 	}
 	return m, nil
+}
+
+// recordMessage finds a filed message of this project by its id or short id.
+func recordMessage(ctx context.Context, d Deps, who opActor, project, ref string) (store.MailMessage, error) {
+	if ref == "" {
+		return store.MailMessage{}, refuse("message", "message is needed.")
+	}
+	list, err := d.Store.MailMessages(ctx, who.OrgID, project, store.MailFilter{})
+	if err != nil {
+		return store.MailMessage{}, err
+	}
+	m, err := byRef(list, func(m store.MailMessage) string { return m.ID }, ref, "message")
+	if err != nil {
+		return store.MailMessage{}, err
+	}
+	if m.Status != "filed" {
+		return store.MailMessage{}, refuse("message", "That message is held: accept or discard it first.")
+	}
+	return m, nil
+}
+
+// direction is "from" or "to", for a message's one line.
+func direction(m store.MailMessage) string {
+	if m.Direction == "out" {
+		return "to"
+	}
+	return "from"
 }

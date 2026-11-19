@@ -118,7 +118,8 @@ func TestRegisterDueDatesAndIsolation(t *testing.T) {
 	if err != nil || plant.SystemID != "mechanical" {
 		t.Fatalf("system from work item %q %v", plant.SystemID, err)
 	}
-	// A notice cannot name a message until messages exist (plan 1).
+	// A notice cannot name a message that is not a filed message of this
+	// project (plan 1 built messages; mail_record_test has the good case).
 	notice := store.DeliveryInput{Content: delivery.Content{Kind: "notice", Title: "Notice of delay", Details: json.RawMessage(`{"message_id":"0b5f1c1e-1111-4111-8111-111111111111"}`)}}
 	if _, err := s.CreateDelivery(ctx, orgA, projectA, userA, notice); !errors.Is(err, store.ErrInvalidDelivery) {
 		t.Fatalf("notice message %v", err)

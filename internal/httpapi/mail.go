@@ -83,6 +83,7 @@ var mailRoutes = map[string]func(http.ResponseWriter, *http.Request, Deps){
 	"POST /projects/{id}/mail/{message}/accept":  acceptMail,
 	"POST /projects/{id}/mail/{message}/discard": discardMail,
 	"POST /projects/{id}/mail/address":           rotateMailAddress,
+	"PATCH /projects/{id}/mail/{message}":        patchMail,
 }
 
 func init() {
@@ -92,6 +93,7 @@ func init() {
 	routePaths["POST /projects/{id}/mail/{message}/accept"] = pathMailDecide
 	routePaths["POST /projects/{id}/mail/{message}/discard"] = pathMailDecide
 	routePaths["POST /projects/{id}/mail/address"] = pathMailDecide
+	routePaths["PATCH /projects/{id}/mail/{message}"] = pathMailDecide
 }
 
 // refuseMail is the answer to every refused post, whatever the reason: a bad
@@ -449,7 +451,19 @@ func getMail(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	project := r.PathValue("id")
-	f := store.MailFilter{Held: r.URL.Query().Get("held") == "1"}
+	q := r.URL.Query()
+	if doc := q.Get("document"); doc != "" {
+		getDocumentTransmittals(w, r, deps, session.OrgID, project, doc)
+		return
+	}
+	f := store.MailFilter{Held: q.Get("held") == "1", Unanswered: q.Get("unanswered") == "1", NotSent: q.Get("not_sent") == "1",
+		FirmID: q.Get("firm"), PackageID: q.Get("package")}
+	for _, id := range []string{f.FirmID, f.PackageID} {
+		if id != "" && !uuidPattern.MatchString(id) {
+			http.Error(w, "firm and package are ids", http.StatusBadRequest)
+			return
+		}
+	}
 	if b := r.URL.Query().Get("before"); b != "" {
 		t, err := time.Parse(time.RFC3339Nano, b)
 		if err != nil {
@@ -627,4 +641,65 @@ func mailReason(r string) string {
 		return w
 	}
 	return fmt.Sprint(r)
+}
+
+// getDocumentTransmittals is ?document=: each transmittal that carried the
+// document or a revision it supersedes, and for the newest revision who was
+// sent an older one and never this one (Task 5).
+func getDocumentTransmittals(w http.ResponseWriter, r *http.Request, deps Deps, org, project, doc string) {
+	if !uuidPattern.MatchString(doc) {
+		http.NotFound(w, r)
+		return
+	}
+	out, err := deps.Store.TransmittalsOfDocument(r.Context(), org, project, doc)
+	if errors.Is(err, store.ErrNotFound) {
+		http.NotFound(w, r)
+		return
+	}
+	if err != nil {
+		readFailed(w, deps, "transmittals", err)
+		return
+	}
+	writeJSON(w, http.StatusOK, out)
+}
+
+// patchMail is the PM's two edits to a filed message: its package, and
+// what was done with Jev's pick. Any other field is refused: the record is
+// frozen. Both are operations with Undo (mail.link, mail.dismiss_pick).
+func patchMail(w http.ResponseWriter, r *http.Request, deps Deps) {
+	session, ok := deliverySession(w, r, deps, true)
+	if !ok {
+		return
+	}
+	if !uuidPattern.MatchString(r.PathValue("message")) {
+		http.NotFound(w, r)
+		return
+	}
+	var e store.MailEdit
+	dec := json.NewDecoder(http.MaxBytesReader(w, r.Body, 4096))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&e); err != nil {
+		http.Error(w, "Only a message's package and its pick can change; nothing else on a message is edited.", http.StatusBadRequest)
+		return
+	}
+	m, err := deps.Store.EditMail(r.Context(), session.OrgID, r.PathValue("id"), r.PathValue("message"), e)
+	switch {
+	case errors.Is(err, store.ErrNotFound):
+		http.NotFound(w, r)
+		return
+	case errors.Is(err, store.ErrVersionConflict):
+		http.Error(w, "This message changed while the edit was being made. Read it again.", http.StatusConflict)
+		return
+	case errors.Is(err, store.ErrMailHeld):
+		http.Error(w, "A held message isn't part of the record yet: accept or discard it.", http.StatusConflict)
+		return
+	case errors.Is(err, store.ErrInvalidInput):
+		http.Error(w, strings.TrimPrefix(err.Error(), store.ErrInvalidInput.Error()+": "), http.StatusBadRequest)
+		return
+	case err != nil:
+		readFailed(w, deps, "mail", err)
+		return
+	}
+	mailEvent(deps, session.OrgID, r.PathValue("id"), m.ID)
+	writeJSON(w, http.StatusOK, m)
 }
