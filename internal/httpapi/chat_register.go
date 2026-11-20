@@ -201,7 +201,35 @@ func registerItem(ctx context.Context, d Deps, who opActor, project, ref string)
 
 // rfiFields are the RFI's own words, given as their own fields so a date
 // in raised_on is checked like any other figure.
-var rfiFields = []string{"question", "ref", "raised_by", "raised_on", "answer"}
+var rfiFields = []string{"question", "ref", "raised_by", "raised_on", "answer", "to", "cc", "subject"}
+
+// rfiAddressing resolves an RFI's to and cc (a list, or comma-separated
+// text, of addresses or firm names) through Send's resolver, so they are
+// saved as lists of addresses the send route accepts.
+func rfiAddressing(ctx context.Context, d Deps, who opActor, f map[string]any) error {
+	for _, key := range []string{"to", "cc"} {
+		v, ok := f[key]
+		if !ok {
+			continue
+		}
+		parts, bad := addressParts(v)
+		if bad != "" {
+			return refuse(key, "%s", bad)
+		}
+		list := []any{}
+		for _, p := range parts {
+			resolved, bad := resolveAddresses(ctx, d, who, p)
+			if bad != "" {
+				return refuse(key, "%s", bad)
+			}
+			for _, a := range resolved {
+				list = append(list, a)
+			}
+		}
+		f[key] = list
+	}
+	return nil
+}
 
 // liftRFIFields moves the RFI's own fields into details, over what the row
 // has now. A raised date hidden inside details is refused: it must be its
@@ -250,6 +278,9 @@ func sendRegisterAdd(ctx context.Context, d Deps, who opActor, project string, f
 	}
 	kind := fieldText(f, "kind")
 	if kind == "rfi" {
+		if err := rfiAddressing(ctx, d, who, f); err != nil {
+			return sent{}, err
+		}
 		if err := liftRFIFields(f, nil); err != nil {
 			return sent{}, err
 		}
@@ -319,6 +350,9 @@ func sendRegisterEdit(ctx context.Context, d Deps, who opActor, project string, 
 		delete(f, "package")
 	}
 	if it.Kind == "rfi" {
+		if err := rfiAddressing(ctx, d, who, f); err != nil {
+			return sent{}, err
+		}
 		if err := liftRFIFields(f, it.Details); err != nil {
 			return sent{}, err
 		}

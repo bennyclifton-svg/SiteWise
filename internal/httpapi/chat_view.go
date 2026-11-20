@@ -166,7 +166,7 @@ func checkDialog(ctx context.Context, d Deps, who opActor, project string, in vi
 	}
 	what, ok := viewDialogs[in.Dialog]
 	if !ok {
-		return agent.View{}, "The dialogs chat can open are award (fields package and column), share (fields kind, then documents, report, or package and firm; shared_with and days if the PM said them), report (field issue yes to open its issue form), send (documents, to, cc, subject, note, reply_to, issue) and claim (field claim: its id or number)."
+		return agent.View{}, "The dialogs chat can open are award (fields package and column), share (fields kind, then documents, report, or package and firm; shared_with and days if the PM said them), report (field issue yes to open its issue form), send (documents, to, cc, subject, note, reply_to, issue; or rfi with to, cc and subject to open that RFI's sheet) and claim (field claim: its id or number)."
 	}
 	if in.Dialog == "share" {
 		fields, line, bad := checkShareDialog(ctx, d, who, project, in.Fields)

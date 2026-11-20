@@ -346,6 +346,25 @@ func checkSendDialog(ctx context.Context, d Deps, who opActor, project string, f
 		}
 		out["issue"] = issue
 	}
+	if ref := strings.TrimSpace(f["rfi"]); ref != "" {
+		// An RFI is sent from its own sheet (register panel, 20 November
+		// 2026): the screen opens the sheet with these fields in its To, Cc
+		// and Subject; its documents are its transmittal and its note its
+		// question, so those fields are not used. The PM presses Send there.
+		it, err := registerItem(ctx, d, who, project, ref)
+		if err != nil {
+			return nil, "", err.Error() + " Nothing on screen was changed."
+		}
+		if it.Kind != "rfi" {
+			return nil, "", "Only an RFI is sent from the register's sheet. Nothing on screen was changed."
+		}
+		out["rfi"] = it.ID
+		line := "Opened " + rfiNumber(it.Number) + " to send"
+		if out["to"] != "" {
+			line += " to " + out["to"]
+		}
+		return out, line + ". Nothing is sent until the PM presses Send on it.", ""
+	}
 	line := fmt.Sprintf("Opened Send with %s", countOf(len(docs), "document"))
 	if out["to"] != "" {
 		line += " to " + out["to"]
@@ -356,11 +375,19 @@ func checkSendDialog(ctx context.Context, d Deps, who opActor, project string, f
 // sendAddresses reads "to" or "cc": addresses, or firm ids or names, comma
 // separated. A firm without an email is refused in words.
 func sendAddresses(ctx context.Context, d Deps, who opActor, raw string) (string, string) {
+	list, bad := resolveAddresses(ctx, d, who, raw)
+	return strings.Join(list, ", "), bad
+}
+
+// resolveAddresses is sendAddresses as a list: each address as the Send
+// dialog's field shows it, a firm named by id or name as its recorded
+// address. The RFI sheet's To and Cc use it too (delivery.edit).
+func resolveAddresses(ctx context.Context, d Deps, who opActor, raw string) ([]string, string) {
 	if strings.TrimSpace(raw) == "" {
-		return "", ""
+		return nil, ""
 	}
 	if correspondence.CleanHeader(raw) != nil {
-		return "", "An address is one line."
+		return nil, "An address is one line."
 	}
 	var out []string
 	for _, part := range strings.Split(raw, ",") {
@@ -374,18 +401,18 @@ func sendAddresses(ctx context.Context, d Deps, who opActor, raw string) (string
 		}
 		f, err := d.Store.MailFirm(ctx, who.OrgID, part)
 		if err != nil {
-			return "", fmt.Sprintf("%q is neither an email address nor one of the organisation's firms.", part)
+			return nil, fmt.Sprintf("%q is neither an email address nor one of the organisation's firms.", part)
 		}
 		found := &f
 		if found.Email == "" {
-			return "", found.Name + " has no email address. Add it on the firm, or give the address."
+			return nil, found.Name + " has no email address. Add it on the firm, or give the address."
 		}
 		out = append(out, addressWords(mail.Address{Name: found.Name, Address: found.Email}))
 	}
 	if len(out) > store.MailMaxRecipients {
-		return "", fmt.Sprintf("Send goes to at most %d addresses.", store.MailMaxRecipients)
+		return nil, fmt.Sprintf("Send goes to at most %d addresses.", store.MailMaxRecipients)
 	}
-	return strings.Join(out, ", "), ""
+	return out, ""
 }
 
 // addressWords is an address as the Send dialog's field shows it: the bare
@@ -424,21 +451,11 @@ const msgSendAfterOutside = "Filled in after reading a message or a document; ch
 // is never kept because a name beside it matches. The warning line is
 // added.
 func guardSendFields(f map[string]string, asked string, contacts []store.MailContact) {
-	asked = strings.ToLower(asked)
-	named := map[string]bool{}
-	for _, c := range contacts {
-		if n := strings.ToLower(strings.TrimSpace(c.Name)); n != "" && strings.Contains(asked, n) {
-			named[strings.ToLower(c.Email)] = true
-		}
-	}
+	named := namedAddresses(asked, contacts)
 	for _, key := range []string{"to", "cc"} {
 		var keep []string
 		for _, part := range splitAddresses(f[key]) {
-			addr := strings.ToLower(part)
-			if a, err := mail.ParseAddress(part); err == nil {
-				addr = strings.ToLower(a.Address)
-			}
-			if addr != "" && (strings.Contains(asked, addr) || named[addr]) {
+			if chosenAddress(part, asked, named) {
 				keep = append(keep, part)
 			}
 		}
@@ -449,6 +466,93 @@ func guardSendFields(f map[string]string, asked string, contacts []store.MailCon
 		}
 	}
 	f["warning"] = msgSendAfterOutside
+}
+
+// namedAddresses are the recorded addresses of the project's firms that the
+// PM's message names.
+func namedAddresses(asked string, contacts []store.MailContact) map[string]bool {
+	asked = strings.ToLower(asked)
+	named := map[string]bool{}
+	for _, c := range contacts {
+		if n := strings.ToLower(strings.TrimSpace(c.Name)); n != "" && strings.Contains(asked, n) {
+			named[strings.ToLower(c.Email)] = true
+		}
+	}
+	return named
+}
+
+// chosenAddress reports an address the PM chose: itself in the PM's own
+// message, or the project's recorded address of a firm the message names.
+// A name beside an address in outside text never makes it chosen.
+func chosenAddress(part, asked string, named map[string]bool) bool {
+	addr := strings.ToLower(part)
+	if a, err := mail.ParseAddress(part); err == nil {
+		addr = strings.ToLower(a.Address)
+	}
+	return addr != "" && (strings.Contains(strings.ToLower(asked), addr) || named[addr])
+}
+
+// rfiAddressCheck holds chat's To and Cc on an RFI (delivery.add and
+// delivery.edit) to addresses the PM chose, as Send's guard does after
+// outside text, but on every turn and as a refusal: a saved To is what the
+// sheet's Send sends. Firm names are resolved first, as the edit will.
+func rfiAddressCheck(ctx context.Context, d Deps, who opActor, project, op string, raw json.RawMessage, asked string) *opError {
+	if op != "delivery.add" && op != "delivery.edit" {
+		return nil
+	}
+	var f map[string]any
+	if json.Unmarshal(raw, &f) != nil {
+		return nil
+	}
+	var named map[string]bool
+	for _, key := range []string{"to", "cc"} {
+		parts, bad := addressParts(f[key])
+		if bad != "" {
+			return &opError{Field: key, Message: bad}
+		}
+		for _, p := range parts {
+			list, bad := resolveAddresses(ctx, d, who, p)
+			if bad != "" {
+				return &opError{Field: key, Message: bad}
+			}
+			if named == nil {
+				contacts, err := d.Store.ProjectMailContacts(ctx, who.OrgID, project)
+				if err != nil {
+					return &opError{Field: key, Message: "The project's firms could not be read."}
+				}
+				named = namedAddresses(asked, contacts)
+			}
+			for _, a := range list {
+				if !chosenAddress(a, asked, named) {
+					return &opError{Field: key, Message: fmt.Sprintf("%s is not in the PM's message, nor the recorded address of a firm the PM named. Ask the PM for the address.", a)}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+// addressParts reads to or cc as chat or the screen sends it: a string of
+// comma-separated entries, or a list of strings.
+func addressParts(v any) ([]string, string) {
+	switch x := v.(type) {
+	case nil:
+		return nil, ""
+	case string:
+		return []string{x}, ""
+	case []any:
+		var out []string
+		for _, e := range x {
+			s, ok := e.(string)
+			if !ok {
+				return nil, "Give addresses as text."
+			}
+			out = append(out, s)
+		}
+		return out, ""
+	default:
+		return nil, "Give addresses as text."
+	}
 }
 
 // splitAddresses splits "A <a@x>, b@y" on the commas between addresses.

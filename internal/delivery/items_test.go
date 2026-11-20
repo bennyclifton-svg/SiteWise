@@ -58,3 +58,34 @@ func TestDeliveryDatesAndReferenceShape(t *testing.T) {
 		}
 	}
 }
+
+// To, Cc and Subject on an RFI are checked as the send route checks them
+// (register panel, 20 November 2026).
+func TestRFIAddressing(t *testing.T) {
+	rfi := func(details string) error {
+		return Validate(Content{Kind: "rfi", Title: "Wall", Status: "draft", Details: json.RawMessage(details)})
+	}
+	if err := rfi(`{"to":["eng@consult.test","Northline <info@northline.test>"],"cc":["pm@team.test"],"subject":"RFI-001 Wall"}`); err != nil {
+		t.Fatal(err)
+	}
+	many := `{"to":[`
+	for i := 0; i < 21; i++ {
+		if i > 0 {
+			many += ","
+		}
+		many += `"a` + string(rune('a'+i)) + `@x.test"`
+	}
+	many += `]}`
+	for _, bad := range []string{
+		`{"to":["eng@consult.test\r\nBcc: x@y.test"]}`,
+		`{"to":["not an address"]}`,
+		`{"to":["a@x.test, b@y.test"]}`,
+		`{"cc":["a@x.test\u0007"]}`,
+		`{"subject":"Line\nbreak"}`,
+		many,
+	} {
+		if rfi(bad) == nil {
+			t.Fatalf("accepted %s", bad)
+		}
+	}
+}

@@ -95,7 +95,7 @@ func chatTools() []llm.Tool {
 				"ids":    map[string]any{"type": "array", "items": map[string]any{"type": "string"}, "description": "row ids, at most 200"},
 				"filter": str("with select or only, in place of ids: a set SiteWise computes by rule. " + filterList() + ". Any other set: pick ids from a read"),
 				"dialog": str("a dialog to open: award, share (a guest link to documents, an issued report, or an issued RFP or RFT for one invited firm), report (the project report), send (Send or Reply, filled in; the PM presses Send), or claim (a progress claim's panel)", "award", "share", "report", "send", "claim"),
-				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id). share: kind (documents, report or package); documents (ids, comma separated), report (an id), or package (an id) and firm (the invited firm's name); shared_with and days only when the PM said them. report: issue (yes opens its issue form). send: documents (ids, comma separated), to and cc (addresses, or firm ids or names), subject, note (words you may draft), reply_to (a message id), issue (an issued report version id). claim: claim (its id or number)"},
+				"fields": map[string]any{"type": "object", "additionalProperties": map[string]any{"type": "string"}, "description": "award: package (a package id) and column (the firm's column id). share: kind (documents, report or package); documents (ids, comma separated), report (an id), or package (an id) and firm (the invited firm's name); shared_with and days only when the PM said them. report: issue (yes opens its issue form). send: documents (ids, comma separated), to and cc (addresses, or firm ids or names), subject, note (words you may draft), reply_to (a message id), issue (an issued report version id); for an RFI, rfi (its id or number) with to, cc and subject opens that RFI's sheet instead. claim: claim (its id or number)"},
 				"final":  map[string]any{"type": "boolean"},
 			})},
 	}
@@ -266,6 +266,10 @@ func (b *chatBox) apply(ctx context.Context, st *agent.State, input json.RawMess
 	}
 	for i, op := range ops {
 		if bad := figureCheck(op, in.Calls[i].Fields, st); bad != nil {
+			bad.Index = i
+			return refused(bad)
+		}
+		if bad := rfiAddressCheck(ctx, b.d, b.who, b.project, op.Name, in.Calls[i].Fields, st.Asked); bad != nil {
 			bad.Index = i
 			return refused(bad)
 		}

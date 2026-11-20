@@ -265,7 +265,7 @@ func (e *sendError) Error() string { return e.msg }
 // Callers keep the returned message's id on their own record.
 func queueOutbound(ctx context.Context, deps Deps, session store.Session, project string, in store.Outbound, sheet bool, note string) (store.MailMessage, error) {
 	if deps.Outbox == nil {
-		return store.MailMessage{}, &sendError{http.StatusServiceUnavailable, "Sending mail is not set up on this server, so nothing was sent."}
+		return store.MailMessage{}, &sendError{http.StatusServiceUnavailable, msgSendingOff}
 	}
 	who, err := deps.Store.MailSenderContext(ctx, session.OrgID, project, session.UserID)
 	if err != nil {
@@ -518,6 +518,9 @@ func postTransmittal(w http.ResponseWriter, r *http.Request, deps Deps) {
 	}
 	writeJSON(w, http.StatusAccepted, m)
 }
+
+// msgSendingOff is the send route's refusal when sending is not set up.
+const msgSendingOff = "Sending mail is not set up on this server, so nothing was sent."
 
 func retryTransmittal(w http.ResponseWriter, r *http.Request, deps Deps, session store.Session, project, id string) {
 	if deps.Outbox == nil {

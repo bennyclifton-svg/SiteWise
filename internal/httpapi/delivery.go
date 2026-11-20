@@ -49,7 +49,17 @@ func getDelivery(w http.ResponseWriter, r *http.Request, deps Deps) {
 		deliveryError(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, view)
+	// SendOff is why the RFI sheet's Send is off, in the send route's own
+	// words, so the button says so before it is pressed. Other refusals
+	// (an unconfirmed email, the daily cap) come back when it is pressed.
+	out := struct {
+		store.RegisterView
+		SendOff string `json:"send_off,omitempty"`
+	}{RegisterView: view}
+	if deps.Outbox == nil {
+		out.SendOff = "Sending mail is not set up on this server."
+	}
+	writeJSON(w, http.StatusOK, out)
 }
 
 // putDeliverySettings sets the project's RFI response time

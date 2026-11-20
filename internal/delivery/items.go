@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"sitewise/internal/correspondence"
 )
 
 type Content struct {
@@ -55,6 +57,29 @@ type Item struct {
 	// Transmittal is an RFI's attached documents as the RFP transmittal's
 	// rows (doc number, title, rev, date, discipline), in the order attached.
 	Transmittal [][]string `json:"transmittal,omitempty"`
+	// Thread is an RFI's mail: the message it went out on and every filed
+	// message in that thread, oldest first. Read with the register, never
+	// stored on the row.
+	Thread []ThreadMessage `json:"thread,omitempty"`
+}
+
+// ThreadMessage is one message of an RFI's thread as the sheet's history
+// shows it. Excerpt is a reply's first lines, as plain text.
+type ThreadMessage struct {
+	ID         string `json:"id"`
+	Direction  string `json:"direction"` // "out": the PM sent it; "in": a reply
+	At         string `json:"at"`
+	With       string `json:"with"` // the recipients of what went out, the sender of a reply
+	Number     *int   `json:"number,omitempty"`
+	SendStatus string `json:"send_status,omitempty"`
+	Excerpt    string `json:"excerpt,omitempty"`
+	// Documents is how many documents went out, or how many attachments a
+	// reply carried.
+	Documents int `json:"documents"`
+	// BodyDocument is the filed document a reply's text became, and Reading
+	// the possible answer that document already is on this RFI, if any.
+	BodyDocument string `json:"body_document,omitempty"`
+	Reading      string `json:"reading,omitempty"`
 }
 
 // Reading is a proposed answer to an open register row: a filed document
@@ -207,6 +232,38 @@ type RFIDetails struct {
 	// Send for an RFI). Go's: set when the PM's Send queues it, never typed.
 	// A reply in that message's thread answers the RFI by rule.
 	SentMessageID string `json:"sent_message_id,omitempty"`
+	// To, Cc and Subject are what the sheet's Send sends (register panel,
+	// 20 November 2026): saved so they survive a reload. Each address is
+	// checked as the send route checks it.
+	To      []string `json:"to,omitempty"`
+	Cc      []string `json:"cc,omitempty"`
+	Subject string   `json:"subject,omitempty"`
+}
+
+// MaxRecipients is the send route's limit (store.MailMaxRecipients): an
+// RFI keeps at most this many addresses in To and Cc together.
+const MaxRecipients = 20
+
+// checkAddressing refuses what the send route would refuse: a line break
+// or control character, an entry that is not exactly one address, more
+// than MaxRecipients in all, or a subject over the route's 300.
+func (d RFIDetails) checkAddressing() error {
+	if len(d.To)+len(d.Cc) > MaxRecipients {
+		return fmt.Errorf("an RFI goes to at most %d addresses", MaxRecipients)
+	}
+	for _, v := range append(append([]string(nil), d.To...), d.Cc...) {
+		if len(v) > 320 {
+			return fmt.Errorf("an address is too long")
+		}
+		list, err := correspondence.ParseRecipients([]string{v})
+		if err != nil || len(list) != 1 {
+			return fmt.Errorf("%q is not one email address", v)
+		}
+	}
+	if !bounded(d.Subject, 300) || correspondence.CleanHeader(d.Subject) != nil {
+		return fmt.Errorf("the subject is one line of at most 300 characters")
+	}
+	return nil
 }
 
 // NoticeDetails is what is particular to a notice. Its due date is the
@@ -296,6 +353,9 @@ func validateDetails(c Content) error {
 		}
 		if d.RaisedOn != nil && !date(*d.RaisedOn) {
 			return fmt.Errorf("invalid RFI raised date")
+		}
+		if err := d.checkAddressing(); err != nil {
+			return err
 		}
 		seen := map[string]bool{}
 		for _, id := range d.AnswerDocuments {

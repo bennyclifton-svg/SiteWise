@@ -182,6 +182,13 @@ func readScreen(ctx context.Context, d Deps, who opActor, project string, in *sc
 			parts = append(parts, "Open: document "+shortID(in.Open.ID)+".")
 		}
 	}
+	// A register row opens as a sheet in the middle panel (register panel,
+	// 20 November 2026); the list itself is in the right-hand panel.
+	if in.Open != nil && in.Open.Kind == "register" && in.Open.ID != "" {
+		if rows, err := tableRows(ctx, d, who, project, "register"); err == nil && containsID(rows, in.Open.ID) {
+			parts = append(parts, "Open: register row "+shortID(in.Open.ID)+".")
+		}
+	}
 	var sel *screenSel
 	if s := in.Selected; s != nil && len(s.IDs) > 0 {
 		t, ok := viewTables[s.Table]
