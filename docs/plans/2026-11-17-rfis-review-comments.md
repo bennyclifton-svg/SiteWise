@@ -6,6 +6,12 @@ branch `wave/register` (Tasks 1 to 7 and "From chat"; migration 066), not
 merged. What was built, measured and left open, and where the build
 differs from this text, is in `docs/evidence/2026-11-18-register-rfis.md`.
 The answer key for Question A is empty until the owner supplies it.
+Moved 20 November 2026 (owner-approved wireframe, branch
+`wave/register-panel`, not merged): the register is the right-hand panel's
+Register side, off the left nav; a row opens as a sheet in the middle
+panel; an RFI's To, Cc and Subject are saved and its Send is on the sheet;
+its history reads the RFI's mail thread with the register. See
+`docs/evidence/2026-11-20-register-panel.md`.
 
 **Revised 18 November** after the review in `2026-11-17-next-wave-index.md`.
 The register is one table with no kind tabs. "With" replaces "To". Review

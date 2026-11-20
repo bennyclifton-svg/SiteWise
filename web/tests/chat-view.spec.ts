@@ -9,7 +9,7 @@ async function say(page: Page, text: string): Promise<void> {
   const input = page.getByRole("textbox", { name: "Tell SiteWise what to change, or ask about this project" });
   await input.fill(text);
   await input.press("Enter");
-  await expect(page.getByRole("button", { name: "Send" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Chat" }).getByRole("button", { name: "Send" })).toBeVisible();
 }
 
 async function newProject(page: Page, name: string): Promise<string> {
@@ -190,9 +190,55 @@ test("the project report opens with its issue form; chat issues nothing", async 
   await expect(page.getByRole("heading", { name: "Project report No. 1", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Issue saved report", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Freeze and issue PDF", exact: true })).toBeVisible();
-  // It opened on the Register, where the report's toolbar item lives.
-  await expect(page.getByRole("button", { name: "Register", exact: true })).toHaveAttribute("aria-current", /page|true/);
+  // The reader is in the middle; the right-hand panel shows the Register,
+  // whose band holds Project report.
+  await expect(page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Register", exact: true })).toHaveAttribute("aria-selected", "true");
   const list = await (await page.request.get(`/api/projects/${id}/reports`)).json();
   const view = await (await page.request.get(`/api/reports/${list[0].id}`)).json();
   expect(view.issues).toHaveLength(0);
+});
+
+// The register in the right-hand panel (20 November 2026): show switches
+// the panel and leaves the middle view; open puts the row's sheet in the
+// middle; select acts on the list; Send for an RFI opens its sheet filled
+// in, and chat sends nothing.
+test("register: show switches the panel, open puts the sheet in the middle, Send for an RFI fills the sheet", async ({ page }) => {
+  await freshOwner(page, "chat-view-register");
+  await modelSwitch(page, true);
+  const id = await newProject(page, "Chat moves the register");
+  const add = await page.request.post(`/api/projects/${id}/ops`, { headers, data: { area: "delivery", ops: [
+    { op: "delivery.add", fields: { kind: "rfi", title: "Slab edge set-down", raised_on: "2026-11-20" } },
+    { op: "delivery.add", fields: { kind: "rfi", title: "Stair balustrade", raised_on: "2026-11-20" } }] } });
+  expect(add.ok(), await add.text()).toBeTruthy();
+  const view = await (await page.request.get(`/api/projects/${id}/delivery`)).json();
+  const slab = view.items.find((i: { title: string }) => i.title === "Slab edge set-down").id as string;
+  const stair = view.items.find((i: { title: string }) => i.title === "Stair balustrade").id as string;
+  await page.goto(`/projects/${id}?view=costs`);
+  const chat = page.getByRole("region", { name: "Chat" });
+  const tab = (name: string) => page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name, exact: true });
+  await tab("Documents").click();
+
+  await say(page, "screen show register");
+  await expect(chat).toContainText("Showed the register rows.");
+  await expect(tab("Register")).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("button", { name: "Costs", exact: true })).toHaveAttribute("aria-current", "page");
+
+  await say(page, `screen select register ${stair.slice(0, 8)}`);
+  await expect(page.locator(".register-panel tr", { hasText: "Stair balustrade" })).toHaveAttribute("aria-selected", "true");
+
+  await say(page, `screen open register ${slab.slice(0, 8)}`);
+  await expect(page.locator(".register-sheet").getByRole("heading", { name: "RFI-001 · Slab edge set-down" })).toBeVisible();
+
+  // Back to the documents; Send for the other RFI opens its sheet with the
+  // fields in, and nothing is sent.
+  await tab("Documents").click();
+  await say(page, "screen send rfi-002 to site@builder.test");
+  await expect(chat).toContainText("Opened RFI-002 to send to site@builder.test");
+  const sheet = page.locator(".register-sheet");
+  await expect(sheet.getByRole("heading", { name: "RFI-002 · Stair balustrade" })).toBeVisible();
+  await expect(sheet.getByLabel("To", { exact: true })).toHaveValue("site@builder.test");
+  await expect(sheet.getByLabel("Subject", { exact: true })).toHaveValue("RFI-002 from chat");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const sent = (await (await page.request.get("/__e2e/mail-sent")).json()).sent ?? [];
+  expect(sent.some((m: { subject: string }) => m.subject.includes("RFI-002"))).toBeFalsy();
 });

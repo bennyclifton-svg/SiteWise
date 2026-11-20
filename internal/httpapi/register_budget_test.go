@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -47,6 +48,30 @@ func TestRegisterBudget(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	// The RFI sheet's history (register panel, 20 November 2026): one RFI
+	// in ten went out by Send and has two filed replies in its thread, each
+	// with its body document and an attachment, all read with the register.
+	for _, q := range []string{
+		`INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,to_addrs,body,status,direction,thread_id,number,send_status,received_at)
+ SELECT i.org_id, i.id, i.project_id, '<out-'||i.number||'@budget>', NULL, 'sitewise@budget.test', 'eng@consult.test', 'Please answer.', 'filed', 'out', i.id, i.number, 'sent', now()-interval '1 day'
+ FROM project_delivery_items i WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.kind='rfi' AND i.number%10=2`,
+		`INSERT INTO mail_messages(org_id,id,project_id,message_id,webhook_token,sender,sender_name,body,status,direction,thread_id,received_at)
+ SELECT i.org_id, gen_random_uuid(), i.project_id, '<in-'||i.number||'-'||r||'@budget>', 'budget-'||i.number||'-'||r, 'eng@consult.test', 'Consult Eng', 'Reply '||r||E'.\nSecond line.\n\nOn Mon, PM wrote:\n> Please answer.', 'filed', 'in', i.id, now()-interval '1 hour'*r
+ FROM project_delivery_items i CROSS JOIN generate_series(1,2) r WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.kind='rfi' AND i.number%10=2`,
+		`INSERT INTO mail_parts(org_id,message_id,n,filename,sha256,document_id)
+ SELECT m.org_id, m.id, n, 'part-'||n, decode(repeat('ab',32),'hex'), CASE WHEN n=0 OR m.direction='out' THEN $3::uuid END
+ FROM mail_messages m CROSS JOIN generate_series(0,1) n WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid`,
+		`UPDATE project_delivery_items SET details = details || jsonb_build_object('sent_message_id', id::text)
+ WHERE org_id=$1::uuid AND project_id=$2::uuid AND kind='rfi' AND number%10=2`,
+	} {
+		args := []any{m.orgID, project}
+		if strings.Contains(q, "$3") {
+			args = append(args, docs["Reply"])
+		}
+		if _, err := pool.Exec(ctx, q, args...); err != nil {
+			t.Fatal(err)
+		}
+	}
 	base := "/api/projects/" + project + "/delivery"
 	samples := map[string][]int64{}
 	timed := func(path, method, url string, body []byte, want int, out any) {
@@ -56,9 +81,18 @@ func TestRegisterBudget(t *testing.T) {
 	}
 	for i := 0; i < 30; i++ {
 		var view struct {
-			Items []json.RawMessage `json:"items"`
+			Items []struct {
+				Thread []json.RawMessage `json:"thread"`
+			} `json:"items"`
 		}
 		timed("delivery_read", http.MethodGet, base, nil, http.StatusOK, &view)
+		threads := 0
+		for _, it := range view.Items {
+			threads += len(it.Thread)
+		}
+		if threads != 50*3 {
+			t.Fatalf("read %d thread messages", threads)
+		}
 		if len(view.Items) != 1000+i {
 			t.Fatalf("read %d rows", len(view.Items))
 		}

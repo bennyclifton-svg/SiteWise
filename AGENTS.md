@@ -49,8 +49,10 @@ speed, Jev only, the building as the model, and the intake budget.
 `PRODUCT.md` names the workbench. The foundation design is the origin of the
 rules above and describes the intake slice. The workbench also includes
 Profile, Cost Plan, Procurement, Specifications, Program and Register.
-Register is the left nav's former Project Plan slot: one table of what is
-owed (RFIs, notices, consent conditions and the older delivery kinds).
+Register is the right-hand panel's Register side (a Documents | Register
+switch, beside every view; off the left nav since 20 November 2026): one
+table of what is owed (RFIs, notices, consent conditions and the older
+delivery kinds), whose rows open as a sheet in the middle panel.
 Implication proposals
 stay on the project and are off the left nav.
 
@@ -127,7 +129,7 @@ approved cut-off. Evidence never satisfies a condition: only the PM's click
 does. Program gates (one hold point per gate) come through the existing
 review; their dates are Go's.
 
-The project report (Register toolbar, one per project) calls neither Jev
+The project report (the Register band, one per project) calls neither Jev
 nor the LLM: Update, comments, issue and export are Go over saved records,
 and every figure comes from the screens' own rollups (`costs.Summarize`,
 the invoice ledger, the Program engine, the procurement board, the

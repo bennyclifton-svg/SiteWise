@@ -39,7 +39,8 @@ const DOING: Record<string, string> = {
   documents: "Looking through the documents…", passages: "Reading the documents…", messages: "Checking the inbox…", view: "Moving the screen…",
 };
 // Where each table chat can name lives (internal/httpapi/chat_screen.go).
-const PLACE: Record<string, ChatPlace> = { documents: "documents", messages: "documents", cost_lines: "costs", program: "program", procurement: "procurement", register: "register", variations: "costs", claims: "costs", claim_rows: "costs" };
+// The register's list is in the right-hand panel beside every view, as the documents are.
+const PLACE: Record<string, ChatPlace> = { documents: "documents", messages: "documents", cost_lines: "costs", program: "program", procurement: "procurement", register: "documents", variations: "costs", claims: "costs", claim_rows: "costs" };
 
 /** The key Go's undo names a change by: its change id, or the Program version it left. */
 const undoKey = (c: Card) => c.undo === "program" ? `program:${c.program_version ?? ""}` : c.change_id ?? "";
@@ -85,7 +86,7 @@ function Marked({ answer, onOpenDocument }: { answer: Answer; onOpenDocument: (i
 // moveScreen makes one view event happen: the table's view is shown first,
 // then its setter is called once the table has registered. It resolves with
 // a note when the move could not be made, or "".
-async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShowDocuments: () => void): Promise<string> {
+async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShowDocuments: () => void, onShowRegister: () => void): Promise<string> {
   if (v.dialog === "award") {
     const pkg = v.fields?.package ?? "", column = v.fields?.column ?? "";
     onShow("procurement");
@@ -101,6 +102,15 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
     const dialog = await whenReady(() => dialogOf("share"));
     if (!dialog) return "Share could not be opened. Use Share… on the document, report or invited firm.";
     dialog.open(v.fields ?? {});
+    return "";
+  }
+  if (v.dialog === "send" && v.fields?.rfi) {
+    // An RFI is sent from its own sheet: it opens with To, Cc and Subject
+    // filled in, and the PM presses Send there.
+    onShowRegister();
+    const sheet = await whenReady(() => dialogOf("rfi-sheet"));
+    if (!sheet) return "The RFI could not be opened. Open it from the Register.";
+    sheet.open(v.fields);
     return "";
   }
   if (v.dialog === "send") {
@@ -134,7 +144,7 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
   }
   const place = PLACE[v.table ?? ""];
   if (!place) return "";
-  if (place === "documents") onShowDocuments(); else onShow(place);
+  if (v.table === "register") onShowRegister(); else if (place === "documents") onShowDocuments(); else onShow(place);
   hostOf(v.table ?? "")?.();
   if (v.do === "show") return "";
   const table = await whenReady(() => tableOf(v.table ?? ""));
@@ -147,9 +157,11 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
   return "";
 }
 
-export default function Chat({ projectId, view, openDocument, onShow, onShowDocuments, onOpenDocument }: {
+export default function Chat({ projectId, view, openDocument, openRegister = null, onShow, onShowDocuments, onShowRegister, onOpenDocument }: {
   projectId: string; view: WorkbenchView; openDocument: string | null;
-  onShow: (view: WorkbenchView) => void; onShowDocuments: () => void; onOpenDocument: (id: string) => void;
+  /** The register row open as a sheet in the middle panel. */
+  openRegister?: string | null;
+  onShow: (view: WorkbenchView) => void; onShowDocuments: () => void; onShowRegister: () => void; onOpenDocument: (id: string) => void;
 }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState("");
@@ -198,7 +210,7 @@ export default function Chat({ projectId, view, openDocument, onShow, onShowDocu
     setTurns(all => [...all, { key, text: typed, status: "running", doing: "Thinking…", streamed: "", cards: [], moved: [] }]);
     const fail = (message: string) => patch(key, t => ({ ...t, status: "failed", doing: "", error: message }));
     // What is on screen as Enter is pressed: ids and counts only, never titles.
-    const screen = { view, open: openDocument ? { kind: "document", id: openDocument } : undefined, selected: screenSelection(view) };
+    const screen = { view, open: openDocument ? { kind: "document", id: openDocument } : openRegister ? { kind: "register", id: openRegister } : undefined, selected: screenSelection(view) };
     try {
       const res = await fetch(`/api${base}/chat`, {
         method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
@@ -226,7 +238,7 @@ export default function Chat({ projectId, view, openDocument, onShow, onShowDocu
           else if (ev.type === "view" && ev.view) {
             const v = ev.view;
             patch(key, t => ({ ...t, doing: "", moved: [...t.moved, v.line] }));
-            void moveScreen(v, onShow, onShowDocuments).then(note => { if (note) patch(key, t => ({ ...t, error: note })); });
+            void moveScreen(v, onShow, onShowDocuments, onShowRegister).then(note => { if (note) patch(key, t => ({ ...t, error: note })); });
           }
           else if (ev.type === "undone" && ev.text) { const undone = ev.text; setTurns(all => markUndone(all, undone)); }
           else if (ev.type === "go") { const view = VIEW[ev.text ?? ""]; if (view) onShow(view); patch(key, t => ({ ...t, doing: "", answer: { text: `Opened ${AREA[ev.text ?? ""] ?? ev.text}.` } })); }

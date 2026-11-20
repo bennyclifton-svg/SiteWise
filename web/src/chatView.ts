@@ -30,7 +30,7 @@ export interface ChatTable {
   selected(): readonly string[];
 }
 
-/** Where the project report's reader opens: the Register, whose toolbar holds "Project report" (monthly plan, Task 7). */
+/** Shown before the project report opens: the right-hand panel's Register side, whose band holds "Project report" (monthly plan, Task 7). The reader itself opens in the middle panel. */
 export const REPORT_PLACE: WorkbenchView = "register";
 
 export interface ChatDialog {

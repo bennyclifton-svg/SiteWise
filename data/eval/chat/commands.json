@@ -2439,9 +2439,9 @@
    "group": "register",
    "fixture": "house",
    "message": "Set these to the building envelope",
-   "note": "RFI-002 selected by hand: exactly that row moves; RFI-001 was already on the envelope.",
+   "note": "RFI-002 selected by hand in the Register beside the Profile (the list is in the right-hand panel since 20 November 2026): exactly that row moves; RFI-001 was already on the envelope.",
    "screen": {
-    "view": "register",
+    "view": "profile",
     "selected": {
      "table": "register",
      "rows": [
@@ -2508,6 +2508,48 @@
      "has": [
       "RFI response time 10 working days, on"
      ]
+    }
+   ]
+  },
+  {
+   "id": "rg9",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Open RFI-001",
+   "note": "view open on the register: the RFI's sheet opens in the middle panel; the view beside it does not change.",
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "register",
+     "do": "open",
+     "rows": [
+      "RFI-001"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "rg10",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Send RFI-002 to eng@northline.example",
+   "note": "Send for an RFI opens its own sheet with To filled in; its documents are its transmittal and its question the note. Nothing is sent until the PM presses Send.",
+   "expect": [
+    {
+     "kind": "opens",
+     "dialog": "send",
+     "fields": {
+      "rfi": "RFI-002",
+      "to": "eng@northline.example"
+     }
+    },
+    {
+     "kind": "not_applied"
     }
    ]
   },
@@ -2909,9 +2951,9 @@
    "group": "conditions",
    "fixture": "house",
    "message": "Give these to the landscape architect",
-   "note": "Condition 14 selected by hand: who acts changes at once, with Undo; the condition's number and words do not.",
+   "note": "Condition 14 selected by hand in the Register beside the Profile: who acts changes at once, with Undo; the condition's number and words do not.",
    "screen": {
-    "view": "register",
+    "view": "profile",
     "selected": {
      "table": "register",
      "rows": [

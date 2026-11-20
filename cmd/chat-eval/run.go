@@ -232,6 +232,10 @@ func (n *names) view(v agent.View) chateval.View {
 		if id := v.Fields["reply_to"]; id != "" {
 			out.Fields["reply_to"] = n.name("messages", id)
 		}
+		// An RFI is sent from its sheet: named by its number.
+		if id := v.Fields["rfi"]; id != "" {
+			out.Fields["rfi"] = n.name("register", id)
+		}
 	case "claim":
 		out.Fields = map[string]string{"claim": n.name("claims", v.Fields["claim"])}
 	case "report":

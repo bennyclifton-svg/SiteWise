@@ -56,7 +56,7 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await expect(wall).not.toContainText("Not from your team", { timeout: 10_000 });
 
   // Back to documents: the accepted body landed as a document.
-  await page.getByRole("tab", { name: "Documents" }).click();
+  await page.getByRole("tablist", { name: "Repository" }).getByRole("tab", { name: "Documents" }).click();
   await expect(page.locator(".reg-doc").filter({ hasText: "Wall detail" })).toHaveCount(1, { timeout: 15_000 });
 
   // Send… from the documents' right-click menu: the sink gets it, the record shows Out.
@@ -101,3 +101,70 @@ async function messageID(request: APIRequestContext, project: string, id: string
   const body = await res.json();
   return body.message_id ?? "";
 }
+
+// The register panel (20 November 2026): an RFI goes out from its sheet
+// through the one send route, with its To, its question as the note and
+// its transmittal; the engineer's reply joins its history and is used as
+// the answer. The screenshots are the evidence note's.
+test("an RFI sent from its sheet, its reply in the history, used as the answer", async ({ page }) => {
+  await page.setViewportSize({ width: 1650, height: 920 });
+  const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
+  await page.goto(`/#token=${token}`);
+  await page.request.post("/__e2e/age-accounts");
+  await page.getByLabel("New project").fill("Seven Hills house");
+  await page.getByRole("button", { name: "Create project", exact: true }).click();
+  await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
+  const project = new URL(page.url()).pathname.split("/").pop()!;
+  const address = (await page.locator(".mail-address code").innerText()).trim();
+  const add = await page.request.post(`/api/projects/${project}/ops`, { headers: origin, data: { area: "delivery", ops: [
+    { op: "delivery.add", fields: { kind: "rfi", title: "Basement wall waterproofing membrane", raised_on: "2026-11-20", owner_text: "MBM Structural", question: "Please confirm the membrane to the basement walls and its laps at the footing." } },
+    { op: "delivery.add", fields: { kind: "rfi", title: "Stair balustrade height at landing", raised_on: "2026-11-20" } }] } });
+  expect(add.ok(), await add.text()).toBeTruthy();
+  await page.reload();
+
+  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Register" }).click();
+  await page.locator(".register-panel tr", { hasText: "Basement wall waterproofing" }).locator('td[data-field="title"]').click();
+  const sheet = page.locator(".register-sheet");
+  await sheet.getByLabel("To", { exact: true }).fill("eng@mbm.test");
+  await sheet.getByLabel("Question", { exact: true }).click();
+  // A seeded document has no stored bytes to attach, so this one goes with
+  // none; the transmittal from the Documents side is delivery.spec's.
+  const send = sheet.getByRole("button", { name: "Send", exact: true });
+  await expect(send).toHaveAttribute("title", "Send to 1 address with 0 documents");
+  await send.click();
+  await expect(sheet.locator(".register-send-what")).toHaveText("Sent as TR-001. It is in Messages.");
+  await expect.poll(async () => ((await (await page.request.get("/__e2e/mail-sent")).json()).sent ?? []).some((m: { subject: string; to: string[] }) => m.subject === "RFI-001 Basement wall waterproofing membrane" && m.to.includes("eng@mbm.test")), { timeout: 10_000 }).toBeTruthy();
+  const history = sheet.getByRole("list", { name: "History" });
+  await expect(history.locator('li[data-kind="sent"]')).toContainText("Sent to eng@mbm.test · 0 documents · TR-001");
+
+  // The engineer replies in the thread: it files and joins the history.
+  const record = await (await page.request.get(`/api/projects/${project}/mail`)).json();
+  const tr = record.messages.find((m: { subject: string }) => m.subject.startsWith("RFI-001"));
+  const reply = await mailgun(page.request, address, "eng@mbm.test", {
+    From: "MBM Structural <eng@mbm.test>", To: address, Subject: "Re: RFI-001 Basement wall waterproofing membrane",
+    Body: "Use the sheet membrane, laps 150 mm.\nTurn it 300 mm up the wall.\n\nOn Thu, PM wrote:\n> Please confirm", MessageID: `<${randomUUID()}@mbm.test>`,
+    InReplyTo: await messageID(page.request, project, tr.id),
+  });
+  expect(reply.status()).toBe(200);
+  await expect(async () => {
+    await page.reload();
+    await page.locator(".register-panel tr", { hasText: "Basement wall waterproofing" }).locator('td[data-field="title"]').click();
+    await expect(history.locator('li[data-kind="reply"]')).toContainText("Reply from MBM Structural", { timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+  await expect(history.locator('li[data-kind="reply"] .register-quote')).toHaveText("Use the sheet membrane, laps 150 mm.\nTurn it 300 mm up the wall.");
+  await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-register.png" });
+  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Documents" }).click();
+  await history.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-documents.png" });
+
+  // Use as the answer: the reply is the answer and the RFI is with the PM.
+  await history.locator('li[data-kind="reply"]').getByRole("button", { name: "Use as the answer" }).click();
+  await expect(history.locator('li[data-kind="reply"]')).toHaveAttribute("data-tone", "answer");
+  await expect(sheet.locator(".register-sheet-head .register-status")).toHaveText("Answered · with you");
+  await expect(history.locator("li").last()).toContainText("→ Answered");
+  await history.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-answered.png" });
+  // "Open the reply" opens it in the repository's Messages.
+  await history.locator('li[data-kind="reply"]').getByRole("button", { name: "Open the reply" }).click();
+  await expect(page.getByRole("tablist", { name: "Repository" }).getByRole("tab", { name: "Messages" })).toHaveAttribute("aria-selected", "true");
+});

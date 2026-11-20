@@ -34,13 +34,12 @@ const VIEWS: { id: WorkbenchView; label: string; name?: string; icon: NavIcon; t
   { id: "procurement", label: "Procurement", tone: "brass", icon: { line: "M9 3.5h10v13M5 7.5h10v13H5zM7.5 14l2 2 3.5-4", wash: "M5 7.5h10v13H5z" } },
   // A drawing sheet with its title block.
   { id: "specifications", label: "Specifications", tone: "blue", icon: { line: "M3.5 4.5h17v15h-17zM13 15h7.5M13 15v4.5M6.5 8h8M6.5 11h5", wash: "M13 15h7.5v4.5H13z" } },
-  // The register: what is owed on the project (RFIs, notices and the older
-  // delivery kinds), in the slot the Project Plan placeholder held.
-  { id: "register", label: "Register", tone: "report", icon: { line: "M6 3h12v18H6zM9 3v18M12.5 16v-2M15 16v-5" } },
+  // The register is in the right-hand panel, beside every view, since
+  // 20 November 2026: "register" here means that panel's Register side.
 ];
 
 /** A view's name as the nav shows it, for a Back button that returns to it. */
-export const viewLabel = (view: WorkbenchView): string => VIEWS.find(v => v.id === view)?.label ?? "";
+export const viewLabel = (view: WorkbenchView): string => VIEWS.find(v => v.id === view)?.label ?? (view === "register" ? "Register" : "");
 
 export function LeftNav({ projects, currentId, navigate, view, onView, marks }: Props) {
   const [open, setOpen] = useState(false);

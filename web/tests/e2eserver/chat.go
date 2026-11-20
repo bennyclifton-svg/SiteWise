@@ -23,6 +23,7 @@ import (
 //	                are listed first with the documents tool)
 //	"screen award FIRM"  the award dialog on that firm's column
 //	"screen report [issue]"  the project report, with its issue form
+//	"screen send rfi-001 to ADDRESS"  an RFI's sheet, To and Subject filled in
 //	"exclude these" set_lines on the cost lines the screen line selects
 //	"filter DO TABLE NAME"  a view call with a named filter, final
 //	"show the cost lines with no budget"  filter only cost_lines no_budget
@@ -74,6 +75,10 @@ func (chatScript) Converse(_ context.Context, conv llm.Conversation, onText func
 		}
 		if strings.HasPrefix(pm, "screen award ") {
 			return awardCall(pm, text)
+		}
+		// "screen send rfi-001 to ADDRESS": the RFI's sheet, filled in.
+		if m := regexp.MustCompile(`^screen send (rfi-\d+) to (\S+)$`).FindStringSubmatch(pm); m != nil {
+			return call("view", map[string]any{"do": "open", "dialog": "send", "fields": map[string]string{"rfi": m[1], "to": m[2], "subject": strings.ToUpper(m[1]) + " from chat"}, "final": true})
 		}
 		if strings.Contains(pm, " documents ") {
 			return call("documents", map[string]any{})
@@ -154,6 +159,11 @@ func call(name string, input map[string]any) (llm.Turn, error) {
 func idsNamed(text string, names []string) []string {
 	var ids []string
 	for _, n := range names {
+		// A short id typed by the test itself, for tables the outline lacks.
+		if n = strings.TrimSpace(n); regexp.MustCompile(`^[0-9a-f]{8}$`).MatchString(n) {
+			ids = append(ids, n)
+			continue
+		}
 		re := regexp.MustCompile(`(?mi)^\s*([0-9a-f]{8})(?: \|)? ` + regexp.QuoteMeta(strings.TrimSpace(n)) + `\b`)
 		if m := re.FindStringSubmatch(text); m != nil {
 			ids = append(ids, m[1])

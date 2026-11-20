@@ -36,7 +36,19 @@ function sizeWords(bytes: number) {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-const split = (s?: string) => (s ?? "").split(",").map(x => x.trim()).filter(Boolean);
+/** The organisation's firms with an address, offered under To and Cc as
+ * "Name <address>" (the RFI sheet uses the same list). */
+export function FirmAddresses({ id }: { id: string }) {
+  const [firms, setFirms] = useState<{ name: string; email: string }[]>([]);
+  useEffect(() => {
+    request<{ firms?: { name: string; email: string }[] } | { name: string; email: string }[]>("GET", "/firms")
+      .then(body => setFirms((Array.isArray(body) ? body : body.firms ?? []).filter(f => f.email)))
+      .catch(() => setFirms([]));
+  }, []);
+  return <datalist id={id}>{firms.map(f => <option key={f.email} value={`${f.name} <${f.email}>`} />)}</datalist>;
+}
+
+export const split = (s?: string) => (s ?? "").split(",").map(x => x.trim()).filter(Boolean);
 
 export function SendDialog({ projectId, projectName, fields, documentOf, onSent, onClose }: {
   projectId: string;
@@ -51,15 +63,8 @@ export function SendDialog({ projectId, projectName, fields, documentOf, onSent,
   const [subject, setSubject] = useState(fields.subject ?? `${projectName} transmittal`);
   const [note, setNote] = useState(fields.note ?? "");
   const [docs, setDocs] = useState<string[]>(split(fields.documents));
-  const [firms, setFirms] = useState<{ name: string; email: string }[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    request<{ firms?: { name: string; email: string }[] } | { name: string; email: string }[]>("GET", "/firms")
-      .then(body => setFirms((Array.isArray(body) ? body : body.firms ?? []).filter(f => f.email)))
-      .catch(() => setFirms([]));
-  }, []);
 
   const known = docs.map(id => documentOf(id) ?? { id, name: "Document" });
   const total = known.reduce((n, d) => n + (d.size ?? 0), 0);
@@ -90,7 +95,7 @@ export function SendDialog({ projectId, projectName, fields, documentOf, onSent,
         <input id="send-to" className="input" list="send-firms" value={to} placeholder="name@example.com, another@example.com" onChange={e => setTo(e.target.value)} />
         <label htmlFor="send-cc">Cc</label>
         <input id="send-cc" className="input" list="send-firms" value={cc} placeholder="You are copied in" onChange={e => setCc(e.target.value)} />
-        <datalist id="send-firms">{firms.map(f => <option key={f.email} value={`${f.name} <${f.email}>`} />)}</datalist>
+        <FirmAddresses id="send-firms" />
         <label htmlFor="send-subject">Subject</label>
         <input id="send-subject" className="input" maxLength={300} value={subject} onChange={e => setSubject(e.target.value)} />
         <label htmlFor="send-note">Note</label>

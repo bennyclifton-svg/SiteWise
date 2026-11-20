@@ -1,14 +1,15 @@
 import { expect, test } from "@playwright/test";
 
 // The project report (docs/plans/2026-11-17-monthly-report.md, Task 7):
-// open it from the Register's toolbar, Update, comment, issue and download.
+// open it from the band of the right-hand panel's Register side, in the
+// middle panel; Update, comment, issue and download.
 test("project report: open, update, comment, issue and download", async ({ page }) => {
   page.on("pageerror", error => { throw error; });
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Project report check");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
-  await page.getByRole("button", { name: "Register", exact: true }).click();
+  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Register", exact: true }).click();
   const project = new URL(page.url()).pathname.split("/").pop();
 
   // A double click opens one report.
@@ -56,7 +57,8 @@ test("project report: open, update, comment, issue and download", async ({ page 
   await expect(link).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 
-  // Back returns to the Register.
-  await page.getByRole("button", { name: "Back to Register", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Register", exact: true })).toBeVisible();
+  // Back returns to the view the middle panel had; the Register stays beside it.
+  await page.getByRole("button", { name: "Back to Project Profile", exact: true }).click();
+  await expect(page.getByRole("region", { name: "Project profile" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Register" })).toBeVisible();
 });

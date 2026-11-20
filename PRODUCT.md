@@ -80,7 +80,14 @@ The workbench, in navigation order:
   click, add, copy, split, delete, drag) and the user's word is final.
 - **Register.** One table of what is owed on the project: RFIs, notices,
   consent conditions and the older delivery kinds (actions, risks, issues, decisions, approvals,
-  accepted hold points), each with No., Item, With, Due, Status and System.
+  accepted hold points). It is the right-hand panel's Register side, beside
+  every view (a Documents | Register switch, remembered per viewer), in four
+  columns: No., Item (with its status chip), With and Due; System is a
+  filter. A row opens as one sheet in the middle panel. An RFI's sheet holds
+  To, Cc, Subject and Raised, its question, its transmittal and its history
+  (raised, each status change, what went out and each reply in its thread,
+  the answer), and one Send that goes through the same route and checks as
+  the Send dialog; To, Cc and Subject are saved on the RFI.
   An RFI typed in the grey row is numbered (RFI-007) and due five working
   days on (the Program's calendar; the PM sets the project's own in the
   three-dot menu). With is who holds it now: the firm, or You once it is

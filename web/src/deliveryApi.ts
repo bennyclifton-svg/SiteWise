@@ -17,12 +17,34 @@ export interface DeliveryRecord extends DeliveryContent {
   number?: number; with?: string; late_days?: number; readings?: Reading[];
   /** An RFI's attached documents as the RFP transmittal's rows (Go). */
   transmittal?: string[][];
+  /** An RFI's mail: what went out and the filed replies in its thread, oldest first (Go). */
+  thread?: ThreadMessage[];
   provenance: { actor?: string; at?: string; last_edited_by?: string; last_edited_at?: string; proposal?: { kind: string; draft: boolean; label: string };
     sources?: { document_id?: string; filename?: string; excerpt?: string; page?: number }[];
-    status_history?: { from: string; status: string; at: string }[];
+    status_history?: { from: string; status: string; at: string; from_kind?: string; kind?: string }[];
+    initial_status?: string;
     // A consent condition's reading and the notices that wrote it (plan 6).
     reading?: { fields?: Record<string, { value: string; band: string; decided_by: string }> };
     flag?: string; deferred_commencement?: boolean };
+}
+/** One message of an RFI's thread, as the sheet's history shows it. */
+export interface ThreadMessage {
+  id: string; direction: "in" | "out"; at: string;
+  /** The recipients of what went out; the sender of a reply. */
+  with: string;
+  number?: number; send_status?: "" | "queued" | "sent" | "failed";
+  /** A reply's first lines, plain text. */
+  excerpt?: string;
+  /** Documents that went out, or a reply's attachments. */
+  documents: number;
+  /** The document a reply's text was filed as, and its possible answer on this RFI. */
+  body_document?: string; reading?: string;
+}
+/** What is particular to an RFI. To, Cc and Subject are what its sheet sends. */
+export interface RFIDetails {
+  question?: string; answer?: string; ref?: string; raised_by?: string; raised_on?: string | null;
+  answer_documents?: string[]; due_typed?: boolean; sent_message_id?: string;
+  to?: string[]; cc?: string[]; subject?: string;
 }
 /** A consent condition's details: the notice's own number and words, and what the PM edits. */
 export interface ConditionDetails {
@@ -42,6 +64,8 @@ export interface RegisterView {
   response_days: number; response_typical: boolean; calendar: "program" | "weekdays"; today: string;
   systems: { id: string; label: string }[]; also_open?: AlsoOpen;
   consents?: ConsentRead[]; consent?: { number?: string; date?: string; lapse_date?: string };
+  /** Why the RFI sheet's Send is off on this server, in Go's words; absent when sending is set up. */
+  send_off?: string;
 }
 /** The register's gates in project order, and their Due words. */
 export const GATES: [string, string][] = [["before_cc", "Before CC"], ["before_work", "Before work starts"], ["during_works", "During works"],

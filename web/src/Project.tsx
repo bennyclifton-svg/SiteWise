@@ -36,12 +36,34 @@ import { MailRepository } from "./MailIn";
 import { SendHost } from "./SendDialog";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
-import { Delivery } from "./Delivery";
+import { RegisterPanel } from "./Delivery";
+import { RegisterSheet, rowLabel, type SheetFill } from "./RegisterSheet";
+import { useRegisterData } from "./registerData";
+import { Reports } from "./Reports";
+import { useProjectReportDialog } from "./ProjectReportButton";
+import { hostOf, registerDialog, registerHost, tableOf, whenReady } from "./chatView";
 import { newerAnnouncement, type RemoteProgram } from "./programApi";
 import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
+// The right-hand panel's side, remembered for this viewer only.
+const RIGHT_TAB_KEY = "sitewise.workbench.rightPanel.v1";
+type RightTab = "documents" | "register";
+function readRightTab(): RightTab | null {
+  try { const v = localStorage.getItem(RIGHT_TAB_KEY); return v === "documents" || v === "register" ? v : null; } catch { return null; }
+}
+function storeRightTab(tab: RightTab) {
+  try { localStorage.setItem(RIGHT_TAB_KEY, tab); } catch { /* private window: the choice lasts this visit */ }
+}
+
+/** The right-hand panel's switch: the repository or the register. */
+function PanelSwitch({ tab, onTab }: { tab: RightTab; onTab: (tab: RightTab) => void }) {
+  return <div className="mail-toggle panel-switch" role="tablist" aria-label="Right panel">
+    <button type="button" role="tab" aria-selected={tab === "documents"} onClick={() => onTab("documents")}>Documents</button>
+    <button type="button" role="tab" aria-selected={tab === "register"} onClick={() => onTab("register")}>Register</button>
+  </div>;
+}
 const UPLOAD_CONCURRENCY = 4;
 const ACCEPT = ".pdf,.docx,.xlsx,.md,.markdown";
 
@@ -262,7 +284,17 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [profileRun, setProfileRun] = useState<ProfileRunState | null>(null);
   const [visitedSinceRun, setVisitedSinceRun] = useState<Partial<Record<WorkbenchView, boolean>>>({});
   const [profileFeedbackTarget, setProfileFeedbackTarget] = useState<HTMLDivElement | null>(null);
-  const [initialView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program", "register"], "profile"));
+  // A link from before the register moved to the right-hand panel may still
+  // say view=register: it opens the Profile with the Register beside it.
+  const [linkedView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program", "register"], "profile"));
+  const initialView: WorkbenchView = linkedView === "register" ? "profile" : linkedView;
+  const [rightTab, setRightTabState] = useState<RightTab>(() => linkedView === "register" ? "register" : readRightTab() ?? "documents");
+  const [registerOn, setRegisterOn] = useState(rightTab === "register");
+  // The register row open as a sheet in the middle panel, and the project
+  // report open in its reader there; either covers the view until closed.
+  const [registerItem, setRegisterItem] = useState<string | null>(null);
+  const [projectReport, setProjectReport] = useState<string | null>(null);
+  const [sheetFill, setSheetFill] = useState<SheetFill | undefined>();
   const [repositoryOpenRequest, setRepositoryOpenRequest] = useState(0);
   const [documentSelection, setDocumentSelection] = useState<Selection>(emptySelection);
   const [showReports, setShowReports] = useState(initialView === "procurement");
@@ -277,8 +309,6 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [reportsOpened, setReportsOpened] = useState(initialView === "procurement");
   const [showProgram, setShowProgram] = useState(initialView === "program");
   const [programOpened, setProgramOpened] = useState(initialView === "program");
-  const [showRegister, setShowRegister] = useState(initialView === "register");
-  const [registerOpened, setRegisterOpened] = useState(initialView === "register");
   // "Raise RFI from this document" on the document register: the request
   // the Register screen turns into a draft RFI.
   const [raiseRFI, setRaiseRFI] = useState<{ documentId: string; title: string; n: number } | null>(null);
@@ -679,9 +709,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
 
   const viewingRow = rows.find(row => row.key === openDocument);
 
-  const view: WorkbenchView = showRegister
-    ? "register"
-    : showProgram
+  const view: WorkbenchView = showProgram
     ? "program"
     : showSpecifications
     ? "specifications"
@@ -691,19 +719,21 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
         ? "procurement"
         : "profile";
 
+  const setRightTab = useCallback((tab: RightTab) => {
+    setRightTabState(tab);
+    storeRightTab(tab);
+    if (tab === "register") setRegisterOn(true);
+  }, []);
+  // The Register side of the right-hand panel; the middle keeps its view.
+  const showRegisterPanel = useCallback(() => { setRightTab("register"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
+  const showDocumentsPanel = useCallback(() => { setRightTab("documents"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
   const showView = (next: WorkbenchView) => {
+    if (next === "register") { showRegisterPanel(); return; }
     setVisitedSinceRun((seen) => ({ ...seen, [next]: true }));
     writeLocationChoice("view", next);
     setOpenDocument(null);
-    setShowRegister(next === "register");
-    if (next === "register") {
-      setRegisterOpened(true);
-      setShowProgram(false);
-      setShowSpecifications(false);
-      setShowCosts(false);
-      setShowReports(false);
-      return;
-    }
+    setRegisterItem(null);
+    setProjectReport(null);
     setShowProgram(next === "program");
     if (next === "program") {
       setProgramOpened(true);
@@ -769,12 +799,39 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   }, [reading, readDocs, runDocs, state.projectName]);
   const documentLabel = useCallback((id: string) => docsRef.current[id]?.number || docsRef.current[id]?.filename || "", []);
 
+  // A mail event reads it again too: a reply joins its RFI's history.
+  const register = useRegisterData(projectId, reportTick + mailTick, registerOn || !!registerItem, onSignedOut);
+  const openRegisterItem = useCallback((id: string) => { setRegisterOn(true); setOpenDocument(null); setProjectReport(null); setRegisterItem(id); }, []);
+  // The project report opens in the middle, from the Register's band or chat.
+  useProjectReportDialog(id => { setOpenDocument(null); setProjectReport(id); });
+  // Chat's Send for an RFI opens its sheet with To, Cc and Subject filled in.
+  useEffect(() => registerDialog("rfi-sheet", { open: f => {
+    if (!f.rfi) return;
+    setSheetFill(prev => ({ n: (prev?.n ?? 0) + 1, to: f.to, cc: f.cc, subject: f.subject, warning: f.warning }));
+    openRegisterItem(f.rfi);
+  } }), [openRegisterItem]);
+  useEffect(() => registerHost("register", showRegisterPanel), [showRegisterPanel]);
+  useEffect(() => registerHost("documents", showDocumentsPanel), [showDocumentsPanel]);
+  const closeSheet = useCallback(() => { setRegisterItem(null); setSheetFill(undefined); }, []);
+  // A message of an RFI's thread opens in the repository's Messages.
+  const openMessage = useCallback(async (id: string) => {
+    showDocumentsPanel();
+    hostOf("messages")?.();
+    const messages = await whenReady(() => tableOf("messages"));
+    messages?.open?.(id);
+  }, [showDocumentsPanel]);
+  const transmittal = { selectedIds: documentSelection.ids, onSelectDocuments: (ids: readonly string[]) => setDocumentSelection(selectDocumentRows(ids)),
+    onShowDocuments: (ids: readonly string[]) => { setNotReadOnly(false); showDocumentsPanel(); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } };
+  const openRow = registerItem ? register.rowOf(registerItem) : undefined;
+  const middleLabel = registerItem ? (openRow ? rowLabel(openRow) : "Register") : viewLabel(view);
+  const covered = !!viewingRow || !!projectReport || !!registerItem;
+
   const nav = (
     <LeftNav projects={projects} currentId={projectId} navigate={navigate} view={view} onView={showView} marks={navMarks} />
   );
-  const register = (
+  const documentsList = (
     <Register
-      onRaiseRFI={(documentId, title) => { setRaiseRFI(r => ({ documentId, title, n: (r?.n ?? 0) + 1 })); showView("register"); }}
+      onRaiseRFI={(documentId, title) => { setRaiseRFI(r => ({ documentId, title, n: (r?.n ?? 0) + 1 })); showRegisterPanel(); }}
       rows={rows}
       selection={documentSelection}
       onSelectionChange={setDocumentSelection}
@@ -792,9 +849,22 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onOpen={setOpenDocument}
     />
   );
+  const panelSwitch = <PanelSwitch tab={rightTab} onTab={setRightTab} />;
+  // The right-hand panel: Documents (the repository, as it was) or the
+  // Register. Each side stays mounted once opened, so its filters and
+  // selection survive the switch.
   const repository = (
-    <MailRepository projectId={projectId} tick={mailTick} documents={register}
-      onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} />
+    <>
+      <div className="panel-side" hidden={rightTab !== "documents"}>
+        <div className="panel-band">{panelSwitch}</div>
+        <MailRepository projectId={projectId} tick={mailTick} documents={documentsList}
+          onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} />
+      </div>
+      {registerOn && <div className="panel-side" hidden={rightTab !== "register"}>
+        <RegisterPanel data={register} shown={rightTab === "register"} switcher={panelSwitch} projectId={projectId} raise={raiseRFI} openId={registerItem}
+          onOpen={openRegisterItem} onOpenReport={id => { setOpenDocument(null); setProjectReport(id); }} onSignedOut={onSignedOut} onShowView={showView} documents={registerDocuments} />
+      </div>}
+    </>
   );
 
   if (state.phase === "loading") {
@@ -835,16 +905,16 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   return (
     <CockpitFrame
       nav={nav}
-      actionSurface={viewingRow ? "document" : showRegister ? "register" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
+      actionSurface={viewingRow ? "document" : projectReport || registerItem ? "register" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
       onRename={async name => { await request("PATCH", `/projects/${projectId}`, { name }); dispatch({ type: "renamed", name }); onRenamed(projectId, name); }}
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
       repositoryOpenRequest={repositoryOpenRequest}
-      wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram || showRegister)}
+      wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram || !!projectReport || !!registerItem)}
       profileFeedbackRef={setProfileFeedbackTarget}
-      showProfileFeedback={!viewingRow && !showSpecifications && !showReports && !showCosts && !showProgram && !showRegister}
-      chat={<Suspense fallback={null}><Chat projectId={projectId} view={view} openDocument={viewingRow?.doc?.id ?? null} onShow={showView} onShowDocuments={() => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); }} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
+      showProfileFeedback={!covered && !showSpecifications && !showReports && !showCosts && !showProgram}
+      chat={<Suspense fallback={null}><Chat projectId={projectId} view={view} openDocument={viewingRow?.doc?.id ?? null} openRegister={!viewingRow ? registerItem : null} onShow={showView} onShowRegister={showRegisterPanel} onShowDocuments={() => { setNotReadOnly(false); showDocumentsPanel(); }} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
       onDragEnter={onDragEnter}
       onDragOverCapture={e => { if ((e.target as HTMLElement).closest("[data-proposal-drop]")) { dragDepth.current = 0; setOver(false); } }}
       onDropCapture={() => { dragDepth.current = 0; setOver(false); }}
@@ -854,18 +924,20 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDrop={onDrop}
     >
       <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
-      <section className="profile-col" aria-label="Project profile" hidden={!!viewingRow || showSpecifications || showReports || showCosts || showProgram || showRegister}>
+      <section className="profile-col" aria-label="Project profile" hidden={covered || showSpecifications || showReports || showCosts || showProgram}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget}
           documentLabel={documentLabel} onRunState={setProfileRun} onOpenView={showView} />
       </section>
-      {costsOpened && <div className="project-reports" hidden={!!viewingRow || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
-      {specificationsOpened && <div className="project-reports" hidden={!!viewingRow || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
-      {programOpened && <div className="project-reports" hidden={!!viewingRow || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !viewingRow} onSignedOut={onSignedOut} /></div>}
-      {reportsOpened && <div className="project-reports" hidden={!!viewingRow || !showReports}><Procurement transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
-      {registerOpened && <div className="project-reports" hidden={!!viewingRow || !showRegister}><Delivery projectId={projectId} tick={reportTick} readerTick={readerTick} raise={raiseRFI} onSignedOut={onSignedOut} onShowView={showView}
-        onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} documents={registerDocuments}
-        transmittal={{ selectedIds: documentSelection.ids, onSelectDocuments: ids => setDocumentSelection(selectDocumentRows(ids)), onShowDocuments: ids => { setNotReadOnly(false); setRepositoryOpenRequest(n => n + 1); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } }} /></div>}
-      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={viewLabel(view)} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
+      {costsOpened && <div className="project-reports" hidden={covered || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
+      {specificationsOpened && <div className="project-reports" hidden={covered || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
+      {programOpened && <div className="project-reports" hidden={covered || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !covered} onSignedOut={onSignedOut} /></div>}
+      {reportsOpened && <div className="project-reports" hidden={covered || !showReports}><Procurement transmittal={transmittal} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
+      {projectReport && !viewingRow && <div className="project-reports"><Reports key={projectReport} reportId={projectReport} tick={reportTick + readerTick} backTo={middleLabel === "Register" ? viewLabel(view) : middleLabel} surface="register"
+        onBack={() => { setProjectReport(null); register.reload(); }} onSignedOut={onSignedOut} /></div>}
+      {registerItem && !projectReport && !viewingRow && <div className="project-reports"><RegisterSheet data={register} id={registerItem} projectId={projectId} backTo={viewLabel(view)} onClose={closeSheet}
+        documents={registerDocuments} transmittal={transmittal} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} onOpenMessage={id => void openMessage(id)}
+        onSent={() => setMailTick(n => n + 1)} fill={sheetFill} /></div>}
+      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={projectReport ? "Project report" : middleLabel} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
       }} />}
