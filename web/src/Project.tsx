@@ -32,7 +32,7 @@ import { Register } from "./Register";
 import { DocumentWorkspace } from "./DocumentWorkspace";
 import { Procurement } from "./Procurement";
 import { ShareHost } from "./ShareDialog";
-import { MailRepository } from "./MailIn";
+import { MailRepository, type MailState } from "./MailIn";
 import { SendHost } from "./SendDialog";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
@@ -41,7 +41,7 @@ import { RegisterSheet, rowLabel, type SheetFill } from "./RegisterSheet";
 import { useRegisterData } from "./registerData";
 import { Reports } from "./Reports";
 import { useProjectReportDialog } from "./ProjectReportButton";
-import { hostOf, registerDialog, registerHost, tableOf, whenReady } from "./chatView";
+import { registerDialog, registerHost, tableOf, whenReady } from "./chatView";
 import { newerAnnouncement, type RemoteProgram } from "./programApi";
 import { SpecificationSchedule as Specifications } from "./SpecificationSchedule";
 import { ocrStage } from "./OCRStatus";
@@ -49,18 +49,20 @@ import { ocrStage } from "./OCRStatus";
 const STALE_MS = 8000;
 // The right-hand panel's side, remembered for this viewer only.
 const RIGHT_TAB_KEY = "sitewise.workbench.rightPanel.v1";
-type RightTab = "documents" | "register";
+type RightTab = "documents" | "messages" | "register";
 function readRightTab(): RightTab | null {
-  try { const v = localStorage.getItem(RIGHT_TAB_KEY); return v === "documents" || v === "register" ? v : null; } catch { return null; }
+  try { const v = localStorage.getItem(RIGHT_TAB_KEY); return v === "documents" || v === "messages" || v === "register" ? v : null; } catch { return null; }
 }
 function storeRightTab(tab: RightTab) {
   try { localStorage.setItem(RIGHT_TAB_KEY, tab); } catch { /* private window: the choice lasts this visit */ }
 }
 
-/** The right-hand panel's switch: the repository or the register. */
-function PanelSwitch({ tab, onTab }: { tab: RightTab; onTab: (tab: RightTab) => void }) {
+/** The right-hand panel's switch: the documents, the project's messages
+ * (only when it has mail: intake on, or any message), or the register. */
+function PanelSwitch({ tab, onTab, mail }: { tab: RightTab; onTab: (tab: RightTab) => void; mail: MailState }) {
   return <div className="mail-toggle panel-switch" role="tablist" aria-label="Right panel">
     <button type="button" role="tab" aria-selected={tab === "documents"} onClick={() => onTab("documents")}>Documents</button>
+    {mail.available && <button type="button" role="tab" aria-selected={tab === "messages"} onClick={() => onTab("messages")}>Messages{mail.held > 0 ? <span className="panel-switch-held"> · {mail.held} held</span> : null}</button>}
     <button type="button" role="tab" aria-selected={tab === "register"} onClick={() => onTab("register")}>Register</button>
   </div>;
 }
@@ -290,6 +292,10 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const initialView: WorkbenchView = linkedView === "register" ? "profile" : linkedView;
   const [rightTab, setRightTabState] = useState<RightTab>(() => linkedView === "register" ? "register" : readRightTab() ?? "documents");
   const [registerOn, setRegisterOn] = useState(rightTab === "register");
+  // Whether the project has mail, from the repository's read; a remembered
+  // Messages side on a project without it shows the Documents.
+  const [mail, setMail] = useState<MailState>({ available: false, held: 0 });
+  const side: RightTab = rightTab === "messages" && !mail.available ? "documents" : rightTab;
   // The register row open as a sheet in the middle panel, and the project
   // report open in its reader there; either covers the view until closed.
   const [registerItem, setRegisterItem] = useState<string | null>(null);
@@ -727,6 +733,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   // The Register side of the right-hand panel; the middle keeps its view.
   const showRegisterPanel = useCallback(() => { setRightTab("register"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
   const showDocumentsPanel = useCallback(() => { setRightTab("documents"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
+  const showMessagesPanel = useCallback(() => { setRightTab("messages"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
   const showView = (next: WorkbenchView) => {
     if (next === "register") { showRegisterPanel(); return; }
     setVisitedSinceRun((seen) => ({ ...seen, [next]: true }));
@@ -812,14 +819,14 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   } }), [openRegisterItem]);
   useEffect(() => registerHost("register", showRegisterPanel), [showRegisterPanel]);
   useEffect(() => registerHost("documents", showDocumentsPanel), [showDocumentsPanel]);
+  useEffect(() => registerHost("messages", showMessagesPanel), [showMessagesPanel]);
   const closeSheet = useCallback(() => { setRegisterItem(null); setSheetFill(undefined); }, []);
   // A message of an RFI's thread opens in the repository's Messages.
   const openMessage = useCallback(async (id: string) => {
-    showDocumentsPanel();
-    hostOf("messages")?.();
+    showMessagesPanel();
     const messages = await whenReady(() => tableOf("messages"));
     messages?.open?.(id);
-  }, [showDocumentsPanel]);
+  }, [showMessagesPanel]);
   const transmittal = { selectedIds: documentSelection.ids, onSelectDocuments: (ids: readonly string[]) => setDocumentSelection(selectDocumentRows(ids)),
     onShowDocuments: (ids: readonly string[]) => { setNotReadOnly(false); showDocumentsPanel(); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } };
   const openRow = registerItem ? register.rowOf(registerItem) : undefined;
@@ -849,19 +856,19 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onOpen={setOpenDocument}
     />
   );
-  const panelSwitch = <PanelSwitch tab={rightTab} onTab={setRightTab} />;
+  const panelSwitch = <PanelSwitch tab={side} onTab={setRightTab} mail={mail} />;
   // The right-hand panel: Documents (the repository, as it was) or the
   // Register. Each side stays mounted once opened, so its filters and
   // selection survive the switch.
   const repository = (
     <>
-      <div className="panel-side" hidden={rightTab !== "documents"}>
+      <div className="panel-side" hidden={side === "register"}>
         <div className="panel-band">{panelSwitch}</div>
-        <MailRepository projectId={projectId} tick={mailTick} documents={documentsList}
+        <MailRepository projectId={projectId} tick={mailTick} documents={documentsList} side={side === "messages" ? "messages" : "documents"} onMail={setMail}
           onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} />
       </div>
-      {registerOn && <div className="panel-side" hidden={rightTab !== "register"}>
-        <RegisterPanel data={register} shown={rightTab === "register"} switcher={panelSwitch} projectId={projectId} raise={raiseRFI} openId={registerItem}
+      {registerOn && <div className="panel-side" hidden={side !== "register"}>
+        <RegisterPanel data={register} shown={side === "register"} switcher={panelSwitch} projectId={projectId} raise={raiseRFI} openId={registerItem}
           onOpen={openRegisterItem} onOpenReport={id => { setOpenDocument(null); setProjectReport(id); }} onSignedOut={onSignedOut} onShowView={showView} documents={registerDocuments} />
       </div>}
     </>

@@ -82,11 +82,11 @@ test("an RFI typed in the grey row is numbered and due in five working days; a p
   await expect(sheet(page).getByRole("heading", { name: "RFI-001 · Basement wall waterproofing" })).toBeVisible();
   await expect(sheet(page).locator(".register-sheet-head .register-status")).toHaveText("Open · with Northline Structural");
   const history = sheet(page).getByRole("list", { name: "History" });
-  await expect(history.locator("li")).toHaveText([/Raised · draft/, /Draft → Open/, /Possible answer: Engineer's reply/]);
+  await expect(history.locator("li")).toHaveText([/Raised by .+@.+ · draft/, /Draft → Open/, /Possible answer: Engineer's reply/]);
   await history.getByRole("button", { name: "Accept", exact: true }).click();
   await expect(row.locator(".register-status")).toHaveText("Answered");
   await expect(row.locator('td[data-field="with"]')).toHaveText("You");
-  await expect(history.locator("li")).toHaveText([/Raised · draft/, /Draft → Open/, /Open → Answered/, /Answered by Engineer's reply/]);
+  await expect(history.locator("li")).toHaveText([/Raised by .+@.+ · draft/, /Draft → Open/, /Open → Answered/, /Answered by Engineer's reply/]);
   await expect(history.locator('li[data-tone="answer"]')).toHaveCount(1);
   await sheet(page).getByRole("button", { name: "Undo", exact: true }).click();
   await expect(row.locator(".register-status")).toContainText("1 to check");

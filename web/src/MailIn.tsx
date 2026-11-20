@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ApiError, request } from "./api";
-import { dialogOf, registerHost, showingLine, useChatTable } from "./chatView";
+import { dialogOf, showingLine, useChatTable } from "./chatView";
 import { ConfirmDialog } from "./ConfirmDialog";
 import { HELD_WORDS, NOTICE_WORDS, readMail, readMessage, shortDay, transmittalNumber, type MailList, type MailMessage } from "./mailApi";
 import { packageApi } from "./packageApi";
@@ -51,18 +51,25 @@ interface Props {
   tick: number;
   documents: ReactNode;
   onOpenDocument: (id: string) => boolean;
+  /** Which side of the right-hand panel shows: the documents or the messages. */
+  side: "documents" | "messages";
+  /** Whether the project has mail, so the panel's switch offers Messages. */
+  onMail: (state: MailState) => void;
 }
 
-export function MailRepository({ projectId, tick, documents, onOpenDocument }: Props) {
+/** The project has mail when intake is on (an address) or any message exists. */
+export interface MailState { available: boolean; held: number }
+
+export function MailRepository({ projectId, tick, documents, onOpenDocument, side, onMail }: Props) {
   const [list, setList] = useState<MailList | null>(null);
-  const [tab, setTab] = useState<"documents" | "messages">("documents");
   const [copied, setCopied] = useState(false);
   const [rotate, setRotate] = useState(false);
   const [notice, setNotice] = useState("");
   const load = () => readMail(projectId).then(setList).catch(() => undefined);
   useEffect(() => { void load(); }, [projectId, tick]);
-  useEffect(() => registerHost("messages", () => setTab("messages")), []);
   const hasMessages = (list?.messages.length ?? 0) > 0;
+  const available = !!list?.address || hasMessages, held = list?.held ?? 0;
+  useEffect(() => onMail({ available, held }), [available, held, onMail]);
   const copy = async () => {
     try { await navigator.clipboard.writeText(list?.address ?? ""); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { setCopied(false); }
   };
@@ -72,20 +79,18 @@ export function MailRepository({ projectId, tick, documents, onOpenDocument }: P
   };
   return (
     <div className="mail-repository">
-      {(list?.address || hasMessages) && <div className="mail-head">
+      {/* The address line is the Messages side's only (owner, 20 November 2026). */}
+      {side === "messages" && <div className="mail-head">
         {list?.address && <p className="mail-address">
           Email documents to <code>{list.address}</code>{" "}
           <button type="button" className="cell-link" onClick={() => void copy()}>{copied ? "Copied" : "Copy"}</button>{" · "}
           <button type="button" className="cell-link" onClick={() => setRotate(true)}>New address…</button>
-          {list.held > 0 && <>{" · "}<button type="button" className="cell-link" onClick={() => setTab("messages")}>{list.held} held</button></>}
         </p>}
-        {hasMessages && <div className="mail-toggle" role="tablist" aria-label="Repository">
-          <button type="button" role="tab" aria-selected={tab === "documents"} onClick={() => setTab("documents")}>Documents</button>
-          <button type="button" role="tab" aria-selected={tab === "messages"} onClick={() => setTab("messages")}>Messages</button>
-        </div>}
         {notice && <p className="reg-notice" role="status">{notice}</p>}
       </div>}
-      {tab === "messages" && hasMessages ? <Messages projectId={projectId} list={list!} reload={load} onOpenDocument={onOpenDocument} /> : documents}
+      {side === "messages"
+        ? hasMessages ? <Messages projectId={projectId} list={list!} reload={load} onOpenDocument={onOpenDocument} /> : <p className="reg-empty">No messages yet. Mail sent to the address above is filed here.</p>
+        : documents}
       {rotate && <ConfirmDialog title="Give the project a new address" message="Replies to messages sent from the old address will not arrive. Mail to the old address stops at once." confirmLabel="New address" busy={false} onConfirm={() => void doRotate()} onCancel={() => setRotate(false)} />}
     </div>
   );

@@ -42,4 +42,13 @@ describe("rfiHistory", () => {
     const row = base({ status: "open", actual_date: null, details: { raised_on: "2026-11-20" }, provenance: { at: "2026-11-20T00:10:00Z", status_history: [{ from: "draft", status: "open", at: "2026-11-21T00:00:00Z" }] } });
     expect(rfiHistory(row, () => "").map(l => l.text)).toEqual(["Raised · draft", "Draft → Open"]);
   });
+
+  it("names who raised it: the sender for someone else's RFI, else the team member", () => {
+    const own = base({ status: "draft", details: { raised_on: "2026-11-20" }, raised_by_member: "pm@team.test", provenance: { at: "2026-11-20T00:10:00Z" } });
+    expect(rfiHistory(own, () => "")[0].text).toBe("Raised by pm@team.test · draft");
+    const theirs = base({ status: "open", details: { raised_on: "2026-11-18", raised_by: "Main builder" }, raised_by_member: "pm@team.test", provenance: { at: "2026-11-20T00:10:00Z", initial_status: "open" } });
+    expect(rfiHistory(theirs, () => "")[0].text).toBe("Raised by Main builder");
+    const gone = base({ status: "draft", details: {}, raised_by_member: "a former team member", provenance: { at: "2026-11-20T00:10:00Z" } });
+    expect(rfiHistory(gone, () => "")[0].text).toBe("Raised by a former team member · draft");
+  });
 });

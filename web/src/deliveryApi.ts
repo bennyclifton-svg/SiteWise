@@ -19,6 +19,8 @@ export interface DeliveryRecord extends DeliveryContent {
   transmittal?: string[][];
   /** An RFI's mail: what went out and the filed replies in its thread, oldest first (Go). */
   thread?: ThreadMessage[];
+  /** Who in the team added the row (Go): their email, or "a former team member". */
+  raised_by_member?: string;
   provenance: { actor?: string; at?: string; last_edited_by?: string; last_edited_at?: string; proposal?: { kind: string; draft: boolean; label: string };
     sources?: { document_id?: string; filename?: string; excerpt?: string; page?: number }[];
     status_history?: { from: string; status: string; at: string; from_kind?: string; kind?: string }[];

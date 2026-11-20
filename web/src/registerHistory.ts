@@ -51,7 +51,8 @@ export function rfiHistory(row: DeliveryRecord, titleOf: (documentId: string) =>
 
   const raised = d.raised_on ?? sydneyDate(p.at);
   out.push({ key: "raised", kind: "raised", tone: "note", date: raised, sort: `${raised}|0`,
-    text: `Raised${d.raised_by ? ` by ${d.raised_by}` : ""}${(p.initial_status ?? "draft") === "draft" ? " · draft" : ""}` });
+    // Someone else's RFI names its sender; the team's own names the member.
+    text: `Raised${d.raised_by || row.raised_by_member ? ` by ${d.raised_by || row.raised_by_member}` : ""}${(p.initial_status ?? "draft") === "draft" ? " · draft" : ""}` });
   (p.status_history ?? []).forEach((h, i) => {
     if (h.from === h.status) return; // a change of kind only
     const date = sydneyDate(h.at);
@@ -90,7 +91,7 @@ export function rfiHistory(row: DeliveryRecord, titleOf: (documentId: string) =>
 export function rowHistory(row: DeliveryRecord): HistoryLine[] {
   const p = row.provenance;
   const at = sydneyDate(p.at);
-  const out: HistoryLine[] = [{ key: "raised", kind: "raised", tone: "note", date: at, sort: `${at}|0`, text: "Added to the register" }];
+  const out: HistoryLine[] = [{ key: "raised", kind: "raised", tone: "note", date: at, sort: `${at}|0`, text: `Added to the register${row.raised_by_member ? ` by ${row.raised_by_member}` : ""}` }];
   (p.status_history ?? []).forEach((h, i) => {
     if (h.from === h.status) return;
     const date = sydneyDate(h.at);

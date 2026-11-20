@@ -61,6 +61,10 @@ type Item struct {
 	// message in that thread, oldest first. Read with the register, never
 	// stored on the row.
 	Thread []ThreadMessage `json:"thread,omitempty"`
+	// RaisedBy is who in the team added the row: the member's email (the
+	// account has no name), or "a former team member" once they are no
+	// longer in the organisation. Empty when the record names no member.
+	RaisedBy string `json:"raised_by_member,omitempty"`
 }
 
 // ThreadMessage is one message of an RFI's thread as the sheet's history

@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 	"time"
 
@@ -112,3 +113,56 @@ FROM t CROSS JOIN LATERAL (
   max(x.document_id::text) FILTER (WHERE x.n=0) AS body_document
  FROM mail_parts x WHERE x.org_id=$1::uuid AND x.message_id=t.id) p
 WHERE t.n <= $5 ORDER BY t.item, t.received_at, t.id`
+
+// formerMember is how a row names a member no longer in the organisation.
+const formerMember = "a former team member"
+
+// rowRaisers names the team member who added each row (its provenance
+// actor), read for the whole register in one query within the org. A member
+// who has left, or whose account is gone, is "a former team member".
+func rowRaisers(ctx context.Context, tx pgx.Tx, org string, items []delivery.Item) (map[string]string, error) {
+	actors := map[string]string{}
+	var ids []string
+	for _, it := range items {
+		var p struct {
+			Actor string `json:"actor"`
+		}
+		if json.Unmarshal(it.Provenance, &p) != nil || !validUUID(p.Actor) {
+			continue
+		}
+		if _, seen := actors[p.Actor]; !seen {
+			ids = append(ids, p.Actor)
+		}
+		actors[p.Actor] = formerMember
+	}
+	out := map[string]string{}
+	if len(ids) == 0 {
+		return out, nil
+	}
+	rows, err := tx.Query(ctx, `SELECT u.id::text, u.email FROM users u
+ JOIN memberships m ON m.org_id=u.org_id AND m.user_id=u.id
+ WHERE u.org_id=$1::uuid AND u.id::text = ANY($2::text[])`, org, ids)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id, email string
+		if err := rows.Scan(&id, &email); err != nil {
+			return nil, err
+		}
+		actors[id] = email
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	for _, it := range items {
+		var p struct {
+			Actor string `json:"actor"`
+		}
+		if json.Unmarshal(it.Provenance, &p) == nil && actors[p.Actor] != "" {
+			out[it.ID] = actors[p.Actor]
+		}
+	}
+	return out, nil
+}

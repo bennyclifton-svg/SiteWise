@@ -124,3 +124,4 @@ li[data-tone="check"] .register-what { box-shadow: inset var(--state-check-width
 .register-line-actions:empty { display: none; }
 .register-add-answer { margin: 4px 0 0 calc(6.5rem + 34px); }
 .register-answer-form { margin: 4px 0 0 calc(6.5rem + 34px); }
+.panel-switch-held { color: var(--origin-check); font-weight: 400; }

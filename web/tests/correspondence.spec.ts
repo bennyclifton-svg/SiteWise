@@ -31,22 +31,29 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
   const project = new URL(page.url()).pathname.split("/").pop()!;
 
-  // The address line: random, never the project's name, with Copy.
+  // With intake on the panel's switch offers Messages; the address line is
+  // on that side only (owner, 20 November 2026), random, never the
+  // project's name, with Copy.
+  const panel = page.getByRole("tablist", { name: "Right panel" });
+  const messagesTab = panel.getByRole("tab", { name: /^Messages/ });
+  await expect(page.locator(".mail-address")).toHaveCount(0);
+  await messagesTab.click();
   const line = page.locator(".mail-address");
   await expect(line).toContainText("Email documents to");
   const address = (await line.locator("code").innerText()).trim();
   expect(address).toMatch(/^p-[0-9a-f]{32}@in\.e2e\.test$/);
   expect(address.toLowerCase()).not.toContain("mail");
-  // No toggle until the project has a message (rule 5).
-  await expect(page.getByRole("tab", { name: "Messages" })).toHaveCount(0);
+  await expect(page.getByText("No messages yet.")).toBeVisible();
 
   // Someone outside the team: held, with its reason in plain words.
   const held = await mailgun(page.request, address, "someone@outside.test", {
     From: "Someone <someone@outside.test>", To: address, Subject: "Wall detail", Body: "Please see the detail.", MessageID: `<${randomUUID()}@outside.test>`,
   });
   expect(held.status()).toBe(200);
-  await expect(line).toContainText("1 held", { timeout: 10_000 });
-  await page.getByRole("button", { name: "1 held" }).click();
+  // Held mail is counted on the Messages tab, seen from any side.
+  await panel.getByRole("tab", { name: "Documents" }).click();
+  await expect(messagesTab).toHaveText("Messages · 1 held", { timeout: 10_000 });
+  await messagesTab.click();
   const messages = page.getByRole("table", { name: /^Messages/ });
   const wall = messages.locator("tbody").filter({ hasText: "Wall detail" });
   await expect(wall).toContainText("Not from your team");
@@ -56,7 +63,7 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await expect(wall).not.toContainText("Not from your team", { timeout: 10_000 });
 
   // Back to documents: the accepted body landed as a document.
-  await page.getByRole("tablist", { name: "Repository" }).getByRole("tab", { name: "Documents" }).click();
+  await panel.getByRole("tab", { name: "Documents" }).click();
   await expect(page.locator(".reg-doc").filter({ hasText: "Wall detail" })).toHaveCount(1, { timeout: 15_000 });
 
   // Send… from the documents' right-click menu: the sink gets it, the record shows Out.
@@ -70,7 +77,7 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await expect.poll(async () => (await (await page.request.get("/__e2e/mail-sent")).json()).sent?.length ?? 0, { timeout: 10_000 }).toBeGreaterThan(0);
   const sent = (await (await page.request.get("/__e2e/mail-sent")).json()).sent as { to: string[]; subject: string }[];
   expect(sent.some(m => m.subject.includes("TR Wall detail") && m.to.includes("engineer@consult.test"))).toBeTruthy();
-  await page.getByRole("tab", { name: "Messages" }).click();
+  await messagesTab.click();
   const out = messages.locator("tbody").filter({ hasText: "TR-001" });
   await expect(out).toContainText("Out");
   await expect(out).toContainText("TR-001");
@@ -115,6 +122,7 @@ test("an RFI sent from its sheet, its reply in the history, used as the answer",
   await page.getByRole("button", { name: "Create project", exact: true }).click();
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
   const project = new URL(page.url()).pathname.split("/").pop()!;
+  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: /^Messages/ }).click();
   const address = (await page.locator(".mail-address code").innerText()).trim();
   const add = await page.request.post(`/api/projects/${project}/ops`, { headers: origin, data: { area: "delivery", ops: [
     { op: "delivery.add", fields: { kind: "rfi", title: "Basement wall waterproofing membrane", raised_on: "2026-11-20", owner_text: "MBM Structural", question: "Please confirm the membrane to the basement walls and its laps at the footing." } },
@@ -166,5 +174,5 @@ test("an RFI sent from its sheet, its reply in the history, used as the answer",
   await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-answered.png" });
   // "Open the reply" opens it in the repository's Messages.
   await history.locator('li[data-kind="reply"]').getByRole("button", { name: "Open the reply" }).click();
-  await expect(page.getByRole("tablist", { name: "Repository" }).getByRole("tab", { name: "Messages" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: /^Messages/ })).toHaveAttribute("aria-selected", "true");
 });

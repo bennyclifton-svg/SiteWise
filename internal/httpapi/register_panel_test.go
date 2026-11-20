@@ -232,3 +232,37 @@ func TestChatOpensTheRFISheetAndSeesIt(t *testing.T) {
 		t.Fatalf("screen line %q", line)
 	}
 }
+
+// The history names who in the team raised a row: the member's email (the
+// account has no name), or "a former team member" once they have left. One
+// query for the whole register, within the org.
+func TestRegisterNamesWhoRaisedIt(t *testing.T) {
+	a := newApp(t, withProfile(t))
+	m := a.member(t, newUUID(t))
+	project := m.createProject(t, "Who raised it")
+	m.ops(t, project, "delivery", http.StatusOK, op("delivery.add", map[string]any{"kind": "rfi", "title": "Ours", "raised_on": "2026-11-20"}))
+	pool := testPool(t)
+	ctx := context.Background()
+	var email string
+	if err := pool.QueryRow(ctx, `SELECT u.email FROM users u JOIN memberships s ON s.org_id=u.org_id AND s.user_id=u.id WHERE u.org_id=$1::uuid`, m.orgID).Scan(&email); err != nil {
+		t.Fatal(err)
+	}
+	left := newUUID(t)
+	for _, q := range []string{
+		`INSERT INTO users(org_id,id,email) VALUES ($1::uuid,$2::uuid,'left@team.test')`,
+		`INSERT INTO project_delivery_items(org_id,id,project_id,kind,title,status,number,details,origin,review_status,provenance)
+ SELECT $1::uuid, gen_random_uuid(), id, 'rfi', 'Theirs', 'draft', 2, '{}', 'user', 'accepted_for_planning', jsonb_build_object('actor',$2::text) FROM projects WHERE org_id=$1::uuid`,
+	} {
+		if _, err := pool.Exec(ctx, q, m.orgID, left); err != nil {
+			t.Fatal(err)
+		}
+	}
+	items, _ := readPanel(t, m, project)
+	if got := items["Ours"].RaisedBy; got != email {
+		t.Fatalf("ours raised by %q, want %q", got, email)
+	}
+	// left@ has an account but no membership: no longer in the team.
+	if got := items["Theirs"].RaisedBy; got != "a former team member" {
+		t.Fatalf("theirs raised by %q", got)
+	}
+}
