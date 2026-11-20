@@ -46,7 +46,6 @@
 .report-table.rfp-terms-table tbody tr { height: var(--rfp-row-h); }
 .report-table.rfp-terms-table .rfp-terms-no { text-align: center; font-variant-numeric: tabular-nums; }
 .rfp-terms-table tr[data-blocked] > td { background: color-mix(in oklab, var(--alert) 8%, transparent); }
-.rfp-terms-table tr[data-drop] > td { background: var(--table-edit-bg); outline: 1px dashed var(--sw-selection-border, var(--line-strong)); outline-offset: -2px; }
 /* A term's wording and its edit box share every metric, as a stage line's. */
 .rfp-terms-table .inline-text.inline-text-cell,
 .report-section .rfp-terms-table textarea.inline-text.inline-text-cell {

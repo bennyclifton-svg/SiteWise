@@ -3,10 +3,16 @@
    screen, the update strip, where the marks sit. The motion and marks
    themselves are shared by every surface: trace-motion.css. */
 
-/* ---------- Header: Update in the title band (owner, 10 Nov 2026) ---------- */
+/* ---------- Update at the panel's top right (owner, 20 Nov 2026) ---------- */
 
-.header-page-actions { display: flex; align-items: center; gap: 12px; }
-.header-page-actions:empty { display: none; }
+/* The summary and Update share the first line; the summary wraps before it
+   reaches the button. Update is laid over the line's right end, so it adds no
+   height and the scope keeps its rows on the first screen. */
+.pf-lede-row { position: relative; }
+.pf-lede-row > .pf-lede { padding-right: 15rem; }
+.pf-update { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 12px; }
+@media print { .pf-update { display: none; } }
+
 .update-new {
   position: absolute;
   top: -10px;

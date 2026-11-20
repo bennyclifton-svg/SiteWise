@@ -116,8 +116,6 @@
 }
 .cockpit-scroll .procurement-table .table-action:hover:not(:disabled) { border-color: var(--sw-border-strong); background: var(--sw-hover-bg); }
 
-.procurement-table tr.row-drop td,
-.procurement-table tr.row-drop th { background: color-mix(in oklab, var(--sw-selection-bg) 70%, transparent); box-shadow: none; }
 
 .procurement-pmp { display: flex; align-items: center; gap: 10px; margin: 22px 0 0; color: var(--sw-text-secondary); font-size: 13.5px; }
 

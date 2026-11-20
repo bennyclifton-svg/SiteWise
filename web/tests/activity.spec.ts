@@ -17,7 +17,7 @@ test("queued uploads wait for a slot and failed uploads stop animating", async (
     await route.fulfill({ status: 500, json: { error: "Upload failed" } });
   });
   const picker = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: "Add files" }).click();
+  await page.getByRole("button", { name: "Drop files here, or browse" }).click();
   await (await picker).setFiles(Array.from({ length: 6 }, (_, i) => ({ name: `batch-${i}.pdf`, mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4") })));
   await expect(page.locator(".reg-line .activity-icon[data-state=queued]")).toHaveCount(2);
   await expect(page.locator(".reg-line .activity-icon[data-state=active]")).toHaveCount(4);

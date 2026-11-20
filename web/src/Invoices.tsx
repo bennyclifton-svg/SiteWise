@@ -201,10 +201,14 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
               {inv.supplier_id && !ledger.packages.some(p => p.id === inv.supplier_id) && <option value={inv.supplier_id}>{inv.supplier || "Unavailable discipline"}</option>}
               {ledger.packages.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
             </select></td>
-            <td>{row.line_id && onCostLine && costLineIds?.includes(row.line_id) ? <button type="button" className="inv-open" title="Show activity in cost plan" onClick={() => onCostLine(row.line_id)}>{lineLabel(row.line_id, row.line)}</button> : row.line_id ? lineLabel(row.line_id, row.line) : row.shares > 1 ? "Unallocated" :
-              <select className="field-plain inv-discipline inv-line-pick" aria-label={`Activity line for ${inv.number || inv.filename}`} value="" disabled={!!savingDiscipline || inv.status === "reading"} onChange={e => void saveRowField(inv, "line", e.target.value)}>
+            {/* A one-line invoice always picks its line here, mapped or not, so a wrong
+                automatic mapping is fixed in the row. A split keeps its shares to the panel;
+                "Show … in cost plan" lives in the panel too. */}
+            <td>{row.shares > 1 ? (row.line_id && onCostLine && costLineIds?.includes(row.line_id) ? <button type="button" className="inv-open" title="Show activity in cost plan" onClick={() => onCostLine(row.line_id)}>{lineLabel(row.line_id, row.line)}</button> : row.line_id ? lineLabel(row.line_id, row.line) : "Unallocated") :
+              <select className="field-plain inv-discipline inv-line-pick" aria-label={`Activity line for ${inv.number || inv.filename}`} value={row.line_id ?? ""} disabled={!!savingDiscipline || inv.status === "reading"} onChange={e => { if (e.target.value !== row.line_id) void saveRowField(inv, "line", e.target.value); }}>
                 <option value="">Unallocated</option>
-                {ledger.lines.filter(l => !l.archived && !ledger.groups?.[l.id]).map(l => <option key={l.id} value={l.id}>{activityLabel(l)}</option>)}
+                {row.line_id && !ledger.lines.some(l => l.id === row.line_id) && <option value={row.line_id}>{lineLabel(row.line_id, row.line)}</option>}
+                {ledger.lines.filter(l => l.id === row.line_id || (!l.archived && !ledger.groups?.[l.id])).map(l => <option key={l.id} value={l.id}>{activityLabel(l)}</option>)}
               </select>}</td>
             <td>{month(inv.period)}</td>
             <td className="num">{fmt(row.ex_gst)}</td>

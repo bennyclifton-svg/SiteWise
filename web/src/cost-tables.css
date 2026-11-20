@@ -121,7 +121,6 @@
 
 /* The whole table is the drop zone; dragging files over it outlines it. */
 .invoices { min-height: max(320px, calc(100vh - 300px)); }
-.invoices[data-over] .inv-table-scroll { outline: 1.5px dashed var(--sw-text-tertiary); outline-offset: 2px; }
 
 .cockpit-scroll .inv-table :is(th, td) { padding-left: 12px; padding-right: 12px; }
 .cockpit-scroll .inv-table :is(th, td):first-child { padding-left: 15px; }
@@ -275,8 +274,6 @@
 .cockpit-scroll .procurement-table .firm-chip[data-static] { cursor: default; }
 .cockpit-scroll .procurement-table .firm-chip[data-static]:hover { background: transparent; }
 .cockpit-scroll .procurement-table tr.row-unplaced-combine > td { padding: 8px 10px; }
-/* A quote dragged over an invited firm's cell: the dashed drop outline. */
-.cockpit-scroll .procurement-table td.firm-slot[data-over] { outline: 1.5px dashed var(--sw-text-tertiary); outline-offset: -3px; }
 @media print {
   .firm-name-add, .firm-suggest { display: none !important; }
 }
@@ -303,7 +300,6 @@
 .cockpit-scroll .inv-table .inv-hint td { max-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--sw-text-secondary); }
 .inv-table .inv-hint svg { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
 .inv-table .inv-hint strong { font-weight: 500; color: var(--sw-text-primary); }
-.invoices[data-over] .inv-table[data-empty] tbody td { background: var(--ct-selected); }
 
 /* Section headings carry a light grey band so each section's start reads at
    a glance (owner direction, 8 Nov 2026). A tint of the text colour works in

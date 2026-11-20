@@ -234,7 +234,6 @@
 .firm-chip[data-status="awarded"] { border-color: var(--ok); }
 .firm-chip[data-status="awarded"] .firm-chip-status { color: var(--ok); font-weight: 600; }
 .firm-chip[data-status="unsuccessful"] { opacity: .7; }
-.procurement-table tr.row-drop td, .procurement-table tr.row-drop th { background: var(--azure-soft); box-shadow: inset 0 0 0 1px var(--azure); }
 /* Combined engagements slice 5: a prompt's members, and the rows ticked for
    a combined proposal, read as one line of choices. */
 .procurement-prompt label, .procurement-combine-for label { display: inline-flex; align-items: center; gap: 6px; }

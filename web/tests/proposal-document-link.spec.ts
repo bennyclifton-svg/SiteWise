@@ -11,7 +11,7 @@ test("link a filed document by drag without another upload", async ({ page }) =>
   const add = async (discipline_id: string) => (await (await page.request.post(`${base}/procurement/rows`, { headers, data: { discipline_id } })).json());
   const civil = await add("consultant.civil"), hydraulic = await add("consultant.hydraulic");
   const chooser = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: "Add files", exact: true }).click();
+  await page.getByRole("button", { name: "Drop files here, or browse", exact: true }).click();
   await (await chooser).setFiles({ name: "filed-scope.md", mimeType: "text/markdown", buffer: Buffer.from("# Drainage scope\nDocument number: CF-101\nRevision: A\nDate: 2026-10-24\nStormwater concept design.\n") });
   const source = page.locator('tbody.reg-doc[data-filename="filed-scope.md"] tr.reg-line');
   await expect(source).toHaveAttribute("draggable", "true");

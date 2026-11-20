@@ -60,8 +60,8 @@ test("an update shows its reading, marks what it changed and says what it did", 
   await page.getByRole("button", { name: "Create project" }).click();
   const update = page.getByRole("button", { name: "Update", exact: true });
   await expect(update).toBeVisible();
-  // Update sits in the title band, not on the sheet.
-  await expect(page.locator(".cockpit-shell-header .header-page-actions").getByRole("button", { name: "Update", exact: true })).toBeVisible();
+  // Update sits at the Profile panel's top right, not in the title band.
+  await expect(page.locator(".pf-update").getByRole("button", { name: "Update", exact: true })).toBeVisible();
   const run = await simulateUpdate(page);
 
   await update.click();

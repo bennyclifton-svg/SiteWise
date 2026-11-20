@@ -497,30 +497,36 @@ body {
   color: var(--sw-text-tertiary);
 }
 
-.project-side-panel .reg-tool {
-  display: inline-flex;
-  width: 1.5rem;
-  height: 1.5rem;
-  flex: none;
-  align-items: center;
-  justify-content: center;
+/* With the feed live the head holds only screen-reader text, so it takes
+   no room; it shows again to say "Reconnecting…" or "Offline". */
+.project-side-panel .reg-head:has(> .reg-live[data-state="live"]) {
+  height: 0;
   padding: 0;
   border: 0;
-  border-radius: 999px;
+  overflow: hidden;
+}
+/* ...so the column heads stick to the very top instead of under it. */
+.project-side-panel .register:has(> .reg-head > .reg-live[data-state="live"]) .reg-table thead th { top: 0; }
+
+/* The ghost last row: the picker's click path (owner, 20 Nov 2026). Grey
+   until hovered, like the Cost Plan's new-line row. */
+.reg-add-row td { padding: 0; border: 0; }
+.project-side-panel .reg-add {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 0.5rem 0.375rem;
+  border: 0;
   background: transparent;
   color: var(--sw-text-tertiary);
+  font: inherit;
+  text-align: left;
   cursor: pointer;
 }
-
-.project-side-panel .reg-tool svg {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
-.project-side-panel .reg-tool:hover {
-  background: var(--sw-selection-bg);
-  color: var(--sw-text-primary);
-}
+.project-side-panel .reg-add svg { width: 0.875rem; height: 0.875rem; flex: none; }
+.project-side-panel .reg-add:hover { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
+.project-side-panel .reg-add:focus-visible { outline: 2px solid var(--azure, var(--sw-link)); outline-offset: -2px; }
 
 .project-side-panel .reg-table {
   width: 100%;

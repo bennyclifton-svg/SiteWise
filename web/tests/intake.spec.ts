@@ -68,9 +68,9 @@ test("file each format, correct a field, reconnect, and keep other orgs out", as
   await open(pdf);
   await expect(page.locator(".document-workspace .tb-state")).toHaveText(/Filed in \d+\.\d\d s/);
 
-  // The keyboard path: the Add files button opens the picker.
+  // The keyboard path: the "Drop files here, or browse" row opens the picker.
   const chooser = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: "Add files" }).focus();
+  await page.getByRole("button", { name: "Drop files here, or browse" }).focus();
   await page.keyboard.press("Enter");
   await (
     await chooser

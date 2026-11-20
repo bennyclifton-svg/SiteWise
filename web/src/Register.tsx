@@ -355,9 +355,6 @@ export function Register({
             {live === "live" ? "Live" : live === "reconnecting" ? "Reconnecting…" : "Offline, retrying"}
           </span>
         </span>
-        <button type="button" className="reg-tool" onClick={onAddFiles} aria-label="Add files" title="Add files">
-          <IconUpload />
-        </button>
       </div>
       {activity.length > 0 && <p className="reg-activity" role="status" aria-atomic="true"><Pending queued={!activeCount}>{[activeCount > 0 && `${activeCount} processing`, queuedCount > 0 && `${queuedCount} waiting`].filter(Boolean).join(" · ")}</Pending></p>}
       <p className="reg-notice" role="status">{notice}</p>
@@ -378,7 +375,10 @@ export function Register({
         </p>
       )}
       {rows.length === 0 ? (
-        <p className="reg-empty">Drop drawings, reports and schedules anywhere on this page. Each is filed in about a second.</p>
+        <>
+          <p className="reg-empty">Drop drawings, reports and schedules anywhere on this page. Each is filed in about a second.</p>
+          <AddFiles onClick={onAddFiles} />
+        </>
       ) : (
         <table
           className="reg-table"
@@ -430,6 +430,11 @@ export function Register({
               renameRequest={row.doc && rename?.id === row.doc.id ? rename.n : 0}
             />
           ))}
+          {/* The quiet last row is the click path for the picker; dropping
+              anywhere still works (owner, 20 Nov 2026: replaces the icon). */}
+          <tfoot className="reg-add-row">
+            <tr><td colSpan={COLUMNS.length + 1}><AddFiles onClick={onAddFiles} /></td></tr>
+          </tfoot>
         </table>
       )}
       {menu && <RowMenu at={menu} items={menuItems(menu)} label={menu.ids.length > 1 ? `Actions for ${menu.ids.length} documents` : "Document actions"}
@@ -660,4 +665,9 @@ function RegisterRow({
       </tr>
     </tbody>
   );
+}
+
+/** The picker's way in, styled as the table's ghost last row. */
+function AddFiles({ onClick }: { onClick: () => void }) {
+  return <button type="button" className="reg-add" onClick={onClick}><IconPlus /><span>Drop files here, or browse</span></button>;
 }

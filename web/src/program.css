@@ -118,7 +118,6 @@
 .pg-note-chip.is-released { border-style: solid; border-color: var(--ok); color: var(--ok); }
 .pg-reading-mark { fill: var(--warn-soft); stroke: var(--warn); stroke-dasharray: 3 2; stroke-width: 1.2; }
 .pg-bar.is-released .pg-shape, .pg-bar.is-released .pg-hold-mark { fill: var(--ok); stroke: var(--ok); }
-.program.is-dropping .pg-body { outline: 2px dashed var(--ember); outline-offset: 2px; }
 .pg-drop-hint { border-color: var(--ember); color: var(--ember-hot); }
 
 /* Split pane: one scroller in both directions; the grid column is sticky on

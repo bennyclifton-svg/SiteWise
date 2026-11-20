@@ -456,13 +456,7 @@ select {
     border-color 150ms var(--ease-out);
 }
 
-/* One highlight for every file drop target: the invoice zone and the document repository. */
-.drop[data-over="true"],
-.file-drop[data-over="true"] {
-  border-color: var(--ember);
-  border-style: solid;
-  background: color-mix(in oklab, var(--ember) 10%, var(--paper));
-}
+/* A drag over a drop target: one look everywhere, set in states.css. */
 
 .drop-mark {
   display: grid;

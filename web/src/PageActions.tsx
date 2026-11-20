@@ -51,13 +51,7 @@ export function MoreMenu({ label, items }: { label: string; items: MenuItem[] })
   </div>;
 }
 
-export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null; headerTarget?: HTMLDivElement | null; sideTarget?: HTMLDivElement | null; openSide?: () => void }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
-
-/** A page action in the title band, beside the documents toggle (Profile's Update; owner, 10 Nov 2026). */
-export function PageHeaderAction({ surface, children }: { surface: string; children: ReactNode }) {
-  const { surface: active, headerTarget } = useContext(PageActionsContext);
-  return active === surface && headerTarget ? createPortal(children, headerTarget) : null;
-}
+export const PageActionsContext = createContext<{ surface: string; target: HTMLDivElement | null; primaryTarget: HTMLDivElement | null; besideTarget: HTMLDivElement | null; sideTarget?: HTMLDivElement | null; openSide?: () => void }>({ surface: "", target: null, primaryTarget: null, besideTarget: null });
 
 /** Details about the thing in the working view (not a document) take the
  * right-hand column in place of the register while they are open. */

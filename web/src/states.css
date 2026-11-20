@@ -74,3 +74,33 @@
 
 /* To check: a value the documents disagree on, in any table cell. */
 :where(td[data-band="red"], th[data-band="red"]) { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+
+/* ---------- A file over a drop target (owner, 20 November 2026) ----------
+   One look for every drop: the document repository, a procurement row or an
+   invited firm's cell, invoices, progress claims, a program file, an RFP term
+   and the guest quote page. A 2px dashed ember line on the target's edge
+   (just inside a row or cell), a faint ember tint behind it. Each target's own rule is gone. */
+:root {
+  --drop-line: 2px dashed var(--ember);
+  --drop-tint: color-mix(in oklab, var(--ember) 9%, transparent);
+}
+.file-drop[data-over="true"],
+.drop[data-over="true"],
+.invoices[data-over] .inv-table-scroll,
+.var-claims[data-over],
+.program.is-dropping .pg-body {
+  outline: var(--drop-line);
+  /* On the target's own edge: a line set inside it would pass under the
+     sticky column heads these panels have. */
+  outline-offset: 0;
+  background: var(--drop-tint);
+}
+/* Rows and cells: the line on the row or cell, the tint on its cells (a
+   cell's own background would hide a tint on the row). */
+.procurement-table tr.row-drop,
+.rfp-terms-table tr[data-drop] { outline: var(--drop-line); outline-offset: -2px; }
+.cockpit-scroll .procurement-table td.firm-slot[data-over] { outline: var(--drop-line); outline-offset: -3px; }
+.procurement-table tr.row-drop > :is(td, th),
+.rfp-terms-table tr[data-drop] > td,
+.cockpit-scroll .procurement-table td.firm-slot[data-over],
+.invoices[data-over] .inv-table[data-empty] tbody td { background: var(--drop-tint); }

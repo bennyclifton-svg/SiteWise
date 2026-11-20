@@ -154,13 +154,26 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   // Re-map one invoice to no line. The Invoices tab shows Unallocated.
   // The cost plan does not grow a row for it, and the lines that still hold invoices keep their amounts.
   await page.getByRole("tab", { name: /Invoices/ }).click();
+  // A mapped row's line is a picker, not a jump to the cost plan: change it in the row, then put it back.
+  const rowLine = table.getByLabel("Activity line for INV-00004", { exact: true });
+  const mapped = await rowLine.inputValue();
+  expect(mapped).not.toBe("");
+  const other = await rowLine.locator("option").evaluateAll((os, cur) => (os as HTMLOptionElement[]).map(o => o.value).find(v => v && v !== cur) ?? "", mapped);
+  expect(other).not.toBe("");
+  await rowLine.selectOption(other);
+  await expect(rowLine).toBeEnabled();
+  await expect(rowLine).toHaveValue(other);
+  await expect(page.getByRole("tab", { name: /Invoices/ })).toHaveAttribute("aria-selected", "true");
+  await rowLine.selectOption(mapped);
+  await expect(rowLine).toBeEnabled();
+  await expect(rowLine).toHaveValue(mapped);
   await table.getByRole("button", { name: "INV-00004", exact: true }).click();
   const panel = page.getByRole("complementary", { name: "Invoice INV-00004" });
   await expect(panel.getByLabel("Ex GST (AUD)")).toHaveValue("1,493.80");
   await panel.getByLabel("Activity line").selectOption({ label: "Unallocated" });
   await expect(panel.getByText("Cleared by you").first()).toBeVisible();
   await panel.getByRole("button", { name: "Close", exact: true }).click();
-  await expect(table.getByRole("row", { name: /INV-00004/ })).toContainText("Unallocated");
+  await expect(rowLine).toHaveValue("");
   await page.getByRole("tab", { name: /Cost plan/i }).click();
   await expect(plan.getByRole("row", { name: /^Total/ })).toBeVisible();
   await expectNoInvoiceFooter(plan);

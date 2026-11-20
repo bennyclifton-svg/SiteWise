@@ -334,6 +334,5 @@
 .guest-note { margin: 8px 0; color: var(--sw-text-tertiary); font-size: var(--fs-sm); }
 .guest-gone { padding: 48px 0; max-width: 34rem; }
 .guest-drop { display: grid; justify-items: start; gap: 6px; padding: 18px; border: 1px dashed var(--sw-border-default); border-radius: var(--radius-control); }
-.guest-drop[data-over="true"] { border-style: solid; border-color: var(--sw-text-primary); }
 .guest-drop p { margin: 0; }
 .guest-received { margin: 8px 0 0; padding-left: 18px; }

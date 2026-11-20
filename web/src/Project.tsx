@@ -58,9 +58,11 @@ function storeRightTab(tab: RightTab) {
 }
 
 /** The right-hand panel's switch: the documents, the project's messages
- * (only when it has mail: intake on, or any message), or the register. */
+ * (only when it has mail: intake on, or any message), or the register.
+ * Drawn as one pen box like Update, the chosen side filled (owner, 20 Nov 2026). */
 function PanelSwitch({ tab, onTab, mail }: { tab: RightTab; onTab: (tab: RightTab) => void; mail: MailState }) {
-  return <div className="mail-toggle panel-switch" role="tablist" aria-label="Right panel">
+  return <div className="panel-switch" role="tablist" aria-label="Right panel">
+    <span className="ground-frame" aria-hidden="true" />
     <button type="button" role="tab" aria-selected={tab === "documents"} onClick={() => onTab("documents")}>Documents</button>
     {mail.available && <button type="button" role="tab" aria-selected={tab === "messages"} onClick={() => onTab("messages")}>Messages{mail.held > 0 ? <span className="panel-switch-held"> · {mail.held} held</span> : null}</button>}
     <button type="button" role="tab" aria-selected={tab === "register"} onClick={() => onTab("register")}>Register</button>
