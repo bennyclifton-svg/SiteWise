@@ -7,10 +7,12 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 // Email intake (docs/plans/2026-11-14-email-intake.md, Tasks 2 and 5). Each
@@ -154,14 +156,87 @@ type MailMessage struct {
 	NoticeP    *float64 `json:"-"`
 }
 
-// newMailLocalPart is "p-" and 32 random hex characters. It carries no
-// name, so an address never says whose project it is.
-func newMailLocalPart() string {
-	var b [16]byte
-	if _, err := rand.Read(b[:]); err != nil {
-		panic(err)
+// Local parts the domain keeps for its own mailboxes: Mailgun's first route
+// sends these to the owner, so no project may have one
+// (docs/deployment.md, "Project email"). Migration 078 repeats this list.
+var reservedMailLocal = map[string]bool{
+	"abuse": true, "accounts": true, "admin": true, "administrator": true, "billing": true,
+	"contact": true, "help": true, "hello": true, "hostmaster": true, "info": true,
+	"legal": true, "mail": true, "noreply": true, "postmaster": true, "privacy": true,
+	"root": true, "sales": true, "security": true, "support": true, "team": true, "webmaster": true,
+}
+
+// MailLocalBase is a project name as an address (owner, 20 November 2026:
+// "ST13 House" is st13_house@…): lower case ASCII letters and digits, every
+// other run of characters one underscore, at most 40 characters. A name
+// with nothing left is "project"; a reserved one gets "_project".
+func MailLocalBase(name string) string {
+	var b strings.Builder
+	gap := false
+	for _, r := range strings.ToLower(name) {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			if gap && b.Len() > 0 {
+				b.WriteByte('_')
+			}
+			gap = false
+			b.WriteRune(r)
+			continue
+		}
+		gap = true
 	}
-	return "p-" + hex.EncodeToString(b[:])
+	base := b.String()
+	if len(base) > 40 {
+		base = strings.TrimRight(base[:40], "_")
+	}
+	if base == "" {
+		return "project"
+	}
+	if reservedMailLocal[base] {
+		return base + "_project"
+	}
+	return base
+}
+
+// mailExecer is a pool or a transaction.
+type mailExecer interface {
+	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}
+
+// addMailAddress gives the project its named address: the name, else the
+// name and "_2", "_3" ... while another project has it. ON CONFLICT DO
+// NOTHING covers both "taken" and "this project has one already", so a
+// transaction never aborts; the existence check tells them apart. A
+// project that does not exist is ErrNotFound.
+func addMailAddress(ctx context.Context, q mailExecer, org, project, name string) error {
+	base := MailLocalBase(name)
+	for n := 1; n <= 200; n++ {
+		local := base
+		if n > 1 {
+			local = base + "_" + strconv.Itoa(n)
+		}
+		tag, err := q.Exec(ctx, `INSERT INTO project_mail_addresses(org_id,project_id,local_part)
+SELECT org_id,id,$3 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid
+ON CONFLICT DO NOTHING`, org, project, local)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() == 1 {
+			return nil
+		}
+		var has, exists bool
+		if err := q.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM project_mail_addresses WHERE org_id=$1::uuid AND project_id=$2::uuid),
+EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&has, &exists); err != nil {
+			return err
+		}
+		if has {
+			return nil
+		}
+		if !exists {
+			return ErrNotFound
+		}
+	}
+	return fmt.Errorf("no free mail address for %q", base)
 }
 
 // MailAddress is the project's local part. A project made before the
@@ -178,18 +253,16 @@ func (s *Store) MailAddress(ctx context.Context, org, project string) (string, e
 	if !errors.Is(err, pgx.ErrNoRows) {
 		return "", err
 	}
-	tag, err := s.pool.Exec(ctx, `INSERT INTO project_mail_addresses(org_id,project_id,local_part)
-SELECT org_id,id,$3 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid
-ON CONFLICT (org_id,project_id) DO NOTHING`, org, project, newMailLocalPart())
+	var name string
+	err = s.pool.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, project).Scan(&name)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", ErrNotFound
+	}
 	if err != nil {
 		return "", err
 	}
-	if tag.RowsAffected() == 0 {
-		err = s.pool.QueryRow(ctx, `SELECT local_part FROM project_mail_addresses WHERE org_id=$1::uuid AND project_id=$2::uuid`, org, project).Scan(&local)
-		if errors.Is(err, pgx.ErrNoRows) {
-			return "", ErrNotFound
-		}
-		return local, err
+	if err := addMailAddress(ctx, s.pool, org, project, name); err != nil {
+		return "", err
 	}
 	return s.MailAddress(ctx, org, project)
 }
@@ -208,21 +281,41 @@ WHERE a.local_part=$1`, local).Scan(&t.OrgID, &t.ProjectID, &t.Archived)
 	return t, err
 }
 
-// RotateMailAddress gives the project a new address. The old one stops at
-// once: mail to it, including replies to anything sent from it, is dropped.
+// RotateMailAddress gives the project a new address: its name and six
+// random hex characters, so whoever knew the old one cannot guess the new
+// one. The old one stops at once: mail to it, including replies to
+// anything sent from it, is dropped.
 func (s *Store) RotateMailAddress(ctx context.Context, org, project string) (string, error) {
 	if _, err := s.MailAddress(ctx, org, project); err != nil {
 		return "", err
 	}
-	local := newMailLocalPart()
-	tag, err := s.pool.Exec(ctx, `UPDATE project_mail_addresses SET local_part=$3, created_at=now() WHERE org_id=$1::uuid AND project_id=$2::uuid`, org, project, local)
-	if err != nil {
+	var name string
+	if err := s.pool.QueryRow(ctx, `SELECT name FROM projects WHERE org_id=$1::uuid AND id=$2::uuid`, org, project).Scan(&name); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return "", ErrNotFound
+		}
 		return "", err
 	}
-	if tag.RowsAffected() != 1 {
-		return "", ErrNotFound
+	for try := 0; try < 5; try++ {
+		var b [3]byte
+		if _, err := rand.Read(b[:]); err != nil {
+			return "", err
+		}
+		local := MailLocalBase(name) + "_" + hex.EncodeToString(b[:])
+		tag, err := s.pool.Exec(ctx, `UPDATE project_mail_addresses SET local_part=$3, created_at=now() WHERE org_id=$1::uuid AND project_id=$2::uuid`, org, project, local)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			continue // another project has it; draw again
+		}
+		if err != nil {
+			return "", err
+		}
+		if tag.RowsAffected() != 1 {
+			return "", ErrNotFound
+		}
+		return local, nil
 	}
-	return local, nil
+	return "", fmt.Errorf("no free mail address for %q", name)
 }
 
 // MailMember is the user of org whose confirmed email is address, or "".

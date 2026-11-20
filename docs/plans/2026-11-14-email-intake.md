@@ -666,7 +666,9 @@ remain the owner's. Differences from this plan, each the smallest change
 that keeps its intent (the evidence note lists them with reasons):
 
 - The local part is `p-` and 32 random hex characters, not the project's
-  name: an address never names the org or project.
+  name: an address never names the org or project. **(Superseded 20
+  November 2026 by the owner: the address is the project's name, migration
+  078 and `store.MailLocalBase`; see docs/deployment.md "Project email".)**
 - Every refusal (bad signature, stale or future timestamp, unreadable or
   over 40 MB) answers the same 406 "not accepted", not 401 or 413: one
   answer, and Mailgun does not retry a refusal.

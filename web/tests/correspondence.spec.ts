@@ -41,7 +41,7 @@ test("the project's address, a held message accepted, and a transmittal sent and
   const line = page.locator(".mail-address");
   await expect(line).toContainText("Email documents to");
   const address = (await line.locator("code").innerText()).trim();
-  expect(address).toMatch(/^p-[0-9a-f]{32}@in\.e2e\.test$/);
+  expect(address).toMatch(/^[a-z0-9][a-z0-9_-]*@in\.e2e\.test$/);
   expect(address.toLowerCase()).not.toContain("mail");
   await expect(page.getByText("No messages yet.")).toBeVisible();
 

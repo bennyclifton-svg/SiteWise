@@ -33,10 +33,12 @@ just before that deploy is on the server at
 `/root/sitewise-before-bc4fdf4.dump`; the one before `76bb126` (16 Nov) is
 beside it. Done: operations.md section 1 steps 1–5 and 8–10, OCR.
 
-- Project email is **off**: `SITEWISE_MAIL_IN_DOMAIN`,
-  `SITEWISE_MAILGUN_SIGNING_KEY` and `SITEWISE_MAIL_SEND` are not set, so
-  `/api/mail/inbound` answers 404 and Send says sending is not set up (see
-  "Project email" below). After the 20 Nov deploy only `/healthz`, the
+- Project email **in is off**: `SITEWISE_MAIL_IN_DOMAIN` and
+  `SITEWISE_MAILGUN_SIGNING_KEY` are not set, so `/api/mail/inbound` answers
+  404 (see "Project email" below). **Sending is on** since 20 Nov 2026
+  (`SITEWISE_MAIL_SEND=1`): the owner chose to turn it on while Stripe is
+  still in test mode, accepting that free orgs can send within the free cap.
+  Backup of the env before that change: `sitewise.env.bak-20261120-mailsend`. After the 20 Nov deploy only `/healthz`, the
   start-up log and the migration list were checked; nobody signed in or
   dropped a file.
 - The model key was added to `/etc/sitewise/sitewise.env` on 16 Nov 2026, so
@@ -142,49 +144,46 @@ the prices the pass reads. Leave it unset until the going-live checklist in
 
 ## Project email (optional; off until set)
 
-Each project has a private address (`p-` and 32 random characters at the
-receiving domain); mail to it is filed, and SiteWise sends transmittals
+Each project has an address named after it (`st13_house@sitewise.au` for
+"ST13 House"; owner, 20 November 2026, migration 078): lower case letters
+and digits, other characters one underscore, `_2`, `_3` ... when another
+project has the name. Mail to it is filed, and SiteWise sends transmittals
 out (`docs/plans/2026-11-14-email-intake.md`,
 `docs/plans/2026-11-17-correspondence-transmittals.md`). It is off until
 both settings below are set: the webhook answers 404 and no address shows.
-**Run email intake's Task 0 first** (its "Task 0 findings" section lists
-what to record); nothing has been tried against real Mailgun.
+A named address is guessable; mail from anyone but a team member whose
+DKIM signature verifies is held, never filed or read.
 
 1. **DNS:** nothing to add. The receiving domain is `sitewise.au` itself
    (owner, 20 November 2026): its MX records already point at Mailgun, and
    the free Mailgun plan allows one domain, so `in.sitewise.au` was not
-   added. Project mail is told apart by the shape of the address.
-2. **Mailgun** (Receiving → Routes): spam filtering on for the domain, and
-   two routes.
-   - Priority 0, project mail:
-     `match_recipient("p-[0-9a-f]{32}@sitewise\.au")` with
+   added.
+2. **Mailgun** (US region; Receiving → Routes): spam filtering set to
+   "tag" for the domain, and three routes, first match wins.
+   - Priority 0, the owner's own mailboxes: `match_recipient` over the
+     names in `reservedMailLocal` (`internal/store/mail.go`) plus
+     `no-reply` and `mailer-daemon`, forwarding to the owner's mailbox,
+     with `stop()`. No project can have one of those names. A name added
+     there must be added to this route.
+   - Priority 5, project mail: `match_recipient(".*@sitewise\.au")` with
      `forward("https://sitewise.au/api/mail/inbound/mime")` and `stop()`. The
      URL must end in `mime`: Mailgun then posts the raw message (`body-mime`),
      which is what SiteWise verifies the sender's DKIM signature over; without
-     it every message is held as "Could not confirm the sender". **Not
-     created yet**: it waits on this section's settings and Task 0.
-   - Priority 10, everything else: `match_recipient(".*@sitewise.au")`
-     forwarding to the owner's own mailbox, with `stop()`. In place since 20
-     November 2026; before that it posted to an address nothing answered, so
-     mail to `support@sitewise.au` was lost.
+     it every message is held as "Could not confirm the sender". Mail to an
+     address no project has is dropped by the app.
+   - Priority 10, the old catch-all to the owner's mailbox. Nothing reaches
+     it now; it stays as the fallback if the priority 5 route is removed.
 
    Mail goes out from `SITEWISE_MAIL_FROM` as "SiteWise", with Reply-To the
    PM and the project address.
    - The webhook signing key signs only a timestamp and a token, not the
      message. **Use this Mailgun account's signing key for this webhook
      only**: no other service may receive posts signed with it.
-   - **Caddy (a go-live gate, email intake Task 11):** limit
-     `/api/mail/inbound*` to Mailgun's published webhook source addresses.
-     Mail does not go live until this rule is in place and a post from
-     elsewhere answers 404. Read the current ranges from Mailgun's own
-     documentation page on the day (they are not copied here, and must not
-     be guessed), and add to `/etc/caddy/Caddyfile` inside the site block:
-     ```
-     @mailgun_not path /api/mail/inbound*
-     @mailgun_not not remote_ip <ranges from Mailgun's page>
-     respond @mailgun_not 404
-     ```
-     then `systemctl reload caddy`. The app still checks every signature.
+   - **No Caddy IP rule (owner, 20 November 2026).** The plan's gate was to
+     limit `/api/mail/inbound*` to Mailgun's published webhook addresses.
+     Mailgun publishes none; its securing-webhooks page says to verify the
+     signature, which the app does on every post, with replayed tokens
+     refused. Add the rule only if Mailgun publishes a list.
 3. **Settings** in `/etc/sitewise/sitewise.env`, both or neither (one without
    the other stops the server starting):
    - `SITEWISE_MAIL_IN_DOMAIN=sitewise.au`

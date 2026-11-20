@@ -12,31 +12,50 @@ import (
 	"sitewise/internal/store"
 )
 
-var localPartPattern = regexp.MustCompile(`^p-[0-9a-f]{32}$`)
+var localPartPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
+
+// runName makes a project name unique to this run: addresses are unique
+// across every org, and rows from earlier runs stay in the test database.
+func runName(t *testing.T, name string) string {
+	return name + " " + strconv.FormatInt(time.Now().UnixNano(), 36)
+}
+
+// slug is what runName's name becomes as an address.
+func slug(name string) string {
+	return strings.ReplaceAll(strings.ToLower(name), " ", "_")
+}
 
 func TestProjectGetsMailAddress(t *testing.T) {
 	ctx := context.Background()
 	st := profileStore(t)
-	const second = "11111111-1111-4111-8111-aaaaaaaaab01"
-	if err := st.CreateProject(ctx, orgA, second, "Project"); err != nil {
+	name := runName(t, "ST13 House")
+	const second, third = "11111111-1111-4111-8111-aaaaaaaaab01", "11111111-1111-4111-8111-aaaaaaaaab02"
+	pool := rawPool(t)
+	for _, id := range []string{second, third} {
+		if _, err := pool.Exec(ctx, `DELETE FROM projects WHERE id=$1::uuid`, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := st.CreateProject(ctx, orgA, second, name); err != nil {
 		t.Fatal(err)
 	}
-	a, err := st.MailAddress(ctx, orgA, projectA)
-	if err != nil {
+	// Another org's project of the same name gets the next number.
+	if err := st.CreateProject(ctx, orgB, third, name); err != nil {
 		t.Fatal(err)
 	}
 	b, err := st.MailAddress(ctx, orgA, second)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !localPartPattern.MatchString(a) || !localPartPattern.MatchString(b) || a == b {
-		t.Fatalf("addresses %q %q", a, b)
+	c, err := st.MailAddress(ctx, orgB, third)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if strings.Contains(a, "project") {
-		t.Fatalf("the address names the project: %q", a)
+	if b != slug(name) || c != slug(name)+"_2" {
+		t.Fatalf("addresses %q %q, want %q and _2", b, c, slug(name))
 	}
-	got, err := st.ProjectByMailAddress(ctx, strings.ToUpper(a))
-	if err != nil || got.OrgID != orgA || got.ProjectID != projectA || got.Archived {
+	got, err := st.ProjectByMailAddress(ctx, strings.ToUpper(b))
+	if err != nil || got.OrgID != orgA || got.ProjectID != second || got.Archived {
 		t.Fatalf("lookup %+v %v", got, err)
 	}
 	if _, err := st.ProjectByMailAddress(ctx, "p-00000000000000000000000000000000"); !errors.Is(err, store.ErrNotFound) {
@@ -46,12 +65,27 @@ func TestProjectGetsMailAddress(t *testing.T) {
 		t.Fatalf("another org's project: %v", err)
 	}
 	// A project row made without CreateProject gets its address on first read.
-	pool := rawPool(t)
 	if _, err := pool.Exec(ctx, `DELETE FROM project_mail_addresses WHERE org_id=$1::uuid AND project_id=$2::uuid`, orgA, second); err != nil {
 		t.Fatal(err)
 	}
-	if c, err := st.MailAddress(ctx, orgA, second); err != nil || !localPartPattern.MatchString(c) || c == b {
-		t.Fatalf("lazy address %q %v", c, err)
+	if got, err := st.MailAddress(ctx, orgA, second); err != nil || got != slug(name) {
+		t.Fatalf("lazy address %q %v", got, err)
+	}
+}
+
+func TestMailLocalBase(t *testing.T) {
+	for in, want := range map[string]string{
+		"ST13 House":             "st13_house",
+		"  Smith & Jones -- Rd ": "smith_jones_rd",
+		"Café 2":                 "caf_2",
+		"日本":                     "project",
+		"Support":                "support_project",
+		strings.Repeat("a", 60):  strings.Repeat("a", 40),
+		strings.Repeat("a", 39) + " b": strings.Repeat("a", 39),
+	} {
+		if got := store.MailLocalBase(in); got != want || !localPartPattern.MatchString(got) {
+			t.Errorf("%q: %q, want %q", in, got, want)
+		}
 	}
 }
 
@@ -63,7 +97,7 @@ func TestRotateMailAddress(t *testing.T) {
 		t.Fatal(err)
 	}
 	fresh, err := st.RotateMailAddress(ctx, orgA, projectA)
-	if err != nil || fresh == old || !localPartPattern.MatchString(fresh) {
+	if err != nil || fresh == old || !localPartPattern.MatchString(fresh) || !strings.HasPrefix(fresh, strings.TrimRight(old, "_0123456789")) {
 		t.Fatalf("rotate %q %v", fresh, err)
 	}
 	if _, err := st.ProjectByMailAddress(ctx, old); !errors.Is(err, store.ErrNotFound) {
