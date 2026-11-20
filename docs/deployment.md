@@ -142,17 +142,26 @@ both settings below are set: the webhook answers 404 and no address shows.
 **Run email intake's Task 0 first** (its "Task 0 findings" section lists
 what to record); nothing has been tried against real Mailgun.
 
-1. **DNS** at Crazy Domains: the MX records Mailgun's panel shows for the
-   receiving domain, recommended `in.sitewise.au` (the root domain stays free
-   for ordinary mailboxes).
-2. **Mailgun:** spam filtering on for that domain; one route,
-   `match_recipient(".*@in\.sitewise\.au")` with
-   `forward("https://sitewise.au/api/mail/inbound/mime")` and `stop()`. The
-   URL must end in `mime`: Mailgun then posts the raw message (`body-mime`),
-   which is what SiteWise verifies the sender's DKIM signature over; without
-   it every message is held as "Could not confirm the sender". Mail goes out
-   from `SITEWISE_MAIL_FROM` as "SiteWise", with Reply-To the PM and the
-   project address.
+1. **DNS:** nothing to add. The receiving domain is `sitewise.au` itself
+   (owner, 20 November 2026): its MX records already point at Mailgun, and
+   the free Mailgun plan allows one domain, so `in.sitewise.au` was not
+   added. Project mail is told apart by the shape of the address.
+2. **Mailgun** (Receiving → Routes): spam filtering on for the domain, and
+   two routes.
+   - Priority 0, project mail:
+     `match_recipient("p-[0-9a-f]{32}@sitewise\.au")` with
+     `forward("https://sitewise.au/api/mail/inbound/mime")` and `stop()`. The
+     URL must end in `mime`: Mailgun then posts the raw message (`body-mime`),
+     which is what SiteWise verifies the sender's DKIM signature over; without
+     it every message is held as "Could not confirm the sender". **Not
+     created yet**: it waits on this section's settings and Task 0.
+   - Priority 10, everything else: `match_recipient(".*@sitewise.au")`
+     forwarding to the owner's own mailbox, with `stop()`. In place since 20
+     November 2026; before that it posted to an address nothing answered, so
+     mail to `support@sitewise.au` was lost.
+
+   Mail goes out from `SITEWISE_MAIL_FROM` as "SiteWise", with Reply-To the
+   PM and the project address.
    - The webhook signing key signs only a timestamp and a token, not the
      message. **Use this Mailgun account's signing key for this webhook
      only**: no other service may receive posts signed with it.
@@ -170,7 +179,7 @@ what to record); nothing has been tried against real Mailgun.
      then `systemctl reload caddy`. The app still checks every signature.
 3. **Settings** in `/etc/sitewise/sitewise.env`, both or neither (one without
    the other stops the server starting):
-   - `SITEWISE_MAIL_IN_DOMAIN=in.sitewise.au`
+   - `SITEWISE_MAIL_IN_DOMAIN=sitewise.au`
    - `SITEWISE_MAILGUN_SIGNING_KEY=` the account's **HTTP webhook signing
      key** (Mailgun: Sending → Webhooks), not the API key. Nothing reads the
      API key. Never write the value anywhere else.

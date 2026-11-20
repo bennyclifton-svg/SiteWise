@@ -107,9 +107,10 @@ A progress claim is an invoice of kind `progress_claim`; dropped on a
 contract it is read with one interactive fan-out (`claim-1`) for the rows
 rules leave open, and those picks stay blank until a claim answer key is
 fitted. Security of Payment periods come from
-`knowledge/contracts/security_of_payment.yaml`; no row is verified, so every
-date from one is "to check" with its section, and only the owner sets
-`verified: true`. Issuing a payment schedule is never an operation: chat
+`knowledge/contracts/security_of_payment.yaml`; the owner read the NSW Act
+and marked that row verified on 20 November 2026, and every other row is
+unverified, so a date from one is "to check" with its section. Only the
+owner sets `verified: true`. Issuing a payment schedule is never an operation: chat
 opens the claim's panel and the PM presses Issue.
 
 Consent conditions are a kind in the same table
@@ -236,7 +237,7 @@ Before changing one of these surfaces, read its current note:
 - Variations and claims (Cost Plan; built 19 November 2026 on branch
   `wave/claims`): `docs/plans/2026-11-17-variations-progress-claims.md`,
   evidence in `docs/evidence/2026-11-19-variations-progress-claims.md`. The
-  Act rows are draft and unverified; the claim key
+  Act rows are draft, and only NSW is verified; the claim key
   (`data/eval/claim/private/`) is empty.
 - Consent conditions (Register; built 18 November 2026 on branch
   `wave/conditions`): `docs/plans/2026-11-17-consent-conditions.md`,
