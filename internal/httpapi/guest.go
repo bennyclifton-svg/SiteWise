@@ -39,6 +39,8 @@ const (
 	// Exchanges per client address; misses on any guest route count too.
 	guestPerIP     = 30
 	guestReadsHour = 300
+	// Exchanges of one valid link an hour: a click on the link is one.
+	guestExchangesHour = 30
 	// Quotes per link an hour (security review M3; the lifetime cap is
 	// store.GuestQuoteLifetime).
 	guestQuoteHour = 5
@@ -186,9 +188,18 @@ func postGuestSession(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
-	if err := deps.Store.TouchGuestGrant(r.Context(), g, true, time.Now()); err != nil {
+	// A valid link is limited per link as its reads are (second security
+	// review, finding 3): each exchange writes the open count.
+	if !deps.limits.allow("guest-exchange:"+g.ID, guestExchangesHour, time.Hour) {
+		tooMany(w)
+		return
+	}
+	// The PM's cell hears "link opened" at most once a link an hour; the
+	// count still rises on every exchange.
+	announce := deps.limits.allow("guest-opened:"+g.ID, 1, time.Hour)
+	if err := deps.Store.TouchGuestGrant(r.Context(), g, true, announce, time.Now()); err != nil {
 		deps.Log.Printf("guest open not recorded share=%s: %v", g.ID, err)
-	} else if deps.Broker != nil && g.Kind == store.GuestPackage {
+	} else if announce && deps.Broker != nil && g.Kind == store.GuestPackage {
 		deps.Broker.Wake(g.OrgID)
 	}
 	http.SetCookie(w, guestCookie(deps, token, g.ExpiresAt))
@@ -210,7 +221,7 @@ func getGuestPage(w http.ResponseWriter, r *http.Request, deps Deps) {
 		http.Error(w, "read failed", http.StatusInternalServerError)
 		return
 	}
-	if err := deps.Store.TouchGuestGrant(r.Context(), g, false, time.Now()); err != nil {
+	if err := deps.Store.TouchGuestGrant(r.Context(), g, false, false, time.Now()); err != nil {
 		deps.Log.Printf("guest open not recorded share=%s: %v", g.ID, err)
 	}
 	writeJSON(w, http.StatusOK, page)
@@ -354,6 +365,17 @@ func postGuestQuote(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	q, err := deps.Store.OpenGuestQuote(r.Context(), g, filing.DocumentID, filing.Created, time.Now())
+	if errors.Is(err, store.ErrGuestDuplicate) {
+		// Bytes another firm or the PM already sent: answered exactly as a
+		// received quote, with this upload's own name and time, so the answer
+		// never confirms what the project holds (second security review,
+		// finding 4). Nothing was stored or attached.
+		clean, cerr := intake.CleanFilename(name)
+		if cerr != nil {
+			clean = name
+		}
+		q, err = store.GuestQuote{Filename: clean, ReceivedOn: store.SydneyDate(time.Now())}, nil
+	}
 	if err != nil {
 		if filing.Created {
 			dropGuestUpload(deps, g, filing.DocumentID)

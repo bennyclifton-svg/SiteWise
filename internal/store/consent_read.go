@@ -95,10 +95,12 @@ func (s *Store) QueueConsent(ctx context.Context, org, project, document, actor 
 // QueueConsentAfterFiling queues the read of a notice filing recognised:
 // the full_text job calls it once the text is stored. No one asked, so the
 // rows are not one undoable change (no actor); the PM removes them in one
-// bulk action instead. A read already done is not queued again.
+// bulk action instead. A read already done is not queued again. A guest's
+// document is never read into conditions on its own: the PM's Read
+// conditions does that (second security review, finding 2).
 func (s *Store) QueueConsentAfterFiling(ctx context.Context, org, document string) error {
 	_, err := s.pool.Exec(ctx, `INSERT INTO jobs(org_id,id,document_id,kind,status)
- SELECT d.org_id,$3::uuid,d.id,'consent','queued' FROM documents d WHERE d.org_id=$1::uuid AND d.id=$2::uuid
+ SELECT d.org_id,$3::uuid,d.id,'consent','queued' FROM documents d WHERE d.org_id=$1::uuid AND d.id=$2::uuid AND NOT `+guestPlacedSQL+`
  ON CONFLICT (org_id,document_id,kind) DO NOTHING`, org, document, newID())
 	return err
 }

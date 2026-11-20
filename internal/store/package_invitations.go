@@ -147,6 +147,11 @@ FROM firms f WHERE f.org_id=$1::uuid AND f.id=$2::uuid`, org, oldFirm, project, 
 		return Invitation{}, err
 	}
 	var f Firm
+	// renamedAway: a bare firm renamed in place to a different name key is a
+	// different firm under the same id. Its links go as a swap's do (second
+	// security review, finding 1); a case, spacing or "Pty Ltd" correction
+	// keeps the same key and keeps the link.
+	renamedAway := false
 	if firmID != "" {
 		if f, err = readFirm(ctx, tx, org, firmID); err != nil {
 			return Invitation{}, err
@@ -161,6 +166,11 @@ ORDER BY lower(name)=lower($3) DESC, status='confirmed' DESC, created_at LIMIT 1
 			return Invitation{}, err
 		case bare:
 			f = Firm{ID: oldFirm, Name: name}
+			var oldKey string
+			if err := tx.QueryRow(ctx, `SELECT name_key FROM firms WHERE org_id=$1::uuid AND id=$2::uuid`, org, oldFirm).Scan(&oldKey); err != nil {
+				return Invitation{}, err
+			}
+			renamedAway = oldKey != key
 			if _, err := tx.Exec(ctx, `UPDATE firms SET name=$3, name_key=$4, updated_at=now(), version=version+1 WHERE org_id=$1::uuid AND id=$2::uuid`, org, oldFirm, name, key); err != nil {
 				return Invitation{}, err
 			}
@@ -177,12 +187,16 @@ ORDER BY lower(name)=lower($3) DESC, status='confirmed' DESC, created_at LIMIT 1
 			}
 			return Invitation{}, err
 		}
+	}
+	if f.ID != oldFirm || renamedAway {
 		// A link made for the old firm is that firm's: it must not upload as,
 		// or list the quotes of, the firm now in the cell (security review
 		// M2). Withdraw it before the invitation moves.
 		if err := revokeGrantsTx(ctx, tx, `g.firm_id=$2::uuid AND g.package_id IN (SELECT p.id FROM packages p WHERE p.org_id=$1::uuid AND p.project_id=$3::uuid AND (p.id=$4::uuid OR p.group_id=$4::uuid))`, org, oldFirm, project, pkg); err != nil {
 			return Invitation{}, err
 		}
+	}
+	if f.ID != oldFirm {
 		// The invitation keeps its time, so the firm keeps its cell.
 		if _, err := tx.Exec(ctx, `UPDATE package_invitations i SET firm_id=$5::uuid FROM packages p
 WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.firm_id=$4::uuid

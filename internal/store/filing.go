@@ -304,14 +304,22 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 	if err := enqueueKind(ctx, q, orgID, documentID, JobKindFullText); err != nil {
 		return FilingOutcome{}, err
 	}
-	if err := queueVisual(ctx, tx, orgID, documentID); err != nil {
+	// A guest's quote is filing plus the proposal read only: no visual
+	// identity, register reading, notice pick or sheet split follows it.
+	guest, err := guestPlaced(ctx, tx, orgID, documentID)
+	if err != nil {
 		return FilingOutcome{}, err
 	}
-	if err := queueRegister(ctx, tx, orgID, documentID); err != nil {
-		return FilingOutcome{}, err
-	}
-	if err := writeNotice(ctx, tx, orgID, documentID, in.Notice); err != nil {
-		return FilingOutcome{}, err
+	if !guest {
+		if err := queueVisual(ctx, tx, orgID, documentID); err != nil {
+			return FilingOutcome{}, err
+		}
+		if err := queueRegister(ctx, tx, orgID, documentID); err != nil {
+			return FilingOutcome{}, err
+		}
+		if err := writeNotice(ctx, tx, orgID, documentID, in.Notice); err != nil {
+			return FilingOutcome{}, err
+		}
 	}
 	if in.RetryJev {
 		if err := enqueueKind(ctx, q, orgID, documentID, JobKindJevRetry); err != nil {
@@ -344,6 +352,12 @@ func commitFilingTx(ctx context.Context, tx pgx.Tx, orgID, documentID string, in
 		}
 		if in.OCR {
 			if _, err := tx.Exec(ctx, `UPDATE drawing_expansions SET status='review',reason='OCR read first-page identity only. Separate scanned sheets have not been filed.' WHERE org_id=$1::uuid AND source_id=$2::uuid AND status='pending'`, orgID, documentID); err != nil {
+				return FilingOutcome{}, err
+			}
+		}
+		// Held for the PM's Retry processing, never split on a guest's say.
+		if guest {
+			if _, err := tx.Exec(ctx, `UPDATE drawing_expansions SET status='review',reason=$3 WHERE org_id=$1::uuid AND source_id=$2::uuid AND status='pending'`, orgID, documentID, GuestHeldExpansion); err != nil {
 				return FilingOutcome{}, err
 			}
 		}
