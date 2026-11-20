@@ -43,6 +43,10 @@ var (
 	ErrGuestGone = errors.New("guest link expired or withdrawn")
 	// ErrGuestAwarded refuses a quote on a package already awarded.
 	ErrGuestAwarded = errors.New("this tender has been awarded")
+	// ErrGuestDuplicate: a guest's bytes match a project file that is not
+	// this link's own quote. Nothing is placed or changed (second security
+	// review, finding 4).
+	ErrGuestDuplicate = errors.New("guest upload matches another project file")
 )
 
 // GuestGrantInput is what the PM's Share dialog sends.
@@ -265,14 +269,16 @@ func (s *Store) GuestGrantByToken(ctx context.Context, hash []byte, now time.Tim
 }
 
 // TouchGuestGrant records an open: opened counts a link exchange (a click on
-// the link); every page read moves last opened.
-func (s *Store) TouchGuestGrant(ctx context.Context, g GuestGrant, opened bool, now time.Time) error {
+// the link); every page read moves last opened. announce appends the
+// procurement event that moves the PM's cell; the route sends it at most
+// once a link an hour.
+func (s *Store) TouchGuestGrant(ctx context.Context, g GuestGrant, opened, announce bool, now time.Time) error {
 	add := 0
 	if opened {
 		add = 1
 	}
 	_, err := s.pool.Exec(ctx, `UPDATE guest_grants SET opens=opens+$3, last_opened_at=$4 WHERE org_id=$1::uuid AND id=$2::uuid`, g.OrgID, g.ID, add, now)
-	if err != nil || !opened || g.Kind != GuestPackage {
+	if err != nil || !opened || !announce || g.Kind != GuestPackage {
 		return err
 	}
 	// The PM's cell moves to "link opened" without a reload.
@@ -726,11 +732,6 @@ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND d.id::text=$3`, g.OrgID, g
 		return GuestQuote{}, err
 	}
 	mine := q.SubmissionID != "" && subPkg == g.PackageID && subFirm == g.FirmID
-	if !created && !mine {
-		// The same bytes are already in the project as something else: another
-		// firm's quote or the PM's own file. Never re-point it.
-		return GuestQuote{}, ErrConflict
-	}
 	if !mine {
 		var placed int
 		if err := tx.QueryRow(ctx, `SELECT count(*) FROM project_changes WHERE org_id=$1::uuid AND via='guest' AND actor=$2::uuid`, g.OrgID, g.ID).Scan(&placed); err != nil {
@@ -738,6 +739,14 @@ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND d.id::text=$3`, g.OrgID, g
 		}
 		if placed >= GuestQuoteLifetime {
 			return GuestQuote{}, ErrGuestQuoteLimit
+		}
+		if !created {
+			// The same bytes are already in the project as something else:
+			// another firm's quote or the PM's own file. Never re-point it.
+			// The route answers this as a received quote (ErrGuestDuplicate),
+			// so the bytes say nothing about what the project holds; the
+			// count above runs first so the answer takes the usual work.
+			return GuestQuote{}, ErrGuestDuplicate
 		}
 		if q.SubmissionID, err = s.openSubmissionTx(ctx, tx, g.OrgID, g.ProjectID, documentID, g.PackageID, g.FirmID, now); err != nil {
 			return GuestQuote{}, err
@@ -765,6 +774,29 @@ WHERE d.org_id=$1::uuid AND d.project_id=$2::uuid AND d.id::text=$3`, g.OrgID, g
 	}
 	q.ReceivedOn = SydneyDate(now)
 	return q, tx.Commit(ctx)
+}
+
+// guestPlacedSQL is true when the document d was placed by a guest link: the
+// guest_quote change OpenGuestQuote writes in the transaction that releases
+// it to filing. No member can undo or edit that row, so it is the marker.
+// A guest's document is filing plus the proposal read only (AGENTS.md;
+// second security review, finding 2): no automatic per-document read
+// follows it. The PM can still start one by their own click.
+const guestPlacedSQL = `EXISTS(SELECT 1 FROM project_changes c WHERE c.org_id=d.org_id AND c.project_id=d.project_id AND c.via='guest'
+ AND c.ops @> jsonb_build_array(jsonb_build_object('op','guest_quote','document_id',d.id::text)))`
+
+// GuestHeldExpansion is why a guest's multi-page drawing is not split into
+// sheets automatically; the PM's Retry processing splits it.
+const GuestHeldExpansion = "Sent through a guest link, so its sheets are not split automatically. Retry processing to split them."
+
+// guestPlaced says whether a guest link placed this document.
+func guestPlaced(ctx context.Context, tx pgx.Tx, org, document string) (bool, error) {
+	var placed bool
+	err := tx.QueryRow(ctx, `SELECT `+guestPlacedSQL+` FROM documents d WHERE d.org_id=$1::uuid AND d.id=$2::uuid`, org, document).Scan(&placed)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, nil
+	}
+	return placed, err
 }
 
 // markGuestLinks marks each card whose firm holds a live link on its row,

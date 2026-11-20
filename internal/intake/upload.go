@@ -75,6 +75,10 @@ func (u *Uploader) Upload(ctx context.Context, orgID, projectID string, up Uploa
 	return u.commit(ctx, orgID, projectID, name, reason, blob)
 }
 
+// CleanFilename is the name Upload stores for filename, so a caller can
+// answer with it without a stored row (a guest's duplicate upload).
+func CleanFilename(filename string) (string, error) { return cleanFilename(filename) }
+
 // File commits bytes that are already stored, as Upload does after its put:
 // a message part the mail webhook stored before deciding to file it (email
 // intake, Task 4). The type is checked by name with ReasonFor, so an

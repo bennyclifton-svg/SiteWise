@@ -645,7 +645,9 @@ VALUES ($1::uuid,gen_random_uuid(),$2::uuid,decode(repeat('ee',32),'hex'),'docum
 		t.Fatalf("the replaced link still works: %d", code)
 	}
 	acme := f.guest(t, newToken)
-	// Correcting the firm's name keeps the link on its cell.
+	// Correcting the firm's name to the same name key ("Pty Ltd" aside)
+	// keeps the link on its cell; a wholly different name withdraws it
+	// (TestGuestRenamedFirmLosesItsLink).
 	base := "/api/projects/" + f.project + "/procurement/packages/" + f.pkg + "/invitations/"
 	var inv struct {
 		FirmID string `json:"firm_id"`
@@ -832,8 +834,13 @@ WHERE s.org_id=$1::uuid AND s.id=$2::uuid`, f.m.orgID, sub).Scan(&held); err != 
 	}
 	raw, _ := io.ReadAll(blob)
 	blob.Close()
-	if code, body := acme.raw(t, http.MethodPost, "/api/guest/quote?name=mine.pdf", raw, true); code != http.StatusConflict || strings.Contains(body, firmBName) {
+	// Answered as a receipt, so the bytes confirm nothing (second review,
+	// finding 4), and never placed on Acme's cell.
+	if code, body := acme.raw(t, http.MethodPost, "/api/guest/quote?name=mine.pdf", raw, true); code != http.StatusCreated || strings.Contains(body, firmBName) || !strings.Contains(body, `"filename":"mine.pdf"`) {
 		t.Fatalf("another firm's bytes = %d %s", code, body)
+	}
+	if n := f.count(t, `SELECT count(*) FROM submissions WHERE org_id=$1::uuid AND firm_id=$2::uuid AND package_id=$3::uuid`, f.m.orgID, f.firmA, f.pkg); n != 1 {
+		t.Fatalf("Acme has %d quotes after sending B's bytes", n)
 	}
 	var after string
 	if err := f.conn.QueryRow(context.Background(), `SELECT to_jsonb(s)::text FROM submissions s WHERE s.org_id=$1::uuid AND s.id=$2::uuid`, f.m.orgID, f.subB).Scan(&after); err != nil || after != bravo {

@@ -362,12 +362,12 @@ Plan 0's rule table governs (`2026-11-18-chat-agency.md`).
 | Revoked mid-upload | Bytes land; `OpenGuestQuote` rechecks under the row lock and refuses; the new document is deleted before filing, so no Jev call; 401. A document that existed before is never deleted. |
 | Huge file | 413 at 50 MB before anything is committed (the `files.ErrTooLarge` path). |
 | Wrong file type | 400 by name before a byte is read: "Send a PDF, Word or Excel file." A renamed file that will not extract is stored, not filed, as a PM drop is. |
-| Firm uploading to another firm's cell | Not possible by route: the quote route takes no package or firm. Bytes identical to another firm's quote give 409; that quote is untouched. |
+| Firm uploading to another firm's cell | Not possible by route: the quote route takes no package or firm. Bytes identical to another firm's quote (or any project file not this firm's own quote) are answered as a received quote and nothing is stored or attached (second review, finding 4); that quote is untouched. |
 | Enumeration of tokens | 256-bit tokens, SHA-256 at rest, unique index; 30 exchanges per IP per 15 min; answers carry no ids; any id a guest sends is checked against the grant (404). |
 | Rate limits | Exchange 30 per IP per 15 min; reads 300 per link an hour; quotes 20 per link an hour; share creates 100 per org an hour. In memory, per process, as the account limits are. |
 | PM opens a guest link in their own browser | Two cookie names; member routes read only `sitewise_session`, guest routes only `sitewise_guest` (Path=/api/guest). Neither gives the other's access. |
 | Second link in one browser | Replaces the first cookie; clicking the first link again restores it. |
-| Invitation removed or corrected | Removed: the link goes with it (an undo restores the firm, not the link). Corrected name: the link follows the cell. |
+| Invitation removed or corrected | Removed: the link goes with it (an undo restores the firm, not the link). Corrected name with the same name key (case, spacing, "Pty Ltd"): the link follows the cell. A different name or firm: the link is withdrawn (second review, finding 1). |
 | Package retired, project deleted or archived | Refused (retired), gone (cascade), paused (decision 9). |
 | RFT re-issued (addendum) | The new issue shows first, earlier issues below. |
 | Shared document deleted or superseded | Deleted: drops off, its URL 404. Superseded: the guest keeps the revision shared; the PM shares the new one. |

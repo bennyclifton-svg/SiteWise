@@ -57,9 +57,10 @@ check is `guest_open`'s).
 
 - A link is a bearer secret. Scope, expiry, revoke and the open count
   contain it; they do not prove who holds it (plan, risk 1).
-- A guest cannot reach the model or Jev directly, but a quote starts the
-  same background reads a PM's upload does: filing (Jev), the proposal read
-  (Jev) and, when the org has switched the model on, the tender pass. A
+- A guest cannot reach the model or Jev directly, but a quote starts
+  filing (Jev), the proposal read (Jev), its R7 programme read and, when
+  the org has switched the model on, the tender pass; no other automatic
+  per-document read follows it (second review, finding 2). A
   link therefore spends the org's reads; it is capped at 5 quotes an hour
   and 10 for its whole life, and a guest never takes the org's last tenth
   of its monthly documents or storage (review M3).
@@ -75,9 +76,10 @@ check is `guest_open`'s).
   or a failed clean-up leaves a held document that neither the filer nor
   `Server.Resume` will file; it shows as not filed in the register until
   someone deletes it.
-- A corrected firm name keeps the link (the firm's id does not change). A
-  swap to a different firm withdraws the old firm's links first (review
-  M2); the foreign key keeps `ON UPDATE CASCADE` because a swap moves the
+- A corrected firm name with the same name key (case, spacing, "Pty Ltd")
+  keeps the link. A bare firm renamed in place to another name key, and a
+  swap to a different firm, withdraw the old firm's links first (review
+  M2; second review, finding 1); the foreign key keeps `ON UPDATE CASCADE` because a swap moves the
   invitation's firm id and the withdrawn rows still reference it.
 - "Shared with" is a label the PM types; SiteWise sends no mail (plan 1
   owns sending). "Remind the firms" answers with the fixed words.
@@ -103,3 +105,51 @@ Medium and five Low, all fixed, each test shown to fail without its fix).
 | A PM's own browser with a guest cookie | Two cookie names; member routes read only `sitewise_session`, guest routes only `sitewise_guest` (Path=/api/guest) | Gain either side's access from the other | (a) of the sweep sends the guest cookie to every member route |
 | A cross-site page or a network observer | Nothing: guest writes check Origin, the cookie is SameSite=Strict and, in production, Secure; pages cannot be framed | Post a quote or exchange a token from another origin; read the cookie over plain HTTP in production | `TestGuestReachesOnlyItsGrant` (e) and its header checks, `TestGuestCookieSecureInProduction` |
 | One link reading in a loop | 300 reads an hour | More | `TestGuestReadsPerLink` |
+
+## 6. Second review (20 November 2026)
+
+Branch `wave/guest-fixes` from local `main` 5112c22. Four findings, all
+fixed; each test below was run against the code before its fix and failed.
+No migration, no new dependency, no live Jev or model call.
+
+| Finding | Fix | Test |
+|---|---|---|
+| 1 (Medium) A bare firm renamed in place kept its link, so "Acme" could drop files as, and see the quote names of, the firm now in the cell | `CorrectInvitation` compares the old and new name keys; a different key withdraws the firm's live package links on that row (the swap's revoke). A case, spacing or "Pty Ltd" change keeps the key and the link | `TestGuestRenamedFirmLosesItsLink`; `TestGuestGrantLife` comment narrowed |
+| 2 (Medium) A guest quote ran every automatic per-document read (sheet split up to 200 Jev calls, consent read up to 600 rows, register reading) | The marker is the `guest_quote` change (`via='guest'`) `OpenGuestQuote` writes in the transaction that releases the upload to filing. The filing commit skips visual identity, the register job and the notice write for such a document, and holds a multi-sheet drawing in `review` ("Retry processing to split them"); `QueueConsentAfterFiling` skips it | `TestGuestDocumentGetsNoAutomaticReads` (a PM document filed the same way queues consent, register and visual identity; the guest's queues none; the PM's Retry processing, visual read and Read conditions still reach it) |
+| 3 (Low) Unlimited exchanges of a valid link, each an UPDATE, an event and a broker wake | 30 exchanges a link an hour (429 after); "link opened" is announced at most once a link an hour, in memory as the other limits; the open count still rises | `TestGuestExchangeLimitedPerLink` |
+| 4 (Low) 409 "The project team already has this file" confirmed a rival's or the PM's file | Answered 201 `{filename, received_on}` with this upload's cleaned name and today; nothing stored, attached or changed (table snapshot); the lifetime count runs before the refusal and the broker wakes as on success. The firm's own repeat keeps its receipt | `TestGuestDuplicateBytesLookLikeAReceipt`; `TestOpenGuestQuote` corrected |
+
+What a guest document reaches after the fix (finding 2), by job kind:
+
+| Job or hook | Guest document |
+|---|---|
+| `intake` (filing, one identity fan-out), `jev_retry` (filing's re-check of a grey), OCR filing of a scan | Reached: this is filing |
+| Proposal read (`ProposalReader`), tender pass when the org has the model on | Reached: the proposal fan-out |
+| `proposal_program` (R7 programme, one background fan-out per submission, hidden until award) | Reached: part of the proposal path; at most one per quote, so at most 10 a link. Not changed; flagged for the owner |
+| `full_text` (Go text extraction, no Jev) | Reached; its consent queue skips the document |
+| `consent` (automatic, after `full_text`) | Not reached; the PM's Read conditions still queues it |
+| `register` (Go cited-number rule, RFI and evidence nouls) | Not reached. There is no PM click for this job today |
+| `visual_identity` (title-block read) | Not reached; the PM's visual read still queues it |
+| Drawing expansion (`ExpandDrawing`, one call a sheet) | Not reached: held in `review`; the PM's Retry processing splits it |
+| Notice pick (`writeNotice`) | Not reached (skipped; the question is asked only for an email body, which a guest cannot send) |
+| `label`, `evidence` (with hold-point release), `specification` | Not automatic: only the PM's profile Update or specification import starts them |
+| Program import (`programImporter.Filed`), invoice read | Not reached: they read only documents dropped on Program or as an invoice |
+
+Left open: after a duplicate upload the guest page's "Received" list does
+not show the file (nothing was stored), so a firm that reloads can still
+tell; the time difference is the few skipped writes, not the upload. The
+plan's edge-case table is updated for findings 1 and 4.
+
+Speed (`TestGuestOpenBudget`, local test database, one run): `guest_open`
+p50 1.7 ms, p90 4.4 ms (budget 100 / 250); `team` 1.6 / 2.2 ms;
+`procurement_board` 2.3 / 3.9 ms. The filing commit gains one lookup
+over the project's change rows (index on org and project); filing was
+not re-benched.
+
+Tests: `go build ./...` and `go vet ./...` clean; `go test -count=1 -p 1
+./...` on schema `wave_guest_fixes`: every package passes except
+`TestRestoreFactsDetectCostContentChanges` in `internal/store`, which fails
+under any non-public schema (known, unrelated). Playwright
+`guest-share.spec.ts` passed (1 of 1) on its own schema
+`wave_guest_fixes_e2e`, run on port 4174 from a temporary copy of the spec
+and config because another session's e2e server held 4173.
