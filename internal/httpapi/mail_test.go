@@ -227,7 +227,8 @@ func encodePost(fields map[string]string, attach []mailFile) (string, *bytes.Buf
 	return w.FormDataContentType(), &body
 }
 
-// encodeForm writes an urlencoded post, which the webhook refuses.
+// encodeForm writes an urlencoded post, as Mailgun's raw route does for a
+// message with no attachment.
 func encodeForm(fields map[string]string) (string, *bytes.Buffer) {
 	v := url.Values{}
 	for k, val := range fields {
@@ -279,6 +280,21 @@ func (f *mailFixture) documents(t *testing.T) int {
 
 func (f *mailFixture) messages(t *testing.T) int {
 	return f.count(t, `SELECT count(*) FROM mail_messages WHERE org_id=$1::uuid`, f.m.orgID)
+}
+
+// Real Mailgun posts the raw route urlencoded (seen 20 November 2026, a
+// message with no attachment); a signed one is filed like a multipart one.
+func TestMailInboundFilesAnUrlencodedPost(t *testing.T) {
+	f := newMailFixture(t)
+	if got := f.form(t, f.fields(f.memberPost("Structural systems", pdfFile(1, "S-001.pdf")))); got != http.StatusOK {
+		t.Fatalf("urlencoded post = %d", got)
+	}
+	if n := f.documents(t); n != 2 {
+		t.Fatalf("documents = %d, want the body and the PDF", n)
+	}
+	if status, _ := f.statusOf(t, "Structural systems"); status != "filed" {
+		t.Fatalf("status %q", status)
+	}
 }
 
 func TestMailInboundFilesAMembersMessage(t *testing.T) {
@@ -427,10 +443,13 @@ func TestMailInboundRefusesAndDrops(t *testing.T) {
 	unsigned := f.fields(f.memberPost("Unsigned"))
 	delete(unsigned, "signature")
 	refused("unsigned", f.sendFields(t, unsigned, nil))
-	// An urlencoded post, even a genuine one, is not Mailgun's raw route:
-	// 415, counted (review MEDIUM-2).
-	if got := f.form(t, f.fields(f.memberPost("Form"))); got != http.StatusUnsupportedMediaType {
-		t.Fatalf("urlencoded = %d, want 415", got)
+	// An urlencoded post is checked like a multipart one: unsigned, 406.
+	if got := f.form(t, unsigned); got != http.StatusNotAcceptable {
+		t.Fatalf("unsigned urlencoded = %d, want 406", got)
+	}
+	// Any other format: 415, counted.
+	if got := f.raw(t, "text/plain", bytes.NewBufferString("hello")); got != http.StatusUnsupportedMediaType {
+		t.Fatalf("text/plain = %d, want 415", got)
 	}
 	if f.messages(t) != 0 {
 		t.Fatal("a refused post was stored")

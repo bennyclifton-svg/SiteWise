@@ -22,7 +22,8 @@ import (
 
 // Tests for the second security review of wave/mail.
 
-// form posts fields urlencoded, which the webhook refuses.
+// form posts fields urlencoded, as real Mailgun does for a message with no
+// attachment (seen 20 November 2026).
 func (f *mailFixture) form(t *testing.T, fields map[string]string) int {
 	t.Helper()
 	ctype, body := encodeForm(fields)
@@ -226,7 +227,7 @@ func TestMailRefusalStatuses(t *testing.T) {
 	for name, c := range map[string]struct{ got, want int }{
 		"signature":  {f.sendFields(t, bad, nil), http.StatusNotAcceptable},
 		"timestamp":  {f.send(t, stale), http.StatusNotAcceptable},
-		"urlencoded": {f.form(t, f.fields(f.memberPost("Form"))), http.StatusUnsupportedMediaType},
+		"urlencoded, bad signature": {f.form(t, bad), http.StatusNotAcceptable},
 	} {
 		if c.got != c.want {
 			t.Fatalf("%s = %d, want %d", name, c.got, c.want)

@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -216,6 +217,9 @@ func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, *refus
 		return nil
 	}
 	ctype, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	if ctype == "application/x-www-form-urlencoded" {
+		return readMailForm(r, post, check)
+	}
 	if ctype != "multipart/form-data" {
 		return post, &refuseFormat
 	}
@@ -286,6 +290,40 @@ func readMailPost(r *http.Request, key string, now time.Time) (*mailPost, *refus
 	sort.SliceStable(post.files, func(i, j int) bool {
 		return attachmentNumber(post.files[i].Field) < attachmentNumber(post.files[j].Field)
 	})
+	return post, nil
+}
+
+// readMailForm reads an urlencoded post. Real Mailgun sends the raw route
+// this way (20 November 2026, a message with no attachment), so the
+// review's "always multipart" (MEDIUM-2) did not hold. The body is held in
+// memory, within MaxPostBytes and the webhook's slots, and nothing in it is
+// used until the signature and timestamp pass.
+func readMailForm(r *http.Request, post *mailPost, check func() *refusal) (*mailPost, *refusal) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return post, &refuseRead
+	}
+	vals, err := url.ParseQuery(string(body))
+	if err != nil {
+		return post, &refuseFormat
+	}
+	for name := range vals {
+		v := vals.Get(name)
+		if name == mailin.RawField {
+			continue
+		}
+		if len(v) > mailFieldMax {
+			v = v[:mailFieldMax]
+		}
+		post.fields[name] = v
+	}
+	if why := check(); why != nil {
+		return post, why
+	}
+	if post.fields["timestamp"] == "" || post.fields["token"] == "" || post.fields["signature"] == "" {
+		return post, &refuseSignature
+	}
+	post.raw = []byte(vals.Get(mailin.RawField))
 	return post, nil
 }
 
