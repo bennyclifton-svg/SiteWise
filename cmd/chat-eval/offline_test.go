@@ -228,6 +228,9 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		"Show the RFIs past their response date":       filter("only", "register", "overdue"),
 		"Accept the answer on RFI-002":                 acceptFromRead("Structural sketch SK-04"),
 		"Set the RFI response time to 10 working days": apply("delivery", "delivery.settings", map[string]any{"rfi_response_days": 10}),
+		// The register panel: a row opens as a sheet; an RFI is sent from it.
+		"Open RFI-001":                          view(map[string]any{"do": "open", "table": "register", "ids": short("register", "RFI-001")}),
+		"Send RFI-002 to eng@northline.example": view(map[string]any{"do": "open", "dialog": "send", "fields": map[string]string{"rfi": "RFI-002", "to": "eng@northline.example"}}),
 
 		// The conditions group (plan 6).
 		"What is still open before the construction certificate and who has it?": read("before_cc"),

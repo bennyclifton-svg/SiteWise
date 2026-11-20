@@ -172,7 +172,7 @@ func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project stri
 	if err != nil {
 		return view, err
 	}
-	threads, err := rfiThreads(ctx, tx, org, project)
+	threads, err := rfiThreads(ctx, tx, org, project, all, readings)
 	if err != nil {
 		return view, err
 	}

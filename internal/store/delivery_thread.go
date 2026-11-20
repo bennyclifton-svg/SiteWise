@@ -21,44 +21,54 @@ const threadLimit = 50
 const excerptRunes = 280
 
 // rfiThreads reads every RFI's thread: the message it went out on and every
-// filed message in that message's thread, oldest first. Mail of another org
-// or project never joins, because every join carries both.
-func rfiThreads(ctx context.Context, tx pgx.Tx, org, project string) (map[string][]delivery.ThreadMessage, error) {
-	rows, err := tx.Query(ctx, `SELECT item, id, direction, sender, sender_name, to_addrs, number, received_at, send_status, body, documents, body_document, reading FROM (
- SELECT i.id::text AS item, m.id::text AS id, m.direction, m.sender, m.sender_name, m.to_addrs, m.number, m.received_at, m.send_status,
-  CASE WHEN m.direction='in' THEN left(m.body, 1200) ELSE '' END AS body,
-  (SELECT count(*) FROM mail_parts p WHERE p.org_id=m.org_id AND p.message_id=m.id
-    AND CASE WHEN m.direction='out' THEN p.document_id IS NOT NULL ELSE p.n>0 END)::int AS documents,
-  COALESCE((SELECT p.document_id::text FROM mail_parts p WHERE p.org_id=m.org_id AND p.message_id=m.id AND p.n=0 AND m.direction='in'), '') AS body_document,
-  COALESCE((SELECT r.id::text FROM mail_parts p JOIN delivery_readings r ON r.org_id=p.org_id AND r.document_id=p.document_id
-    WHERE p.org_id=m.org_id AND p.message_id=m.id AND p.n=0 AND m.direction='in' AND r.project_id=i.project_id AND r.item_id=i.id AND r.status='proposed' AND r.field='answers' LIMIT 1), '') AS reading,
-  row_number() OVER (PARTITION BY i.id ORDER BY m.received_at, m.id) AS n
- FROM project_delivery_items i
- JOIN mail_messages sent ON sent.org_id=i.org_id AND sent.project_id=i.project_id AND sent.id::text=i.details->>'sent_message_id'
- JOIN mail_messages m ON m.org_id=sent.org_id AND m.project_id=sent.project_id AND m.thread_id=sent.thread_id AND m.status='filed'
- WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.kind='rfi' AND i.retired_at IS NULL AND COALESCE(i.details->>'sent_message_id','')<>''
-) t WHERE n <= $3 ORDER BY item, received_at, id`, org, project, threadLimit)
+// filed message in that message's thread, oldest first. The RFIs and the
+// messages they went out on come from the rows already read, so the query
+// starts from those ids; mail of another org or project never joins,
+// because every join carries both. A reply's possible answer is matched in
+// Go from the readings already read.
+func rfiThreads(ctx context.Context, tx pgx.Tx, org, project string, items []delivery.Item, readings map[string][]delivery.Reading) (map[string][]delivery.ThreadMessage, error) {
+	out := map[string][]delivery.ThreadMessage{}
+	var ids, sent []string
+	for _, it := range items {
+		if it.Kind != "rfi" {
+			continue
+		}
+		if m := delivery.RFI(it.Content).SentMessageID; validUUID(m) {
+			ids, sent = append(ids, it.ID), append(sent, m)
+		}
+	}
+	if len(ids) == 0 {
+		return out, nil
+	}
+	rows, err := tx.Query(ctx, threadSQL, org, project, ids, sent, threadLimit)
+
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	out := map[string][]delivery.ThreadMessage{}
 	for rows.Next() {
 		var item, body, sender, name, to string
+		var docs, attachments int
 		var at time.Time
 		var m delivery.ThreadMessage
-		if err := rows.Scan(&item, &m.ID, &m.Direction, &sender, &name, &to, &m.Number, &at, &m.SendStatus, &body, &m.Documents, &m.BodyDocument, &m.Reading); err != nil {
+		if err := rows.Scan(&item, &m.ID, &m.Direction, &sender, &name, &to, &m.Number, &at, &m.SendStatus, &body, &docs, &attachments, &m.BodyDocument); err != nil {
 			return nil, err
 		}
 		m.At = at.UTC().Format(time.RFC3339)
 		if m.Direction == "out" {
-			m.With = to
+			m.With, m.Documents, m.BodyDocument = to, docs, ""
 		} else {
-			m.With = sender
+			m.With, m.Documents = sender, attachments
 			if name != "" {
 				m.With = name
 			}
 			m.Excerpt = replyExcerpt(body)
+			for _, r := range readings[item] {
+				if r.DocumentID == m.BodyDocument && m.BodyDocument != "" && r.Field != "evidence" {
+					m.Reading = r.ID
+					break
+				}
+			}
 		}
 		out[item] = append(out[item], m)
 	}
@@ -84,3 +94,21 @@ func replyExcerpt(body string) string {
 	}
 	return truncateRunes(strings.Join(lines, "\n"), excerptRunes)
 }
+
+// threadSQL starts from the RFIs' sent messages; each message's parts are
+// counted by a lateral lookup on mail_parts' key, so the plan does not
+// depend on table statistics.
+const threadSQL = `WITH s(item, id) AS (SELECT * FROM unnest($3::text[], $4::uuid[])),
+t AS (
+ SELECT s.item, m.id, m.direction, m.sender, m.sender_name, m.to_addrs, m.number, m.received_at, m.send_status,
+  CASE WHEN m.direction='in' THEN left(m.body, 1200) ELSE '' END AS body,
+  row_number() OVER (PARTITION BY s.item ORDER BY m.received_at, m.id) AS n
+ FROM s JOIN mail_messages sent ON sent.org_id=$1::uuid AND sent.project_id=$2::uuid AND sent.id=s.id
+ JOIN mail_messages m ON m.org_id=sent.org_id AND m.project_id=sent.project_id AND m.thread_id=sent.thread_id AND m.status='filed')
+SELECT t.item, t.id::text, t.direction, t.sender, t.sender_name, t.to_addrs, t.number, t.received_at, t.send_status, t.body,
+ p.docs::int, p.atts::int, COALESCE(p.body_document,'')
+FROM t CROSS JOIN LATERAL (
+ SELECT count(*) FILTER (WHERE x.document_id IS NOT NULL) AS docs, count(*) FILTER (WHERE x.n>0) AS atts,
+  max(x.document_id::text) FILTER (WHERE x.n=0) AS body_document
+ FROM mail_parts x WHERE x.org_id=$1::uuid AND x.message_id=t.id) p
+WHERE t.n <= $5 ORDER BY t.item, t.received_at, t.id`

@@ -72,6 +72,11 @@ func TestRegisterBudget(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	// Statistics as a live database keeps them, so the plan is the one a
+	// project with mail gets, not the fresh-table guess.
+	if _, err := pool.Exec(ctx, `ANALYZE project_delivery_items, delivery_readings, mail_messages, mail_parts`); err != nil {
+		t.Fatal(err)
+	}
 	base := "/api/projects/" + project + "/delivery"
 	samples := map[string][]int64{}
 	timed := func(path, method, url string, body []byte, want int, out any) {
