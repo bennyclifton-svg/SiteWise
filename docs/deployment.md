@@ -26,11 +26,19 @@ a symlink to the live one; files live in `/var/lib/sitewise/files`; logs via
 ## State of the live server
 
 Live since 8 Nov 2026 (first release `79a8d5f`, fresh empty database, no
-local data copied). Current release: `76bb126`, deployed 16 Nov 2026; it ran
-migrations 050 to 063. A dump taken just before that deploy is on the server
-at `/root/sitewise-before-76bb126.dump`. Done: operations.md section 1 steps
-1–5 and 8–10, OCR.
+local data copied). Current release: `bc4fdf4`, deployed 20 Nov 2026; it ran
+migrations 064 to 077 (chat agency, the register, guest access, consent
+conditions, the project report, variations and claims, mail). A dump taken
+just before that deploy is on the server at
+`/root/sitewise-before-bc4fdf4.dump`; the one before `76bb126` (16 Nov) is
+beside it. Done: operations.md section 1 steps 1–5 and 8–10, OCR.
 
+- Project email is **off**: `SITEWISE_MAIL_IN_DOMAIN`,
+  `SITEWISE_MAILGUN_SIGNING_KEY` and `SITEWISE_MAIL_SEND` are not set, so
+  `/api/mail/inbound` answers 404 and Send says sending is not set up (see
+  "Project email" below). After the 20 Nov deploy only `/healthz`, the
+  start-up log and the migration list were checked; nobody signed in or
+  dropped a file.
 - The model key was added to `/etc/sitewise/sitewise.env` on 16 Nov 2026, so
   the tender pass and chat start on (see "Tender pass" below; chat uses the
   same key). Each org still switches the model on for itself in Account.
