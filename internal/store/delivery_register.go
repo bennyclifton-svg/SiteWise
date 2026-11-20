@@ -168,10 +168,15 @@ func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project stri
 	if hasProgram {
 		view.Calendar = "program"
 	}
+	attached, err := rfiTransmittals(ctx, tx, org, project, all)
+	if err != nil {
+		return view, err
+	}
 	counts := map[string]*RegisterKind{}
 	var order []string
 	for i := range all {
 		it := &all[i]
+		it.Transmittal = attached[it.ID]
 		it.With = delivery.With(it.Content)
 		it.LateDays = lateDays(cal, *it, today)
 		it.Readings = readings[it.ID]

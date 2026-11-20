@@ -15,6 +15,8 @@ export interface DeliveryRecord extends DeliveryContent {
   owner_user_id?: string;
   id: string; version: number; origin: string; review_status: string; meaning: string; source_proposal_key?: string;
   number?: number; with?: string; late_days?: number; readings?: Reading[];
+  /** An RFI's attached documents as the RFP transmittal's rows (Go). */
+  transmittal?: string[][];
   provenance: { actor?: string; at?: string; last_edited_by?: string; last_edited_at?: string; proposal?: { kind: string; draft: boolean; label: string };
     sources?: { document_id?: string; filename?: string; excerpt?: string; page?: number }[];
     status_history?: { from: string; status: string; at: string }[];

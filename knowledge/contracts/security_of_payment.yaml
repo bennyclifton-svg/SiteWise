@@ -6,7 +6,8 @@
 # out from it shows "to check" with its section; its excluded spans are not
 # applied, so a date can only fall early.
 #
-# Nothing here has been read in an Act by anyone on this project. Counts are
+# The NSW row was read in the Act by the owner on 20 November 2026; no other
+# row has been read in an Act by anyone on this project. Counts are
 # quoted so a YAML reader cannot turn them into anything else. Only the owner
 # sets verified: true, with the Act's URL and the date it was read.
 version: 1
@@ -18,7 +19,7 @@ acts:
     business_day_excludes:
       weekdays: [sat, sun]
       public_holidays: true
-      # s 4 as the guidance describes it; not applied while unverified.
+      # s 4, confirmed by the owner on 20 November 2026.
       spans:
         - {from: "12-27", to: "12-31"}
     schedule:
@@ -32,10 +33,10 @@ acts:
     other_payments:
       - {who: head contractor to subcontractor (non-residential), section: s 11(1B)(a), business_days: "20"}
       - {who: head contractor to subcontractor (residential), section: s 11(1C)(b), business_days: "10"}
-    verified: false
-    primary_source: ""
+    verified: true
+    primary_source: https://legislation.nsw.gov.au/view/html/inforce/current/act-1999-046
     secondary_source: NSW Government guidance table "Making a payment claim" (nsw.gov.au, NSW Fair Trading) for the payment periods; commentary for the payment schedule period (s 14(4)). Not the Act.
-    checked_on: ""
+    checked_on: "2026-11-20"
     status: draft
     notes: >-
       legislation.nsw.gov.au served a browser check page, not the Act, on 17
@@ -43,10 +44,13 @@ acts:
       owner said payment is 15 business days head contractor to subcontractor
       and 10 business days principal to head contractor. That does not match
       the guidance table above (15 principal to head contractor; 20 head
-      contractor to subcontractor, non-residential). It may be the owner's own
-      contract terms, which can be earlier than the Act's, or a slip. Open
-      question for the owner; the contract's own periods are typed per
-      contract and the earlier date wins.
+      contractor to subcontractor, non-residential). On 20 November 2026 the
+      owner settled it: use the guidance table's figures (15 principal to
+      head contractor, 20 head contractor to subcontractor, 10 residential).
+      Later on 20 November 2026 the owner read ss 4, 11, 13 and 14 in the
+      Act at the primary source and confirmed every figure in this row
+      matches; the owner marked it verified. The contract's own periods are
+      typed per contract and the earlier date wins.
   - id: sop.qld
     state: QLD
     act: Building Industry Fairness (Security of Payment) Act 2017 (Qld)

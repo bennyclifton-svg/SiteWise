@@ -322,6 +322,25 @@ func sendRegisterEdit(ctx context.Context, d Deps, who opActor, project string, 
 		if err := liftRFIFields(f, it.Details); err != nil {
 			return sent{}, err
 		}
+		// An RFI's attached documents, as its transmittal: the whole list,
+		// each checked against the project by the store.
+		if docs, ok := f["documents"]; ok {
+			refs := []map[string]string{}
+			list, ok := docs.([]any)
+			if !ok {
+				return sent{}, refuse("documents", "Send documents as a list of document ids.")
+			}
+			for _, raw := range list {
+				id, _ := raw.(string)
+				v, _, err := projectDocument(ctx, d, who, project, id)
+				if err != nil {
+					return sent{}, err
+				}
+				refs = append(refs, map[string]string{"document_id": v.ID})
+			}
+			f["source_refs"] = refs
+			delete(f, "documents")
+		}
 	}
 	return sent{Path: map[string]string{"item": it.ID}, Body: f}, nil
 }

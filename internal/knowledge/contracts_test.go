@@ -59,8 +59,8 @@ func TestSOPActsRefuse(t *testing.T) {
 	}
 }
 
-// The real file loads, and nothing in it is verified: no one on the project
-// has read these Acts (owner decision 1 is open).
+// The real file loads. The owner read the NSW Act and marked that row
+// verified on 20 November 2026; every other row stays unverified.
 func TestSOPFileLoadsUnverified(t *testing.T) {
 	c, err := Load("../../knowledge")
 	if err != nil {
@@ -71,8 +71,8 @@ func TestSOPFileLoadsUnverified(t *testing.T) {
 		t.Fatalf("NSW row: %+v", nsw)
 	}
 	for _, a := range c.SOPActs() {
-		if a.Verified || a.Status != "draft" {
-			t.Errorf("%s must stay draft and unverified until the owner reads the Act", a.ID)
+		if a.Verified != (a.ID == "sop.nsw") || a.Status != "draft" {
+			t.Errorf("%s: verified %v, status %s; only the row the owner has read is verified", a.ID, a.Verified, a.Status)
 		}
 	}
 	if _, ok := c.SOPAct("WA"); ok {

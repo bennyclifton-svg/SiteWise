@@ -52,6 +52,9 @@ type Item struct {
 	With     string    `json:"with,omitempty"`
 	LateDays *int      `json:"late_days,omitempty"`
 	Readings []Reading `json:"readings,omitempty"`
+	// Transmittal is an RFI's attached documents as the RFP transmittal's
+	// rows (doc number, title, rev, date, discipline), in the order attached.
+	Transmittal [][]string `json:"transmittal,omitempty"`
 }
 
 // Reading is a proposed answer to an open register row: a filed document

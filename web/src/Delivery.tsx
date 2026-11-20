@@ -1,3 +1,4 @@
+import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 // The register: what is owed on the project, in one table
 // (docs/plans/2026-11-17-rfis-review-comments.md, Task 5). Every kind
 // shares six columns; what is particular to a kind sits in the strip under
@@ -57,7 +58,9 @@ const conditionOrder = (a: DeliveryRecord, b: DeliveryRecord) =>
 type Field = "title" | "with" | "due" | "system" | "status";
 interface Edit { id: string; field: Field; many?: string[]; error?: string }
 
-export function Delivery({ projectId, tick, readerTick = 0, raise, onSignedOut, onShowView, onOpenDocument, documents = [] }: {
+export function Delivery({ projectId, tick, readerTick = 0, raise, onSignedOut, onShowView, onOpenDocument, documents = [], transmittal }: {
+  /** The repository's selection, for an RFI's transmittal (as an RFP's). */
+  transmittal?: TransmittalSelection;
   projectId: string; tick: number; readerTick?: number; raise: { documentId: string; title: string; n: number } | null;
   onSignedOut: () => void; onShowView: (view: WorkbenchView) => void; onOpenDocument: (id: string) => void;
   /** Filed documents, for Read conditions and Link evidence (statutory instruments first). */
@@ -337,7 +340,8 @@ export function Delivery({ projectId, tick, readerTick = 0, raise, onSignedOut, 
       onDismiss={id => void run([{ op: "delivery.edit", fields: { item: one.id, dismiss_readings: [id] } }], "Dismissed.")}
       onSatisfied={() => void run(statusOps([one.id], "satisfied"), "Marked satisfied.")}
       onAddToRFP={() => void addToRFP(one)} />}
-    {one && one.kind !== "condition" && <Detail row={one} busy={busy} onOpenDocument={onOpenDocument}
+    {one && one.kind !== "condition" && <Detail row={one} busy={busy} onOpenDocument={onOpenDocument} transmittal={transmittal}
+      onAttach={ids => void run(editOps([one.id], { source_refs: ids.map(id => ({ document_id: id })) }), "Updated the transmittal.")}
       onSave={fields => void run(editOps([one.id], fields), "Saved.")}
       onAccept={id => void run(editOps([one.id], { accept_reading: id }), "Accepted the answer.")}
       onDismiss={id => void run([{ op: "delivery.edit", fields: { item: one.id, dismiss_readings: [id] } }], "Dismissed.")} />}
@@ -348,8 +352,9 @@ export function Delivery({ projectId, tick, readerTick = 0, raise, onSignedOut, 
 
 // Detail is what is particular to the selected row's kind: an RFI's
 // question, answer, documents and possible answers.
-function Detail({ row, busy, onSave, onAccept, onDismiss, onOpenDocument }: {
+function Detail({ row, busy, onSave, onAccept, onDismiss, onOpenDocument, transmittal, onAttach }: {
   row: DeliveryRecord; busy: boolean; onSave: (fields: Record<string, unknown>) => void;
+  transmittal?: TransmittalSelection; onAttach: (ids: string[]) => void;
   onAccept: (reading: string) => void; onDismiss: (reading: string) => void; onOpenDocument: (id: string) => void;
 }) {
   const d = row.details as { question?: string; answer?: string; ref?: string; raised_on?: string | null; answer_documents?: string[] };
@@ -374,7 +379,17 @@ function Detail({ row, busy, onSave, onAccept, onDismiss, onOpenDocument }: {
       <button type="button" className="btn btn-small" disabled={busy} onClick={() => onAccept(rd.id)}>Accept</button>
       <button type="button" className="cell-link" disabled={busy} onClick={() => onDismiss(rd.id)}>Dismiss</button>
     </div>)}
-    {(row.provenance.sources ?? []).length > 0 && <p>Sources: {(row.provenance.sources ?? []).map((s, i) => <button key={i} type="button" className="cell-link" onClick={() => s.document_id && onOpenDocument(s.document_id)}>{s.filename || "Document"}{s.page ? ` p. ${s.page}` : ""}</button>)}</p>}
+    {/* An RFI's documents are its transmittal, chosen as an RFP's are: select
+        in the repository, then Update Transmittal (owner, 20 November 2026). */}
+    {row.kind === "rfi"
+      ? <section className="report-section register-transmittal">
+        <div className="report-section-head section-band"><h3>Transmittal</h3></div>
+        <RfpTransmittal busy={busy} selection={transmittal} onWrite={async (_key, ids) => onAttach(ids as string[])}
+          block={{ id: "rfi:transmittal", label: "Transmittal", text: "", provisional: false, edited: false, conflict: false, source_missing: false, citation_ids: [],
+            table: { columns: ["Doc number", "Title", "Rev", "Date", "Discipline"], rows: row.transmittal ?? [] },
+            basis: { document_ids: [...new Set((row.provenance.sources ?? []).flatMap(s => s.document_id ? [s.document_id] : []))] } }} />
+      </section>
+      : (row.provenance.sources ?? []).length > 0 && <p>Sources: {(row.provenance.sources ?? []).map((s, i) => <button key={i} type="button" className="cell-link" onClick={() => s.document_id && onOpenDocument(s.document_id)}>{s.filename || "Document"}{s.page ? ` p. ${s.page}` : ""}</button>)}</p>}
     {history.length > 0 && <p className="register-history">{history.map(h => `${words(h.from)} → ${words(h.status)} ${new Date(h.at).toLocaleDateString()}`).join(" · ")}</p>}
   </section>;
 }
