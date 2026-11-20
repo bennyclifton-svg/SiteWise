@@ -128,8 +128,14 @@ function RfiSheet({ row, data, projectId, documents, transmittal, onOpenDocument
     setWarning(fill.warning ?? "");
   }, [fill]);
 
+  // The sheet saves one field at a time, as each loses focus, so two saves
+  // can be in flight together (To, then Cc). Each goes after the one before,
+  // and without a version: Go puts the field into the row's current details
+  // (liftRFIFields) and takes the version it holds, so the second save
+  // neither fails on the first's new version nor undoes it.
   const save = (fields: Record<string, unknown>, label = "Saved.") => {
-    const p = data.run(editOps([row], fields), label, "sheet");
+    const p = Promise.resolve(pending.current).catch(() => undefined)
+      .then(() => data.run([{ op: "delivery.edit", fields: { item: row.id, ...fields } }], label, "sheet"));
     pending.current = p;
     return p;
   };

@@ -18,7 +18,10 @@ test("a user authors, reviews and issues a standalone specification", async ({pa
   await newLine.getByRole("button",{name:"Add line item",exact:true}).click();
   await expect(page.getByRole("button",{name:"Edit Item name for Bathroom mirror",exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Update specification",exact:true}).click();
-  await expect(page.getByRole("status")).toContainText("Current documents are already read or queued");
+  // The page has other live regions (the project name's saving line since
+  // 4 November 2026, the repository's live state), so the specification's
+  // own message is read where it shows.
+  await expect(page.locator(".spec-feedback")).toContainText("Current documents are already read or queued");
   await page.screenshot({path:"../tmp/specification-framework-desktop.png"});
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:"../tmp/specification-framework-mobile.png"});

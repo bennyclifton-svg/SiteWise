@@ -59,12 +59,15 @@ test("one RFP report: page one edited where it prints, checks beside their value
   await expect(page.getByRole("group", { name: "Proposal dates" }).getByLabel("Release date", { exact: true })).toBeVisible();
   await expect(pageOne.locator('[data-control="fact:client"][data-blocked]')).toBeVisible();
 
+  // Section heads show without their print numbers on screen (owner,
+  // 8 Nov 2026; Reports.tsx screenTitle); the Edit buttons keep them.
   // Allowances follow the scope: one table, each quantity at its default
   // and nudged with arrows; no banner and no edit panel (owner, 8 Nov 2026).
-  const allowances = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "3. Allowances", exact: true }) });
+  const allowances = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "Allowances", exact: true }) });
   await expect(allowances.locator(".rfp-markers")).toHaveCount(0);
   await expect(allowances.getByRole("button", { name: /^Edit 3\. Allowances$/ })).toHaveCount(0);
-  await expect(allowances.getByRole("columnheader", { name: "Qty", exact: true })).toBeVisible();
+  // Two pairs of columns, Item | Qty | Item | Qty (owner, 8 Nov 2026; RfpAllowanceTable.tsx).
+  await expect(allowances.getByRole("columnheader", { name: "Qty", exact: true })).toHaveCount(2);
   const presentations = allowances.getByLabel("Client presentations quantity", { exact: true });
   await expect(presentations).toHaveValue("2");
   const qtySaved = page.waitForResponse(r => r.request().method() === "PUT" && r.url().endsWith("/settings/allowance%3Aclient_presentations"));
@@ -73,8 +76,8 @@ test("one RFP report: page one edited where it prints, checks beside their value
   expect((await qtySaved).ok()).toBeTruthy();
   await expect(presentations).toBeEnabled();
   await expect(presentations).toHaveValue("3");
-  await expect(allowances.locator('tr[data-control="allowance:client_presentations"]')).not.toHaveAttribute("data-blocked");
-  await expect(page.getByRole("heading", { name: "4. Transmittal", exact: true })).toBeVisible();
+  await expect(allowances.locator('td[data-control="allowance:client_presentations"]')).not.toHaveAttribute("data-blocked");
+  await expect(page.getByRole("heading", { name: "Transmittal", exact: true })).toBeVisible();
 
   // Project facts are edited where they print on page one and saved to Profile.
   await pageOne.getByLabel("Client", { exact: true }).fill("Inner West Council");
@@ -141,7 +144,9 @@ test("one RFP report: page one edited where it prints, checks beside their value
   expect(await box.evaluate(el => el.scrollHeight <= el.clientHeight)).toBeTruthy();
   await page.keyboard.press('Control+End');
   await page.keyboard.type(' Edited in place.');
-  await page.getByRole('heading', { name: '1. Project' }).click();
+  // Click away onto another section's head: page one has had no "Project"
+  // heading on screen since 8 Nov 2026 (section numbers and that title are print only).
+  await page.getByRole('heading', { name: 'Allowances', exact: true }).click();
   await expect(box).toHaveCount(0);
   await expect(scope.getByText(`${original} Edited in place.`, { exact: true })).toBeVisible();
 });
@@ -224,10 +229,12 @@ test("transmittal follows repository selection, saves snapshots and stays inside
   await expect(page.locator('.rfp-grid .pf-tb-head')).toHaveText(['Site and planning', 'The building', 'Delivery']);
   await expect(page.locator('.rfp-page-one .rfp-source')).toHaveCount(0);
   // The button picks up the saved schedule (all three here), not the whole register.
+  // Document rows are selected by click and carry data-selected; the row
+  // checkboxes went on 4 Nov 2026 (register-edit.spec: "click selects").
   await transmittal.getByRole('button', {name:'Select transmittal documents', exact:true}).click();
-  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
+  await expect(page.locator('tbody.reg-doc[data-selected]')).toHaveCount(3);
   await repoRows.nth(1).locator('.reg-title').click({modifiers:['Control']});
-  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(2);
+  await expect(page.locator('tbody.reg-doc[data-selected]')).toHaveCount(2);
   const selected = await repoRows.evaluateAll(els => els.filter(el => el.hasAttribute('data-selected')).map(el => el.id.slice(4)));
   await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
   await expect(transmittal.locator('tbody tr')).toHaveCount(2);
@@ -250,16 +257,16 @@ test("transmittal follows repository selection, saves snapshots and stays inside
 
   // Selecting again brings back the two saved documents only; Ctrl-click adds the third.
   await transmittal.getByRole('button', {name:'Select transmittal documents', exact:true}).click();
-  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(2);
+  await expect(page.locator('tbody.reg-doc[data-selected]')).toHaveCount(2);
   await repoRows.nth(1).locator('.reg-title').click({modifiers:['Control']});
-  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
+  await expect(page.locator('tbody.reg-doc[data-selected]')).toHaveCount(3);
 
   // A failed write leaves both the previous saved schedule and the selection intact.
   await page.route('**/settings/transmittal', route => route.fulfill({status:503,body:'Unavailable'}));
   await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
   await expect(page.getByRole('alert')).toContainText('Could not load or save');
   await expect(transmittal.locator('tbody tr')).toHaveCount(2);
-  await expect(repoRows.locator('input[type=checkbox]:checked')).toHaveCount(3);
+  await expect(page.locator('tbody.reg-doc[data-selected]')).toHaveCount(3);
   await page.unroute('**/settings/transmittal');
   await transmittal.getByRole('button', {name:'Update Transmittal', exact:true}).click();
   await expect(transmittal.locator('tbody tr')).toHaveCount(3);

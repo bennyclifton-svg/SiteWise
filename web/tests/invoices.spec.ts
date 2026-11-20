@@ -66,6 +66,10 @@ async function dropInvoices(page: Page, numbers: number[]) {
 
 test("ten invoices dropped at once land in the ledger, re-map moves the summary, and the workbook matches the screen", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1700, height: 1000 });
+  // The cost grid shows whole dollars unless Decimals is on (Costs.tsx,
+  // 7 Nov 2026). The ledger holds cents, so this test compares the screen
+  // with the ledger to the cent with Decimals on.
+  await page.addInitScript(() => { try { localStorage.setItem("sitewise.costs.decimals", "true"); } catch { /* storage off */ } });
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Invoice ledger");
@@ -191,7 +195,10 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await expect(table.getByRole("row").nth(1)).toContainText("Unallocated");
 
   await page.getByRole("tab", { name: /Variations/ }).click();
-  await expect(page.getByText("Variations are coming")).toBeVisible();
+  // The placeholder became the Variations and claims tab (plan
+  // 2026-11-17-variations-progress-claims.md, built 19 Nov 2026); with no
+  // awarded contract it says where contracts come from.
+  await expect(page.getByRole("region", { name: "Variations and claims" }).getByRole("heading", { name: "No live contracts yet" })).toBeVisible();
   await page.getByRole("tab", { name: /Invoices/ }).click();
   await page.screenshot({ path: testInfo.outputPath("invoices-desktop.png"), fullPage: true });
   await page.emulateMedia({ media: "print" });

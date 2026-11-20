@@ -54,7 +54,8 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
   testInfo.annotations.push({ type: "timing", description: `group RFP create and first build: ${Date.now() - start}ms` });
   await expect(civil.locator(".rfp-stage-scope")).toBeVisible();
   await expect(page.getByText(/This RFP is for one engagement, Civil and Structural, covering Civil engineering services and Structural engineering services/)).toBeVisible();
-  await expect(page.getByRole("heading", { name: "3. Fee schedule", exact: true })).toBeVisible();
+  // Section heads show without their print numbers on screen (owner, 8 Nov 2026).
+  await expect(page.getByRole("heading", { name: "Fee schedule", exact: true })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Sum for Structural engineering services", exact: true })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Engagement total (the sums above)", exact: true })).toBeVisible();
   // One page one and one set of proposal dates for the whole document; a
