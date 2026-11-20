@@ -158,21 +158,20 @@ DKIM signature verifies is held, never filed or read.
    (owner, 20 November 2026): its MX records already point at Mailgun, and
    the free Mailgun plan allows one domain, so `in.sitewise.au` was not
    added.
-2. **Mailgun** (US region; Receiving → Routes): spam filtering set to
-   "tag" for the domain, and three routes, first match wins.
-   - Priority 0, the owner's own mailboxes: `match_recipient` over the
-     names in `reservedMailLocal` (`internal/store/mail.go`) plus
-     `no-reply` and `mailer-daemon`, forwarding to the owner's mailbox,
-     with `stop()`. No project can have one of those names. A name added
-     there must be added to this route.
-   - Priority 5, project mail: `match_recipient(".*@sitewise\.au")` with
-     `forward("https://sitewise.au/api/mail/inbound/mime")` and `stop()`. The
-     URL must end in `mime`: Mailgun then posts the raw message (`body-mime`),
-     which is what SiteWise verifies the sender's DKIM signature over; without
-     it every message is held as "Could not confirm the sender". Mail to an
-     address no project has is dropped by the app.
-   - Priority 10, the old catch-all to the owner's mailbox. Nothing reaches
-     it now; it stays as the fallback if the priority 5 route is removed.
+2. **Mailgun** (US region; Send → Receiving → Routes): spam filtering set
+   to "tag" for the domain (done 20 November 2026). The free plan allows
+   **one route**, so one route does both jobs:
+   `match_recipient(".*@sitewise\.au")` with
+   `forward("https://sitewise.au/api/mail/inbound/mime")`, `forward(<the
+   owner's mailbox>)` and `stop()`. SiteWise files mail to a project's
+   address and drops the rest; the owner's mailbox gets a copy of everything,
+   so `support@` and the other names in `reservedMailLocal`
+   (`internal/store/mail.go`), which no project can take, still arrive. The
+   URL must end in `mime`: Mailgun then posts the raw message (`body-mime`),
+   which is what SiteWise verifies the sender's DKIM signature over; without
+   it every message is held as "Could not confirm the sender". On a paid
+   plan, split it: reserved names to the owner only, everything else to
+   SiteWise only.
 
    Mail goes out from `SITEWISE_MAIL_FROM` as "SiteWise", with Reply-To the
    PM and the project address.
