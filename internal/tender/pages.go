@@ -26,6 +26,10 @@ var (
 	priceWords   = regexp.MustCompile(`(?i)tender (sum|price)|lump sum|contract sum|fee (proposal|schedule|summary|table|breakdown)|schedule of (rates|prices|fees)|price schedule|returnable|sub-?\s?total|\btotal\b|provisional sum|prime cost|pc sum|quotation|quote summary|remuneration|professional fee|hourly rate|costings`)
 	contextWords = regexp.MustCompile(`(?i)exclusion|excluded|qualification|clarification|assumption|not included|no allowance|departure|\boption|alternative|value management|cost saving`)
 	noiseWords   = regexp.MustCompile(`(?i)certificate of currency|policy (no|number)|sum insured|the insured|underwriter|limit of (liability|indemnity)`)
+	// feeSchedule is a page that prices the offer. A proposal can print its
+	// insurance table on the same page as its fees (Willow Tree, Hale 2), so
+	// such a page is never dropped as an insurance page.
+	feeSchedule = regexp.MustCompile(`(?i)remuneration|lump sum|tender (sum|price)|contract sum|fee (proposal|schedule|summary|table|breakdown)|schedule of (prices|fees)|professional fee|stage costing`)
 )
 
 type scored struct {
@@ -44,7 +48,7 @@ func SelectPages(pages []Page) Selection {
 			cands = append(cands, scored{p.Number, 0})
 			continue
 		}
-		if noiseWords.MatchString(text) {
+		if noiseWords.MatchString(text) && !feeSchedule.MatchString(text) {
 			noise[p.Number] = true
 			continue
 		}

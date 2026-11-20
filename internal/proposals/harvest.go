@@ -311,6 +311,44 @@ var (
 // project's own value, a turnover or a staff count.
 var excludedContext = regexp.MustCompile(`(?i)services concerned|failure to exercise reasonable care|policy value|imprisonment|if no invoice has been issued|insurance|insurer|indemnity|public liability|liability\b|\bworkers\b|any one (?:claim|occurrence)|aggregate|valued (?:at|over|up to)|projects? (?:valued|worth|value)|value of the (?:project|works)|estimated value|contract value|turnover|construction (?:cost|value|budget) of|capital (?:value|investment)|\$\s?\d+(?:\.\d+)?\s?(?:m|million|billion|bn)\b`)
 
+var (
+	insuranceHeading = regexp.MustCompile(`(?i)\binsurances?\b|\bcertificates? of currency\b`)
+	// OCR can split a certificate's title across its logo ("Certificate
+	// icare Workers Insurance of currency"), so its other words count too.
+	certificateWords = regexp.MustCompile(`(?i)\bcertificates? of currency\b|\bcertificate\b[\s\S]{0,80}\bof currency\b|statement of coverage|\bthe insured\b|limit of indemnity`)
+	policyNumber     = regexp.MustCompile(`(?i)\bpolicy\s*(?:no\b|number)`)
+	// feeSchedule words price the offer; a page that has them is a fee page
+	// even when it also prints the firm's insurances (Willow Tree, Hale 2).
+	feeSchedule = regexp.MustCompile(`(?i)remuneration|lump sum|fee (?:proposal|schedule|summary|table|breakdown)|schedule of (?:prices|fees)|professional fee|stage costing|\bfee\s*\(?(?:ex|excl|inc|incl)`)
+)
+
+// insuranceSection is a heading over the firm's insurances ("Appendix C –
+// Insurances"): the figures under it are cover, not fees.
+func insuranceSection(heading string) bool {
+	return insuranceHeading.MatchString(heading) && !strings.Contains(strings.ToLower(heading), "fee")
+}
+
+// certificatePages are the PDF pages of attached certificates of currency.
+// Their figures are cover limits or declared wages ("782300 Consulting
+// Engineering Services $1,259,757.61"), never fees. A page needs both a
+// certificate's words and a policy number, and no fee words, so a cover
+// letter that only mentions a certificate keeps its fees.
+func certificatePages(lines []Line) map[int]bool {
+	text := map[int]string{}
+	for _, l := range lines {
+		if l.Page > 0 {
+			text[l.Page] += l.Text + "\n"
+		}
+	}
+	out := map[int]bool{}
+	for p, t := range text {
+		if certificateWords.MatchString(t) && policyNumber.MatchString(t) && !feeSchedule.MatchString(t) {
+			out[p] = true
+		}
+	}
+	return out
+}
+
 // "Cost estimate" is a total only when the words end at the figure or the
 // line ("Cost Estimate  $51,700.00"); a QS service named "DA cost estimate
 // report" is a fee row (F39).
@@ -356,6 +394,7 @@ func Harvest(filename string, text identity.Text) Evidence {
 	ratesBlock := 0
 	incAt := map[int]int{}
 	inAddressee := 0
+	certificates := certificatePages(lines)
 	for i, l := range lines {
 		t := l.Text
 		lower := strings.ToLower(t)
@@ -480,6 +519,12 @@ func Harvest(filename string, text identity.Text) Evidence {
 				above, localHeading := amountColumnContext(lines, i, j, m.before)
 				column := columnHeading(lines, i, l, j)
 				if excludedContext.MatchString(localHeading) || excludedContext.MatchString(label+" "+cell) && !priceColumn(column) || excludedContext.MatchString(above) && !strings.Contains(strings.ToLower(label+" "+cell), "fee") {
+					continue
+				}
+				// A table's cells can split the cover from its label ("BIA |
+				// 201909-0444 R3 | $20,000,000.00"), so the section heading
+				// and the page decide too.
+				if insuranceSection(heading) || certificates[l.Page] {
 					continue
 				}
 				a := Amount{Cents: m.cents, Display: m.display, Context: clip(ctx, 240), Under: clip(heading, 160), Before: clip(before, 160), Page: l.Page, Section: section, Title: title, Line: i}

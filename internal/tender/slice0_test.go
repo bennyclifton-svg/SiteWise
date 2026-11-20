@@ -71,6 +71,21 @@ func TestInsuranceCertificateIsDropped(t *testing.T) {
 	}
 }
 
+// Willow Tree's town planning proposal (Hale 2, 20 Nov 2026) prints its
+// remuneration schedule above its insurance table on one page. The page's
+// "Policy Number" column must not drop the fees with it.
+func TestFeeScheduleBesideInsuranceTableIsSent(t *testing.T) {
+	page5 := "Appendix B – Remuneration Schedule\nStage Costing – Lump Sum\nStage\nFee\n" +
+		"Stage 1: Schematic Design (Lodgement of DA)\n$8,500\nStage 2: Detailed Design\nN/A\n" +
+		"Stage 3: Post Lodgement\n$2,500\nTotal (excl. GST)\n$11,000*\n" +
+		"Appendix C – Insurances\nInsurance Type\nCompany\nPolicy Number\nExtent of Cover\nExpiry\n" +
+		"Public Liability\nBerkley Insurance\n201909-0444 R3\n$20,000,000.00\n"
+	sel := SelectPages([]Page{{Number: 1, Text: prose}, {Number: 5, Text: page5}})
+	if !reflect.DeepEqual(sel.Images, []int{5}) {
+		t.Fatalf("the remuneration page was not sent as an image: %+v", sel)
+	}
+}
+
 func TestLongDocumentKeepsOnlyRelevantText(t *testing.T) {
 	var pages []Page
 	for i := 1; i <= 40; i++ {
