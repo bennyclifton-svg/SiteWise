@@ -157,3 +157,18 @@ li[data-tone="check"] .register-what { box-shadow: inset var(--state-check-width
 .register-answer-form { margin: 4px 0 0 calc(6.5rem + 34px); }
 .panel-switch-held { color: var(--origin-check); font-weight: 400; }
 .panel-switch button[aria-selected="true"] .panel-switch-held { color: inherit; }
+
+/* Correspondence kinds (docs/plans/2026-11-23-correspondence-between-parties.md,
+   section 18): the grey row's kind, the completion line, the terms form and
+   an EOT claim's result. */
+.register-ghost-row { display: flex; gap: var(--space-2, 8px); align-items: center; }
+.register-ghost-kind { border: 0; background: transparent; color: var(--sw-text-secondary); font: inherit; font-size: var(--fs-xs); padding: 0; }
+.register-ghost-kind:focus-visible { outline: 2px solid var(--sw-focus, currentColor); outline-offset: 1px; }
+.register-completion { margin: 0; font-size: var(--fs-sm); color: var(--sw-text-secondary); }
+.register-completion strong { color: var(--sw-text-primary, inherit); font-weight: 600; }
+.register-terms { display: grid; gap: var(--space-2, 8px); }
+.register-terms label { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.register-terms input[type="number"], .register-days-input { width: 5.5em; }
+.register-outcomes { display: flex; flex-wrap: wrap; gap: var(--space-3, 12px); border: 0; margin: 0 0 var(--space-2, 8px); padding: 0; }
+.register-result-chip { font-size: var(--fs-sm); padding: 1px 8px; border: 1px solid var(--sw-border-subtle); border-radius: 999px; }
+.register-result-chip[data-outcome="rejected"] { color: var(--sw-error-text); }

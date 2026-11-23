@@ -267,6 +267,19 @@ c("rg8", "register", "register", "house", "Set the RFI response time to 10 worki
 # the middle panel, and an RFI is sent from that sheet.
 c("rg9", "register", "register", "house", "Open RFI-001", [sel("register", ["RFI-001"], "open"), K("no_change")], note="view open on the register: the RFI's sheet opens in the middle panel; the view beside it does not change.")
 c("rg10", "register", "register", "house", "Send RFI-002 to eng@northline.example", [opens("send", rfi="RFI-002", to="eng@northline.example"), K("not_applied")], note="Send for an RFI opens its own sheet with To filled in; its documents are its transmittal and its question the note. Nothing is sent until the PM presses Send.")
+# Correspondence between parties, first slice
+# (docs/plans/2026-11-23-correspondence-between-parties.md, section 18): the
+# PM records an EOT claim as it arrives, records its result, and sets the
+# agreed completion date. Each change applies at once with Undo; no case
+# waits for a click, since recording a result is the PM typing an
+# assessment (index, plan 3's row). Every date and total is Go's.
+EOT_REC = "Record an EOT claim from Acme Builders received on 23 November 2026 for 5 days of rain"
+c("rg11", "register", "register", "house", EOT_REC, [state("delivery", ["| EOT claim | EOT-1 | Rain, 5 days | You | 2026-12-21 |", "open (5 days claimed)"])], True, "Numbered EOT-1 in its own run; due 28 calendar days after receipt by SiteWise's default; with the PM, who answers it.")
+c("rg12", "register", "register", "house", "Grant 2 of the 5 days on EOT-1 because three fell in the Christmas shutdown", [state("delivery", ["| EOT-1 | Rain, 5 days |", "assessed: 2 of 5 days granted", "2 days granted on 1 EOT claim"])], True, "The result is recorded as data with its reasons; the total is Go's.", before=[EOT_REC])
+c("rg13", "register", "register", "house", "Set the agreed completion date to 1 March 2027", [state("delivery", ["Agreed completion 2027-03-01"])], True, "delivery.settings with agreed_completion: a project term, never the Profile's target completion.")
+c("rg14", "register", "register", "house", "How many days of extension have been granted so far?", [state("delivery", ["| EOT claim | EOT-1 | Rain, 5 days |"]), K("no_own_figure")], note="read delivery: Go's completion line says the days granted, and with no agreed date that nothing has moved.", before=[EOT_REC])
+c("rg15", "register", "register", "house", "When is the response to EOT-1 due and how was that worked out?", [state("delivery", ["| EOT claim | EOT-1 | Rain, 5 days |"]), K("no_own_figure")], note="read delivery: 28 calendar days from receipt, SiteWise's default and not the contract's.", before=[EOT_REC])
+c("rg16", "register", "register", "house", "Record an EOT claim from Acme Builders for the rain", [K("refuses"), K("no_change")], note="The stand-in sends days claimed and a received date the PM never gave: Go's figure check refuses the operation and nothing changes.")
 # --- guest links (docs/plans/2026-11-17-guest-access.md, "From chat"). In
 # the house fixture the structural RFP is issued, Hartwell Consulting holds
 # a link it has not opened, and the arborist report is shared with the

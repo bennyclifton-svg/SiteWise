@@ -18,7 +18,37 @@ import (
 // "From chat"). The read prints Go's figures: numbers, due dates, days late
 // and who holds a row. The operations run the register's own routes.
 
-var kindWords = map[string]string{"rfi": "RFI", "notice": "Notice", "condition": "Condition", "action": "Action", "risk": "Risk", "issue": "Issue", "decision": "Decision", "approval": "Approval", "milestone": "Hold point"}
+var kindWords = map[string]string{"rfi": "RFI", "eot_claim": "EOT claim", "delay_notice": "Notice of delay", "letter": "Letter", "notice": "Notice", "condition": "Condition", "action": "Action", "risk": "Risk", "issue": "Issue", "decision": "Decision", "approval": "Approval", "milestone": "Hold point"}
+
+// completionLine is the agreed completion date and the days granted, in
+// SiteWise's words; unknown is said plainly.
+func completionLine(c store.Completion) string {
+	days := fmt.Sprintf("%d day%s granted on %d EOT claim%s", c.DaysGranted, plural(c.DaysGranted), c.Claims, plural(c.Claims))
+	if c.Agreed == nil {
+		return "No agreed completion date is recorded, so nothing has moved; " + days + "."
+	}
+	return fmt.Sprintf("Agreed completion %s; %s; completion after EOTs %s (calendar days, computed by SiteWise).", *c.Agreed, days, *c.Adjusted)
+}
+
+// resultWords is an EOT claim's standing result, after its status.
+func resultWords(d delivery.EOTClaimDetails) string {
+	claimed := "?"
+	if d.DaysClaimed != nil {
+		claimed = strconv.Itoa(*d.DaysClaimed)
+	}
+	r := d.Result
+	switch {
+	case r == nil:
+		return fmt.Sprintf(" (%s days claimed)", claimed)
+	case r.Outcome == delivery.OutcomeRejected:
+		return fmt.Sprintf(": rejected (%s days claimed)", claimed)
+	case r.Outcome == delivery.OutcomeMoreInfo:
+		return fmt.Sprintf(": more information asked for (%s days claimed)", claimed)
+	case r.DaysGranted != nil:
+		return fmt.Sprintf(": %d of %s days granted", *r.DaysGranted, claimed)
+	}
+	return ""
+}
 
 // rfiNumber is "RFI-007".
 func rfiNumber(n *int) string {
@@ -65,6 +95,12 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 		cal = "Monday to Friday (no Program)"
 	}
 	r.line("The register: what is owed on the project, from SiteWise's records. Today is %s. RFI response time %d working days%s, on %s. Numbers, due dates, days late and With are computed by SiteWise; With is who holds the row now (You when an RFI is answered).", view.Today, view.ResponseDays, typical, cal)
+	eotTypical := ""
+	if view.EOTTypical {
+		eotTypical = " (SiteWise's default, not the contract's; the PM has not set the project's own)"
+	}
+	r.line("EOT claim response time %d calendar days%s; a letter takes the RFI response time.", view.EOTDays, eotTypical)
+	r.line("%s", completionLine(view.Completion))
 	consentHeader(view, r)
 	if len(view.Kinds) == 0 {
 		r.line("Nothing is recorded as owed yet.")
@@ -82,7 +118,7 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 		if it.LateDays != nil {
 			late = *it.LateDays
 		}
-		if overdue && !reports.RFIOverdue(reports.AttentionRecord{Kind: it.Kind, Status: it.Status, LateDays: late}) {
+		if overdue && !reports.Overdue(reports.AttentionRecord{Kind: it.Kind, Status: it.Status, LateDays: late}) {
 			continue
 		}
 		if gate != "" && delivery.Condition(it.Content).Stage != gate {
@@ -95,7 +131,11 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 		}
 		lateText := "—"
 		if late > 0 {
-			lateText = fmt.Sprintf("%d working days late", late)
+			unit := "working days"
+			if it.Kind == delivery.KindEOTClaim {
+				unit = "days"
+			}
+			lateText = fmt.Sprintf("%d %s late", late, unit)
 		}
 		var answers []string
 		for _, rd := range it.Readings {
@@ -103,6 +143,12 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 			r.outside = "the titles of filed documents offered as possible answers"
 		}
 		number, status := rfiNumber(it.Number), strings.ReplaceAll(it.Status, "_", " ")
+		if it.Number != nil {
+			number = delivery.Label(it.Kind, *it.Number)
+		}
+		if it.Kind == delivery.KindEOTClaim {
+			status += resultWords(delivery.EOT(it.Content))
+		}
 		if it.Kind == "condition" {
 			// The printed heading is the council's words.
 			r.outside = "consent conditions' printed headings"
@@ -143,7 +189,7 @@ func registerFilter(keep func(it delivery.Item, who opActor) bool) func(context.
 }
 
 func registerOverdue(it delivery.Item, _ opActor) bool {
-	return reports.RFIOverdue(attentionRecord(it, ""))
+	return reports.Overdue(attentionRecord(it, ""))
 }
 
 // registerWithMe is what is the PM's move: answered RFIs, and the drafts
@@ -177,24 +223,33 @@ func conditionNoOne(it delivery.Item, _ opActor) bool {
 	return it.Kind == "condition" && delivery.Open(it.Kind, it.Status) && strings.TrimSpace(it.OwnerText) == "" && it.PackageID == ""
 }
 
-// rfiRef is "RFI-007", "RFI 7" or "rfi#7".
-var rfiRef = regexp.MustCompile(`(?i)^\s*RFI[\s\-#]*0*(\d+)\s*$`)
+// rfiRef is "RFI-007", "RFI 7" or "rfi#7"; numberRef is any numbered
+// kind's reference ("EOT-4", "NOD 2", "LTR#1").
+var (
+	rfiRef    = regexp.MustCompile(`(?i)^\s*RFI[\s\-#]*0*(\d+)\s*$`)
+	numberRef = regexp.MustCompile(`(?i)^\s*(RFI|NOD|EOT|LTR)[\s\-#]*0*(\d+)\s*$`)
+)
 
-// registerItem finds one live row by its id, its short id or its RFI
-// number.
+// refKinds maps a reference's prefix to its kind.
+var refKinds = map[string]string{"RFI": "rfi", "NOD": delivery.KindDelayNotice, "EOT": delivery.KindEOTClaim, "LTR": delivery.KindLetter}
+
+// registerItem finds one live row by its id, its short id or its number in
+// its own kind's run (RFI-007, EOT-4): each kind numbers from 1, so the
+// prefix decides.
 func registerItem(ctx context.Context, d Deps, who opActor, project, ref string) (delivery.Item, error) {
 	items, err := d.Store.ReadDelivery(ctx, who.OrgID, project)
 	if err != nil {
 		return delivery.Item{}, err
 	}
-	if m := rfiRef.FindStringSubmatch(ref); m != nil {
-		n, _ := strconv.Atoi(m[1])
+	if m := numberRef.FindStringSubmatch(ref); m != nil {
+		kind := refKinds[strings.ToUpper(m[1])]
+		n, _ := strconv.Atoi(m[2])
 		for _, it := range items {
-			if it.Number != nil && *it.Number == n {
+			if it.Kind == kind && it.Number != nil && *it.Number == n {
 				return it, nil
 			}
 		}
-		return delivery.Item{}, refuse("item", "There is no RFI-%03d on the register.", n)
+		return delivery.Item{}, refuse("item", "There is no %s on the register.", delivery.Label(kind, n))
 	}
 	return byRef(items, func(it delivery.Item) string { return it.ID }, ref, "register row")
 }
@@ -282,6 +337,10 @@ func sendRegisterAdd(ctx context.Context, d Deps, who opActor, project string, f
 			return sent{}, err
 		}
 		if err := liftRFIFields(f, nil); err != nil {
+			return sent{}, err
+		}
+	} else if claimKind(kind) {
+		if err := liftClaimFields(ctx, d, who, project, f, nil); err != nil {
 			return sent{}, err
 		}
 	} else if _, ok := f["raised_on"]; ok {
@@ -376,7 +435,90 @@ func sendRegisterEdit(ctx context.Context, d Deps, who opActor, project string, 
 			delete(f, "documents")
 		}
 	}
+	if claimKind(it.Kind) {
+		if err := liftClaimFields(ctx, d, who, project, f, it.Details); err != nil {
+			return sent{}, err
+		}
+	}
 	return sent{Path: map[string]string{"item": it.ID}, Body: f}, nil
+}
+
+// claimKind is a kind of the correspondence slice: a notice of delay, an
+// EOT claim or a letter.
+func claimKind(kind string) bool {
+	return kind == delivery.KindDelayNotice || kind == delivery.KindEOTClaim || kind == delivery.KindLetter
+}
+
+// claimFields are a received item's own fields, given as their own fields
+// so each date and number is checked like any other figure; resultFields
+// are an EOT claim's result.
+var (
+	claimFields  = []string{"ref", "raised_by", "received_on", "cause", "delay_from", "delay_to", "days_claimed", "body", "answer", "message"}
+	resultFields = []string{"outcome", "days_granted", "reasons", "assessed_on"}
+)
+
+// liftClaimFields moves a received item's fields into details, over what
+// the row has now, and an EOT claim's result fields into its result. A
+// figure hidden inside details is refused, as an RFI's raised date is.
+func liftClaimFields(ctx context.Context, d Deps, who opActor, project string, f map[string]any, current json.RawMessage) error {
+	details := map[string]any{}
+	if len(current) > 0 {
+		_ = json.Unmarshal(current, &details)
+	}
+	if given, ok := f["details"].(map[string]any); ok {
+		for _, k := range append(append([]string{}, claimFields...), "result", "days_granted", "assessed_on") {
+			if _, hidden := given[k]; hidden {
+				return refuse("details", "Give %s as its own field, not inside details.", k)
+			}
+		}
+		for k, v := range given {
+			details[k] = v
+		}
+	}
+	lifted := false
+	for _, k := range claimFields {
+		v, ok := f[k]
+		if !ok {
+			continue
+		}
+		delete(f, k)
+		lifted = true
+		if k == "message" {
+			details["message_id"] = v
+			continue
+		}
+		details[k] = v
+	}
+	if ref := fieldText(f, "notice"); ref != "" {
+		n, err := registerItem(ctx, d, who, project, ref)
+		if err != nil {
+			return err
+		}
+		if n.Kind != delivery.KindDelayNotice {
+			return refuse("notice", "%s is not a notice of delay.", ref)
+		}
+		details["notice_id"] = n.ID
+		delete(f, "notice")
+		lifted = true
+	}
+	result, _ := details["result"].(map[string]any)
+	for _, k := range resultFields {
+		if v, ok := f[k]; ok {
+			if result == nil {
+				result = map[string]any{}
+			}
+			result[k] = v
+			delete(f, k)
+			lifted = true
+		}
+	}
+	if result != nil {
+		details["result"] = result
+	}
+	if lifted || f["details"] != nil {
+		f["details"] = details
+	}
+	return nil
 }
 
 // sendRegisterAccept is delivery.accept's: the reading by its id from the

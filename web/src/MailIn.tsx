@@ -131,10 +131,17 @@ function Messages({ projectId, list, reload, onOpenDocument }: { projectId: stri
     finally { setBusy(false); }
   };
   const patch = (m: MailMessage, body: Record<string, unknown>) => request("PATCH", `/projects/${projectId}/mail/${m.id}`, { version: m.version, ...body });
-  const addToRegister = (m: MailMessage) => act(() => request("POST", `/projects/${projectId}/delivery`, {
-    kind: "notice", title: m.subject || "Notice", status: "open",
-    details: { message_id: m.id, notice: NOTICE_WORDS[m.notice ?? ""] ?? "", received_on: m.received_at.slice(0, 10) },
-  }), "Added to the register.");
+  // A delay pick covers a notice of delay and an EOT claim alike (Jev's one
+  // eot_delay option), so the PM says which: each is its own numbered kind
+  // (correspondence plan, section 18). Every other pick is a notice row.
+  const addToRegister = (m: MailMessage, kind: "notice" | "eot_claim" | "delay_notice" = m.notice === "eot_delay" ? "eot_claim" : "notice") => act(() => request("POST", `/projects/${projectId}/delivery`,
+    kind === "notice" ? {
+      kind, title: m.subject || "Notice", status: "open",
+      details: { message_id: m.id, notice: NOTICE_WORDS[m.notice ?? ""] ?? "", received_on: m.received_at.slice(0, 10) },
+    } : {
+      kind, title: m.subject || (kind === "eot_claim" ? "EOT claim" : "Notice of delay"), status: "open",
+      details: { message_id: m.id, received_on: m.received_at.slice(0, 10), raised_by: (m.sender_name || m.with).slice(0, 200) },
+    }), kind === "eot_claim" ? "Recorded the EOT claim." : kind === "delay_notice" ? "Recorded the notice of delay." : "Added to the register.");
   const [pick, setPick] = useState<{ m: MailMessage; action: "claim" | "variation" } | null>(null);
   const runChip = (m: MailMessage, a: ChipAction = chipAction(m.notice ?? "")) => {
     if (a === "register") return addToRegister(m);
@@ -165,7 +172,8 @@ function Messages({ projectId, list, reload, onOpenDocument }: { projectId: stri
                 {sendState(m) && <span className="mail-mark" data-tone={m.send_status === "failed" ? "alert" : undefined}>{sendState(m)}</span>}
                 {action && CHIP_ACTIONS[action] && <span className="mail-chip" onClick={e => e.stopPropagation()}>
                   Possible {NOTICE_WORDS[m.notice!] ?? "notice"} · to check{" "}
-                  <button type="button" className="btn btn-small" disabled={busy} onClick={() => void runChip(m)}>{CHIP_LABEL[action]}</button>{" "}
+                  <button type="button" className="btn btn-small" disabled={busy} onClick={() => void runChip(m)}>{m.notice === "eot_delay" ? "Record EOT claim" : CHIP_LABEL[action]}</button>{" "}
+                  {m.notice === "eot_delay" && <><button type="button" className="cell-link" disabled={busy} onClick={() => void addToRegister(m, "delay_notice")}>Notice of delay</button>{" "}</>}
                   <button type="button" className="cell-link" disabled={busy} onClick={() => void act(() => patch(m, { pick_state: "dismissed" }), "Dismissed.")}>Not one</button>
                 </span>}
               </td>

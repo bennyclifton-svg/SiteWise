@@ -35,10 +35,17 @@ type RegisterView struct {
 	Kinds []RegisterKind `json:"kinds"`
 	// ResponseDays is the RFI response time; Typical is true until the PM
 	// sets the project's own (shown blue).
-	ResponseDays    int    `json:"response_days"`
-	ResponseTypical bool   `json:"response_typical"`
-	Calendar        string `json:"calendar"` // "program", or "weekdays" with no program
-	Today           string `json:"today"`
+	ResponseDays    int  `json:"response_days"`
+	ResponseTypical bool `json:"response_typical"`
+	// EOTDays is the calendar days to assess an EOT claim; Typical until
+	// the PM sets the project's own (SiteWise's default, check the contract).
+	EOTDays    int  `json:"eot_days"`
+	EOTTypical bool `json:"eot_typical"`
+	// Completion is the agreed completion date, the days granted on EOT
+	// claims and the date after them, computed here.
+	Completion Completion `json:"completion"`
+	Calendar   string     `json:"calendar"` // "program", or "weekdays" with no program
+	Today      string     `json:"today"`
 	// Systems are the top-level systems in building order, for the System filter.
 	Systems  []RegisterSystem `json:"systems"`
 	AlsoOpen *AlsoOpen        `json:"also_open,omitempty"`
@@ -156,15 +163,17 @@ func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project stri
 	if err != nil {
 		return view, err
 	}
-	days, typical, err := responseDays(ctx, tx, org, project)
+	terms, err := deliveryTerms(ctx, tx, org, project)
 	if err != nil {
 		return view, err
 	}
+	periods := terms.Resolve()
 	cal, hasProgram, err := projectCalendar(ctx, tx, org, project)
 	if err != nil {
 		return view, err
 	}
-	view.ResponseDays, view.ResponseTypical, view.Calendar = days, typical, "weekdays"
+	view.ResponseDays, view.ResponseTypical, view.Calendar = periods.RFIDays, periods.RFITypical, "weekdays"
+	view.EOTDays, view.EOTTypical = periods.EOTDays, periods.EOTTypical
 	if hasProgram {
 		view.Calendar = "program"
 	}
@@ -189,6 +198,7 @@ func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project stri
 		it.RaisedBy = raisers[it.ID]
 		it.With = delivery.With(it.Content)
 		it.LateDays = lateDays(cal, *it, today)
+		it.DueBasis = dueBasis(it.Content, periods)
 		it.Readings = readings[it.ID]
 		k := counts[it.Kind]
 		if k == nil {
@@ -207,6 +217,7 @@ func (s *Store) readRegisterTx(ctx context.Context, tx pgx.Tx, org, project stri
 			view.Items = append(view.Items, *it)
 		}
 	}
+	view.Completion = completionOf(all, terms.AgreedCompletion)
 	for _, kind := range kindOrder(order) {
 		view.Kinds = append(view.Kinds, *counts[kind])
 	}
@@ -258,7 +269,7 @@ func consentFacts(ctx context.Context, tx pgx.Tx, org, project string) (ConsentF
 
 // kindOrder puts RFIs, notices and consent conditions first, then the older kinds as they came.
 func kindOrder(kinds []string) []string {
-	rank := map[string]int{"rfi": 0, "notice": 1, "condition": 2, "action": 3, "risk": 4, "issue": 5, "decision": 6, "approval": 7, "milestone": 8}
+	rank := map[string]int{"rfi": 0, "eot_claim": 1, "delay_notice": 2, "letter": 3, "notice": 4, "condition": 5, "action": 6, "risk": 7, "issue": 8, "decision": 9, "approval": 10, "milestone": 11}
 	out := append([]string(nil), kinds...)
 	for i := 1; i < len(out); i++ {
 		for j := i; j > 0 && rank[out[j]] < rank[out[j-1]]; j-- {
@@ -268,11 +279,60 @@ func kindOrder(kinds []string) []string {
 	return out
 }
 
-// lateDays is how many working days a Draft or Open RFI is past its due
-// date, on the project's calendar; nil when it is not late.
+// owed reports a row that is still waiting on its response: a Draft or
+// Open RFI, an Open EOT claim, an Open letter.
+func owed(it delivery.Item) bool {
+	switch it.Kind {
+	case "rfi":
+		return it.Status == "draft" || it.Status == "open"
+	case delivery.KindEOTClaim, delivery.KindLetter:
+		return it.Status == "open"
+	}
+	return false
+}
+
+// dueBasis says how a row's due date was reached, for the screen's "28
+// days, the default". Empty when the row has no worked-out due date.
+func dueBasis(c delivery.Content, p Periods) string {
+	if c.TargetDate == nil {
+		return ""
+	}
+	typed, typical := false, p.RFITypical
+	switch c.Kind {
+	case "rfi":
+		typed = delivery.RFI(c).DueTyped
+	case delivery.KindLetter:
+		typed = delivery.Letter(c).DueTyped
+	case delivery.KindEOTClaim:
+		typed, typical = delivery.EOT(c).DueTyped, p.EOTTypical
+	default:
+		return ""
+	}
+	switch {
+	case typed:
+		return "typed"
+	case typical:
+		return "default"
+	}
+	return "project"
+}
+
+// lateDays is how far a row still owed a response is past its due date:
+// working days on the project's calendar for an RFI or a letter, calendar
+// days for an EOT claim (its period is in calendar days). Nil when it is
+// not late.
 func lateDays(cal program.Calendar, it delivery.Item, today string) *int {
-	if it.Kind != "rfi" || (it.Status != "draft" && it.Status != "open") || it.TargetDate == nil || *it.TargetDate >= today {
+	if !owed(it) || it.TargetDate == nil || *it.TargetDate >= today {
 		return nil
+	}
+	if it.Kind == delivery.KindEOTClaim {
+		due, err1 := time.Parse("2006-01-02", *it.TargetDate)
+		now, err2 := time.Parse("2006-01-02", today)
+		if err1 != nil || err2 != nil {
+			return nil
+		}
+		n := int(now.Sub(due).Hours() / 24)
+		return &n
 	}
 	c := program.NewCalendar(program.Calendar{Start: *it.TargetDate, WorkingWeek: cal.WorkingWeek, Days: cal.Days})
 	n, ok := c.IndexOnOrBefore(today)
@@ -310,12 +370,9 @@ func projectCalendar(ctx context.Context, tx pgx.Tx, org, project string) (progr
 
 // responseDays is the project's RFI response time, or the typical five.
 func responseDays(ctx context.Context, tx pgx.Tx, org, project string) (int, bool, error) {
-	var days int
-	err := tx.QueryRow(ctx, `SELECT rfi_response_days FROM delivery_settings WHERE org_id=$1::uuid AND project_id=$2::uuid`, org, project).Scan(&days)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return delivery.DefaultResponseDays, true, nil
-	}
-	return days, false, err
+	t, err := deliveryTerms(ctx, tx, org, project)
+	p := t.Resolve()
+	return p.RFIDays, p.RFITypical, err
 }
 
 // proposedReadings are the possible answers the screen shows: rule matches
@@ -442,6 +499,67 @@ func (s *Store) registerFill(ctx context.Context, tx pgx.Tx, org, project string
 				return err
 			}
 		}
+	case delivery.KindEOTClaim:
+		d := delivery.EOT(*c)
+		var was *delivery.EOTClaimDetails
+		if before != nil && before.Kind == c.Kind {
+			b := delivery.EOT(*before)
+			was = &b
+		}
+		if err := s.fillReceived(ctx, tx, org, project, c, dueEdited, &d.DueTyped, d.ReceivedOn, was != nil && was.DueTyped, was == nil || !sameDate(was.ReceivedOn, d.ReceivedOn)); err != nil {
+			return err
+		}
+		if d.MessageID != "" && (was == nil || was.MessageID != d.MessageID) {
+			if err := useMessagePick(ctx, tx, org, project, d.MessageID); err != nil {
+				return err
+			}
+		}
+		if d.NoticeID != "" {
+			var ok bool
+			if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM project_delivery_items WHERE org_id=$1::uuid AND project_id=$2::uuid AND id=$3::uuid AND kind='delay_notice')`, org, project, d.NoticeID).Scan(&ok); err != nil {
+				return err
+			}
+			if !ok {
+				return fmt.Errorf("%w: the linked notice of delay is not on this project", ErrInvalidDelivery)
+			}
+		}
+		// A decided result keeps the day it was recorded when none is given.
+		if d.Result.Decided() && d.Result.AssessedOn == nil {
+			today := sydneyToday()
+			d.Result.AssessedOn = &today
+		}
+		raw, err := json.Marshal(d)
+		if err != nil {
+			return err
+		}
+		c.Details = raw
+	case delivery.KindLetter:
+		d := delivery.Letter(*c)
+		var was *delivery.LetterDetails
+		if before != nil && before.Kind == c.Kind {
+			b := delivery.Letter(*before)
+			was = &b
+		}
+		if err := s.fillReceived(ctx, tx, org, project, c, dueEdited, &d.DueTyped, d.ReceivedOn, was != nil && was.DueTyped, was == nil || !sameDate(was.ReceivedOn, d.ReceivedOn)); err != nil {
+			return err
+		}
+		if d.MessageID != "" && (was == nil || was.MessageID != d.MessageID) {
+			if err := useMessagePick(ctx, tx, org, project, d.MessageID); err != nil {
+				return err
+			}
+		}
+		raw, err := json.Marshal(d)
+		if err != nil {
+			return err
+		}
+		c.Details = raw
+	case delivery.KindDelayNotice:
+		d := delivery.DelayNotice(*c)
+		if d.MessageID != "" && (before == nil || delivery.DelayNotice(*before).MessageID != d.MessageID) {
+			if err := useMessagePick(ctx, tx, org, project, d.MessageID); err != nil {
+				return err
+			}
+		}
 	case "rfi":
 		d := delivery.RFI(*c)
 		for _, id := range d.AnswerDocuments {
@@ -479,6 +597,36 @@ func (s *Store) registerFill(ctx context.Context, tx pgx.Tx, org, project string
 		}
 		c.Details = raw
 	}
+	return nil
+}
+
+// fillReceived works out a received item's due date from its received
+// date and the project's period unless the PM typed it: the rule an RFI's
+// raised date follows. An EOT claim counts calendar days; a letter counts
+// working days on the Program's calendar.
+func (s *Store) fillReceived(ctx context.Context, tx pgx.Tx, org, project string, c *delivery.Content, dueEdited bool, dueTyped *bool, received *string, wasTyped, moved bool) error {
+	if dueEdited {
+		*dueTyped = c.TargetDate != nil
+	} else if wasTyped {
+		*dueTyped = true // the screen sends the details it shows; the mark is Go's
+	}
+	if *dueTyped || !(moved || dueEdited) {
+		return nil
+	}
+	t, err := deliveryTerms(ctx, tx, org, project)
+	if err != nil {
+		return err
+	}
+	p := t.Resolve()
+	if c.Kind == delivery.KindEOTClaim {
+		c.TargetDate = delivery.AddDays(received, p.EOTDays)
+		return nil
+	}
+	cal, _, err := projectCalendar(ctx, tx, org, project)
+	if err != nil {
+		return err
+	}
+	c.TargetDate = delivery.DueDate(cal, received, p.RFIDays)
 	return nil
 }
 
@@ -558,35 +706,7 @@ func nextNumber(ctx context.Context, tx pgx.Tx, org, project, kind string) (*int
 // due date the PM did not type keep the date they have: the new time
 // applies to RFIs raised or re-dated after it.
 func (s *Store) SetDeliverySettings(ctx context.Context, org, project, actor string, days int) error {
-	if days < 1 || days > 60 {
-		return fmt.Errorf("%w: the response time is 1 to 60 working days", ErrInvalidDelivery)
-	}
-	tx, err := s.pool.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-	if err := lockProject(ctx, tx, org, project); err != nil {
-		return err
-	}
-	if err := packageActor(ctx, tx, org, actor); err != nil {
-		return err
-	}
-	tag, err := tx.Exec(ctx, `INSERT INTO delivery_settings(org_id,project_id,rfi_response_days) SELECT org_id,id,$3 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid
- ON CONFLICT (org_id,project_id) DO UPDATE SET rfi_response_days=EXCLUDED.rfi_response_days WHERE delivery_settings.rfi_response_days<>EXCLUDED.rfi_response_days`, org, project, days)
-	if err != nil {
-		return err
-	}
-	if tag.RowsAffected() == 0 {
-		var exists bool
-		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM projects WHERE org_id=$1::uuid AND id=$2::uuid)`, org, project).Scan(&exists); err != nil {
-			return err
-		}
-		if !exists {
-			return ErrNotFound
-		}
-	}
-	return s.finishDeliveryWrite(ctx, tx, org, project)
+	return s.SetDeliveryTerms(ctx, org, project, actor, TermsPatch{RFIDays: Optional[int]{Present: true, Value: &days}})
 }
 
 // alsoOpen counts what else is unsettled on a system.

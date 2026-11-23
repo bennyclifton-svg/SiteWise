@@ -15,6 +15,8 @@ export interface DeliveryRecord extends DeliveryContent {
   owner_user_id?: string;
   id: string; version: number; origin: string; review_status: string; meaning: string; source_proposal_key?: string;
   number?: number; with?: string; late_days?: number; readings?: Reading[];
+  /** How a worked-out due date was reached (Go): SiteWise's default, the project's period, or typed. */
+  due_basis?: "default" | "project" | "typed";
   /** An RFI's attached documents as the RFP transmittal's rows (Go). */
   transmittal?: string[][];
   /** An RFI's mail: what went out and the filed replies in its thread, oldest first (Go). */
@@ -64,11 +66,26 @@ export interface AlsoOpen { system: string; label: string; spec_unknowns: number
 export interface RegisterView {
   items: DeliveryRecord[]; kinds: RegisterKind[];
   response_days: number; response_typical: boolean; calendar: "program" | "weekdays"; today: string;
+  /** Calendar days to assess an EOT claim; typical while it is SiteWise's default. */
+  eot_days: number; eot_typical: boolean;
+  /** The agreed completion date, the days granted on EOT claims and the date after them (Go). */
+  completion: Completion;
   systems: { id: string; label: string }[]; also_open?: AlsoOpen;
   consents?: ConsentRead[]; consent?: { number?: string; date?: string; lapse_date?: string };
   /** Why the RFI sheet's Send is off on this server, in Go's words; absent when sending is set up. */
   send_off?: string;
 }
+/** The project's agreed completion and the days granted, computed by Go; unknown stays unknown. */
+export interface Completion { agreed?: string; days_granted: number; adjusted?: string; claims: number }
+/** An EOT claim's result, as recorded. */
+export interface EOTResult { outcome: "granted" | "granted_in_part" | "rejected" | "more_information"; days_granted?: number | null; reasons?: string; assessed_on?: string | null }
+/** A received item's details: a notice of delay, an EOT claim or a letter. */
+export interface ClaimDetails {
+  ref?: string; raised_by?: string; received_on?: string | null; cause?: string; delay_from?: string | null; delay_to?: string | null;
+  days_claimed?: number | null; notice_id?: string; message_id?: string; due_typed?: boolean; result?: EOTResult | null;
+  body?: string; answer?: string;
+}
+
 /** The register's gates in project order, and their Due words. */
 export const GATES: [string, string][] = [["before_cc", "Before CC"], ["before_work", "Before work starts"], ["during_works", "During works"],
   ["before_occupation", "Before OC"], ["before_subdivision", "Before SC"], ["ongoing", "Ongoing after occupation"], ["throughout", "Throughout"]];
@@ -86,6 +103,10 @@ export const deliveryApi = {
 
 /** "RFI-007" */
 export const rfiNumber = (n?: number) => (n ? `RFI-${String(n).padStart(3, "0")}` : "");
+
+const PREFIX: Record<string, string> = { delay_notice: "NOD", eot_claim: "EOT", letter: "LTR" };
+/** A numbered row's number as shown: RFI-007, EOT-4, NOD-2, LTR-1; "" for a kind with no number. */
+export const numberLabel = (kind: string, n?: number) => (kind === "rfi" ? rfiNumber(n) : n && PREFIX[kind] ? `${PREFIX[kind]}-${n}` : "");
 
 /** Today in Sydney, YYYY-MM-DD: the raised date of an RFI typed in the grey row. */
 export function sydneyToday(): string {

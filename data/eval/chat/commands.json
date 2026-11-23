@@ -2554,6 +2554,128 @@
    ]
   },
   {
+   "id": "rg11",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Record an EOT claim from Acme Builders received on 23 November 2026 for 5 days of rain",
+   "money_or_date": true,
+   "note": "Numbered EOT-1 in its own run; due 28 calendar days after receipt by SiteWise's default; with the PM, who answers it.",
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| EOT claim | EOT-1 | Rain, 5 days | You | 2026-12-21 |",
+      "open (5 days claimed)"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rg12",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Grant 2 of the 5 days on EOT-1 because three fell in the Christmas shutdown",
+   "money_or_date": true,
+   "note": "The result is recorded as data with its reasons; the total is Go's.",
+   "before": [
+    "Record an EOT claim from Acme Builders received on 23 November 2026 for 5 days of rain"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| EOT-1 | Rain, 5 days |",
+      "assessed: 2 of 5 days granted",
+      "2 days granted on 1 EOT claim"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rg13",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Set the agreed completion date to 1 March 2027",
+   "money_or_date": true,
+   "note": "delivery.settings with agreed_completion: a project term, never the Profile's target completion.",
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "Agreed completion 2027-03-01"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rg14",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "How many days of extension have been granted so far?",
+   "note": "read delivery: Go's completion line says the days granted, and with no agreed date that nothing has moved.",
+   "before": [
+    "Record an EOT claim from Acme Builders received on 23 November 2026 for 5 days of rain"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| EOT claim | EOT-1 | Rain, 5 days |"
+     ]
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "rg15",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "When is the response to EOT-1 due and how was that worked out?",
+   "note": "read delivery: 28 calendar days from receipt, SiteWise's default and not the contract's.",
+   "before": [
+    "Record an EOT claim from Acme Builders received on 23 November 2026 for 5 days of rain"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "delivery",
+     "has": [
+      "| EOT claim | EOT-1 | Rain, 5 days |"
+     ]
+    },
+    {
+     "kind": "no_own_figure"
+    }
+   ]
+  },
+  {
+   "id": "rg16",
+   "source": "register",
+   "group": "register",
+   "fixture": "house",
+   "message": "Record an EOT claim from Acme Builders for the rain",
+   "note": "The stand-in sends days claimed and a received date the PM never gave: Go's figure check refuses the operation and nothing changes.",
+   "expect": [
+    {
+     "kind": "refuses"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
    "id": "ga1",
    "source": "guests",
    "group": "shares",

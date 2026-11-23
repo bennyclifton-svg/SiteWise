@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -69,14 +70,19 @@ func putDeliverySettings(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
-	var body struct {
-		Days int `json:"rfi_response_days"`
-	}
+	// Each term is optional: a field left out keeps its value and a null
+	// clears it (back to SiteWise's default, or unknown for the date).
+	var body map[string]json.RawMessage
 	if err := readProposalJSON(w, r, deps.MaxBodyBytes, &body); err != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
-	if err := deps.Store.SetDeliverySettings(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, body.Days); err != nil {
+	patch, err := termsPatch(body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := deps.Store.SetDeliveryTerms(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, patch); err != nil {
 		deliveryError(w, err)
 		return
 	}

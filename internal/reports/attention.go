@@ -10,6 +10,7 @@ import (
 	"sitewise/internal/delivery"
 	"sitewise/internal/figures"
 	"sitewise/internal/invoices"
+	"sitewise/internal/program"
 )
 
 // Attention is the one Go answer to "what needs attention"
@@ -42,6 +43,12 @@ const (
 	RuleCompletionLater       = "program.completion_later_than_report"
 	RuleRFIOverdue            = "register.rfi_overdue"
 	RuleRegisterToCheck       = "register.to_check"
+	// Correspondence between parties, first slice: an EOT claim or a letter
+	// past its response date, and an EOT claim due within two business
+	// days. Silence warns only: no rule here changes a figure.
+	RuleEOTOverdue    = "register.eot_overdue"
+	RuleEOTDue        = "register.eot_due"
+	RuleLetterOverdue = "register.letter_overdue"
 	// Plan 6: consent conditions still open when their Program gate is
 	// within the window, or already reached.
 	RuleConditionsDue    = "register.conditions_due"
@@ -217,6 +224,28 @@ func RFIOverdue(r AttentionRecord) bool {
 	return r.Kind == "rfi" && (r.Status == "draft" || r.Status == "open") && r.LateDays > 0
 }
 
+// ResponseOverdue is an Open EOT claim or letter past its response date,
+// shared by these rules and the register's "overdue" filter.
+func ResponseOverdue(r AttentionRecord, kind string) bool {
+	return r.Kind == kind && r.Status == "open" && r.LateDays > 0
+}
+
+// Overdue is any register row past its response date: an RFI, an EOT
+// claim or a letter.
+func Overdue(r AttentionRecord) bool {
+	return RFIOverdue(r) || ResponseOverdue(r, delivery.KindEOTClaim) || ResponseOverdue(r, delivery.KindLetter)
+}
+
+// EOTDueSoon is an Open EOT claim whose response date is today or within
+// the next two business days: warn before, not after.
+func EOTDueSoon(r AttentionRecord, today string) bool {
+	if r.Kind != delivery.KindEOTClaim || r.Status != "open" || r.TargetDate == "" || today == "" || r.TargetDate < today {
+		return false
+	}
+	soon, ok := program.BusinessDayAfter(program.Calendar{}, today, 2)
+	return ok && r.TargetDate <= soon
+}
+
 // AttentionFigure is one money figure in a sentence, ex GST as its screen
 // holds it. Chat tags it; the report prints it.
 type AttentionFigure struct {
@@ -313,6 +342,12 @@ func Attention(in AttentionInput) []AttentionItem {
 	out = appendIf(out, completionItem(in.Completion, in.LastReport))
 	out = appendIf(out, approvalItem(in.Delivery, in.Today))
 	out = appendIf(out, rfiOverdueItem(in.Delivery))
+	out = appendIf(out, registerItem(in.Delivery, RuleEOTOverdue, func(r AttentionRecord) bool { return ResponseOverdue(r, delivery.KindEOTClaim) },
+		"EOT claim is", "EOT claims are", " past the response date"))
+	out = appendIf(out, registerItem(in.Delivery, RuleEOTDue, func(r AttentionRecord) bool { return EOTDueSoon(r, in.Today) },
+		"EOT claim is", "EOT claims are", " due for a response within two business days"))
+	out = appendIf(out, registerItem(in.Delivery, RuleLetterOverdue, func(r AttentionRecord) bool { return ResponseOverdue(r, delivery.KindLetter) },
+		"letter is", "letters are", " past the response date"))
 	out = appendIf(out, registerToCheckItem(in.Delivery))
 	out = appendIf(out, conditionItem(in.Delivery, in.Today, RuleConditionsAtGate, conditionAtGate, "consent condition is", "consent conditions are", " still open at a gate the Program has reached"))
 	out = appendIf(out, conditionItem(in.Delivery, in.Today, RuleConditionsDue, conditionDue, "consent condition is", "consent conditions are", fmt.Sprintf(" open before a gate in the next %d days", ConditionWindowDays)))
@@ -603,6 +638,17 @@ func rfiOverdueItem(records []AttentionRecord) AttentionItem {
 	}
 	return AttentionItem{Rule: RuleRFIOverdue, Source: "Register", Count: len(ids), IDs: ids,
 		Words: plural(len(ids), "RFI is", "RFIs are") + " past the response date"}
+}
+
+// registerItem is the register rows one rule matches, in one sentence.
+func registerItem(records []AttentionRecord, rule string, match func(AttentionRecord) bool, one, many, rest string) AttentionItem {
+	var ids []string
+	for _, r := range records {
+		if match(r) {
+			ids = append(ids, r.ID)
+		}
+	}
+	return AttentionItem{Rule: rule, Source: "Register", Count: len(ids), IDs: ids, Words: plural(len(ids), one, many) + rest}
 }
 
 // registerToCheckItem is register rows with a possible answer to check.

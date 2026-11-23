@@ -228,6 +228,14 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		"Show the RFIs past their response date":       filter("only", "register", "overdue"),
 		"Accept the answer on RFI-002":                 acceptFromRead("Structural sketch SK-04"),
 		"Set the RFI response time to 10 working days": apply("delivery", "delivery.settings", map[string]any{"rfi_response_days": 10}),
+		// Correspondence between parties, first slice.
+		"Record an EOT claim from Acme Builders received on 23 November 2026 for 5 days of rain": apply("delivery", "delivery.add", map[string]any{"kind": "eot_claim", "title": "Rain, 5 days", "raised_by": "Acme Builders", "received_on": "2026-11-23", "days_claimed": 5, "cause": "Rain"}),
+		"Grant 2 of the 5 days on EOT-1 because three fell in the Christmas shutdown":            apply("delivery", "delivery.edit", map[string]any{"item": "EOT-1", "status": "assessed", "outcome": "granted_in_part", "days_granted": 2, "reasons": "Three days fell in the Christmas shutdown."}),
+		"Set the agreed completion date to 1 March 2027":                                         apply("delivery", "delivery.settings", map[string]any{"agreed_completion": "2027-03-01"}),
+		"How many days of extension have been granted so far?":                                   read(""),
+		"When is the response to EOT-1 due and how was that worked out?":                         read(""),
+		// Days and a date nobody gave: the figure check must refuse them.
+		"Record an EOT claim from Acme Builders for the rain": apply("delivery", "delivery.add", map[string]any{"kind": "eot_claim", "title": "Rain", "raised_by": "Acme Builders", "received_on": "2026-11-20", "days_claimed": 7}),
 		// The register panel: a row opens as a sheet; an RFI is sent from it.
 		"Open RFI-001":                          view(map[string]any{"do": "open", "table": "register", "ids": short("register", "RFI-001")}),
 		"Send RFI-002 to eng@northline.example": view(map[string]any{"do": "open", "dialog": "send", "fields": map[string]string{"rfi": "RFI-002", "to": "eng@northline.example"}}),

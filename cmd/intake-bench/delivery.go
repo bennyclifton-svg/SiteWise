@@ -35,6 +35,12 @@ func (a *apiClient) delivery(ctx context.Context, st *store.Store, n int) error 
 		if i%4 == 0 {
 			c = map[string]any{"kind": "risk", "title": fmt.Sprintf("Seeded risk %d", i), "system_id": "substructure"}
 		}
+		if i%4 == 1 {
+			// EOT claims with a standing result, so the read totals days
+			// granted (correspondence plan, section 18).
+			c = map[string]any{"kind": "eot_claim", "status": "assessed", "title": fmt.Sprintf("Seeded EOT %d", i),
+				"details": map[string]any{"received_on": "2026-11-02", "days_claimed": 5, "result": map[string]any{"outcome": "granted_in_part", "days_granted": 2, "reasons": "Weekend."}}}
+		}
 		body, _ := json.Marshal(c)
 		resp, err := a.do(ctx, http.MethodPost, base, bytes.NewReader(body), int64(len(body)))
 		if err != nil {
@@ -75,10 +81,25 @@ func (a *apiClient) delivery(ctx context.Context, st *store.Store, n int) error 
 		if err := json.Unmarshal(raw, &view); err != nil {
 			return err
 		}
-		if len(view.Items) != 1000-n+i+1 {
+		if len(view.Items) != 1000-n+2*i+1 {
 			return fmt.Errorf("register read omitted rows: %d", len(view.Items))
 		}
 		if _, err := a.timed(ctx, "delivery_system_read", http.MethodGet, base+"?system=envelope", nil, http.StatusOK); err != nil {
+			return err
+		}
+		// An EOT claim recorded, then its result: both delivery_write.
+		body, _ = json.Marshal(map[string]any{"kind": "eot_claim", "title": fmt.Sprintf("EOT %d", i), "details": map[string]any{"received_on": "2026-11-23", "days_claimed": 5}})
+		raw, err = a.timed(ctx, "delivery_write", http.MethodPost, base, body, http.StatusCreated)
+		if err != nil {
+			return err
+		}
+		var eot delivery.Item
+		if err := json.Unmarshal(raw, &eot); err != nil || eot.TargetDate == nil || *eot.TargetDate != "2026-12-21" {
+			return fmt.Errorf("invalid EOT create response")
+		}
+		result, _ := json.Marshal(map[string]any{"version": eot.Version, "status": "assessed", "details": map[string]any{"received_on": "2026-11-23", "days_claimed": 5,
+			"result": map[string]any{"outcome": "granted_in_part", "days_granted": 2, "reasons": "Three days fell on the shutdown."}}})
+		if _, err := a.timed(ctx, "delivery_write", http.MethodPatch, base+"/"+eot.ID, result, http.StatusOK); err != nil {
 			return err
 		}
 	}

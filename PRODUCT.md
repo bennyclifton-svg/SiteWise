@@ -90,7 +90,19 @@ The workbench, in navigation order:
   the Send dialog; To, Cc and Subject are saved on the RFI.
   An RFI typed in the grey row is numbered (RFI-007) and due five working
   days on (the Program's calendar; the PM sets the project's own in the
-  three-dot menu). With is who holds it now: the firm, or You once it is
+  three-dot menu's Project terms). The grey row also records an EOT claim,
+  a notice of delay or a letter as it arrives, each numbered in its own run
+  (EOT-4, NOD-2, LTR-1). An EOT claim is due 28 calendar days after it was
+  received and a letter five working days, shown as SiteWise's default,
+  never as the contract's, until the PM sets the project's own. On an EOT
+  claim's sheet the PM records the result: granted, granted in part,
+  rejected or more information needed, the days granted and the reasons
+  (needed when fewer days than claimed). A late claim is flagged, never
+  refused, and silence warns only. The agreed completion date is an
+  optional project term, separate from the Profile's target completion;
+  the register shows the days granted and, when the date is set, the date
+  after them, computed at read. A delay pick on a message records an EOT
+  claim or a notice of delay in one click. With is who holds it now: the firm, or You once it is
   answered. A filed reply that cites the RFI shows "Possible answer"; Accept
   makes it Answered, with Undo. A System filter adds what else is open on
   that part of the building. Its reads and writes call neither Jev nor the

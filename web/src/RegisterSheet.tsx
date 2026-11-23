@@ -8,13 +8,14 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ApiError, request } from "./api";
 import { statusChip, statusItems } from "./Delivery";
-import { rfiNumber, type DeliveryRecord, type RFIDetails } from "./deliveryApi";
+import { ClaimDetail } from "./ClaimSheet";
+import { numberLabel, rfiNumber, type DeliveryRecord, type RFIDetails } from "./deliveryApi";
 import type { MailMessage } from "./mailApi";
 import { BackButton, MoreMenu, PagePrimaryAction, type MenuItem } from "./PageActions";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { editOps, type RegisterData } from "./registerData";
 import { rfiHistory, rowHistory, type HistoryLine } from "./registerHistory";
-import { cond, GATE_WORDS, KIND, STATUSES } from "./registerKinds";
+import { cond, GATE_WORDS, KIND, RECEIVED, STATUSES } from "./registerKinds";
 import { FirmAddresses, split } from "./SendDialog";
 import "./register.css";
 
@@ -61,7 +62,7 @@ export function RegisterSheet(props: Props) {
 /** "RFI-003", "Condition 14", or the kind's name. */
 export function rowLabel(r: DeliveryRecord): string {
   if (r.kind === "condition") return `Condition ${cond(r).number ?? ""}`.trim();
-  return rfiNumber(r.number) || KIND[r.kind]?.[0] || r.kind;
+  return numberLabel(r.kind, r.number) || KIND[r.kind]?.[0] || r.kind;
 }
 
 // Head is the sheet's one header row: number and title, the status chip
@@ -292,14 +293,15 @@ function AnswerForm({ initial, busy, onSave, onCancel }: { initial: string; busy
 // OtherSheet is a notice, a consent condition or one of the older kinds:
 // today's detail, in the sheet, with its history.
 function OtherSheet({ row, data, documents, onOpenDocument, onOpenMessage }: Props & { row: DeliveryRecord }) {
-  const extra: MenuItem[] = row.kind !== "rfi" && row.kind !== "notice" && row.kind !== "condition"
+  const extra: MenuItem[] = row.kind !== "rfi" && row.kind !== "notice" && row.kind !== "condition" && !RECEIVED.has(row.kind)
     ? (STATUSES[row.kind] ?? []).filter(s => s !== row.status).map(s => ({ label: `Set ${s.replaceAll("_", " ")}`, icon: null, disabled: data.busy, onSelect: () => void data.run(editOps([row], { status: s }), "Saved.", "sheet") }))
     : row.kind === "condition" ? [{ label: "Not applicable", icon: null, disabled: data.busy, onSelect: () => void data.run(editOps([row], { status: "not_applicable" }), "Marked not applicable.", "sheet") }] : [];
   const notice = row.details as { notice?: string; received_on?: string | null; message_id?: string };
   return <>
     <Head row={row} data={data} extra={extra} />
     <Notice data={data} />
-    {row.kind === "condition"
+    {RECEIVED.has(row.kind) ? <ClaimDetail row={row} data={data} onOpenMessage={onOpenMessage} />
+      : row.kind === "condition"
       ? <ConditionDetail row={row} busy={data.busy} documents={documents} onOpenDocument={onOpenDocument}
         onLink={doc => void data.run(editOps([row], { link_evidence: doc }), "Linked the evidence.", "sheet")}
         onAccept={id => void data.run(editOps([row], { accept_reading: id }), "Linked the evidence.", "sheet")}

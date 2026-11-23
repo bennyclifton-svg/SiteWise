@@ -752,9 +752,17 @@ func (m monthly) procurementSentence() string {
 // registerKinds are the register's kinds the report lists, in the
 // register's own order (RFIs, notices and plan 6's consent conditions
 // first), with their plural names.
-var registerKinds = []struct{ kind, many string }{
-	{"rfi", "RFIs"}, {"notice", "notices"}, {"condition", "consent conditions"}, {"action", "actions"}, {"risk", "risks"},
-	{"issue", "issues"}, {"decision", "decisions"}, {"approval", "approvals"},
+//
+// The correspondence kinds (EOT claims, delay notices, letters) are quiet:
+// listed when the project has rows, never named in the "No … are
+// recorded" line (index rule 5).
+var registerKinds = []struct {
+	kind, many string
+	quiet      bool
+}{
+	{"rfi", "RFIs", false}, {"eot_claim", "EOT claims", true}, {"delay_notice", "delay notices", true}, {"letter", "letters", true},
+	{"notice", "notices", false}, {"condition", "consent conditions", false}, {"action", "actions", false}, {"risk", "risks", false},
+	{"issue", "issues", false}, {"decision", "decisions", false}, {"approval", "approvals", false},
 }
 
 type registerBasis struct {
@@ -776,7 +784,9 @@ func (m monthly) registers() []Block {
 	for _, k := range registerKinds {
 		items := byKind[k.kind]
 		if len(items) == 0 {
-			none = append(none, k.many)
+			if !k.quiet {
+				none = append(none, k.many)
+			}
 			continue
 		}
 		open, overdue := 0, 0
@@ -804,6 +814,13 @@ func (m monthly) registers() []Block {
 			text += fmt.Sprintf(", %d past the target date", overdue)
 		}
 		text += fmt.Sprintf(" of %d recorded.", len(items))
+		if k.kind == delivery.KindEOTClaim {
+			granted := 0
+			for _, it := range items {
+				granted += delivery.DaysGranted(it.Content)
+			}
+			text += fmt.Sprintf(" %s granted.", plural(granted, "day", "days"))
+		}
 		more := 0
 		if len(listed) > maxRegisterItems {
 			more = len(listed) - maxRegisterItems

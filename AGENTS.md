@@ -98,6 +98,20 @@ most 12) whose picks stay hidden until the owner approves a cut-off
 (`docs/plans/2026-11-17-rfis-review-comments.md`). A reading is a proposal;
 only the PM's edit makes an RFI answered.
 
+EOT claims, notices of delay and letters are register kinds, each numbered
+in its own run (`docs/plans/2026-11-23-correspondence-between-parties.md`,
+sections 16 to 18; built 23 November 2026, one organisation only). Their
+due dates, lateness, the days granted and the date after EOTs are Go's;
+the result is the PM's typing, with Undo. The project's terms
+(`delivery_settings`) are optional and fall back in one place
+(`store.DeliveryTerms.Resolve`); a default is SiteWise's, never the
+contract's, and no AS 4902 period or clause number is shown until the owner
+reads the form. The agreed completion date is never the Profile's target
+completion. Silence warns only, except that a progress claim past its
+payment schedule date still counts at the claimed amount under a verified
+Security of Payment row. Outside organisations, partners and notification
+mail are not built.
+
 Variations and progress claims sit on the Cost Plan's Variations and claims
 tab (`docs/plans/2026-11-17-variations-progress-claims.md`). Variation
 writes, assessments, Accept claimed, a contract's periods, the tab's read

@@ -9,13 +9,13 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Pending } from "./Activity";
 import { useChatTable, showingLine, revealQuietly } from "./chatView";
-import { GATES, rfiNumber, sydneyToday, type DeliveryRecord, type RegisterView } from "./deliveryApi";
+import { GATES, numberLabel, sydneyToday, type ClaimDetails, type Completion, type DeliveryRecord, type RegisterView } from "./deliveryApi";
 import { IconMore } from "./icons";
 import type { WorkbenchView } from "./LeftNav";
 import { MoreMenu } from "./PageActions";
 import { ProjectReportButton } from "./ProjectReportButton";
 import { editOps, type RegisterData } from "./registerData";
-import { CLOSED, conditionOrder, conditionStatus, cond, GATE_WORDS, KIND, STATUSES, statusWords, words } from "./registerKinds";
+import { CLOSED, conditionOrder, conditionStatus, cond, GATE_WORDS, KIND, OWED, resultWords, STATUSES, statusWords, words } from "./registerKinds";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 import { clickRow, emptySelection, prune, selectAll, type Selection } from "./table/selection";
@@ -26,7 +26,7 @@ interface Edit { id: string; field: Field; many?: string[]; error?: string }
 
 /** The register's row menu items that do not need the list: shared with the sheet's three dots. */
 export function statusItems(rows: DeliveryRecord[], busy: boolean, run: (status: string, label: string) => void): MenuItem[] {
-  const owed = rows.every(r => r.kind === "rfi" || r.kind === "notice");
+  const owed = rows.every(r => OWED.has(r.kind));
   const out: MenuItem[] = [];
   if (!owed) return out;
   const n = rows.length;
@@ -34,14 +34,15 @@ export function statusItems(rows: DeliveryRecord[], busy: boolean, run: (status:
     out.push({ label: n === 1 ? "Close" : `Close ${n} rows`, icon: null, disabled: busy, onSelect: () => run("closed", "Closed.") });
     out.push({ label: n === 1 ? "Withdraw" : `Withdraw ${n} rows`, icon: null, disabled: busy, onSelect: () => run("withdrawn", "Withdrawn.") });
   }
-  if (rows.some(r => CLOSED.has(r.status) || r.status === "answered")) out.push({ label: "Reopen", icon: null, disabled: busy, onSelect: () => run("open", "Reopened.") });
+  if (rows.some(r => CLOSED.has(r.status) || r.status === "answered" || r.status === "assessed")) out.push({ label: "Reopen", icon: null, disabled: busy, onSelect: () => run("open", "Reopened.") });
   return out;
 }
 
 /** The status chip's words: "Open · with MBM", or a condition's next step. */
 export function statusChip(r: DeliveryRecord): string {
   if (r.kind === "condition") return conditionStatus(r);
-  const status = statusWords(r.status);
+  const d = r.details as ClaimDetails;
+  const status = r.kind === "eot_claim" && d.result ? `${statusWords(r.status)} · ${resultWords(d.result, d.days_claimed)}` : statusWords(r.status);
   if (!r.with) return status;
   return `${status} · with ${r.with === "You" ? "you" : r.with}`;
 }
@@ -70,7 +71,8 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
   const [edit, setEdit] = useState<Edit | null>(null);
   const [menu, setMenu] = useState<(RowMenuAt & { ids: string[] }) | null>(null);
   const [ghost, setGhost] = useState("");
-  const [days, setDays] = useState<string | null>(null);
+  const [terms, setTerms] = useState<Terms | null>(null);
+  const [ghostKind, setGhostKind] = useState("rfi");
   const [readFrom, setReadFrom] = useState<string | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
   const raised = useRef(0);
@@ -169,11 +171,24 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
     }
   };
   const readNotice = async (documentId: string) => { setReadFrom(null); await data.readNotice(documentId); };
+  // The grey row raises an RFI, or records an EOT claim, a notice of delay
+  // or a letter as received today; the sheet takes the rest.
   const addRFI = () => {
     const title = ghost.trim();
     if (!title) return;
     setGhost("");
-    void run([{ op: "delivery.add", fields: { kind: "rfi", title, raised_on: sydneyToday() } }], "Added an RFI.");
+    if (ghostKind === "rfi") void run([{ op: "delivery.add", fields: { kind: "rfi", title, raised_on: sydneyToday() } }], "Added an RFI.");
+    else void run([{ op: "delivery.add", fields: { kind: ghostKind, title, received_on: sydneyToday() } }], `Recorded the ${(KIND[ghostKind]?.[0] ?? "item").toLowerCase()}.`);
+  };
+  const openTerms = () => setTerms({ rfi: view && !view.response_typical ? String(view.response_days) : "", eot: view && !view.eot_typical ? String(view.eot_days) : "", agreed: view?.completion?.agreed ?? "" });
+  const saveTerms = (t: Terms) => {
+    const fields: Record<string, unknown> = {};
+    const rfi = t.rfi.trim() ? Number(t.rfi) : null, eot = t.eot.trim() ? Number(t.eot) : null, agreed = t.agreed || null;
+    if (rfi !== (view?.response_typical ? null : view?.response_days)) fields.rfi_response_days = rfi;
+    if (eot !== (view?.eot_typical ? null : view?.eot_days)) fields.eot_response_days = eot;
+    if (agreed !== (view?.completion?.agreed ?? null)) fields.agreed_completion = agreed;
+    setTerms(null);
+    if (Object.keys(fields).length) void run([{ op: "delivery.settings", fields }], "Saved the project's terms.");
   };
 
   const editor = (r: DeliveryRecord, field: Field, value: string) => {
@@ -208,7 +223,10 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
     if (!r.target_date) return "—";
     return r.late_days ? <>{r.target_date} <span className="register-late">· {r.late_days} {r.late_days === 1 ? "day" : "days"} late</span></> : r.target_date;
   };
-  const typicalDue = (r: DeliveryRecord) => r.kind === "rfi" && !!view?.response_typical && !r.details.due_typed && !!r.target_date;
+  const typicalDue = (r: DeliveryRecord) => r.due_basis === "default";
+  const dueTitle = (r: DeliveryRecord) => !r.due_basis || r.due_basis === "typed" ? undefined
+    : r.kind === "eot_claim" ? `${view?.eot_days} days after it was received (${r.due_basis === "default" ? "SiteWise's default; check your contract" : "the project's period"})`
+      : `${view?.response_days} working days after it was ${r.kind === "rfi" ? "raised" : "received"} (${r.due_basis === "default" ? "typical" : "the project's period"})`;
   const calendarWords = view?.calendar === "weekdays" ? "Monday to Friday; there is no Program" : "the Program's working days";
 
   const also = system ? data.alsoOpen : undefined;
@@ -220,7 +238,8 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
       {switcher}
       <span className="panel-band-tools">
         <ProjectReportButton projectId={projectId} onOpen={onOpenReport} onSignedOut={onSignedOut} />
-        <MoreMenu label="Register actions" items={[{ label: "Read conditions…", icon: null, disabled: busy || documents.length === 0, onSelect: () => setReadFrom(documents[0]?.id ?? "") }, { label: `RFI response time: ${view?.response_days ?? 5} working days${view?.response_typical ? " (typical)" : ""}…`, icon: null, onSelect: () => setDays(String(view?.response_days ?? 5)) }]} />
+        <MoreMenu label="Register actions" items={[{ label: "Read conditions…", icon: null, disabled: busy || documents.length === 0, onSelect: () => setReadFrom(documents[0]?.id ?? "") },
+          { label: "Project terms…", icon: null, onSelect: openTerms }]} />
       </span>
     </div>
     <section className="register-screen register-panel" aria-label="Register" aria-busy={busy}>
@@ -235,10 +254,7 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
       </select>}
       <label className="register-toggle"><input type="checkbox" checked={showClosed} onChange={e => setShowClosed(e.target.checked)} /> Show closed</label>
     </div>
-    {days !== null && <form className="register-days" onSubmit={e => { e.preventDefault(); const n = Number(days); if (n >= 1 && n <= 60) { setDays(null); void run([{ op: "delivery.settings", fields: { rfi_response_days: n } }], `RFI response time set to ${n} working days.`); } }}>
-      <label>RFI response time <input type="number" min={1} max={60} value={days} onChange={e => setDays(e.target.value)} autoFocus aria-label="RFI response time in working days" /> working days, on {calendarWords}.</label>
-      <button className="btn btn-small" disabled={busy}>Save</button> <button type="button" className="cell-link" onClick={() => setDays(null)}>Cancel</button>
-    </form>}
+    {terms !== null && <TermsForm terms={terms} calendarWords={calendarWords} busy={busy} onChange={setTerms} onSave={saveTerms} onCancel={() => setTerms(null)} />}
     {readFrom !== null && <form className="register-days" onSubmit={e => { e.preventDefault(); if (readFrom) void readNotice(readFrom); }}>
       <label>Read the consent conditions of <select aria-label="Notice to read" value={readFrom} onChange={e => setReadFrom(e.target.value)}>
         {documents.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}</select></label>
@@ -249,6 +265,7 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
     {last && last.from === "list" && <p className="reg-notice" role="status">{last.label} <button type="button" className="cell-link" disabled={busy} onClick={data.undo}>Undo</button></p>}
     {filters && !only && <p className="reg-filter">Showing {filters} · <button type="button" className="cell-link" onClick={() => { setKind(""); data.setSystem(""); }}>Clear</button></p>}
     {only && <p className="reg-filter">{showingLine("register", only.ids.size, only.shown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
+    {view && (all.some(r => r.kind === "eot_claim") || view.completion?.agreed) && <CompletionLine c={view.completion} onSet={openTerms} />}
     {also && <p className="register-also">Also open on {also.label}: <button type="button" className="cell-link" onClick={() => onShowView("specifications")}>{also.spec_unknowns} specification {also.spec_unknowns === 1 ? "row" : "rows"} not settled</button>
       {" · "}<button type="button" className="cell-link" onClick={() => onShowView("procurement")}>{also.exclusions} tender {also.exclusions === 1 ? "exclusion" : "exclusions"}</button>
       {also.main_works_exclusions > 0 && <>{" · "}<button type="button" className="cell-link" onClick={() => onShowView("procurement")}>Main Works lists {also.main_works_exclusions}, not sorted by system</button></>}</p>}
@@ -271,20 +288,23 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
               if (!more && !(edit?.id === r.id)) onOpen(r.id);
             }}
             onContextMenu={e => { if ((e.target as HTMLElement).closest("input")) return; e.preventDefault(); openMenu(r.id, e.clientX, e.clientY, e.currentTarget); }}>
-            <th scope="row" className="register-no">{r.kind === "condition" ? <span title={`Condition ${cond(r).number ?? ""}`}>{cond(r).number}</span> : rfiNumber(r.number) || <span title={KIND[r.kind]?.[0]}>{KIND[r.kind]?.[0] ?? r.kind}</span>}</th>
+            <th scope="row" className="register-no">{r.kind === "condition" ? <span title={`Condition ${cond(r).number ?? ""}`}>{cond(r).number}</span> : numberLabel(r.kind, r.number) || <span title={KIND[r.kind]?.[0]}>{KIND[r.kind]?.[0] ?? r.kind}</span>}</th>
             {itemCell(r)}
             {cell(r, "with", r.with || "—", r.owner_text)}
             {r.kind === "condition"
               ? cell(r, "due", GATE_WORDS[cond(r).stage ?? ""] ?? "Gate not known", cond(r).stage ?? "", { band: r.review_status === "proposed" ? "amber" : undefined })
-              : cell(r, "due", due(r), r.target_date ?? "", { band: typicalDue(r) ? "typical" : undefined, title: typicalDue(r) ? `${view.response_days} working days after it was raised (typical)` : undefined })}
+              : cell(r, "due", due(r), r.target_date ?? "", { band: typicalDue(r) ? "typical" : undefined, title: dueTitle(r) })}
             <td className="register-more"><button type="button" className="reg-more-btn" aria-label={`Actions for ${r.title}`} aria-haspopup="menu"
               onClick={e => { e.stopPropagation(); const b = e.currentTarget.getBoundingClientRect(); openMenu(r.id, b.left, b.bottom, e.currentTarget); }}><IconMore /></button></td>
           </tr></Fragment>)}
-          <tr className="register-ghost"><td colSpan={5}>
-            <input value={ghost} disabled={busy} maxLength={200} placeholder="Raise an RFI…" aria-label="Raise an RFI"
+          <tr className="register-ghost"><td colSpan={5}><span className="register-ghost-row">
+            <select className="register-ghost-kind" value={ghostKind} disabled={busy} aria-label="Add as" onChange={e => setGhostKind(e.target.value)}>
+              <option value="rfi">RFI</option><option value="eot_claim">EOT claim</option><option value="delay_notice">Notice of delay</option><option value="letter">Letter</option>
+            </select>
+            <input value={ghost} disabled={busy} maxLength={200} placeholder={GHOST[ghostKind]} aria-label={GHOST[ghostKind].replace("…", "")}
               onChange={e => setGhost(e.target.value)} onBlur={addRFI}
               onKeyDown={e => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); addRFI(); } else if (e.key === "Escape") setGhost(""); }} />
-          </td></tr>
+          </span></td></tr>
         </tbody>
       </table>
     </div>}
@@ -292,6 +312,48 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
       onClose={restore => { setMenu(null); if (restore) menu.trigger?.focus({ preventScroll: true }); }} />}
     </section>
   </>;
+}
+
+type Terms = { rfi: string; eot: string; agreed: string };
+
+const GHOST: Record<string, string> = { rfi: "Raise an RFI…", eot_claim: "Record an EOT claim received today…", delay_notice: "Record a notice of delay received today…", letter: "Record a letter received today…" };
+
+/** "Monday 21 December 2026" from YYYY-MM-DD, read as a calendar date. */
+export function longDate(iso?: string | null): string {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-AU", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+}
+
+// CompletionLine is the agreed completion date and what the EOTs granted
+// have done to it, every figure Go's. With no agreed date it says so.
+function CompletionLine({ c, onSet }: { c?: Completion; onSet: () => void }) {
+  const granted = c?.days_granted ?? 0;
+  const days = `${granted} ${granted === 1 ? "day" : "days"} granted`;
+  return <p className="register-completion" role="status">
+    {c?.agreed
+      ? <>Agreed completion {longDate(c.agreed)} · {days}{granted > 0 ? <> · now <strong>{longDate(c.adjusted)}</strong></> : null}</>
+      : <>No agreed completion date is recorded, so nothing has moved · {days} · <button type="button" className="cell-link" onClick={onSet}>Set the date</button></>}
+  </p>;
+}
+
+// TermsForm is the project's optional terms. Each may be left blank: a
+// blank period is SiteWise's default, and a blank date is unknown.
+function TermsForm({ terms, calendarWords, busy, onChange, onSave, onCancel }: {
+  terms: Terms; calendarWords: string; busy: boolean;
+  onChange: (t: Terms) => void; onSave: (t: Terms) => void; onCancel: () => void;
+}) {
+  const rfi = terms.rfi.trim() ? Number(terms.rfi) : null, eot = terms.eot.trim() ? Number(terms.eot) : null;
+  const bad = (rfi !== null && !(Number.isInteger(rfi) && rfi >= 1 && rfi <= 60)) || (eot !== null && !(Number.isInteger(eot) && eot >= 1 && eot <= 120));
+  return <form className="register-days register-terms" onSubmit={e => { e.preventDefault(); if (!bad) onSave(terms); }}>
+    <p className="register-muted">Optional. A blank period is SiteWise's default, not your contract's.</p>
+    <label>RFIs and letters <input type="number" min={1} max={60} value={terms.rfi} placeholder="5" autoFocus
+      onChange={e => onChange({ ...terms, rfi: e.target.value })} aria-label="RFI and letter response time in working days" /> working days, on {calendarWords}</label>
+    <label>EOT claims <input type="number" min={1} max={120} value={terms.eot} placeholder="28"
+      onChange={e => onChange({ ...terms, eot: e.target.value })} aria-label="EOT claim response time in calendar days" /> days from receipt</label>
+    <label>Agreed completion <input type="date" className="register-date" value={terms.agreed} onChange={e => onChange({ ...terms, agreed: e.target.value })} aria-label="Agreed completion date" /></label>
+    <p><button className="btn btn-small" disabled={busy || bad}>Save</button> <button type="button" className="cell-link" onClick={onCancel}>Cancel</button></p>
+  </form>;
 }
 
 // ConsentHead is above the conditions: the Profile's consent number, date

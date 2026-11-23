@@ -200,3 +200,57 @@ test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their r
   await expect(s.getByLabel("Their ref", { exact: true })).toHaveValue("BLD-RFI-12");
   await expect(s.getByRole("list", { name: "History" }).locator("li").first()).toContainText("Raised by Main builder");
 });
+
+/** Calendar days after today in Sydney. */
+function daysIn(n: number): string {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Sydney", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+  const d = new Date(`${today}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+// Correspondence between parties, first slice
+// (docs/plans/2026-11-23-correspondence-between-parties.md, section 18).
+test("an EOT claim is numbered in its own run, due by the default, assessed in part with reasons, and moves the agreed date", async ({ page }) => {
+  const project = await openRegister(page, "Synthetic EOT");
+  await page.getByLabel("Add as").selectOption("eot_claim");
+  await page.getByLabel("Record an EOT claim received today").fill("Rain, week 47");
+  await page.getByLabel("Record an EOT claim received today").press("Enter");
+  const row = page.locator(".register-panel tr", { hasText: "Rain, week 47" });
+  await expect(row.locator("th")).toHaveText("EOT-1");
+  await expect(row.locator('td[data-field="due"]')).toContainText(daysIn(28));
+  await expect(row.locator('td[data-field="due"]')).toHaveAttribute("data-band", "typical");
+  // No agreed date yet: the register says nothing has moved.
+  await expect(page.locator(".register-completion")).toContainText("No agreed completion date is recorded, so nothing has moved");
+
+  await row.locator('td[data-field="title"]').click();
+  const s = sheet(page);
+  await expect(s).toContainText("SiteWise's default; check your contract");
+  await s.getByLabel("Days claimed").fill("5");
+  await s.getByLabel("Days claimed").blur();
+  await expect.poll(async () => (await itemOf(page, project, "Rain, week 47")).details.days_claimed).toBe(5);
+
+  // Granted in part needs reasons; the standard words are offered.
+  await s.getByLabel("Granted in part").check();
+  await s.getByLabel("Days granted").fill("2");
+  await expect(s.getByLabel("Reasons")).toHaveValue(/granted in part/);
+  await s.getByRole("button", { name: "Record result" }).click();
+  await expect(s.locator(".register-result-chip")).toHaveText("2 of 5 days granted");
+  await expect(row.locator(".register-status")).toHaveText("Assessed");
+  await expect(page.locator(".register-completion")).toContainText("2 days granted");
+
+  // The agreed completion date is a project term; the date after EOTs is Go's.
+  await page.getByRole("button", { name: "Register actions" }).click();
+  await page.getByRole("menuitem", { name: "Project terms…" }).click();
+  await page.getByLabel("Agreed completion date").fill("2027-03-01");
+  await page.locator(".register-terms").getByRole("button", { name: "Save" }).click();
+  await expect(page.locator(".register-completion")).toContainText("now Wednesday 3 March 2027");
+  const view = await (await page.request.get(`/api/projects/${project}/delivery`)).json();
+  expect(view.completion).toMatchObject({ agreed: "2027-03-01", days_granted: 2, adjusted: "2027-03-03" });
+
+  // A second kind numbers from 1 in its own run.
+  await page.getByLabel("Add as").selectOption("delay_notice");
+  await page.getByLabel("Record a notice of delay received today").fill("Late steel");
+  await page.getByLabel("Record a notice of delay received today").press("Enter");
+  await expect(page.locator(".register-panel tr", { hasText: "Late steel" }).locator("th")).toHaveText("NOD-1");
+});

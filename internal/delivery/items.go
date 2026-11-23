@@ -48,11 +48,15 @@ type Item struct {
 	SourceProposalKey string          `json:"source_proposal_key,omitempty"`
 	RetiredAt         *time.Time      `json:"retired_at,omitempty"`
 	Version           int64           `json:"version"`
-	// Number is an RFI's number in its project (RFI-007), never reused.
+	// Number is a numbered kind's number in its project (RFI-007, EOT-4),
+	// in that kind's own run, never reused.
 	Number *int `json:"number,omitempty"`
 	// With, LateDays and Readings are computed at read, never stored.
-	With     string    `json:"with,omitempty"`
-	LateDays *int      `json:"late_days,omitempty"`
+	With     string `json:"with,omitempty"`
+	LateDays *int   `json:"late_days,omitempty"`
+	// DueBasis says how a worked-out due date was reached: "default" (SiteWise's
+	// own period), "project" (the project's), or "typed". Computed at read.
+	DueBasis string    `json:"due_basis,omitempty"`
 	Readings []Reading `json:"readings,omitempty"`
 	// Transmittal is an RFI's attached documents as the RFP transmittal's
 	// rows (doc number, title, rev, date, discipline), in the order attached.
@@ -104,13 +108,13 @@ type Reading struct {
 }
 
 // Numbered kinds carry a project number that belongs to that kind alone.
-func Numbered(kind string) bool { return kind == "rfi" }
+func Numbered(kind string) bool { return Prefix(kind) != "" }
 
 // CheckKindChange refuses a change to or from a numbered kind: RFI-007
 // must not become a risk and later an RFI again under another number.
 func CheckKindChange(from, to string) error {
 	if from != to && (Numbered(from) || Numbered(to)) {
-		return fmt.Errorf("an RFI stays an RFI; add a new record instead")
+		return fmt.Errorf("a numbered record keeps its kind; add a new record instead")
 	}
 	return nil
 }
@@ -119,7 +123,17 @@ func CheckKindChange(from, to string) error {
 // An answered RFI is with the PM, whose move it is to pass the answer on or
 // close it; otherwise it is with whoever the row names.
 func With(c Content) string {
-	if c.Kind == "rfi" && c.Status == "answered" {
+	if (c.Kind == "rfi" || c.Kind == KindLetter) && c.Status == "answered" {
+		return "You"
+	}
+	if c.Kind == KindEOTClaim && c.Status == "assessed" {
+		// Assessed: the raiser's move, to accept it or follow it up.
+		if by := EOT(c).RaisedBy; by != "" {
+			return by
+		}
+	}
+	if c.OwnerText == "" && (c.Kind == KindEOTClaim || c.Kind == KindLetter) && Open(c.Kind, c.Status) {
+		// Received with no responder named: the host answers it.
 		return "You"
 	}
 	return c.OwnerText
@@ -141,8 +155,12 @@ func Statuses(kind string) []string {
 		return []string{"not_submitted", "submitted", "approved", "rejected", "withdrawn"}
 	case "rfi":
 		return []string{"draft", "open", "answered", "closed", "withdrawn"}
-	case "notice":
+	case "notice", KindDelayNotice:
 		return []string{"open", "closed", "withdrawn"}
+	case KindEOTClaim:
+		return []string{"open", "assessed", "closed", "withdrawn"}
+	case KindLetter:
+		return []string{"open", "answered", "closed", "withdrawn"}
 	case "condition":
 		return []string{"open", "evidence_filed", "satisfied", "not_applicable"}
 	default:
@@ -175,8 +193,13 @@ func Open(kind, status string) bool {
 	case "rfi":
 		// Answered stays open until the PM closes it (owner decision 7).
 		return status == "draft" || status == "open" || status == "answered"
-	case "notice":
+	case "notice", KindDelayNotice:
 		return status == "open"
+	case KindEOTClaim:
+		// Assessed stays open until the PM settles it, as an answered RFI does.
+		return status == "open" || status == "assessed"
+	case KindLetter:
+		return status == "open" || status == "answered"
 	case "condition":
 		// Only the PM marks a condition satisfied (owner decision 6); evidence
 		// filed is still open until then.
@@ -387,6 +410,24 @@ func validateDetails(c Content) error {
 		if d.ReceivedOn != nil && !date(*d.ReceivedOn) {
 			return fmt.Errorf("invalid notice received date")
 		}
+	case KindDelayNotice:
+		var d DelayNoticeDetails
+		if err := decode(&d); err != nil {
+			return err
+		}
+		return d.check()
+	case KindEOTClaim:
+		var d EOTClaimDetails
+		if err := decode(&d); err != nil {
+			return err
+		}
+		return d.check(c.Status)
+	case KindLetter:
+		var d LetterDetails
+		if err := decode(&d); err != nil {
+			return err
+		}
+		return d.check()
 	default:
 		var d struct{}
 		return decode(&d)
