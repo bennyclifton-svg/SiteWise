@@ -26,11 +26,14 @@ a symlink to the live one; files live in `/var/lib/sitewise/files`; logs via
 ## State of the live server
 
 Live since 8 Nov 2026 (first release `79a8d5f`, fresh empty database, no
-local data copied). Current release: `bc4fdf4`, deployed 20 Nov 2026; it ran
-migrations 064 to 077 (chat agency, the register, guest access, consent
-conditions, the project report, variations and claims, mail). A dump taken
-just before that deploy is on the server at
-`/root/sitewise-before-bc4fdf4.dump`; the one before `76bb126` (16 Nov) is
+local data copied). Current release: `782036a`, deployed 24 Nov 2026; it ran
+migration 079 (EOT claims, notices of delay and letters on the register,
+the optional project terms). The release before it was `bfefdc6` (migration
+078). A dump taken just before the 24 Nov deploy is on the server at
+`/root/sitewise-before-782036a.dump`. Do not roll back to `bfefdc6` by
+symlink once a project has cleared its RFI response time: that release
+reads the column as a number. Restore the dump instead. Earlier dumps
+(`/root/sitewise-before-bc4fdf4.dump`, and the one before `76bb126`) are
 beside it. Done: operations.md section 1 steps 1–5 and 8–10, OCR.
 
 - Project email **in is off**: `SITEWISE_MAIL_IN_DOMAIN` and
