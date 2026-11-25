@@ -717,3 +717,43 @@ project's period or SiteWise's default; an EOT result (outcome, days
 granted, reasons) recorded on the item by the host; days granted totalled;
 the optional agreed completion date and the date after EOTs; overdue
 warnings in `Attention`; chat through the existing register operations.
+
+## 19. Raised by us, and Correspondence (owner, 25 November 2026)
+
+**Direction.** An EOT claim, a notice of delay and a letter are each either
+received from another party or raised by the host and lodged with one. A
+builder hosting the project lodges its EOT claims with the principal; a
+principal or PM receives them. The row keeps `details.direction`: `in` (or
+blank, every row before this) or `out`. Nothing else changes in the data, so
+there is no migration.
+
+- A raised item is with whoever the row names (the party who owes the
+  reply), never "You" by default. Once their result or reply is recorded, it
+  is with the host.
+- Its date is the day it was lodged (a letter: sent), in `received_on`; its
+  due date is the other party's period from that day, worked out exactly as
+  a received item's. Lateness then means they are late.
+- The result form reads "Their result", recorded as it came back. The days
+  granted and the date after EOTs count the same either way.
+- Chat takes `direction` (in, out, or the words received and raised) on
+  `delivery.add` and `delivery.edit`; its register read says "raised by you".
+
+Not in this step: the builder's own time bar for lodging a claim, counted
+from when the delay began. That period is the contract's, and like the
+others it would show as SiteWise's default until the owner reads the form.
+Sending a raised item through mail is also later.
+
+**Correspondence.** The register and the project's messages leave the
+right-hand panel, which is the documents only. Correspondence is on the left
+nav in Specifications' place (off the nav until it is ready), with tabs
+Register (the default) and Messages. The register is one list: Type, No.,
+Subject, Raised by, With, Issued, Due and Status. A heading click sorts; a
+drag moves the column, and the order is kept in the browser for that viewer.
+A row drills in to its sheet, with a breadcrumb (Correspondence › EOT-1)
+back. The sheet is laid out in an RFP's bands: particulars, the message,
+the answer or result, and history. The project report is Report on the left
+nav, under Correspondence, with an RFP's section bands.
+
+**Breadcrumbs.** Every drilled-in view's Back is now a breadcrumb trail:
+each step above is a link back, and the last names what is open (a document,
+a price table, the comparison report, an RFP, a register row).

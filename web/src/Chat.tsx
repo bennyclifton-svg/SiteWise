@@ -32,15 +32,16 @@ interface Turn {
 }
 interface CardState { card: Card; state: "" | "busy" | "undone" | "dismissed"; note?: string }
 
-const VIEW: Record<string, WorkbenchView> = { cost_plan: "costs", costs: "costs", profile: "profile", program: "program", procurement: "procurement", specifications: "specifications", register: "register", delivery: "register" };
-const AREA: Record<string, string> = { cost_plan: "Cost Plan", profile: "Profile", program: "Program", procurement: "Procurement" };
+const VIEW: Record<string, WorkbenchView> = { cost_plan: "costs", costs: "costs", profile: "profile", program: "program", procurement: "procurement", specifications: "specifications",
+  register: "correspondence", delivery: "correspondence", correspondence: "correspondence", messages: "correspondence", report: "report" };
+const AREA: Record<string, string> = { cost_plan: "Cost Plan", profile: "Profile", program: "Program", procurement: "Procurement", register: "Correspondence", correspondence: "Correspondence", report: "the project report" };
 const DOING: Record<string, string> = {
   read: "Reading the records…", find: "Looking it up…", apply: "Making the change…", calc: "Working it out…",
   documents: "Looking through the documents…", passages: "Reading the documents…", messages: "Checking the inbox…", view: "Moving the screen…",
 };
 // Where each table chat can name lives (internal/httpapi/chat_screen.go).
-// The register's list is in the right-hand panel beside every view, as the documents are.
-const PLACE: Record<string, ChatPlace> = { documents: "documents", messages: "documents", cost_lines: "costs", program: "program", procurement: "procurement", register: "documents", variations: "costs", claims: "costs", claim_rows: "costs" };
+// The register and the messages are Correspondence's tabs; the documents are the right-hand panel.
+const PLACE: Record<string, ChatPlace> = { documents: "documents", messages: "correspondence", cost_lines: "costs", program: "program", procurement: "procurement", register: "correspondence", variations: "costs", claims: "costs", claim_rows: "costs" };
 
 /** The key Go's undo names a change by: its change id, or the Program version it left. */
 const undoKey = (c: Card) => c.undo === "program" ? `program:${c.program_version ?? ""}` : c.change_id ?? "";
@@ -86,7 +87,7 @@ function Marked({ answer, onOpenDocument }: { answer: Answer; onOpenDocument: (i
 // moveScreen makes one view event happen: the table's view is shown first,
 // then its setter is called once the table has registered. It resolves with
 // a note when the move could not be made, or "".
-async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShowDocuments: () => void, onShowRegister: () => void): Promise<string> {
+async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShowDocuments: () => void, onShowRegister: () => void, onShowMessages: () => void): Promise<string> {
   if (v.dialog === "award") {
     const pkg = v.fields?.package ?? "", column = v.fields?.column ?? "";
     onShow("procurement");
@@ -144,7 +145,7 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
   }
   const place = PLACE[v.table ?? ""];
   if (!place) return "";
-  if (v.table === "register") onShowRegister(); else if (place === "documents") onShowDocuments(); else onShow(place);
+  if (v.table === "register") onShowRegister(); else if (v.table === "messages") onShowMessages(); else if (place === "documents") onShowDocuments(); else onShow(place);
   hostOf(v.table ?? "")?.();
   if (v.do === "show") return "";
   const table = await whenReady(() => tableOf(v.table ?? ""));
@@ -157,11 +158,11 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
   return "";
 }
 
-export default function Chat({ projectId, view, openDocument, openRegister = null, onShow, onShowDocuments, onShowRegister, onOpenDocument }: {
+export default function Chat({ projectId, view, openDocument, openRegister = null, onShow, onShowDocuments, onShowRegister, onShowMessages, onOpenDocument }: {
   projectId: string; view: WorkbenchView; openDocument: string | null;
   /** The register row open as a sheet in the middle panel. */
   openRegister?: string | null;
-  onShow: (view: WorkbenchView) => void; onShowDocuments: () => void; onShowRegister: () => void; onOpenDocument: (id: string) => void;
+  onShow: (view: WorkbenchView) => void; onShowDocuments: () => void; onShowRegister: () => void; onShowMessages: () => void; onOpenDocument: (id: string) => void;
 }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState("");
@@ -238,7 +239,7 @@ export default function Chat({ projectId, view, openDocument, openRegister = nul
           else if (ev.type === "view" && ev.view) {
             const v = ev.view;
             patch(key, t => ({ ...t, doing: "", moved: [...t.moved, v.line] }));
-            void moveScreen(v, onShow, onShowDocuments, onShowRegister).then(note => { if (note) patch(key, t => ({ ...t, error: note })); });
+            void moveScreen(v, onShow, onShowDocuments, onShowRegister, onShowMessages).then(note => { if (note) patch(key, t => ({ ...t, error: note })); });
           }
           else if (ev.type === "undone" && ev.text) { const undone = ev.text; setTurns(all => markUndone(all, undone)); }
           else if (ev.type === "go") { const view = VIEW[ev.text ?? ""]; if (view) onShow(view); patch(key, t => ({ ...t, doing: "", answer: { text: `Opened ${AREA[ev.text ?? ""] ?? ev.text}.` } })); }

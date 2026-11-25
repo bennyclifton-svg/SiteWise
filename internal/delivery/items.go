@@ -126,14 +126,20 @@ func With(c Content) string {
 	if (c.Kind == "rfi" || c.Kind == KindLetter) && c.Status == "answered" {
 		return "You"
 	}
+	raised := Raised(c)
 	if c.Kind == KindEOTClaim && c.Status == "assessed" {
-		// Assessed: the raiser's move, to accept it or follow it up.
+		// Assessed: the raiser's move, to accept it or follow it up. A claim
+		// the host raised comes back to the host.
+		if raised {
+			return "You"
+		}
 		if by := EOT(c).RaisedBy; by != "" {
 			return by
 		}
 	}
-	if c.OwnerText == "" && (c.Kind == KindEOTClaim || c.Kind == KindLetter) && Open(c.Kind, c.Status) {
-		// Received with no responder named: the host answers it.
+	if c.OwnerText == "" && !raised && (c.Kind == KindEOTClaim || c.Kind == KindLetter) && Open(c.Kind, c.Status) {
+		// Received with no responder named: the host answers it. A raised
+		// item is with whoever the row names, the party who owes the reply.
 		return "You"
 	}
 	return c.OwnerText

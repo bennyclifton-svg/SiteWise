@@ -57,6 +57,32 @@ const (
 	// A letter takes the RFI response time (working days).
 )
 
+// Directions. A received item came in from another party and the host owes
+// the response; a raised one is the host's own, lodged with another party,
+// who owes it. Blank reads as received, as every row before this did.
+const (
+	DirectionIn  = "in"
+	DirectionOut = "out"
+)
+
+// Raised reports an item the host lodged with another party.
+func Raised(c Content) bool {
+	var d struct {
+		Direction string `json:"direction"`
+	}
+	if c.Kind == KindEOTClaim || c.Kind == KindLetter || c.Kind == KindDelayNotice {
+		_ = json.Unmarshal(c.Details, &d)
+	}
+	return d.Direction == DirectionOut
+}
+
+func checkDirection(d string) error {
+	if d != "" && d != DirectionIn && d != DirectionOut {
+		return fmt.Errorf("the direction is received or raised")
+	}
+	return nil
+}
+
 // EOT outcomes. A decided outcome assesses the claim; "more_information"
 // is a response that keeps it open.
 const (
@@ -82,6 +108,8 @@ func (r *EOTResult) Decided() bool {
 // DelayNoticeDetails is a notice of delay. No response is owed; it is
 // recorded, and an EOT claim may point at it.
 type DelayNoticeDetails struct {
+	// Direction is "in" (received, the default) or "out" (raised by the host).
+	Direction  string  `json:"direction,omitempty"`
 	Ref        string  `json:"ref"`
 	RaisedBy   string  `json:"raised_by"`
 	ReceivedOn *string `json:"received_on"`
@@ -93,6 +121,8 @@ type DelayNoticeDetails struct {
 // EOTClaimDetails is an extension of time claim. Its due date is
 // target_date, worked out from received_on unless the PM typed it.
 type EOTClaimDetails struct {
+	// Direction is "in" (received, the default) or "out" (raised by the host).
+	Direction   string     `json:"direction,omitempty"`
 	Ref         string     `json:"ref"`
 	RaisedBy    string     `json:"raised_by"`
 	ReceivedOn  *string    `json:"received_on"`
@@ -108,6 +138,8 @@ type EOTClaimDetails struct {
 
 // LetterDetails is a letter owed a response.
 type LetterDetails struct {
+	// Direction is "in" (received, the default) or "out" (raised by the host).
+	Direction  string  `json:"direction,omitempty"`
 	Ref        string  `json:"ref"`
 	RaisedBy   string  `json:"raised_by"`
 	ReceivedOn *string `json:"received_on"`
@@ -167,6 +199,9 @@ func checkDates(ds ...*string) error {
 }
 
 func (d DelayNoticeDetails) check() error {
+	if err := checkDirection(d.Direction); err != nil {
+		return err
+	}
 	if !bounded(d.Ref, 100) || !bounded(d.RaisedBy, 200) || !bounded(d.Cause, 8000) || (d.MessageID != "" && !uuidLike(d.MessageID)) {
 		return fmt.Errorf("invalid notice of delay details")
 	}
@@ -174,6 +209,9 @@ func (d DelayNoticeDetails) check() error {
 }
 
 func (d LetterDetails) check() error {
+	if err := checkDirection(d.Direction); err != nil {
+		return err
+	}
 	if !bounded(d.Ref, 100) || !bounded(d.RaisedBy, 200) || !bounded(d.Body, 8000) || !bounded(d.Answer, 8000) || (d.MessageID != "" && !uuidLike(d.MessageID)) {
 		return fmt.Errorf("invalid letter details")
 	}
@@ -184,6 +222,9 @@ func (d LetterDetails) check() error {
 // needs a reason, as an assessed claim row does; an assessed claim needs a
 // decided result.
 func (d EOTClaimDetails) check(status string) error {
+	if err := checkDirection(d.Direction); err != nil {
+		return err
+	}
 	if !bounded(d.Ref, 100) || !bounded(d.RaisedBy, 200) || !bounded(d.Cause, 8000) ||
 		(d.MessageID != "" && !uuidLike(d.MessageID)) || (d.NoticeID != "" && !uuidLike(d.NoticeID)) {
 		return fmt.Errorf("invalid EOT claim details")

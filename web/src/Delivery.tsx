@@ -1,7 +1,9 @@
-// The register in the right-hand panel (owner, 20 November 2026; first
-// built as a middle view in docs/plans/2026-11-17-rfis-review-comments.md,
-// Task 5): what is owed on the project, in a narrow table of four columns.
-// A row opens as a sheet in the middle panel (RegisterSheet.tsx). Numbers,
+// The register: what is owed on the project, as one list in the middle
+// panel's Correspondence view (owner, 25 November 2026; before that a narrow
+// card in the right-hand panel, and first a middle view in
+// docs/plans/2026-11-17-rfis-review-comments.md, Task 5). Its columns can be
+// sorted with a click and moved with a drag; the order is kept for this
+// viewer only. A row drills in to its sheet (RegisterSheet.tsx). Numbers,
 // due dates, days late and With are Go's. Every write goes through POST /ops
 // (area delivery), so each action has one Undo. No screen read or write
 // here calls Jev or the model.
@@ -13,9 +15,8 @@ import { GATES, numberLabel, sydneyToday, type ClaimDetails, type Completion, ty
 import { IconMore } from "./icons";
 import type { WorkbenchView } from "./LeftNav";
 import { MoreMenu } from "./PageActions";
-import { ProjectReportButton } from "./ProjectReportButton";
 import { editOps, type RegisterData } from "./registerData";
-import { CLOSED, conditionOrder, conditionStatus, cond, GATE_WORDS, KIND, OWED, resultWords, STATUSES, statusWords, words } from "./registerKinds";
+import { CLOSED, conditionOrder, conditionStatus, cond, GATE_WORDS, KIND, OWED, RECEIVED, resultWords, STATUSES, statusWords, words } from "./registerKinds";
 import { InlineCellEditor, type CommitKey } from "./table/InlineCellEditor";
 import { RowMenu, type MenuItem, type RowMenuAt } from "./table/RowMenu";
 import { clickRow, emptySelection, prune, selectAll, type Selection } from "./table/selection";
@@ -24,7 +25,7 @@ import "./register.css";
 type Field = "title" | "with" | "due" | "system" | "status";
 interface Edit { id: string; field: Field; many?: string[]; error?: string }
 
-/** The register's row menu items that do not need the list: shared with the sheet's three dots. */
+/** The register row menu items that do not need the list: shared with the sheet's three dots. */
 export function statusItems(rows: DeliveryRecord[], busy: boolean, run: (status: string, label: string) => void): MenuItem[] {
   const owed = rows.every(r => OWED.has(r.kind));
   const out: MenuItem[] = [];
@@ -47,19 +48,67 @@ export function statusChip(r: DeliveryRecord): string {
   return `${status} · with ${r.with === "You" ? "you" : r.with}`;
 }
 
-export function RegisterPanel({ data, shown, switcher, projectId, raise, openId, onOpen, onOpenReport, onSignedOut, onShowView, documents = [] }: {
+/** Whether the host raised the item (an EOT claim, notice or letter it lodged). */
+export const raised = (r: DeliveryRecord) => RECEIVED.has(r.kind) && (r.details as ClaimDetails).direction === "out";
+
+/** Who raised the row: "You" for the host's own RFI or raised item, else the sender. */
+export function raisedBy(r: DeliveryRecord): string {
+  const d = r.details as { raised_by?: string };
+  if (r.kind === "rfi") return d.raised_by || "You";
+  if (RECEIVED.has(r.kind)) return raised(r) ? "You" : d.raised_by || "";
+  if (r.kind === "notice") return d.raised_by || "";
+  return "";
+}
+
+/** The day the row was issued: an RFI's raised date, the day an item was received or lodged. */
+export function issuedOn(r: DeliveryRecord): string {
+  const d = r.details as { raised_on?: string | null; received_on?: string | null };
+  return d.raised_on ?? d.received_on ?? "";
+}
+
+// The list's columns. The order is the viewer's own, kept in the browser.
+type Col = "type" | "no" | "subject" | "from" | "with" | "issued" | "due" | "status";
+const COLUMN: Record<Col, string> = { type: "Type", no: "No.", subject: "Subject", from: "Raised by", with: "With", issued: "Issued", due: "Due", status: "Status" };
+const DEFAULT_ORDER: Col[] = ["type", "no", "subject", "from", "with", "issued", "due", "status"];
+const ORDER_KEY = "sitewise.register.columns.v1";
+function readOrder(): Col[] {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(ORDER_KEY) ?? "null");
+    if (Array.isArray(v) && v.length === DEFAULT_ORDER.length && DEFAULT_ORDER.every(c => v.includes(c))) return v as Col[];
+  } catch { /* private window or a damaged value: the default order */ }
+  return DEFAULT_ORDER;
+}
+function storeOrder(order: Col[]) {
+  try { localStorage.setItem(ORDER_KEY, JSON.stringify(order)); } catch { /* the order lasts this visit */ }
+}
+const GATE_RANK: Record<string, number> = Object.fromEntries(GATES.map(([g], i) => [g, i]));
+const byText = (a: string, b: string) => (a === "") === (b === "") ? a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }) : a === "" ? 1 : -1;
+/** Each column's sort, blanks last either way. */
+function compare(col: Col, a: DeliveryRecord, b: DeliveryRecord): number {
+  switch (col) {
+    case "type": return byText(KIND[a.kind]?.[0] ?? a.kind, KIND[b.kind]?.[0] ?? b.kind);
+    case "no": return a.kind === "condition" && b.kind === "condition" ? byText(cond(a).number ?? "", cond(b).number ?? "")
+      : byText(KIND[a.kind]?.[0] ?? a.kind, KIND[b.kind]?.[0] ?? b.kind) || (a.number ?? 1e9) - (b.number ?? 1e9);
+    case "subject": return byText(a.title, b.title);
+    case "from": return byText(raisedBy(a), raisedBy(b));
+    case "with": return byText(a.with ?? "", b.with ?? "");
+    case "issued": return byText(issuedOn(a), issuedOn(b));
+    case "due": return a.kind === "condition" || b.kind === "condition"
+      ? (GATE_RANK[cond(a).stage ?? ""] ?? 99) - (GATE_RANK[cond(b).stage ?? ""] ?? 99) : byText(a.target_date ?? "", b.target_date ?? "");
+    case "status": return byText(statusChip(a), statusChip(b));
+  }
+}
+
+export function RegisterList({ data, shown, tabs, raise, onOpen, onShowView, documents = [] }: {
   data: RegisterData;
-  /** The panel is on screen: chat moves its table only then. */
+  /** The list is on screen: chat moves its table only then. */
   shown: boolean;
-  /** The Documents | Register switch, at the head of the band. */
-  switcher: ReactNode;
-  projectId: string;
+  /** The Register | Messages tabs, at the head of the band. */
+  tabs: ReactNode;
   raise: { documentId: string; title: string; n: number } | null;
-  /** The row whose sheet is open in the middle panel. */
-  openId: string | null;
+  /** Drills in to the row's sheet. */
   onOpen: (id: string) => void;
-  onOpenReport: (reportId: string) => void;
-  onSignedOut: () => void; onShowView: (view: WorkbenchView) => void;
+  onShowView: (view: WorkbenchView) => void;
   /** Filed documents, for Read conditions (statutory instruments first). */
   documents?: { id: string; title: string; kind: string }[];
 }) {
@@ -73,17 +122,22 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
   const [ghost, setGhost] = useState("");
   const [terms, setTerms] = useState<Terms | null>(null);
   const [ghostKind, setGhostKind] = useState("rfi");
+  const [ghostDir, setGhostDir] = useState<"in" | "out">("in");
   const [readFrom, setReadFrom] = useState<string | null>(null);
+  const [columns, setColumns] = useState<Col[]>(readOrder);
+  const [sort, setSort] = useState<{ col: Col; dir: 1 | -1 } | null>(null);
+  const [dragging, setDragging] = useState<Col | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
-  const raised = useRef(0);
+  const raisedRef = useRef(0);
   const system = data.system;
 
   const all = view?.items ?? [];
   const rows = useMemo(() => {
     const listed = all.filter(r => (!kind || r.kind === kind) && (!system || r.system_id === system) && (showClosed || !CLOSED.has(r.status)) && (!only || only.ids.has(r.id)));
+    if (sort) return [...listed].sort((a, b) => sort.dir * compare(sort.col, a, b));
     // Conditions group by gate, in the order a project reaches them.
     return kind === "condition" ? [...listed].sort(conditionOrder) : listed;
-  }, [all, kind, system, showClosed, only]);
+  }, [all, kind, system, showClosed, only, sort]);
   const order = rows.map(r => r.id);
   const orderKey = order.join("|");
   useEffect(() => setSelection(s => prune(s, orderKey ? orderKey.split("|") : [])), [orderKey]);
@@ -95,13 +149,13 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
 
   // "Raise RFI from this document": a draft RFI with the document as its source.
   useEffect(() => {
-    if (!raise || raise.n === raised.current) return;
-    raised.current = raise.n;
+    if (!raise || raise.n === raisedRef.current) return;
+    raisedRef.current = raise.n;
     void run([{ op: "delivery.add", fields: { kind: "rfi", title: raise.title.slice(0, 200), raised_on: sydneyToday(), source_refs: [{ document_id: raise.documentId }] } }], "Raised an RFI from the document.");
   }, [raise, run]);
 
   const open = (id: string) => { setSelection(clickRow(emptySelection, id, all.map(r => r.id))); onOpen(id); };
-  useChatTable("register", "documents", {
+  useChatTable("register", "correspondence", {
     select: ids => { setOnly(null); setSelection(selectAll(ids.filter(id => all.some(r => r.id === id)))); },
     only: (ids, words) => { setShowClosed(true); setKind(""); data.setSystem(""); setOnly({ ids: new Set(ids), shown: words ?? "" }); },
     clear: () => setOnly(null),
@@ -153,7 +207,7 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
     setMenu({ x, y, trigger, ids });
   };
   const keys = (e: React.KeyboardEvent) => {
-    if ((e.target as HTMLElement).closest("input,select,textarea")) return;
+    if ((e.target as HTMLElement).closest("input,select,textarea,button")) return;
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") { e.preventDefault(); setSelection(selectAll(order)); }
     else if (e.key === "Escape" && selection.ids.length) setSelection(emptySelection);
     else if ((e.key === "ArrowDown" || e.key === "ArrowUp") && order.length) {
@@ -172,13 +226,16 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
   };
   const readNotice = async (documentId: string) => { setReadFrom(null); await data.readNotice(documentId); };
   // The grey row raises an RFI, or records an EOT claim, a notice of delay
-  // or a letter as received today; the sheet takes the rest.
-  const addRFI = () => {
+  // or a letter as received today, or as raised by the host today; the
+  // sheet takes the rest.
+  const addRow = () => {
     const title = ghost.trim();
     if (!title) return;
     setGhost("");
-    if (ghostKind === "rfi") void run([{ op: "delivery.add", fields: { kind: "rfi", title, raised_on: sydneyToday() } }], "Added an RFI.");
-    else void run([{ op: "delivery.add", fields: { kind: ghostKind, title, received_on: sydneyToday() } }], `Recorded the ${(KIND[ghostKind]?.[0] ?? "item").toLowerCase()}.`);
+    if (ghostKind === "rfi") { void run([{ op: "delivery.add", fields: { kind: "rfi", title, raised_on: sydneyToday() } }], "Added an RFI."); return; }
+    const what = ghostKind === "eot_claim" ? "EOT claim" : (KIND[ghostKind]?.[0] ?? "item").toLowerCase();
+    void run([{ op: "delivery.add", fields: { kind: ghostKind, title, received_on: sydneyToday(), ...(ghostDir === "out" ? { direction: "out" } : {}) } }],
+      ghostDir === "out" ? `Raised the ${what}.` : `Recorded the ${what}.`);
   };
   const openTerms = () => setTerms({ rfi: view && !view.response_typical ? String(view.response_days) : "", eot: view && !view.eot_typical ? String(view.eot_days) : "", agreed: view?.completion?.agreed ?? "" });
   const saveTerms = (t: Terms) => {
@@ -198,61 +255,80 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
       onCommit={(text, key) => edit && void commit(edit, text, key)} onCancel={() => { setEdit(null); refocus(); }} />;
   };
   const start = (r: DeliveryRecord, field: Field) => { if (busy) return; setSelection(clickRow(emptySelection, r.id, order)); setEdit({ id: r.id, field }); };
-  // The Item cell carries the status chip and hosts the status and system
-  // editors too, since neither is a column in the narrow table.
-  const itemCell = (r: DeliveryRecord) => {
-    const editing = edit?.id === r.id && (edit.field === "title" || edit.field === "status" || edit.field === "system") ? edit.field : null;
-    const value = editing === "title" ? r.title : editing === "status" ? r.status : r.system_id ?? "";
-    const check = r.kind === "condition" ? r.review_status === "proposed" : (r.readings?.length ?? 0) > 0;
-    return <td data-field="title" onDoubleClick={() => start(r, "title")}>
-      {editing ? editor(r, editing, value) : <span className="register-item">
-        <span className="register-value" title={r.title}>{r.title}</span>
-        <span className="register-chip register-status" data-band={check ? "amber" : undefined}>{r.kind === "condition" ? conditionStatus(r) : statusWords(r.status)}
-          {r.kind === "condition" && r.review_status === "proposed" ? <span className="register-check"> · to check</span> : null}
-          {r.kind !== "condition" && r.readings?.length ? <span className="register-check"> · {r.readings.length} to check</span> : null}</span>
-      </span>}
-    </td>;
-  };
-  const cell = (r: DeliveryRecord, field: "with" | "due", shown: ReactNode, value: string, extra: { band?: string; title?: string } = {}) => {
-    const editing = edit?.id === r.id && edit.field === field;
-    return <td data-field={field} data-band={extra.band} title={extra.title} onDoubleClick={() => start(r, field)}>
-      {editing ? editor(r, field, value) : <span className="register-value">{shown}</span>}
-    </td>;
-  };
   const due = (r: DeliveryRecord) => {
     if (!r.target_date) return "—";
-    return r.late_days ? <>{r.target_date} <span className="register-late">· {r.late_days} {r.late_days === 1 ? "day" : "days"} late</span></> : r.target_date;
+    const late = r.late_days ? <span className="register-late"> · {r.late_days} {r.late_days === 1 ? "day" : "days"} late</span> : null;
+    return <>{r.target_date}{late}</>;
   };
   const typicalDue = (r: DeliveryRecord) => r.due_basis === "default";
   const dueTitle = (r: DeliveryRecord) => !r.due_basis || r.due_basis === "typed" ? undefined
-    : r.kind === "eot_claim" ? `${view?.eot_days} days after it was received (${r.due_basis === "default" ? "SiteWise's default; check your contract" : "the project's period"})`
-      : `${view?.response_days} working days after it was ${r.kind === "rfi" ? "raised" : "received"} (${r.due_basis === "default" ? "typical" : "the project's period"})`;
+    : r.kind === "eot_claim" ? `${view?.eot_days} days after it was ${raised(r) ? "lodged" : "received"} (${r.due_basis === "default" ? "SiteWise's default; check your contract" : "the project's period"})`
+      : `${view?.response_days} working days after it was ${r.kind === "rfi" ? "raised" : raised(r) ? "sent" : "received"} (${r.due_basis === "default" ? "typical" : "the project's period"})`;
   const calendarWords = view?.calendar === "weekdays" ? "Monday to Friday; there is no Program" : "the Program's working days";
+
+  // One cell per column. The Subject cell also hosts the system editor,
+  // since the system is not a column.
+  const cell = (r: DeliveryRecord, col: Col): ReactNode => {
+    const editing = edit?.id === r.id ? edit.field : null;
+    switch (col) {
+      case "type": return <td key={col} className="register-type">{KIND[r.kind]?.[0] ?? r.kind}</td>;
+      case "no": return <th key={col} scope="row" className="register-no">{r.kind === "condition" ? cond(r).number : numberLabel(r.kind, r.number) || "—"}</th>;
+      case "subject": {
+        const ed = editing === "title" || editing === "system" ? editing : null;
+        return <td key={col} data-field="title">
+          {ed ? editor(r, ed, ed === "title" ? r.title : r.system_id ?? "") : <span className="register-value" title={r.title}>{r.title}</span>}</td>;
+      }
+      case "from": return <td key={col} data-field="from"><span className="register-value" title={raisedBy(r)}>{raisedBy(r) || "—"}</span></td>;
+      case "with": return <td key={col} data-field="with" data-edit onDoubleClick={() => start(r, "with")}>
+        {editing === "with" ? editor(r, "with", r.owner_text) : <span className="register-value" title={r.with}>{r.with || "—"}</span>}</td>;
+      case "issued": return <td key={col} data-field="issued" className="register-date-cell">{issuedOn(r) || "—"}</td>;
+      case "due": {
+        const gate = r.kind === "condition";
+        return <td key={col} data-field="due" className="register-date-cell" data-band={gate ? (r.review_status === "proposed" ? "amber" : undefined) : typicalDue(r) ? "typical" : undefined}
+          title={gate ? undefined : dueTitle(r)} data-edit onDoubleClick={() => start(r, "due")}>
+          {editing === "due" ? editor(r, "due", gate ? cond(r).stage ?? "" : r.target_date ?? "")
+            : <span className="register-value">{gate ? GATE_WORDS[cond(r).stage ?? ""] ?? "Gate not known" : due(r)}</span>}</td>;
+      }
+      case "status": {
+        const check = r.kind === "condition" ? r.review_status === "proposed" : (r.readings?.length ?? 0) > 0;
+        const d = r.details as ClaimDetails;
+        const words = r.kind === "condition" ? conditionStatus(r) : r.kind === "eot_claim" && d.result ? `${statusWords(r.status)} · ${resultWords(d.result, d.days_claimed)}` : statusWords(r.status);
+        const editable = r.kind !== "rfi" && r.kind !== "notice";
+        return <td key={col} data-field="status" data-band={check ? "amber" : undefined} data-edit={editable || undefined} onDoubleClick={() => editable && start(r, "status")}>
+          {editing === "status" ? editor(r, "status", r.status) : <span className="register-value">{words}
+            {r.kind === "condition" && r.review_status === "proposed" ? <span className="register-check"> · to check</span> : null}
+            {r.kind !== "condition" && r.readings?.length ? <span className="register-check"> · {r.readings.length} to check</span> : null}</span>}</td>;
+      }
+    }
+  };
+  const sortBy = (col: Col) => setSort(s => s?.col === col ? { col, dir: s.dir === 1 ? -1 : 1 } : { col, dir: 1 });
+  const moveColumn = (from: Col, to: Col) => {
+    if (from === to) return;
+    const next = columns.filter(c => c !== from);
+    next.splice(next.indexOf(to) + (columns.indexOf(from) < columns.indexOf(to) ? 1 : 0), 0, from);
+    setColumns(next); storeOrder(next);
+  };
+  const span = columns.length + 1;
 
   const also = system ? data.alsoOpen : undefined;
   const filters = [kind && (KIND[kind]?.[1] ?? kind), system && `on ${systemLabel(system)}`].filter(Boolean).join(" ");
-  // The band sits above the card, as the Documents side's does; the card
-  // scrolls under it.
-  return <>
-    <div className="panel-band">
-      {switcher}
-      <span className="panel-band-tools">
-        <ProjectReportButton projectId={projectId} onOpen={onOpenReport} onSignedOut={onSignedOut} />
-        <MoreMenu label="Register actions" items={[{ label: "Read conditions…", icon: null, disabled: busy || documents.length === 0, onSelect: () => setReadFrom(documents[0]?.id ?? "") },
-          { label: "Project terms…", icon: null, onSelect: openTerms }]} />
-      </span>
-    </div>
-    <section className="register-screen register-panel" aria-label="Register" aria-busy={busy}>
-    <div className="register-filters">
-      {view && view.kinds.length > 0 && <select aria-label="Kind" value={kind} onChange={e => setKind(e.target.value)}>
-        <option value="">All kinds</option>
-        {view.kinds.map(k => <option key={k.kind} value={k.kind}>{KIND[k.kind]?.[1] ?? k.kind}{k.to_check ? ` · ${k.to_check} to check` : ""}</option>)}
-      </select>}
-      {view && <select aria-label="System" value={system} onChange={e => data.setSystem(e.target.value)}>
-        <option value="">All systems</option>
-        {view.systems.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-      </select>}
-      <label className="register-toggle"><input type="checkbox" checked={showClosed} onChange={e => setShowClosed(e.target.checked)} /> Show closed</label>
+  return <section className="register-screen register-list" aria-label="Register" aria-busy={busy}>
+    <div className="correspondence-band">
+      {tabs}
+      <div className="register-filters">
+        {view && view.kinds.length > 0 && <select aria-label="Kind" value={kind} onChange={e => setKind(e.target.value)}>
+          <option value="">All kinds</option>
+          {view.kinds.map(k => <option key={k.kind} value={k.kind}>{KIND[k.kind]?.[1] ?? k.kind}{k.to_check ? ` · ${k.to_check} to check` : ""}</option>)}
+        </select>}
+        {view && <select aria-label="System" value={system} onChange={e => data.setSystem(e.target.value)}>
+          <option value="">All systems</option>
+          {view.systems.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+        </select>}
+        <label className="register-toggle"><input type="checkbox" checked={showClosed} onChange={e => setShowClosed(e.target.checked)} /> Show closed</label>
+      </div>
+      <MoreMenu label="Register actions" items={[{ label: "Read conditions…", icon: null, disabled: busy || documents.length === 0, onSelect: () => setReadFrom(documents[0]?.id ?? "") },
+        { label: "Project terms…", icon: null, onSelect: openTerms },
+        ...(columns.join() !== DEFAULT_ORDER.join() ? [{ label: "Reset columns", icon: null, onSelect: () => { setColumns(DEFAULT_ORDER); storeOrder(DEFAULT_ORDER); } }] : [])]} />
     </div>
     {terms !== null && <TermsForm terms={terms} calendarWords={calendarWords} busy={busy} onChange={setTerms} onSave={saveTerms} onCancel={() => setTerms(null)} />}
     {readFrom !== null && <form className="register-days" onSubmit={e => { e.preventDefault(); if (readFrom) void readNotice(readFrom); }}>
@@ -260,7 +336,7 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
         {documents.map(d => <option key={d.id} value={d.id}>{d.title}</option>)}</select></label>
       <button className="btn btn-small" disabled={busy || !readFrom}>Read</button> <button type="button" className="cell-link" onClick={() => setReadFrom(null)}>Cancel</button>
     </form>}
-    {error && (!openId || last?.from !== "sheet") && <div className="banner" role="alert"><p>{error}</p></div>}
+    {error && last?.from !== "sheet" && <div className="banner" role="alert"><p>{error}</p></div>}
     {view && (kind === "condition" || (!kind && all.some(r => r.kind === "condition")) || (view.consents ?? []).some(c => c.status !== "done")) && <ConsentHead view={view} />}
     {last && last.from === "list" && <p className="reg-notice" role="status">{last.label} <button type="button" className="cell-link" disabled={busy} onClick={data.undo}>Undo</button></p>}
     {filters && !only && <p className="reg-filter">Showing {filters} · <button type="button" className="cell-link" onClick={() => { setKind(""); data.setSystem(""); }}>Clear</button></p>}
@@ -271,52 +347,60 @@ export function RegisterPanel({ data, shown, switcher, projectId, raise, openId,
       {also.main_works_exclusions > 0 && <>{" · "}<button type="button" className="cell-link" onClick={() => onShowView("procurement")}>Main Works lists {also.main_works_exclusions}, not sorted by system</button></>}</p>}
     {!view ? !error && <p role="status"><Pending delayed>Loading the register…</Pending></p> : <div className="register-scroll">
       <table ref={tableRef} className="register-table" tabIndex={0} onKeyDown={keys} data-testid="register-table"
-        aria-label="Register. Click to open, Shift or Ctrl to select more, F2 to edit, right-click for actions.">
-        <colgroup><col className="register-col-no" /><col /><col className="register-col-with" /><col className="register-col-due" /><col className="register-col-more" /></colgroup>
-        <thead><tr><th scope="col">No.</th><th scope="col">Item</th><th scope="col">With</th>
-          <th scope="col" title={`RFI response time ${view.response_days} working days${view.response_typical ? " (typical)" : ""}, on ${calendarWords}`}>Due</th>
+        aria-label="Register. Click to open, Shift or Ctrl to select more, F2 to edit, right-click for actions. Click a heading to sort; drag it to move the column.">
+        <colgroup>{columns.map(c => <col key={c} className={`register-col-${c}`} />)}<col className="register-col-more" /></colgroup>
+        <thead><tr>{columns.map(c => <th key={c} scope="col" aria-sort={sort?.col === c ? (sort.dir === 1 ? "ascending" : "descending") : undefined}
+          draggable data-dragging={dragging === c ? "true" : undefined}
+          onDragStart={e => { setDragging(c); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/x-sitewise-column", c); }}
+          onDragOver={e => { if (dragging) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; } }}
+          onDrop={e => { e.preventDefault(); if (dragging) moveColumn(dragging, c); setDragging(null); }}
+          onDragEnd={() => setDragging(null)}
+          title={c === "due" ? `RFI response time ${view.response_days} working days${view.response_typical ? " (typical)" : ""}, on ${calendarWords}` : undefined}>
+          <button type="button" className="register-sort" onClick={() => sortBy(c)}>{COLUMN[c]}<span className="register-sort-mark" aria-hidden="true">{sort?.col === c ? (sort.dir === 1 ? "▲" : "▼") : ""}</span></button></th>)}
           <th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
         <tbody>
-          {all.length === 0 && <tr className="register-empty"><td colSpan={5}>Nothing is recorded as owed yet.</td></tr>}
-          {rows.map((r, i) => <Fragment key={r.id}>{kind === "condition" && (i === 0 || (cond(rows[i - 1]).stage ?? "") !== (cond(r).stage ?? "")) &&
-            <tr className="register-group"><th colSpan={5} scope="rowgroup">{GATE_WORDS[cond(r).stage ?? ""] ?? "Gate not known"}</th></tr>}<tr data-id={r.id} aria-selected={selected.has(r.id)} data-open={openId === r.id ? "true" : undefined} tabIndex={-1}
+          {all.length === 0 && <tr className="register-empty"><td colSpan={span}>Nothing is recorded yet.</td></tr>}
+          {rows.map((r, i) => <Fragment key={r.id}>{kind === "condition" && !sort && (i === 0 || (cond(rows[i - 1]).stage ?? "") !== (cond(r).stage ?? "")) &&
+            <tr className="register-group"><th colSpan={span} scope="rowgroup">{GATE_WORDS[cond(r).stage ?? ""] ?? "Gate not known"}</th></tr>}<tr data-id={r.id} aria-selected={selected.has(r.id)} tabIndex={-1}
+            data-raised={raised(r) ? "true" : undefined}
             title={systemLabel(r.system_id) ? `System: ${systemLabel(r.system_id)}` : undefined}
             onClick={e => {
               if ((e.target as HTMLElement).closest("input,select,button")) return;
               const more = e.ctrlKey || e.metaKey || e.shiftKey;
               setSelection(s => clickRow(s, r.id, order, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey }));
-              if (!more && !(edit?.id === r.id)) onOpen(r.id);
+              // With, Due and Status edit on a double click; a click there
+              // only selects. Anywhere else, a click drills in.
+              if (!more && !(edit?.id === r.id) && !(e.target as HTMLElement).closest("td[data-edit]")) onOpen(r.id);
             }}
             onContextMenu={e => { if ((e.target as HTMLElement).closest("input")) return; e.preventDefault(); openMenu(r.id, e.clientX, e.clientY, e.currentTarget); }}>
-            <th scope="row" className="register-no">{r.kind === "condition" ? <span title={`Condition ${cond(r).number ?? ""}`}>{cond(r).number}</span> : numberLabel(r.kind, r.number) || <span title={KIND[r.kind]?.[0]}>{KIND[r.kind]?.[0] ?? r.kind}</span>}</th>
-            {itemCell(r)}
-            {cell(r, "with", r.with || "—", r.owner_text)}
-            {r.kind === "condition"
-              ? cell(r, "due", GATE_WORDS[cond(r).stage ?? ""] ?? "Gate not known", cond(r).stage ?? "", { band: r.review_status === "proposed" ? "amber" : undefined })
-              : cell(r, "due", due(r), r.target_date ?? "", { band: typicalDue(r) ? "typical" : undefined, title: dueTitle(r) })}
+            {columns.map(c => cell(r, c))}
             <td className="register-more"><button type="button" className="reg-more-btn" aria-label={`Actions for ${r.title}`} aria-haspopup="menu"
               onClick={e => { e.stopPropagation(); const b = e.currentTarget.getBoundingClientRect(); openMenu(r.id, b.left, b.bottom, e.currentTarget); }}><IconMore /></button></td>
           </tr></Fragment>)}
-          <tr className="register-ghost"><td colSpan={5}><span className="register-ghost-row">
+          <tr className="register-ghost"><td colSpan={span}><span className="register-ghost-row">
             <select className="register-ghost-kind" value={ghostKind} disabled={busy} aria-label="Add as" onChange={e => setGhostKind(e.target.value)}>
               <option value="rfi">RFI</option><option value="eot_claim">EOT claim</option><option value="delay_notice">Notice of delay</option><option value="letter">Letter</option>
             </select>
-            <input value={ghost} disabled={busy} maxLength={200} placeholder={GHOST[ghostKind]} aria-label={GHOST[ghostKind].replace("…", "")}
-              onChange={e => setGhost(e.target.value)} onBlur={addRFI}
-              onKeyDown={e => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); addRFI(); } else if (e.key === "Escape") setGhost(""); }} />
+            {ghostKind !== "rfi" && <select className="register-ghost-kind" value={ghostDir} disabled={busy} aria-label="Direction" onChange={e => setGhostDir(e.target.value as "in" | "out")}>
+              <option value="in">Received</option><option value="out">Raised by us</option>
+            </select>}
+            <input value={ghost} disabled={busy} maxLength={200} placeholder={ghostWords(ghostKind, ghostDir)} aria-label={ghostWords(ghostKind, ghostDir).replace("…", "")}
+              onChange={e => setGhost(e.target.value)} onBlur={addRow}
+              onKeyDown={e => { e.stopPropagation(); if (e.key === "Enter") { e.preventDefault(); addRow(); } else if (e.key === "Escape") setGhost(""); }} />
           </span></td></tr>
         </tbody>
       </table>
     </div>}
     {menu && <RowMenu at={menu} items={menuItems(menu.ids)} label="Register actions" head={menu.ids.length > 1 ? `${menu.ids.length} rows` : rowOf(menu.ids[0])?.title}
       onClose={restore => { setMenu(null); if (restore) menu.trigger?.focus({ preventScroll: true }); }} />}
-    </section>
-  </>;
+  </section>;
 }
 
 type Terms = { rfi: string; eot: string; agreed: string };
 
-const GHOST: Record<string, string> = { rfi: "Raise an RFI…", eot_claim: "Record an EOT claim received today…", delay_notice: "Record a notice of delay received today…", letter: "Record a letter received today…" };
+const GHOST_IN: Record<string, string> = { rfi: "Raise an RFI…", eot_claim: "Record an EOT claim received today…", delay_notice: "Record a notice of delay received today…", letter: "Record a letter received today…" };
+const GHOST_OUT: Record<string, string> = { eot_claim: "Raise an EOT claim…", delay_notice: "Give a notice of delay…", letter: "Write a letter…" };
+const ghostWords = (kind: string, dir: "in" | "out") => (dir === "out" && GHOST_OUT[kind]) || GHOST_IN[kind];
 
 /** "Monday 21 December 2026" from YYYY-MM-DD, read as a calendar date. */
 export function longDate(iso?: string | null): string {

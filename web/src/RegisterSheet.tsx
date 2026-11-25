@@ -44,7 +44,7 @@ const sourceIds = (r: DeliveryRecord) => [...new Set((r.provenance.sources ?? []
 export function RegisterSheet(props: Props) {
   const { data, id, backTo, onClose } = props;
   const row = data.rowOf(id);
-  const back = <PagePrimaryAction surface="register"><BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} /></PagePrimaryAction>;
+  const back = <PagePrimaryAction surface="register"><BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} here={row ? rowLabel(row) : undefined} /></PagePrimaryAction>;
   useEffect(() => {
     // Escape in the right-hand panel belongs to its tables (clearing a selection).
     const key = (e: KeyboardEvent) => { if (e.key === "Escape" && !(e.target as HTMLElement).closest("input,textarea,select,[role=menu],[role=dialog],.project-side-panel")) onClose(); };
@@ -56,6 +56,14 @@ export function RegisterSheet(props: Props) {
   return <section className="register-sheet" aria-label={`${rowLabel(row)} ${row.title}`} aria-busy={data.busy}>
     {back}
     {row.kind === "rfi" ? <RfiSheet {...props} row={row} /> : <OtherSheet {...props} row={row} />}
+  </section>;
+}
+
+/** One band of the sheet, headed as an RFP's sections are. */
+export function Band({ title, children, className = "" }: { title: string; children: ReactNode; className?: string }) {
+  return <section className={`report-section register-band ${className}`.trim()}>
+    <div className="report-section-head section-band"><h3>{title}</h3></div>
+    {children}
   </section>;
 }
 
@@ -204,7 +212,7 @@ function RfiSheet({ row, data, projectId, documents, transmittal, onOpenDocument
       {sendNote?.error ?? sendNote?.done ?? (why || what)}</p>
     {warning && <p className="send-error" role="note">{warning}</p>}
     <Notice data={data} />
-    <div className="pf-grid register-grid">
+    <Band title="Particulars"><div className="pf-grid register-grid">
       <label className="pf-row"><span className="pf-label">To</span><span className="pf-value">
         <input className="input" list="rfi-firms" value={to} placeholder="name@example.com, or a firm" onChange={e => setTo(e.target.value)} onBlur={() => saveIfChanged("to")} aria-label="To" /></span></label>
       <label className="pf-row"><span className="pf-label">Cc</span><span className="pf-value">
@@ -220,9 +228,9 @@ function RfiSheet({ row, data, projectId, documents, transmittal, onOpenDocument
         <input className="input" key={`${row.id}-${row.version}-ref`} defaultValue={d.ref ?? ""} maxLength={100} disabled={data.busy} aria-label="Their ref"
           onBlur={e => { if (e.target.value !== (d.ref ?? "")) void save({ ref: e.target.value }); }} /></span></label>}
       <FirmAddresses id="rfi-firms" />
-    </div>
-    <label className="register-field register-question">Question
-      <textarea aria-label="Question" value={question} maxLength={8000} rows={4} onChange={e => setQuestion(e.target.value)} onBlur={() => saveIfChanged("question")} /></label>
+    </div></Band>
+    <Band title="Question">
+      <textarea className="register-body" aria-label="Question" value={question} maxLength={8000} rows={4} onChange={e => setQuestion(e.target.value)} onBlur={() => saveIfChanged("question")} /></Band>
     {/* An RFI's documents are its transmittal, chosen as an RFP's are: select
         in the repository, then Update Transmittal (owner, 20 November 2026). */}
     <section className="report-section register-transmittal">
@@ -233,7 +241,7 @@ function RfiSheet({ row, data, projectId, documents, transmittal, onOpenDocument
           basis: { document_ids: docs } }} />
     </section>
     <section className="report-section register-history-band">
-      <div className="report-section-head section-band"><h3>History</h3></div>
+      <div className="report-section-head section-band"><h3>Responses and history</h3></div>
       <Timeline lines={lines} render={l => <>
         {l.kind === "sent" && l.message && <button type="button" className="cell-link" onClick={() => onOpenMessage(l.message!.id)}>Open what was sent</button>}
         {l.kind === "reply" && l.message && <>
@@ -308,7 +316,7 @@ function OtherSheet({ row, data, documents, onOpenDocument, onOpenMessage }: Pro
         onDismiss={id => void data.run([{ op: "delivery.edit", fields: { item: row.id, dismiss_readings: [id] } }], "Dismissed.", "sheet")}
         onSatisfied={() => void data.run(editOps([row], { status: "satisfied" }), "Marked satisfied.", "sheet")}
         onAddToRFP={() => void data.addToRFP(row)} />
-      : <div className="pf-grid register-grid">
+      : <Band title="Particulars"><div className="pf-grid register-grid">
         <div className="pf-row"><span className="pf-label">With</span><span className="pf-value">{row.with || "—"}</span></div>
         <div className="pf-row"><span className="pf-label">Due</span><span className="pf-value">{row.target_date ?? "—"}</span></div>
         {row.kind === "notice" && notice.notice && <div className="pf-row"><span className="pf-label">Notice</span><span className="pf-value">{notice.notice}</span></div>}
@@ -317,7 +325,7 @@ function OtherSheet({ row, data, documents, onOpenDocument, onOpenMessage }: Pro
           <button type="button" className="cell-link" onClick={() => onOpenMessage(notice.message_id!)}>Open the message</button></span></div>}
         {(row.provenance.sources ?? []).length > 0 && <div className="pf-row"><span className="pf-label">Sources</span><span className="pf-value">
           {(row.provenance.sources ?? []).map((s, i) => <button key={i} type="button" className="cell-link" onClick={() => s.document_id && onOpenDocument(s.document_id)}>{s.filename || "Document"}{s.page ? ` p. ${s.page}` : ""}</button>)}</span></div>}
-      </div>}
+      </div></Band>}
     <section className="report-section register-history-band">
       <div className="report-section-head section-band"><h3>History</h3></div>
       <Timeline lines={rowHistory(row)} render={() => null} />
@@ -341,7 +349,7 @@ function ConditionDetail({ row, busy, documents, onOpenDocument, onLink, onAccep
     return <span className="register-chip" data-band={f?.band === "amber" ? "amber" : undefined}>{label}: {who}</span>;
   };
   const title = (id: string) => documents.find(x => x.id === id)?.title ?? "Document deleted";
-  return <section className="register-detail" aria-label="Selected condition">
+  return <Band title="Condition"><section className="register-detail" aria-label="Selected condition">
     {row.provenance.flag && <p className="register-flag" data-band="amber">{row.provenance.flag}</p>}
     {d.stage_heading && <p className="register-history">{d.stage_heading}</p>}
     <p className="register-council">{d.text || "No words were read for this condition."}</p>
@@ -361,5 +369,5 @@ function ConditionDetail({ row, busy, documents, onOpenDocument, onLink, onAccep
     </div>
     <p>{row.status !== "satisfied" && <button type="button" className="btn btn-small" disabled={busy} onClick={onSatisfied}>Satisfied</button>}{" "}
       <button type="button" className="cell-link" disabled={busy || !row.package_id || !!d.rfp} title={!row.package_id ? "Give it to a package first" : d.rfp ? "Already on the RFP" : undefined} onClick={onAddToRFP}>{d.rfp ? "On the RFP" : "Add to RFP"}</button></p>
-  </section>;
+  </section></Band>;
 }

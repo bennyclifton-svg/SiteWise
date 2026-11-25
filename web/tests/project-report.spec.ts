@@ -1,19 +1,20 @@
 import { expect, test } from "@playwright/test";
 
 // The project report (docs/plans/2026-11-17-monthly-report.md, Task 7):
-// open it from the band of the right-hand panel's Register side, in the
-// middle panel; Update, comment, issue and download.
+// Report on the left nav (25 November 2026), with an RFP's section bands;
+// Update, comment, issue and download.
 test("project report: open, update, comment, issue and download", async ({ page }) => {
   page.on("pageerror", error => { throw error; });
   const { token } = await (await page.request.post("/__e2e/invite?org=a")).json();
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Project report check");
   await page.getByRole("button", { name: "Create project", exact: true }).click();
-  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Register", exact: true }).click();
+  await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
   const project = new URL(page.url()).pathname.split("/").pop();
 
-  // A double click opens one report.
-  await page.getByRole("button", { name: "Project report", exact: true }).dblclick();
+  // Opening Report twice makes one report.
+  const report = page.getByRole("group", { name: "Project views" }).getByRole("button", { name: "Report", exact: true });
+  await report.dblclick();
   await expect(page.getByRole("heading", { name: "Project report No. 1", exact: true })).toBeVisible();
   const reports = await (await page.request.get(`/api/projects/${project}/reports`)).json();
   expect(reports.filter((r: { kind: string }) => r.kind === "monthly")).toHaveLength(1);
@@ -28,7 +29,7 @@ test("project report: open, update, comment, issue and download", async ({ page 
 
   // The PM's comment under Cost.
   const cost = page.locator(".report-section").filter({ has: page.getByRole("heading", { name: "Cost", exact: true }) });
-  await cost.getByRole("button", { name: "Edit wording: Comment", exact: true }).click();
+  await cost.locator(".report-block").filter({ has: page.getByRole("heading", { name: "Comment", exact: true }) }).locator("p.inline-text").click();
   await page.getByLabel("Report wording").fill("The cost plan is prepared next month.");
   await page.getByRole("button", { name: "Save wording", exact: true }).click();
   await expect(cost.getByText("The cost plan is prepared next month.", { exact: true })).toBeVisible();
@@ -57,8 +58,7 @@ test("project report: open, update, comment, issue and download", async ({ page 
   await expect(link).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 
-  // Back returns to the view the middle panel had; the Register stays beside it.
-  await page.getByRole("button", { name: "Back to Project Profile", exact: true }).click();
-  await expect(page.getByRole("region", { name: "Project profile" })).toBeVisible();
-  await expect(page.getByRole("region", { name: "Register" })).toBeVisible();
+  // Report is a view of its own: no Back, and the nav marks it.
+  await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toHaveCount(0);
+  await expect(report).toHaveAttribute("aria-current", "page");
 });

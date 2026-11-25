@@ -142,7 +142,7 @@ export function DocumentWorkspace({ row, catalog, backTo, priorLabel, onCorrect,
 
   return <section ref={root} className="document-workspace" id="document-workspace" aria-label="Document viewer" data-filename={row.filename} data-layout={layout} data-filing={filing || undefined}>
     <header className="document-head">
-      <BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} />
+      <BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} here={doc?.number || "Document"} />
       <div className="document-title">
         <h2 title={title || row.filename}>{title || row.filename}</h2>
         {doc && <p className="document-meta">{identity(doc, catalog, !!title).map((part, i) => <span key={i}>{part}</span>)}</p>}

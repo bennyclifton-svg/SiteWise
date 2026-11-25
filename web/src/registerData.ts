@@ -32,6 +32,8 @@ export interface RegisterData {
   readNotice: (documentId: string) => Promise<boolean>;
 }
 
+const READ_FAILED = "The register could not be read. Reload to try again.";
+
 /** The register's rows, read once `enabled` and again on each tick or write. */
 export function useRegisterData(projectId: string, tick: number, enabled: boolean, onSignedOut: () => void): RegisterData {
   const [view, setView] = useState<RegisterView | null>(null);
@@ -46,10 +48,13 @@ export function useRegisterData(projectId: string, tick: number, enabled: boolea
   useEffect(() => {
     if (!enabled) return;
     let stopped = false;
-    deliveryApi.view(projectId).then(v => { if (!stopped) { setView(v); setError(""); } }).catch(e => {
+    // A good read clears only a failed read's message: a write's refusal,
+    // such as a 409, stays until the next write, though the read after it
+    // succeeds.
+    deliveryApi.view(projectId).then(v => { if (!stopped) { setView(v); setError(e => e === READ_FAILED ? "" : e); } }).catch(e => {
       if (stopped) return;
       if (e instanceof ApiError && e.status === 401) onSignedOut();
-      else setError("The register could not be read. Reload to try again.");
+      else setError(READ_FAILED);
     });
     return () => { stopped = true; };
   }, [projectId, tick, n, enabled, onSignedOut]);

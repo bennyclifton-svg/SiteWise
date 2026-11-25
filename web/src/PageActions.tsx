@@ -8,9 +8,25 @@ export function UpdateButton({ onClick, disabled, title, busy, children = "Updat
   return <GroundButton primary icon="refresh" className="btn-update" onClick={onClick} disabled={disabled} title={title} busy={busy}>{children}</GroundButton>;
 }
 
-/** Back out of a drilled-in view: the same drawn button, ground line only. */
-export function BackButton({ to, onClick, disabled, title, className }: { to: string; onClick: () => void; disabled?: boolean; title?: string; className?: string }) {
-  return <GroundButton small icon="back" className={className} onClick={onClick} disabled={disabled} title={title} aria-label={`Back to ${to}`}>{to}</GroundButton>;
+/** One step of a breadcrumb trail above the one that is open. */
+export interface Crumb { label: string; onClick: () => void }
+
+/**
+ * The path to a drilled-in view (owner, 25 November 2026): every step above
+ * it is a link back, the last names what is open. `to` is the step it came
+ * from, kept as "Back to …" so the name says what the click does; `before`
+ * are the steps above that, oldest first.
+ */
+export function BackButton({ to, onClick, here, before = [], disabled, title, className }: {
+  to: string; onClick: () => void; here?: string; before?: Crumb[]; disabled?: boolean; title?: string; className?: string;
+}) {
+  return <nav className={`crumbs${className ? ` ${className}` : ""}`} aria-label="Breadcrumb">
+    <ol>
+      {before.map(c => <li key={c.label}><button type="button" className="crumb" disabled={disabled} title={disabled ? title : undefined} onClick={c.onClick}>{c.label}</button></li>)}
+      <li><button type="button" className="crumb" disabled={disabled} title={title} aria-label={`Back to ${to}`} onClick={onClick}>{to}</button></li>
+      {here && <li aria-current="page"><span className="crumb-here" title={here}>{here}</span></li>}
+    </ol>
+  </nav>;
 }
 
 /** A menu item; one with `checked` is a switch that stays open when toggled. */

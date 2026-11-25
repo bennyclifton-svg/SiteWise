@@ -172,3 +172,39 @@ li[data-tone="check"] .register-what { box-shadow: inset var(--state-check-width
 .register-outcomes { display: flex; flex-wrap: wrap; gap: var(--space-3, 12px); border: 0; margin: 0 0 var(--space-2, 8px); padding: 0; }
 .register-result-chip { font-size: var(--fs-sm); padding: 1px 8px; border: 1px solid var(--sw-border-subtle); border-radius: 999px; }
 .register-result-chip[data-outcome="rejected"] { color: var(--sw-error-text); }
+
+/* Correspondence (owner, 25 November 2026): the register as one list in the
+   middle panel, its columns sorted by a click and moved by a drag, and the
+   Register | Messages tabs on the band above it. */
+.correspondence { min-width: 0; }
+.correspondence-band { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 2.75rem; }
+.correspondence-band .correspondence-tabs { order: 0; margin: 0 4px 0 0; }
+.correspondence-band .register-filters { flex: 1; }
+.correspondence-messages { display: flex; flex-direction: column; gap: 8px; }
+.register-list .register-table { table-layout: fixed; min-width: 58rem; }
+.register-list col.register-col-type { width: 6rem; }
+.register-list col.register-col-no { width: 5rem; }
+.register-list col.register-col-from { width: 6.5rem; }
+.register-list col.register-col-with { width: 6.5rem; }
+.register-list col.register-col-issued { width: 6rem; }
+.register-list col.register-col-due { width: 7rem; }
+.register-list col.register-col-status { width: 8rem; }
+.register-list col.register-col-more { width: 2rem; }
+.register-list .register-table td[data-field="title"] { width: auto; }
+.register-list .register-table td .register-value { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.register-list .register-date-cell { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.register-list .register-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.register-list thead th[draggable="true"] { cursor: grab; }
+.register-list thead th[data-dragging] { opacity: .45; }
+.register-list thead th { overflow: hidden; }
+.register-sort { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 0; border: 0; background: none; cursor: pointer; white-space: nowrap; }
+.register-sort:hover { text-decoration: underline; text-underline-offset: 3px; }
+.register-sort-mark { font-size: 9px; }
+
+/* The sheet's bands: each part under the RFP's blue section head. */
+.register-band { margin: 0; }
+.register-band > .register-grid, .register-band > .register-detail { margin-top: 4px; }
+.register-band .register-detail { border-top: 0; padding-top: 0; }
+.register-body { display: block; box-sizing: border-box; width: 100%; margin-top: 8px; padding: 8px 10px; resize: vertical; font: inherit; color: var(--sw-text-primary, var(--ink));
+  border: 1px solid var(--sw-border-subtle); border-radius: var(--radius-sm, 4px); background: var(--sw-surface); }
+.register-band .register-answer-form { margin: 0; }

@@ -258,3 +258,45 @@ func TestRegisterClaimsBudget(t *testing.T) {
 	check("delivery_read", reads)
 	check("delivery_write", writes)
 }
+
+// A builder hosting the project lodges an EOT claim with the principal: the
+// claim is the host's own, with the principal until the result comes back,
+// and then with the host. Its due date is the principal's period from the
+// day it was lodged.
+func TestRegisterRaisedClaimDirection(t *testing.T) {
+	ctx := context.Background()
+	s, _, _ := workStore(t)
+	in := claimInput("eot_claim", "Rain, week 47", `{"direction":"out","received_on":"2026-11-23","days_claimed":3}`)
+	in.Content.OwnerText = "Principal"
+	out, err := s.CreateDelivery(ctx, orgA, projectA, userA, in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !delivery.Raised(out.Content) || delivery.With(out.Content) != "Principal" {
+		t.Fatalf("raised claim with %q", delivery.With(out.Content))
+	}
+	if out.TargetDate == nil || *out.TargetDate != "2026-12-21" {
+		t.Fatalf("raised claim due %v", out.TargetDate)
+	}
+	// With no responder named, a raised claim is with nobody named, never "You".
+	bare, err := s.CreateDelivery(ctx, orgA, projectA, userA, claimInput("letter", "Site access", `{"direction":"out","received_on":"2026-11-23"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if w := delivery.With(bare.Content); w != "" {
+		t.Fatalf("raised letter with %q", w)
+	}
+	status := "assessed"
+	assessed, err := s.PatchDelivery(ctx, orgA, projectA, out.ID, userA, store.DeliveryPatch{Patch: delivery.Patch{Version: out.Version,
+		Status: &status, Details: json.RawMessage(`{"direction":"out","received_on":"2026-11-23","days_claimed":3,"result":{"outcome":"granted","days_granted":3,"reasons":""}}`)}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if w := delivery.With(assessed.Content); w != "You" {
+		t.Fatalf("assessed raised claim with %q", w)
+	}
+	// Only in and out are directions.
+	if _, err := s.CreateDelivery(ctx, orgA, projectA, userA, claimInput("eot_claim", "Bad", `{"direction":"sideways"}`)); !errors.Is(err, store.ErrInvalidDelivery) {
+		t.Fatalf("bad direction %v", err)
+	}
+}

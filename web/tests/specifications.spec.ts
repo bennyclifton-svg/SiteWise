@@ -7,7 +7,7 @@ test("a user authors, reviews and issues a standalone specification", async ({pa
   await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Synthetic specification authoring");
   await page.getByRole("button",{name:"Create project",exact:true}).click();
-  await page.getByRole("button",{name:"Specifications",exact:true}).click();
+  await page.waitForURL(/\/projects\/[0-9a-f-]{36}/);await page.goto(`${new URL(page.url()).pathname}?view=specifications`);
   await expect(page.getByRole("columnheader",{name:"Type / specification",exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Specify basin",exact:true})).toBeVisible();
   await page.setViewportSize({width:1360,height:1000});
@@ -92,7 +92,7 @@ test("specification load failures preserve recovery and do not look empty",async
   const {token}=await(await page.request.post("/__e2e/invite?org=a")).json();await page.goto(`/#token=${token}`);
   await page.getByLabel("New project").fill("Synthetic specification recovery");await page.getByRole("button",{name:"Create project",exact:true}).click();
   let broken=true;await page.route("**/api/projects/*/specifications",r=>broken?r.fulfill({status:500,body:"unavailable"}):r.continue());
-  await page.getByRole("button",{name:"Specifications",exact:true}).click();
+  await page.waitForURL(/\/projects\/[0-9a-f-]{36}/);await page.goto(`${new URL(page.url()).pathname}?view=specifications`);
   await expect(page.getByRole("alert")).toContainText("Could not load specifications");
   await expect(page.getByRole("button",{name:"Add item",exact:true})).toBeDisabled();
   broken=false;await page.getByRole("button",{name:"Reload specifications",exact:true}).click();
@@ -108,7 +108,7 @@ test("a consultant reference can cover a section without copying its specificati
   const upload=await page.request.post(`/api/projects/${project}/files?name=consultant-materials.pdf`,{data:bytes,headers:{"Content-Type":"application/pdf",Origin:"http://127.0.0.1:4173"}});
   expect(upload.ok()).toBeTruthy();
   const doc=await upload.json();await page.reload();
-  await page.getByRole("button",{name:"Specifications",exact:true}).click();
+  await page.waitForURL(/\/projects\/[0-9a-f-]{36}/);await page.goto(`${new URL(page.url()).pathname}?view=specifications`);
   const section=page.locator("tr.spec-section").filter({has:page.getByRole("button",{name:"Interiors and finishes",exact:true})});
   await section.getByRole("button",{name:"Needs attention",exact:true}).click();
   const form=page.getByRole("form",{name:"Specification coverage",exact:true});

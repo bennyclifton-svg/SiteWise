@@ -48,11 +48,14 @@ speed, Jev only, the building as the model, and the intake budget.
 
 `PRODUCT.md` names the workbench. The foundation design is the origin of the
 rules above and describes the intake slice. The workbench also includes
-Profile, Cost Plan, Procurement, Specifications, Program and Register.
-Register is the right-hand panel's Register side (a Documents | Register
-switch, beside every view; off the left nav since 20 November 2026): one
-table of what is owed (RFIs, notices, consent conditions and the older
-delivery kinds), whose rows open as a sheet in the middle panel.
+Profile, Cost Plan, Program, Procurement, Correspondence and Report on the
+left nav (25 November 2026; Specifications is off the nav until it is ready,
+and its screen stays reachable from links). The right-hand panel is the
+documents only. Correspondence has two tabs: Register (the default), one
+table of what is owed (RFIs, EOT claims, notices, letters, consent
+conditions and the older delivery kinds) whose rows drill in to a sheet with
+a breadcrumb back, and Messages, the project's mail. Report is the project
+report.
 Implication proposals
 stay on the project and are off the left nav.
 
@@ -100,7 +103,11 @@ only the PM's edit makes an RFI answered.
 
 EOT claims, notices of delay and letters are register kinds, each numbered
 in its own run (`docs/plans/2026-11-23-correspondence-between-parties.md`,
-sections 16 to 18; built 23 November 2026, one organisation only). Their
+sections 16 to 18; built 23 November 2026, one organisation only). Each is
+received, or raised by the host and lodged with another party (direction
+`out`, 25 November 2026: a builder hosting the project lodges its EOT
+claims with the principal); a raised item is with that party until their
+result or reply is recorded, then with the host. Their
 due dates, lateness, the days granted and the date after EOTs are Go's;
 the result is the PM's typing, with Undo. The project's terms
 (`delivery_settings`) are optional and fall back in one place
@@ -144,7 +151,7 @@ approved cut-off. Evidence never satisfies a condition: only the PM's click
 does. Program gates (one hold point per gate) come through the existing
 review; their dates are Go's.
 
-The project report (the Register band, one per project) calls neither Jev
+The project report (Report on the left nav, one per project) calls neither Jev
 nor the LLM: Update, comments, issue and export are Go over saved records,
 and every figure comes from the screens' own rollups (`costs.Summarize`,
 the invoice ledger, the Program engine, the procurement board, the

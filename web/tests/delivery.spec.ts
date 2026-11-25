@@ -1,11 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 
 // The register (docs/plans/2026-11-17-rfis-review-comments.md, Task 5),
-// in the right-hand panel since 20 November 2026: a narrow list beside
-// every view, the grey new row, Go's numbers and due dates, a row opened as
-// a sheet in the middle panel, a possible answer accepted with Undo,
-// keyboard selection, a 409 retry, and a Kind filter that lists only kinds
-// with rows. Synthetic project; no Jev, no model.
+// in Correspondence since 25 November 2026: one list in the middle panel
+// with sortable, movable columns, the grey new row, Go's numbers and due
+// dates, a row drilled in to as a sheet with a breadcrumb back, a possible
+// answer accepted with Undo, keyboard selection, a 409 retry, and a Kind
+// filter that lists only kinds with rows. Synthetic project; no Jev, no model.
 
 const headers = { Origin: "http://127.0.0.1:4173" };
 
@@ -18,9 +18,11 @@ function dueIn5(): string {
   return d.toISOString().slice(0, 10);
 }
 
-const panel = (page: Page) => page.getByRole("tablist", { name: "Right panel" });
-const showRegister = (page: Page) => panel(page).getByRole("tab", { name: "Register", exact: true }).click();
+const views = (page: Page) => page.getByRole("group", { name: "Project views" });
+const showRegister = (page: Page) => views(page).getByRole("button", { name: "Correspondence" }).click();
+const list = (page: Page) => page.locator(".register-list");
 const sheet = (page: Page) => page.locator(".register-sheet");
+const back = (page: Page) => page.getByRole("button", { name: "Back to Correspondence" }).click();
 
 async function openRegister(page: Page, name: string) {
   await page.setViewportSize({ width: 1650, height: 920 });
@@ -36,7 +38,7 @@ async function openRegister(page: Page, name: string) {
 async function raise(page: Page, title: string) {
   await page.getByLabel("Raise an RFI").fill(title);
   await page.getByLabel("Raise an RFI").press("Enter");
-  await expect(page.locator(".register-panel tr", { hasText: title })).toBeVisible();
+  await expect(list(page).locator("tr", { hasText: title })).toBeVisible();
 }
 
 async function itemOf(page: Page, project: string, title: string) {
@@ -46,22 +48,25 @@ async function itemOf(page: Page, project: string, title: string) {
 
 test("an RFI typed in the grey row is numbered and due in five working days; a possible answer is accepted with Undo", async ({ page }) => {
   const project = await openRegister(page, "Synthetic register");
-  // The Register is beside the view, not a view of its own.
-  await expect(page.getByRole("group", { name: "Project views" }).getByRole("button", { name: "Register" })).toHaveCount(0);
-  await expect(page.getByText("Nothing is recorded as owed yet.")).toBeVisible();
+  // The right-hand panel is the documents only; the register is Correspondence's.
+  await expect(page.getByRole("tablist", { name: "Right panel" })).toHaveCount(0);
+  await expect(views(page).getByRole("button", { name: "Specifications" })).toHaveCount(0);
+  await expect(page.getByRole("tablist", { name: "Correspondence" }).getByRole("tab", { name: "Register" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByText("Nothing is recorded yet.")).toBeVisible();
   await expect(page.getByLabel("Kind")).toHaveCount(0);
 
   await raise(page, "Basement wall waterproofing");
-  const row = page.locator(".register-panel tr", { hasText: "Basement wall waterproofing" });
+  const row = list(page).locator("tr", { hasText: "Basement wall waterproofing" });
   await expect(row.locator("th")).toHaveText("RFI-001");
   await expect(row.locator('td[data-field="due"]')).toContainText(dueIn5());
-  await expect(row.locator(".register-status")).toHaveText("Draft");
+  await expect(row.locator('td[data-field="status"]')).toHaveText("Draft");
+  await expect(row.locator('td[data-field="from"]')).toHaveText("You");
   // Only the kind with rows is offered.
   await expect(page.getByLabel("Kind").locator("option")).toHaveText(["All kinds", "RFIs"]);
 
   // Undo puts the register back as it was: empty.
   await page.getByRole("button", { name: "Undo", exact: true }).click();
-  await expect(page.getByText("Nothing is recorded as owed yet.")).toBeVisible();
+  await expect(page.getByText("Nothing is recorded yet.")).toBeVisible();
   await raise(page, "Basement wall waterproofing");
   await expect(row.locator("th")).toHaveText("RFI-001");
 
@@ -71,45 +76,62 @@ test("an RFI typed in the grey row is numbered and due in five working days; a p
   expect(opened.ok()).toBeTruthy();
   expect((await page.request.post(`/__e2e/register-reply?project=${project}&text=${encodeURIComponent("Issued in response to RFI-001: sheet membrane, laps 150 mm.")}`)).ok()).toBeTruthy();
   await page.reload();
-  // The panel's side is remembered for this viewer.
-  await expect(panel(page).getByRole("tab", { name: "Register" })).toHaveAttribute("aria-selected", "true");
-  await expect(row.locator(".register-status")).toContainText("1 to check");
+  // The view is remembered for this viewer.
+  await expect(views(page).getByRole("button", { name: "Correspondence" })).toHaveAttribute("aria-current", "page");
+  await expect(row.locator('td[data-field="status"]')).toContainText("1 to check");
   await expect(row.locator('td[data-field="with"]')).toHaveText("Northline Structural");
 
-  // The row opens as a sheet in the middle; its history carries the
-  // possible answer with Accept.
+  // The row drills in to its sheet; its history carries the possible answer.
   await row.locator('td[data-field="title"]').click();
+  await expect(list(page)).toBeHidden();
+  await expect(page.getByRole("navigation", { name: "Breadcrumb" }).locator('[aria-current="page"]')).toHaveText("RFI-001");
   await expect(sheet(page).getByRole("heading", { name: "RFI-001 · Basement wall waterproofing" })).toBeVisible();
   await expect(sheet(page).locator(".register-sheet-head .register-status")).toHaveText("Open · with Northline Structural");
   const history = sheet(page).getByRole("list", { name: "History" });
   await expect(history.locator("li")).toHaveText([/Raised by .+@.+ · draft/, /Draft → Open/, /Possible answer: Engineer's reply/]);
   await history.getByRole("button", { name: "Accept", exact: true }).click();
-  await expect(row.locator(".register-status")).toHaveText("Answered");
-  await expect(row.locator('td[data-field="with"]')).toHaveText("You");
+  await expect(sheet(page).locator(".register-sheet-head .register-status")).toHaveText("Answered · with you");
   await expect(history.locator("li")).toHaveText([/Raised by .+@.+ · draft/, /Draft → Open/, /Open → Answered/, /Answered by Engineer's reply/]);
   await expect(history.locator('li[data-tone="answer"]')).toHaveCount(1);
   await sheet(page).getByRole("button", { name: "Undo", exact: true }).click();
-  await expect(row.locator(".register-status")).toContainText("1 to check");
-  await expect(row.locator('td[data-field="with"]')).toHaveText("Northline Structural");
-  // Back returns to the view that was there.
-  await page.getByRole("button", { name: "Back to Project Profile" }).click();
+  await expect(sheet(page).locator(".register-sheet-head .register-status")).toHaveText("Open · with Northline Structural");
+  // The breadcrumb goes back to the list.
+  await back(page);
   await expect(sheet(page)).toHaveCount(0);
-  await expect(page.getByRole("region", { name: "Project profile" })).toBeVisible();
+  await expect(row.locator('td[data-field="status"]')).toContainText("1 to check");
 });
 
-test("keyboard selection, F2 to edit, and a 409 retry", async ({ page }) => {
+test("keyboard selection, F2 to edit, sorting and moving columns, and a 409 retry", async ({ page }) => {
   const project = await openRegister(page, "Synthetic register keys");
   await raise(page, "Window head flashing");
   await raise(page, "Stair balustrade height");
   const table = page.getByTestId("register-table");
-  const first = page.locator(".register-panel tr", { hasText: "Window head flashing" });
-  await first.locator('td[data-field="title"]').click();
+  const first = list(page).locator("tr", { hasText: "Window head flashing" });
+  await first.locator('td[data-field="title"]').click({ modifiers: ["Control"] });
   await table.press("ArrowDown");
-  await expect(page.locator(".register-panel tr", { hasText: "Stair balustrade height" })).toHaveAttribute("aria-selected", "true");
+  await expect(list(page).locator("tr", { hasText: "Stair balustrade height" })).toHaveAttribute("aria-selected", "true");
   await table.press("Control+a");
-  await expect(page.locator('.register-panel tr[aria-selected="true"]')).toHaveCount(2);
+  await expect(list(page).locator('tr[aria-selected="true"]')).toHaveCount(2);
   await table.press("Escape");
-  await expect(page.locator('.register-panel tr[aria-selected="true"]')).toHaveCount(0);
+  await expect(list(page).locator('tr[aria-selected="true"]')).toHaveCount(0);
+
+  // A heading sorts; a second click reverses.
+  const subjects = list(page).locator('tbody td[data-field="title"]');
+  await page.getByRole("button", { name: "Subject", exact: true }).click();
+  await expect(subjects).toHaveText(["Stair balustrade height", "Window head flashing"]);
+  await page.getByRole("button", { name: "Subject", exact: true }).click();
+  await expect(subjects).toHaveText(["Window head flashing", "Stair balustrade height"]);
+  // A heading dragged onto another moves its column, and the order is kept.
+  const dt = await page.evaluateHandle(() => new DataTransfer());
+  await list(page).locator("thead th", { hasText: "Status" }).dispatchEvent("dragstart", { dataTransfer: dt });
+  await list(page).locator("thead th", { hasText: "Type" }).dispatchEvent("dragover", { dataTransfer: dt });
+  await list(page).locator("thead th", { hasText: "Type" }).dispatchEvent("drop", { dataTransfer: dt });
+  await expect(list(page).locator("thead th").first()).toHaveText(/Status/);
+  await page.reload();
+  await expect(list(page).locator("thead th").first()).toHaveText(/Status/);
+  await page.getByRole("button", { name: "Register actions" }).click();
+  await page.getByRole("menuitem", { name: "Reset columns" }).click();
+  await expect(list(page).locator("thead th").first()).toHaveText(/Type/);
 
   // Another tab edits the row first. The screen keeps the old version (its
   // reads are held stale until the conflict), so its edit gets 409; the
@@ -120,22 +142,23 @@ test("keyboard selection, F2 to edit, and a 409 retry", async ({ page }) => {
   page.on("response", r => { if (r.url().endsWith("/ops") && r.status() === 409) stale = false; });
   const item = before.items.find((i: { title: string }) => i.title === "Window head flashing");
   await page.request.post(`/api/projects/${project}/ops`, { headers, data: { area: "delivery", ops: [{ op: "delivery.edit", fields: { item: item.id, version: item.version, owner_text: "Arc Architects" } }] } });
-  await first.locator('td[data-field="title"]').click();
+  await first.locator('td[data-field="title"]').click({ modifiers: ["Control"] });
   await table.focus();
   await table.press("F2");
   await page.keyboard.press("Control+a");
   await page.keyboard.type("Window head flashing detail");
   await page.keyboard.press("Enter");
-  await expect(page.locator(".register-panel").getByRole("alert")).toContainText("changed while you were editing");
+  await expect(list(page).getByRole("alert")).toContainText("changed while you were editing");
   await expect(first.locator('td[data-field="with"]')).toHaveText("Arc Architects");
-  await first.locator('td[data-field="title"]').dblclick();
+  await table.focus();
+  await table.press("F2");
   await page.keyboard.press("Control+a");
   await page.keyboard.type("Window head flashing detail");
   await page.keyboard.press("Enter");
-  await expect(page.locator(".register-panel tr", { hasText: "Window head flashing detail" }).locator('td[data-field="with"]')).toHaveText("Arc Architects");
+  await expect(list(page).locator("tr", { hasText: "Window head flashing detail" }).locator('td[data-field="with"]')).toHaveText("Arc Architects");
 });
 
-test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their ref, the transmittal from the Documents side, Send with its reason", async ({ page }) => {
+test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their ref, the transmittal from the documents, Send with its reason", async ({ page }) => {
   const project = await openRegister(page, "Synthetic RFI sheet");
   expect((await page.request.post(`/__e2e/file-document?project=${project}&title=${encodeURIComponent("Slab edge detail")}&kind=drawing`, { data: "Slab edge detail, sheet S-101." })).ok()).toBeTruthy();
   await raise(page, "Slab edge set-down");
@@ -143,7 +166,7 @@ test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their r
   expect((await page.request.post(`/api/projects/${project}/ops`, { headers, data: { area: "delivery", ops: [{ op: "delivery.add", fields: { kind: "rfi", title: "Builder query on stair", ref: "BLD-RFI-12", raised_by: "Main builder", raised_on: "2026-11-18" } }] } })).ok()).toBeTruthy();
   await page.reload();
 
-  const row = page.locator(".register-panel tr", { hasText: "Slab edge set-down" });
+  const row = list(page).locator("tr", { hasText: "Slab edge set-down" });
   await row.locator('td[data-field="title"]').click();
   const s = sheet(page);
   await expect(s.getByRole("heading", { name: "RFI-001 · Slab edge set-down" })).toBeVisible();
@@ -161,8 +184,7 @@ test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their r
   await expect(s.getByRole("button", { name: "Undo", exact: true })).toBeVisible();
   await expect(send).toHaveAttribute("title", "Send to 2 addresses with 0 documents");
 
-  // The transmittal from the Documents side, with the RFI still open.
-  await panel(page).getByRole("tab", { name: "Documents" }).click();
+  // The transmittal from the documents beside it, with the RFI still open.
   await page.locator(".reg-doc").filter({ hasText: "Slab edge detail" }).locator("tr.reg-line").click();
   await s.getByRole("button", { name: "Update Transmittal" }).click();
   await expect(s.locator(".rfp-transmittal-table tbody tr")).toContainText("Slab edge detail");
@@ -170,8 +192,6 @@ test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their r
 
   // A reload keeps what the PM typed.
   await page.reload();
-  await expect(panel(page).getByRole("tab", { name: "Documents" })).toHaveAttribute("aria-selected", "true");
-  await showRegister(page);
   await row.locator('td[data-field="title"]').click();
   await expect(s.getByLabel("To", { exact: true })).toHaveValue("eng@consult.test");
   await expect(s.getByLabel("Cc", { exact: true })).toHaveValue("site@builder.test");
@@ -196,7 +216,8 @@ test("an RFI's sheet: To, Cc and Subject kept over a reload, Ref only as their r
   await page.unroute("**/api/projects/*/delivery");
 
   // An RFI someone else raised shows their number as Their ref.
-  await page.locator(".register-panel tr", { hasText: "Builder query on stair" }).locator('td[data-field="title"]').click();
+  await back(page);
+  await list(page).locator("tr", { hasText: "Builder query on stair" }).locator('td[data-field="title"]').click();
   await expect(s.getByLabel("Their ref", { exact: true })).toHaveValue("BLD-RFI-12");
   await expect(s.getByRole("list", { name: "History" }).locator("li").first()).toContainText("Raised by Main builder");
 });
@@ -216,7 +237,7 @@ test("an EOT claim is numbered in its own run, due by the default, assessed in p
   await page.getByLabel("Add as").selectOption("eot_claim");
   await page.getByLabel("Record an EOT claim received today").fill("Rain, week 47");
   await page.getByLabel("Record an EOT claim received today").press("Enter");
-  const row = page.locator(".register-panel tr", { hasText: "Rain, week 47" });
+  const row = list(page).locator("tr", { hasText: "Rain, week 47" });
   await expect(row.locator("th")).toHaveText("EOT-1");
   await expect(row.locator('td[data-field="due"]')).toContainText(daysIn(28));
   await expect(row.locator('td[data-field="due"]')).toHaveAttribute("data-band", "typical");
@@ -236,7 +257,8 @@ test("an EOT claim is numbered in its own run, due by the default, assessed in p
   await expect(s.getByLabel("Reasons")).toHaveValue(/granted in part/);
   await s.getByRole("button", { name: "Record result" }).click();
   await expect(s.locator(".register-result-chip")).toHaveText("2 of 5 days granted");
-  await expect(row.locator(".register-status")).toHaveText("Assessed");
+  await back(page);
+  await expect(row.locator('td[data-field="status"]')).toHaveText("Assessed · 2 of 5 days granted");
   await expect(page.locator(".register-completion")).toContainText("2 days granted");
 
   // The agreed completion date is a project term; the date after EOTs is Go's.
@@ -252,5 +274,39 @@ test("an EOT claim is numbered in its own run, due by the default, assessed in p
   await page.getByLabel("Add as").selectOption("delay_notice");
   await page.getByLabel("Record a notice of delay received today").fill("Late steel");
   await page.getByLabel("Record a notice of delay received today").press("Enter");
-  await expect(page.locator(".register-panel tr", { hasText: "Late steel" }).locator("th")).toHaveText("NOD-1");
+  await expect(list(page).locator("tr", { hasText: "Late steel" }).locator("th")).toHaveText("NOD-1");
+});
+
+// A builder hosting the project lodges an EOT claim with the principal
+// (owner, 25 November 2026): raised by us, with them until their result
+// comes back, then with the host.
+test("an EOT claim raised by us is lodged, with the other party, and their result comes back to us", async ({ page }) => {
+  const project = await openRegister(page, "Synthetic raised EOT");
+  await page.getByLabel("Add as").selectOption("eot_claim");
+  await page.getByLabel("Direction").selectOption("out");
+  await page.getByLabel("Raise an EOT claim").fill("Wet weather, week 48");
+  await page.getByLabel("Raise an EOT claim").press("Enter");
+  const row = list(page).locator("tr", { hasText: "Wet weather, week 48" });
+  await expect(row.locator("th")).toHaveText("EOT-1");
+  await expect(row.locator('td[data-field="from"]')).toHaveText("You");
+  await expect(row.locator('td[data-field="due"]')).toContainText(daysIn(28));
+
+  await row.locator('td[data-field="title"]').click();
+  const s = sheet(page);
+  await expect(s.getByLabel("Direction")).toHaveValue("out");
+  await expect(s.getByLabel("Lodged")).toBeVisible();
+  await expect(s).toContainText("Their response due");
+  await s.getByLabel("To", { exact: true }).fill("Principal");
+  await s.getByLabel("To", { exact: true }).blur();
+  await expect.poll(async () => (await itemOf(page, project, "Wet weather, week 48")).with).toBe("Principal");
+  await s.getByLabel("Days claimed").fill("3");
+  await s.getByLabel("Days claimed").blur();
+  await expect.poll(async () => (await itemOf(page, project, "Wet weather, week 48")).details.days_claimed).toBe(3);
+
+  // Their result is recorded as it came back; the claim is then with us.
+  await expect(s.getByRole("heading", { name: "Their result" })).toBeVisible();
+  await s.getByLabel("Granted", { exact: true }).check();
+  await s.getByLabel("Days granted").fill("3");
+  await s.getByRole("button", { name: "Record result" }).click();
+  await expect(s.locator(".register-sheet-head .register-status")).toHaveText("Assessed · 3 of 3 days granted · with you");
 });

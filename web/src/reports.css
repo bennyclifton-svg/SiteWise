@@ -183,9 +183,7 @@
    must scroll inside, not widen the page. */
 .project-reports { min-width: 0; }
 .procurement { min-width: 0; max-width: 1200px; padding: 24px 28px 64px; }
-.procurement-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.procurement-head h1 { margin: 0; font-size: 22px; }
-.procurement-head .btn, .draft-form .btn { border-radius: 999px; }
+.draft-form .btn { border-radius: 999px; }
 .procurement-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 10px; color: var(--ink-body); font-size: var(--fs-md); }
 .procurement-line p { margin: 0; }
 .procurement-scroll { position: relative; max-width: 100%; overflow-x: auto; margin: 14px 0; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
@@ -519,3 +517,12 @@ p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
 .firm-card:has(.firm-share) .firm-chip { padding-right: 60px; }
 .cockpit-scroll .procurement-table .firm-card:has(.firm-share) .firm-chip { padding-right: 80px; }
 .firm-detach.firm-share:hover:not(:disabled) { color: var(--ink); }
+
+/* The project report reads as an RFP does (owner, 25 November 2026): blue
+   section bands, then each block's label as a small heading over its words
+   and its table, at the RFP's density. */
+.report-monthly .report-section { margin-top: 20px; }
+.report-monthly .report-block { padding: 10px 12px; }
+.report-monthly .report-block h4 { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
+.report-monthly .report-table { font-size: var(--fs-md); }
+.report-monthly .report-table :is(th, td) { padding: 4px 10px; }

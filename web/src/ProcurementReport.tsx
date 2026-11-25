@@ -12,7 +12,8 @@ import { signed } from "./tender/words";
 const money = (m: string | null | undefined) => (m == null ? "—" : `$${fmt(m)}`);
 const RATING: Record<string, string> = { strong: "Strong", acceptable: "Acceptable", concern: "Concern" };
 
-export function ProcurementReport({ projectId, table: initial, onBack, onSignedOut }: { projectId: string; table: PriceTable; onBack: () => void; onSignedOut: () => void }) {
+export function ProcurementReport({ projectId, table: initial, onBack, onProcurement, onSignedOut }: { projectId: string; table: PriceTable; onBack: () => void; /** Back past the price table to Procurement. */ onProcurement?: () => void; onSignedOut: () => void }) {
+  const crumbs = onProcurement ? [{ label: "Procurement", onClick: onProcurement }] : [];
   const pkg = initial.package_id;
   const [data, setData] = useState<ReportData | null>(null);
   const [text, setText] = useState("");
@@ -30,7 +31,7 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
     setBusy(true); setError("");
     try { const d = await action(); setData(d); } catch (e) { fail(e); } finally { setBusy(false); }
   }
-  if (!data) return <section className="prices"><BackButton to="Price table" onClick={onBack} />{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
+  if (!data) return <section className="prices"><BackButton to={initial.title || "Price table"} before={crumbs} here="Comparison report" onClick={onBack} />{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
   const { table, report } = data;
   const cols = table.columns;
   const quoted = !table.builder && cols.some(c => c.quote);
@@ -45,7 +46,7 @@ export function ProcurementReport({ projectId, table: initial, onBack, onSignedO
 
   return <section className="prices procurement-report" aria-label="Comparison report">
     <header className="prices-head no-print">
-      <BackButton to="Price table" onClick={onBack} />
+      <BackButton to={table.title || "Price table"} before={crumbs} here="Comparison report" onClick={onBack} />
       <div className="prices-actions"><button type="button" className="btn btn-small" onClick={() => window.print()}>Print</button></div>
     </header>
     {error && <div className="banner" role="alert"><p>{error}</p></div>}

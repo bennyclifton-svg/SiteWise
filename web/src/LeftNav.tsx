@@ -7,7 +7,10 @@ import { AccountMenu } from "./AccountMenu";
 import { requestCostSettings } from "./costSettingsRequest";
 import { Wordmark } from "./Wordmark";
 
-export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program" | "register";
+// "specifications" is off the nav until it is ready (owner, 25 November
+// 2026) but its screen stays reachable from links; "register" is an old
+// link's name for Correspondence.
+export type WorkbenchView = "profile" | "specifications" | "procurement" | "costs" | "program" | "correspondence" | "report" | "register";
 
 interface Props {
   projects: { id: string; name: string; archived?: boolean }[] | null;
@@ -32,14 +35,15 @@ const VIEWS: { id: WorkbenchView; label: string; name?: string; icon: NavIcon; t
   { id: "program", label: "Program", tone: "blue", icon: { line: "M4 3.5v17M6.5 5.5h7v3h-7zM9.5 10.5h9v3h-9zM12.5 15.5h6v3h-6z", wash: "M9.5 10.5h9v3h-9z" } },
   // A document set going out: two sheets and a tick.
   { id: "procurement", label: "Procurement", tone: "brass", icon: { line: "M9 3.5h10v13M5 7.5h10v13H5zM7.5 14l2 2 3.5-4", wash: "M5 7.5h10v13H5z" } },
-  // A drawing sheet with its title block.
-  { id: "specifications", label: "Specifications", tone: "blue", icon: { line: "M3.5 4.5h17v15h-17zM13 15h7.5M13 15v4.5M6.5 8h8M6.5 11h5", wash: "M13 15h7.5v4.5H13z" } },
-  // The register is in the right-hand panel, beside every view, since
-  // 20 November 2026: "register" here means that panel's Register side.
+  // A letter in its envelope: the register and the project's mail
+  // (owner, 25 November 2026; the right-hand panel is documents only).
+  { id: "correspondence", label: "Correspondence", tone: "blue", icon: { line: "M3.5 6h17v12.5h-17zM3.5 6.5l8.5 6.5 8.5-6.5", wash: "M3.5 6h17l-8.5 6.5z" } },
+  // A report sheet with a folded corner and its lines.
+  { id: "report", label: "Report", tone: "brass", icon: { line: "M6 3.5h8.5L18 7v13.5H6zM14.5 3.5V7H18M9 11.5h6M9 14.5h6M9 17.5h3.5", wash: "M14.5 3.5V7H18z" } },
 ];
 
 /** A view's name as the nav shows it, for a Back button that returns to it. */
-export const viewLabel = (view: WorkbenchView): string => VIEWS.find(v => v.id === view)?.label ?? (view === "register" ? "Register" : "");
+export const viewLabel = (view: WorkbenchView): string => VIEWS.find(v => v.id === view)?.label ?? (view === "register" ? "Correspondence" : view === "specifications" ? "Specifications" : "");
 
 export function LeftNav({ projects, currentId, navigate, view, onView, marks }: Props) {
   const [open, setOpen] = useState(false);

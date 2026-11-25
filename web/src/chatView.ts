@@ -30,8 +30,8 @@ export interface ChatTable {
   selected(): readonly string[];
 }
 
-/** Shown before the project report opens: the right-hand panel's Register side, whose band holds "Project report" (monthly plan, Task 7). The reader itself opens in the middle panel. */
-export const REPORT_PLACE: WorkbenchView = "register";
+/** Where the project report opens: the Report view (owner, 25 November 2026). */
+export const REPORT_PLACE: WorkbenchView = "report";
 
 export interface ChatDialog {
   open(fields: Readonly<Record<string, string>>): void;

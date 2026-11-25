@@ -32,7 +32,7 @@ var viewTables = map[string]viewTable{
 	"cost_lines":  {"cost line", "cost lines", "cost_plan", "costs"},
 	"program":     {"Program row", "Program rows", "program", "program"},
 	"procurement": {"package", "packages", "procurement", "procurement"},
-	"register":    {"register row", "register rows", "delivery", "register"},
+	"register":    {"register row", "register rows", "delivery", "correspondence"},
 	"variations":  {"variation", "variations", "variations", "costs"},
 	"claims":      {"progress claim", "progress claims", "claims", "costs"},
 	"claim_rows":  {"claim row", "claim rows", "claims", "costs"},
@@ -49,7 +49,9 @@ func (t viewTable) count(n int) string {
 
 // viewNames are the workbench views the strip may report, with the words
 // the model reads.
-var viewNames = map[string]string{"profile": "Profile", "costs": "Cost Plan", "procurement": "Procurement", "specifications": "Specifications", "program": "Program", "register": "Register"}
+// "register" is an older strip's name for Correspondence.
+var viewNames = map[string]string{"profile": "Profile", "costs": "Cost Plan", "procurement": "Procurement", "specifications": "Specifications", "program": "Program",
+	"correspondence": "Correspondence (the register and the project's messages)", "report": "Report (the project report)", "register": "Correspondence (the register and the project's messages)"}
 
 // tableRows lists the full ids of a table's rows in this project, read with
 // the org from the session.
@@ -182,8 +184,8 @@ func readScreen(ctx context.Context, d Deps, who opActor, project string, in *sc
 			parts = append(parts, "Open: document "+shortID(in.Open.ID)+".")
 		}
 	}
-	// A register row opens as a sheet in the middle panel (register panel,
-	// 20 November 2026); the list itself is in the right-hand panel.
+	// A register row drills in from Correspondence to its sheet (owner,
+	// 25 November 2026).
 	if in.Open != nil && in.Open.Kind == "register" && in.Open.ID != "" {
 		if rows, err := tableRows(ctx, d, who, project, "register"); err == nil && containsID(rows, in.Open.ID) {
 			parts = append(parts, "Open: register row "+shortID(in.Open.ID)+".")

@@ -31,12 +31,12 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
   const project = new URL(page.url()).pathname.split("/").pop()!;
 
-  // With intake on the panel's switch offers Messages; the address line is
-  // on that side only (owner, 20 November 2026), random, never the
-  // project's name, with Copy.
-  const panel = page.getByRole("tablist", { name: "Right panel" });
+  // Messages is Correspondence's second tab (25 November 2026); the address
+  // line is on it only, random, never the project's name, with Copy.
+  await page.getByRole("group", { name: "Project views" }).getByRole("button", { name: "Correspondence" }).click();
+  const panel = page.getByRole("tablist", { name: "Correspondence" });
   const messagesTab = panel.getByRole("tab", { name: /^Messages/ });
-  await expect(page.locator(".mail-address")).toHaveCount(0);
+  await expect(page.locator(".mail-address")).toBeHidden();
   await messagesTab.click();
   const line = page.locator(".mail-address");
   await expect(line).toContainText("Email documents to");
@@ -50,8 +50,8 @@ test("the project's address, a held message accepted, and a transmittal sent and
     From: "Someone <someone@outside.test>", To: address, Subject: "Wall detail", Body: "Please see the detail.", MessageID: `<${randomUUID()}@outside.test>`,
   });
   expect(held.status()).toBe(200);
-  // Held mail is counted on the Messages tab, seen from any side.
-  await panel.getByRole("tab", { name: "Documents" }).click();
+  // Held mail is counted on the Messages tab, seen from the Register tab.
+  await panel.getByRole("tab", { name: "Register" }).click();
   await expect(messagesTab).toHaveText("Messages · 1 held", { timeout: 10_000 });
   await messagesTab.click();
   const messages = page.getByRole("table", { name: /^Messages/ });
@@ -62,8 +62,7 @@ test("the project's address, a held message accepted, and a transmittal sent and
   await wall.getByRole("button", { name: "Accept" }).click();
   await expect(wall).not.toContainText("Not from your team", { timeout: 10_000 });
 
-  // Back to documents: the accepted body landed as a document.
-  await panel.getByRole("tab", { name: "Documents" }).click();
+  // The documents beside it: the accepted body landed as a document.
   await expect(page.locator(".reg-doc").filter({ hasText: "Wall detail" })).toHaveCount(1, { timeout: 15_000 });
 
   // Send… from the documents' right-click menu: the sink gets it, the record shows Out.
@@ -122,7 +121,8 @@ test("an RFI sent from its sheet, its reply in the history, used as the answer",
   await page.getByRole("button", { name: "Create project", exact: true }).click();
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}$/);
   const project = new URL(page.url()).pathname.split("/").pop()!;
-  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: /^Messages/ }).click();
+  await page.getByRole("group", { name: "Project views" }).getByRole("button", { name: "Correspondence" }).click();
+  await page.getByRole("tablist", { name: "Correspondence" }).getByRole("tab", { name: /^Messages/ }).click();
   const address = (await page.locator(".mail-address code").innerText()).trim();
   const add = await page.request.post(`/api/projects/${project}/ops`, { headers: origin, data: { area: "delivery", ops: [
     { op: "delivery.add", fields: { kind: "rfi", title: "Basement wall waterproofing membrane", raised_on: "2026-11-20", owner_text: "MBM Structural", question: "Please confirm the membrane to the basement walls and its laps at the footing." } },
@@ -130,8 +130,8 @@ test("an RFI sent from its sheet, its reply in the history, used as the answer",
   expect(add.ok(), await add.text()).toBeTruthy();
   await page.reload();
 
-  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Register" }).click();
-  await page.locator(".register-panel tr", { hasText: "Basement wall waterproofing" }).locator('td[data-field="title"]').click();
+  await page.getByRole("tablist", { name: "Correspondence" }).getByRole("tab", { name: "Register" }).click();
+  await page.locator(".register-list tr", { hasText: "Basement wall waterproofing" }).locator('td[data-field="title"]').click();
   const sheet = page.locator(".register-sheet");
   await sheet.getByLabel("To", { exact: true }).fill("eng@mbm.test");
   await sheet.getByLabel("Question", { exact: true }).click();
@@ -156,14 +156,13 @@ test("an RFI sent from its sheet, its reply in the history, used as the answer",
   expect(reply.status()).toBe(200);
   await expect(async () => {
     await page.reload();
-    await page.locator(".register-panel tr", { hasText: "Basement wall waterproofing" }).locator('td[data-field="title"]').click();
+    await page.locator(".register-list tr", { hasText: "Basement wall waterproofing" }).locator('td[data-field="title"]').click();
     await expect(history.locator('li[data-kind="reply"]')).toContainText("Reply from MBM Structural", { timeout: 1_000 });
   }).toPass({ timeout: 15_000 });
   await expect(history.locator('li[data-kind="reply"] .register-quote')).toHaveText("Use the sheet membrane, laps 150 mm.\nTurn it 300 mm up the wall.");
-  await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-register.png" });
-  await page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Documents" }).click();
+  await page.screenshot({ path: "../docs/evidence/img/2026-11-25-correspondence-sheet.png" });
   await history.scrollIntoViewIfNeeded();
-  await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-documents.png" });
+  await page.screenshot({ path: "../docs/evidence/img/2026-11-25-correspondence-history.png" });
 
   // Use as the answer: the reply is the answer and the RFI is with the PM.
   await history.locator('li[data-kind="reply"]').getByRole("button", { name: "Use as the answer" }).click();
@@ -171,8 +170,9 @@ test("an RFI sent from its sheet, its reply in the history, used as the answer",
   await expect(sheet.locator(".register-sheet-head .register-status")).toHaveText("Answered · with you");
   await expect(history.locator("li").last()).toContainText("→ Answered");
   await history.scrollIntoViewIfNeeded();
-  await page.screenshot({ path: "../docs/evidence/img/2026-11-20-register-panel-answered.png" });
-  // "Open the reply" opens it in the repository's Messages.
+  await page.screenshot({ path: "../docs/evidence/img/2026-11-25-correspondence-answered.png" });
+  // "Open the reply" opens it under its row in Correspondence's Messages.
   await history.locator('li[data-kind="reply"]').getByRole("button", { name: "Open the reply" }).click();
-  await expect(page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: /^Messages/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tablist", { name: "Correspondence" }).getByRole("tab", { name: /^Messages/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator(".mail-text").filter({ hasText: "Use the sheet membrane" })).toBeVisible();
 });

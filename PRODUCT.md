@@ -80,10 +80,13 @@ The workbench, in navigation order:
   click, add, copy, split, delete, drag) and the user's word is final.
 - **Register.** One table of what is owed on the project: RFIs, notices,
   consent conditions and the older delivery kinds (actions, risks, issues, decisions, approvals,
-  accepted hold points). It is the right-hand panel's Register side, beside
-  every view (a Documents | Register switch, remembered per viewer), in four
-  columns: No., Item (with its status chip), With and Due; System is a
-  filter. A row opens as one sheet in the middle panel. An RFI's sheet holds
+  accepted hold points). It is Correspondence's first tab, in the middle
+  panel (Messages, the project's mail, is the second; the right-hand panel
+  is the documents only), in columns Type, No., Subject, Raised by, With,
+  Issued, Due and Status: a click on a heading sorts by it, a drag moves it,
+  and the order is kept per viewer; System is a filter. A row drills in to
+  one sheet, with a breadcrumb back to the list, laid out in an RFP's
+  bands: particulars, the message, responses and history. An RFI's sheet holds
   To, Cc, Subject and Raised, its question, its transmittal and its history
   (raised, each status change, what went out and each reply in its thread,
   the answer), and one Send that goes through the same route and checks as
@@ -91,7 +94,9 @@ The workbench, in navigation order:
   An RFI typed in the grey row is numbered (RFI-007) and due five working
   days on (the Program's calendar; the PM sets the project's own in the
   three-dot menu's Project terms). The grey row also records an EOT claim,
-  a notice of delay or a letter as it arrives, each numbered in its own run
+  a notice of delay or a letter as it arrives, or as the host raises it with
+  another party (a builder lodging an EOT claim with the principal: it is
+  with them until their result is recorded), each numbered in its own run
   (EOT-4, NOD-2, LTR-1). An EOT claim is due 28 calendar days after it was
   received and a letter five working days, shown as SiteWise's default,
   never as the contract's, until the PM sets the project's own. On an EOT

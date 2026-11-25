@@ -123,7 +123,8 @@ test("quoted fees stay separate from scope, a confirmed appointment awards and u
   await page.emulateMedia({ media: "print" });
   await page.screenshot({ path: "../.tools/procurement-report-print.png", fullPage: true });
   await page.emulateMedia({ media: "screen" });
-  await page.getByRole("button", { name: "Back to Price table" }).click();
+  // The breadcrumb names the package's price table: Procurement › package › report.
+  await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("button", { name: /^Back to / }).click();
 
   // The cost plan shows only the confirmed appointment.
   await page.getByRole("button", { name: "More actions", exact: true }).click();

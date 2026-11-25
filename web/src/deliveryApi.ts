@@ -81,6 +81,8 @@ export interface Completion { agreed?: string; days_granted: number; adjusted?: 
 export interface EOTResult { outcome: "granted" | "granted_in_part" | "rejected" | "more_information"; days_granted?: number | null; reasons?: string; assessed_on?: string | null }
 /** A received item's details: a notice of delay, an EOT claim or a letter. */
 export interface ClaimDetails {
+  /** "out" when the host raised it with another party; received otherwise. */
+  direction?: "in" | "out";
   ref?: string; raised_by?: string; received_on?: string | null; cause?: string; delay_from?: string | null; delay_to?: string | null;
   days_claimed?: number | null; notice_id?: string; message_id?: string; due_typed?: boolean; result?: EOTResult | null;
   body?: string; answer?: string;

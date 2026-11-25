@@ -149,6 +149,9 @@ func readRegister(ctx context.Context, d Deps, who opActor, project, part string
 		if it.Kind == delivery.KindEOTClaim {
 			status += resultWords(delivery.EOT(it.Content))
 		}
+		if delivery.Raised(it.Content) {
+			status += ", raised by you"
+		}
 		if it.Kind == "condition" {
 			// The printed heading is the council's words.
 			r.outside = "consent conditions' printed headings"
@@ -453,7 +456,7 @@ func claimKind(kind string) bool {
 // so each date and number is checked like any other figure; resultFields
 // are an EOT claim's result.
 var (
-	claimFields  = []string{"ref", "raised_by", "received_on", "cause", "delay_from", "delay_to", "days_claimed", "body", "answer", "message"}
+	claimFields  = []string{"direction", "ref", "raised_by", "received_on", "cause", "delay_from", "delay_to", "days_claimed", "body", "answer", "message"}
 	resultFields = []string{"outcome", "days_granted", "reasons", "assessed_on"}
 )
 
@@ -486,6 +489,15 @@ func liftClaimFields(ctx context.Context, d Deps, who opActor, project string, f
 		if k == "message" {
 			details["message_id"] = v
 			continue
+		}
+		if k == "direction" {
+			// Chat may say it in words; the row keeps in or out.
+			switch strings.ToLower(strings.TrimSpace(fmt.Sprint(v))) {
+			case "in", "received", "receive":
+				v = delivery.DirectionIn
+			case "out", "raised", "raise", "lodged", "sent":
+				v = delivery.DirectionOut
+			}
 		}
 		details[k] = v
 	}

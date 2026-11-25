@@ -49,6 +49,7 @@ interface Props {
   projectId: string;
   /** Moves when a mail event arrives. */
   tick: number;
+  /** The documents list, for the Documents side; Correspondence shows messages only. */
   documents: ReactNode;
   onOpenDocument: (id: string) => boolean;
   /** Which side of the right-hand panel shows: the documents or the messages. */
@@ -89,7 +90,7 @@ export function MailRepository({ projectId, tick, documents, onOpenDocument, sid
         {notice && <p className="reg-notice" role="status">{notice}</p>}
       </div>}
       {side === "messages"
-        ? hasMessages ? <Messages projectId={projectId} list={list!} reload={load} onOpenDocument={onOpenDocument} /> : <p className="reg-empty">No messages yet. Mail sent to the address above is filed here.</p>
+        ? hasMessages ? <Messages projectId={projectId} list={list!} reload={load} onOpenDocument={onOpenDocument} /> : <p className="reg-empty">{list?.address ? "No messages yet. Mail sent to the address above is filed here." : "No messages yet. What you send from SiteWise is kept here."}</p>
         : documents}
       {rotate && <ConfirmDialog title="Give the project a new address" message="Replies to messages sent from the old address will not arrive. Mail to the old address stops at once." confirmLabel="New address" busy={false} onConfirm={() => void doRotate()} onCancel={() => setRotate(false)} />}
     </div>
@@ -118,7 +119,7 @@ function Messages({ projectId, list, reload, onOpenDocument }: { projectId: stri
   }, [projectId]);
   const rows = useMemo(() => threads(list.messages).filter(r => !only || only.ids.has(r.m.id)), [list, only]);
   const ids = rows.map(r => r.m.id);
-  useChatTable("messages", "documents", {
+  useChatTable("messages", "correspondence", {
     select: s => setSelection(selectAll(s.filter(id => list.messages.some(m => m.id === id)))),
     only: (s, shown) => setOnly({ ids: new Set(s), shown }),
     clear: () => { setOnly(null); setSelection(emptySelection); },

@@ -218,11 +218,11 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
     if (docId && !onOpenDocument?.(docId)) window.open(submissionApi.fileURL(projectId, c.submission.id, page), "_blank", "noopener");
   }
 
-  if (showReport && table) return <ProcurementReport projectId={projectId} table={table} onBack={() => setShowReport(false)} onSignedOut={onSignedOut} />;
+  if (showReport && table) return <ProcurementReport projectId={projectId} table={table} onBack={() => setShowReport(false)} onProcurement={onBack} onSignedOut={onSignedOut} />;
 
   return <section className="prices" aria-label="Price table" aria-busy={busy || edits.busy}>
     <header className="prices-head">
-      <BackButton to="Procurement" onClick={onBack} />
+      <BackButton to="Procurement" onClick={onBack} here={table?.title ?? "Package"} />
       <h1>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></h1>
       <div className="prices-actions"><span role="status">{(busy || edits.busy) && !uploading && <Pending delayed>Saving…</Pending>}</span>
         {tenderMode && <button type="button" className="btn btn-small" disabled={!edits.canUndo || edits.busy} onClick={() => void edits.undo()}>Undo</button>}

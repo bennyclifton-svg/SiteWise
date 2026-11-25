@@ -125,6 +125,8 @@ var goTo = map[string]string{
 	"open procurement": "procurement", "show procurement": "procurement", "open the profile": "profile", "show the profile": "profile",
 	"open specifications": "specifications", "show the documents": "documents", "open documents": "documents",
 	"open the register": "register", "show the register": "register", "open register": "register", "show register": "register",
+	"open correspondence": "correspondence", "show correspondence": "correspondence",
+	"open the report": "report", "show the report": "report", "open the project report": "report", "show the project report": "report",
 }
 
 type chatDone struct {

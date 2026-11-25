@@ -32,14 +32,14 @@ import { Register } from "./Register";
 import { DocumentWorkspace } from "./DocumentWorkspace";
 import { Procurement } from "./Procurement";
 import { ShareHost } from "./ShareDialog";
-import { MailRepository, type MailState } from "./MailIn";
+import { type MailState } from "./MailIn";
 import { SendHost } from "./SendDialog";
 import { Costs } from "./Costs";
 import { Program } from "./Program";
-import { RegisterPanel } from "./Delivery";
+import { Correspondence, type CorrespondenceTab } from "./Correspondence";
 import { RegisterSheet, rowLabel, type SheetFill } from "./RegisterSheet";
 import { useRegisterData } from "./registerData";
-import { Reports } from "./Reports";
+import { ProjectReport } from "./ProjectReport";
 import { useProjectReportDialog } from "./ProjectReportButton";
 import { registerDialog, registerHost, tableOf, whenReady } from "./chatView";
 import { newerAnnouncement, type RemoteProgram } from "./programApi";
@@ -47,27 +47,6 @@ import { SpecificationSchedule as Specifications } from "./SpecificationSchedule
 import { ocrStage } from "./OCRStatus";
 
 const STALE_MS = 8000;
-// The right-hand panel's side, remembered for this viewer only.
-const RIGHT_TAB_KEY = "sitewise.workbench.rightPanel.v1";
-type RightTab = "documents" | "messages" | "register";
-function readRightTab(): RightTab | null {
-  try { const v = localStorage.getItem(RIGHT_TAB_KEY); return v === "documents" || v === "messages" || v === "register" ? v : null; } catch { return null; }
-}
-function storeRightTab(tab: RightTab) {
-  try { localStorage.setItem(RIGHT_TAB_KEY, tab); } catch { /* private window: the choice lasts this visit */ }
-}
-
-/** The right-hand panel's switch: the documents, the project's messages
- * (only when it has mail: intake on, or any message), or the register.
- * Drawn as one pen box like Update, the chosen side filled (owner, 20 Nov 2026). */
-function PanelSwitch({ tab, onTab, mail }: { tab: RightTab; onTab: (tab: RightTab) => void; mail: MailState }) {
-  return <div className="panel-switch" role="tablist" aria-label="Right panel">
-    <span className="ground-frame" aria-hidden="true" />
-    <button type="button" role="tab" aria-selected={tab === "documents"} onClick={() => onTab("documents")}>Documents</button>
-    {mail.available && <button type="button" role="tab" aria-selected={tab === "messages"} onClick={() => onTab("messages")}>Messages{mail.held > 0 ? <span className="panel-switch-held"> · {mail.held} held</span> : null}</button>}
-    <button type="button" role="tab" aria-selected={tab === "register"} onClick={() => onTab("register")}>Register</button>
-  </div>;
-}
 const UPLOAD_CONCURRENCY = 4;
 const ACCEPT = ".pdf,.docx,.xlsx,.md,.markdown";
 
@@ -288,35 +267,30 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const [profileRun, setProfileRun] = useState<ProfileRunState | null>(null);
   const [visitedSinceRun, setVisitedSinceRun] = useState<Partial<Record<WorkbenchView, boolean>>>({});
   const [profileFeedbackTarget, setProfileFeedbackTarget] = useState<HTMLDivElement | null>(null);
-  // A link from before the register moved to the right-hand panel may still
-  // say view=register: it opens the Profile with the Register beside it.
-  const [linkedView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program", "register"], "profile"));
-  const initialView: WorkbenchView = linkedView === "register" ? "profile" : linkedView;
-  const [rightTab, setRightTabState] = useState<RightTab>(() => linkedView === "register" ? "register" : readRightTab() ?? "documents");
-  const [registerOn, setRegisterOn] = useState(rightTab === "register");
-  // Whether the project has mail, from the repository's read; a remembered
-  // Messages side on a project without it shows the Documents.
+  // A link may name an old view: view=register opens Correspondence.
+  const [linkedView] = useState(() => readLocationChoice<WorkbenchView>("view", ["profile", "costs", "procurement", "specifications", "program", "correspondence", "report", "register"], "profile"));
+  const initialView: WorkbenchView = linkedView === "register" ? "correspondence" : linkedView;
+  // The middle panel's view, and every view opened so far: each stays
+  // mounted once opened, so its filters and selection survive a switch.
+  const [view, setView] = useState<WorkbenchView>(initialView);
+  const [opened, setOpened] = useState<ReadonlySet<WorkbenchView>>(() => new Set([initialView]));
+  const [corrTab, setCorrTab] = useState<CorrespondenceTab>("register");
+  // The project's mail, from Correspondence's Messages read: its held count.
   const [mail, setMail] = useState<MailState>({ available: false, held: 0 });
-  const side: RightTab = rightTab === "messages" && !mail.available ? "documents" : rightTab;
-  // The register row open as a sheet in the middle panel, and the project
-  // report open in its reader there; either covers the view until closed.
+  // The register row drilled in to from Correspondence; it covers the list
+  // until closed. The project report Report shows (chat may name it).
   const [registerItem, setRegisterItem] = useState<string | null>(null);
-  const [projectReport, setProjectReport] = useState<string | null>(null);
+  const [reportId, setReportId] = useState<string | null>(null);
   const [sheetFill, setSheetFill] = useState<SheetFill | undefined>();
   const [repositoryOpenRequest, setRepositoryOpenRequest] = useState(0);
   const [documentSelection, setDocumentSelection] = useState<Selection>(emptySelection);
-  const [showReports, setShowReports] = useState(initialView === "procurement");
-  const [showCosts, setShowCosts] = useState(initialView === "costs");
-  const [showSpecifications, setShowSpecifications] = useState(initialView === "specifications");
-  const [specificationsOpened, setSpecificationsOpened] = useState(initialView === "specifications");
+  const showReports = view === "procurement", showCosts = view === "costs", showSpecifications = view === "specifications", showProgram = view === "program";
+  const showCorrespondence = view === "correspondence", showReport = view === "report";
+  const specificationsOpened = opened.has("specifications"), costsOpened = opened.has("costs"), reportsOpened = opened.has("procurement"), programOpened = opened.has("program");
   const [specificationTick, setSpecificationTick] = useState(0);
   const [invoiceTick, setInvoiceTick] = useState(0);
   // Moves on a mail event: the repository's Messages list reads again.
   const [mailTick, setMailTick] = useState(0);
-  const [costsOpened, setCostsOpened] = useState(initialView === "costs");
-  const [reportsOpened, setReportsOpened] = useState(initialView === "procurement");
-  const [showProgram, setShowProgram] = useState(initialView === "program");
-  const [programOpened, setProgramOpened] = useState(initialView === "program");
   // "Raise RFI from this document" on the document register: the request
   // the Register screen turns into a draft RFI.
   const [raiseRFI, setRaiseRFI] = useState<{ documentId: string; title: string; n: number } | null>(null);
@@ -717,63 +691,20 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
 
   const viewingRow = rows.find(row => row.key === openDocument);
 
-  const view: WorkbenchView = showProgram
-    ? "program"
-    : showSpecifications
-    ? "specifications"
-    : showCosts
-      ? "costs"
-      : showReports
-        ? "procurement"
-        : "profile";
-
-  const setRightTab = useCallback((tab: RightTab) => {
-    setRightTabState(tab);
-    storeRightTab(tab);
-    if (tab === "register") setRegisterOn(true);
-  }, []);
-  // The Register side of the right-hand panel; the middle keeps its view.
-  const showRegisterPanel = useCallback(() => { setRightTab("register"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
-  const showDocumentsPanel = useCallback(() => { setRightTab("documents"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
-  const showMessagesPanel = useCallback(() => { setRightTab("messages"); setRepositoryOpenRequest(n => n + 1); }, [setRightTab]);
-  const showView = (next: WorkbenchView) => {
-    if (next === "register") { showRegisterPanel(); return; }
+  // The right-hand panel is the documents only (owner, 25 November 2026).
+  const showDocumentsPanel = useCallback(() => setRepositoryOpenRequest(n => n + 1), []);
+  const showView = useCallback((asked: WorkbenchView) => {
+    const next: WorkbenchView = asked === "register" ? "correspondence" : asked;
     setVisitedSinceRun((seen) => ({ ...seen, [next]: true }));
     writeLocationChoice("view", next);
     setOpenDocument(null);
     setRegisterItem(null);
-    setProjectReport(null);
-    setShowProgram(next === "program");
-    if (next === "program") {
-      setProgramOpened(true);
-      setShowSpecifications(false);
-      setShowCosts(false);
-      setShowReports(false);
-      return;
-    }
-    if (next === "specifications") {
-      setSpecificationsOpened(true);
-      setShowSpecifications(true);
-      setShowCosts(false);
-      setShowReports(false);
-      return;
-    }
-    setShowSpecifications(false);
-    if (next === "procurement") {
-      setShowCosts(false);
-      setReportsOpened(true);
-      setShowReports(true);
-      return;
-    }
-    if (next === "costs") {
-      setCostsOpened(true);
-      setShowCosts(true);
-      setShowReports(false);
-      return;
-    }
-    setShowCosts(false);
-    setShowReports(false);
-  };
+    setOpened(o => o.has(next) ? o : new Set(o).add(next));
+    setView(next);
+  }, []);
+  // Correspondence on one of its tabs; the register's list or its messages.
+  const showRegisterPanel = useCallback(() => { showView("correspondence"); setCorrTab("register"); }, [showView]);
+  const showMessagesPanel = useCallback(() => { showView("correspondence"); setCorrTab("messages"); }, [showView]);
 
   // The profile's update on the nav (docs/design/2026-11-10-run-time-feedback.md):
   // a ring on Project Profile while it reads and you are elsewhere, then its
@@ -809,10 +740,11 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const documentLabel = useCallback((id: string) => docsRef.current[id]?.number || docsRef.current[id]?.filename || "", []);
 
   // A mail event reads it again too: a reply joins its RFI's history.
-  const register = useRegisterData(projectId, reportTick + mailTick, registerOn || !!registerItem, onSignedOut);
-  const openRegisterItem = useCallback((id: string) => { setRegisterOn(true); setOpenDocument(null); setProjectReport(null); setRegisterItem(id); }, []);
-  // The project report opens in the middle, from the Register's band or chat.
-  useProjectReportDialog(id => { setOpenDocument(null); setProjectReport(id); });
+  const register = useRegisterData(projectId, reportTick + mailTick, showCorrespondence || !!registerItem, onSignedOut);
+  // A row drills in from Correspondence, so its breadcrumb goes back there.
+  const openRegisterItem = useCallback((id: string) => { showView("correspondence"); setCorrTab("register"); setRegisterItem(id); }, [showView]);
+  // Chat names the project report: Report shows it.
+  useProjectReportDialog(id => { showView("report"); setReportId(id); });
   // Chat's Send for an RFI opens its sheet with To, Cc and Subject filled in.
   useEffect(() => registerDialog("rfi-sheet", { open: f => {
     if (!f.rfi) return;
@@ -823,7 +755,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   useEffect(() => registerHost("documents", showDocumentsPanel), [showDocumentsPanel]);
   useEffect(() => registerHost("messages", showMessagesPanel), [showMessagesPanel]);
   const closeSheet = useCallback(() => { setRegisterItem(null); setSheetFill(undefined); }, []);
-  // A message of an RFI's thread opens in the repository's Messages.
+  // A message of an RFI's thread opens under its row in Correspondence's Messages.
   const openMessage = useCallback(async (id: string) => {
     showMessagesPanel();
     const messages = await whenReady(() => tableOf("messages"));
@@ -832,8 +764,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const transmittal = { selectedIds: documentSelection.ids, onSelectDocuments: (ids: readonly string[]) => setDocumentSelection(selectDocumentRows(ids)),
     onShowDocuments: (ids: readonly string[]) => { setNotReadOnly(false); showDocumentsPanel(); setDocumentSelection(selectDocumentRows(ids.filter(id => state.docs[id]))); } };
   const openRow = registerItem ? register.rowOf(registerItem) : undefined;
-  const middleLabel = registerItem ? (openRow ? rowLabel(openRow) : "Register") : viewLabel(view);
-  const covered = !!viewingRow || !!projectReport || !!registerItem;
+  const middleLabel = registerItem ? (openRow ? rowLabel(openRow) : "Correspondence") : viewLabel(view);
+  const covered = !!viewingRow || !!registerItem;
 
   const nav = (
     <LeftNav projects={projects} currentId={projectId} navigate={navigate} view={view} onView={showView} marks={navMarks} />
@@ -858,23 +790,8 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onOpen={setOpenDocument}
     />
   );
-  const panelSwitch = <PanelSwitch tab={side} onTab={setRightTab} mail={mail} />;
-  // The right-hand panel: Documents (the repository, as it was) or the
-  // Register. Each side stays mounted once opened, so its filters and
-  // selection survive the switch.
-  const repository = (
-    <>
-      <div className="panel-side" hidden={side === "register"}>
-        <div className="panel-band">{panelSwitch}</div>
-        <MailRepository projectId={projectId} tick={mailTick} documents={documentsList} side={side === "messages" ? "messages" : "documents"} onMail={setMail}
-          onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} />
-      </div>
-      {registerOn && <div className="panel-side" hidden={side !== "register"}>
-        <RegisterPanel data={register} shown={side === "register"} switcher={panelSwitch} projectId={projectId} raise={raiseRFI} openId={registerItem}
-          onOpen={openRegisterItem} onOpenReport={id => { setOpenDocument(null); setProjectReport(id); }} onSignedOut={onSignedOut} onShowView={showView} documents={registerDocuments} />
-      </div>}
-    </>
-  );
+  // The right-hand panel: the documents only (owner, 25 November 2026).
+  const repository = <div className="mail-repository">{documentsList}</div>;
 
   if (state.phase === "loading") {
     return (
@@ -914,16 +831,16 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   return (
     <CockpitFrame
       nav={nav}
-      actionSurface={viewingRow ? "document" : projectReport || registerItem ? "register" : showProgram ? "program" : showCosts ? "costs" : showReports ? "procurement" : showSpecifications ? "specifications" : "profile"}
+      actionSurface={viewingRow ? "document" : registerItem ? "register" : view === "register" ? "correspondence" : view}
       onRename={async name => { await request("PATCH", `/projects/${projectId}`, { name }); dispatch({ type: "renamed", name }); onRenamed(projectId, name); }}
       title={state.projectName}
       subtitle={address || "Site address TBC"}
       repository={repository}
       repositoryOpenRequest={repositoryOpenRequest}
-      wideWorkspace={!viewingRow && (showSpecifications || showReports || showCosts || showProgram || !!projectReport || !!registerItem)}
+      wideWorkspace={!viewingRow && view !== "profile"}
       profileFeedbackRef={setProfileFeedbackTarget}
-      showProfileFeedback={!covered && !showSpecifications && !showReports && !showCosts && !showProgram}
-      chat={<Suspense fallback={null}><Chat projectId={projectId} view={view} openDocument={viewingRow?.doc?.id ?? null} openRegister={!viewingRow ? registerItem : null} onShow={showView} onShowRegister={showRegisterPanel} onShowDocuments={() => { setNotReadOnly(false); showDocumentsPanel(); }} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
+      showProfileFeedback={!covered && view === "profile"}
+      chat={<Suspense fallback={null}><Chat projectId={projectId} view={view} openDocument={viewingRow?.doc?.id ?? null} openRegister={!viewingRow ? registerItem : null} onShow={showView} onShowRegister={showRegisterPanel} onShowDocuments={() => { setNotReadOnly(false); showDocumentsPanel(); }} onShowMessages={showMessagesPanel} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} /></Suspense>}
       onDragEnter={onDragEnter}
       onDragOverCapture={e => { if ((e.target as HTMLElement).closest("[data-proposal-drop]")) { dragDepth.current = 0; setOver(false); } }}
       onDropCapture={() => { dragDepth.current = 0; setOver(false); }}
@@ -933,7 +850,7 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDrop={onDrop}
     >
       <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
-      <section className="profile-col" aria-label="Project profile" hidden={covered || showSpecifications || showReports || showCosts || showProgram}>
+      <section className="profile-col" aria-label="Project profile" hidden={covered || view !== "profile"}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget}
           documentLabel={documentLabel} onRunState={setProfileRun} onOpenView={showView} />
       </section>
@@ -941,12 +858,14 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       {specificationsOpened && <div className="project-reports" hidden={covered || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {programOpened && <div className="project-reports" hidden={covered || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !covered} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={covered || !showReports}><Procurement transmittal={transmittal} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
-      {projectReport && !viewingRow && <div className="project-reports"><Reports key={projectReport} reportId={projectReport} tick={reportTick + readerTick} backTo={middleLabel === "Register" ? viewLabel(view) : middleLabel} surface="register"
-        onBack={() => { setProjectReport(null); register.reload(); }} onSignedOut={onSignedOut} /></div>}
-      {registerItem && !projectReport && !viewingRow && <div className="project-reports"><RegisterSheet data={register} id={registerItem} projectId={projectId} backTo={viewLabel(view)} onClose={closeSheet}
+      {opened.has("correspondence") && <div className="project-reports" hidden={covered || !showCorrespondence}><Correspondence tab={corrTab} onTab={setCorrTab} shown={showCorrespondence && !covered}
+        data={register} projectId={projectId} mailTick={mailTick} mail={mail} onMail={setMail} raise={raiseRFI} onOpenRow={openRegisterItem} onShowView={showView} documents={registerDocuments}
+        onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}
+      {opened.has("report") && <div className="project-reports" hidden={covered || !showReport}><ProjectReport projectId={projectId} reportId={reportId} onReport={setReportId} tick={reportTick + readerTick} onSignedOut={onSignedOut} /></div>}
+      {registerItem && !viewingRow && <div className="project-reports"><RegisterSheet data={register} id={registerItem} projectId={projectId} backTo="Correspondence" onClose={closeSheet}
         documents={registerDocuments} transmittal={transmittal} onOpenDocument={id => { if (state.docs[id]) setOpenDocument(id); }} onOpenMessage={id => void openMessage(id)}
         onSent={() => setMailTick(n => n + 1)} fill={sheetFill} /></div>}
-      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={projectReport ? "Project report" : middleLabel} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
+      {viewingRow && <DocumentWorkspace key={viewingRow.key} row={viewingRow} catalog={catalog} backTo={middleLabel} priorLabel={priorLabel} onCorrect={correct} onRetry={retry} onSplit={split} onJump={jump} onDismiss={key => dispatch({ type: "dismiss", key })} onClose={() => {
         setOpenDocument(null);
         document.querySelector<HTMLElement>(`#doc-${viewingRow.doc?.id} .reg-line`)?.focus({ preventScroll: true });
       }} />}
