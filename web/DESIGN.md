@@ -53,7 +53,16 @@ hold the surfaces. They load after the surface stylesheets.
   agree or Jev leans on them (owner, 11 Nov 2026), blue typical, a rust
   square yours, amber to check. The summary's pencil keeps its dotted green
   where Jev leans.
-- **Logo.** The datum lockup in `Wordmark.tsx`, Section version (owner pick
+- **One source for the logo and the perspex** (owner, 25 Nov 2026).
+  `public/brand/sitewise-wordmark.svg` is the logo and `public/brand/brand.css`
+  paints it (`.wordmark`, a mask in the current text colour) and holds the
+  perspex (`.perspex`: tint, wear, sheen, blur and cut edge). `index.html`
+  links brand.css, so the app's `Wordmark`, the workbench ribbon, the Projects
+  and Account band, the sign-in pages, the guest page, the landing headline
+  and the static pages in `public/legal` all draw from those two files. Every
+  page outside a project wears the same frame: the logo bar on the drafting
+  table (the logo links home), one sheet, the title under the perspex.
+- **Logo.** The datum lockup (`Wordmark.tsx` over the file above), Section version (owner pick
   8 Nov 2026): the structure above the level line is solid, the slipped ground
   below it is drawn in 45° section hatch. In the current text colour. The
   favicon (`public/brand/sitewise-datum.svg`) keeps the plain half-tint,
@@ -82,25 +91,68 @@ hold the surfaces. They load after the surface stylesheets.
 The public front door (`src/landing`) wears Trace, not a marketing theme:
 the table with its stone grain, one sheet, a butter-paper band for the
 opening, blue table-head bands, and the ground-line button a size up as the
-page's single action ("Start a project free"). The opening lists what
-SiteWise builds as an app table whose rows link to five notes in job order
-(files, profile, cost plan, program, tenders), each beside a real screen of
-a sample project. Copy says what the visitor gets, in plain words; it does
-not explain provenance (owner, 14 Nov 2026).
+page's single action ("Start a project free"). Copy says what the visitor
+gets, in plain words; it does not explain provenance (owner, 14 Nov 2026).
 
-- **Screens that fill themselves in.** Profile, Cost Plan and Program play
-  once as they scroll into view, with "Play again" beneath: covers over the
-  picture come off in the workbench's own motions (glint where a passage is
-  read, a wipe where a value is written, a fade where a scope cell shades
-  in). `shotMotion.ts` plays them; the pictures and `shots.json` (each
-  cover's box, colour, time and motion) come from
-  `scripts/make-landing-shots.mjs`, which measures the live DOM as it takes
-  the picture. It is a replay over a still, not a recording. Reduced motion
-  lays no covers.
+25 Nov 2026 (owner): one simple page. The headline is "Files your documents
+in about a second."; directly under it is the stage (`Stage.tsx`): four
+steps (profile, cost plan, program, tenders) beside one screen of the
+sample project, which builds itself and moves on to the next step by
+itself, then round again. Pricing and the footer follow. The old opening
+table, document-register note and closing band are gone.
+
+- **The profile plays as a real Update** (`profileReplay.ts`): Update
+  sketches, documents are taken three at a time, each sheet in the strip is
+  hatched as its passages are labelled and inked as they are read, and a
+  value is written the moment the first passage that settles it is read, so
+  values land out of order and in a new order each round. The strip says
+  what the workbench strip says (processing, queued, read, the latest find
+  quoted from its document) and ends on "Update finished" with its chips.
+  Documents and quotes are T05's own corpus; the construction budget is the
+  user's and stays put. It shows no elapsed time: the replay is shortened.
+- **Screens that fill themselves in.** Covers over each picture come off in
+  the workbench's own motions (glint where a passage is read, a wipe where
+  a value is written, a fade where a scope cell shades in). `shotMotion.ts`
+  lays and plays them; profile, cost and program boxes (`shots.json`) come
+  from `scripts/make-landing-shots.mjs`, which measures the live DOM as it
+  takes the picture; the procurement and tender boxes (`tenderShots.ts`)
+  are measured by hand from their pictures. It is a replay over a still,
+  not a recording.
+- **One clock.** The whole stage pauses off screen, in a hidden tab, or on
+  Pause. Choosing a step plays it from empty. Reduced motion lays no
+  covers and moves nothing by itself; the steps still switch the screen.
 - **Light only.** The screens were captured in light, so the page pins the
   light palette whatever theme the browser last chose.
 - **Sample data only.** The page is public: every screen is a synthetic
   project (T05 from `testing/synthetic`), never a client job.
+
+## One heading per view (25 Nov 2026)
+
+Every view in the middle panel opens with `PanelHead` (`src/PanelHead.tsx`,
+`panel-head.css`), owner direction 25 Nov 2026:
+
+- Top line, only when drilled in: the breadcrumb (`BackButton`).
+- Main line: the view's title, or its tabs as large words with the open one
+  underlined in pencil (Cost Plan | Invoices | Variations and claims;
+  Consultants | Trades; Register | Messages).
+- Right end: at most one primary action as the ground-line button
+  (`UpdateButton`, or `PrimaryButton` for New), then the three dots
+  (`MoreMenu`) for everything else: downloads, print, export, import,
+  switches. A view with no primary action (Cost Plan) shows only the dots.
+- Anything that only shows (Saving…, a selection count, the baseline being
+  viewed, a register row's status chips) sits between the title and the
+  actions.
+- Drilled-in views wear the same heading with the breadcrumb on top: an RFP
+  or report (Update), a price table (+ New, a menu of Row or Firm), the
+  comparison report, a register row (Send for an RFI), a document (Filing
+  opens its pane beside the dots; Download original is in the dots).
+- There is no separate page-action row or Download button any more; the
+  shell's old `PagePrimaryAction` / `PageActions` slots are gone.
+- Correspondence has no Kind or System filter (owner, 25 Nov 2026); Show
+  closed is a switch in the three dots. A register of conditions alone is
+  still grouped by gate.
+- The left nav shows no count of the profile's marked changes (it wrapped
+  the label); every nav label stays on one line.
 
 ## Run-time motion and marks (shared, 11 Nov 2026)
 

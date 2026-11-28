@@ -99,12 +99,12 @@ function compare(col: Col, a: DeliveryRecord, b: DeliveryRecord): number {
   }
 }
 
-export function RegisterList({ data, shown, tabs, raise, onOpen, onShowView, documents = [] }: {
+export function RegisterList({ data, shown, head, raise, onOpen, onShowView, documents = [] }: {
   data: RegisterData;
   /** The list is on screen: chat moves its table only then. */
   shown: boolean;
-  /** The Register | Messages tabs, at the head of the band. */
-  tabs: ReactNode;
+  /** The view's heading (PanelHead), given the list's three dots. */
+  head: (more: ReactNode) => ReactNode;
   raise: { documentId: string; title: string; n: number } | null;
   /** Drills in to the row's sheet. */
   onOpen: (id: string) => void;
@@ -136,7 +136,8 @@ export function RegisterList({ data, shown, tabs, raise, onOpen, onShowView, doc
     const listed = all.filter(r => (!kind || r.kind === kind) && (!system || r.system_id === system) && (showClosed || !CLOSED.has(r.status)) && (!only || only.ids.has(r.id)));
     if (sort) return [...listed].sort((a, b) => sort.dir * compare(sort.col, a, b));
     // Conditions group by gate, in the order a project reaches them.
-    return kind === "condition" ? [...listed].sort(conditionOrder) : listed;
+    const conditions = kind === "condition" || (listed.length > 0 && listed.every(r => r.kind === "condition"));
+    return conditions ? [...listed].sort(conditionOrder) : listed;
   }, [all, kind, system, showClosed, only, sort]);
   const order = rows.map(r => r.id);
   const orderKey = order.join("|");
@@ -313,23 +314,12 @@ export function RegisterList({ data, shown, tabs, raise, onOpen, onShowView, doc
   const also = system ? data.alsoOpen : undefined;
   const filters = [kind && (KIND[kind]?.[1] ?? kind), system && `on ${systemLabel(system)}`].filter(Boolean).join(" ");
   return <section className="register-screen register-list" aria-label="Register" aria-busy={busy}>
-    <div className="correspondence-band">
-      {tabs}
-      <div className="register-filters">
-        {view && view.kinds.length > 0 && <select aria-label="Kind" value={kind} onChange={e => setKind(e.target.value)}>
-          <option value="">All kinds</option>
-          {view.kinds.map(k => <option key={k.kind} value={k.kind}>{KIND[k.kind]?.[1] ?? k.kind}{k.to_check ? ` · ${k.to_check} to check` : ""}</option>)}
-        </select>}
-        {view && <select aria-label="System" value={system} onChange={e => data.setSystem(e.target.value)}>
-          <option value="">All systems</option>
-          {view.systems.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-        </select>}
-        <label className="register-toggle"><input type="checkbox" checked={showClosed} onChange={e => setShowClosed(e.target.checked)} /> Show closed</label>
-      </div>
-      <MoreMenu label="Register actions" items={[{ label: "Read conditions…", icon: null, disabled: busy || documents.length === 0, onSelect: () => setReadFrom(documents[0]?.id ?? "") },
-        { label: "Project terms…", icon: null, onSelect: openTerms },
-        ...(columns.join() !== DEFAULT_ORDER.join() ? [{ label: "Reset columns", icon: null, onSelect: () => { setColumns(DEFAULT_ORDER); storeOrder(DEFAULT_ORDER); } }] : [])]} />
-    </div>
+    {/* The Kind and System filters are gone for now (owner, 25 Nov 2026);
+        Show closed is a switch in the three dots. */}
+    {head(<MoreMenu label="Register actions" items={[{ label: "Read conditions…", icon: null, disabled: busy || documents.length === 0, onSelect: () => setReadFrom(documents[0]?.id ?? "") },
+      { label: "Project terms…", icon: null, onSelect: openTerms },
+      { label: "Show closed", icon: null, checked: showClosed, onSelect: () => setShowClosed(!showClosed) },
+      ...(columns.join() !== DEFAULT_ORDER.join() ? [{ label: "Reset columns", icon: null, onSelect: () => { setColumns(DEFAULT_ORDER); storeOrder(DEFAULT_ORDER); } }] : [])]} />)}
     {terms !== null && <TermsForm terms={terms} calendarWords={calendarWords} busy={busy} onChange={setTerms} onSave={saveTerms} onCancel={() => setTerms(null)} />}
     {readFrom !== null && <form className="register-days" onSubmit={e => { e.preventDefault(); if (readFrom) void readNotice(readFrom); }}>
       <label>Read the consent conditions of <select aria-label="Notice to read" value={readFrom} onChange={e => setReadFrom(e.target.value)}>
@@ -360,7 +350,7 @@ export function RegisterList({ data, shown, tabs, raise, onOpen, onShowView, doc
           <th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
         <tbody>
           {all.length === 0 && <tr className="register-empty"><td colSpan={span}>Nothing is recorded yet.</td></tr>}
-          {rows.map((r, i) => <Fragment key={r.id}>{kind === "condition" && !sort && (i === 0 || (cond(rows[i - 1]).stage ?? "") !== (cond(r).stage ?? "")) &&
+          {rows.map((r, i) => <Fragment key={r.id}>{r.kind === "condition" && rows.every(x => x.kind === "condition") && !sort && (i === 0 || (cond(rows[i - 1]).stage ?? "") !== (cond(r).stage ?? "")) &&
             <tr className="register-group"><th colSpan={span} scope="rowgroup">{GATE_WORDS[cond(r).stage ?? ""] ?? "Gate not known"}</th></tr>}<tr data-id={r.id} aria-selected={selected.has(r.id)} tabIndex={-1}
             data-raised={raised(r) ? "true" : undefined}
             title={systemLabel(r.system_id) ? `System: ${systemLabel(r.system_id)}` : undefined}

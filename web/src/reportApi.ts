@@ -2,8 +2,12 @@ import { request } from "./api";
 
 export interface SavedReport { id: string; project_id: string; title: string; kind: string; package_id: string; current_draft_version_id: string }
 export interface ReportReference { citation_id: string; label: "E" | "U" | "C" | "A"; anchor_id: string; basis: { text: string; source: Record<string, unknown>; material_assumption: boolean; protected_edit: boolean } }
-export interface ReportBlock { basis?: Record<string, unknown>; table?: { columns: string[]; rows: string[][]; display?: string }; generated_text?: string; id: string; label: string; text: string; provisional: boolean; edited: boolean; conflict: boolean; source_missing: boolean; citation_ids: string[] }
-export interface ReportDraft { id: string; version: number; number: number; status: string; reporting_date: string; sections: { id: string; title: string; internal?: boolean; blocks: ReportBlock[] }[]; references: ReportReference[]; material_assumptions: ReportReference[] }
+/** What one row of a project report table is (internal/reports/golden.go RowFacts). */
+export interface RowFacts { key?: string; kind?: "record" | "report" | "placeholder" | "history"; id?: string; new?: boolean; changed?: boolean[]; tones?: string[]; typed?: boolean[]; base?: string[]; flag?: "moved" | "missing"; source?: string; pos?: number }
+/** A project report table the PM edits row by row. */
+export interface ReportTableData { id: string; columns: string[]; rows: string[][]; display?: string; meta: RowFacts[]; hidden?: number; hidden_ids?: string[]; hidden_keys?: string[] }
+export interface ReportBlock { basis?: Record<string, unknown>; table?: { columns: string[]; rows: string[][]; display?: string; id?: string; meta?: RowFacts[]; hidden?: number; hidden_ids?: string[] }; generated_text?: string; id: string; label: string; text: string; provisional: boolean; edited: boolean; conflict: boolean; source_missing: boolean; citation_ids: string[] }
+export interface ReportDraft { id: string; version: number; number: number; status: string; reporting_date: string; period_from?: string; period_to?: string; period_label?: string; sections: { id: string; title: string; internal?: boolean; blocks: ReportBlock[] }[]; references: ReportReference[]; material_assumptions: ReportReference[] }
 /** A combined engagement's members, each with its own RFP's controls (internal/store/report_rfp_group.go). */
 export interface RfpGroupMember { package_id: string; title: string; section: string; report_id?: string; draft_version?: number; controls?: RfpControls }
 export interface RfpGroupView { title: string; members: RfpGroupMember[]; left: string[] }
@@ -37,6 +41,19 @@ export const reportApi = {
   ensure: (id: string) => request<ReportDraft>("POST", `/reports/${id}/draft`, { only_if_missing: true }),
   refresh: (id: string, useLastCompleted = false) => request<ReportDraft>("POST", `/reports/${id}/draft`, { use_last_completed: useLastCompleted }),
   edit: (id: string, target: string, text: string, version: number) => request<ReportDraft>("PUT", `/reports/${id}/edits/${encodeURIComponent(target)}`, { text, version }),
+  /** One change to a project report table: a generated row by table and key, a laid row by id, a new row by table. */
+  row: (id: string, change: Record<string, unknown>, version: number) => change.row
+    ? request<{ draft: ReportDraft; row: string }>("PATCH", `/reports/${id}/rows/${change.row as string}`, { ...change, row: undefined, version })
+    : request<{ draft: ReportDraft; row: string }>("POST", `/reports/${id}/rows`, { ...change, version }),
+  /** A dropped PNG or JPEG for a report cell: saved by its bytes, answered with the line that shows it. */
+  image: async (id: string, file: File) => {
+    const res = await fetch(`/api/reports/${id}/images?caption=${encodeURIComponent(file.name.replace(/\.[a-z]+$/i, ""))}`, { method: "POST", body: file, credentials: "same-origin", headers: { "Content-Type": file.type || "application/octet-stream" } });
+    if (!res.ok) throw new Error((await res.text()) || "The image could not be saved.");
+    return res.json() as Promise<{ sha256: string; line: string }>;
+  },
+  imageURL: (id: string, sha: string) => `/api/reports/${id}/images/${sha}`,
+  deleteRow: (id: string, row: string, version: number) => request<{ draft: ReportDraft }>("DELETE", `/reports/${id}/rows/${row}`, { version }),
+  period: (id: string, period: { from: string; to: string; label: string }, version: number) => request<ReportDraft>("PUT", `/reports/${id}/period`, { ...period, version }),
 	reset: (id: string, target: string, version: number) => request<ReportDraft>("DELETE", `/reports/${id}/edits/${encodeURIComponent(target)}`, { version }),
   /** view names a combined engagement's report: a member's setting then returns that report's view. */
   setting: (id: string, key: string, value: unknown, version: number, view?: string) => request<ReportView>("PUT", `/reports/${id}/settings/${encodeURIComponent(key)}`, { value, version, view }),

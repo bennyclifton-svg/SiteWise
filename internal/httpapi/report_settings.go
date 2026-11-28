@@ -223,7 +223,12 @@ func getReportExport(w http.ResponseWriter, r *http.Request, deps Deps) {
 		reportError(w, err)
 		return
 	}
-	doc := export.FromSections(data.Title, data.Project, data.Date, data.Sections)
+	images, err := deps.Store.ReportImages(r.Context(), session.OrgID, r.PathValue("r"), data.Sections, deps.Blobs)
+	if err != nil {
+		reportError(w, err)
+		return
+	}
+	doc := export.FromSectionsWithImages(data.Title, data.Project, data.Date, data.Sections, images)
 	var body []byte
 	contentType := "application/pdf"
 	if format == "pdf" {

@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
@@ -31,7 +32,10 @@ func putClaimLines(w http.ResponseWriter, r *http.Request, deps Deps) {
 		return
 	}
 	for _, row := range in.Rows {
-		if !uuidPattern.MatchString(row.ID) {
+		// A row is named by its id, or by the line, variation or retention
+		// the claim left out.
+		named := row.Retention || row.Line != nil && uuidPattern.MatchString(*row.Line) || row.Variation != nil && uuidPattern.MatchString(*row.Variation)
+		if row.ID == "" && !named || row.ID != "" && !uuidPattern.MatchString(row.ID) {
 			http.Error(w, "invalid row", http.StatusBadRequest)
 			return
 		}
@@ -72,14 +76,43 @@ func patchAwardPeriods(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
-	var in store.ContractPeriods
-	if readProposalJSON(w, r, deps.MaxBodyBytes, &in) != nil {
+	// The body is the contract's periods, its terms (date and retention), or
+	// both. A group that is left out is not touched.
+	var raw map[string]json.RawMessage
+	if readProposalJSON(w, r, deps.MaxBodyBytes, &raw) != nil {
 		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
 	}
-	if err := deps.Store.SetContractPeriods(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, r.PathValue("pkg"), in); err != nil {
-		claimError(w, deps, err)
+	periods, terms := false, false
+	for k := range raw {
+		switch k {
+		case "schedule_days", "schedule_basis", "payment_days", "payment_basis":
+			periods = true
+		case "contract_date", "retention_percent", "retention_base", "act_applies":
+			terms = true
+		default:
+			http.Error(w, "invalid body", http.StatusBadRequest)
+			return
+		}
+	}
+	whole, _ := json.Marshal(raw)
+	var p store.ContractPeriods
+	var t store.ContractTerms
+	if !periods && !terms || json.Unmarshal(whole, &p) != nil || json.Unmarshal(whole, &t) != nil {
+		http.Error(w, "invalid body", http.StatusBadRequest)
 		return
+	}
+	if periods {
+		if err := deps.Store.SetContractPeriods(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, r.PathValue("pkg"), p); err != nil {
+			claimError(w, deps, err)
+			return
+		}
+	}
+	if terms {
+		if err := deps.Store.SetContractTerms(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, r.PathValue("pkg"), t); err != nil {
+			claimError(w, deps, err)
+			return
+		}
 	}
 	invoiceWritten(w, r, deps, session)
 }
@@ -124,6 +157,12 @@ type issuedJSON struct {
 	File string `json:"file"`
 }
 
+type claimSendJSON struct {
+	MessageID string `json:"message_id"`
+	Status    string `json:"status"`
+	SentOn    string `json:"sent_on"`
+}
+
 type claimJSON struct {
 	InvoiceID       string           `json:"invoice_id"`
 	PackageID       string           `json:"package_id"`
@@ -149,17 +188,24 @@ type claimJSON struct {
 	SettledBy       []string         `json:"settled_by"`
 	Flags           []invoices.Flag  `json:"flags"`
 	Rows            []claimRowJSON   `json:"rows"`
-}
-
-// claimFigures are one contract's claims' figures.
-func claimFigures(v store.LedgerView, pkg string) []invoices.ClaimFigures {
-	var out []invoices.ClaimFigures
-	for _, c := range v.Claims {
-		if c.PackageID == pkg {
-			out = append(out, c.Figures)
-		}
-	}
-	return out
+	// As the schedule prints the claim: its number on the contract, its
+	// period (AUG26) and its tax invoice.
+	// Note is the PM's own words on the schedule. RetentionOpen: the
+	// contract has retention terms and this claim has not said what it holds.
+	Note          string `json:"schedule_note"`
+	RetentionOpen bool   `json:"retention_open"`
+	// ScheduleServedConfirmed: the PM typed or confirmed the day served.
+	// Send is the message the issued schedule last went out on.
+	ScheduleServedConfirmed bool `json:"schedule_served_confirmed"`
+	// TaxInvoice: the claim is its own tax invoice. AwaitingInvoice: no
+	// invoice is linked to it yet.
+	TaxInvoice      bool           `json:"tax_invoice"`
+	AwaitingInvoice bool           `json:"awaiting_invoice"`
+	Send            *claimSendJSON `json:"schedule_send,omitempty"`
+	DisplayNumber   string         `json:"display_number"`
+	Period          string         `json:"period"`
+	InvoiceNo       string         `json:"invoice_no"`
+	InvoiceDate     string         `json:"invoice_date"`
 }
 
 func claimsBody(v store.LedgerView) []claimJSON {
@@ -173,6 +219,11 @@ func claimsBody(v store.LedgerView) []claimJSON {
 		vars[va.ID] = va.Number + " " + va.Title
 	}
 	out := []claimJSON{}
+	prints := store.ClaimPrints(v)
+	terms := map[string]bool{} // contracts with retention terms
+	for _, c := range v.Contracts {
+		terms[c.PackageID] = c.RetentionBP != nil
+	}
 	for _, c := range v.Claims {
 		f := c.Figures
 		j := claimJSON{InvoiceID: c.InvoiceID, PackageID: c.PackageID, Number: c.Number, Served: c.Served, ServedConfirmed: c.ServedConfirmed,
@@ -180,6 +231,23 @@ func claimsBody(v store.LedgerView) []claimJSON {
 			Retention: cents(f.Retention), Net: cents(f.Net), GST: cents(f.GST), Payable: cents(f.Payable), Unassessed: f.Unassessed,
 			MissingReasons: f.MissingReasons, Counts: f.Counts, Late: c.Late, Alert: c.Alert, ScheduleDue: c.Schedule, PaymentDue: c.Payment,
 			Issued: []issuedJSON{}, SettledBy: append([]string{}, c.SettledBy...), Flags: append([]invoices.Flag{}, f.Flags...), Rows: []claimRowJSON{}}
+		j.DisplayNumber, j.Note = c.Number, c.Note
+		j.ScheduleServedConfirmed = c.ScheduleServedConfirmed
+		j.TaxInvoice, j.AwaitingInvoice = c.TaxInvoice, c.AwaitingInvoice
+		if c.Send != nil {
+			j.Send = &claimSendJSON{MessageID: c.Send.MessageID, Status: c.Send.Status, SentOn: c.Send.SentOn}
+		}
+		if terms[c.PackageID] {
+			j.RetentionOpen = true
+			for _, r := range c.Rows {
+				if r.Kind == invoices.RowRetention && r.Assessed != nil {
+					j.RetentionOpen = false
+				}
+			}
+		}
+		if p, ok := prints[c.InvoiceID]; ok {
+			j.DisplayNumber, j.Period, j.InvoiceNo, j.InvoiceDate = p.Number, p.Period, p.InvoiceNo, p.InvoiceDate
+		}
 		if j.ScheduleDue.Notes == nil {
 			j.ScheduleDue.Notes = []string{}
 		}

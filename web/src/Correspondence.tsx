@@ -6,6 +6,7 @@
 
 import type { ReactNode } from "react";
 import { RegisterList } from "./Delivery";
+import { PanelHead } from "./PanelHead";
 import type { WorkbenchView } from "./LeftNav";
 import { MailRepository, type MailState } from "./MailIn";
 import type { RegisterData } from "./registerData";
@@ -31,18 +32,23 @@ interface Props {
 }
 
 export function Correspondence({ tab, onTab, shown, data, projectId, mailTick, mail, onMail, raise, onOpenRow, onOpenDocument, onShowView, documents }: Props) {
-  const tabs: ReactNode = <div className="panel-switch correspondence-tabs" role="tablist" aria-label="Correspondence">
-    <span className="ground-frame" aria-hidden="true" />
-    <button type="button" role="tab" aria-selected={tab === "register"} onClick={() => onTab("register")}>Register</button>
-    <button type="button" role="tab" aria-selected={tab === "messages"} onClick={() => onTab("messages")}>Messages{mail.held > 0 ? <span className="panel-switch-held"> · {mail.held} held</span> : null}</button>
-  </div>;
+  // The heading every view wears (PanelHead): Register | Messages as large
+  // words, the open one underlined; each tab brings its own three dots.
+  const head = (more?: ReactNode) => <PanelHead<CorrespondenceTab>
+    title="Correspondence"
+    tabs={{ label: "Correspondence", idPrefix: "correspondence", value: tab, onChange: onTab, items: [
+      { id: "register", label: "Register" },
+      { id: "messages", label: <>Messages{mail.held > 0 ? <span className="panel-switch-held"> · {mail.held} held</span> : null}</> },
+    ] }}
+    more={more}
+  />;
   return <div className="correspondence">
-    <div hidden={tab !== "register"}>
-      <RegisterList data={data} shown={shown && tab === "register"} tabs={tabs} raise={raise} onOpen={onOpenRow} onShowView={onShowView} documents={documents} />
+    <div role="tabpanel" id="correspondence-panel-register" aria-labelledby="correspondence-tab-register" hidden={tab !== "register"}>
+      <RegisterList data={data} shown={shown && tab === "register"} head={head} raise={raise} onOpen={onOpenRow} onShowView={onShowView} documents={documents} />
     </div>
     {/* Messages stays mounted once read, so an open message survives the switch. */}
-    <section className="correspondence-messages" aria-label="Messages" hidden={tab !== "messages"}>
-      <div className="correspondence-band">{tabs}</div>
+    <section className="correspondence-messages" role="tabpanel" id="correspondence-panel-messages" aria-labelledby="correspondence-tab-messages" hidden={tab !== "messages"}>
+      {head()}
       <MailRepository projectId={projectId} tick={mailTick} documents={null} side="messages" onMail={onMail} onOpenDocument={onOpenDocument} />
     </section>
   </div>;

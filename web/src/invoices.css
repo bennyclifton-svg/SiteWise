@@ -2,17 +2,12 @@
    beside its fields, and chips that say how each value was decided. */
 .costs-export { position: relative; margin-left: auto; }
 .print-only { display: none; }
-.costs-export + .costs-toolbar { margin-left: 0; }
 .costs-download { width: 36px; padding: 0; justify-content: center; }
 .costs-download[aria-expanded="true"] { background: var(--sw-hover-bg); border-color: var(--sw-border-strong); }
 .costs-download-menu { position: absolute; top: calc(100% + 4px); right: 0; z-index: 20; min-width: 11.5rem; margin: 0; padding: 4px; border: 1px solid var(--line-strong); border-radius: var(--radius-control); background: var(--paper); box-shadow: var(--shadow-sm); }
 .costs-download-menu [role="menuitem"] { display: block; width: 100%; padding: 6px 10px; border: 0; border-radius: var(--radius-sm); background: none; color: var(--ink); font: inherit; font-weight: 500; line-height: 1.3; text-align: left; text-decoration: none; white-space: nowrap; cursor: pointer; }
 .costs-download-menu [role="menuitem"]:hover,
 .costs-download-menu [role="menuitem"]:focus-visible { background: var(--ground); }
-.costs-tabs { display: flex; gap: 2px; margin: 0 0 14px; border-bottom: 1px solid var(--line-strong); }
-.costs-tab { position: relative; padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--ink-muted); font: inherit; font-weight: 500; cursor: pointer; }
-.costs-tab[aria-selected="true"] { border-bottom-color: var(--ember); color: var(--ink); }
-.costs-tab:focus-visible { outline: 2px solid var(--azure); outline-offset: -2px; }
 
 .cost-ledger { background-color: var(--canvas) !important; }
 .cost-grid thead .cost-ledger { color: var(--ink); }
@@ -116,7 +111,7 @@
    chip prints its words so no meaning rides on colour. */
 @media print {
   @page { size: A4 landscape; margin: 12mm; }
-  .leftnav, .project-side-panel, .ask-bar, .cockpit-shell-header .btn, .costs-toolbar, .costs-tabs, .inv-drop, .inv-uploads, .inv-filters, .inv-panel, .cost-drawer, .cost-actions, .cost-add, .banner { display: none !important; }
+  .leftnav, .project-side-panel, .ask-bar, .cockpit-shell-header .btn, .panel-head-actions, .inv-drop, .inv-uploads, .inv-filters, .inv-panel, .cost-drawer, .cost-actions, .cost-add, .banner { display: none !important; }
   .cockpit-shell { display: block !important; }
   .cost-grid-scroll, .inv-table-scroll { max-height: none !important; overflow: visible !important; border: 0; }
   .cost-sticky { position: static !important; }
@@ -133,7 +128,7 @@
   .inv-chip svg { display: none; }
   .print-only { display: block; margin: 0 0 8px; font-size: 9pt; color: #000; }
   .cockpit-shell-header button { display: none !important; }
-  .cockpit-title, .cockpit-address, .costs-head h1, .costs-chip { color: #000 !important; background: none !important; border-color: #000 !important; }
+  .cockpit-title, .cockpit-address, .panel-head .panel-tab, .costs-chip { color: #000 !important; background: none !important; border-color: #000 !important; }
 }
 
 /* Variations and claims tab: the contract's figures above its tables. */
@@ -156,4 +151,3 @@
 .claim-banner { margin: 0 0 0 12px; padding: 4px 10px; border-radius: 4px; font-size: var(--fs-sm, .875rem); }
 .claim-banner[data-alert="overdue"], .nav-count[data-alert="overdue"], .cost-tag[data-alert="overdue"] { background: var(--sw-danger-bg); color: var(--sw-danger-text); box-shadow: inset 0 0 0 1px var(--sw-danger-border); }
 .claim-banner[data-alert="due"], .nav-count[data-alert="due"], .cost-tag[data-alert="soon"], .cost-tag[data-alert="check"] { background: var(--sw-warning-bg); color: var(--sw-warning-text); box-shadow: inset 0 0 0 1px var(--sw-warning-border); }
-.costs-tab .nav-count { margin-left: 6px; }

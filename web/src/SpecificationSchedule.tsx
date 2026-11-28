@@ -4,6 +4,9 @@ import { ApiError, type Doc } from "./api";
 import { Specifications as Details, specificationValue } from "./Specifications";
 import { specificationApi, type SpecificationType as Item, type SpecificationView as View, type SpecificationCoverage as Coverage, type SpecificationSection as Section, type SpecificationStarter as Starter } from "./specificationApi";
 import { CoverageEditor, ItemResponsibility, blankCoverage, coverageNames, externallyMaintained, type SpecRun } from "./SpecificationCoverage";
+import { MoreMenu, UpdateButton } from "./PageActions";
+import { PanelHead } from "./PanelHead";
+import { IconDownload, IconEye, IconPlus, IconPrint, IconUpload } from "./icons";
 import "./specifications.css";
 
 // Approved table-first direction: shared Profiler hierarchy, inline local
@@ -34,7 +37,17 @@ export function SpecificationSchedule({projectId,tick,documents,onSignedOut,onOp
     return <div className="spec-value"><Inline label={`${label} for ${t.title}`} value={a&&!(external&&a.origin!=="document")?specificationValue(a.value):""} placeholder={`Add ${label.toLowerCase()}…`} disabled={blocked||editing||!!(a&&(a.meaning!=="requirement"||a.status!=="accepted"))} locked={locked} onEditing={setEditing} onSave={text=>run(()=>specificationApi.cell(projectId,t.id,key,text.trim()?{state:"known",text:text.trim()}:{state:"unknown"},"requirement",a?.id??""))}/>{external&&a?.origin==="user"&&<small>Local decision retained for coordination in Details.</small>}{a?.source.document_id&&<small>{a.status==="proposed"?"Proposed":"Confirmed"} source reading · {a.meaning}{a.source.stale?" · revision review":""}</small>}</div>;
   }
   return <section className="spec-workspace" aria-label="Specifications" aria-busy={busy}>
-    <header className="spec-header"><div><h2>Specification</h2><p>Project requirements and referenced consultant specifications.</p></div><div className="spec-actions"><button className="btn btn-primary" disabled={blocked||pending||editing} onClick={()=>void update()}>{pending?<Pending queued={!reading}>{reading?"Updating specification…":"Specification update queued"}</Pending>:"Update specification"}</button><button className="btn" disabled={blocked||editing} onClick={()=>setPanel(panel==="import"?"":"import")}>Import</button><button className="btn" disabled={blocked||editing} onClick={()=>setPanel(panel==="schedule"?"":"schedule")}>Preview / issue</button><button className="btn" disabled={blocked||editing} onClick={()=>{setNewSystem("");setPanel(panel==="new"?"":"new");}}>Add item</button></div></header>
+    <PanelHead className="spec-header" title="Specification"
+      action={<UpdateButton disabled={blocked||pending||editing} busy={pending} onClick={()=>void update()}>{pending?(reading?"Updating specification…":"Specification update queued"):"Update specification"}</UpdateButton>}
+      more={<MoreMenu label="Specification actions" items={[
+        {label:"Add item",icon:<IconPlus/>,disabled:blocked||editing,onSelect:()=>{setNewSystem("");setPanel(panel==="new"?"":"new");}},
+        {label:"Import",icon:<IconUpload/>,disabled:blocked||editing,onSelect:()=>setPanel(panel==="import"?"":"import")},
+        {label:"Preview / issue",icon:<IconEye/>,disabled:blocked||editing,onSelect:()=>setPanel(panel==="schedule"?"":"schedule")},
+        {label:"Export draft CSV",icon:<IconDownload/>,href:specificationApi.exportURL(projectId),download:true},
+        {label:"Print specification",icon:<IconPrint/>,onSelect:()=>window.print()},
+      ]}/>}>
+      <span>Project requirements and referenced consultant specifications.</span>
+    </PanelHead>
     {(error||loadError)&&<div className="banner" role="alert"><p>{error||loadError}</p>{loadError&&<button className="btn" onClick={refresh}>Reload specifications</button>}</div>}
     <p className="spec-feedback" role="status">{busy ? <Pending delayed>Saving…</Pending> : message}</p>
     {!view&&!loadError&&<p className="spec-loading"><Pending delayed>Loading specification framework…</Pending></p>}

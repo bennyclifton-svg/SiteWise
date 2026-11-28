@@ -7,6 +7,8 @@ import { BuilderQuotedTotals, BuilderWorkSections } from "./BuilderComparison";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { IconConfirmed, IconMore, IconUpdate } from "./icons";
 import { BackButton, PageActionsContext, PageSidePanel } from "./PageActions";
+import { PanelHead, PrimaryButton } from "./PanelHead";
+import "./ground-button.css";
 import { ApiError } from "./api";
 import { AwardDialog } from "./AwardDialog";
 import { registerDialog } from "./chatView";
@@ -221,19 +223,19 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
   if (showReport && table) return <ProcurementReport projectId={projectId} table={table} onBack={() => setShowReport(false)} onProcurement={onBack} onSignedOut={onSignedOut} />;
 
   return <section className="prices" aria-label="Price table" aria-busy={busy || edits.busy}>
-    <header className="prices-head">
-      <BackButton to="Procurement" onClick={onBack} here={table?.title ?? "Package"} />
-      <h1>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></h1>
-      <div className="prices-actions"><span role="status">{(busy || edits.busy) && !uploading && <Pending delayed>Saving…</Pending>}</span>
-        {tenderMode && <button type="button" className="btn btn-small" disabled={!edits.canUndo || edits.busy} onClick={() => void edits.undo()}>Undo</button>}
-        {/* One "+ New" pill and one ⋮ menu keep the head clean (owner direction, 7 Nov 2026). */}
-        {cols.length > 0
-          ? <ActionMenu label="New" trigger={<span>+ New</span>} triggerClass="btn btn-small">
-              <button type="button" role="menuitem" disabled={locked || !!moving} onClick={() => setRowEditor("new")}>Row</button>
-              <button type="button" role="menuitem" onClick={() => setAdding(true)}>Firm</button>
-            </ActionMenu>
-          : <button type="button" className="btn btn-small" onClick={() => setAdding(a => !a)} aria-expanded={adding}>+ New firm</button>}
-        <ActionMenu label="More actions" trigger={<IconMore />} triggerClass="prices-more-btn">
+    {/* The heading every view wears (PanelHead): the breadcrumb, the package,
+        New as the one primary action (the ground-line button) and the three dots. */}
+    <PanelHead
+      className="prices-head"
+      crumbs={<BackButton to="Procurement" onClick={onBack} here={table?.title ?? "Package"} />}
+      title={<>{table?.title ?? "Package"} <span>{compare ? `· comparing ${cols.length} firms` : cols.length === 1 ? "· review" : ""}</span></>}
+      action={cols.length > 0
+        ? <ActionMenu label="New" trigger={<GroundFace>+ New</GroundFace>} triggerClass="ground-btn is-primary btn-update">
+            <button type="button" role="menuitem" disabled={locked || !!moving} onClick={() => setRowEditor("new")}>Row</button>
+            <button type="button" role="menuitem" onClick={() => setAdding(true)}>Firm</button>
+          </ActionMenu>
+        : <PrimaryButton onClick={() => setAdding(a => !a)} aria-expanded={adding}>+ New firm</PrimaryButton>}
+      more={<ActionMenu label="More actions" trigger={<IconMore />} triggerClass="more-menu-btn">
           {reportId && <a role="menuitem" href={submissionApi.responseFormURL(reportId)} download>Response form</a>}
           {cols.length > 0 && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg)} download>Export to Excel</a>}
           {tenderMode && <a role="menuitem" href={submissionApi.exportURL(projectId, pkg, "csv")} download>Export to CSV</a>}
@@ -241,9 +243,11 @@ export function Prices({ projectId, pkg, reportId, tick, onBack, onSignedOut, on
           <button type="button" role="menuitem" onClick={() => window.print()}>Download (print)</button>
           {cols.length > 0 && <button type="button" role="menuitem" onClick={() => setShowReport(true)}>Report</button>}
           {quoted && table?.award && onOpenCostPlan && <button type="button" role="menuitem" onClick={onOpenCostPlan}>Open cost plan</button>}
-        </ActionMenu>
-      </div>
-    </header>
+        </ActionMenu>}
+    >
+      <span role="status">{(busy || edits.busy) && !uploading && <Pending delayed>Saving…</Pending>}</span>
+      {tenderMode && <button type="button" className="btn btn-small" disabled={!edits.canUndo || edits.busy} onClick={() => void edits.undo()}>Undo</button>}
+    </PanelHead>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => setError("")}>Dismiss</button></div>}
     {edits.note && <div className="banner" role="status"><p>{edits.note}</p><button type="button" className="btn btn-small" onClick={edits.clearNote}>Dismiss</button></div>}
     {adding && <AddFirm projectId={projectId} pkg={pkg} onDone={t => { setTable(t); setAdding(false); }} onFail={fail} onCancel={() => setAdding(false)} />}
@@ -474,6 +478,11 @@ function AwardBanner({ table, busy, onUndo, onOpenCostPlan }: { table: PriceTabl
         : <button type="button" className="btn btn-small" disabled={busy} onClick={onUndo}>Undo award</button>}
     </div>
   </div>;
+}
+
+/** The ground-line button's face, for a menu trigger that is the view's primary action. */
+function GroundFace({ children }: { children: ReactNode }) {
+  return <><span className="ground-frame" aria-hidden="true" /><span className="ground-hatch" aria-hidden="true" /><span className="ground-label">{children}</span></>;
 }
 
 /** A button that opens a short menu of actions below it; Escape or a click

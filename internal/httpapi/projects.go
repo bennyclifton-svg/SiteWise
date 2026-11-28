@@ -203,6 +203,8 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 		"POST /projects/{id}/variations":                                                postVariation,
 		"PATCH /projects/{id}/variations/{v}":                                           patchVariation,
 		"PUT /projects/{id}/invoices/{inv}/claim-lines":                                 putClaimLines,
+		"POST /projects/{id}/contracts/{pkg}/breakdown":                                 postBreakdown,
+		"PATCH /projects/{id}/contracts/{pkg}/breakdown/{line}":                         patchBreakdown,
 		"POST /projects/{id}/invoices/{inv}/schedule":                                   postPaymentSchedule,
 		"PATCH /projects/{id}/procurement/packages/{pkg}/award":                         patchAwardPeriods,
 		"GET /projects/{id}/delivery/dependencies":                                      getDeliveryDependencies,
@@ -350,6 +352,9 @@ func apiRoutes() map[string]func(http.ResponseWriter, *http.Request, Deps) {
 	}
 	// Email intake: the one webhook and the project's mail.
 	for pattern, h := range mailRoutes {
+		routes[pattern] = h
+	}
+	for pattern, h := range reportRowRoutes {
 		routes[pattern] = h
 	}
 	for pattern, h := range transmittalRoutes {

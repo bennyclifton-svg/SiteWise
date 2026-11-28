@@ -2,6 +2,7 @@ package invoices
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -62,4 +63,26 @@ func DisplayABN(digits string) string {
 		return digits
 	}
 	return digits[:2] + " " + digits[2:5] + " " + digits[5:8] + " " + digits[8:]
+}
+
+// CompanyNumberCheck says what is wrong with a company number as typed, or
+// "" when it reads as an ABN (eleven digits that pass the check) or an ACN
+// (nine digits). SiteWise prints the number as typed either way: this is a
+// warning for the PM, not a refusal.
+func CompanyNumberCheck(typed string) string {
+	digits := ""
+	for _, r := range typed {
+		if r >= '0' && r <= '9' {
+			digits += string(r)
+		}
+	}
+	switch {
+	case digits == "":
+		return ""
+	case len(digits) == 9, len(digits) == 11 && ValidABN(digits):
+		return ""
+	case len(digits) == 11:
+		return typed + " has eleven digits but is not a valid ABN."
+	}
+	return typed + " has " + strconv.Itoa(len(digits)) + " digits: an ACN has 9 and an ABN 11."
 }

@@ -225,8 +225,8 @@ func TestMailRefusalStatuses(t *testing.T) {
 	stale := f.memberPost("Stale")
 	stale.timestamp = time.Now().Add(-25 * time.Hour)
 	for name, c := range map[string]struct{ got, want int }{
-		"signature":  {f.sendFields(t, bad, nil), http.StatusNotAcceptable},
-		"timestamp":  {f.send(t, stale), http.StatusNotAcceptable},
+		"signature":                 {f.sendFields(t, bad, nil), http.StatusNotAcceptable},
+		"timestamp":                 {f.send(t, stale), http.StatusNotAcceptable},
 		"urlencoded, bad signature": {f.form(t, bad), http.StatusNotAcceptable},
 	} {
 		if c.got != c.want {

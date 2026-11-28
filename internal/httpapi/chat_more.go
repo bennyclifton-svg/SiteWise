@@ -26,7 +26,7 @@ func readMore(ctx context.Context, d Deps, who opActor, project, area string, r 
 	case "attention":
 		return readAttention(ctx, d, who, project, r)
 	case "report":
-		return readProjectReport(ctx, d, who, project, r)
+		return readProjectReport(ctx, d, who, project, "", r)
 	case "shares":
 		return readShares(ctx, d, who, project, r)
 	case "mail":
@@ -310,7 +310,7 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 	case "attention":
 		err = readAttention(r.Context(), d, who, project, rd)
 	case "report":
-		err = readProjectReport(r.Context(), d, who, project, rd)
+		err = readProjectReport(r.Context(), d, who, project, r.URL.Query().Get("part"), rd)
 	case "delivery":
 		err = readRegister(r.Context(), d, who, project, r.URL.Query().Get("part"), rd)
 	case "shares":
@@ -336,7 +336,7 @@ func getChatRead(w http.ResponseWriter, r *http.Request, d Deps) {
 // block in the report's order, the cost table's amounts behind their tags,
 // the movements since the last issue and which comments wait for review.
 // It reads the saved draft; it builds nothing and calls no model.
-func readProjectReport(ctx context.Context, d Deps, who opActor, project string, r *reader) error {
+func readProjectReport(ctx context.Context, d Deps, who opActor, project, part string, r *reader) error {
 	rep, err := d.Store.MonthlyReport(ctx, who.OrgID, project)
 	if errors.Is(err, store.ErrNotFound) {
 		r.line("There is no project report yet. apply reports.update creates it and builds its draft from the screens' figures.")
@@ -361,9 +361,25 @@ func readProjectReport(ctx context.Context, d Deps, who opActor, project string,
 	if len(view.Stale) > 0 {
 		r.line("The draft's sources changed since it was built (%s): reports.update rebuilds it.", strings.Join(view.Stale, ", "))
 	}
+	if dr.PeriodLabel != nil {
+		r.line("Period: %s.", *dr.PeriodLabel)
+	}
+	var parts []string
 	for _, s := range dr.Sections {
-		r.line("%s:", s.Title)
+		parts = append(parts, s.ID)
+		if part != "" && s.ID != part {
+			continue
+		}
+		review := ""
+		if s.Internal {
+			review = " (review list, not issued)"
+		}
+		r.line("%s: [part %s]%s", s.Title, s.ID, review)
 		for _, b := range s.Blocks {
+			if b.Table != nil && b.Table.ID != "" && b.Table.Meta != nil {
+				readReportTable(r, b)
+				continue
+			}
 			mark := ""
 			switch {
 			case b.Conflict:
@@ -395,6 +411,65 @@ func readProjectReport(ctx context.Context, d Deps, who opActor, project string,
 			}
 		}
 	}
+	if part != "" && !containsID(parts, part) {
+		return refuse("part", "The report's parts are %s.", strings.Join(parts, ", "))
+	}
+	r.line("A table row is changed with reports.set_cell, reports.add_row, reports.remove_row, reports.restore_row or reports.move_row, naming the table and the row's key. A row from a record (an EOT, a variation, a contract) is changed at source with that screen's operation, then reports.update.")
 	r.line("Issuing is the PM's: open the report with view (dialog report, issue yes); the PM presses Issue.")
 	return nil
+}
+
+// readReportTable prints one of the report's tables with each row's key,
+// so an operation can name the row. A cell whose words came from a
+// document counts as outside text: a change made on it waits for a click.
+func readReportTable(r *reader, b reports.Block) {
+	t := b.Table
+	if b.Label != "" {
+		r.line("  %s (table %s; columns %s):", b.Label, t.ID, strings.Join(t.Columns, " | "))
+	}
+	if b.Text != "" {
+		r.line("  %s", b.Text)
+	}
+	for i, row := range t.Rows {
+		f := t.Meta[i]
+		key := f.Key
+		if key == "" {
+			key = f.ID
+		}
+		var marks []string
+		switch f.Kind {
+		case reports.RowPlaceholder:
+			marks = append(marks, "placeholder")
+		case reports.RowOwn:
+			marks = append(marks, "PM's row")
+		case reports.RowHistory:
+			marks = append(marks, "an earlier period, as issued")
+		}
+		for c, typed := range f.Typed {
+			if typed && c < len(t.Columns) {
+				marks = append(marks, "PM typed "+t.Columns[c])
+			}
+		}
+		switch f.Flag {
+		case "moved":
+			marks = append(marks, "SiteWise's value moved under the PM's words; issue waits until the PM keeps theirs or takes SiteWise's")
+		case "missing":
+			marks = append(marks, "its record is gone; issue waits")
+		}
+		if f.New {
+			marks = append(marks, "new this period")
+		}
+		if f.Source != "" {
+			marks = append(marks, "words from document "+f.Source)
+			r.outside = "the project report's words read from a document"
+		}
+		mark := ""
+		if len(marks) > 0 {
+			mark = " (" + strings.Join(marks, "; ") + ")"
+		}
+		r.line("    [%s] %s%s", key, strings.ReplaceAll(strings.Join(row, " | "), "\n", " / "), mark)
+	}
+	if t.Hidden > 0 {
+		r.line("    %d hidden by the PM (keys %s; reports.restore_row brings one back).", t.Hidden, strings.Join(t.HiddenKeys, ", "))
+	}
 }

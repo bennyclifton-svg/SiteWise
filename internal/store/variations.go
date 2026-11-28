@@ -43,11 +43,27 @@ type Contract struct {
 	// Lines are the award's cost lines in award order, with the approved
 	// contract each holds (nil when unknown).
 	Lines []ContractLine
+	// Breakdown is what a payment schedule prints: the stored lines, or the
+	// cost lines while none is stored. Gaps are the cost lines whose
+	// breakdown does not add up to their contract value.
+	Breakdown []BreakdownLine
+	Gaps      []BreakdownGap
 	// The contract's own periods; nil days is not entered.
 	ScheduleDays  *int
 	ScheduleBasis string
 	PaymentDays   *int
 	PaymentBasis  string
+	// What a payment schedule prints of the contract, typed once: its own
+	// date, and its retention as a rate (basis points) of a base. "" and
+	// nil are not entered; SiteWise has no default rate.
+	ContractDate string
+	// ActApplies is the PM's switch for naming the Act; nil is the default
+	// by kind (ActOn).
+	ActApplies    *bool
+	RetentionBP   *int
+	RetentionBase string
+	// The awarded firm's ABN and address, as the firm's record holds them.
+	FirmABN, FirmEmail string
 }
 
 // ContractLine is one cost line a contract holds.
@@ -57,14 +73,29 @@ type ContractLine struct {
 	Amount *int64
 }
 
-// Claims are taken only on works contracts (owner decision 8): client to
-// builder and client to trade are both head contracts.
-func (c Contract) Claims() bool { return c.Kind == "works" }
+// Claims are taken on every live contract, consultants included (payment
+// schedules plan, owner decision 7). A services contract's claim is its own
+// tax invoice unless the PM says otherwise.
+func (c Contract) Claims() bool { return true }
+
+// Services is a consultant's or other services contract.
+func (c Contract) Services() bool { return c.Kind != "works" }
+
+// ActOn says the contract's schedules name the Security of Payment Act:
+// the PM's switch where set, else on for works and off for services (owner
+// decision 8).
+func (c Contract) ActOn() bool {
+	if c.ActApplies != nil {
+		return *c.ActApplies
+	}
+	return !c.Services()
+}
 
 // readContracts reads every live award with its lines from the draft plan.
 func readContracts(ctx context.Context, q querier, org, project string) ([]Contract, error) {
 	rows, err := q.Query(ctx, `
-SELECT a.id::text, a.package_id::text, p.title, p.kind, COALESCE(f.name, ''), a.schedule_days, a.schedule_basis, a.payment_days, a.payment_basis
+SELECT a.id::text, a.package_id::text, p.title, p.kind, COALESCE(f.name, ''), a.schedule_days, a.schedule_basis, a.payment_days, a.payment_basis,
+ COALESCE(a.contract_date::text, ''), a.retention_bp, COALESCE(a.retention_base, ''), COALESCE(f.abn, ''), COALESCE(f.email, ''), a.act_applies
 FROM awards a JOIN packages p ON p.org_id=a.org_id AND p.id=a.package_id
 JOIN submissions s ON s.org_id=a.org_id AND s.id=a.submission_id LEFT JOIN firms f ON f.org_id=s.org_id AND f.id=s.firm_id
 WHERE a.org_id=$1::uuid AND a.project_id=$2::uuid AND a.undone_at IS NULL
@@ -77,7 +108,9 @@ ORDER BY p.title, a.id`, org, project)
 	for rows.Next() {
 		var c Contract
 		var sd, pd *int16
-		if err := rows.Scan(&c.AwardID, &c.PackageID, &c.Title, &c.Kind, &c.Firm, &sd, &c.ScheduleBasis, &pd, &c.PaymentBasis); err != nil {
+		var bp *int32
+		if err := rows.Scan(&c.AwardID, &c.PackageID, &c.Title, &c.Kind, &c.Firm, &sd, &c.ScheduleBasis, &pd, &c.PaymentBasis,
+			&c.ContractDate, &bp, &c.RetentionBase, &c.FirmABN, &c.FirmEmail, &c.ActApplies); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -88,6 +121,10 @@ ORDER BY p.title, a.id`, org, project)
 		if pd != nil {
 			n := int(*pd)
 			c.PaymentDays = &n
+		}
+		if bp != nil {
+			n := int(*bp)
+			c.RetentionBP = &n
 		}
 		index[c.AwardID] = len(out)
 		out = append(out, c)
@@ -133,7 +170,18 @@ ORDER BY s.award_id, ord, s.cost_item_id`, org, project)
 		}
 		out[i].Lines = append(out[i].Lines, l)
 	}
-	return out, lines.Err()
+	if err := lines.Err(); err != nil {
+		return nil, err
+	}
+	lines.Close()
+	stored, err := readBreakdown(ctx, q, org, project)
+	if err != nil {
+		return nil, err
+	}
+	for i := range out {
+		out[i].setBreakdown(stored[out[i].AwardID])
+	}
+	return out, nil
 }
 
 // readVariations reads a project's variations with their linked documents.

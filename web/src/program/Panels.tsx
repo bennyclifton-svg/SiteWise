@@ -5,6 +5,7 @@
 // none calls Jev.
 
 import { useState, type ReactNode } from "react";
+import { GroundButton } from "../GroundButton";
 import type { ProgramActivity, ProgramHoldPoint, ProgramImport, ProgramProposedLink } from "../programApi";
 import { fmtDate } from "./layout";
 import { fileLinks, notReadWords, proposedText, type ReadingGroup } from "./readings";
@@ -17,18 +18,21 @@ import { fileLinks, notReadWords, proposedText, type ReadingGroup } from "./read
  * 12 November 2026); one undo reverses it.
  */
 export function UpdateProgramButton({ pending, busy, onUpdate }: { pending: number; busy: boolean; onUpdate: () => void }) {
+  // The ground-line button every view uses for its one primary action (PanelHead).
   return (
-    <button
-      type="button"
-      className={pending > 0 ? "btn pg-update is-pending" : "btn pg-update"}
+    <GroundButton
+      primary
+      icon="refresh"
+      className={pending > 0 ? "btn-update pg-update is-pending" : "btn-update pg-update"}
       disabled={busy}
+      busy={busy}
       title={pending > 0
         ? `${pending} update${pending === 1 ? "" : "s"} from the Profile and Procurement. Click to apply; undo reverses it.`
         : "Rebuild the program from the Profile and Procurement."}
       onClick={onUpdate}
     >
       Update program{pending > 0 && <span className="pg-update-count">{pending}</span>}
-    </button>
+    </GroundButton>
   );
 }
 

@@ -8,55 +8,102 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pricing · SiteWise</title>
+  <link rel="icon" href="/brand/sitewise-datum.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/brand/brand.css">
   <link rel="stylesheet" href="/legal/legal.css">
 </head>
 <body>
-<header>
-  <a class="home" href="/">SiteWise</a>
-  <nav aria-label="Legal">
-    <a href="/legal/terms.html">Terms</a>
-    <a href="/legal/privacy.html">Privacy</a>
-    <a href="/legal/refunds.html">Refunds</a>
+<header class="bar">
+  <a class="home" href="/" aria-label="SiteWise home"><span class="wordmark"></span></a>
+  <nav class="site-nav" aria-label="Site">
+    <a href="/legal/pricing.html" aria-current="page">Pricing</a>
+    <a class="signin" href="/signin">Sign in</a>
   </nav>
 </header>
-<main>
+<main class="sheet">
+<div class="band perspex">
 <h1>Pricing</h1>
 <p class="updated">Prices in Australian dollars, excluding GST. GST is added at checkout.</p>
+</div>
+<div class="body">
 
-<table>
+<section class="plans" aria-labelledby="plans-head">
+<h2 id="plans-head" class="visually-hidden">Plans</h2>
+<table class="plan-table">
   <thead>
-    <tr><th></th><th>Free</th><th>Starter</th><th>Team</th></tr>
+    <tr>
+      <td></td>
+      <th scope="col">
+        <span class="plan-name">Free</span>
+        <span class="plan-price">$0</span>
+        <span class="plan-period">No charge</span>
+        <span class="plan-for">Try SiteWise on one project.</span>
+      </th>
+      <th scope="col">
+        <span class="plan-name">Starter</span>
+        <span class="plan-price">$50<small>/ month</small></span>
+        <span class="plan-period">or $500 a year, 2 months free</span>
+        <span class="plan-for">One person, up to five projects.</span>
+      </th>
+      <th scope="col">
+        <span class="plan-name">Team</span>
+        <span class="plan-price">$200<small>/ month</small></span>
+        <span class="plan-period">or $2,000 a year, 2 months free</span>
+        <span class="plan-for">Up to five people, unlimited projects.</span>
+      </th>
+    </tr>
   </thead>
   <tbody>
-    <tr><th scope="row">Monthly</th><td>$0</td><td>$50 / month</td><td>$200 / month</td></tr>
-    <tr><th scope="row">Yearly (2 months free)</th><td>$0</td><td>$500 / year</td><td>$2,000 / year</td></tr>
     <tr><th scope="row">Active projects</th><td>1</td><td>5</td><td>Unlimited</td></tr>
     <tr><th scope="row">Documents read each month</th><td>50</td><td>500</td><td>3,000</td></tr>
     <tr><th scope="row">Storage</th><td>500 MB</td><td>10 GB</td><td>50 GB</td></tr>
     <tr><th scope="row">Users</th><td>1</td><td>1</td><td>Up to 5</td></tr>
   </tbody>
 </table>
+<div class="plan-cta">
+  <a class="button" href="/signup">Sign up free</a>
+  <p>Every account starts on Free. Upgrade from your Account page at any time.</p>
+</div>
+</section>
 
-<p><a href="/signup">Sign up free</a>. You can upgrade from your Account page at any time.</p>
-
-<h2>Questions</h2>
-<h3>What counts as a document read?</h3>
-<p>Each new file you upload counts once: a drawing set, report, invoice, fee proposal or program
-file. Dropping the same file again does not count, and neither does editing costs, procurement,
-specifications or the program. The count resets on the first of each month, Sydney time.</p>
-<h3>What happens when I reach a limit?</h3>
-<p>SiteWise tells you and pauses the action, such as a new upload, until you upgrade or the
-monthly allowance resets. Everything you already have stays available.</p>
-<h3>How do I pay?</h3>
-<p>By card or Australian bank account (direct debit) through Stripe. You receive a tax invoice
-for every payment.</p>
-<h3>Can I cancel?</h3>
-<p>Yes, at any time. See <a href="/legal/refunds.html">Cancellations and Refunds</a>.</p>
-<h3>Is my data safe?</h3>
-<p>SiteWise is hosted in Sydney, every connection is encrypted, and each account's data is kept
-separate. See the <a href="/legal/privacy.html">Privacy Policy</a>.</p>
+<section class="faq" aria-labelledby="faq-head">
+<h2 id="faq-head">Questions</h2>
+<dl>
+  <div>
+    <dt>What counts as a document read?</dt>
+    <dd>Each new file you upload counts once: a drawing set, report, invoice, fee proposal or program
+    file. Dropping the same file again does not count, and neither does editing costs, procurement,
+    specifications or the program. The count resets on the first of each month, Sydney time.</dd>
+  </div>
+  <div>
+    <dt>What happens when I reach a limit?</dt>
+    <dd>SiteWise tells you and pauses the action, such as a new upload, until you upgrade or the
+    monthly allowance resets. Everything you already have stays available.</dd>
+  </div>
+  <div>
+    <dt>How do I pay?</dt>
+    <dd>By card or Australian bank account (direct debit) through Stripe. You receive a tax invoice
+    for every payment.</dd>
+  </div>
+  <div>
+    <dt>Can I cancel?</dt>
+    <dd>Yes, at any time. See <a href="/legal/refunds.html">Cancellations and Refunds</a>.</dd>
+  </div>
+  <div>
+    <dt>Is my data safe?</dt>
+    <dd>SiteWise is hosted in Sydney, every connection is encrypted, and each account's data is kept
+    separate. See the <a href="/legal/privacy.html">Privacy Policy</a>.</dd>
+  </div>
+</dl>
+</section>
+</div>
 </main>
-<footer>
+<footer class="foot">
+  <nav class="legal-nav" aria-label="Legal">
+    <a href="/legal/terms.html">Terms of Service</a>
+    <a href="/legal/privacy.html">Privacy Policy</a>
+    <a href="/legal/refunds.html">Cancellations and refunds</a>
+  </nav>
   <p>[LEGAL ENTITY NAME] · ABN [ABN] · <a href="mailto:[CONTACT EMAIL]">[CONTACT EMAIL]</a></p>
 </footer>
 </body>

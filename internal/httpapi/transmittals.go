@@ -247,6 +247,10 @@ type transmittalBody struct {
 	// RFI is the register's RFI this message sends; a reply in its thread
 	// then answers it by rule.
 	RFI string `json:"rfi"`
+	// Claim is a progress claim whose issued payment schedule this message
+	// carries, as issued. When the message has gone, the day the schedule
+	// was served is set by rule for the PM to confirm.
+	Claim string `json:"claim"`
 }
 
 // sendError is a refusal in the PM's words, with its status.
@@ -504,10 +508,32 @@ func postTransmittal(w http.ResponseWriter, r *http.Request, deps Deps) {
 			return
 		}
 	}
+	if body.Claim != "" {
+		version, err := deps.Store.ClaimScheduleToSend(r.Context(), session.OrgID, project, body.Claim)
+		if errors.Is(err, store.ErrClaimNotIssued) {
+			err = &sendError{http.StatusConflict, "Issue the payment schedule before sending it."}
+		}
+		var f store.OutboundFile
+		if err == nil {
+			f, err = issueFile(r.Context(), deps, session.OrgID, project, version)
+		}
+		if err != nil {
+			writeSendError(w, deps, err)
+			return
+		}
+		in.Files = append(in.Files, f)
+	}
 	m, err := queueOutbound(r.Context(), deps, session, project, in, true, body.Note)
 	if err != nil {
 		writeSendError(w, deps, err)
 		return
+	}
+	if body.Claim != "" {
+		if err := deps.Store.LinkClaimMessage(r.Context(), session.OrgID, project, body.Claim, m.ID); err != nil {
+			deps.Log.Printf("transmittal org=%s: the claim was not linked to its message: %v", session.OrgID, err)
+		} else if deps.Broker != nil {
+			deps.Broker.Wake(session.OrgID)
+		}
 	}
 	if body.RFI != "" {
 		if err := deps.Store.LinkRFIMessage(r.Context(), session.OrgID, project, body.RFI, m.ID); err != nil {

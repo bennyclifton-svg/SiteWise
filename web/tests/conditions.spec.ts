@@ -56,8 +56,7 @@ test("a notice is read into conditions grouped by gate; one is edited, evidenced
   expect((await page.request.post("/__e2e/run-consent")).ok()).toBeTruthy();
 
   await openRegister(page);
-  await expect(page.getByLabel("Kind").locator("option")).toContainText(["All kinds", "Conditions · 7 to check"]);
-  await page.getByLabel("Kind").selectOption({ label: "Conditions · 7 to check" });
+  // No Kind filter (owner, 25 Nov 2026): a register of conditions alone is grouped by gate.
   await expect(page.getByText("Read 7 of 7")).toBeVisible();
   await expect(page.locator("tr.register-group th")).toHaveText(["Before CC", "Before work starts", "During works", "Before OC", "Before SC"]);
   const tree = page.locator(".register-list tr", { hasText: "Condition 12" });

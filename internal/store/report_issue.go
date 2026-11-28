@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"sitewise/internal/export"
 	"sitewise/internal/files"
 	"sitewise/internal/procurement"
 	"sitewise/internal/reports"
@@ -134,7 +135,12 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if err != nil {
 		return out, err
 	}
-	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: reports.IssueTitle(r.Kind, r.Title, d.Number), ReportingDate: options.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: sections, References: refs, BudgetDisclosed: options.BudgetDisclosed, RendererVersion: render.Version}
+	golden := goldenSections(sections)
+	renderer := render.Version
+	if golden {
+		renderer = export.Version
+	}
+	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: r.ID, VersionID: d.ID, Kind: r.Kind, Title: reports.IssueTitle(r.Kind, r.Title, d.Number), ReportingDate: options.ReportingDate, SourceRevisions: d.SourceRevisions, Sections: sections, References: refs, BudgetDisclosed: options.BudgetDisclosed, RendererVersion: renderer}
 	if len(stale) > 0 {
 		snap.StaleReason = options.StaleReason
 	}
@@ -142,11 +148,30 @@ func (s *Store) IssueReport(ctx context.Context, org, id, actor, appBuild string
 	if err != nil {
 		return out, ErrInvalidReport
 	}
-	pdf, err := render.PDF(snap)
+	// The project report in the owner's format prints through the writer
+	// that makes its draft PDF and Word file, with no page limit (question
+	// 6); every other report keeps the frozen renderer and its gate.
+	var pdfBytes []byte
+	if golden {
+		// Every image a cell names is drawn from its stored bytes; one that
+		// is gone refuses issue, naming its cell.
+		images, missing, ierr := reportImageBytes(ctx, tx, org, r.ID, sections, blobs)
+		if ierr != nil {
+			return out, ierr
+		}
+		if missing != "" {
+			return out, ImageMissing{Cell: missing}
+		}
+		pdfBytes, err = export.PDF(export.FromSectionsWithImages(snap.Title, "", options.ReportingDate, sections, images))
+	} else {
+		var pdf render.Result
+		pdf, err = render.PDF(snap)
+		pdfBytes = pdf.PDF
+	}
 	if err != nil {
 		return out, err
 	}
-	blob, err := blobs.Put(ctx, bytes.NewReader(pdf.PDF))
+	blob, err := blobs.Put(ctx, bytes.NewReader(pdfBytes))
 	if err != nil {
 		return out, err
 	}

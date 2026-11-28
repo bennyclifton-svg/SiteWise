@@ -273,7 +273,8 @@ func init() {
 // subject and note may be words chat drafted; every document is a filed
 // document of this project, every firm this org's with an email, a reply a
 // message of this project, an issue an issued version of this project's
-// report. Nothing is sent: the PM presses Send.
+// report, a claim one whose payment schedule is issued. Nothing is sent:
+// the PM presses Send.
 func checkSendDialog(ctx context.Context, d Deps, who opActor, project string, f map[string]string) (map[string]string, string, string) {
 	out := map[string]string{}
 	views, err := d.Store.ProjectDocumentViews(ctx, who.OrgID, project)
@@ -345,6 +346,50 @@ func checkSendDialog(ctx context.Context, d Deps, who opActor, project string, f
 			return nil, "", "That is not an issued version of this project's report."
 		}
 		out["issue"] = issue
+	}
+	if ref := strings.TrimSpace(f["claim"]); ref != "" {
+		// A claim's issued payment schedule goes as it was issued. Where the
+		// PM named nobody, To is the contractor and the principal as the
+		// project's own records hold them.
+		v, err := d.Store.InvoiceLedger(ctx, who.OrgID, project, todaySydney())
+		if err != nil {
+			return nil, "", "The claims could not be read."
+		}
+		c, err := claimRef(v, ref)
+		if err != nil {
+			return nil, "", err.Error() + " Nothing on screen was changed."
+		}
+		number := store.ClaimPrints(v)[c.InvoiceID].Number
+		if len(c.Issued) == 0 {
+			return nil, "", fmt.Sprintf("Claim %s has no issued payment schedule to send. Open it and press Issue payment schedule first. Nothing on screen was changed.", number)
+		}
+		out["claim"] = c.InvoiceID
+		h, err := d.Store.ScheduleHeader(ctx, who.OrgID, project, who.UserID, v, c.InvoiceID)
+		if err != nil {
+			return nil, "", "The schedule's parties could not be read."
+		}
+		if out["to"] == "" {
+			var to []string
+			for _, a := range []mail.Address{{Name: h.Contractor, Address: h.ContractorEmail}, {Name: h.Principal, Address: h.PrincipalEmail}} {
+				if a.Address != "" {
+					to = append(to, addressWords(a))
+				}
+			}
+			out["to"] = strings.Join(to, ", ")
+		}
+		if out["subject"] == "" {
+			out["subject"] = "Payment schedule " + number
+			for _, ct := range v.Contracts {
+				if ct.PackageID == c.PackageID {
+					out["subject"] += " · " + ct.Title
+				}
+			}
+		}
+		line := fmt.Sprintf("Opened Send with payment schedule %s as issued", number)
+		if out["to"] != "" {
+			line += " to " + out["to"]
+		}
+		return out, line + ". Nothing is sent until the PM presses Send.", ""
 	}
 	if ref := strings.TrimSpace(f["rfi"]); ref != "" {
 		// An RFI is sent from its own sheet (register panel, 20 November

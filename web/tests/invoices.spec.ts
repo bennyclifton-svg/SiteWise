@@ -207,11 +207,12 @@ test("ten invoices dropped at once land in the ledger, re-map moves the summary,
   await expect(table.getByRole("columnheader", { name: /^Activity line/ })).toHaveAttribute("aria-sort", "ascending");
   await expect(table.getByRole("row").nth(1)).toContainText("Unallocated");
 
-  await page.getByRole("tab", { name: /Variations/ }).click();
-  // The placeholder became the Variations and claims tab (plan
-  // 2026-11-17-variations-progress-claims.md, built 19 Nov 2026); with no
+  await page.getByRole("tab", { name: "Variations", exact: true }).click();
+  // The placeholder became the Variations tab (plan
+  // 2026-11-17-variations-progress-claims.md, built 19 Nov 2026; claims
+  // moved to their own tab, plan 2026-11-26-payment-schedules.md); with no
   // awarded contract it says where contracts come from.
-  await expect(page.getByRole("region", { name: "Variations and claims" }).getByRole("heading", { name: "No live contracts yet" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Variations", exact: true }).getByRole("heading", { name: "No live contracts yet" })).toBeVisible();
   await page.getByRole("tab", { name: /Invoices/ }).click();
   await page.screenshot({ path: testInfo.outputPath("invoices-desktop.png"), fullPage: true });
   await page.emulateMedia({ media: "print" });

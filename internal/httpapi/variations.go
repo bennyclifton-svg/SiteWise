@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"sitewise/internal/invoices"
 	"sitewise/internal/store"
 )
 
@@ -93,10 +92,31 @@ type contractJSON struct {
 	SumToDate     moneyField         `json:"contract_sum_to_date"`
 	Certified     moneyField         `json:"certified_to_date"`
 	RetentionHeld moneyField         `json:"retention_held"`
-	ScheduleDays  *int               `json:"schedule_days"`
-	ScheduleBasis string             `json:"schedule_basis"`
-	PaymentDays   *int               `json:"payment_days"`
-	PaymentBasis  string             `json:"payment_basis"`
+	// Adjusted is the sum to date with provisional sums marked final taken
+	// at what was completed; Paid is the payment list's total ex GST.
+	Provisional moneyField       `json:"provisional_adjustment"`
+	Adjusted    moneyField       `json:"adjusted"`
+	Paid        moneyField       `json:"paid_to_date"`
+	Latest      *scheduleRefJSON `json:"latest_schedule"`
+	// Breakdown is what the contract's payment schedules print; gaps are
+	// the cost lines it does not add up to.
+	Breakdown []breakdownLineJSON `json:"breakdown"`
+	Gaps      []breakdownGapJSON  `json:"breakdown_gaps"`
+	// What a schedule prints of the contract: its date, and its retention
+	// as a percent of a base. "" is not entered.
+	ContractDate     string `json:"contract_date"`
+	RetentionPercent string `json:"retention_percent"`
+	RetentionBase    string `json:"retention_base"`
+	// Services: a consultant's contract. ActOn: its schedules name the Act;
+	// ActApplies is the PM's switch ("yes", "no", "" for the default).
+	Services      bool   `json:"services"`
+	ActOn         bool   `json:"act_on"`
+	ActApplies    string `json:"act_applies"`
+	FirmABN       string `json:"firm_abn"`
+	ScheduleDays  *int   `json:"schedule_days"`
+	ScheduleBasis string `json:"schedule_basis"`
+	PaymentDays   *int   `json:"payment_days"`
+	PaymentBasis  string `json:"payment_basis"`
 }
 
 type variationJSON struct {
@@ -128,29 +148,21 @@ type docRef struct {
 func tabBody(v store.LedgerView) ([]contractJSON, []variationJSON) {
 	contracts := []contractJSON{}
 	lineLabel := map[string]string{}
-	byPackage := map[string][]invoices.Variation{}
-	for _, va := range v.Variations {
-		byPackage[va.PackageID] = append(byPackage[va.PackageID], va)
-	}
-	for _, c := range v.Contracts {
+	summaries := store.ContractSummaries(v)
+	for i, c := range v.Contracts {
 		j := contractJSON{AwardID: c.AwardID, PackageID: c.PackageID, Title: c.Title, Firm: c.Firm, Claims: c.Claims(), Lines: []contractLineJSON{},
-			ScheduleDays: c.ScheduleDays, ScheduleBasis: c.ScheduleBasis, PaymentDays: c.PaymentDays, PaymentBasis: c.PaymentBasis}
-		amounts := make([]*int64, 0, len(c.Lines))
+			ScheduleDays: c.ScheduleDays, ScheduleBasis: c.ScheduleBasis, PaymentDays: c.PaymentDays, PaymentBasis: c.PaymentBasis,
+			ContractDate: c.ContractDate, RetentionPercent: ratePercent(c.RetentionBP), RetentionBase: c.RetentionBase, FirmABN: c.FirmABN,
+			Services: c.Services(), ActOn: c.ActOn(), ActApplies: yesNoPtr(c.ActApplies)}
 		for _, l := range c.Lines {
 			j.Lines = append(j.Lines, contractLineJSON{ID: l.ID, Label: l.Label, Amount: cents(l.Amount)})
-			amounts = append(amounts, l.Amount)
 			lineLabel[l.ID] = l.Label
 		}
-		var current []invoices.Variation
-		for _, va := range byPackage[c.PackageID] {
-			if va.AwardID == c.AwardID {
-				current = append(current, va)
-			}
-		}
-		sum, approved, toDate := invoices.ContractTotals(amounts, current)
-		j.Sum, j.Approved, j.SumToDate = cents(sum), centsValue(approved), cents(toDate)
-		certified, held := invoices.ContractClaims(claimFigures(v, c.PackageID))
-		j.Certified, j.RetentionHeld = centsValue(certified), centsValue(held)
+		s := summaries[i]
+		j.Sum, j.Approved, j.SumToDate = cents(s.Original), centsValue(s.Variations), cents(s.TotalLet)
+		j.Certified, j.RetentionHeld = centsValue(s.Certified), centsValue(s.Retention)
+		j.Provisional, j.Adjusted, j.Paid, j.Latest = centsValue(s.Provisional), cents(s.Adjusted), centsValue(s.Paid), scheduleRefBody(s.Latest)
+		j.Breakdown, j.Gaps = breakdownBody(c)
 		contracts = append(contracts, j)
 	}
 	vars := []variationJSON{}
@@ -170,4 +182,14 @@ func tabBody(v store.LedgerView) ([]contractJSON, []variationJSON) {
 		vars = append(vars, j)
 	}
 	return contracts, vars
+}
+
+func yesNoPtr(b *bool) string {
+	switch {
+	case b == nil:
+		return ""
+	case *b:
+		return "yes"
+	}
+	return "no"
 }

@@ -1,8 +1,8 @@
 /* Table headings (owner direction, 7 Nov 2026): every table's header row is
    one muted blue band. Green and rose stay free for status (approved, flagged). */
 :root, :root[data-theme="light"] {
-  --tone-brass: #977426;
-  --tone-blue: #2D5E9E;
+  --tone-brass: #5F6368;
+  --tone-blue: #0B57D0;
 }
 :root[data-theme="dark"] {
   --tone-brass: #D6B565;

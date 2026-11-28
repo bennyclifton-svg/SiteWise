@@ -212,7 +212,9 @@ export function InvoicesTab({ onCostLine, costLineIds, projectId, ledger, filter
               </select>}</td>
             <td>{month(inv.period)}</td>
             <td className="num">{fmt(row.ex_gst)}</td>
-            <td><span className="inv-status" data-status={inv.status} title={inv.flags.map(x => x.reason).join("; ")}>{inv.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[inv.status] ?? inv.status}</span>{!inv.counted && inv.status !== "reading" && <span className="inv-out"> · not in totals</span>}</td>
+            <td><span className="inv-status" data-status={inv.status} title={inv.flags.map(x => x.reason).join("; ")}>{inv.status === "reading" ? <Pending>Reading invoice…</Pending> : STATUS_WORD[inv.status] ?? inv.status}</span>{inv.settles_claim ? <span className="inv-out"> · for claim {ledger?.claims?.find(c => c.invoice_id === inv.settles_claim)?.display_number ?? ""}{inv.link_note === "waiting" ? ", waiting for its schedule" : ""}</span>
+              : inv.held ? <span className="inv-out"> · not counted until placed</span>
+              : !inv.counted && inv.status !== "reading" && <span className="inv-out"> · not in totals</span>}</td>
           </tr>;
         })}</tbody>
       </table></div>}

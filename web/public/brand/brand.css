@@ -1,0 +1,78 @@
+/* SiteWise brand: the one source for the logo and the perspex, shared by the
+   app (index.html links this file) and the static pages in /legal. Keep it to
+   these two things; everything else belongs to each surface's own sheet.
+
+   Tokens, set by the page and falling back to the light sheet:
+     --trace-paper        the perspex tint
+     --trace-paper-sheen  light falling from the top left
+     --trace-sheet        what the perspex becomes without transparency */
+
+/* ---------- The logo ---------- */
+
+/* The Datum lockup (sitewise-wordmark.svg), painted in the current text
+   colour. Size it with width and height in the lockup's 238:51 ratio. */
+.wordmark {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  background: currentColor;
+  -webkit-mask: url("/brand/sitewise-wordmark.svg") left center / contain no-repeat;
+  mask: url("/brand/sitewise-wordmark.svg") left center / contain no-repeat;
+}
+@media (forced-colors: active) {
+  .wordmark { background: CanvasText; forced-color-adjust: none; }
+}
+
+/* ---------- The perspex ---------- */
+
+/* Smoked, long-worn perspex: the plate that holds a page's title and blurs
+   whatever scrolls under it. The wear is a static mark (scripts/make-marks.mjs);
+   the sheen is light from the top left. The element must be positioned
+   (relative, absolute or sticky) for its cut edge. */
+.perspex {
+  background:
+    linear-gradient(104deg, var(--trace-paper-sheen, rgba(255, 255, 255, .2)), transparent 38% 70%, color-mix(in srgb, var(--trace-paper-sheen, rgba(255, 255, 255, .2)) 40%, transparent)),
+    url("/brand/perspex-wear.svg") top left / 1600px 260px repeat-x,
+    var(--trace-paper, rgba(233, 238, 246, .62));
+  -webkit-backdrop-filter: blur(12px) saturate(.9);
+  backdrop-filter: blur(12px) saturate(.9);
+  isolation: isolate; /* keeps the engraved wear (::before) inside the plate */
+}
+/* The polished cut edge: one hairline that catches the light at two points. */
+.perspex::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .25), #fff 18%, rgba(255, 255, 255, .35) 42%, rgba(255, 255, 255, .5) 64%, #fff 82%, rgba(255, 255, 255, .25));
+  box-shadow: 0 1px 0 rgba(60, 64, 67, .18), 0 10px 20px -12px rgba(60, 64, 67, .36);
+  pointer-events: none;
+}
+/* The same wear, engraved: on a light plate white scores alone vanish, so
+   each one also gets its shadow, a darker copy one pixel lower. The dark
+   plate reads the white scores on their own, so it skips this layer. Sits
+   under the plate's content (the plate isolates its own stacking context). */
+.perspex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    url("/brand/perspex-wear.svg") 0 1px / 1600px 260px repeat-x,
+    url("/brand/perspex-wear.svg") 0 1px / 1600px 260px repeat-x,
+    url("/brand/perspex-wear.svg") 0 1px / 1600px 260px repeat-x;
+  filter: invert(1) contrast(1.4);
+  opacity: 1;
+  pointer-events: none;
+}
+:root[data-theme="dark"] .perspex::before { display: none; }
+
+:root[data-theme="dark"] .perspex::after { box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 10px 20px -12px rgba(0, 0, 0, .5); }
+
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce), print {
+  .perspex { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet, #FFFFFF); }
+  .perspex::before { display: none; }
+}

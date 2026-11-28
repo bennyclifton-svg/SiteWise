@@ -34,6 +34,15 @@ type Table struct {
 	Columns []string   `json:"columns"`
 	Rows    [][]string `json:"rows"`
 	Display string     `json:"display,omitempty"`
+	// ID names a project report table the PM can edit row by row; Meta
+	// says what each row is (RowFacts) and Hidden how many rows the PM
+	// hid. All omitted elsewhere, so other tables hash as before.
+	ID        string     `json:"id,omitempty"`
+	Meta      []RowFacts `json:"meta,omitempty"`
+	Hidden    int        `json:"hidden,omitempty"`
+	HiddenIDs []string   `json:"hidden_ids,omitempty"`
+	// HiddenKeys are the hidden rows' keys, in HiddenIDs' order.
+	HiddenKeys []string `json:"hidden_keys,omitempty"`
 }
 
 type Section struct {

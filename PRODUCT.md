@@ -122,14 +122,26 @@ The workbench, in navigation order:
   Add to RFP puts one line on the package's RFP draft, and the Program
   offers one gate hold point per gate through its review. Reading a notice
   is a background Jev read; the screen's own reads and writes call neither
-  Jev nor the model. "Project report" on its toolbar opens the project
-  report: cost by section, Program completion and critical path,
-  procurement, the registers, what needs attention and what is due next,
-  each figure the one its screen shows, with what moved since the last
-  issue. The PM comments under any section and issues an A4 PDF, at most
-  four pages; issued versions are frozen. It calls neither Jev nor the
-  model; chat updates it and writes comments with Undo, and opens Issue
-  filled in but never presses it.
+  Jev nor the model.
+- **Report.** The project report, on the left nav, in the owner's own
+  format: a cover, quality information and contents, then 01 site and
+  project context, 02 executive summary, 03 statutory approvals, 04
+  programme review, 05 cost planning, 06 design management, 07 site
+  activity, 08 variation and change control, 09 insurances, and the
+  attachments (each contract's latest payment schedule). Where SiteWise
+  holds a record the row is filled from it (contract sums and variations
+  from the one contract rollup, EOT claims and the adjusted completion
+  date from the register, approvals, who is engaged); where it holds none
+  the template's row is there, grey, "Nil to report" or "TBD". Every table
+  is edited row by row: type over a cell, add a row, move, hide, give a row
+  back, drop in a PNG or JPEG. The PM's words stay through Update; when the
+  value under them moves the row says so and issue waits for Keep mine or
+  Use SiteWise's. The period is proposed and typed over; the earlier
+  sections (cost by section, Program, procurement, registers, attention,
+  what moved) stay on screen as review lists and are not issued. Issue
+  freezes an A4 PDF with no page limit. It calls neither Jev nor the model;
+  chat updates it, types over cells and adds rows with Undo, prepares the
+  period for a click, and opens Issue filled in but never presses it.
 - **Cost Plan.** Four sections: fees and charges, consultants, construction,
   contingency. Budget is the planning figure. The user enters the approved
   contract and the amount claimed. Forecast, variance and remaining are
@@ -142,12 +154,25 @@ The workbench, in navigation order:
   from that ledger, with an Unallocated row so the totals always add up.
   Both views export to Excel and CSV and print. Lines are selected as in the
   document register; right-click sets a category or package, excludes,
-  copies or deletes the selection in one save. A Variations and claims tab
+  copies or deletes the selection in one save. A Variations tab
   shows each live contract's sum, approved variations, sum to date,
-  certified to date and retention held, a variation register (approve,
-  reject, Undo) and its progress claims: a claim dropped on the contract is
-  read in about a second, assessed row by row (or Accept claimed), and its
-  payment schedule issued as a frozen PDF. Approved and forecast variations
+  certified to date and retention held, and its variation register
+  (approve, reject, Undo). A Progress claims tab lists each live
+  contract's payment schedules, a builder's or a consultant's, one row per
+  claim received. A claim dropped on its contract is read in about a
+  second. Create schedule fills every line as claimed and opens the
+  schedule as a sheet in the owner's format: the contract's breakdown (its
+  works lines and provisional sums, seeded from the awarded tender and
+  editable), variations, the total and retention, the note and the payment
+  list. The PM types what is complete as a percent or an amount, gives a
+  reason where that is less than claimed, holds or returns retention as a
+  percent of the contract's base, and marks a provisional sum final. The
+  contract's date, retention terms and the parties are typed once. Issue
+  freezes the PDF in the owner's layout; Send opens filled in to the
+  contractor and the principal with that PDF, and the day it goes is the
+  day served, to confirm. A tax invoice links itself to its claim when its
+  figures match; one no rule can place is held out of the totals until the
+  PM places it (for a claim, or not for a claim). Approved and forecast variations
   fill two grid columns and the forecast; certified claims fill Claimed to
   Date. Payment schedule and payment dates are worked out in Go from the
   contract's periods and the state's Security of Payment row, marked "to

@@ -75,12 +75,12 @@ func TestProjectGetsMailAddress(t *testing.T) {
 
 func TestMailLocalBase(t *testing.T) {
 	for in, want := range map[string]string{
-		"ST13 House":             "st13_house",
-		"  Smith & Jones -- Rd ": "smith_jones_rd",
-		"Café 2":                 "caf_2",
-		"日本":                     "project",
-		"Support":                "support_project",
-		strings.Repeat("a", 60):  strings.Repeat("a", 40),
+		"ST13 House":                   "st13_house",
+		"  Smith & Jones -- Rd ":       "smith_jones_rd",
+		"Café 2":                       "caf_2",
+		"日本":                           "project",
+		"Support":                      "support_project",
+		strings.Repeat("a", 60):        strings.Repeat("a", 40),
 		strings.Repeat("a", 39) + " b": strings.Repeat("a", 39),
 	} {
 		if got := store.MailLocalBase(in); got != want || !localPartPattern.MatchString(got) {

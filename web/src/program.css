@@ -7,16 +7,12 @@
 .cockpit-scroll .program {
   max-width: none;
   margin: 0;
-  padding: 16px 18px 20px;
-  border: 1px solid var(--sw-border-default);
-  border-radius: var(--cockpit-radius);
-  background: var(--sw-surface);
+  /* No card of its own: its heading lines up with every other view (PanelHead). */
+  padding: 0 0 20px;
   min-width: 0;
 }
 
 .program { --pg-scale-h: 44px; color: var(--ink-body); font-size: var(--fs-md); }
-.program-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px; }
-.program-head h1 { margin: 0; font-size: 22px; font-weight: 600; color: var(--ink); }
 .pg-chip { padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink-muted); font-size: var(--fs-sm); }
 .program-empty { display: grid; justify-items: start; gap: 14px; max-width: 75ch; padding: 24px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); color: var(--ink-muted); }
 .program-empty p { margin: 0; }
@@ -38,7 +34,7 @@
 .pg-accept { border-color: var(--warn); }
 .pg-update { gap: 8px; }
 /* Changes wait: the same warning hue as other program notices, no motion. */
-.pg-update.is-pending { border-color: var(--warn); background: var(--warn-soft); }
+.pg-update.is-pending { background: var(--warn-soft); }
 .pg-update-count { min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--warn); color: var(--paper); font-size: var(--fs-sm); line-height: 20px; text-align: center; }
 .pg-panel-intro { margin: 0 0 8px; font-size: var(--fs-sm); }
 
@@ -295,7 +291,7 @@
 .pg-reason { display: grid; gap: 4px; margin: 0 0 12px; color: var(--ink-muted); font-size: var(--fs-sm); }
 
 @media (max-width: 760px) {
-  .cockpit-scroll .program { padding: 12px 10px 16px; }
+  .cockpit-scroll .program { padding: 0 0 16px; }
   .pg-toolbar { gap: 6px; }
   .pg-body { height: max(320px, calc(100dvh - 380px)); }
 }

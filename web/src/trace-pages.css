@@ -2,23 +2,9 @@
    Profile and Procurement: page titles in one size, column heads ruled rather
    than banded, group rows in sentence case, the open tab underlined in pencil. */
 
-/* Page titles */
-.costs-head h1,
-.cockpit-scroll .costs-head h1,
-.program-head h1,
-.spec-header h1,
-.spec-header h2 { color: var(--sw-text-primary); font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
-
 /* ---------- Cost Plan ---------- */
 
 .cockpit-scroll .costs { padding: 0 0 40px; }
-.costs-tabs { border-bottom: 1px solid var(--trace-rule); }
-.costs-tab { border-bottom: 0; color: var(--sw-text-tertiary); }
-.costs-tab[aria-selected="true"] {
-  color: var(--sw-text-primary);
-  background: url("./assets/marks/pencil-graphite.svg") left 6px bottom 2px / 480px 6px repeat-x;
-  background-size: 480px 6px;
-}
 
 .cockpit-scroll .cost-grid thead th {
   border-top: 1.5px solid var(--trace-rule-strong);
@@ -43,7 +29,6 @@
 
 /* ---------- Program ---------- */
 
-.program-head { margin-bottom: 14px; }
 .pg-gridhead { color: var(--sw-text-tertiary); font-size: 11.5px; }
 .pg-corner,
 .pg-scale { background: var(--trace-sheet); }

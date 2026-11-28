@@ -39,6 +39,16 @@
   color-scheme: light;
 }
 
+/* In light the workbench accent (focus rings, the open tab, Program's
+   selection and today line, drop lines) is Gmail's blue; dark keeps ember.
+   The rust "set by you" origin mark is --trace-ember, not this. */
+:root:not([data-theme="dark"]) {
+  --ember: #0B57D0;
+  --ember-hot: #0842A0;
+  --ember-soft: #E8F0FE;
+  --header: #FFFFFF;
+}
+
 html,
 body {
   background: var(--sw-canvas);
@@ -73,15 +83,15 @@ body {
 }
 
 .btn-primary {
-  background: var(--sw-p-neutral-900);
-  border-color: var(--sw-p-neutral-900);
-  color: var(--sw-p-neutral-50);
+  background: var(--sw-p-blue-600);
+  border-color: var(--sw-p-blue-600);
+  color: #FFFFFF;
 }
 
 .btn-primary:hover,
 .btn-primary:active {
-  background: var(--sw-p-neutral-800);
-  border-color: var(--sw-p-neutral-800);
+  background: var(--sw-p-blue-700);
+  border-color: var(--sw-p-blue-700);
 }
 
 :root[data-theme="dark"] .btn-primary {
@@ -94,20 +104,6 @@ body {
 :root[data-theme="dark"] .btn-primary:active {
   background: var(--sw-p-neutral-50);
   border-color: var(--sw-p-neutral-50);
-}
-
-.wordmark {
-  display: inline-block;
-  position: relative;
-}
-
-.wordmark-ink {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--sw-text-primary);
-  -webkit-mask: url("/brand/sitewise-lockup-dark.png") center / contain no-repeat;
-  mask: url("/brand/sitewise-lockup-dark.png") center / contain no-repeat;
 }
 
 /* ---------- three-panel shell ---------- */
@@ -383,8 +379,9 @@ body {
   width: 100%;
   min-height: 44px;
   align-items: center;
-  gap: 14px;
-  padding: 8px 12px;
+  /* Tight enough that the longest label, Correspondence, fits on one line. */
+  gap: 10px;
+  padding: 8px 4px 8px 12px;
   border: 0;
   border-radius: 0.7rem;
   background: transparent;
@@ -395,6 +392,10 @@ body {
   text-align: left;
   cursor: pointer;
 }
+
+/* Every item one line, so the nav keeps one rhythm whatever count it shows
+   (owner, 25 Nov 2026): a long label ends in an ellipsis, never wraps. */
+.nav-item > span:not(.nav-mark) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .nav-item:hover:not(:disabled) {
   background: var(--sw-selection-bg);
@@ -764,13 +765,6 @@ body {
   padding: 16px 18px 28px;
 }
 
-.procurement-head h1,
-.costs-head h1 {
-  font-size: var(--fs-lg);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
 .cockpit-scroll .procurement-scroll,
 .cockpit-scroll .cost-grid-scroll {
   max-height: none;
@@ -1011,7 +1005,7 @@ body {
 }
 
 .ask-send {
-  background: var(--sw-p-cyan-700);
+  background: var(--sw-p-blue-600);
   color: var(--sw-p-neutral-50);
 }
 
@@ -1020,18 +1014,8 @@ body {
   color: var(--sw-text-tertiary);
 }
 
-.home-bar,
-.entry {
+.home-bar {
   background: var(--sw-canvas);
-}
-
-.entry-panel {
-  border-radius: var(--cockpit-radius);
-  border-color: var(--sw-border-default);
-}
-
-.entry-panel .wordmark {
-  margin-bottom: 28px;
 }
 
 @media (max-width: 1100px) {
@@ -1326,13 +1310,7 @@ body {
 /* Actions align to the panels they control, above their bordered surfaces. */
 .cockpit-page { display: flex; flex-direction: column; }
 .cockpit-shell { flex: 1; height: auto; }
-.panel-actions { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 0 16px; position: relative; z-index: 5; }
-.panel-actions:not(:has(button, a)) { display: none; }
-.workspace-primary-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .repository-controls { display: flex; flex: none; align-items: center; justify-content: flex-end; padding: 0 0 8px; }
-.page-action-rail { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
-.page-action-beside { display: flex; align-items: center; gap: 8px; }
-.page-action-beside:empty { display: none; }
 .page-refresh { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--ink); cursor: pointer; text-decoration: none; }
 .page-refresh svg { width: 20px; height: 20px; }
 .page-refresh:hover { background: var(--sw-hover-bg); }
@@ -1371,12 +1349,12 @@ body {
 .more-menu-tick { display: grid; place-items: center; margin-left: auto; padding-left: 14px; color: var(--sw-text-primary); }
 .more-menu-list button:disabled { color: var(--sw-text-tertiary); cursor: default; }
 .more-menu-list button:disabled:hover { background: none; }
-@media print { .page-action-rail { display: none !important; } .cockpit-page { display: block; } }
+@media print { .cockpit-page { display: block; } }
 
 @media print {
   .cockpit-page, .cockpit-shell, .project-main-panel, .cockpit-scroll { height: auto !important; min-height: 0 !important; overflow: visible !important; }
-  .leftnav, .project-side-panel, .ask-bar, .profile-feedback-slot, .profile-toolbar, .panel-actions, .page-action-rail,
-  .cockpit-header-actions, .procurement-head button, .spec-actions, .spec-tools { display: none !important; }
+  .leftnav, .project-side-panel, .ask-bar, .profile-feedback-slot, .profile-toolbar,
+  .cockpit-header-actions, .spec-actions, .spec-tools { display: none !important; }
   .cockpit-shell { display: block !important; }
   .procurement-scroll, .spec-table-wrap { overflow: visible !important; max-height: none !important; }
 }
@@ -1386,9 +1364,8 @@ body {
   .cockpit-shell-header { grid-row: 2; }
   .project-main-panel { grid-row: 3; }
   .project-side-panel { grid-row: 4; }
-  .panel-actions { flex-wrap: wrap; }
 }
-@media print { .panel-actions, .repository-controls { display: none !important; } }
+@media print { .repository-controls { display: none !important; } }
 
 .cockpit-scroll .profile > .pf-section:first-of-type { margin-top: 0; }
 /* Production usability: pane width, rather than viewport width, owns forms. */

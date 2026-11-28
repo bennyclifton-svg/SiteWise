@@ -59,7 +59,7 @@ func (d *Draft) claimContract() (ClaimContract, bool) {
 		return ClaimContract{}, false
 	}
 	c, ok := d.ctx.Contracts[sup.Value]
-	if !ok {
+	if !ok || c.Services {
 		return ClaimContract{}, false
 	}
 	d.by[FieldKind] = Decision{Field: FieldKind, Value: KindProgressClaim, Band: BandGreen, DecidedBy: DecidedByRule}
@@ -135,6 +135,9 @@ func readClaim(ctx context.Context, ask Asker, th Thresholds, d *Draft, text ide
 		rows = ContractRows(c)
 	}
 	d.claimNumberRule(text)
+	if TaxInvoiceWords(d.ev.KindWords) {
+		d.by[FieldTaxInvoice] = Decision{Field: FieldTaxInvoice, Value: "yes", Band: BandGreen, DecidedBy: DecidedByRule}
+	}
 	out := Outcome{}
 	if call, asked, ok := d.claimCall(rows, c); ok {
 		if priority != "" {
@@ -240,4 +243,15 @@ func (d *Draft) claimNumberRule(text identity.Text) {
 			}
 		}
 	}
+}
+
+// TaxInvoiceWords says a claim's heading or filename prints "tax invoice":
+// the claim is its own tax invoice.
+func TaxInvoiceWords(words []string) bool {
+	for _, w := range words {
+		if w == "tax invoice" {
+			return true
+		}
+	}
+	return false
 }

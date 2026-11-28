@@ -261,12 +261,33 @@ func getInvoices(w http.ResponseWriter, r *http.Request, deps Deps) {
 	if !ok {
 		return
 	}
+	// ?sheet={claim} adds that claim's payment schedule as a sheet.
+	claim := r.URL.Query().Get("sheet")
+	if claim != "" && !uuidPattern.MatchString(claim) {
+		http.Error(w, "sheet is a claim's id", http.StatusBadRequest)
+		return
+	}
 	v, err := deps.Store.InvoiceLedger(r.Context(), session.OrgID, r.PathValue("id"), todaySydney())
 	if err != nil {
 		invoiceError(w, deps, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, ledgerBody(v))
+	body := ledgerBody(v)
+	if claim != "" {
+		sheet, ok := store.ClaimSheet(v, claim)
+		if !ok {
+			http.NotFound(w, r)
+			return
+		}
+		body.Sheet = sheetBody(sheet)
+		header, err := deps.Store.ScheduleHeader(r.Context(), session.OrgID, r.PathValue("id"), session.UserID, v, claim)
+		if err != nil {
+			invoiceError(w, deps, err)
+			return
+		}
+		body.Sheet.Header = headerBody(header)
+	}
+	writeJSON(w, http.StatusOK, body)
 }
 
 func patchInvoice(w http.ResponseWriter, r *http.Request, deps Deps) {
@@ -580,13 +601,19 @@ type invoiceJSON struct {
 	Counted       bool       `json:"counted"`
 	// SettlesClaim is the progress claim this tax invoice is for, linked
 	// by "user" or by "rule" (SettlesBy).
-	SettlesClaim string                      `json:"settles_claim,omitempty"`
-	SettlesBy    string                      `json:"settles_by,omitempty"`
-	CreatedAt    time.Time                   `json:"created_at"`
-	Flags        []invoices.Flag             `json:"flags"`
-	Fields       map[string]invoiceFieldJSON `json:"fields"`
-	Allocations  []invoiceAllocationJSON     `json:"allocations"`
-	Rows         []invoiceRowJSON            `json:"rows"`
+	SettlesClaim string `json:"settles_claim,omitempty"`
+	SettlesBy    string `json:"settles_by,omitempty"`
+	// LinkNote: "waiting" for the claim's schedule, or "claimed_amount".
+	// Held: not counted until the PM places it. NotClaim: the PM said it is
+	// not for a claim.
+	LinkNote    string                      `json:"link_note,omitempty"`
+	Held        bool                        `json:"held"`
+	NotClaim    bool                        `json:"not_claim"`
+	CreatedAt   time.Time                   `json:"created_at"`
+	Flags       []invoices.Flag             `json:"flags"`
+	Fields      map[string]invoiceFieldJSON `json:"fields"`
+	Allocations []invoiceAllocationJSON     `json:"allocations"`
+	Rows        []invoiceRowJSON            `json:"rows"`
 }
 
 type invoiceLedgerJSON struct {
@@ -601,6 +628,8 @@ type invoiceLedgerJSON struct {
 	Contracts  []contractJSON  `json:"contracts"`
 	Variations []variationJSON `json:"variations"`
 	Claims     []claimJSON     `json:"claims"`
+	// Sheet is one claim's payment schedule, only when the read asks for it.
+	Sheet *sheetJSON `json:"sheet,omitempty"`
 }
 
 type invoiceGroupJSON struct {
@@ -642,7 +671,7 @@ func ledgerBody(v store.LedgerView) invoiceLedgerJSON {
 		j := invoiceJSON{ID: inv.ID, Filename: inv.Filename, Status: v.Status[inv.ID], NotReadReason: inv.NotReadReason, Kind: inv.Kind, Number: inv.Number,
 			Date: inv.Date, Period: inv.Period, SupplierID: inv.PackageID, Supplier: n.supplier(inv.PackageID), ABN: inv.ABN, Currency: inv.Currency,
 			Ex: cents(inv.Ex), GST: cents(inv.GST), Total: cents(inv.Total), InvoiceCount: inv.InvoiceCount, SupersededBy: inv.SupersededBy,
-			DuplicateOK: inv.DuplicateOK, Counted: invoices.Counted(inv), SettlesClaim: inv.SettlesClaim, SettlesBy: inv.SettlesBy, CreatedAt: inv.CreatedAt, Flags: v.Flags[inv.ID], Fields: map[string]invoiceFieldJSON{}}
+			DuplicateOK: inv.DuplicateOK, Counted: invoices.Counted(inv), SettlesClaim: inv.SettlesClaim, SettlesBy: inv.SettlesBy, LinkNote: inv.LinkNote, Held: inv.Held, NotClaim: inv.NotClaim, CreatedAt: inv.CreatedAt, Flags: v.Flags[inv.ID], Fields: map[string]invoiceFieldJSON{}}
 		if j.Flags == nil {
 			j.Flags = []invoices.Flag{}
 		}

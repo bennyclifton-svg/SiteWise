@@ -10,7 +10,7 @@ TENDERS = {"w5", "r11", "r12", "r14", "t4", "t5", "t6", "q4", "q5", "v1", "v2", 
 # Cases that need the fixture's issued RFPs and guest links (guest access plan).
 SHARES = {"ga1", "ga2", "ga3", "ga4", "ga5", "ga6", "ga7", "ga8"}
 # Cases that need the house's Main Works contract, V01 and claim 4 (plan 3).
-CLAIMS = {"cl1", "cl2", "cl3", "cl4", "cl5", "cl6", "cl7", "cl8"}
+CLAIMS = {"cl1", "cl2", "cl3", "cl4", "cl5", "cl6", "cl7", "cl8", "cl9", "cl10", "cl11", "cl12", "cl13"}
 
 
 def c(id, source, group, fixture, message, expect, money=False, note="", before=None, screen=None):
@@ -307,6 +307,12 @@ c("pr5", "report", "report", "house", "Issue the project report", [state("report
 c("pr6", "report", "report", "house", "Draft the cost comment", [state("report", ["(PM)"]), K("no_own_figure")], note="Chat reads the report and writes the comment; every figure in it must be one the read printed, or the operation is refused.", before=[PREPARE])
 c("pr7", "report", "report", "house", "Send report 1 to the client", [K("refuses", has=[DECLINE]), K("no_change")], note="Sending waits on correspondence (plan 1): the fixed words, logged as declined. After plan 1, chat opens Send with the issued PDF and the PM presses Send.")
 c("pr8", "report", "report", "house", "What moved since the last report?", [K("no_change"), K("no_own_figure")], note="read report: with no issued report yet, the draft says it is the first. After an issue, the Changes section lists each movement with Go's figures.")
+# The project report in the owner's format (docs/plans/2026-11-26-project-report-golden-format.md, section 9). Draft.
+c("pr9", "report", "report", "house", "Fill safety and induction: inductions held for all new starters", [state("report", ["Inductions held for all new starters", "PM typed Summary"])], note="reports.set_cell at once with Undo: the PM's words over the template's row; the text carries no figure.", before=[PREPARE])
+c("pr10", "report", "report", "house", "Add professional indemnity to the insurances table", [state("report", ["Professional indemnity", "PM's row"])], note="reports.add_row at once with Undo: a row of the PM's own that Update never changes.", before=[PREPARE])
+c("pr11", "report", "report", "house", "Hide the energy distributor row in the approvals", [state("report", ["1 hidden by the PM"])], note="reports.remove_row hides a row SiteWise made, with Undo; reports.restore_row brings it back.", before=[PREPARE])
+c("pr12", "report", "report", "house", "Set the report period to 1 November 2026 to 7 November 2026", [K("prepared"), state("report", ["Project report draft 1"], ["1 to 7 November 2026"])], True, "reports.period waits for the PM's click: the draft is rebuilt for the new window, and the period has no Undo.", before=[PREPARE])
+c("pr13", "report", "report", "house", "Fill safety and induction with how many inductions were held", [K("refuses"), state("report", ["Project report draft 1"], ["37 inductions"])], note="The stand-in writes a count the PM never gave: Go's figure check refuses the cell and nothing changes.", before=[PREPARE])
 
 # --- the conditions group (plan 6, "From chat"; draft, not owner-reviewed).
 # The house fixture's consent DA-2026-0412 is read by the real route and
@@ -356,6 +362,12 @@ c("cl5", "claims", "claims", "house", "Approve V01 at $11,000", [K("prepared")],
 c("cl6", "claims", "claims", "house", "Issue the schedule for claim 4", [opens("claim", claim="4"), K("not_applied")], note="Issuing leaves the building: chat opens the claim's panel; the PM presses Issue. Nothing is issued and nothing changes.")
 c("cl7", "claims", "claims", "house", "On claim 4 assess the superstructure row at $8,000 to date because the frame is not complete", [state("variations", ["row 2 Superstructure", "assessed to date 8000", "reason: the frame is not complete"])], True, "claims.assess at once with Undo: the amount is the PM's, the reason the PM's words.")
 c("cl8", "claims", "claims", "house", "Add a variation on the superstructure for the extra steel", [K("refuses"), K("no_change")], note="The stand-in sends a claimed amount the PM never gave: Go's figure check refuses the operation and nothing changes.")
+# Payment schedules in the owner's format (docs/plans/2026-11-26-payment-schedules.md, section 8). Draft.
+c("cl9", "claims", "claims", "house", "On claim 4 set the substructure to 80% complete", [state("variations", ["row 1 Substructure", "assessed to date 320000"])], True, "claims.assess with percent at once with Undo: the model sends the 80; Go works out the dollars of the line's 400,000.")
+c("cl10", "claims", "claims", "house", "Add a provisional sum to Main Works for arborist fees, $30,000", [state("variations", ["Arborist fees (provisional sum)", "30000"])], True, "claims.breakdown_add at once with Undo: the sum is the PM's.")
+c("cl11", "claims", "claims", "house", "Which claims are waiting for an invoice?", [sel("claims", ["4"], "only"), K("no_change")], note="Named filter awaiting_invoice on the claims.")
+c("cl12", "claims", "claims", "house", "Send the payment schedule for claim 4 to the principal", [K("no_change"), K("not_applied")], note="Claim 4 has no issued schedule: chat says to issue it first and opens nothing. Chat never sends; once issued it opens Send filled in.")
+c("cl13", "claims", "claims", "house", "On claim 4 set the superstructure to what they claimed plus a bit", [K("refuses"), K("no_change")], note="The stand-in sends an amount the PM never gave: Go's figure check refuses the operation and nothing changes.")
 
 out = {"about": "The command key for chat. Each case is one typed message on a fresh fixture project. See README.md.", "cases": C}
 with open("data/eval/chat/commands.json", "w", newline="\n", encoding="utf-8") as f:

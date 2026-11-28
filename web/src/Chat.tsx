@@ -125,7 +125,7 @@ async function moveScreen(v: View, onShow: (view: WorkbenchView) => void, onShow
     // A claim's panel opens filled in; the PM presses Issue there. Chat never issues.
     onShow("costs");
     const dialog = await whenReady(() => dialogOf("claim"));
-    if (!dialog) return "The claim could not be opened. Open it on the Variations and claims tab.";
+    if (!dialog) return "The claim could not be opened. Open it on the Progress claims tab.";
     dialog.open(v.fields ?? {});
     return "";
   }

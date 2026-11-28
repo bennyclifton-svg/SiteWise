@@ -224,3 +224,15 @@ func ScheduleAlert(in SOPInput, due DueDate, served bool, today string) string {
 	}
 	return ""
 }
+
+// ScheduleLapsed reports that the Act's own date for the payment schedule
+// has passed with none served, on a row the owner has verified. Only then
+// does the claimed amount become the amount counted. A date from the
+// contract's period alone, or from an unverified row, warns and no more.
+func ScheduleLapsed(in SOPInput, served bool, today string) bool {
+	if served || in.Act == nil || !in.Act.Verified || in.Act.ScheduleDays <= 0 || in.State == "" || in.Served == "" {
+		return false
+	}
+	date := after(sopCalendar(in), in.Served, in.Act.ScheduleDays, "business")
+	return date != "" && today > date
+}

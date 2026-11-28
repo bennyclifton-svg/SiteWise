@@ -95,6 +95,7 @@ func TestClaimAssessIssueAndCount(t *testing.T) {
 	cut.Rows = append(cut.Rows, struct {
 		ID        string  `json:"id"`
 		Assessed  *string `json:"assessed_to_date"`
+		Percent   *string `json:"percent"`
 		Reason    *string `json:"reason"`
 		Line      *string `json:"line"`
 		Variation *string `json:"variation"`

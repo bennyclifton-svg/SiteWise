@@ -53,7 +53,9 @@ test("an RFI typed in the grey row is numbered and due in five working days; a p
   await expect(views(page).getByRole("button", { name: "Specifications" })).toHaveCount(0);
   await expect(page.getByRole("tablist", { name: "Correspondence" }).getByRole("tab", { name: "Register" })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByText("Nothing is recorded yet.")).toBeVisible();
+  // No Kind or System filter (owner, 25 Nov 2026).
   await expect(page.getByLabel("Kind")).toHaveCount(0);
+  await expect(page.getByLabel("System", { exact: true })).toHaveCount(0);
 
   await raise(page, "Basement wall waterproofing");
   const row = list(page).locator("tr", { hasText: "Basement wall waterproofing" });
@@ -61,8 +63,6 @@ test("an RFI typed in the grey row is numbered and due in five working days; a p
   await expect(row.locator('td[data-field="due"]')).toContainText(dueIn5());
   await expect(row.locator('td[data-field="status"]')).toHaveText("Draft");
   await expect(row.locator('td[data-field="from"]')).toHaveText("You");
-  // Only the kind with rows is offered.
-  await expect(page.getByLabel("Kind").locator("option")).toHaveText(["All kinds", "RFIs"]);
 
   // Undo puts the register back as it was: empty.
   await page.getByRole("button", { name: "Undo", exact: true }).click();

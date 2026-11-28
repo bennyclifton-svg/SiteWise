@@ -56,7 +56,23 @@ type Invoice struct {
 	// SettlesClaim is the progress claim this tax invoice is for, linked by
 	// the PM or by rule (SettlesBy): the claim already counts, so it does not.
 	SettlesClaim, SettlesBy string
+	// LinkNote says how a rule link stands: waiting for the claim's
+	// schedule, or the invoice is for the claimed amount, not the payable.
+	LinkNote string
+	// NotClaim: the PM said it is not for a progress claim, so it counts as
+	// an ordinary invoice.
+	NotClaim bool
+	// Held: on a contract with a claim still waiting for its tax invoice,
+	// no rule placed it. It is not counted until the PM places it (owner
+	// decision 2 of the payment schedules plan).
+	Held bool
 }
+
+// How a rule link stands (Invoice.LinkNote).
+const (
+	LinkWaiting       = "waiting"        // the claim's schedule is not issued yet
+	LinkClaimedAmount = "claimed_amount" // invoiced the claim's own total, not the schedule's payable
+)
 
 // BudgetLine is a cost plan line invoices can be charged to. Archived lines
 // were removed from the plan but still hold allocations; their spend counts.
@@ -96,7 +112,7 @@ func Counted(inv Invoice) bool {
 	if inv.Kind == KindProgressClaim {
 		return inv.Claim != nil && inv.Claim.Counts && (inv.Currency == "" || inv.Currency == "AUD")
 	}
-	if inv.Status == StatusNotRead || inv.SettlesClaim != "" {
+	if inv.Status == StatusNotRead || inv.SettlesClaim != "" || inv.Held {
 		return false
 	}
 	return (inv.Kind == "invoice" || inv.Kind == "credit_note") && (inv.Currency == "" || inv.Currency == "AUD") && inv.Ex != nil

@@ -1,5 +1,3 @@
-import { PageActions } from "./PageActions";
-import { specificationApi } from "./specificationApi";
 import { emptySelection, selectAll as selectDocumentRows, type Selection } from "./table/selection";
 import { Activity, Pending } from "./Activity";
 import { readLocationChoice, writeLocationChoice } from "./workbenchLocation";
@@ -707,15 +705,16 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
   const showMessagesPanel = useCallback(() => { showView("correspondence"); setCorrTab("messages"); }, [showView]);
 
   // The profile's update on the nav (docs/design/2026-11-10-run-time-feedback.md):
-  // a ring on Project Profile while it reads and you are elsewhere, then its
-  // count of changes; and on the views it affects, their own counts until opened.
+  // a ring on Project Profile while it reads and you are elsewhere (no count of
+  // its changes: the profile marks them itself, and a count wrapped the nav
+  // label onto two lines; owner, 25 Nov 2026); and on the views it affects,
+  // their own counts until opened.
   const runNext = profileRun?.next ?? null;
   useEffect(() => setVisitedSinceRun({}), [runNext]);
   const navMarks: Partial<Record<WorkbenchView, ReactNode>> = {};
   const count = (n: number, words: string) => <><span className="nav-count" title={`${n} ${words}`} aria-hidden="true">{n}</span><span className="sr-only">{n} {words}</span></>;
   if (profileRun && view !== "profile") {
     if (profileRun.reading) navMarks.profile = <span title="Reading documents for the profile"><Activity /><span className="sr-only">Reading documents for the profile</span></span>;
-    else if (profileRun.changes > 0) navMarks.profile = count(profileRun.changes, "changes marked on the profile");
   }
   if (runNext) {
     const mark = (v: WorkbenchView, n: number, words: string) => {
@@ -849,12 +848,11 @@ export function Project({ projectId, catalog, projects, navigate, onSignedOut, o
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <PageActions surface="specifications"><a href={specificationApi.exportURL(projectId)} download>Export draft CSV</a><button type="button" onClick={() => window.print()}>Print specification</button></PageActions>
       <section className="profile-col" aria-label="Project profile" hidden={covered || view !== "profile"}>
         <Profile projectId={projectId} tick={profileTick} workTick={reportTick} onJump={jump} onSignedOut={onSignedOut} onShowNotRead={() => setNotReadOnly(true)} onIdentity={setAddress} feedbackTarget={profileFeedbackTarget}
           documentLabel={documentLabel} onRunState={setProfileRun} onOpenView={showView} />
       </section>
-      {costsOpened && <div className="project-reports" hidden={covered || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick} onSignedOut={onSignedOut} /></div>}
+      {costsOpened && <div className="project-reports" hidden={covered || !showCosts}><Costs projectId={projectId} tick={profileTick + reportTick} invoiceTick={invoiceTick + mailTick} onSignedOut={onSignedOut} /></div>}
       {specificationsOpened && <div className="project-reports" hidden={covered || !showSpecifications}><Specifications projectId={projectId} tick={specificationTick+profileTick+reportTick} documents={Object.values(state.docs)} onSignedOut={onSignedOut} onOpenProfile={()=>showView("profile")} /></div>}
       {programOpened && <div className="project-reports" hidden={covered || !showProgram}><Program projectId={projectId} remoteVersion={programVersion} remoteTick={programTick} onProfileChanged={() => setProfileTick((t) => t + 1)} active={showProgram && !covered} onSignedOut={onSignedOut} /></div>}
       {reportsOpened && <div className="project-reports" hidden={covered || !showReports}><Procurement transmittal={transmittal} projectId={projectId} tick={profileTick + reportTick} onSignedOut={onSignedOut} onOpenCostPlan={() => showView("costs")} onOpenDocument={id => { if (!state.docs[id]) return false; setOpenDocument(id); return true; }} /></div>}

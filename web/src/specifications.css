@@ -1,9 +1,7 @@
 /* Table-first specification surface. All appearance follows current shell
    tokens; the document rail is available through its existing header. */
 .spec-workspace { min-width:0; padding:24px 22px 40px; color:var(--ink-body); }
-.spec-header { display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:14px; }
-.spec-header h2 { font-size:24px; font-weight:500; margin:0 0 5px; color:var(--ink); }
-.spec-header p,.spec-footnote,.spec-loading { color:var(--ink-muted); font-size:var(--fs-md); }
+.spec-footnote,.spec-loading { color:var(--ink-muted); font-size:var(--fs-md); }
 .spec-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .spec-feedback { font-size:var(--fs-md); margin:8px 0; }
 .spec-feedback:empty { display:none; }
@@ -77,7 +75,6 @@
  .specification-page .cockpit-title-block { flex:1 1 100%; min-width:0; }
  .specification-page .cockpit-title { font-size:20px; overflow-wrap:anywhere; }
  .spec-workspace { padding:16px 12px 32px; }
- .spec-header h2 { font-size:22px; }
  .spec-form { grid-template-columns:minmax(0,1fr); }
  .spec-panel { padding:14px; }
  .spec-tools { gap:10px; }.spec-tools>span { width:100%; }

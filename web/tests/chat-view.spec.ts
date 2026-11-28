@@ -117,7 +117,7 @@ test("a table not on screen is shown first, then moved", async ({ page }) => {
   await say(page, `screen select program ${stages[1]}`);
   await expect(chat).toContainText("Selected 1 Program row.");
   await expect(page.getByRole("heading", { name: "Program", exact: true })).toBeVisible();
-  await expect(page.locator(".program-head .pg-chip")).toContainText("1 selected");
+  await expect(page.locator(".program .panel-head .pg-chip")).toContainText("1 selected");
 
   await say(page, `screen only program ${stages[0]}`);
   await expect(page.locator(".program .reg-filter")).toContainText("Showing 1 Program row chosen in chat.");
@@ -190,19 +190,20 @@ test("the project report opens with its issue form; chat issues nothing", async 
   await expect(page.getByRole("heading", { name: "Project report No. 1", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Issue saved report", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Freeze and issue PDF", exact: true })).toBeVisible();
-  // The reader is in the middle; the right-hand panel shows the Register,
-  // whose band holds Project report.
-  await expect(page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name: "Register", exact: true })).toHaveAttribute("aria-selected", "true");
+  // The report is its own left-nav view (25 November 2026), with no Back.
+  const nav = page.getByRole("group", { name: "Project views" });
+  await expect(nav.getByRole("button", { name: "Report", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("button", { name: /^Back to / })).toHaveCount(0);
   const list = await (await page.request.get(`/api/projects/${id}/reports`)).json();
   const view = await (await page.request.get(`/api/reports/${list[0].id}`)).json();
   expect(view.issues).toHaveLength(0);
 });
 
-// The register in the right-hand panel (20 November 2026): show switches
-// the panel and leaves the middle view; open puts the row's sheet in the
-// middle; select acts on the list; Send for an RFI opens its sheet filled
-// in, and chat sends nothing.
-test("register: show switches the panel, open puts the sheet in the middle, Send for an RFI fills the sheet", async ({ page }) => {
+// The register is the Correspondence view (25 November 2026): show opens it
+// on its Register tab; select acts on the list; open drills in to the row's
+// sheet and hides the list; Send for an RFI opens its sheet filled in, and
+// chat sends nothing.
+test("register: show opens Correspondence, open drills in to the sheet, Send for an RFI fills the sheet", async ({ page }) => {
   await freshOwner(page, "chat-view-register");
   await modelSwitch(page, true);
   const id = await newProject(page, "Chat moves the register");
@@ -215,23 +216,23 @@ test("register: show switches the panel, open puts the sheet in the middle, Send
   const stair = view.items.find((i: { title: string }) => i.title === "Stair balustrade").id as string;
   await page.goto(`/projects/${id}?view=costs`);
   const chat = page.getByRole("region", { name: "Chat" });
-  const tab = (name: string) => page.getByRole("tablist", { name: "Right panel" }).getByRole("tab", { name, exact: true });
-  await tab("Documents").click();
+  const nav = page.getByRole("group", { name: "Project views" });
+  const tab = (name: string) => page.getByRole("tablist", { name: "Correspondence" }).getByRole("tab", { name, exact: true });
 
   await say(page, "screen show register");
   await expect(chat).toContainText("Showed the register rows.");
+  await expect(nav.getByRole("button", { name: "Correspondence", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(tab("Register")).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("button", { name: "Costs", exact: true })).toHaveAttribute("aria-current", "page");
 
   await say(page, `screen select register ${stair.slice(0, 8)}`);
-  await expect(page.locator(".register-panel tr", { hasText: "Stair balustrade" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator(".register-list tr", { hasText: "Stair balustrade" })).toHaveAttribute("aria-selected", "true");
 
   await say(page, `screen open register ${slab.slice(0, 8)}`);
   await expect(page.locator(".register-sheet").getByRole("heading", { name: "RFI-001 · Slab edge set-down" })).toBeVisible();
+  await expect(page.locator(".register-list")).toBeHidden();
 
-  // Back to the documents; Send for the other RFI opens its sheet with the
-  // fields in, and nothing is sent.
-  await tab("Documents").click();
+  // Send for the other RFI opens its sheet with the fields in, and nothing
+  // is sent.
   await say(page, "screen send rfi-002 to site@builder.test");
   await expect(chat).toContainText("Opened RFI-002 to send to site@builder.test");
   const sheet = page.locator(".register-sheet");

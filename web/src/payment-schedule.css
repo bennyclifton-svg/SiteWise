@@ -1,0 +1,117 @@
+/* Progress claims and the payment schedule sheet
+   (docs/plans/2026-11-26-payment-schedules.md, section 6). The cost tables'
+   grammar: one row height, faint rules, heads from table-heads.css, states
+   from states.css, a field in a cell is the cell (sizing.css). Nothing new
+   to look at. */
+
+/* ---------- The list: one table, grouped by contract ---------- */
+.pc { min-width: 0; container: pc / inline-size; }
+.cockpit-scroll .pc-table { width: 100%; font-size: var(--fs-sm); }
+.cockpit-scroll .pc-table :is(th, td) { padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+/* Narrow figure columns keep their width: tighter tracking, as the cost grid. */
+.cockpit-scroll .pc-table thead th { letter-spacing: .03em !important; }
+.cockpit-scroll .pc-table .pc-contract th { background: color-mix(in srgb, var(--sw-text-primary) 8%, var(--trace-sheet)); font-weight: 600; text-align: left; }
+.pc-contract-firm { margin-left: 8px; color: var(--sw-text-secondary); font-weight: 400; }
+.pc-add { float: right; padding: 0; border: 0; background: none; color: var(--sw-text-primary); font: inherit; font-size: var(--fs-sm); font-weight: 400; cursor: pointer; }
+.pc-add:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cockpit-scroll .pc-table .pc-figs td { height: auto; padding-top: 6px; padding-bottom: 6px; color: var(--sw-text-secondary); white-space: normal; }
+.pc-fig { display: inline-block; margin-right: 18px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pc-fig b { color: var(--sw-text-primary); font-weight: 500; }
+.cockpit-scroll .pc-table .pc-claim { cursor: pointer; }
+.cockpit-scroll .pc-table .pc-claim:hover > td { background: var(--state-hover); }
+.cockpit-scroll .pc-table .pc-hint td { color: var(--sw-text-tertiary); white-space: normal; }
+.pc-muted { color: var(--sw-text-tertiary); }
+.pc-create { margin-left: 8px; }
+/* A file over a contract wears the one drop look (states.css lists the
+   target); the tint goes on its cells, which have backgrounds of their own. */
+.cockpit-scroll .pc-table .pc-group[data-over] > tr > :is(td, th) { background: var(--drop-tint); }
+/* Beside an open document panel the list keeps what a schedule is decided
+   on: number, claimed, scheduled, payable, due and status. Period, the day
+   received, retention and the invoice are on the sheet, and come back here
+   when the panel has the room. */
+@container pc (max-width: 66rem) {
+  .cockpit-scroll .pc-table :is(thead th, .pc-claim td):is(:nth-child(2), :nth-child(3), :nth-child(6), :nth-child(8)) { display: none; }
+}
+
+/* ---------- The sheet ---------- */
+.ps { display: flex; flex-direction: column; gap: 14px; min-width: 0; padding-bottom: 24px; }
+.ps > .panel-head { margin-bottom: 0; }
+/* Drilled in, the title is long: the action stays on its line and what only
+   shows (status, the due date) sits under it. */
+.ps-head .panel-head-title { flex: 1 1 20rem; }
+.ps-head .panel-head-note { order: 3; flex-basis: 100%; }
+.ps-head .register-chip { padding: 1px 8px; border: 1px solid var(--sw-border-subtle); border-radius: 999px; font-size: var(--fs-sm); }
+.ps-head .register-chip[data-band="amber"] { box-shadow: none; border-color: var(--state-check-edge); }
+.ps-check { margin: 0; padding-left: 10px; box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); color: var(--sw-warning-text); font-size: var(--fs-sm); }
+.ps .report-section { margin: 0; }
+
+.ps-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 0 32px; margin: 4px 0 0; }
+.ps-row { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 8px; align-items: baseline; min-height: 30px; padding: 4px; border-bottom: 1px solid var(--sw-border-subtle); }
+.ps-row[data-band="amber"] { padding-left: 10px; box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+.ps-row dt { color: var(--sw-text-secondary); font-size: var(--fs-sm); }
+.ps-row dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.ps-row input.field-plain { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; }
+.ps-src { margin-left: 8px; color: var(--sw-text-tertiary); font-size: var(--fs-xs); }
+.ps-how { display: block; max-width: 60ch; color: var(--sw-text-secondary); font-size: var(--fs-xs); }
+/* Where a typed value came from: the rust square is the user's own word (trace.css origin rule). */
+.ps-dot { display: inline-block; width: 8px; height: 8px; margin-right: 5px; background: var(--origin-user); }
+.ps-act { margin: 10px 4px 0; color: var(--sw-text-secondary); font-size: var(--fs-sm); }
+.ps-details .ps-flag { margin: 4px 4px 0; }
+.ps-terms-lead { margin: 8px 4px 0; }
+.ps-row input.ps-term { width: 100%; box-shadow: inset 0 -1px 0 var(--sw-border-strong); }
+.ps-row input.ps-term-short { width: 5rem; box-shadow: inset 0 -1px 0 var(--sw-border-strong); }
+.ps-row select.field-plain { border: 0; background: transparent; color: inherit; font: inherit; }
+.ps-ret-mode { width: auto; margin-left: 10px; border: 0; background: transparent; color: var(--sw-text-secondary); font: inherit; font-size: var(--fs-sm); }
+.cockpit-scroll .ps-table tr[data-open] > th { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+.ps-note-own { display: block; box-sizing: border-box; width: calc(100% - 8px); min-height: 56px; margin: 8px 4px 0; padding: 8px 10px; border: 1px solid var(--sw-border-subtle); border-radius: var(--radius-sm, 4px); background: var(--sw-surface); color: var(--sw-text-primary); font: inherit; resize: vertical; }
+
+/* One set of column widths, so every section's figures line up. The widths
+   hold a seven-figure sum; the description takes the rest and wraps. */
+.cockpit-scroll .ps-table { width: 100%; min-width: 46rem; table-layout: fixed; }
+.ps-table col.ps-c-num { width: 7.5rem; }
+.ps-table col.ps-c-pct { width: 4.25rem; }
+.ps-table col.ps-c-done { width: 7.5rem; }
+.cockpit-scroll .ps-table thead th { height: 24px; line-height: 14px; letter-spacing: .03em !important; }
+.cockpit-scroll .ps-table thead th.ps-ctr { text-align: center; }
+/* A section's name is its table's first heading; a long one takes two lines. */
+.cockpit-scroll .ps-table thead th.ps-band { white-space: normal; }
+.cockpit-scroll .ps-table tbody th { text-align: left; }
+/* A long description wraps; the row grows, as the owner's schedule does. */
+.cockpit-scroll .ps-table th.ps-desc { padding-top: 6px; padding-bottom: 6px; line-height: 20px; white-space: normal; }
+.ps-desc-note { color: var(--sw-text-secondary); font-style: italic; }
+.ps-desc .cost-tag { display: inline-block; white-space: nowrap; }
+.ps-place { width: auto; margin-left: 10px; color: var(--origin-check); }
+/* A provisional sum's Final tick sits at the end of its description. */
+.ps-final { float: right; display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; color: var(--sw-text-secondary); font-size: var(--fs-xs); white-space: nowrap; }
+.ps-final input { width: 14px; height: 14px; margin: 0; accent-color: var(--sw-text-primary); }
+.ps-flag { display: block; color: var(--sw-warning-text); font-size: var(--fs-xs); font-weight: 400; }
+.cockpit-scroll .ps-table tr[data-retired] :is(th, td) { color: var(--sw-text-tertiary); }
+/* Editing the breakdown: the line's words and sum become fields, in the cell. */
+.ps-editing { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; color: var(--sw-text-secondary); font-size: var(--fs-sm); }
+.ps-edit { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.ps-edit input.field-plain { flex: 1 1 12rem; width: auto; min-width: 8rem; box-shadow: inset 0 -1px 0 var(--sw-border-strong); }
+.ps-edit input.ps-edit-note { flex: 1 1 8rem; color: var(--sw-text-secondary); font-style: italic; }
+.ps-edit select.field-plain { width: auto; border: 0; background: transparent; color: var(--sw-text-secondary); font: inherit; font-size: var(--fs-xs); }
+.cockpit-scroll .ps-table .ps-ghost td { color: var(--sw-text-tertiary); }
+.cockpit-scroll .ps-table tr.ps-subtotal :is(th, td) { border-top: 1px solid var(--sw-text-tertiary); font-weight: 600; }
+.cockpit-scroll .ps-table tr.ps-current td { font-weight: 600; }
+.cockpit-scroll .ps-table tr.ps-reason td { height: auto; padding: 0 10px 0 22px; background: var(--sw-surface-inset); }
+.ps-reason label { display: flex; align-items: center; gap: 10px; color: var(--sw-text-secondary); font-size: var(--fs-sm); }
+.ps-reason input { flex: 1; min-width: 0; height: var(--ct-row-h, 32px); }
+.cockpit-scroll .ps-payments { min-width: 40rem; table-layout: auto; }
+.ps-note p, .ps-issued p { margin: 8px 4px 0; }
+.ps-issued ul { margin: 8px 4px 0; padding-left: 18px; }
+.ps-served { display: block; margin: 8px 4px 0; }
+
+@media (max-width: 700px) {
+  .ps-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media print {
+  .ps-place, .pc-add, .pc-create { display: none !important; }
+}
+
+/* Invoices to place (slice 6): one line each, the choices as small buttons. */
+.pc-place { margin: 0 0 12px; padding: 8px 12px; border: 1px solid var(--sw-border-subtle); border-left: var(--state-check-width) solid var(--state-check-edge); background: var(--sw-surface); }
+.pc-place-head { margin: 0 0 6px; font-weight: 600; }
+.pc-place ul { margin: 0; padding: 0; list-style: none; }
+.pc-place li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0; }

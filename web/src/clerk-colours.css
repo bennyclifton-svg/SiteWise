@@ -175,62 +175,95 @@
   }
 }
 
+/* Light runs on Gmail's cool greys (owner, 25 Nov 2026). Dark keeps the warm
+   neutrals above for its text, so the swap is scoped away from it; the
+   selector outranks both :root blocks above whatever their order. */
+:root:not([data-theme="dark"]) {
+  --sw-p-neutral-0: #FFFFFF;
+  --sw-p-neutral-50: #F8FAFD;
+  --sw-p-neutral-100: #F0F4F9;
+  --sw-p-neutral-200: #E1E5EA;
+  --sw-p-neutral-300: #C7CCD3;
+  --sw-p-neutral-400: #A8ADB4;
+  --sw-p-neutral-500: #80868B;
+  --sw-p-neutral-600: #5F6368;
+  --sw-p-neutral-700: #444746;
+  --sw-p-neutral-800: #303134;
+  --sw-p-neutral-900: #1F1F1F;
+  --sw-p-neutral-950: #141517;
+  /* Gmail blue: compose fill, selected nav, link and focus. */
+  --sw-p-blue-50: #F2F6FC;
+  --sw-p-blue-100: #E8F0FE;
+  --sw-p-blue-200: #D3E3FD;
+  --sw-p-blue-300: #C2E7FF;
+  --sw-p-blue-400: #A8D3F4;
+  --sw-p-blue-500: #8FC4EE;
+  --sw-p-blue-600: #0B57D0;
+  --sw-p-blue-700: #0842A0;
+  --sw-p-blue-800: #062E6F;
+  --sw-p-blue-900: #041E49;
+  --sw-p-blue-950: #001D35;
+  --sw-brand-support: var(--sw-p-blue-300);
+  --sw-brand-functional-support: var(--sw-p-blue-600);
+  --sw-brand-accent: var(--sw-p-blue-300);
+}
+
 :root, [data-theme="light"] {
   color-scheme: light;
-  --sw-canvas: var(--sw-p-neutral-50);
+  --sw-canvas: #F6F8FC;
   --sw-surface: var(--sw-p-neutral-0);
   --sw-surface-elevated: var(--sw-p-neutral-0);
-  --sw-surface-inset: var(--sw-p-neutral-100);
-  --sw-border-subtle: var(--sw-p-neutral-100);
+  --sw-surface-inset: var(--sw-p-blue-50);
+  --sw-border-subtle: #EDF0F4;
   --sw-border-default: var(--sw-p-neutral-200);
-  --sw-border-strong: var(--sw-p-neutral-500);
+  --sw-border-strong: var(--sw-p-neutral-300);
   --sw-border-control: var(--sw-p-neutral-500);
   --sw-text-primary: var(--sw-p-neutral-900);
   --sw-text-secondary: var(--sw-p-neutral-700);
   --sw-text-tertiary: var(--sw-p-neutral-600);
   --sw-text-inverse: var(--sw-p-neutral-50);
-  --sw-action-primary: var(--sw-p-citron-400);
-  --sw-action-primary-hover: var(--sw-p-citron-500);
-  --sw-action-primary-pressed: var(--sw-p-citron-600);
-  --sw-action-primary-text: var(--sw-p-neutral-950);
-  --sw-action-primary-border: var(--sw-p-citron-800);
-  --sw-action-secondary: var(--sw-p-neutral-900);
-  --sw-action-secondary-hover: var(--sw-p-neutral-800);
-  --sw-action-secondary-pressed: var(--sw-p-neutral-950);
-  --sw-action-secondary-text: var(--sw-p-neutral-50);
-  --sw-action-secondary-border: var(--sw-p-neutral-900);
-  --sw-action-focus: var(--sw-p-cyan-700);
+  --sw-action-primary: var(--sw-p-blue-300);
+  --sw-action-primary-hover: var(--sw-p-blue-400);
+  --sw-action-primary-pressed: var(--sw-p-blue-500);
+  --sw-action-primary-text: var(--sw-p-blue-950);
+  --sw-action-primary-border: var(--sw-p-blue-400);
+  --sw-action-secondary: var(--sw-p-blue-600);
+  --sw-action-secondary-hover: var(--sw-p-blue-700);
+  --sw-action-secondary-pressed: var(--sw-p-blue-800);
+  --sw-action-secondary-text: #FFFFFF;
+  --sw-action-secondary-border: var(--sw-p-blue-600);
+  --sw-action-focus: var(--sw-p-blue-600);
   --sw-action-focus-gap: var(--sw-p-neutral-0);
   --sw-action-disabled-bg: var(--sw-p-neutral-100);
   --sw-action-disabled-text: var(--sw-p-neutral-600);
   --sw-action-disabled-border: var(--sw-p-neutral-200);
-  --sw-link: var(--sw-p-cyan-700);
-  --sw-link-hover: var(--sw-p-cyan-800);
-  --sw-selection-bg: var(--sw-p-cyan-100);
-  --sw-selection-border: var(--sw-p-cyan-600);
-  --sw-selection-text: var(--sw-p-cyan-800);
-  --sw-hover-bg: var(--sw-p-neutral-50);
-  --sw-pressed-bg: var(--sw-p-neutral-100);
+  --sw-link: var(--sw-p-blue-600);
+  --sw-link-hover: var(--sw-p-blue-700);
+  --sw-selection-bg: var(--sw-p-blue-200);
+  --sw-selection-border: var(--sw-p-blue-600);
+  --sw-selection-text: var(--sw-p-blue-900);
+  --sw-hover-bg: #F1F4F9;
+  --sw-pressed-bg: #E8EDF5;
   --sw-input-bg: var(--sw-p-neutral-0);
   --sw-input-text: var(--sw-p-neutral-900);
   --sw-input-placeholder: var(--sw-p-neutral-600);
-  --sw-info-bg: var(--sw-p-cyan-50);
-  --sw-info-border: var(--sw-p-cyan-600);
-  --sw-info-text: var(--sw-p-cyan-800);
-  --sw-info-icon: var(--sw-p-cyan-700);
+  --sw-info-bg: var(--sw-p-blue-100);
+  --sw-info-border: var(--sw-p-blue-600);
+  --sw-info-text: var(--sw-p-blue-700);
+  --sw-info-icon: var(--sw-p-blue-600);
   --sw-chart-surface: var(--sw-p-neutral-0);
   --sw-chart-grid: var(--sw-p-neutral-100);
   --sw-chart-label: var(--sw-p-neutral-600);
   --sw-chart-separator: var(--sw-p-neutral-0);
-  --sw-scene-ground: var(--sw-p-cyan-300);
+  --sw-scene-ground: var(--sw-p-blue-300);
   --sw-scene-building: var(--sw-p-neutral-50);
   --sw-scene-building-edge: var(--sw-p-neutral-500);
-  --sw-scene-service-active: var(--sw-p-cyan-700);
+  --sw-scene-service-active: var(--sw-p-blue-600);
   --sw-scene-service-inactive: var(--sw-p-neutral-400);
   --sw-scene-decision: var(--sw-p-warning-light-icon);
   --sw-map-line-decorative: var(--sw-p-neutral-300);
-  --sw-map-line-interactive: var(--sw-p-cyan-700);
-  --sw-map-lot-selected: var(--sw-p-cyan-100);
+  --sw-map-line-interactive: var(--sw-p-blue-600);
+  --sw-map-lot-selected: var(--sw-p-blue-200);
   --sw-success-bg: var(--sw-p-success-light-bg);
   --sw-success-border: var(--sw-p-success-light-border);
   --sw-success-text: var(--sw-p-success-light-text);

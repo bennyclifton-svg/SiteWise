@@ -92,15 +92,38 @@ func docxBody(d Doc) ([]byte, error) {
 	var b strings.Builder
 	b.WriteString(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` +
 		`<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>`)
-	para(&b, []Run{{Text: d.Title, Bold: true}}, 32, `w:before="0" w:after="40"`)
-	if d.Subtitle != "" {
-		para(&b, []Run{{Text: d.Subtitle, Muted: true}}, 18, `w:before="0" w:after="200"`)
+	if d.Cover != nil {
+		// The cover, then a page break; Word numbers its own pages, so the
+		// contents list the titles only.
+		para(&b, nil, 20, `w:before="2400" w:after="0"`)
+		para(&b, []Run{{Text: d.Cover.Title, Bold: true}}, 52, `w:before="0" w:after="360"`)
+		for _, l := range d.Cover.Lines {
+			para(&b, []Run{{Text: l[0] + "  ", Muted: true}, {Text: l[1]}}, 24, `w:before="0" w:after="120"`)
+		}
+		b.WriteString(`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`)
+		if d.Contents {
+			para(&b, []Run{{Text: "Contents", Bold: true}}, 32, `w:before="0" w:after="240"`)
+			for _, s := range d.Sections {
+				if s.Title != "" {
+					para(&b, []Run{{Text: s.Title}}, 20, `w:before="0" w:after="80"`)
+				}
+			}
+			b.WriteString(`<w:p><w:r><w:br w:type="page"/></w:r></w:p>`)
+		}
+	} else {
+		para(&b, []Run{{Text: d.Title, Bold: true}}, 32, `w:before="0" w:after="40"`)
+		if d.Subtitle != "" {
+			para(&b, []Run{{Text: d.Subtitle, Muted: true}}, 18, `w:before="0" w:after="200"`)
+		}
 	}
 	for _, s := range d.Sections {
 		if s.Title != "" {
 			band(&b, s.Title)
 		}
 		for _, blk := range s.Blocks {
+			if blk.Heading != "" {
+				para(&b, []Run{{Text: blk.Heading, Bold: true}}, 20, `w:before="120" w:after="80"`)
+			}
 			runs := []Run{}
 			if blk.Label != "" {
 				runs = append(runs, Run{Text: blk.Label + ": ", Bold: true})
@@ -152,10 +175,16 @@ func writeRuns(b *strings.Builder, runs []Run, size int, extra string) {
 		if r.Muted {
 			colour = colourMuted
 		}
+		if r.Blue {
+			colour = colourNew
+		}
 		for i, part := range strings.Split(r.Text, "\n") {
 			b.WriteString(`<w:r><w:rPr>`)
 			if r.Bold {
 				b.WriteString(`<w:b/>`)
+			}
+			if r.Italic {
+				b.WriteString(`<w:i/>`)
 			}
 			fmt.Fprintf(b, `%s<w:color w:val="%s"/><w:sz w:val="%d"/></w:rPr>`, extra, colour.hex(), size)
 			if i > 0 {
@@ -246,14 +275,19 @@ func cell(b *strings.Builder, c Cell, width, cols int, merge string, head, stron
 	}
 	if head {
 		fmt.Fprintf(b, `<w:tcBorders><w:bottom w:val="single" w:sz="6" w:color="%s"/></w:tcBorders><w:shd w:val="clear" w:color="auto" w:fill="%s"/>`, colourStrong.hex(), colourBand.hex())
+	} else if fill, ok := fillColour(c.Fill); ok {
+		fmt.Fprintf(b, `<w:shd w:val="clear" w:color="auto" w:fill="%s"/>`, fill.hex())
 	}
 	valign := "center"
 	if c.RowSpan > 1 {
 		valign = "top"
 	}
 	fmt.Fprintf(b, `<w:vAlign w:val="%s"/></w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="300" w:lineRule="auto"/>`, valign)
-	if c.Align == Center {
+	switch c.Align {
+	case Center:
 		b.WriteString(`<w:jc w:val="center"/>`)
+	case Right:
+		b.WriteString(`<w:jc w:val="right"/>`)
 	}
 	b.WriteString(`</w:pPr>`)
 	switch {
@@ -267,6 +301,10 @@ func cell(b *strings.Builder, c Cell, width, cols int, merge string, head, stron
 		fmt.Fprintf(b, `<w:r><w:rPr><w:b/><w:caps/><w:color w:val="%s"/><w:spacing w:val="12"/><w:sz w:val="16"/></w:rPr><w:t xml:space="preserve">%s</w:t></w:r>`, colourHead.hex(), esc(runText(c.Runs)))
 	default:
 		writeRuns(b, c.Runs, 20, "")
+		// The Word file names each image; the issued PDF draws it.
+		for _, img := range c.Images {
+			writeRuns(b, []Run{{Text: "\n[Image: " + strings.TrimSpace(img.Caption+"]"), Muted: true, Italic: true}}, 18, "")
+		}
 	}
 	b.WriteString(`</w:p></w:tc>`)
 }

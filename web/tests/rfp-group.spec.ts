@@ -66,7 +66,7 @@ test("a combined engagement has one RFP: each discipline's part edits its own RF
 
   // Exclude a line in the structural part: it is written to the structural
   // engineer's own report and the document shows it at once.
-  const toolbar = page.locator(".report-toolbar");
+  const toolbar = page.locator(".report-head");
   const before = Number(await toolbar.getAttribute("data-version"));
   await expandStages(structural);
   // An open stage's lines fill the table's four columns, no stray fee cell.

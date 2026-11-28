@@ -121,6 +121,7 @@ func operations() []operation {
 		all = append(all, forwardedOperations(area)...)
 	}
 	all = append(all, reportOperations()...)
+	all = append(all, reportRowOperations()...)
 	all = append(all, claimsOperations()...)
 	return append(all, consentOperations()...)
 }

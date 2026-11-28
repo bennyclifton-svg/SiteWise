@@ -87,7 +87,7 @@
 .file-drop[data-over="true"],
 .drop[data-over="true"],
 .invoices[data-over] .inv-table-scroll,
-.var-claims[data-over],
+.pc-group[data-over],
 .program.is-dropping .pg-body {
   outline: var(--drop-line);
   /* On the target's own edge: a line set inside it would pass under the

@@ -119,11 +119,34 @@ payment schedule date still counts at the claimed amount under a verified
 Security of Payment row. Outside organisations, partners and notification
 mail are not built.
 
-Variations and progress claims sit on the Cost Plan's Variations and claims
-tab (`docs/plans/2026-11-17-variations-progress-claims.md`). Variation
-writes, assessments, Accept claimed, a contract's periods, the tab's read
-(it rides on `GET /invoices`) and Issue call neither Jev nor the LLM; every
-figure and date is Go's (`invoices.ClaimLedger`, `invoices.ScheduleDue`).
+Variations sit on the Cost Plan's Variations tab and progress claims on its
+Progress claims tab (`docs/plans/2026-11-17-variations-progress-claims.md`,
+`docs/plans/2026-11-26-payment-schedules.md`). Every live contract takes
+claims, consultants included; a services contract's claim is its own tax
+invoice unless the PM says otherwise. A claim's payment schedule opens there
+as a sheet in the owner's format: the contract's breakdown
+(`contract_breakdown_lines`: works lines and provisional sums, seeded at
+award from the awarded tender's lines where they add up, else one per cost
+line, and the PM's to edit), variations, the total and retention, the note
+and the payment list (`invoices.BuildSheet`, riding on
+`GET /invoices?sheet=`). The PM types what is complete as a percent or an
+amount, and retention as a percent of the contract's base or dollars; Go
+works out the dollars and refuses a hold past the limit. The contract's date
+and retention terms are on its award; the parties a schedule names are the
+project's terms, with fall-backs in one place (`DeliveryTerms.Parties`).
+Variation writes, assessments, Accept claimed, a contract's periods and
+terms, the breakdown, both tabs' read (it rides on `GET /invoices`), the
+sheet and Issue call neither Jev nor the LLM; every figure and date is Go's
+(`invoices.ClaimLedger`, `invoices.ScheduleDue`), and each contract's header
+figures come from the one rollup the tab, chat and the report read
+(`store.ContractSummaries`). Issue prints the sheet in the owner's layout
+through `internal/export` (`reports.ScheduleSheetSections`); the Act is named
+only from a verified row, and on a services contract only when the PM
+switches it on. Send carries the issued PDF through `queueOutbound`; the day
+the message goes is the day served, by rule, for the PM to confirm. A tax
+invoice links itself to the one claim whose payable, net or printed total
+it matches; on a contract with a claim waiting for its invoice, an invoice
+no rule placed is held out of the totals until the PM places it.
 A progress claim is an invoice of kind `progress_claim`; dropped on a
 contract it is read with one interactive fan-out (`claim-1`) for the rows
 rules leave open, and those picks stay blank until a claim answer key is
@@ -132,7 +155,8 @@ fitted. Security of Payment periods come from
 and marked that row verified on 20 November 2026, and every other row is
 unverified, so a date from one is "to check" with its section. Only the
 owner sets `verified: true`. Issuing a payment schedule is never an operation: chat
-opens the claim's panel and the PM presses Issue.
+opens the claim's sheet and the PM presses Issue; chat opens Send filled in
+for an issued schedule and never sends.
 
 Consent conditions are a kind in the same table
 (`docs/plans/2026-11-17-consent-conditions.md`). A notice of determination
@@ -151,13 +175,24 @@ approved cut-off. Evidence never satisfies a condition: only the PM's click
 does. Program gates (one hold point per gate) come through the existing
 review; their dates are Go's.
 
-The project report (Report on the left nav, one per project) calls neither Jev
-nor the LLM: Update, comments, issue and export are Go over saved records,
-and every figure comes from the screens' own rollups (`costs.Summarize`,
-the invoice ledger, the Program engine, the procurement board, the
-register, `reports.Attention`); unknown stays unknown. Chat may update it
-and write or clear its comments with Undo, and opens its issue form filled
-in, but never presses Issue
+The project report (Report on the left nav, one per project) is in the
+owner's format (`docs/plans/2026-11-26-project-report-golden-format.md`,
+template `tpl.monthly-report` version 2): the owner's sections in order,
+then the earlier sections as review lists that are never issued. It calls
+neither Jev nor the LLM: Update, every row write, the period, images, issue
+and export are Go over saved records, and every figure comes from the
+screens' own rollups (`store.ContractSummaries`, the register's
+completion, the variation register, `costs.Summarize`, the invoice ledger,
+the Program engine, the procurement board, `reports.Attention`); unknown
+stays "TBD". What the PM owns in its tables is `report_rows`, laid over the
+draft's saved generated copy (`report_versions.generated`) without running
+the loader; a typed-over cell whose value moves holds issue until the PM
+keeps theirs or takes SiteWise's. Images are PNG or JPEG, decoded and
+capped at 8 MB, listed in `report_images` and served only through their
+report. Issue prints through `internal/export` with no page limit. Chat may
+update it, write or clear its comments, type over cells and add, hide, move
+or restore rows with Undo; the period waits for a click; it opens the issue
+form filled in, but never presses Issue
 (`docs/plans/2026-11-17-monthly-report.md`).
 
 Mail (`docs/plans/2026-11-14-email-intake.md`,
@@ -259,7 +294,13 @@ Before changing one of these surfaces, read its current note:
   `wave/claims`): `docs/plans/2026-11-17-variations-progress-claims.md`,
   evidence in `docs/evidence/2026-11-19-variations-progress-claims.md`. The
   Act rows are draft, and only NSW is verified; the claim key
-  (`data/eval/claim/private/`) is empty.
+  (`data/eval/claim/private/`) is empty. Payment schedules in the owner's
+  format: `docs/plans/2026-11-26-payment-schedules.md` (read "Progress" and
+  "Deviations": all eight slices are built, 26 to 28 November 2026, not
+  committed), evidence in `docs/evidence/2026-11-27-payment-schedules.md`.
+- Project report in the owner's format:
+  `docs/plans/2026-11-26-project-report-golden-format.md` (read "Progress"
+  and "Deviations"; slices 0 to 6 built 28 November 2026, not committed).
 - Consent conditions (Register; built 18 November 2026 on branch
   `wave/conditions`): `docs/plans/2026-11-17-consent-conditions.md`,
   evidence in `docs/evidence/2026-11-18-consent-conditions.md`. The answer

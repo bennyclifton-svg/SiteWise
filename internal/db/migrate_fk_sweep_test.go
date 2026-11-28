@@ -221,8 +221,11 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 		variation := id(5100 + n)
 		f["variations"] = row{"org_id": org, "id": variation, "project_id": p, "package_id": pkg, "award_id": award, "cost_item_id": costID, "number": "V01", "title": "Rock", "status": "submitted", "created_by": u}
 		f["variation_documents"] = row{"org_id": org, "project_id": p, "variation_id": variation, "document_id": id(1900 + n)}
+		f["contract_breakdown_lines"] = row{"org_id": org, "id": id(5400 + n), "project_id": p, "award_id": award, "cost_item_id": costID, "section": "works", "ordinal": 0, "label": "Substructure", "source": "award"}
+		f["report_rows"] = row{"org_id": org, "id": id(5500 + n), "project_id": p, "report_id": f["reports"]["id"], "table_id": "approvals", "cells": row{}, "created_by": u}
+		f["report_images"] = row{"org_id": org, "project_id": p, "report_id": f["reports"]["id"], "sha256": "\\x" + strings.Repeat(fmt.Sprintf("%02d", 90+n), 32), "media_type": "image/png", "byte_size": 1, "created_by": u}
 		f["progress_claim_lines"] = row{"org_id": org, "id": id(5200 + n), "project_id": p, "invoice_id": invoice, "ordinal": 0, "kind": "contract", "cost_item_id": costID, "mapped_by": "rule", "band": "green"}
-		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "variations", "variation_documents", "progress_claim_lines", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns", "mail_messages"} {
+		for _, table := range []string{"users", "sites", "projects", "files", "documents", "passages", "project_parts", "work_items", "packages", "package_stages", "package_scope_items", "project_delivery_items", "reports", "report_versions", "profile_planning_values", "proposals", "cost_plan_versions", "cost_items", "cost_item_revisions", "specification_types", "specification_applications", "specification_imports", "invoices", "invoice_allocations", "invoice_decisions", "firms", "package_invitations", "submissions", "awards", "variations", "variation_documents", "contract_breakdown_lines", "progress_claim_lines", "report_rows", "report_images", "tender_adjustments", "project_changes", "chat_conversations", "chat_turns", "mail_messages"} {
 			if err := insert(tx, table, f[table]); err != nil {
 				t.Fatal(table, err)
 			}
@@ -363,6 +366,15 @@ func TestNextWaveCompositeForeignKeys(t *testing.T) {
 				if strings.Contains(f.definition, "variation_id") {
 					base["kind"], base["cost_item_id"], base["variation_id"] = "variation", nil, fixtures[0]["variations"]["id"]
 				}
+				if strings.Contains(f.definition, "breakdown_line_id") {
+					base["breakdown_line_id"] = fixtures[0]["contract_breakdown_lines"]["id"]
+				}
+			case "contract_breakdown_lines":
+				base["ordinal"] = 1
+			case "report_rows":
+				base["table_id"] = "change"
+			case "report_images":
+				base["sha256"] = "\\x" + strings.Repeat("ed", 32)
 			case "invoice_allocations":
 				base["ordinal"] = 1
 			case "invoice_decisions":

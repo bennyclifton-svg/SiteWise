@@ -69,6 +69,9 @@ type MonthlyInput struct {
 	// Attention is what reports.Attention reads, so this report, chat and
 	// the named filters cannot disagree.
 	Attention AttentionInput
+	// Golden is what the owner's sections read beyond the above; nil on a
+	// template without them.
+	Golden *GoldenInput
 }
 
 // MonthlyPrevious is the last issued project report: its number, its
@@ -131,6 +134,12 @@ func IssueTitle(kind, title string, number int) string {
 func AssembleMonthly(in MonthlyInput, sectionTitles map[string]string, edits []Edit) ([]Section, error) {
 	var basisErr error
 	m := monthly{in: in, err: &basisErr}
+	// The owner's format (template version 2): the owner's sections first;
+	// the earlier ones follow as the PM's review lists, never issued.
+	var front []Section
+	if _, ok := sectionTitles["cover"]; ok {
+		front = m.goldenSections(sectionTitles)
+	}
 	order := []struct {
 		id    string
 		build func() []Block
@@ -157,6 +166,12 @@ func AssembleMonthly(in MonthlyInput, sectionTitles map[string]string, edits []E
 	out[changes].Blocks = m.changes(out)
 	if basisErr != nil {
 		return nil, basisErr
+	}
+	if front != nil {
+		for i := range out {
+			out[i].Internal = true
+		}
+		out = append(front, out...)
 	}
 	return ApplyEdits(out, edits)
 }
@@ -320,9 +335,55 @@ func (m monthly) cost() []Block {
 	if l != nil {
 		out = append(out, m.invoicesThisPeriod(*l))
 	}
-	out = append(out, m.block("cost:variations", "", "Variations are not yet recorded in SiteWise.", map[string]any{"method": "variations_not_built"}))
+	vtext, vfig := m.variationLine()
+	out = append(out, m.block("cost:variations", "", vtext, map[string]any{"method": "variations_register_v1", "figures": vfig}))
 	text, f := m.costSentence()
 	return append(out, m.comment("cost", text, f))
+}
+
+// variationLine is the variation register's totals, as the Variations tab
+// shows them: approved, and what the open ones are expected to cost (the
+// PM's estimate, else the amount claimed). Unknown stays unknown.
+func (m monthly) variationLine() (string, map[string]any) {
+	var vs []invoices.Variation
+	if m.in.Ledger != nil {
+		vs = m.in.Ledger.Variations
+	}
+	var approved, forecast int64
+	nApproved, nOpen, unknown := 0, 0, 0
+	for _, v := range vs {
+		switch {
+		case v.Status == invoices.VariationApproved:
+			nApproved++
+			if v.Approved != nil {
+				approved += *v.Approved
+			}
+		case v.Open():
+			nOpen++
+			if f, _ := v.Forecast(); f != nil {
+				forecast += *f
+			} else {
+				unknown++
+			}
+		}
+	}
+	fig := map[string]any{"approved": approved, "approved_count": nApproved, "open_count": nOpen, "open_forecast": forecast, "open_unknown": unknown}
+	if nApproved == 0 && nOpen == 0 {
+		return "No variation is recorded in SiteWise.", fig
+	}
+	dollars := func(c int64) string { return "$" + invoices.DisplayCents(c) }
+	var parts []string
+	if nApproved > 0 {
+		parts = append(parts, fmt.Sprintf("%d approved, %s", nApproved, dollars(approved)))
+	}
+	if nOpen > 0 {
+		open := fmt.Sprintf("%d open, %s expected", nOpen, dollars(forecast))
+		if unknown > 0 {
+			open += fmt.Sprintf(" (%d with no amount yet)", unknown)
+		}
+		parts = append(parts, open)
+	}
+	return "Variations: " + strings.Join(parts, "; ") + ", ex GST.", fig
 }
 
 // costFigures are one row's exact figures, kept in the basis so the next

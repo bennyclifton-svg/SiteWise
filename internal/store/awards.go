@@ -632,6 +632,11 @@ SELECT $1::uuid,$2::uuid,$3::uuid,$4::uuid,$5::uuid,$6::uuid,COALESCE((SELECT la
 		}
 		l.CostItemID = id
 	}
+	// The contract's breakdown: the firm's own tender lines where they add
+	// up to a cost line, else one line per cost line.
+	if err := seedBreakdown(ctx, tx, org, project, awardID, true); err != nil {
+		return v, err
+	}
 	abn := firm.ABN
 	if abn != "" && !invoices.ValidABN(abn) {
 		abn = ""

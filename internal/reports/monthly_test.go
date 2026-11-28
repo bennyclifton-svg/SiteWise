@@ -107,7 +107,7 @@ func TestMonthlyCostSection(t *testing.T) {
 		"Unallocated invoices | — | — | — | $300 | —",
 		"Total | $1,020,000 | $12,000 known; 2 unknown | $412,000 known; 1 unknown | $3,300 | $9,000",
 		"Forecast final cost is not yet known: 1 line has no forecast, and the known part is $412,000 ex GST.",
-		"Variations are not yet recorded in SiteWise.",
+		"No variation is recorded in SiteWise.",
 	} {
 		if !strings.Contains(got, want) {
 			t.Errorf("cost lacks %q:\n%s", want, got)

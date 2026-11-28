@@ -35,7 +35,7 @@ export function TracePage({ onHome, children }: { onHome: () => void; children: 
 /** The title band: title, one line under it, and page-level actions (ground-line buttons). */
 export function TraceBand({ title, meta, actions }: { title: string; meta?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="trace-band">
+    <div className="trace-band perspex">
       <div className="trace-band-title">
         <h1>{title}</h1>
         {meta && <p className="trace-band-meta">{meta}</p>}

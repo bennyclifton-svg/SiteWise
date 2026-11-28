@@ -1,6 +1,7 @@
-import { PageActions, PagePrimaryAction } from "./PageActions";
+import { MoreMenu } from "./PageActions";
+import { PanelHead } from "./PanelHead";
 import { startRowDrag } from "./table/RowHandle";
-import { IconBin, IconCalendar, IconFitHeight, IconFitScreen, IconFitSelection, IconLinks, IconRedo, IconSequence, IconUndo } from "./icons";
+import { IconBin, IconCalendar, IconDownload, IconPrint, IconUpload, IconFitHeight, IconFitScreen, IconFitSelection, IconLinks, IconRedo, IconSequence, IconUndo } from "./icons";
 // The Program view (plan docs/plans/2026-10-18-program.md section 9):
 // toolbar, the completion header and a split pane with
 // the grid on the left and the chart on the right sharing one vertical
@@ -1089,9 +1090,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   if (view === undefined) {
     return (
       <section className="program" aria-label="Program">
-        <header className="program-head">
-          <h1>Program</h1>
-        </header>
+        <PanelHead title="Program" />
         {error ? <Failure error={error} retry={load} /> : <p className="program-empty">Opening the program…</p>}
       </section>
     );
@@ -1100,9 +1099,7 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
   if (view === null) {
     return (
       <section className="program" aria-label="Program">
-        <header className="program-head">
-          <h1>Program</h1>
-        </header>
+        <PanelHead title="Program" />
       {error && <Failure error={error} retry={load} />}
         <div className="program-empty">
           <p>No program yet. SiteWise builds one from the Profile, the included work and the Procurement packages; nothing is guessed, and unknown durations stay unknown.</p>
@@ -1188,11 +1185,19 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         importFiles(Array.from(e.dataTransfer.files));
       }}
     >
-      <header className="program-head">
-        <h1>Program</h1>
+      <PanelHead
+        title="Program"
+        action={<UpdateProgramButton pending={view.changes_pending} busy={busy} onUpdate={() => apply((cur) => programApi.update(projectId, cur!), { undoable: true })} />}
+        more={<MoreMenu label="Program actions" items={[
+          { label: "Export to Excel", icon: <IconDownload />, href: programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed"), download: true },
+          { label: "Export CSV", icon: <IconDownload />, href: programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed").replace("format=xlsx", "format=csv"), download: true },
+          { label: "Print", icon: <IconPrint />, onSelect: () => window.print() },
+          { label: "Import program file…", icon: <IconUpload />, onSelect: () => fileInput.current?.click() },
+        ]} />}
+      >
         {sel.ids.length > 0 && <span className="pg-chip">{sel.ids.length} selected</span>}
         {dropping && <span className="pg-chip pg-drop-hint">Drop a PDF, DOCX or XLSX program to read its dates</span>}
-      </header>
+      </PanelHead>
       {only && <p className="reg-filter">{showingLine("program", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
 
       <div className="pg-toolbar" role="toolbar" aria-label="Program tools">
@@ -1260,17 +1265,8 @@ export function Program({ projectId, remoteVersion, remoteTick = 0, active, onSi
         </div>
       </div>
 
-      <PageActions surface="program">
-        <a href={programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed")} download>Export to Excel</a>
-        <a href={programApi.exportHref(projectId, anyOpen ? "expanded" : "collapsed").replace("format=xlsx", "format=csv")} download>Export CSV</a>
-        <button type="button" onClick={() => window.print()}>Print</button>
-        <button type="button" onClick={() => fileInput.current?.click()}>Import program file…</button>
-      </PageActions>
       {calendarOpen && <ProgramCalendar week={view.program.working_week} busy={busy} onClose={() => setCalendarOpen(false)} onSave={week => commit([{ op: "set_working_week", working_week: week }], { note: "Calendar saved. Dates recalculated." })} />}
       {error && <Failure error={error} retry={load} />}
-      <PagePrimaryAction surface="program">
-        <UpdateProgramButton pending={view.changes_pending} busy={busy} onUpdate={() => apply((cur) => programApi.update(projectId, cur!), { undoable: true })} />
-      </PagePrimaryAction>
       {orphaned.map((g) => (
         <EvidenceNotice
           key={g.key}
@@ -1615,7 +1611,7 @@ function printReserve(): number {
     const cs = getComputedStyle(el);
     return el.getBoundingClientRect().height + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
   };
-  return PRINT_SHELL_H + outer(".program .program-head") + outer(".program .pg-summary");
+  return PRINT_SHELL_H + outer(".program .panel-head") + outer(".program .pg-summary");
 }
 
 /** Rows that fit on the first page below `reserve` px: at least 4, at most a full page. */

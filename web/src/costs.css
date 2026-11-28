@@ -1,10 +1,7 @@
 /* Cost plan grid: a QS cost report on the paper workbench. Figures use
    tabular numerals; placeholder columns are hatched so they never read as zero. */
 .costs { padding: 20px 20px 48px; min-width: 0; }
-.costs-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 14px; }
-.costs-head h1 { font-size: 22px; }
 .costs-chip { padding: 3px 10px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--paper); color: var(--ink-muted); font-size: var(--fs-sm); }
-.costs-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; margin: 0 0 10px; }
 .costs-viewing { color: var(--ink-muted); font-size: var(--fs-sm); }
 .costs .report-notice, .costs .banner { margin-bottom: 14px; }
 .costs-empty { padding: 24px; border: 1px dashed var(--line-strong); color: var(--ink-muted); }
@@ -52,7 +49,6 @@
 
 @media (max-width: 900px) {
   .costs { padding: 16px 16px 40px; }
-  .costs-toolbar { margin-left: 0; }
   .cost-grid-scroll { max-height: none; }
   .cost-sticky[data-col="category"] { position: static; }
   .cost-sticky[data-col="item"] { left: 42px; min-width: 160px; }
@@ -164,15 +160,10 @@
 @media (pointer: coarse) { .cost-row .cost-delete, .cost-row .cost-more { width: 36px; height: 36px; } }
 
 /* The view names are the page title: Cost Plan, Invoices, Variations on one line. */
-.costs-head .costs-tabs, .procurement-head .costs-tabs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 28px; margin: 0; border-bottom: 0; }
-.costs-head .costs-tab, .procurement-head .costs-tab { padding: 0 0 6px; color: var(--sw-text-tertiary, var(--ink-muted)); font-size: 26px; font-weight: 600; letter-spacing: -.02em; line-height: 1.2; }
-.costs-head .costs-tab[aria-selected="true"], .procurement-head .costs-tab[aria-selected="true"] { color: var(--sw-text-primary, var(--ink)); }
-.costs-head .costs-tab:hover, .procurement-head .costs-tab:hover { color: var(--sw-text-primary, var(--ink)); }
-@media (max-width: 600px) { .costs-head .costs-tab, .procurement-head .costs-tab { font-size: 20px; } .costs-head .costs-tabs, .procurement-head .costs-tabs { gap: 4px 18px; } }
 /* The Item head's chevron opens or closes every group. */
 .cost-grid thead .cost-master-toggle { width: 26px; height: 26px; margin-right: 2px; vertical-align: middle; border-radius: var(--radius-sm); }
 .cost-grid thead .cost-master-toggle:hover { background: var(--ground); }
-@media print { .cost-master-toggle { display: none; } .costs-head h1.sr-only, .procurement-head h1.sr-only { position: static; width: auto; height: auto; margin: 0 0 8px; overflow: visible; clip: auto; white-space: normal; } }
+@media print { .cost-master-toggle { display: none; } }
 
 /* Bulk actions on selected lines (right-click menu): the head's bin while
    lines are selected, and the category or package picker. */

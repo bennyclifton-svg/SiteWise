@@ -4,9 +4,6 @@
 
 .cockpit-scroll .procurement { padding: 0 0 40px; }
 
-.procurement-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 18px; }
-.procurement-head h1,
-.cockpit-scroll .procurement-head h1 { margin: 0; color: var(--sw-text-primary); font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
 
 /* ---------- The table ---------- */
 

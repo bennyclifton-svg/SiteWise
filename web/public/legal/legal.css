@@ -1,106 +1,164 @@
-/* Legal and pricing pages: plain, readable, no scripts or external assets. */
+/* Pricing and legal pages: plain, readable, no scripts. They wear the same
+   frame as sign-in and every page outside a project (web/DESIGN.md, Trace):
+   the logo bar on the drafting table, one sheet, the title under the perspex,
+   the legal links below the sheet. The logo and the perspex come from
+   /brand/brand.css, shared with the app. Light only, as the app is unless a
+   user picks dark inside it, so the page never changes colour on a click
+   from sign-in. Colours are the app's light tokens (src/trace.css). */
+
+@font-face { font-family: "Instrument Sans"; font-weight: 400; font-display: swap; src: url("/brand/fonts/instrument-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 500; font-display: swap; src: url("/brand/fonts/instrument-sans-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Sans"; font-weight: 600; font-display: swap; src: url("/brand/fonts/instrument-sans-latin-600-normal.woff2") format("woff2"); }
+
 :root {
-  color-scheme: light dark;
-  --ink: #1d1d1b;
-  --muted: #5d5d58;
-  --line: #d9d7d0;
-  --paper: #fbfaf7;
-  --accent: #b5471b;
+  color-scheme: light;
+  --ink: #1F1F1F;
+  --body: #444746;
+  --muted: #5F6368;
+  --line: #E1E5EA;
+  --line-strong: #C7CCD3;
+  --table: #F6F8FC;
+  --accent: #0B57D0;
+  --accent-hover: #0842A0;
+  --tint: #F1F4F9;
+  --trace-sheet: #FFFFFF;
+  --trace-paper: rgba(224, 231, 241, .74);
+  --trace-paper-sheen: rgba(255, 255, 255, .45);
+  --width: min(820px, calc(100% - 48px));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #ecebe6;
-    --muted: #a9a8a1;
-    --line: #3a3a36;
-    --paper: #151513;
-    --accent: #f08a5d;
-  }
-}
-
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--table);
+  color: var(--body);
+  font: 16px/1.6 "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-header,
-main,
-footer {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 0 24px;
+a { color: var(--accent); text-underline-offset: 3px; }
+a:hover { color: var(--accent-hover); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
-header {
+/* ---------- The bar, on the table, its logo on the sheet's left edge ---------- */
+
+.bar,
+.sheet,
+.foot {
+  width: var(--width);
+  margin-inline: auto;
+}
+
+.bar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-top: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
+  gap: 16px;
+  height: 72px;
 }
 
-header a.home {
-  font-weight: 700;
-  font-size: 20px;
-  color: var(--ink);
+.home { display: flex; color: var(--ink); }
+.home .wordmark { width: 131px; height: 28px; }
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.site-nav a {
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--body);
   text-decoration: none;
 }
 
-nav a {
-  margin-left: 14px;
-  color: var(--muted);
-  font-size: 14px;
+.site-nav a:hover { background: var(--tint); color: var(--ink); }
+.site-nav a[aria-current="page"] { background: var(--tint); color: var(--ink); }
+
+.site-nav .signin {
+  border: 1px solid var(--line-strong);
+  background: var(--trace-sheet);
+  color: var(--ink);
 }
 
-main {
-  padding-top: 24px;
-  padding-bottom: 48px;
+.site-nav .signin:hover { border-color: var(--muted); background: var(--trace-sheet); }
+
+/* ---------- The sheet, its title under the perspex ---------- */
+
+.sheet {
+  border-radius: 6px;
+  background: var(--trace-sheet);
+  box-shadow: 0 0 0 1px rgba(60, 64, 67, .06), 0 1px 2px rgba(60, 64, 67, .08), 0 14px 34px -16px rgba(60, 64, 67, .22);
 }
 
+.band {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 32px 40px 22px;
+  border-radius: 6px 6px 0 0;
+}
+
+.body { padding: 12px 40px 48px; }
+
+/* One scale on every public page: title 32, section 22, item 16, body 16,
+   notes 14, labels 13 (sign-in uses the same, src/trace-home.css). */
 h1 {
-  font-size: 30px;
-  line-height: 1.2;
-  margin: 8px 0 4px;
+  margin: 0;
+  color: var(--ink);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -.025em;
 }
 
 h2 {
-  font-size: 20px;
-  margin: 36px 0 8px;
+  margin: 44px 0 8px;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -.015em;
 }
 
 h3 {
+  margin: 24px 0 4px;
+  color: var(--ink);
   font-size: 16px;
-  margin: 20px 0 4px;
+  font-weight: 600;
 }
 
-p,
-li {
-  max-width: 68ch;
-}
+strong { color: var(--ink); font-weight: 600; }
 
-a {
-  color: var(--accent);
-}
+p, li { max-width: 68ch; }
 
 .updated {
+  margin: 8px 0 0;
   color: var(--muted);
-  margin-top: 0;
+  font-size: 15px;
 }
 
 .summary {
-  padding: 14px 18px;
-  border: 1px solid var(--line);
+  margin-top: 24px;
+  padding: 16px 20px;
   border-radius: 6px;
+  background: var(--tint);
 }
+
+.summary p { margin: 0; }
 
 table {
   width: 100%;
@@ -110,20 +168,190 @@ table {
 
 th,
 td {
-  text-align: left;
-  vertical-align: top;
   padding: 10px 8px;
   border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
 }
 
-th {
+th { color: var(--ink); font-weight: 600; }
+
+/* ---------- Pricing: three plans side by side ---------- */
+
+.plans { margin-top: 20px; }
+
+.plan-table { margin: 0; table-layout: fixed; }
+.plan-table colgroup, .plan-table td:first-child, .plan-table tbody th { width: 28%; }
+
+.plan-table thead th {
+  padding: 4px 16px 22px;
+  border-bottom: 1px solid var(--line-strong);
+  vertical-align: top;
+  font-weight: 400;
+}
+
+.plan-table thead td { border-bottom: 1px solid var(--line-strong); }
+
+.plan-name,
+.plan-price,
+.plan-period,
+.plan-for { display: block; }
+
+.plan-name {
+  color: var(--muted);
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
-footer {
-  padding-top: 16px;
-  padding-bottom: 32px;
-  border-top: 1px solid var(--line);
+.plan-price {
+  margin-top: 6px;
+  color: var(--ink);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-price small {
+  margin-left: 4px;
   color: var(--muted);
   font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.plan-period {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.plan-for {
+  margin-top: 12px;
+  color: var(--body);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.plan-table tbody th,
+.plan-table tbody td { padding: 14px 16px; }
+
+.plan-table tbody th {
+  padding-left: 0;
+  color: var(--body);
+  font-weight: 500;
+}
+
+.plan-table tbody td {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-table tbody tr:last-child > * { border-bottom: 0; }
+/* Each plan its own column: a hairline between them. */
+.plan-table thead th + th,
+.plan-table tbody td + td { border-left: 1px solid var(--line); }
+
+.plan-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 28px;
+}
+
+.plan-cta p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button:hover { background: var(--accent-hover); color: #FFFFFF; }
+
+/* ---------- Questions: a new part of the sheet, ruled off ---------- */
+
+.faq {
+  margin: 56px -40px 0;
+  padding: 0 40px;
+  border-top: 1px solid var(--line);
+}
+
+.faq h2 { margin-top: 36px; }
+
+.faq dl { margin: 12px 0 0; }
+
+.faq dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 4px 32px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+
+.faq dl > div:first-child { border-top: 0; }
+
+.faq dt { color: var(--ink); font-weight: 600; line-height: 1.45; }
+.faq dd { margin: 0; max-width: 60ch; }
+
+/* ---------- Below the sheet: the legal links ---------- */
+
+.foot {
+  padding: 22px 0 40px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.foot p { margin: 6px 0 0; }
+
+.legal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+}
+
+.legal-nav a { color: var(--muted); }
+.legal-nav a:hover,
+.legal-nav a[aria-current="page"] { color: var(--ink); }
+
+/* ---------- Narrow screens: the sheet fills the width ---------- */
+
+@media (max-width: 720px) {
+  :root { --width: 100%; }
+  .bar { height: 60px; padding-inline: 16px; }
+  .home .wordmark { width: 112px; height: 24px; }
+  .site-nav a { padding: 6px 10px; }
+  .sheet { border-radius: 0; }
+  .band { padding: 22px 16px 16px; border-radius: 0; }
+  h1 { font-size: 28px; }
+  .body { padding: 4px 16px 36px; overflow-x: auto; }
+  .plan-table thead th { padding: 8px 8px 16px; }
+  .plan-table tbody th, .plan-table tbody td { padding: 12px 8px; }
+  .plan-table tbody th { padding-left: 0; font-size: 14px; }
+  .plan-price { font-size: 24px; }
+  .plan-price small { display: block; margin: 2px 0 0; }
+  .plan-for { display: none; }
+  .faq { margin-inline: -16px; padding-inline: 16px; }
+  .faq dl > div { grid-template-columns: 1fr; }
+  .foot { padding-inline: 16px; }
+}
+
+@media print {
+  body { background: none; }
+  .site-nav { display: none; }
+  .sheet { box-shadow: none; }
+  .band { position: static; }
 }

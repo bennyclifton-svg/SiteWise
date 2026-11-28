@@ -138,18 +138,71 @@ templates:
         title: Changes and project evidence
         essential: true
         clauses: []
-
-  # The project report: what a client reads each period, from the screens'
-  # own figures (docs/plans/2026-11-17-monthly-report.md). Draft wording
-  # until the owner reviews it.
+  # The project report in the owner's format (docs/plans/2026-11-26-
+  # project-report-golden-format.md): the owner's sections in the owner's
+  # order, then the earlier sections as review lists kept off the issued
+  # report. Section titles are the owner's own report's; draft until the
+  # owner reviews them.
   - id: tpl.monthly-report
-    version: 1
+    version: 2
     kind: monthly
     status: draft
     sources:
+      - {design: docs/plans/2026-11-26-project-report-golden-format.md, anchor: "## 5. Section by section"}
       - {design: docs/plans/2026-11-17-monthly-report.md, anchor: "## Tasks"}
-      - {design: docs/design/2026-11-12-project-report.md, anchor: "## 4. What the report says"}
     sections:
+      - id: cover
+        title: Cover
+        essential: true
+        clauses: []
+      - id: quality
+        title: Quality information
+        essential: true
+        clauses: []
+      - id: context
+        title: 01 Site and project context
+        essential: true
+        clauses: []
+      - id: summary
+        title: 02 Executive summary
+        essential: true
+        clauses: []
+      - id: statutory
+        title: 03 Statutory approvals
+        essential: true
+        clauses: []
+      - id: programme
+        title: 04 Programme review
+        essential: true
+        clauses: []
+      - id: cost_planning
+        title: 05 Cost planning
+        essential: true
+        clauses: []
+      - id: design
+        title: 06 Design management
+        essential: true
+        clauses: []
+      - id: site
+        title: 07 Site activity
+        essential: true
+        clauses: []
+      - id: change
+        title: 08 Variation and change control
+        essential: true
+        clauses: []
+      - id: insurances
+        title: 09 Insurances, security and bonds
+        essential: true
+        clauses: []
+      - id: attach_a
+        title: Attachment A Payment schedules
+        essential: true
+        clauses: []
+      - id: attach_b
+        title: Attachment B
+        essential: true
+        clauses: []
       - id: glance
         title: At a glance
         essential: true

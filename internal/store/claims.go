@@ -51,20 +51,37 @@ type ClaimView struct {
 	ServedConfirmed bool
 	ReferenceDate   string
 	ScheduleServed  string
-	Rows            []invoices.ClaimRow
-	Figures         invoices.ClaimFigures
-	Schedule        invoices.DueDate
-	Payment         invoices.DueDate
-	Alert           string
-	Late            bool
-	Issued          []IssuedSchedule
-	SettledBy       []string // tax invoices linked to it
+	// ScheduleServedConfirmed: the PM typed or confirmed the day served. A
+	// day set by rule when the schedule's message was sent is not.
+	ScheduleServedConfirmed bool
+	// Send is the message the issued schedule last went out on; nil when it
+	// has not been sent from SiteWise.
+	Send *ClaimSend
+	// TaxInvoice: the claim is its own tax invoice. AwaitingInvoice: it is
+	// not, and no invoice is linked to it yet.
+	TaxInvoice, AwaitingInvoice bool
+	// Note is the PM's own words on the schedule.
+	Note      string
+	Rows      []invoices.ClaimRow
+	Figures   invoices.ClaimFigures
+	Schedule  invoices.DueDate
+	Payment   invoices.DueDate
+	Alert     string
+	Late      bool
+	Issued    []IssuedSchedule
+	SettledBy []string // tax invoices linked to it
+}
+
+// ClaimSend is a sent schedule's message: queued, sent or failed, and the
+// day it went (Sydney).
+type ClaimSend struct {
+	MessageID, Status, SentOn string
 }
 
 func readClaimRows(ctx context.Context, q querier, org, project string) (map[string][]invoices.ClaimRow, error) {
 	rows, err := q.Query(ctx, `
 SELECT invoice_id::text, id::text, ordinal, kind, label, COALESCE(page,0), COALESCE(cost_item_id::text,''), COALESCE(variation_id::text,''), mapped_by, band,
- to_date_cents, previous_cents, this_claim_cents, assessed_to_date_cents, reason, version
+ to_date_cents, previous_cents, this_claim_cents, assessed_to_date_cents, reason, version, COALESCE(breakdown_line_id::text,'')
 FROM progress_claim_lines WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY invoice_id, ordinal`, org, project)
 	if err != nil {
 		return nil, err
@@ -75,7 +92,7 @@ FROM progress_claim_lines WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY
 		var inv string
 		var r invoices.ClaimRow
 		if err := rows.Scan(&inv, &r.ID, &r.Ordinal, &r.Kind, &r.Label, &r.Page, &r.LineID, &r.VariationID, &r.MappedBy, &r.Band,
-			&r.ToDate, &r.Previous, &r.ThisClaim, &r.Assessed, &r.Reason, &r.Version); err != nil {
+			&r.ToDate, &r.Previous, &r.ThisClaim, &r.Assessed, &r.Reason, &r.Version, &r.BreakdownID); err != nil {
 			return nil, err
 		}
 		out[inv] = append(out[inv], r)
@@ -200,6 +217,13 @@ func (s *Store) claimLedger(ctx context.Context, tx pgx.Tx, org, project, today 
 	for _, c := range v.Contracts {
 		contracts[c.PackageID] = c
 	}
+	// A row that names only its cost line sits on that line's whole
+	// breakdown line.
+	for _, inv := range v.Invoices {
+		if c, ok := contracts[inv.PackageID]; ok {
+			c.placeRows(rowsBy[inv.ID])
+		}
+	}
 	variationLine, variationStatus := map[string]string{}, map[string]string{}
 	for _, va := range v.Variations {
 		variationLine[va.ID], variationStatus[va.ID] = va.LineID, va.Status
@@ -214,13 +238,21 @@ func (s *Store) claimLedger(ctx context.Context, tx pgx.Tx, org, project, today 
 	var inputs []invoices.ClaimInput
 	views := map[string]*ClaimView{}
 	var order []string
+	sentOn := map[string]string{} // message id -> claim id
 	for _, inv := range v.Invoices {
 		if inv.Kind != invoices.KindProgressClaim || inv.Status == invoices.StatusVoid || inv.Status == invoices.StatusSuperseded {
 			continue
 		}
 		d := inv.Decisions
 		cv := &ClaimView{InvoiceID: inv.ID, PackageID: inv.PackageID, Number: inv.Number, Rows: rowsBy[inv.ID], Issued: issuedBy[inv.ID],
-			ReferenceDate: d[invoices.FieldReferenceDate].Value, ScheduleServed: d[invoices.FieldScheduleServedOn].Value}
+			ReferenceDate: d[invoices.FieldReferenceDate].Value, ScheduleServed: d[invoices.FieldScheduleServedOn].Value, Note: d[invoices.FieldScheduleNote].Value}
+		if ss := d[invoices.FieldScheduleServedOn]; ss.Value != "" {
+			cv.ScheduleServedConfirmed = ss.DecidedBy == invoices.DecidedByUser
+		}
+		cv.TaxInvoice = d[invoices.FieldTaxInvoice].Value == "yes" || d[invoices.FieldTaxInvoice].Value == "" && contracts[inv.PackageID].Services()
+		if m := d[invoices.FieldScheduleMessage].Value; m != "" {
+			sentOn[m] = inv.ID
+		}
 		if served := d[invoices.FieldServedOn]; served.Value != "" {
 			cv.Served, cv.ServedConfirmed = served.Value, served.DecidedBy == invoices.DecidedByUser
 		} else {
@@ -236,7 +268,9 @@ func (s *Store) claimLedger(ctx context.Context, tx pgx.Tx, org, project, today 
 		if len(cv.Issued) > 0 && cv.Alert != "" && (cv.Schedule.Date == "" || cv.Issued[0].IssuedOn <= cv.Schedule.Date) {
 			cv.Alert = invoices.AlertCheck
 		}
-		cv.Late = cv.Alert == invoices.AlertOverdue
+		// Past due warns whatever the date came from; the claimed amount
+		// counts only once a verified row's own date has passed.
+		cv.Late = cv.Alert == invoices.AlertOverdue && invoices.ScheduleLapsed(in, cv.ScheduleServed != "", today)
 		ci := invoices.ClaimInput{ID: inv.ID, PackageID: inv.PackageID, Created: inv.CreatedAt, Rows: cv.Rows, Late: cv.Late,
 			ReferenceDate: cv.ReferenceDate, GST: inv.GST, Total: inv.Total}
 		if n := len(cv.Issued); n > 0 {
@@ -245,6 +279,32 @@ func (s *Store) claimLedger(ctx context.Context, tx pgx.Tx, org, project, today 
 		inputs = append(inputs, ci)
 		views[inv.ID] = cv
 		order = append(order, inv.ID)
+	}
+	// Only a claim whose schedule was sent from here has a message to read.
+	if len(sentOn) > 0 {
+		ids := make([]string, 0, len(sentOn))
+		for id := range sentOn {
+			ids = append(ids, id)
+		}
+		rows, err := tx.Query(ctx, `SELECT id::text, send_status, COALESCE(to_char(sent_at AT TIME ZONE 'Australia/Sydney','YYYY-MM-DD'),'')
+FROM mail_messages WHERE org_id=$1::uuid AND project_id=$2::uuid AND id::text = ANY($3)`, org, project, ids)
+		if err != nil {
+			return err
+		}
+		for rows.Next() {
+			var m ClaimSend
+			if err := rows.Scan(&m.MessageID, &m.Status, &m.SentOn); err != nil {
+				rows.Close()
+				return err
+			}
+			if cv := views[sentOn[m.MessageID]]; cv != nil {
+				cv.Send = &m
+			}
+		}
+		rows.Close()
+		if err := rows.Err(); err != nil {
+			return err
+		}
 	}
 	figures := invoices.ClaimLedger(inputs, variationLine, variationStatus, lineToDate)
 	settled := map[string]bool{}
@@ -258,24 +318,11 @@ func (s *Store) claimLedger(ctx context.Context, tx pgx.Tx, org, project, today 
 			settled[id] = true
 		}
 	}
-	// The link rule: an invoice from the claim's package whose total is the
-	// schedule's payable to the cent stands for that claim.
-	for i := range v.Invoices {
-		inv := &v.Invoices[i]
-		if inv.Kind != "invoice" || inv.SettlesClaim != "" || inv.Total == nil || inv.Status == invoices.StatusVoid || inv.Status == invoices.StatusSuperseded {
-			continue
-		}
-		for _, id := range order {
-			cv := views[id]
-			if cv.PackageID == inv.PackageID && len(cv.Issued) > 0 && !settled[id] && cv.Figures.Payable != nil && *cv.Figures.Payable == *inv.Total {
-				inv.SettlesClaim, inv.SettlesBy = id, invoices.DecidedByRule
-				settled[id] = true
-				break
-			}
-		}
-	}
+	linkTaxInvoices(v, views, order, settled)
 	for _, id := range order {
-		v.Claims = append(v.Claims, *views[id])
+		cv := views[id]
+		cv.AwaitingInvoice = !cv.TaxInvoice && !settled[id]
+		v.Claims = append(v.Claims, *cv)
 	}
 	for _, inv := range v.Invoices {
 		if inv.SettlesClaim != "" {
@@ -291,38 +338,119 @@ func (s *Store) claimLedger(ctx context.Context, tx pgx.Tx, org, project, today 
 	return nil
 }
 
-// claimInvoiceFlags asks about an unlinked invoice from a package that has
-// claims: it may be the tax invoice for one.
-func claimInvoiceFlags(v *LedgerView) {
-	withClaims := map[string]bool{}
-	for _, c := range v.Claims {
-		withClaims[c.PackageID] = true
-	}
+// linkTaxInvoices is the link rule, worked out at read (slice 6): an
+// invoice from a claim's package stands for the one claim, still without
+// an invoice, whose figures it matches: the schedule's payable, the
+// schedule's net (GST rounded the other way), or the claim's own printed
+// total (an invoice sent before the schedule, or for the amount claimed).
+// Two claims that could take it is no link. Then, on a contract with a
+// claim still waiting for its invoice, an invoice no rule placed is held
+// out of the totals until the PM places it.
+func linkTaxInvoices(v *LedgerView, views map[string]*ClaimView, order []string, settled map[string]bool) {
+	printed := map[string]*int64{}
 	for _, inv := range v.Invoices {
-		if inv.Kind == "invoice" && inv.SettlesClaim == "" && withClaims[inv.PackageID] && inv.Status != invoices.StatusVoid && inv.Status != invoices.StatusSuperseded {
-			v.Flags[inv.ID] = append(v.Flags[inv.ID], invoices.Flag{Code: "claim_tax_invoice", Reason: "Is this the tax invoice for a progress claim? Link it so it is not counted twice"})
+		if inv.Kind == invoices.KindProgressClaim {
+			printed[inv.ID] = inv.Total
+		}
+	}
+	same := func(a, b *int64) bool { return a != nil && b != nil && *a == *b }
+	open := func(inv invoices.Invoice) bool {
+		return inv.Kind == "invoice" && inv.SettlesClaim == "" && !inv.NotClaim && inv.PackageID != "" &&
+			inv.Status != invoices.StatusVoid && inv.Status != invoices.StatusSuperseded
+	}
+	for i := range v.Invoices {
+		inv := &v.Invoices[i]
+		if !open(*inv) {
+			continue
+		}
+		var match, note string
+		n := 0
+		for _, id := range order {
+			cv := views[id]
+			if cv.PackageID != inv.PackageID || settled[id] || cv.TaxInvoice {
+				continue
+			}
+			issued := len(cv.Issued) > 0
+			how := ""
+			switch {
+			case issued && same(inv.Total, cv.Figures.Payable), issued && same(inv.Ex, cv.Figures.Net):
+			case same(inv.Total, printed[id]):
+				how = invoices.LinkWaiting
+				if issued {
+					how = invoices.LinkClaimedAmount
+				}
+			default:
+				continue
+			}
+			n++
+			match, note = id, how
+		}
+		if n == 1 {
+			inv.SettlesClaim, inv.SettlesBy, inv.LinkNote = match, invoices.DecidedByRule, note
+			settled[match] = true
+		}
+	}
+	waiting := map[string]bool{}
+	for _, id := range order {
+		if cv := views[id]; !settled[id] && !cv.TaxInvoice {
+			waiting[cv.PackageID] = true
+		}
+	}
+	for i := range v.Invoices {
+		if inv := &v.Invoices[i]; open(*inv) && waiting[inv.PackageID] {
+			inv.Held = true
 		}
 	}
 }
 
+// claimInvoiceFlags says what the link rule could not settle: an invoice
+// held until it is placed, and one linked on the amount claimed.
+func claimInvoiceFlags(v *LedgerView) {
+	for _, inv := range v.Invoices {
+		switch {
+		case inv.Held:
+			v.Flags[inv.ID] = append(v.Flags[inv.ID], invoices.Flag{Code: "claim_invoice_unplaced", Reason: "Not counted until it is placed: is it the tax invoice for a progress claim, or not for a claim?"})
+		case inv.LinkNote == invoices.LinkClaimedAmount:
+			v.Flags[inv.ID] = append(v.Flags[inv.ID], invoices.Flag{Code: "claim_invoice_claimed_amount", Reason: "Invoiced the claimed amount; the schedule certified a different amount"})
+		}
+	}
+}
+
+// RetentionMove is what a claim holds or returns of retention, as a percent
+// of the contract's base or as dollars. Go adds it to what was held before
+// and refuses a hold past the limit or a return of more than is held. Zero
+// is no change this claim.
+type RetentionMove struct {
+	HoldPercent   *string `json:"hold_percent"`
+	ReturnPercent *string `json:"return_percent"`
+	Hold          *string `json:"hold"`
+	Return        *string `json:"return"`
+}
+
 // ClaimAssess is the PM's assessment of a claim's rows, or Accept claimed.
+// A row with no id names a line, a variation or retention the claim left
+// out, and is added. Percent is what is complete to date as a percent of
+// the line's sum; Go works out the dollars.
 type ClaimAssess struct {
 	Rows []struct {
 		ID        string  `json:"id"`
 		Assessed  *string `json:"assessed_to_date"`
+		Percent   *string `json:"percent"`
 		Reason    *string `json:"reason"`
 		Line      *string `json:"line"`
 		Variation *string `json:"variation"`
 		Retention bool    `json:"retention"`
 	} `json:"rows"`
 	AcceptClaimed bool `json:"accept_claimed"`
+	// Retention sets what this claim holds or returns.
+	Retention *RetentionMove `json:"retention"`
 }
 
 // AssessClaim saves the PM's assessed to date, reasons and mappings, or
 // takes every row's claimed to date. A claim whose schedule is issued is
 // refused, by the database's trigger as well as here.
 func (s *Store) AssessClaim(ctx context.Context, org, project, actor, invoiceID string, in ClaimAssess) error {
-	if len(in.Rows) > invoices.MaxClaimRows+20 || in.AcceptClaimed && len(in.Rows) > 0 {
+	if len(in.Rows) > invoices.MaxClaimRows+20 || in.AcceptClaimed && (len(in.Rows) > 0 || in.Retention != nil) {
 		return claimInvalid("send rows or accept_claimed, not both")
 	}
 	tx, err := s.pool.Begin(ctx)
@@ -352,10 +480,6 @@ WHERE r.org_id=$1::uuid AND r.kind='payment_schedule' AND r.invoice_id=$2::uuid)
 	if err != nil {
 		return err
 	}
-	mine := map[string]invoices.ClaimRow{}
-	for _, r := range rows[invoiceID] {
-		mine[r.ID] = r
-	}
 	contracts, err := readContracts(ctx, tx, org, project)
 	if err != nil {
 		return err
@@ -365,17 +489,69 @@ WHERE r.org_id=$1::uuid AND r.kind='payment_schedule' AND r.invoice_id=$2::uuid)
 		return err
 	}
 	lines, vars := map[string]bool{}, map[string]bool{}
+	stored, whole := map[string]BreakdownLine{}, map[string]string{}
+	sums, labels := map[string]*int64{}, map[string]string{} // by row key: what a percent is a percent of
 	for _, c := range contracts {
 		if c.PackageID == pkg {
+			c.placeRows(rows[invoiceID])
+			whole = c.wholeLines()
 			for _, l := range c.Lines {
 				lines[l.ID] = true
 			}
+			for _, b := range c.Breakdown {
+				key := "l:" + b.ID
+				if b.Stored {
+					stored[b.ID], key = b, invoices.BreakdownKey(b.ID)
+				}
+				sums[key], labels[key] = b.Amount, b.Label
+			}
 		}
+	}
+	mine := map[string]invoices.ClaimRow{}
+	for _, r := range rows[invoiceID] {
+		mine[r.ID] = r
+	}
+	// put places a row on a line named by its breakdown line or its cost line.
+	put := func(r *invoices.ClaimRow, id string) bool {
+		if b, ok := stored[id]; ok && !b.Retired {
+			r.LineID, r.BreakdownID = b.CostLineID, b.ID
+			return true
+		}
+		if lines[id] {
+			r.LineID, r.BreakdownID = id, whole[id]
+			return true
+		}
+		return false
 	}
 	for _, va := range vs {
 		if va.PackageID == pkg {
 			vars[va.ID] = true
+			labels["v:"+va.ID] = strings.TrimSpace(va.Number + " " + va.Title)
+			if va.Status == invoices.VariationApproved {
+				sums["v:"+va.ID] = va.Approved
+			}
 		}
+	}
+	// on is what a row sits on, as the ledger keys it.
+	on := func(r invoices.ClaimRow) string {
+		switch {
+		case r.Kind == invoices.RowRetention:
+			return "retention"
+		case r.VariationID != "":
+			return "v:" + r.VariationID
+		case r.BreakdownID != "":
+			return invoices.BreakdownKey(r.BreakdownID)
+		case r.LineID != "":
+			return "l:" + r.LineID
+		}
+		return ""
+	}
+	next, taken := 0, map[string]bool{}
+	for _, r := range rows[invoiceID] {
+		if r.Ordinal >= next {
+			next = r.Ordinal + 1
+		}
+		taken[on(r)] = true
 	}
 	if in.AcceptClaimed {
 		for _, r := range rows[invoiceID] {
@@ -392,9 +568,57 @@ WHERE r.org_id=$1::uuid AND r.kind='payment_schedule' AND r.invoice_id=$2::uuid)
 		}
 		return s.finishClaimsWrite(ctx, tx, org, project)
 	}
+	if in.Retention != nil {
+		held, err := s.retentionHeld(ctx, tx, org, project, invoiceID, *in.Retention)
+		if err != nil {
+			return err
+		}
+		// The move is the claim's retention row: its held to date.
+		row := in.Rows[:0:0]
+		row = append(row, in.Rows...)
+		amount := invoices.FormatCents(held)
+		in.Rows = append(row, struct {
+			ID        string  `json:"id"`
+			Assessed  *string `json:"assessed_to_date"`
+			Percent   *string `json:"percent"`
+			Reason    *string `json:"reason"`
+			Line      *string `json:"line"`
+			Variation *string `json:"variation"`
+			Retention bool    `json:"retention"`
+		}{Assessed: &amount, Retention: true})
+		for _, r := range rows[invoiceID] {
+			if r.Kind == invoices.RowRetention {
+				in.Rows[len(in.Rows)-1].ID = r.ID
+			}
+		}
+	}
 	for _, w := range in.Rows {
 		r, ok := mine[w.ID]
-		if !ok {
+		add := w.ID == ""
+		switch {
+		case add:
+			// The claim left this line out, so it claims nothing on it this
+			// time; the row is added by its first assessment.
+			nothing := int64(0)
+			r = invoices.ClaimRow{MappedBy: invoices.DecidedByUser, Band: invoices.BandGreen, ThisClaim: &nothing}
+			switch {
+			case w.Retention:
+				r.Kind, r.Label = invoices.RowRetention, "Retention"
+			case w.Variation != nil && vars[*w.Variation]:
+				r.Kind, r.VariationID = invoices.RowVariation, *w.Variation
+			case w.Line != nil && put(&r, *w.Line):
+				r.Kind = invoices.RowContract
+			default:
+				return claimInvalid("that line is not on this claim's contract")
+			}
+			if taken[on(r)] {
+				return claimInvalid("that line already has a row on this claim")
+			}
+			taken[on(r)] = true
+			if r.Label == "" {
+				r.Label = labels[on(r)]
+			}
+		case !ok:
 			return ErrNotFound
 		}
 		if w.Assessed != nil {
@@ -416,27 +640,109 @@ WHERE r.org_id=$1::uuid AND r.kind='payment_schedule' AND r.invoice_id=$2::uuid)
 			r.Reason = reason
 		}
 		switch {
+		case add:
 		case w.Retention:
-			r.Kind, r.LineID, r.VariationID, r.MappedBy, r.Band = invoices.RowRetention, "", "", invoices.DecidedByUser, invoices.BandGreen
+			r.Kind, r.LineID, r.BreakdownID, r.VariationID, r.MappedBy, r.Band = invoices.RowRetention, "", "", "", invoices.DecidedByUser, invoices.BandGreen
 		case w.Line != nil && *w.Line != "":
-			if !lines[*w.Line] {
+			if !put(&r, *w.Line) {
 				return claimInvalid("that line is not on this claim's contract")
 			}
-			r.Kind, r.LineID, r.VariationID, r.MappedBy, r.Band = invoices.RowContract, *w.Line, "", invoices.DecidedByUser, invoices.BandGreen
+			r.Kind, r.VariationID, r.MappedBy, r.Band = invoices.RowContract, "", invoices.DecidedByUser, invoices.BandGreen
 		case w.Variation != nil && *w.Variation != "":
 			if !vars[*w.Variation] {
 				return claimInvalid("that variation is not on this claim's contract")
 			}
-			r.Kind, r.LineID, r.VariationID, r.MappedBy, r.Band = invoices.RowVariation, "", *w.Variation, invoices.DecidedByUser, invoices.BandGreen
+			r.Kind, r.LineID, r.BreakdownID, r.VariationID, r.MappedBy, r.Band = invoices.RowVariation, "", "", *w.Variation, invoices.DecidedByUser, invoices.BandGreen
 		case w.Line != nil:
-			r.Kind, r.LineID, r.VariationID, r.MappedBy, r.Band = invoices.RowContract, "", "", invoices.DecidedByUser, invoices.BandGreen
+			r.Kind, r.LineID, r.BreakdownID, r.VariationID, r.MappedBy, r.Band = invoices.RowContract, "", "", "", invoices.DecidedByUser, invoices.BandGreen
+		}
+		if w.Percent != nil {
+			hundredths, ok, err := invoices.ParseCents(*w.Percent)
+			if err != nil || !ok || hundredths < 0 || hundredths > 100000 {
+				return claimInvalid("the percent is a number from 0 to 1,000")
+			}
+			sum := sums[on(r)]
+			if sum == nil || *sum <= 0 {
+				return claimInvalid("a percent needs the line's sum; type the amount instead")
+			}
+			a := (*sum*hundredths + 5000) / 10000
+			r.Assessed = &a
+		}
+		if add {
+			if _, err := tx.Exec(ctx, `INSERT INTO progress_claim_lines (org_id, id, project_id, invoice_id, ordinal, kind, label, cost_item_id, variation_id, mapped_by, band, this_claim_cents, assessed_to_date_cents, reason, breakdown_line_id)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,NULLIF($8,'')::uuid,NULLIF($9,'')::uuid,$10,$11,$12,$13,$14,NULLIF($15,'')::uuid)`,
+				org, newID(), project, invoiceID, next, r.Kind, r.Label, r.LineID, r.VariationID, r.MappedBy, r.Band, r.ThisClaim, r.Assessed, r.Reason, r.BreakdownID); err != nil {
+				return claimWriteError(err)
+			}
+			next++
+			continue
 		}
 		if _, err := tx.Exec(ctx, `UPDATE progress_claim_lines SET kind=$3, cost_item_id=NULLIF($4,'')::uuid, variation_id=NULLIF($5,'')::uuid, mapped_by=$6, band=$7,
- assessed_to_date_cents=$8, reason=$9, version=version+1 WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ID, r.Kind, r.LineID, r.VariationID, r.MappedBy, r.Band, r.Assessed, r.Reason); err != nil {
+ assessed_to_date_cents=$8, reason=$9, breakdown_line_id=NULLIF($10,'')::uuid, version=version+1 WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ID, r.Kind, r.LineID, r.VariationID, r.MappedBy, r.Band, r.Assessed, r.Reason, r.BreakdownID); err != nil {
 			return claimWriteError(err)
 		}
 	}
 	return s.finishClaimsWrite(ctx, tx, org, project)
+}
+
+// retentionHeld works out a claim's retention held to date from what it
+// holds or returns this time. A percent is of the contract's base, so it
+// needs the contract's retention terms.
+func (s *Store) retentionHeld(ctx context.Context, tx pgx.Tx, org, project, invoiceID string, m RetentionMove) (int64, error) {
+	given := 0
+	for _, p := range []*string{m.HoldPercent, m.ReturnPercent, m.Hold, m.Return} {
+		if p != nil {
+			given++
+		}
+	}
+	if given != 1 {
+		return 0, claimInvalid("say one of: hold or return, as a percent or as dollars")
+	}
+	v, err := s.invoiceLedgerTx(ctx, tx, org, project, time.Now().In(invoices.Sydney).Format("2006-01-02"))
+	if err != nil {
+		return 0, err
+	}
+	sheet, ok := ClaimSheet(v, invoiceID)
+	if !ok {
+		return 0, claimInvalid("this claim is not on a live contract")
+	}
+	r := sheet.Retention
+	var cents int64
+	percent := m.HoldPercent
+	if percent == nil {
+		percent = m.ReturnPercent
+	}
+	dollars := m.Hold
+	if dollars == nil {
+		dollars = m.Return
+	}
+	switch {
+	case percent != nil:
+		hundredths, ok, err := invoices.ParseCents(*percent)
+		if err != nil || !ok || hundredths < 0 || hundredths > 10000 {
+			return 0, claimInvalid("the retention percent is a number from 0 to 100")
+		}
+		if r.Base == nil {
+			return 0, claimInvalid("a percent needs the contract's retention terms (its rate and what it is a percent of); type dollars instead")
+		}
+		cents = (*r.Base*hundredths + 5000) / 10000
+	default:
+		c, ok, err := invoices.ParseCents(*dollars)
+		if err != nil || !ok || c < 0 {
+			return 0, claimInvalid("the retention amount is not an amount")
+		}
+		cents = c
+	}
+	if m.ReturnPercent != nil || m.Return != nil {
+		if cents > r.HeldBefore {
+			return 0, claimInvalid("only $%s is held, so $%s cannot be returned", invoices.DisplayCents(r.HeldBefore), invoices.DisplayCents(cents))
+		}
+		return r.HeldBefore - cents, nil
+	}
+	if r.Limit != nil && r.HeldBefore+cents > *r.Limit {
+		return 0, claimInvalid("the limit is $%s and $%s is already held, so $%s more cannot be held", invoices.DisplayCents(*r.Limit), invoices.DisplayCents(r.HeldBefore), invoices.DisplayCents(cents))
+	}
+	return r.HeldBefore + cents, nil
 }
 
 // claimPackage is a claim's package, or ErrNotFound when the invoice is not
@@ -489,16 +795,24 @@ FROM invoices i WHERE i.org_id=$1::uuid AND i.id=$2::uuid`, org, invoiceID).Scan
 		if r.Page > 0 {
 			page = r.Page
 		}
-		if _, err := tx.Exec(ctx, `INSERT INTO progress_claim_lines (org_id, id, project_id, invoice_id, ordinal, kind, label, page, cost_item_id, variation_id, mapped_by, band, to_date_cents, previous_cents, this_claim_cents)
-VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,NULLIF($9,'')::uuid,NULLIF($10,'')::uuid,$11,$12,$13,$14,$15)`,
-			org, newID(), project, invoiceID, i, r.Kind, r.Label, page, r.LineID, r.VariationID, r.MappedBy, r.Band, r.ToDate, r.Previous, r.ThisClaim); err != nil {
+		// A row the reader placed on a breakdown line is stored on that
+		// line and on the cost line it rolls up to.
+		breakdown := ""
+		if cost, ok := contracts[pkg].CostLine[r.LineID]; ok {
+			breakdown, r.LineID = r.LineID, cost
+		}
+		if _, err := tx.Exec(ctx, `INSERT INTO progress_claim_lines (org_id, id, project_id, invoice_id, ordinal, kind, label, page, cost_item_id, variation_id, mapped_by, band, to_date_cents, previous_cents, this_claim_cents, breakdown_line_id)
+VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,$6,$7,$8,NULLIF($9,'')::uuid,NULLIF($10,'')::uuid,$11,$12,$13,$14,$15,NULLIF($16,'')::uuid)`,
+			org, newID(), project, invoiceID, i, r.Kind, r.Label, page, r.LineID, r.VariationID, r.MappedBy, r.Band, r.ToDate, r.Previous, r.ThisClaim, breakdown); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// claimContexts are the live works contracts a claim may be read against.
+// claimContexts are the live contracts a claim may be read against. A
+// services contract takes a claim only when the PM drops it there; the
+// words rule never makes a consultant's invoice a claim (decision 7).
 func claimContexts(ctx context.Context, q querier, org, project string) (map[string]invoices.ClaimContract, error) {
 	contracts, err := readContracts(ctx, q, org, project)
 	if err != nil {
@@ -513,9 +827,17 @@ func claimContexts(ctx context.Context, q querier, org, project string) (map[str
 		if !c.Claims() {
 			continue
 		}
-		cc := invoices.ClaimContract{PackageID: c.PackageID}
-		for _, l := range c.Lines {
-			cc.Lines = append(cc.Lines, invoices.Line{ID: l.ID, Label: l.Label, PackageID: c.PackageID})
+		// A claim's rows are placed on the breakdown's lines, in the firm's
+		// own words where the breakdown came from its tender.
+		cc := invoices.ClaimContract{PackageID: c.PackageID, CostLine: map[string]string{}, Services: c.Services()}
+		for _, b := range c.Breakdown {
+			if b.Retired {
+				continue
+			}
+			cc.Lines = append(cc.Lines, invoices.Line{ID: b.ID, Label: b.Label, PackageID: c.PackageID})
+			if b.Stored {
+				cc.CostLine[b.ID] = b.CostLineID
+			}
 		}
 		for _, va := range vs {
 			if va.AwardID == c.AwardID {
@@ -533,6 +855,105 @@ type ContractPeriods struct {
 	ScheduleBasis string `json:"schedule_basis"`
 	PaymentDays   *int   `json:"payment_days"`
 	PaymentBasis  string `json:"payment_basis"`
+}
+
+// ContractTerms are what a payment schedule prints of the contract, typed
+// once: its own date, and its retention as a percent of a base. A nil field
+// is left as it is; an empty one clears it.
+type ContractTerms struct {
+	ContractDate     *string `json:"contract_date"`
+	RetentionPercent *string `json:"retention_percent"`
+	RetentionBase    *string `json:"retention_base"`
+	// ActApplies is "yes" or "no" to name the Act on this contract's
+	// schedules, "" for the default by kind.
+	ActApplies *string `json:"act_applies"`
+}
+
+// SetContractTerms types a contract's date and retention terms on its live
+// award. Awards carry no capture trigger, so from chat this waits for the
+// PM's click, as the periods do.
+func (s *Store) SetContractTerms(ctx context.Context, org, project, actor, pkg string, in ContractTerms) error {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if err := lockProject(ctx, tx, org, project); err != nil {
+		return err
+	}
+	if err := packageActor(ctx, tx, org, actor); err != nil {
+		return err
+	}
+	var date, base *string
+	var bp *int32
+	var act *bool
+	err = tx.QueryRow(ctx, `SELECT contract_date::text, retention_bp, retention_base, act_applies FROM awards
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 AND undone_at IS NULL FOR UPDATE`, org, project, pkg).Scan(&date, &bp, &base, &act)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrNotFound
+	}
+	if err != nil {
+		return err
+	}
+	if in.ContractDate != nil {
+		date = nil
+		if v := strings.TrimSpace(*in.ContractDate); v != "" {
+			if t, err := time.Parse("2006-01-02", v); err != nil || t.Year() < 2000 || t.Year() > 2099 {
+				return claimInvalid("the contract date uses YYYY-MM-DD")
+			}
+			date = &v
+		}
+	}
+	if in.RetentionPercent != nil {
+		bp = nil
+		if v := strings.TrimSpace(*in.RetentionPercent); v != "" {
+			hundredths, ok, err := invoices.ParseCents(v)
+			if err != nil || !ok || hundredths < 0 || hundredths > 10000 {
+				return claimInvalid("the retention rate is a percent from 0 to 100")
+			}
+			n := int32(hundredths)
+			bp = &n
+		}
+	}
+	if in.RetentionBase != nil {
+		base = nil
+		if v := strings.TrimSpace(*in.RetentionBase); v != "" {
+			switch v {
+			case invoices.RetentionBaseWorks, invoices.RetentionBaseLet, invoices.RetentionBaseToDate:
+				base = &v
+			default:
+				return claimInvalid("retention is a percent of works, let (works plus provisional sums) or to_date (the contract sum to date)")
+			}
+		}
+	}
+	if in.ActApplies != nil {
+		switch strings.TrimSpace(*in.ActApplies) {
+		case "":
+			act = nil
+		case "yes":
+			yes := true
+			act = &yes
+		case "no":
+			no := false
+			act = &no
+		default:
+			return claimInvalid("act_applies is yes, no, or empty for the default")
+		}
+	}
+	// A rate with no base said is of the works sub total, the "original
+	// sum" of the owner's own schedule. No rate, no base.
+	if bp != nil && base == nil {
+		works := invoices.RetentionBaseWorks
+		base = &works
+	}
+	if bp == nil {
+		base = nil
+	}
+	if _, err := tx.Exec(ctx, `UPDATE awards SET contract_date=$4::text::date, retention_bp=$5, retention_base=$6, act_applies=$7
+WHERE org_id=$1::uuid AND project_id=$2::uuid AND package_id::text=$3 AND undone_at IS NULL`, org, project, pkg, date, bp, base, act); err != nil {
+		return err
+	}
+	return s.finishClaimsWrite(ctx, tx, org, project)
 }
 
 // SetContractPeriods types the contract's periods on its live award. A nil

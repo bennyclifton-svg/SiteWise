@@ -13,6 +13,8 @@
 	{"name":"invoice_export","p50_us":1000000,"p90_us":2000000,"note":"Excel export of 1,000 invoices (proposed: p90 2,000 ms)"},
 	{"name":"claim_intake","p50_us":1000000,"p90_us":2000000,"note":"a 40-row progress claim dropped on its contract, upload to its ledger row event: one claim-1 fan-out (the invoice_intake budget; variations plan Task 12)"},
 	{"name":"variations_read","p50_us":100000,"p90_us":250000,"note":"the Variations and claims tab riding on GET /invoices with 200 variations, 24 claims and 300 invoices (the costs_read budget); held by TestVariationsBudget"},
+	{"name":"schedule_read","p50_us":100000,"p90_us":250000,"note":"one claim's payment schedule as a sheet, riding on GET /invoices?sheet= with 200 variations, 24 claims of 40 rows and 300 invoices (the costs_read budget); no Jev, no model; held by TestVariationsBudget"},
+	{"name":"breakdown_write","p50_us":100000,"p90_us":250000,"note":"add or edit one line of a contract's breakdown, recomputed ledger returned (the costs_write budget); no Jev, no model; held by TestVariationsBudget"},
 	{"name":"variation_write","p50_us":100000,"p90_us":250000,"note":"add or edit a variation, or a contract's periods, recomputed ledger returned (the costs_write budget); no Jev, no model"},
 	{"name":"claim_assess","p50_us":100000,"p90_us":250000,"note":"save an assessment or Accept claimed on a 40-row claim, recomputed ledger returned (the costs_write budget); no Jev, no model"},
 	{"name":"payment_schedule_issue","p50_us":100000,"p90_us":250000,"note":"issue a payment schedule: snapshot, one-page PDF and its file row in one transaction (the report_issue budget); no Jev, no model"},

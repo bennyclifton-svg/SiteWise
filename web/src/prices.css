@@ -1,9 +1,6 @@
 /* Price table, award and comparison report (docs/plans/2026-10-16-procurement-to-award-implementation.md). */
 .prices { position: relative; min-width: 0; padding: 20px 28px 64px; }
-.prices-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 14px; }
-.prices-head h1 { flex: 1 1 auto; margin: 0; font-size: 21px; }
-.prices-head h1 span { font-size: var(--fs-lg); font-weight: 500; color: var(--ink-muted); }
-.prices-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.prices-head .panel-head-title span { font-size: var(--fs-lg); font-weight: 500; letter-spacing: 0; color: var(--ink-muted); }
 .prices-empty { max-width: 70ch; color: var(--ink-body); }
 .prices-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--paper); }
 /* In the workbench, no frame: the Cost Plan and the Procurement board have
@@ -81,7 +78,7 @@
 
 /* Award */
 dialog.award { width: min(860px, 94vw); max-height: 90vh; padding: 20px 24px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--paper); color: var(--ink); }
-dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
+dialog.award::backdrop { background: rgba(32, 33, 36, .4); }
 .award h2 { margin: 0; font-size: 19px; }
 .award-step { margin: 4px 0 14px; color: var(--ink-muted); font-size: var(--fs-md); }
 .award-error { color: var(--alert); }
@@ -265,8 +262,7 @@ dialog.award::backdrop { background: oklch(0.2 0.01 86 / 0.35); }
 .prices-menu-list { z-index: 20; margin-top: 4px; }
 .prices-menu-list :is(a, button) { white-space: nowrap; }
 .prices-menu-list button:disabled { color: var(--ink-muted); cursor: not-allowed; }
-.prices-more-btn { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--sw-text-secondary); cursor: pointer; }
-.prices-more-btn svg { width: 18px; height: 18px; }
-.prices-more-btn:hover, .prices-more-btn[aria-expanded="true"] { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
 /* Download moves into the price table's ⋮ menu, so the shell's row is not needed here. */
-.project-main-panel:has(.prices) .panel-actions { display: none; }
+
+/* In the workbench the heading starts where every view's does (PanelHead). */
+.cockpit-scroll .prices { padding: 0 0 64px; }

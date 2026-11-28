@@ -88,6 +88,19 @@ func lineRef(c store.Contract, ref string) (string, error) {
 	if ref == "" {
 		return "", nil
 	}
+	// A line of the breakdown first: it is what a schedule prints.
+	if b, err := byRef(c.Breakdown, func(b store.BreakdownLine) string { return b.ID }, ref, "breakdown line"); err == nil && !b.Retired {
+		return b.ID, nil
+	}
+	var named []string
+	for _, b := range c.Breakdown {
+		if !b.Retired && strings.EqualFold(strings.TrimSpace(b.Label), ref) {
+			named = append(named, b.ID)
+		}
+	}
+	if len(named) == 1 {
+		return named[0], nil
+	}
 	if l, err := byRef(c.Lines, func(l store.ContractLine) string { return l.ID }, ref, "contract line"); err == nil {
 		return l.ID, nil
 	}

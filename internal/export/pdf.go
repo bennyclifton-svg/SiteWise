@@ -127,6 +127,22 @@ func (w *pdfWriter) room(h float64) {
 
 func (w *pdfWriter) layout(d Doc) error {
 	w.newPage()
+	contents := -1
+	if d.Cover != nil {
+		if err := w.cover(*d.Cover); err != nil {
+			return err
+		}
+		w.newPage()
+	}
+	if d.Contents {
+		contents = len(w.pages) - 1
+		w.newPage()
+	}
+	starts := make([]int, len(d.Sections))
+	if d.Cover != nil {
+		// The cover carries the title; the body starts with the sections.
+		return w.body(d, starts, contents)
+	}
 	if err := w.paragraph([]Run{{Text: d.Title, Bold: true}}, 16, 2); err != nil {
 		return err
 	}
@@ -136,10 +152,18 @@ func (w *pdfWriter) layout(d Doc) error {
 		}
 	}
 	w.y += 10
-	for _, s := range d.Sections {
+	return w.body(d, starts, contents)
+}
+
+// body lays out the sections, noting the page each starts on, then fills
+// the contents page when there is one.
+func (w *pdfWriter) body(d Doc, starts []int, contents int) error {
+	for i, s := range d.Sections {
 		if s.Title != "" {
+			w.room(bandHeight + 3*bodySize*leading)
 			w.band(s.Title)
 		}
+		starts[i] = len(w.pages)
 		for _, b := range s.Blocks {
 			if err := w.block(b); err != nil {
 				return err
@@ -147,6 +171,63 @@ func (w *pdfWriter) layout(d Doc) error {
 		}
 		w.y += 8
 	}
+	if contents >= 0 {
+		return w.contents(d, starts, contents)
+	}
+	return nil
+}
+
+// cover draws the cover page: the title large, then each line.
+func (w *pdfWriter) cover(c Cover) error {
+	w.y = margin + 180
+	if err := w.paragraph([]Run{{Text: c.Title, Bold: true}}, 26, 18); err != nil {
+		return err
+	}
+	for _, l := range c.Lines {
+		if err := w.paragraph([]Run{{Text: l[0] + "  ", Muted: true}, {Text: l[1]}}, 12, 6); err != nil {
+			return err
+		}
+	}
+	if c.Image != nil {
+		img := *c.Image
+		iw, ih := fitImage(img, w.width, coverImageMaxH)
+		y := w.y + 18
+		w.draw(func() error { return w.picture(img, margin, y, iw, ih) })
+		w.y = y + ih
+	}
+	return nil
+}
+
+// contents draws the titled sections and their pages on the page kept for
+// it.
+func (w *pdfWriter) contents(d Doc, starts []int, page int) error {
+	ops := []func() error{}
+	y := margin
+	top := y // each op keeps its own line's place
+	ops = append(ops, func() error {
+		_, err := w.text("Contents", margin, top, 16, true, colourText, 0)
+		return err
+	})
+	y += 34
+	for i, s := range d.Sections {
+		if s.Title == "" {
+			continue
+		}
+		title, number, at := s.Title, fmt.Sprint(starts[i]), y
+		ops = append(ops, func() error {
+			if _, err := w.text(title, margin, at, bodySize, false, colourText, 0); err != nil {
+				return err
+			}
+			wd, err := w.measure(number, false, bodySize, 0)
+			if err != nil {
+				return err
+			}
+			_, err = w.text(number, margin+w.width-wd, at, bodySize, false, colourText, 0)
+			return err
+		})
+		y += bodySize * 2
+	}
+	w.pages[page] = ops
 	return nil
 }
 
@@ -165,6 +246,12 @@ func (w *pdfWriter) band(title string) {
 }
 
 func (w *pdfWriter) block(b Block) error {
+	if b.Heading != "" {
+		w.room(3 * bodySize * leading)
+		if err := w.paragraph([]Run{{Text: b.Heading, Bold: true}}, bodySize, 4); err != nil {
+			return err
+		}
+	}
 	runs := []Run{}
 	if b.Label != "" {
 		runs = append(runs, Run{Text: b.Label + ": ", Bold: true})
@@ -246,6 +333,10 @@ func (w *pdfWriter) table(t Table) error {
 				return nil, err
 			}
 			p.height = float64(max(len(p.lines), 1))*size*leading + 2*padY
+			for _, img := range c.Images {
+				_, h := imageSize(img, width-2*padX)
+				p.height += h + imageGap
+			}
 			out = append(out, p)
 			col += cols
 		}
@@ -323,6 +414,13 @@ func (w *pdfWriter) table(t Table) error {
 	first := 0.0
 	if len(heights) > 0 {
 		first = heights[0]
+	}
+	whole := headH
+	for _, h := range heights {
+		whole += h
+	}
+	if t.Together && whole <= w.bottom()-margin {
+		first = whole - headH
 	}
 	w.room(headH + first)
 	drawHead()
@@ -408,6 +506,9 @@ func (w *pdfWriter) table(t Table) error {
 			p := p
 			w.draw(func() error {
 				x, cw := xs[p.col], xs[p.col+p.cols]-xs[p.col]
+				if c, ok := fillColour(p.cell.Fill); ok {
+					w.fill(c, x, y, cw, h)
+				}
 				w.rect(colourLine, x, y, cw, h)
 				return w.cellText(p, x, y, cw, h, false)
 			})
@@ -480,12 +581,15 @@ func (w *pdfWriter) cellText(p placed, x, y, cw, h float64, top bool) error {
 		for i, line := range p.lines {
 			s := runText(line)
 			x0 := x + padX
-			if p.cell.Align == Center {
+			if p.cell.Align != Left {
 				wd, err := w.measure(s, true, smallSize, headSpacing)
 				if err != nil {
 					return err
 				}
 				x0 = x + (cw-wd)/2
+				if p.cell.Align == Right {
+					x0 = x + cw - padX - wd
+				}
 			}
 			if _, err := w.text(s, x0, ty+float64(i)*lh, smallSize, true, colourHead, headSpacing); err != nil {
 				return err
@@ -496,8 +600,17 @@ func (w *pdfWriter) cellText(p placed, x, y, cw, h float64, top bool) error {
 	lh := bodySize * leading
 	textH := float64(len(p.lines)) * lh
 	ty := y + (h-textH)/2
-	if top {
+	if top || len(p.cell.Images) > 0 {
 		ty = y + padY
+	}
+	// Images sit under the words, each fitted to the cell's width.
+	iy := ty + textH + imageGap
+	for _, img := range p.cell.Images {
+		iw, ih := imageSize(img, cw-2*padX)
+		if err := w.picture(img, x+padX, iy, iw, ih); err != nil {
+			return err
+		}
+		iy += ih + imageGap
 	}
 	for i, line := range p.lines {
 		if err := w.line(line, x+padX, ty+float64(i)*lh, bodySize, p.cell.Align, cw-2*padX); err != nil {
@@ -526,6 +639,38 @@ func (w *pdfWriter) tick(cx, cy float64, on bool) {
 	w.gp.SetStrokeColor(colourStrong.r, colourStrong.g, colourStrong.b)
 	w.gp.SetLineWidth(0.8)
 	_ = w.gp.Rectangle(x0, y0, x0+s, y0+s, "D", 1.5, 6)
+}
+
+// --- images --------------------------------------------------------------
+
+const (
+	imageGap       = 4.0
+	imageMaxH      = 200.0 // a sketch in a cell is never taller than this
+	coverImageMaxH = 300.0
+)
+
+// imageSize fits an image to a width, at most its own size at 96 dpi and
+// never taller than imageMaxH.
+func imageSize(img Image, width float64) (float64, float64) {
+	return fitImage(img, width, imageMaxH)
+}
+
+func fitImage(img Image, width, maxH float64) (float64, float64) {
+	w := min(width, float64(img.W)*0.75)
+	h := w * float64(img.H) / float64(img.W)
+	if h > maxH {
+		h = maxH
+		w = h * float64(img.W) / float64(img.H)
+	}
+	return w, h
+}
+
+func (w *pdfWriter) picture(img Image, x, y, wd, h float64) error {
+	holder, err := gopdf.ImageHolderByBytes(img.Data)
+	if err != nil {
+		return err
+	}
+	return w.gp.ImageByHolder(holder, x, y, &gopdf.Rect{W: wd, H: h})
 }
 
 // --- primitives ----------------------------------------------------------
@@ -592,12 +737,16 @@ func (w *pdfWriter) measure(s string, bold bool, size, spacing float64) (float64
 
 // line draws one wrapped line of runs.
 func (w *pdfWriter) line(runs []Run, x, y, size float64, align Align, width float64) error {
-	if align == Center {
+	if align != Left {
 		total, err := w.measureRuns(runs, size)
 		if err != nil {
 			return err
 		}
-		x += (width - total) / 2
+		if align == Right {
+			x += width - total
+		} else {
+			x += (width - total) / 2
+		}
 	}
 	for _, r := range runs {
 		if r.Text == "" {
@@ -606,6 +755,9 @@ func (w *pdfWriter) line(runs []Run, x, y, size float64, align Align, width floa
 		c := colourText
 		if r.Muted {
 			c = colourMuted
+		}
+		if r.Blue {
+			c = colourNew
 		}
 		wd, err := w.text(r.Text, x, y, size, r.Bold, c, 0)
 		if err != nil {
@@ -665,7 +817,7 @@ func (w *pdfWriter) wrap(runs []Run, size, width float64) ([][]Run, error) {
 	var current []Run
 	used := 0.0
 	push := func(r Run) {
-		if n := len(current); n > 0 && current[n-1].Bold == r.Bold && current[n-1].Muted == r.Muted {
+		if n := len(current); n > 0 && current[n-1].Bold == r.Bold && current[n-1].Muted == r.Muted && current[n-1].Blue == r.Blue && current[n-1].Italic == r.Italic {
 			current[n-1].Text += r.Text
 		} else {
 			current = append(current, r)
@@ -695,12 +847,12 @@ func (w *pdfWriter) wrap(runs []Run, size, width float64) ([][]Run, error) {
 				if f == "" {
 					continue
 				}
-				piece := Run{Text: f, Bold: r.Bold, Muted: r.Muted}
+				piece := Run{Text: f, Bold: r.Bold, Muted: r.Muted, Blue: r.Blue, Italic: r.Italic}
 				wd, err := measure(piece)
 				if err != nil {
 					return nil, err
 				}
-				trimmed := Run{Text: strings.TrimRight(f, " "), Bold: r.Bold, Muted: r.Muted}
+				trimmed := Run{Text: strings.TrimRight(f, " "), Bold: r.Bold, Muted: r.Muted, Blue: r.Blue, Italic: r.Italic}
 				tw, err := measure(trimmed)
 				if err != nil {
 					return nil, err
@@ -711,7 +863,7 @@ func (w *pdfWriter) wrap(runs []Run, size, width float64) ([][]Run, error) {
 				if tw > width {
 					// One word wider than the line: split it.
 					for _, ch := range trimmed.Text {
-						part := Run{Text: string(ch), Bold: r.Bold, Muted: r.Muted}
+						part := Run{Text: string(ch), Bold: r.Bold, Muted: r.Muted, Blue: r.Blue, Italic: r.Italic}
 						cw, err := measure(part)
 						if err != nil {
 							return nil, err
@@ -723,7 +875,7 @@ func (w *pdfWriter) wrap(runs []Run, size, width float64) ([][]Run, error) {
 						used += cw
 					}
 					if strings.HasSuffix(f, " ") {
-						push(Run{Text: " ", Bold: r.Bold, Muted: r.Muted})
+						push(Run{Text: " ", Bold: r.Bold, Muted: r.Muted, Blue: r.Blue, Italic: r.Italic})
 					}
 					continue
 				}

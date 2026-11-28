@@ -15,7 +15,21 @@ import (
 // never touched: its edits are frozen, and the trigger refuses the undo.
 func (s *Store) touchReportsAfterUndo(ctx context.Context, tx pgx.Tx, org, project string, log []changeRow) error {
 	versions := map[string]bool{}
+	reportsTouched := map[string]bool{}
 	for _, r := range log {
+		if r.Table == "report_rows" {
+			image := r.New
+			if image == nil {
+				image = r.Old
+			}
+			var row struct {
+				Report string `json:"report_id"`
+			}
+			if err := json.Unmarshal(image, &row); err == nil && row.Report != "" {
+				reportsTouched[row.Report] = true
+			}
+			continue
+		}
 		if r.Table != "report_edits" {
 			continue
 		}
@@ -67,7 +81,24 @@ func (s *Store) touchReportsAfterUndo(ctx context.Context, tx pgx.Tx, org, proje
 			return err
 		}
 	}
-	if len(versions) == 0 {
+	// The PM's rows: each report's current draft has them laid again.
+	for id := range reportsTouched {
+		rep, err := readReport(ctx, tx, org, id)
+		if errors.Is(err, ErrNotFound) || err == nil && rep.CurrentDraftVersionID == "" {
+			continue
+		}
+		if err != nil {
+			return err
+		}
+		d, err := readReportDraft(ctx, tx, org, rep.CurrentDraftVersionID)
+		if err != nil {
+			return err
+		}
+		if _, err := s.layDraftRows(ctx, tx, org, rep, d); err != nil {
+			return err
+		}
+	}
+	if len(versions) == 0 && len(reportsTouched) == 0 {
 		return nil
 	}
 	return bumpRevisionLocked(ctx, tx, org, project, "reports")

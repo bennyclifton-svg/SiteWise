@@ -105,7 +105,9 @@ func TestMonthlyReportCreatesOnceAndIsScoped(t *testing.T) {
 	for _, sec := range d.Sections {
 		ids = append(ids, sec.ID)
 	}
-	if strings.Join(ids, ",") != "glance,attention,changes,cost,program,procurement,registers,next" {
+	// The owner's sections (template version 2), then the earlier ones as
+	// review lists that are never issued.
+	if strings.Join(ids, ",") != "cover,quality,context,summary,statutory,programme,cost_planning,design,site,change,insurances,attach_a,attach_b,glance,attention,changes,cost,program,procurement,registers,next" {
 		t.Fatalf("sections %v", ids)
 	}
 	for id, want := range map[string]string{"cost:none": "No cost plan yet.", "program:none": "No Program yet.", "proc:none": "No procurement packages yet.", "changes:first": "This is the first issued report"} {
@@ -117,7 +119,9 @@ func TestMonthlyReportCreatesOnceAndIsScoped(t *testing.T) {
 		t.Errorf("registers: %q", text)
 	}
 	view, err := s.ReadReport(ctx, orgA, a.ID, "test")
-	if err != nil || view.PageFit == nil || !view.PageFit.Fits || view.PageFit.Limit != 4 {
+	// The owner's format has no page limit, and no page count is worked
+	// out on open (project report plan, question 6).
+	if err != nil || view.PageFit != nil {
 		t.Fatalf("page fit %+v %v", view.PageFit, err)
 	}
 	if strings.Join(view.Stale, ",") != "" {

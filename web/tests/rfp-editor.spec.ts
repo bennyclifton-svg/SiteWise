@@ -13,7 +13,7 @@ async function signIn(page: Page, name: string) {
 }
 
 async function refreshDraft(page: Page) {
-  const toolbar = page.locator(".report-toolbar");
+  const toolbar = page.locator(".report-head");
   // The version is kept off screen (owner, 7 Nov 2026) but stays on the toolbar.
   const version = await toolbar.getAttribute("data-version");
   expect(version).not.toBeNull();
@@ -225,7 +225,7 @@ test("transmittal follows repository selection, saves snapshots and stays inside
   await expect(transmittal).toContainText('2026-10-28');
   await expect(transmittal.locator('tbody tr td:nth-child(3)')).toHaveText(['B','B','B']);
   await expect(page.locator('.rfp-release-dates + .rfp-markers')).toHaveCount(0);
-  await expect(page.locator('.report-toolbar')).not.toContainText('Draft — not for issue');
+  await expect(page.locator('.report-head')).not.toContainText('Draft — not for issue');
   await expect(page.locator('.rfp-grid .pf-tb-head')).toHaveText(['Site and planning', 'The building', 'Delivery']);
   await expect(page.locator('.rfp-page-one .rfp-source')).toHaveCount(0);
   // The button picks up the saved schedule (all three here), not the whole register.

@@ -23,7 +23,9 @@ function seeded(str) {
   return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
 }
 const g = n => String(+n.toFixed(2));
-function write(name, svg) { writeFileSync(resolve(out, name), svg.replace(/\n\s*/g, "")); }
+function write(name, svg, dir = out) { writeFileSync(resolve(dir, name), svg.replace(/\n\s*/g, "")); }
+// Brand marks the static pages share with the app (public/brand/brand.css).
+const brand = resolve(import.meta.dirname, "../public/brand");
 
 // Wear on the smoked perspex ribbon: a few long scores, cloth-buffing swirls and
 // dust. Each mark is a pale line (light scattering out of the groove) over a faint
@@ -32,7 +34,7 @@ function write(name, svg) { writeFileSync(resolve(out, name), svg.replace(/\n\s*
 {
   const W = 1600, H = 260, r = rng(41), rand = (lo, hi) => lo + r() * (hi - lo);
   const defs = [], marks = [];
-  const twin = (d, w, pale, dark) => `<path d="${d}" stroke="#3c3228" stroke-opacity="${dark}" stroke-width="${w}" transform="translate(.6 .6)"/><path d="${d}" stroke="${pale}" stroke-width="${w}"/>`;
+  const twin = (d, w, pale, dark) => `<path d="${d}" stroke="#303844" stroke-opacity="${dark}" stroke-width="${w}" transform="translate(.6 .6)"/><path d="${d}" stroke="${pale}" stroke-width="${w}"/>`;
   const wrap = (x, span, draw) => { draw(0); if (x - span < 0) draw(W); if (x + span > W) draw(-W); };
   for (let i = 0; i < 58; i++) {
     const x = rand(0, W), y = rand(0, H), ang = r() * Math.PI, len = rand(120, 420), a = rand(.05, .14);
@@ -61,8 +63,8 @@ function write(name, svg) { writeFileSync(resolve(out, name), svg.replace(/\n\s*
     for (let i = 0; i < n; i++) { const x = rand(1, W - 1), y = rand(0, H), q = f(rand(.25, .7)); d += `M${f(x)} ${f(y)}m-${q} 0a${q} ${q} 0 1 0 ${f(q * 2)} 0a${q} ${q} 0 1 0 -${f(q * 2)} 0`; }
     marks.push(`<path d="${d}" fill="${fill}" fill-opacity="${rand(lo, hi).toFixed(2)}" stroke="none"/>`);
   };
-  for (let k = 0; k < 2; k++) { dust(80, "#fff", .1, .3); dust(80, "#3c3228", .04, .1); }
-  write("perspex-wear.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" stroke-linecap="round"><defs>${defs.join("")}</defs>${marks.join("")}</svg>`);
+  for (let k = 0; k < 2; k++) { dust(80, "#fff", .1, .3); dust(80, "#303844", .04, .1); }
+  write("perspex-wear.svg", `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" stroke-linecap="round"><defs>${defs.join("")}</defs>${marks.join("")}</svg>`, brand);
 }
 
 // Highlighter: squared off, even height, with a slight wobble and uneven ink.
@@ -200,7 +202,7 @@ function pencil(name, color, width, dots, seed, wear = "2.2 -.5") {
   const dash = dots ? ` stroke-dasharray="1.8 3.6" stroke-linecap="round"` : "";
   write(name, `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><filter id="p" x="0" y="-60%" width="100%" height="220%"><feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="2" seed="${seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".9" result="d"/><feColorMatrix in="n" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${wear}" result="g"/><feComposite in="d" in2="g" operator="in"/></filter><path d="${d}" fill="none" stroke="${color}" stroke-width="${width}"${dash} filter="url(#p)"/></svg>`);
 }
-pencil("pencil-graphite.svg", "#2f2924", 1.7, false, 3);
+pencil("pencil-graphite.svg", "#2b2f36", 1.7, false, 3);
 pencil("pencil-ember.svg", "#a85e2c", 1.9, false, 11, "2.6 -.25");
 pencil("pencil-azure.svg", "#2d5e9e", 2.1, true, 19, "2.6 -.25");
 // Dark theme: the same lines in the dark sheet's ember and azure.

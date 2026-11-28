@@ -99,3 +99,41 @@ func TestScheduleAlert(t *testing.T) {
 		t.Error("an unknown date is to check")
 	}
 }
+
+// A schedule's date passing with none served makes the claimed amount the
+// amount counted only under the Act, and only on a row the owner has
+// verified (AGENTS.md; plan 2026-11-26-payment-schedules, decision 12). A
+// date from the contract's own period, or from an unverified row, warns.
+func TestScheduleLapsedNeedsAVerifiedRowsOwnDate(t *testing.T) {
+	verified := &SOPAct{State: "NSW", ScheduleSection: "s 14(4)", ScheduleDays: 10, Verified: true}
+	in := SOPInput{State: "NSW", Act: verified, Served: "2026-11-02", ServedConfirmed: true, Years: map[int]bool{2026: true}}
+	// The Act's date is 16 November.
+	if ScheduleLapsed(in, false, "2026-11-16") {
+		t.Error("the Act's date itself is still in time")
+	}
+	if !ScheduleLapsed(in, false, "2026-11-17") {
+		t.Error("past a verified row's date with none served, the claim has lapsed")
+	}
+	if ScheduleLapsed(in, true, "2026-11-30") {
+		t.Error("a served schedule never lapses")
+	}
+	unverified := *verified
+	unverified.Verified = false
+	in.Act = &unverified
+	if ScheduleLapsed(in, false, "2026-11-30") {
+		t.Error("an unverified row warns only")
+	}
+	// The contract asks for the schedule in five business days. Past that
+	// day the screen warns, but the Act's own date has not passed.
+	in.Act, in.ScheduleDays, in.ScheduleBasis = verified, ip(5), "business"
+	due := ScheduleDue(in)
+	if due.Date != "2026-11-09" || ScheduleAlert(in, due, false, "2026-11-10") != AlertOverdue {
+		t.Fatalf("the contract's earlier date: %+v", due)
+	}
+	if ScheduleLapsed(in, false, "2026-11-10") {
+		t.Error("past the contract's date but not the Act's, nothing has lapsed")
+	}
+	if ScheduleLapsed(SOPInput{State: "WA", Served: "2026-11-02", ScheduleDays: ip(10), ScheduleBasis: "business"}, false, "2026-12-30") {
+		t.Error("with no Act row, the contract's period alone warns only")
+	}
+}

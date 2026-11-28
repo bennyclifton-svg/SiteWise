@@ -35,6 +35,7 @@ var captured = map[string]capturedTable{
 	"tender_adjustments":         {Key: []string{"org_id", "id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"tender_adjustment_amounts":  {Key: []string{"org_id", "adjustment_id", "submission_id"}, Ignore: []string{"updated_at"}, Area: "procurement"},
 	"report_edits":               {Key: []string{"org_id", "report_version_id", "target_id"}, Ignore: []string{"version", "updated_at"}, Area: "reports"},
+	"report_rows":                {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "reports"},
 	"project_delivery_items":     {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "delivery"},
 	"delivery_readings":          {Key: []string{"org_id", "id"}, Area: "delivery"},
 	"delivery_settings":          {Key: []string{"org_id", "project_id"}, Area: "delivery"},
@@ -42,9 +43,10 @@ var captured = map[string]capturedTable{
 	// edits; everything else on the row is the record's or the sender's.
 	"mail_messages": {Key: []string{"org_id", "id"}, Ignore: []string{"version", "status", "held_reason", "decided_by", "firm_id",
 		"notice_read", "notice_confidence", "notice_band", "send_status", "send_attempts", "send_error", "sent_at", "send_tried_at"}, Area: "mail"},
-	"variations":           {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "claims"},
-	"variation_documents":  {Key: []string{"org_id", "variation_id", "document_id"}, Area: "claims"},
-	"progress_claim_lines": {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "claims"},
+	"variations":               {Key: []string{"org_id", "id"}, Ignore: []string{"version", "updated_at"}, Area: "claims"},
+	"variation_documents":      {Key: []string{"org_id", "variation_id", "document_id"}, Area: "claims"},
+	"progress_claim_lines":     {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "claims"},
+	"contract_breakdown_lines": {Key: []string{"org_id", "id"}, Ignore: []string{"version"}, Area: "claims"},
 }
 
 var (

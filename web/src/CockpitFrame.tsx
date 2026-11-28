@@ -165,13 +165,10 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
     return () => ro.disconnect();
   }, []);
 
-  const [actionTarget, setActionTarget] = useState<HTMLDivElement | null>(null);
-  const [besideTarget, setBesideTarget] = useState<HTMLDivElement | null>(null);
-  const [primaryTarget, setPrimaryTarget] = useState<HTMLDivElement | null>(null);
   const [sideTarget, setSideTarget] = useState<HTMLDivElement | null>(null);
   const openSide = useCallback(() => setShowDocuments(true), []);
   return (
-    <PageActionsContext.Provider value={{ surface: actionSurface, target: actionTarget, primaryTarget, besideTarget, sideTarget, openSide }}>
+    <PageActionsContext.Provider value={{ surface: actionSurface, sideTarget, openSide }}>
     <div className={`cockpit-page${wideWorkspace?" specification-page":""}`}>
       <div
         ref={shell}
@@ -188,7 +185,7 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
         {nav}
         <div className="trace-sheet" aria-hidden="true" />
         <div className="trace-paper" ref={paper} aria-hidden="true">
-          <div className="trace-paper-sheet" />
+          <div className="trace-paper-sheet perspex" />
         </div>
         <header className="cockpit-shell-header">
           <div className="cockpit-title-block">
@@ -211,14 +208,7 @@ export function CockpitFrame({ actionSurface = "", nav, title, onRename, subtitl
         </header>
         <main className="project-main-panel" id="main">
           <div className="cockpit-scroll">
-            {/* Page actions sit on the sheet, under the title band, so the ribbon stays the title only. */}
-            <div className="panel-actions" aria-label="Workspace actions">
-              <div className="workspace-primary-actions" ref={setPrimaryTarget} />
-              <div className="page-action-rail">
-                <div className="page-action-beside" ref={setBesideTarget} />
-                <div ref={setActionTarget} />
-              </div>
-            </div>
+            {/* Each view's own heading (PanelHead) holds its actions. */}
             {children}
           </div>
           <div ref={profileFeedbackRef} hidden={!showProfileFeedback} className="profile-feedback-slot" />

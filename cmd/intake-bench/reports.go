@@ -296,8 +296,10 @@ func (a *apiClient) monthlyReport(ctx context.Context, st *store.Store, n int) e
 		if err := json.Unmarshal(raw, &view); err != nil || view.Draft == nil {
 			return fmt.Errorf("project report read: %v", err)
 		}
-		if view.PageFit == nil || !view.PageFit.Fits {
-			return fmt.Errorf("the project report does not fit its four pages: %+v", view.PageFit)
+		// The owner's format has no page limit and no page count on open
+		// (project report plan, question 6).
+		if view.PageFit != nil {
+			return fmt.Errorf("the project report worked out a page count on open: %+v", view.PageFit)
 		}
 		version := view.Draft.Version
 		edit := func(target, text string) error {

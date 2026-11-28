@@ -35,8 +35,9 @@ type InvoiceUpload struct {
 	UserID    string
 	// NotRead stores the file without reading it (unsupported format).
 	NotRead string
-	// ClaimPackage is set when the PM dropped the file on a live works
-	// contract: it is that contract's progress claim, decided before the read.
+	// ClaimPackage is set when the PM dropped the file on a live contract
+	// (works or services): it is that contract's progress claim, decided
+	// before the read.
 	ClaimPackage string
 }
 
@@ -121,7 +122,7 @@ AND NOT EXISTS (SELECT 1 FROM invoice_allocations a WHERE a.org_id=$1::uuid AND 
 	if in.ClaimPackage != "" {
 		var live bool
 		if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM awards a JOIN packages p ON p.org_id=a.org_id AND p.id=a.package_id
-WHERE a.org_id=$1::uuid AND a.project_id=$2::uuid AND a.package_id::text=$3 AND a.undone_at IS NULL AND p.kind='works')`, orgID, projectID, in.ClaimPackage).Scan(&live); err != nil {
+WHERE a.org_id=$1::uuid AND a.project_id=$2::uuid AND a.package_id::text=$3 AND a.undone_at IS NULL)`, orgID, projectID, in.ClaimPackage).Scan(&live); err != nil {
 			return InvoiceCreated{}, err
 		}
 		if !live {
@@ -720,7 +721,7 @@ func (s *Store) invoiceLedgerTx(ctx context.Context, tx pgx.Tx, orgID, projectID
 	rows, err := tx.Query(ctx, `
 SELECT id::text, filename, status, not_read_reason, COALESCE(kind,''), COALESCE(number,''), COALESCE(to_char(invoice_date,'YYYY-MM-DD'),''),
  to_char(period,'YYYY-MM-DD'), COALESCE(package_id::text,''), COALESCE(issuer_abn,''), currency, ex_gst_cents, gst_cents, total_cents,
- invoice_count, COALESCE(superseded_by::text,''), duplicate_ok, created_at, COALESCE(settles_claim_id::text,'')
+ invoice_count, COALESCE(superseded_by::text,''), duplicate_ok, created_at, COALESCE(settles_claim_id::text,''), not_claim
 FROM invoices WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY created_at DESC, id DESC`, orgID, projectID)
 	if err != nil {
 		return v, err
@@ -731,7 +732,7 @@ FROM invoices WHERE org_id=$1::uuid AND project_id=$2::uuid ORDER BY created_at 
 		var inv invoices.Invoice
 		var settle string
 		if err := rows.Scan(&inv.ID, &inv.Filename, &inv.Status, &inv.NotReadReason, &inv.Kind, &inv.Number, &inv.Date, &inv.Period, &inv.PackageID, &inv.ABN, &inv.Currency,
-			&inv.Ex, &inv.GST, &inv.Total, &inv.InvoiceCount, &inv.SupersededBy, &inv.DuplicateOK, &inv.CreatedAt, &settle); err != nil {
+			&inv.Ex, &inv.GST, &inv.Total, &inv.InvoiceCount, &inv.SupersededBy, &inv.DuplicateOK, &inv.CreatedAt, &settle, &inv.NotClaim); err != nil {
 			rows.Close()
 			return v, err
 		}
@@ -819,7 +820,9 @@ type InvoiceEdit struct {
 	Fields map[string]*string `json:"fields"`
 	// Action is "", "void", "restore", "replaces" (this invoice supersedes
 	// Target), "keep_both" (a flagged duplicate stays), "settles" (this
-	// tax invoice is for the progress claim Target) or "unsettle".
+	// tax invoice is for the progress claim Target), "unsettle" (back to the
+	// rule) or "not_claim" (an invoice that is not for a progress claim
+	// counts as an ordinary one).
 	Action string `json:"action"`
 	Target string `json:"target"`
 }
@@ -935,7 +938,7 @@ func (s *Store) invoiceAction(ctx context.Context, tx pgx.Tx, orgID, projectID, 
 		if e.Target == "" || e.Target == invoiceID {
 			return invoices.ErrInvalid
 		}
-		tag, err := tx.Exec(ctx, `UPDATE invoices SET settles_claim_id=c.id FROM invoices c
+		tag, err := tx.Exec(ctx, `UPDATE invoices SET settles_claim_id=c.id, not_claim=false FROM invoices c
 WHERE invoices.org_id=$1::uuid AND invoices.project_id=$2::uuid AND invoices.id=$3::uuid AND COALESCE(invoices.kind,'')<>'progress_claim'
   AND c.org_id=$1::uuid AND c.project_id=$2::uuid AND c.id::text=$4 AND c.kind='progress_claim'`, orgID, projectID, invoiceID, e.Target)
 		if err != nil {
@@ -946,8 +949,17 @@ WHERE invoices.org_id=$1::uuid AND invoices.project_id=$2::uuid AND invoices.id=
 		}
 		return nil
 	case "unsettle":
-		_, err := tx.Exec(ctx, `UPDATE invoices SET settles_claim_id=NULL WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, invoiceID)
+		_, err := tx.Exec(ctx, `UPDATE invoices SET settles_claim_id=NULL, not_claim=false WHERE org_id=$1::uuid AND id=$2::uuid`, orgID, invoiceID)
 		return err
+	case "not_claim":
+		tag, err := tx.Exec(ctx, `UPDATE invoices SET not_claim=true, settles_claim_id=NULL WHERE org_id=$1::uuid AND id=$2::uuid AND COALESCE(kind,'')<>'progress_claim'`, orgID, invoiceID)
+		if err != nil {
+			return err
+		}
+		if tag.RowsAffected() != 1 {
+			return invoices.ErrInvalid
+		}
+		return nil
 	case "replaces":
 		if e.Target == "" || e.Target == invoiceID {
 			return invoices.ErrInvalid
@@ -972,6 +984,19 @@ func (s *Store) cleanInvoiceValue(ctx context.Context, tx pgx.Tx, orgID, project
 		return "", invoices.ErrInvalid
 	}
 	v := strings.TrimSpace(*raw)
+	if field == invoices.FieldTaxInvoice {
+		if v != "yes" && v != "no" {
+			return "", invoices.ErrInvalid
+		}
+		return v, nil
+	}
+	// The PM's note on a payment schedule is a sentence or two, not a value.
+	if field == invoices.FieldScheduleNote {
+		if len(v) > 500 {
+			return "", invoices.ErrInvalid
+		}
+		return v, nil
+	}
 	if len(v) > 200 {
 		return "", invoices.ErrInvalid
 	}

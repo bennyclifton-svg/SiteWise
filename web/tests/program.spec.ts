@@ -535,7 +535,7 @@ for (const theme of ["light", "dark"] as const) {
         expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
         await page.getByRole("button", { name: "Fit to screen", exact: true }).click();
       }
-      await expect(section).toHaveScreenshot(`program-${theme}-${size.name}-collapsed.png`, { animations: "disabled", maxDiffPixelRatio: 0.01, mask: [page.locator(".program-head .pg-chip")] });
+      await expect(section).toHaveScreenshot(`program-${theme}-${size.name}-collapsed.png`, { animations: "disabled", maxDiffPixelRatio: 0.01, mask: [page.locator(".program .panel-head .pg-chip")] });
       await page.getByRole("button", { name: "Expand all", exact: true }).click();
       await expect(activityRows(page).first()).toBeVisible();
       await expect(section).toHaveScreenshot(`program-${theme}-${size.name}-expanded.png`, { animations: "disabled", maxDiffPixelRatio: 0.01 });
@@ -592,20 +592,19 @@ test("calendar saves working days and shared file actions follow the visible pag
   await expect(activityRows(page).first()).toBeVisible();
   await page.getByRole('button', { name: 'Collapse all', exact: true }).click();
   await expect(activityRows(page)).toHaveCount(0);
-  const download = page.getByRole('button', { name: 'Download', exact: true });
-  await download.click();
+  // Exports, print and import sit behind the heading's three dots, Update
+  // program beside them (PanelHead, owner 25 Nov 2026); no separate Download.
+  const more = page.getByRole('button', { name: 'Program actions', exact: true });
+  await expect(page.getByRole('button', { name: 'Download', exact: true })).toHaveCount(0);
+  await more.click();
   await expect(page.getByRole('menuitem', { name: 'Export CSV', exact: true })).toBeVisible();
   await expect(page.getByRole('menuitem', { name: /Import program file/ })).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(download).toBeFocused();
+  await expect(more).toBeFocused();
   await page.screenshot({ path: '../tmp/program-ui-desktop.png', fullPage: true });
-  for (const name of ['Costs', 'Procurement', 'Specifications', 'Profile']) {
+  for (const name of ['Costs', 'Procurement', 'Profile']) {
     await page.getByRole('button', { name, exact: true }).click();
-    await expect(download).toHaveCount(1);
-    await download.click();
-    await expect(page.locator('.page-action-menu')).toBeVisible();
-    await expect(page.getByRole('menuitem', { name: 'Export CSV', exact: true })).toHaveCount(0);
-    await page.keyboard.press('Escape');
+    await expect(more).toBeHidden();
   }
   await openProgram(page);
   await page.setViewportSize({ width: 390, height: 844 });

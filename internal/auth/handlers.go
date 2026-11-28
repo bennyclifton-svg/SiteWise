@@ -3,11 +3,13 @@ package auth
 import (
 	"context"
 	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"net/smtp"
+	"strings"
 	"sync"
 	"time"
 
@@ -125,9 +127,31 @@ func (s SMTP) send(to, subject, body string) error {
 		}
 		a = smtp.PlainAuth("", s.User, s.Password, host)
 	}
-	msg := "From: SiteWise <" + s.From + ">\r\nTo: " + to + "\r\nSubject: " + subject +
+	msg, err := accountMessage(s.From, to, subject, body, time.Now())
+	if err != nil {
+		return err
+	}
+	return smtp.SendMail(s.Addr, a, s.From, []string{to}, msg)
+}
+
+// accountMessage builds the plain-text message. Date and Message-ID are set
+// here rather than left to the relay: Gmail refuses or junks mail without a
+// valid Message-ID, and the transmittal path (correspondence.Build) already
+// sets both.
+func accountMessage(from, to, subject, body string, now time.Time) ([]byte, error) {
+	id := make([]byte, 16)
+	if _, err := rand.Read(id); err != nil {
+		return nil, err
+	}
+	domain := "sitewise.au"
+	if at := strings.LastIndexByte(from, '@'); at >= 0 && at < len(from)-1 {
+		domain = from[at+1:]
+	}
+	msg := "From: SiteWise <" + from + ">\r\nTo: " + to + "\r\nSubject: " + subject +
+		"\r\nDate: " + now.Format(time.RFC1123Z) +
+		"\r\nMessage-ID: <" + hex.EncodeToString(id) + "@" + domain + ">" +
 		"\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n" + body
-	return smtp.SendMail(s.Addr, a, s.From, []string{to}, []byte(msg))
+	return []byte(msg), nil
 }
 
 // DevResetMail prints the reset link to the local server log. serve uses it

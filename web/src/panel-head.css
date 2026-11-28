@@ -1,0 +1,52 @@
+/* The heading every middle-panel view wears (PanelHead.tsx). One size of
+   title, tabs as large words with the open one underlined in pencil, and the
+   actions flush right: one ground-line button, then the three dots. */
+
+.panel-head { display: grid; gap: 6px; margin: 0 0 16px; }
+.panel-head-crumbs { min-width: 0; }
+.panel-head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; min-width: 0; min-height: 40px; }
+
+.panel-head-title,
+.panel-tab {
+  margin: 0;
+  color: var(--sw-text-primary);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.panel-head-title { min-width: 0; overflow-wrap: anywhere; }
+
+.panel-tabs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 28px; min-width: 0; }
+.panel-tab {
+  position: relative;
+  padding: 0 0 6px;
+  border: 0;
+  background: none;
+  color: var(--sw-text-tertiary);
+  font-family: inherit;
+  cursor: pointer;
+}
+.panel-tab:hover { color: var(--sw-text-primary); }
+.panel-tab[aria-selected="true"] {
+  color: var(--sw-text-primary);
+  cursor: default;
+  background: url("./assets/marks/pencil-graphite.svg") left 6px bottom 2px / 480px 6px repeat-x;
+}
+.panel-tab:focus-visible { outline: 2px solid var(--azure, var(--sw-link)); outline-offset: 2px; }
+.panel-tab .nav-count { margin-left: 6px; vertical-align: 4px; }
+
+/* Notes take the room between title and actions and wrap there, so the
+   actions stay on the title's line. */
+.panel-head-note { display: flex; flex: 1 1 0; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-width: min-content; color: var(--sw-text-secondary); font-size: var(--fs-sm, 13px); }
+.panel-head-actions { display: flex; flex: none; align-items: center; gap: 10px; margin-left: auto; }
+
+@media (max-width: 600px) {
+  .panel-head-title, .panel-tab { font-size: 20px; }
+  .panel-tabs { gap: 4px 18px; }
+}
+@media print {
+  .panel-head-actions, .panel-head-crumbs { display: none !important; }
+  .panel-tab:not([aria-selected="true"]) { display: none; }
+  .panel-tab[aria-selected="true"] { background: none; }
+}

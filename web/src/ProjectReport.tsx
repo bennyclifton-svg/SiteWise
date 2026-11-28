@@ -36,5 +36,5 @@ export function ProjectReport({ projectId, reportId, onReport, tick, onSignedOut
   }, [projectId, reportId, attempt, onReport, onSignedOut]);
   if (error) return <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => setAttempt(n => n + 1)}>Try again</button></div>;
   if (!reportId) return <p role="status"><Pending delayed>Opening the project report…</Pending></p>;
-  return <Reports key={reportId} reportId={reportId} tick={tick} surface="report" onSignedOut={onSignedOut} />;
+  return <Reports key={reportId} reportId={reportId} tick={tick} onSignedOut={onSignedOut} />;
 }

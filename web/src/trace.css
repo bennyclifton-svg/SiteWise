@@ -5,33 +5,35 @@
    Loaded after the surface stylesheets so it can quiet their chrome. */
 
 :root[data-theme="light"] {
-  --sw-canvas: #E9E8E4;
-  --sw-surface: #FBFAF8;
+  /* Gmail's light scheme (owner, 25 Nov 2026): a cool grey-blue table, white
+     sheets, near-black ink and Gmail's blue for what is selected. */
+  --sw-canvas: #F6F8FC;
+  --sw-surface: #FFFFFF;
   --sw-surface-elevated: #FFFFFF;
-  --sw-surface-inset: #F3F1EC;
-  --sw-border-subtle: #EEEBE6;
-  --sw-border-default: #E3DFD8;
-  --sw-border-strong: #C9C3BA;
-  --sw-text-primary: #1F1B17;
-  --sw-text-secondary: #4A433C;
-  --sw-text-tertiary: #6B625A;
-  --sw-hover-bg: #F3F1EC;
-  --sw-pressed-bg: #ECE9E3;
+  --sw-surface-inset: #F2F6FC;
+  --sw-border-subtle: #EDF0F4;
+  --sw-border-default: #E1E5EA;
+  --sw-border-strong: #C7CCD3;
+  --sw-text-primary: #1F1F1F;
+  --sw-text-secondary: #444746;
+  --sw-text-tertiary: #5F6368;
+  --sw-hover-bg: #F1F4F9;
+  --sw-pressed-bg: #E8EDF5;
   --sw-input-bg: #FFFFFF;
-  --sw-selection-bg: #EFEDE8;
-  --trace-table: #E9E8E4;
-  --trace-sheet: #FBFAF8;
-  --trace-paper: rgba(232, 228, 222, .58);
-  --trace-paper-sheen: rgba(255, 255, 255, .2);
-  --trace-rule: #E6E2DC;
-  --trace-rule-strong: #2A241F;
-  --trace-ink-4: #9A9188;
+  --sw-selection-bg: #D3E3FD;
+  --trace-table: #F6F8FC;
+  --trace-sheet: #FFFFFF;
+  --trace-paper: rgba(224, 231, 241, .74);
+  --trace-paper-sheen: rgba(255, 255, 255, .45);
+  --trace-rule: #E1E5EA;
+  --trace-rule-strong: #1F1F1F;
+  --trace-ink-4: #80868B;
   --trace-ember: #A85E2C;
   --trace-azure: #2D5E9E;
   --trace-brush-check: rgba(226, 170, 72, .5);
-  --trace-brush-nav: #FFFFFF;
-  --trace-brush-hover: rgba(255, 255, 255, .4);
-  --trace-in-scope: #35302A;
+  --trace-brush-nav: #D3E3FD;
+  --trace-brush-hover: rgba(68, 71, 70, .08);
+  --trace-in-scope: #303134;
   --trace-check: #B07A2A;
 }
 
@@ -68,13 +70,8 @@
   background-color: var(--trace-table);
 }
 
-:root[data-theme="light"] .cockpit-page {
-  background-image: url("./assets/marks/stone.svg");
-  background-size: 360px 360px;
-}
 
-.wordmark { display: inline-flex; align-items: center; color: var(--sw-text-primary); }
-.wordmark svg { display: block; overflow: visible; }
+.wordmark { color: var(--sw-text-primary); }
 
 @media (min-width: 1101px) {
   .cockpit-page { padding: 14px 14px 14px 10px; }
@@ -92,7 +89,7 @@
     z-index: -1;
     border-radius: 4px;
     background: var(--trace-sheet);
-    box-shadow: 0 0 0 1px rgba(40, 32, 24, .05), 0 1px 1px rgba(40, 32, 24, .05), 0 14px 34px -16px rgba(40, 32, 24, .24);
+    box-shadow: 0 0 0 1px rgba(60, 64, 67, .06), 0 1px 2px rgba(60, 64, 67, .08), 0 14px 34px -16px rgba(60, 64, 67, .22);
   }
 
   :root[data-theme="dark"] .trace-sheet { box-shadow: 0 0 0 1px var(--sw-border-default); }
@@ -115,27 +112,8 @@
     top: 0;
     bottom: -4px;
     border-radius: 4px 4px 0 0;
-    background:
-      linear-gradient(104deg, var(--trace-paper-sheen), transparent 38% 70%, color-mix(in srgb, var(--trace-paper-sheen) 40%, transparent)),
-      url("./assets/marks/perspex-wear.svg") top left / 1600px 260px repeat-x,
-      var(--trace-paper);
-    -webkit-backdrop-filter: blur(12px) saturate(.9);
-    backdrop-filter: blur(12px) saturate(.9);
+    /* Its paint is the shared perspex (public/brand/brand.css). */
   }
-
-  /* Polished cut edge: one hairline that catches the light at two points. */
-  .trace-paper-sheet::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, .25), #fff 18%, rgba(255, 255, 255, .35) 42%, rgba(255, 255, 255, .5) 64%, #fff 82%, rgba(255, 255, 255, .25));
-    box-shadow: 0 1px 0 rgba(40, 32, 24, .12), 0 10px 20px -12px rgba(40, 32, 24, .35);
-  }
-
-  :root[data-theme="dark"] .trace-paper-sheet::after { box-shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 10px 20px -12px rgba(0, 0, 0, .5); }
 
   .cockpit-shell-header {
     position: relative;
@@ -236,7 +214,7 @@
   opacity: 1;
   transform: none;
   background: var(--trace-brush-nav);
-  filter: drop-shadow(0 1px 1px rgba(40, 32, 24, .06));
+  filter: drop-shadow(0 1px 1px rgba(60, 64, 67, .06));
 }
 
 .nav-item[aria-current="page"] { color: var(--sw-text-primary); font-weight: 600; }
@@ -310,7 +288,6 @@
   .mark-check { text-decoration: underline 2px; }
   .pencil-doc, .pencil-jev, .pencil-typical, .pencil-user { background: none; text-decoration: underline; }
   .pencil-rule::before { background: currentColor; height: 1.5px; top: 0; }
-  .trace-paper-sheet { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--trace-sheet); }
 }
 
 /* ---------- Nav icons: all one blue (owner direction, 7 Nov 2026). data-tone

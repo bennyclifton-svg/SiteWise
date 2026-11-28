@@ -367,15 +367,24 @@ func (s *Store) RecordSendAttempt(ctx context.Context, org, id string, sent bool
 	if len(errText) > mailSendErrorMaxBytes {
 		errText = errText[:mailSendErrorMaxBytes]
 	}
+	// A payment schedule's message (LinkClaimMessage) that has gone sets the
+	// day the schedule was served, by rule: the PM confirms it or types
+	// another day, and a day already there is never replaced.
 	var status string
-	err := s.pool.QueryRow(ctx, `UPDATE mail_messages SET
+	err := s.pool.QueryRow(ctx, `WITH m AS (UPDATE mail_messages SET
  send_attempts = send_attempts + 1,
  send_tried_at = $3,
  send_status = CASE WHEN $4 THEN 'sent' WHEN send_attempts + 1 >= $6 THEN 'failed' ELSE 'queued' END,
  sent_at = CASE WHEN $4 THEN $3 ELSE sent_at END,
  send_error = CASE WHEN $4 THEN '' ELSE $5 END
 WHERE org_id=$1::uuid AND id=$2::uuid AND send_status='queued'
-RETURNING send_status`, org, id, now, sent, errText, MailSendAttempts).Scan(&status)
+RETURNING send_status), served AS (
+INSERT INTO invoice_decisions (org_id, project_id, invoice_id, field, value, band, decided_by)
+SELECT d.org_id, d.project_id, d.invoice_id, 'schedule_served_on', to_char($3::timestamptz AT TIME ZONE 'Australia/Sydney','YYYY-MM-DD'), 'green', 'rule'
+FROM invoice_decisions d JOIN m ON m.send_status='sent'
+WHERE d.org_id=$1::uuid AND d.field='schedule_message' AND d.value=($2::uuid)::text
+ON CONFLICT (org_id, invoice_id, field) DO NOTHING)
+SELECT send_status FROM m`, org, id, now, sent, errText, MailSendAttempts).Scan(&status)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return "", ErrNotFound
 	}

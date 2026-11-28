@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, type DragEvent } from "react";
-import { PageSidePanel } from "./PageActions";
+import { useEffect, useState } from "react";
 import { ApiError } from "./api";
 import { fmt } from "./CostGrid";
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { revealQuietly, showingLine, useChatTable } from "./chatView";
-import { invoiceApi, uploadInvoice, type Claim, type ClaimRow, type Contract, type DueDate, type Ledger, type OpCall, type Variation, type VariationStatus } from "./invoiceApi";
+import { invoiceApi, type Contract, type Ledger, type OpCall, type Variation, type VariationStatus } from "./invoiceApi";
 
-// The Cost Plan's "Variations and claims" tab
-// (docs/plans/2026-11-17-variations-progress-claims.md, Task 10). Every
+// The Cost Plan's Variations tab
+// (docs/plans/2026-11-17-variations-progress-claims.md, Task 10; progress
+// claims moved to their own tab, docs/plans/2026-11-26-payment-schedules.md). Every
 // figure is the server's: the browser never sums money. Every write goes
 // through POST /ops, so each has one Undo; approving waits for nothing here
 // because pressing Approve is the PM's own click.
@@ -16,16 +16,15 @@ const STATUS: Record<VariationStatus, string> = { proposed: "Proposed", submitte
 const money = (m: string | null | undefined) => fmt(m, false);
 const plain = (s: string) => s.replace(/[,$\s]/g, "");
 
-export function VariationsTab({ projectId, ledger, reload, onSignedOut, openClaim, onOpenClaim }: { projectId: string; ledger: Ledger | null; reload: () => void; onSignedOut: () => void; openClaim: string; onOpenClaim: (id: string) => void }) {
+export function VariationsTab({ projectId, ledger, reload, onSignedOut }: { projectId: string; ledger: Ledger | null; reload: () => void; onSignedOut: () => void }) {
   const contracts = ledger?.contracts ?? [];
   const [chosen, setChosen] = useState("");
-  const claimed = ledger?.claims?.find(c => c.invoice_id === openClaim);
-  const contract = contracts.find(c => c.package_id === (claimed?.package_id || chosen)) ?? contracts[0];
+  const contract = contracts.find(c => c.package_id === chosen) ?? contracts[0];
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const [last, setLast] = useState<{ change: string; label: string } | null>(null);
   useEffect(() => { if (chosen && !contracts.some(c => c.package_id === chosen)) setChosen(""); }, [contracts, chosen]);
 
-  async function apply(area: "variations" | "claims", ops: OpCall[], label: string) {
+  async function apply(area: "variations", ops: OpCall[], label: string) {
     if (busy) return false;
     setBusy(true); setError("");
     try {
@@ -41,16 +40,14 @@ export function VariationsTab({ projectId, ledger, reload, onSignedOut, openClai
   }
 
   if (!ledger) return <p role="status">Loading…</p>;
-  if (!contract) return <section className="inv-empty" aria-label="Variations and claims"><h2>No live contracts yet</h2><p>Variations and progress claims sit on an awarded contract. Award a package in Procurement and it appears here.</p></section>;
-  return <section className="variations" aria-label="Variations and claims" aria-busy={busy}>
+  if (!contract) return <section className="inv-empty" aria-label="Variations"><h2>No live contracts yet</h2><p>Variations sit on an awarded contract. Award a package in Procurement and it appears here.</p></section>;
+  return <section className="variations" aria-label="Variations" aria-busy={busy}>
     {contracts.length > 1 && <div className="costs-toolbar"><label className="var-contract">Contract <select value={contract.package_id} onChange={e => setChosen(e.target.value)}>
       {contracts.map(c => <option key={c.package_id} value={c.package_id}>{c.title}{c.firm ? ` · ${c.firm}` : ""}</option>)}</select></label></div>}
     <ContractHeader contract={contract} projectId={projectId} onSaved={reload} onError={setError} />
     {error && <p role="alert" className="inv-error">{error}</p>}
     {last && <p className="reg-notice" role="status">{last.label} <button type="button" className="cell-link" disabled={busy} onClick={() => { const c = last.change; setLast(null); void invoiceApi.undo(projectId, c).then(reload).catch(() => setError("Can't undo: this has changed since.")); }}>Undo</button></p>}
     <VariationTable contract={contract} variations={(ledger.variations ?? []).filter(v => v.package_id === contract.package_id)} busy={busy} apply={apply} />
-    {contract.claims && <ClaimsTable projectId={projectId} contract={contract} claims={(ledger.claims ?? []).filter(c => c.package_id === contract.package_id)} open={openClaim} onOpen={onOpenClaim} onUploaded={reload} onSignedOut={onSignedOut} />}
-    {claimed && <ClaimPanel projectId={projectId} claim={claimed} contract={contract} busy={busy} apply={apply} onClose={() => onOpenClaim("")} reload={reload} onSignedOut={onSignedOut} />}
   </section>;
 }
 
@@ -85,7 +82,7 @@ function ContractHeader({ contract, projectId, onSaved, onError }: { contract: C
   </form>}</>;
 }
 
-type Apply = (area: "variations" | "claims", ops: OpCall[], label: string) => Promise<boolean>;
+type Apply = (area: "variations", ops: OpCall[], label: string) => Promise<boolean>;
 
 function VariationTable({ contract, variations, busy, apply }: { contract: Contract; variations: Variation[]; busy: boolean; apply: Apply }) {
   const [selection, setSelection] = useState(emptySelection);
@@ -151,135 +148,4 @@ function VariationTable({ contract, variations, busy, apply }: { contract: Contr
       </tbody>
     </table></div>
   </>;
-}
-
-const day = (iso: string) => iso ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : "—";
-const ALERT: Record<string, string> = { overdue: "Past due", soon: "Due soon", check: "To check" };
-
-/** A worked-out date: the date, "to check" when it is not settled, and how it was worked out. */
-function Due({ due, label }: { due: DueDate; label: string }) {
-  return <div className="var-due"><dt>{label}</dt><dd>{due.date ? day(due.date) : "Unknown"}{due.to_check && <span className="cost-tag">to check</span>}
-    <p>{due.words}{due.section && !due.words.includes(due.section) ? ` (${due.section})` : ""}</p>{due.notes.map(n => <p key={n}>{n}</p>)}</dd></div>;
-}
-
-function ClaimsTable({ projectId, contract, claims, open, onOpen, onUploaded, onSignedOut }: { projectId: string; contract: Contract; claims: Claim[]; open: string; onOpen: (id: string) => void; onUploaded: () => void; onSignedOut: () => void }) {
-  const [over, setOver] = useState(false), [note, setNote] = useState("");
-  const [selection, setSelection] = useState(emptySelection);
-  const [only, setOnly] = useState<ReadonlySet<string> | null>(null), [onlyShown, setOnlyShown] = useState("");
-  const ids = claims.map(c => c.invoice_id);
-  const input = useRef<HTMLInputElement>(null);
-  useChatTable("claims", "costs", {
-    select: list => { setOnly(null); setSelection(selectAll(list.filter(id => ids.includes(id)))); },
-    only: (list, words) => { setOnly(new Set(list.filter(id => ids.includes(id)))); setOnlyShown(words ?? ""); },
-    clear: () => setOnly(null),
-    open: id => { if (ids.includes(id)) onOpen(id); },
-  }, selection.ids);
-  // A file dropped here is this contract's progress claim, read in about a second.
-  function drop(files: File[]) {
-    for (const f of files) {
-      setNote(`Reading ${f.name}…`);
-      uploadInvoice(projectId, f, () => {}, contract.package_id).done.then(r => { setNote(r.created ? `${f.name} is being read.` : `${f.name} is already filed.`); onUploaded(); })
-        .catch(e => { if (e instanceof ApiError && e.status === 401) onSignedOut(); else setNote(`${f.name}: ${e instanceof Error ? e.message : "upload failed"}`); });
-    }
-  }
-  const drag = {
-    onDragOver: (e: DragEvent) => { if (!e.dataTransfer.types.includes("Files")) return; e.preventDefault(); e.stopPropagation(); setOver(true); },
-    onDragLeave: (e: DragEvent) => { e.stopPropagation(); setOver(false); },
-    onDrop: (e: DragEvent) => { if (!e.dataTransfer.types.includes("Files")) return; e.preventDefault(); e.stopPropagation(); setOver(false); drop(Array.from(e.dataTransfer.files)); },
-  };
-  const shown = only ? claims.filter(c => only.has(c.invoice_id)) : claims;
-  return <section aria-label="Progress claims" className="var-claims" data-over={over || undefined} {...drag}>
-    <h2 className="var-title">Progress claims <button type="button" className="cell-link" onClick={() => input.current?.click()}>Add a claim</button></h2>
-    <input ref={input} type="file" hidden data-testid="claim-input" accept=".pdf,.docx,.xlsx,.md,.markdown,application/pdf" onChange={e => { if (e.target.files?.length) drop(Array.from(e.target.files)); e.target.value = ""; }} />
-    {note && <p className="reg-notice" role="status">{note}</p>}
-    {only && <p className="reg-filter">{showingLine("claims", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
-    <div className="inv-table-scroll"><table className="inv-table var-table">
-      <caption className="sr-only">Progress claims on {contract.title}</caption>
-      <thead><tr><th scope="col">No.</th><th scope="col">Served</th><th scope="col">Reference date</th><th scope="col" className="num">Claimed</th><th scope="col" className="num">Scheduled</th><th scope="col">Schedule due</th><th scope="col">Payment due</th><th scope="col">Status</th></tr></thead>
-      <tbody>{shown.length === 0 ? <tr><td colSpan={8}>No progress claims yet. Drop the builder's claim here.</td></tr> : shown.map(c =>
-        <tr key={c.invoice_id} data-alert={c.alert || undefined} aria-selected={open === c.invoice_id || selection.ids.includes(c.invoice_id)}>
-          <td><button type="button" className="inv-open" onClick={() => onOpen(c.invoice_id)}>{c.number || "Claim"}</button></td>
-          <td>{day(c.served_on)}{!c.served_confirmed && <span className="cost-tag">confirm</span>}</td>
-          <td>{day(c.reference_date)}</td>
-          <td className="num">{money(c.claimed)}</td>
-          <td className="num">{money(c.scheduled)}</td>
-          <td>{c.schedule_due.date ? day(c.schedule_due.date) : "Unknown"}{c.schedule_due.to_check && <span className="cost-tag">to check</span>}</td>
-          <td>{c.payment_due.date ? day(c.payment_due.date) : "Unknown"}{c.payment_due.to_check && <span className="cost-tag">to check</span>}</td>
-          <td>{c.issued.length ? (c.schedule_served_on ? "Schedule served" : "Issued") : c.unassessed ? "Assessing" : "Assessed"}{c.alert && <span className="cost-tag" data-alert={c.alert}>{ALERT[c.alert]}</span>}{c.late && " · claimed amount counts"}</td>
-        </tr>)}</tbody>
-    </table></div>
-  </section>;
-}
-
-function ClaimPanel({ projectId, claim, contract, busy, apply, onClose, reload, onSignedOut }: { projectId: string; claim: Claim; contract: Contract; busy: boolean; apply: Apply; onClose: () => void; reload: () => void; onSignedOut: () => void }) {
-  const [error, setError] = useState(""), [issuing, setIssuing] = useState(false);
-  const [selection, setSelection] = useState(emptySelection);
-  const [only, setOnly] = useState<ReadonlySet<string> | null>(null), [onlyShown, setOnlyShown] = useState("");
-  const ids = claim.rows.map(r => r.id);
-  const issued = claim.issued.length > 0;
-  useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape" && !(e.target instanceof HTMLInputElement)) onClose(); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [onClose]);
-  useChatTable("claim_rows", "costs", {
-    select: list => { setOnly(null); setSelection(selectAll(list.filter(id => ids.includes(id)))); },
-    only: (list, words) => { setOnly(new Set(list.filter(id => ids.includes(id)))); setOnlyShown(words ?? ""); },
-    clear: () => setOnly(null),
-  }, selection.ids);
-  const assess = (r: ClaimRow, fields: Record<string, unknown>) => apply("claims", [{ op: "claims.assess", fields: { claim: claim.invoice_id, row: r.id, ...fields } }], `Assessed ${r.label}.`);
-  async function issue() {
-    setIssuing(true); setError("");
-    try { await invoiceApi.issueSchedule(projectId, claim.invoice_id); reload(); }
-    catch (e) { if (e instanceof ApiError && e.status === 401) { onSignedOut(); return; } setError(e instanceof ApiError && e.message ? e.message : "Could not issue the schedule."); }
-    finally { setIssuing(false); }
-  }
-  async function served(field: string, value: string) {
-    try { await invoiceApi.edit(projectId, claim.invoice_id, { [field]: value }); reload(); }
-    catch (e) { setError(e instanceof ApiError && e.message ? e.message : "Could not save the date."); }
-  }
-  const lineName = (r: ClaimRow) => r.kind === "retention" ? "Retention" : r.variation || r.line || "Not placed";
-  const rows = only ? claim.rows.filter(r => only.has(r.id)) : claim.rows;
-  return <PageSidePanel><aside className="inv-panel var-panel" aria-label={`Claim ${claim.number}`}>
-    <div className="inv-panel-head"><h2>Claim {claim.number || ""} · {contract.title}</h2><button type="button" className="btn btn-small" onClick={onClose}>Close</button></div>
-    <div className="var-panel-body">
-      {error && <p role="alert" className="inv-error">{error}</p>}
-      {claim.flags.length > 0 && <ul className="inv-flags" aria-label="Checks">{claim.flags.map((f, i) => <li key={`${f.code}:${i}`}>{f.reason}</li>)}</ul>}
-      <dl className="var-head">
-        <div><dt>Served</dt><dd><input type="date" aria-label="Claim served on" key={`s:${claim.served_on}`} defaultValue={claim.served_on} onBlur={e => { if (e.target.value && (e.target.value !== claim.served_on || !claim.served_confirmed)) void served("served_on", e.target.value); }} />{!claim.served_confirmed && <span className="cost-tag">confirm</span>}</dd></div>
-        <div><dt>Reference date</dt><dd><input type="date" aria-label="Reference date" key={`r:${claim.reference_date}`} defaultValue={claim.reference_date} onBlur={e => { if (e.target.value !== claim.reference_date) void served("reference_date", e.target.value); }} /></dd></div>
-        <Due due={claim.schedule_due} label="Payment schedule due" />
-        <Due due={claim.payment_due} label="Payment due" />
-      </dl>
-      {only && <p className="reg-filter">{showingLine("claim_rows", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
-      <div className="inv-table-scroll"><table className="inv-table var-table">
-        <caption className="sr-only">Rows of claim {claim.number}</caption>
-        <thead><tr><th scope="col">Row</th><th scope="col">Line</th><th scope="col" className="num">Claimed to date</th><th scope="col" className="num">Certified before</th><th scope="col" className="num">This claim</th><th scope="col" className="num">Assessed to date</th><th scope="col" className="num">This schedule</th><th scope="col">Reason</th></tr></thead>
-        <tbody>{rows.map(r => <tr key={r.id} data-row={r.id} aria-selected={selection.ids.includes(r.id)} onClick={e => { if (!(e.target as HTMLElement).closest("input,select,button")) setSelection(s => clickRow(s, r.id, ids, { ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey })); }}>
-          <td>{r.label}</td>
-          <td>{issued ? lineName(r) : <select className="field-plain" aria-label={`Line for ${r.label}`} value={r.kind === "retention" ? "retention" : r.line_id} disabled={busy} onChange={e => void assess(r, { line: e.target.value })}>
-            <option value="">Not placed</option>{contract.lines.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}<option value="retention">Retention</option></select>}
-            {r.mapped_by === "jev" && r.band === "blank" && <span className="cost-tag" title="Jev's pick is withheld until the claim answer key is calibrated">not placed</span>}</td>
-          <td className="num">{money(r.to_date)}</td>
-          <td className="num">{money(r.certified_before)}</td>
-          <td className="num">{money(r.claimed)}</td>
-          <td className="num">{issued ? money(r.assessed_to_date) : <input className="field-plain num" inputMode="decimal" aria-label={`Assessed to date for ${r.label}`} key={`${r.id}:${r.assessed_to_date}`} defaultValue={r.assessed_to_date ? money(r.assessed_to_date) : ""} disabled={busy}
-            onBlur={e => { const v = plain(e.target.value); if (v !== (r.assessed_to_date ? plain(money(r.assessed_to_date)) : "")) void assess(r, { assessed_to_date: v }); }} onKeyDown={e => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} />}</td>
-          <td className="num">{money(r.scheduled)}</td>
-          <td>{issued ? r.reason : <input className="field-plain" aria-label={`Reason for ${r.label}`} key={`${r.id}:why:${r.reason}`} defaultValue={r.reason} maxLength={1000} disabled={busy} placeholder={r.below_claimed ? "Reason needed" : ""}
-            onBlur={e => { if (e.target.value.trim() !== r.reason) void assess(r, { reason: e.target.value.trim() }); }} onKeyDown={e => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }} />}</td>
-        </tr>)}</tbody>
-      </table></div>
-      <dl className="var-head" aria-label="Schedule totals">
-        <div><dt>Scheduled (ex GST)</dt><dd className="num">{money(claim.scheduled)}</dd></div>
-        <div><dt>Retention withheld</dt><dd className="num">{money(claim.retention)}</dd></div>
-        <div><dt>Net</dt><dd className="num">{money(claim.net)}</dd></div>
-        <div><dt>GST</dt><dd className="num">{money(claim.gst)}</dd></div>
-        <div><dt>Payable</dt><dd className="num">{money(claim.payable)}</dd></div>
-      </dl>
-      <div className="inv-actions">
-        {!issued && <button type="button" className="btn" disabled={busy} onClick={() => void apply("claims", [{ op: "claims.accept_claimed", fields: { claim: claim.invoice_id } }], `Accepted claim ${claim.number} as claimed.`)}>Accept claimed</button>}
-        <button type="button" className="btn" disabled={busy || issuing || claim.unassessed > 0 || claim.missing_reasons > 0} title={claim.unassessed ? `${claim.unassessed} rows not assessed` : claim.missing_reasons ? `${claim.missing_reasons} rows need a reason` : undefined} onClick={() => void issue()}>{issued ? "Issue again" : "Issue payment schedule"}</button>
-      </div>
-      {issued && <><ul className="var-issued">{claim.issued.map(i => <li key={i.version_id}>Schedule {i.number}, issued {day(i.issued_on)} · <a href={i.file}>Download PDF</a></li>)}</ul>
-        <p className="inv-note">Send it from your email with the PDF attached (SiteWise's Send arrives with correspondence), then enter the day it was served.</p>
-        <label className="var-served">Schedule served on <input type="date" aria-label="Schedule served on" key={`ss:${claim.schedule_served_on}`} defaultValue={claim.schedule_served_on} onBlur={e => { if (e.target.value !== claim.schedule_served_on) void served("schedule_served_on", e.target.value); }} /></label></>}
-    </div>
-  </aside></PageSidePanel>;
 }

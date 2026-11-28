@@ -139,8 +139,10 @@ func TestProjectReportBudget(t *testing.T) {
 	}
 	var first store.ReportView
 	m.getJSON(t, base, &first)
-	if first.PageFit == nil || !first.PageFit.Fits {
-		t.Fatalf("the heavy report does not fit: %+v", first.PageFit)
+	// The owner's format has no page limit and works out no page count on
+	// open (project report plan, question 6).
+	if first.PageFit != nil {
+		t.Fatalf("a page count was worked out on open: %+v", first.PageFit)
 	}
 	issue(first.Draft.Version)
 
@@ -157,8 +159,8 @@ func TestProjectReportBudget(t *testing.T) {
 		})
 		var view store.ReportView
 		timed("report_read", func() { m.getJSON(t, base, &view) })
-		if view.PageFit == nil || !view.PageFit.Fits {
-			t.Fatalf("round %d does not fit: %+v", i, view.PageFit)
+		if view.Draft == nil {
+			t.Fatalf("round %d has no draft", i)
 		}
 		version := view.Draft.Version
 		// Every carried or stale block is kept: one save each, as the PM does.

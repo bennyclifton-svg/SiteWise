@@ -15,6 +15,27 @@ type Doc struct {
 	Subtitle string
 	Date     string // footer, YYYY-MM-DD
 	Sections []Section
+	// Cover is a page of its own before everything else; Contents lists the
+	// titled sections with their page numbers on the page after it (the
+	// project report in the owner's format).
+	Cover    *Cover
+	Contents bool
+}
+
+// Cover is a report's cover page: its title, then label and value lines,
+// then its image when it has one.
+type Cover struct {
+	Title string
+	Lines [][2]string
+	Image *Image
+}
+
+// Image is a PNG or JPEG drawn in a cell or on the cover, under its words.
+type Image struct {
+	Data    []byte
+	Caption string
+	// W and H are its size in pixels, read when it was decoded.
+	W, H int
 }
 
 // Section starts with a blue band carrying its title.
@@ -26,6 +47,8 @@ type Section struct {
 // Block is a paragraph group, a table, or both. Label leads the text in
 // bold; TextAfter prints the text under the table (the transmittal's note).
 type Block struct {
+	// Heading names a table above it (a report table's own name).
+	Heading   string
 	Label     string
 	Text      string // paragraphs separated by "\n"
 	Table     *Table
@@ -38,6 +61,9 @@ type Table struct {
 	Columns []Column
 	Head    []Cell // one per column unless a head cell spans columns
 	Rows    []Row
+	// Together starts the table on a new page rather than split it, when it
+	// would fit on one: a schedule's totals read as one block.
+	Together bool
 }
 
 // Column width is a share of the table width when Fixed is zero, else a
@@ -53,7 +79,13 @@ type Align int
 const (
 	Left Align = iota
 	Center
+	// Right is for figures: a payment schedule's dollars and percents.
+	Right
 )
+
+// Version names this writer in an issued snapshot, so a schedule printed
+// here is told from one the older report renderer printed.
+const Version = "sitewise-export-1"
 
 // Row is one table row. Strong draws a heavier rule above it (a stage's
 // first row); MinHeight keeps one-line rows uniform, in points.
@@ -65,7 +97,12 @@ type Row struct {
 
 // Cell holds styled runs of text, or a tick box.
 type Cell struct {
-	Runs    []Run
+	// Fill tints a cell as the owner's report does: "done" green, "key"
+	// yellow.
+	Fill string
+	Runs []Run
+	// Images are drawn under the cell's words (the report's sketches).
+	Images  []Image
 	Tick    Tick
 	Align   Align
 	RowSpan int
@@ -87,6 +124,10 @@ type Run struct {
 	Text  string
 	Bold  bool
 	Muted bool
+	// Blue is new or changed this period, as the owner's report prints it;
+	// Italic is a placeholder (Word only: the PDF face has no italic).
+	Blue   bool
+	Italic bool
 }
 
 func span(n int) int {
@@ -107,7 +148,21 @@ var (
 	colourLine   = rgb{0xE2, 0xDD, 0xD4} // --sw-border-default
 	colourStrong = rgb{0x88, 0x7E, 0x74} // --sw-border-strong
 	colourTick   = rgb{0x1F, 0x5F, 0x73} // a ticked box
+	// The owner's report colours (project report plan, section 6.6).
+	colourNew      = rgb{0x1F, 0x4E, 0xA8} // new this period
+	colourFillDone = rgb{0xDD, 0xEF, 0xD9} // done
+	colourFillKey  = rgb{0xFF, 0xF1, 0xB8} // the key computed date
 )
+
+func fillColour(fill string) (rgb, bool) {
+	switch fill {
+	case "done":
+		return colourFillDone, true
+	case "key":
+		return colourFillKey, true
+	}
+	return rgb{}, false
+}
 
 func (c rgb) hex() string {
 	const digits = "0123456789ABCDEF"

@@ -304,7 +304,7 @@ func TestVariationsBudget(t *testing.T) {
 		upload("inv-"+strconv.Itoa(i), false)
 	}
 	base := "/api/projects/" + project
-	var reads, writes, assesses, issues []time.Duration
+	var reads, writes, assesses, issues, sheets []time.Duration
 	var v tabLedger
 	m.getJSON(t, base+"/invoices", &v)
 	if len(v.Claims) != 24 || len(v.Variations) != 200 || len(v.Invoices) != 324 {
@@ -330,7 +330,31 @@ func TestVariationsBudget(t *testing.T) {
 		m.call(t, http.MethodPost, base+"/invoices/"+claims[i%4]+"/schedule", nil, http.StatusCreated, nil)
 		issues = append(issues, time.Since(began))
 	}
-	for name, d := range map[string][]time.Duration{"variations_read": reads, "variation_write": writes, "claim_assess": assesses, "payment_schedule_issue": issues} {
+	// One claim's sheet, with four schedules issued before it.
+	for i := 0; i < 20; i++ {
+		began := time.Now()
+		m.getJSON(t, base+"/invoices?sheet="+claims[4+i%16], &v)
+		sheets = append(sheets, time.Since(began))
+	}
+	// One line of the breakdown added, then edited.
+	var breakdowns []time.Duration
+	var bl struct {
+		Contracts []struct {
+			Breakdown []struct {
+				ID string `json:"id"`
+			} `json:"breakdown"`
+		} `json:"contracts"`
+	}
+	for i := 0; i < 10; i++ {
+		began := time.Now()
+		m.call(t, http.MethodPost, base+"/contracts/"+pkg+"/breakdown", jsonBody(map[string]any{"label": "Line " + strconv.Itoa(i), "amount": "100"}), http.StatusOK, &bl)
+		breakdowns = append(breakdowns, time.Since(began))
+		last := bl.Contracts[0].Breakdown[len(bl.Contracts[0].Breakdown)-1].ID
+		began = time.Now()
+		m.call(t, http.MethodPatch, base+"/contracts/"+pkg+"/breakdown/"+last, []byte(`{"note":"measured"}`), http.StatusOK, nil)
+		breakdowns = append(breakdowns, time.Since(began))
+	}
+	for name, d := range map[string][]time.Duration{"variations_read": reads, "variation_write": writes, "claim_assess": assesses, "payment_schedule_issue": issues, "schedule_read": sheets, "breakdown_write": breakdowns} {
 		p50, p90 := p50p90(d)
 		t.Logf("%s p50=%s p90=%s", name, p50, p90)
 		if p50 > 100*time.Millisecond || p90 > 250*time.Millisecond {

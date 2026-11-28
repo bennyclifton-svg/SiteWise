@@ -63,12 +63,12 @@ test("panel actions align with the workspace and documents stay visible across t
   expect(hideBox.y + hideBox.height).toBeLessThanOrEqual(docsBox.y);
   expect(await update.getAttribute('class')).toBe(await hide.getAttribute('class'));
   await page.screenshot({ path: '../tmp/panel-actions-profile.png', fullPage: true });
-  for (const name of ['Costs', 'Procurement', 'Specifications', 'Profile']) {
+  for (const name of ['Costs', 'Procurement', 'Program', 'Profile']) {
     await page.getByRole('button', { name, exact: true }).click();
     await expect(docs).toBeVisible();
-    // Costs and Procurement keep their actions in three dots above the table (owner, 7 Nov 2026).
-    if (name === 'Specifications') await expect(download).toBeVisible();
-    if (name === 'Costs' || name === 'Procurement') await expect(download).toHaveCount(0);
+    // Every view keeps downloads and print behind its heading's three dots
+    // (PanelHead, owner 25 Nov 2026): no separate Download anywhere.
+    await expect(download).toHaveCount(0);
     if (name === 'Costs') await page.screenshot({ path: '../tmp/panel-actions-costs.png', fullPage: true });
   }
   await hide.click();

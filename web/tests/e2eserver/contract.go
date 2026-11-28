@@ -3,12 +3,16 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
 	"sitewise/internal/costs"
+	"sitewise/internal/invoices"
 	"sitewise/internal/procurement"
 	"sitewise/internal/store"
 )
@@ -115,8 +119,60 @@ func contractRoutes(mux *http.ServeMux, st *store.Store, dsn string) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"package":%q}`, pkg)
 	})
+	// A tax invoice from the contract's firm, read as Jev would read it, so
+	// the link rule and placing can be tested without a document:
+	// ?project=&number=&total=&gst= (cents).
+	mux.HandleFunc("POST /__e2e/contract-invoice", func(w http.ResponseWriter, r *http.Request) {
+		id, err := seedContractInvoice(r.Context(), st, dsn, r.URL.Query())
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, `{"id":%q}`, id)
+	})
 	mux.HandleFunc("GET /__e2e/claim.md", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/markdown")
 		_, _ = w.Write([]byte(claimMarkdown))
 	})
+}
+
+func seedContractInvoice(ctx context.Context, st *store.Store, dsn string, q map[string][]string) (string, error) {
+	get := func(k string) string {
+		if v := q[k]; len(v) > 0 {
+			return v[0]
+		}
+		return ""
+	}
+	conn, err := pgx.Connect(ctx, dsn)
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close(ctx)
+	var org, user, pkg, line string
+	if err := conn.QueryRow(ctx, `SELECT a.org_id::text, a.created_by::text, a.package_id::text, s.cost_item_id::text FROM awards a
+JOIN cost_line_sources s ON s.org_id=a.org_id AND s.award_id=a.id WHERE a.project_id::text=$1 ORDER BY s.ordinal LIMIT 1`, get("project")).Scan(&org, &user, &pkg, &line); err != nil {
+		return "", err
+	}
+	total, err1 := strconv.ParseInt(get("total"), 10, 64)
+	gst, err2 := strconv.ParseInt(get("gst"), 10, 64)
+	if err1 != nil || err2 != nil {
+		return "", fmt.Errorf("total and gst are cents")
+	}
+	sum := sha256.Sum256([]byte(get("project") + get("number")))
+	now := time.Now()
+	created, err := st.CreateInvoice(ctx, org, get("project"), store.InvoiceUpload{SHA256: sum[:], Size: 1, MediaType: "application/pdf", Filename: get("number") + ".pdf", UserID: user}, now)
+	if err != nil {
+		return "", err
+	}
+	d := func(f, v string) invoices.Decision {
+		return invoices.Decision{Field: f, Value: v, Band: "green", DecidedBy: "rule"}
+	}
+	out := invoices.Outcome{Asked: true, InvoiceCount: 1, Decisions: []invoices.Decision{d(invoices.FieldKind, "invoice"), d(invoices.FieldNumber, get("number")),
+		d(invoices.FieldDate, now.Format("2006-01-02")), d(invoices.FieldTotal, strconv.FormatInt(total, 10)), d(invoices.FieldGST, strconv.FormatInt(gst, 10)),
+		d(invoices.FieldSupplier, pkg), d(invoices.FieldLine, line), d(invoices.FieldPeriod, now.Format("2006-01")+"-01"), d(invoices.FieldCurrency, "AUD")}}
+	if _, err := st.CommitInvoiceRead(ctx, org, created.ID, out, false, now); err != nil {
+		return "", err
+	}
+	return created.ID, nil
 }

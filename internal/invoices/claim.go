@@ -26,6 +26,17 @@ const (
 	FieldServedOn         = "served_on"
 	FieldRetention        = "retention"
 	FieldScheduleServedOn = "schedule_served_on"
+	// FieldScheduleNote is the PM's own words on the payment schedule,
+	// printed after SiteWise's sentence.
+	FieldScheduleNote = "schedule_note"
+	// FieldScheduleMessage is the message the issued schedule last went out
+	// on. Go writes it when the PM presses Send; it is never typed.
+	FieldScheduleMessage = "schedule_message"
+	// FieldTaxInvoice is "yes" when the claim is its own tax invoice (a
+	// consultant's invoice, or one document from a contractor): nothing is
+	// linked to it, and its own number and date print on the payment list.
+	// Set by rule when the document prints "tax invoice"; the PM's to switch.
+	FieldTaxInvoice = "tax_invoice"
 )
 
 // Claim row kinds.
@@ -42,12 +53,16 @@ const MaxClaimRows = 80
 // ClaimRow is one row of a claim's table: the builder's three amounts as
 // printed, what it charges for, and the PM's assessment to date.
 type ClaimRow struct {
-	ID          string
-	Ordinal     int
-	Kind        string
-	Label       string
-	Page        int
-	LineID      string // a contract row's cost line
+	ID      string
+	Ordinal int
+	Kind    string
+	Label   string
+	Page    int
+	LineID  string // a contract row's cost line
+	// BreakdownID is the line of the contract's breakdown the row sits on:
+	// the one it was placed on, else the line that stands for its whole
+	// cost line. Empty when the contract's breakdown is its cost lines.
+	BreakdownID string
 	VariationID string // a variation row's variation
 	MappedBy    string // rule, jev or user
 	Band        string
@@ -78,6 +93,12 @@ type ClaimContract struct {
 	PackageID  string
 	Lines      []Line
 	Variations []ClaimVariation
+	// CostLine maps a line that is a breakdown line to the cost line it
+	// rolls up to. A line not in it is a cost line itself.
+	CostLine map[string]string
+	// Services is a consultant's contract: it takes a claim only when the
+	// PM drops one on it, never by the words rule.
+	Services bool
 }
 
 // ClaimVariation is a variation a claim row may charge for.

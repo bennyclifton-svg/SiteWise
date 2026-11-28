@@ -1,11 +1,15 @@
 // Sign in, create an account, reset a forgotten password, or accept a team
 // invite. One panel; reset and invite links land here with their token in
-// the fragment, which is read once and removed from the address bar.
+// the fragment, which is read once and removed from the address bar. It wears
+// the Trace frame every page outside a project wears (web/DESIGN.md): the logo
+// bar on the drafting table, one sheet, the title under the perspex. Its
+// bar and footer match the pricing and legal pages (public/legal/legal.css).
 
 import { useState, type FormEvent } from "react";
 import { Pending } from "./Activity";
 import { api, ApiError } from "./api";
 import { LegalLinks } from "./LegalLinks";
+import { TraceBand } from "./TracePage";
 import { Wordmark } from "./Wordmark";
 
 type Mode = "signin" | "signup" | "forgot" | "sent" | "reset" | "invite";
@@ -24,6 +28,13 @@ const titles: Record<Mode, string> = {
   sent: "Check your email",
   reset: "Choose a new password",
   invite: "Join your team",
+};
+
+// One line under the title, where the mode needs one.
+const lede: Partial<Record<Mode, string>> = {
+  signup: "Start on the Free plan. Your projects are private to your account. We'll email you a link to confirm your address.",
+  invite: "Choose a password to join the team that invited you. You'll work in their projects.",
+  forgot: "Enter the email you signed up with. We'll send a link to choose a new password.",
 };
 
 export function SignIn({ initialError, initialMode = "signin", onSignedIn }: { initialError: string; initialMode?: "signin" | "signup"; onSignedIn: () => void }) {
@@ -89,93 +100,107 @@ export function SignIn({ initialError, initialMode = "signin", onSignedIn }: { i
   const pending = { signin: "Signing in…", signup: "Creating account…", forgot: "Sending…", reset: "Saving…", sent: "", invite: "Joining…" }[mode];
 
   return (
-    <main className="entry">
-      <div className="entry-panel">
-        <Wordmark height={32} />
-        <span className="sr-only">SiteWise</span>
-        <h1>{titles[mode]}</h1>
-        {mode === "signup" && <p>Start on the Free plan. Your projects are private to your account. We'll email you a link to confirm your address.</p>}
-        {mode === "invite" && <p>Choose a password to join the team that invited you. You'll work in their projects.</p>}
-        {mode === "forgot" && <p>Enter the email you signed up with. We'll send a link to choose a new password.</p>}
-        {mode === "sent" ? (
-          <>
-            <p>If an account uses {email.trim()}, a reset link is on its way. It works once, within one hour.</p>
-            <button type="button" className="btn" onClick={() => go("signin")}>Back to sign in</button>
-          </>
-        ) : (
-          <form className="stack-form" onSubmit={submit} noValidate>
-            {needsEmail && (
-              <>
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  className="input"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete={mode === "signup" ? "email" : "username"}
-                  spellCheck={false}
-                  autoFocus
-                  aria-invalid={error ? "true" : undefined}
-                  aria-describedby={error ? "auth-error" : undefined}
-                />
-              </>
-            )}
-            {mode !== "forgot" && (
-              <>
-                <label htmlFor="password">{mode === "signin" ? "Password" : "New password"}</label>
-                <input
-                  id="password"
-                  className="input"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                  autoFocus={mode === "reset" || mode === "invite"}
-                  maxLength={72}
-                  aria-invalid={error ? "true" : undefined}
-                  aria-describedby={mode === "signin" ? (error ? "auth-error" : undefined) : "password-hint"}
-                />
-                {mode !== "signin" && <span id="password-hint" className="muted">At least 8 characters.</span>}
-              </>
-            )}
-            {needsTerms && (
-              <label className="entry-terms">
-                <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
-                <span>
-                  I agree to the <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a> and{" "}
-                  <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.
-                </span>
-              </label>
-            )}
-            {error && (
-              <span id="auth-error" className="error-text" role="alert">
-                {error}
-              </span>
-            )}
-            <button type="submit" className="btn btn-primary" disabled={busy}>
-              {busy ? <Pending delayed>{pending}</Pending> : label}
-            </button>
-          </form>
-        )}
-        <div className="entry-switch">
-          {mode === "signin" && (
+    <div className="trace-home entry-page">
+      <header className="trace-home-bar">
+        <a className="bar-logo-link" href="/" aria-label="SiteWise home">
+          <Wordmark height={28} />
+        </a>
+        <span className="bar-spacer" />
+        <nav className="site-nav" aria-label="Site">
+          <a href="/legal/pricing.html">Pricing</a>
+          <a
+            className="signin"
+            href="/signin"
+            aria-current={mode === "signin" ? "page" : undefined}
+            onClick={(e) => { e.preventDefault(); go("signin"); }}
+          >
+            Sign in
+          </a>
+        </nav>
+      </header>
+      <main id="main" className="trace-home-sheet entry-sheet">
+        <TraceBand title={titles[mode]} meta={lede[mode]} />
+        <div className="entry-body">
+          {mode === "sent" ? (
             <>
-              <button type="button" className="link-button" onClick={() => go("signup")}>Create an account</button>
-              <button type="button" className="link-button" onClick={() => go("forgot")}>Forgot password?</button>
+              <p>If an account uses {email.trim()}, a reset link is on its way. It works once, within one hour.</p>
+              <button type="button" className="btn" onClick={() => go("signin")}>Back to sign in</button>
             </>
+          ) : (
+            <form className="stack-form" onSubmit={submit} noValidate>
+              {needsEmail && (
+                <>
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    className="input"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete={mode === "signup" ? "email" : "username"}
+                    spellCheck={false}
+                    autoFocus
+                    aria-invalid={error ? "true" : undefined}
+                    aria-describedby={error ? "auth-error" : undefined}
+                  />
+                </>
+              )}
+              {mode !== "forgot" && (
+                <>
+                  <label htmlFor="password">{mode === "signin" ? "Password" : "New password"}</label>
+                  <input
+                    id="password"
+                    className="input"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    autoFocus={mode === "reset" || mode === "invite"}
+                    maxLength={72}
+                    aria-invalid={error ? "true" : undefined}
+                    aria-describedby={mode === "signin" ? (error ? "auth-error" : undefined) : "password-hint"}
+                  />
+                  {mode !== "signin" && <span id="password-hint" className="muted">At least 8 characters.</span>}
+                </>
+              )}
+              {needsTerms && (
+                <label className="entry-terms">
+                  <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
+                  <span>
+                    I agree to the <a href="/legal/terms.html" target="_blank" rel="noopener">Terms of Service</a> and{" "}
+                    <a href="/legal/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.
+                  </span>
+                </label>
+              )}
+              {error && (
+                <span id="auth-error" className="error-text" role="alert">
+                  {error}
+                </span>
+              )}
+              <button type="submit" className="btn btn-primary" disabled={busy}>
+                {busy ? <Pending delayed>{pending}</Pending> : label}
+              </button>
+            </form>
           )}
-          {mode === "signup" && (
-            <span>Already have an account? <button type="button" className="link-button" onClick={() => go("signin")}>Sign in</button></span>
-          )}
-          {(mode === "forgot" || mode === "reset" || mode === "invite") && (
-            <button type="button" className="link-button" onClick={() => go("signin")}>Back to sign in</button>
-          )}
+          <div className="entry-switch">
+            {mode === "signin" && (
+              <>
+                <button type="button" className="link-button" onClick={() => go("signup")}>Create an account</button>
+                <button type="button" className="link-button" onClick={() => go("forgot")}>Forgot password?</button>
+              </>
+            )}
+            {mode === "signup" && (
+              <span>Already have an account? <button type="button" className="link-button" onClick={() => go("signin")}>Sign in</button></span>
+            )}
+            {(mode === "forgot" || mode === "reset" || mode === "invite") && (
+              <button type="button" className="link-button" onClick={() => go("signin")}>Back to sign in</button>
+            )}
+          </div>
         </div>
-        <div className="entry-legal">
-          <LegalLinks />
-        </div>
-      </div>
-    </main>
+      </main>
+      <footer className="entry-foot">
+        <LegalLinks pricing={false} />
+      </footer>
+    </div>
   );
 }

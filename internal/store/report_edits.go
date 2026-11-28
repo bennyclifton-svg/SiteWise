@@ -146,7 +146,11 @@ func (s *Store) ReadReport(ctx context.Context, org, id, appBuild string) (Repor
 		return view, err
 	}
 	view.Draft = &d
-	if _, group := groupDraft(d.SourceRevisions); group {
+	if goldenSections(d.Sections) {
+		// The project report in the owner's format has no page limit
+		// (question 6), and rendering twenty pages on every open would break
+		// the read budget; its length is printed at issue.
+	} else if _, group := groupDraft(d.SourceRevisions); group {
 		// A combined engagement's document is several RFPs long; rendering it
 		// on every read would break the read budget. The RFP editor shows no
 		// page count, and issue renders and gates the length.

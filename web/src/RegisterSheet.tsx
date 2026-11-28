@@ -11,7 +11,8 @@ import { statusChip, statusItems } from "./Delivery";
 import { ClaimDetail } from "./ClaimSheet";
 import { numberLabel, rfiNumber, type DeliveryRecord, type RFIDetails } from "./deliveryApi";
 import type { MailMessage } from "./mailApi";
-import { BackButton, MoreMenu, PagePrimaryAction, type MenuItem } from "./PageActions";
+import { BackButton, MoreMenu, type MenuItem } from "./PageActions";
+import { PanelHead, PrimaryButton } from "./PanelHead";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { editOps, type RegisterData } from "./registerData";
 import { rfiHistory, rowHistory, type HistoryLine } from "./registerHistory";
@@ -44,18 +45,18 @@ const sourceIds = (r: DeliveryRecord) => [...new Set((r.provenance.sources ?? []
 export function RegisterSheet(props: Props) {
   const { data, id, backTo, onClose } = props;
   const row = data.rowOf(id);
-  const back = <PagePrimaryAction surface="register"><BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} here={row ? rowLabel(row) : undefined} /></PagePrimaryAction>;
+  // The breadcrumb is the top line of the sheet's heading (PanelHead).
+  const crumbs = <BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} here={row ? rowLabel(row) : undefined} />;
   useEffect(() => {
     // Escape in the right-hand panel belongs to its tables (clearing a selection).
     const key = (e: KeyboardEvent) => { if (e.key === "Escape" && !(e.target as HTMLElement).closest("input,textarea,select,[role=menu],[role=dialog],.project-side-panel")) onClose(); };
     document.addEventListener("keydown", key);
     return () => document.removeEventListener("keydown", key);
   }, [onClose]);
-  if (!data.view) return <section className="register-sheet" aria-label="Register row">{back}<p role="status">Opening…</p></section>;
-  if (!row) return <section className="register-sheet" aria-label="Register row">{back}<p className="reg-empty">This row is no longer on the register.</p></section>;
+  if (!data.view) return <section className="register-sheet" aria-label="Register row"><PanelHead crumbs={crumbs} title="Register row" /><p role="status">Opening…</p></section>;
+  if (!row) return <section className="register-sheet" aria-label="Register row"><PanelHead crumbs={crumbs} title="Register row" /><p className="reg-empty">This row is no longer on the register.</p></section>;
   return <section className="register-sheet" aria-label={`${rowLabel(row)} ${row.title}`} aria-busy={data.busy}>
-    {back}
-    {row.kind === "rfi" ? <RfiSheet {...props} row={row} /> : <OtherSheet {...props} row={row} />}
+    {row.kind === "rfi" ? <RfiSheet {...props} row={row} crumbs={crumbs} /> : <OtherSheet {...props} row={row} crumbs={crumbs} />}
   </section>;
 }
 
@@ -73,28 +74,30 @@ export function rowLabel(r: DeliveryRecord): string {
   return numberLabel(r.kind, r.number) || KIND[r.kind]?.[0] || r.kind;
 }
 
-// Head is the sheet's one header row: number and title, the status chip
-// that says who holds it, the due chip, then the three dots and Send.
-function Head({ row, data, children, extra = [] }: { row: DeliveryRecord; data: RegisterData; children?: ReactNode; extra?: MenuItem[] }) {
+// Head is the sheet's heading (PanelHead): the breadcrumb, number and
+// title, the status chip that says who holds it, the due chip, then Send as
+// the one primary action (an RFI only) and the three dots.
+function Head({ row, data, crumbs, action, extra = [] }: { row: DeliveryRecord; data: RegisterData; crumbs: ReactNode; action?: ReactNode; extra?: MenuItem[] }) {
   const [renaming, setRenaming] = useState(false);
   const run = (fields: Record<string, unknown>, label: string) => data.run(editOps([row], fields), label, "sheet");
   const status = statusItems([row], data.busy, (s, label) => void run({ status: s }, label)).flatMap(m => typeof m === "object" && "label" in m ? [{ label: m.label, icon: null, disabled: m.disabled, onSelect: m.onSelect }] : []);
   const items: MenuItem[] = [{ label: "Rename", icon: null, disabled: data.busy, onSelect: () => setRenaming(true) }, ...status, ...extra,
     { label: "Remove from register", icon: null, disabled: data.busy, onSelect: () => void run({ retired: true }, "Removed.") }];
   const due = row.kind === "condition" ? GATE_WORDS[cond(row).stage ?? ""] ?? "Gate not known" : row.target_date ? `Due ${row.target_date}` : "";
-  return <header className="register-sheet-head"><div className="register-sheet-title">
-    <h2>{renaming
+  return <PanelHead
+    className="register-sheet-head"
+    crumbs={crumbs}
+    title={renaming
       ? <input className="input register-rename" defaultValue={row.title} maxLength={200} autoFocus aria-label="Item"
         onKeyDown={e => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { e.currentTarget.value = row.title; e.currentTarget.blur(); } }}
         onBlur={e => { const v = e.target.value.trim(); setRenaming(false); if (v && v !== row.title) void run({ title: v }, "Renamed."); }} />
-      : <>{rowLabel(row)} · {row.title}</>}</h2>
+      : <>{rowLabel(row)} · {row.title}</>}
+    action={action}
+    more={<MoreMenu label={`${rowLabel(row)} actions`} items={items} />}
+  >
     <span className="register-chip register-status" data-band={(row.readings?.length ?? 0) > 0 || row.review_status === "proposed" ? "amber" : undefined}>{statusChip(row)}</span>
     {due && <span className="register-chip" data-band={row.late_days ? "late" : undefined}>{due}{row.late_days ? ` · ${plural(row.late_days, "day")} late` : ""}</span>}
-    </div><span className="register-sheet-actions">
-      <MoreMenu label={`${rowLabel(row)} actions`} items={items} />
-      {children}
-    </span>
-  </header>;
+  </PanelHead>;
 }
 
 function Notice({ data }: { data: RegisterData }) {
@@ -104,7 +107,7 @@ function Notice({ data }: { data: RegisterData }) {
   </>;
 }
 
-function RfiSheet({ row, data, projectId, documents, transmittal, onOpenDocument, onOpenMessage, onSent, fill }: Props & { row: DeliveryRecord }) {
+function RfiSheet({ row, crumbs, data, projectId, documents, transmittal, onOpenDocument, onOpenMessage, onSent, fill }: Props & { row: DeliveryRecord; crumbs: ReactNode }) {
   const d = row.details as RFIDetails;
   const number = rfiNumber(row.number);
   const defaultSubject = `${number} ${row.title}`.trim();
@@ -204,10 +207,8 @@ function RfiSheet({ row, data, projectId, documents, transmittal, onOpenDocument
   const theirRef = !!(d.ref || d.raised_by);
 
   return <>
-    <Head row={row} data={data}>
-      <button type="button" className="btn btn-primary btn-small" disabled={!!why || sending || data.busy} aria-busy={sending}
-        title={why || what} aria-describedby="rfi-send-what" onClick={() => void send()}>{sending ? "Sending…" : "Send"}</button>
-    </Head>
+    <Head row={row} data={data} crumbs={crumbs} action={<PrimaryButton disabled={!!why || sending || data.busy} busy={sending}
+      title={why || what} aria-describedby="rfi-send-what" onClick={() => void send()}>{sending ? "Sending…" : "Send"}</PrimaryButton>} />
     <p id="rfi-send-what" className="register-send-what" role={sendNote?.error ? "alert" : "status"} data-tone={sendNote?.error || sendOff ? "alert" : undefined}>
       {sendNote?.error ?? sendNote?.done ?? (why || what)}</p>
     {warning && <p className="send-error" role="note">{warning}</p>}
@@ -300,13 +301,13 @@ function AnswerForm({ initial, busy, onSave, onCancel }: { initial: string; busy
 
 // OtherSheet is a notice, a consent condition or one of the older kinds:
 // today's detail, in the sheet, with its history.
-function OtherSheet({ row, data, documents, onOpenDocument, onOpenMessage }: Props & { row: DeliveryRecord }) {
+function OtherSheet({ row, crumbs, data, documents, onOpenDocument, onOpenMessage }: Props & { row: DeliveryRecord; crumbs: ReactNode }) {
   const extra: MenuItem[] = row.kind !== "rfi" && row.kind !== "notice" && row.kind !== "condition" && !RECEIVED.has(row.kind)
     ? (STATUSES[row.kind] ?? []).filter(s => s !== row.status).map(s => ({ label: `Set ${s.replaceAll("_", " ")}`, icon: null, disabled: data.busy, onSelect: () => void data.run(editOps([row], { status: s }), "Saved.", "sheet") }))
     : row.kind === "condition" ? [{ label: "Not applicable", icon: null, disabled: data.busy, onSelect: () => void data.run(editOps([row], { status: "not_applicable" }), "Marked not applicable.", "sheet") }] : [];
   const notice = row.details as { notice?: string; received_on?: string | null; message_id?: string };
   return <>
-    <Head row={row} data={data} extra={extra} />
+    <Head row={row} data={data} crumbs={crumbs} extra={extra} />
     <Notice data={data} />
     {RECEIVED.has(row.kind) ? <ClaimDetail row={row} data={data} onOpenMessage={onOpenMessage} />
       : row.kind === "condition"

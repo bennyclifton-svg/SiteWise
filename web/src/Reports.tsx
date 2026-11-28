@@ -1,5 +1,6 @@
 import { IconDownload, IconPrint, IconResponseForm } from "./icons";
-import { BackButton, MoreMenu, PagePrimaryAction, UpdateButton } from "./PageActions";
+import { BackButton, MoreMenu, UpdateButton } from "./PageActions";
+import { PanelHead } from "./PanelHead";
 import { RfpTransmittal, type TransmittalSelection } from "./RfpTransmittal";
 import { Pending } from "./Activity";
 // One report, full width, opened from a Procurement row. Sources open beside
@@ -20,10 +21,11 @@ import { RfpScopePosition } from "./RfpScopePosition";
 import { RfpScopeTable, scopeTable } from "./RfpScopeTable";
 import { RfpAllowanceTable, allowanceTable } from "./RfpAllowanceTable";
 import { AGREEMENT_BLOCK, RfpTermsTable } from "./RfpTerms";
+import { ReportTable, type RowChange } from "./ReportTable";
 
 function localDate() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 const referenceNames = { E: "Evidence", U: "User input", C: "Calculation", A: "Assumption" };
-export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, backTo = "Procurement", surface = "procurement" }: { transmittal?: TransmittalSelection; reportId: string; tick: number; /** Absent when the report is a view of its own (the project report). */ onBack?: () => void; onSignedOut: () => void; backTo?: string; /** The host view's page-action surface, where Back appears. */ surface?: string }) {
+export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, backTo = "Procurement" }: { transmittal?: TransmittalSelection; reportId: string; tick: number; /** Absent when the report is a view of its own (the project report). */ onBack?: () => void; onSignedOut: () => void; backTo?: string }) {
   const [issueDate, setIssueDate] = useState(localDate);
   // null until the user ticks or clears it: a consultant RFP prints the
   // budget by default (owner decision, 13 October 2026); a tender to
@@ -148,6 +150,26 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, back
     catch (e) { fail(e); } finally { setBusyKey(""); }
   }
   const ownWrite: Write = Object.assign(writeSetting, { many: writeSettings });
+  // The project report's tables, row by row: each write answers with the
+  // draft, which replaces the one on screen.
+  async function writeRow(change: RowChange) {
+    if (!view?.draft) return;
+    setBusy(true); setError("");
+    try { const out = await reportApi.row(reportId, change as Record<string, unknown>, view.draft.version); setView(v => v && { ...v, draft: out.draft }); }
+    catch (e) { fail(e); } finally { setBusy(false); }
+  }
+  async function deleteRow(row: string) {
+    if (!view?.draft) return;
+    setBusy(true); setError("");
+    try { const out = await reportApi.deleteRow(reportId, row, view.draft.version); setView(v => v && { ...v, draft: out.draft }); }
+    catch (e) { fail(e); } finally { setBusy(false); }
+  }
+  async function savePeriod(period: { from: string; to: string; label: string }) {
+    if (!view?.draft) return;
+    setBusy(true); setError("");
+    try { const d = await reportApi.period(reportId, period, view.draft.version); setView(v => v && { ...v, draft: d }); }
+    catch (e) { fail(e); } finally { setBusy(false); }
+  }
   // A combined engagement: a choice in one discipline's part is written to
   // that member's own report, and the server returns this report's view,
   // recomposed in the same transaction.
@@ -218,8 +240,12 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, back
   pageLimit.current = view?.page_fit?.limit ?? 2;
   const editable = view?.rfp ? editableSections(view.rfp) : new Set<string>();
   // One saved block as the reader sees it, with protected-wording edits.
+  // A report table whose name is its section's (07 Site activity) needs no
+  // second heading under the band.
+  const sectionTitles = (draft?.sections ?? []).map(s => s.title.toLowerCase());
+  const repeats = (block: ReportBlock) => !!block.table?.meta && sectionTitles.some(t => t.endsWith(block.label.toLowerCase()));
   const blockView = (block: ReportBlock, controls: RfpControls | undefined = view?.rfp, onWrite: Write = ownWrite) => draft && <article className="report-block" key={block.id}>
-            <div className="report-block-heading">{block.label && <h4>{block.label}</h4>}{block.provisional && !view?.rfp && <span>Provisional</span>}{block.edited && <span>Protected wording</span>}</div>
+            <div className="report-block-heading">{block.label && !repeats(block) && <h4>{block.label}</h4>}{block.provisional && !view?.rfp && <span>Provisional</span>}{block.edited && <span>Protected wording</span>}</div>
             {block.conflict && <p className="report-conflict">{block.source_missing ? "The source is no longer present. Your wording has been kept for review." : "The source changed. Review your protected wording against its updated source."}</p>}
             {(() => {
               const editing = editor?.target === block.id;
@@ -231,11 +257,13 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, back
               // Terms read and edit row by row in the terms table above. Wording
               // protected as one list before 10 Nov 2026 still shows, to restore.
               if (!editing && controls && block.id === "rfp:terms" && !block.edited) return null;
+              if (!editing && block.table?.meta && !block.text) return null;
               if (editing || !((controls && scopeTable(block)) || block.id === "rfp:positions")) return inline;
               return <>{controls && scopeTable(block) ? <RfpScopeTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} /> : <RfpScopePosition block={block} />}{<button type="button" className="btn btn-small" aria-label={`Edit wording: ${block.label}`} disabled={busy || !!editor || block.source_missing} onClick={() => setEditor({ target: block.id, text: block.text, version: draft.version })}>Edit wording</button>}</>;
             })()}
             {controls && allowanceTable(block) && editor?.target !== block.id && <RfpAllowanceTable block={block} controls={controls} busy={busy || !!busyKey || !!editor} onWrite={onWrite} />}
-            {block.table && !(controls && (scopeTable(block) || allowanceTable(block)) && editor?.target !== block.id) && <div className="report-table-scroll"><table className="report-table">{block.table.display !== "document" && <caption>Saved source comparison{block.edited ? " — independent of edited wording" : ""}</caption>}<thead><tr>{block.table.columns.map((column,i) => <th key={i} scope="col">{column}</th>)}</tr></thead><tbody>{block.table.rows.map((row,i) => <tr key={i}>{row.map((cell,j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>}
+            {block.table?.meta && block.table.id && <ReportTable reportId={reportId} table={{ ...block.table, id: block.table.id, meta: block.table.meta }} label={block.label} busy={busy || !!editor} onWrite={writeRow} onDelete={deleteRow} />}
+            {block.table && !block.table.meta && !(controls && (scopeTable(block) || allowanceTable(block)) && editor?.target !== block.id) && <div className="report-table-scroll"><table className="report-table">{block.table.display !== "document" && <caption>Saved source comparison{block.edited ? " — independent of edited wording" : ""}</caption>}<thead><tr>{block.table.columns.map((column,i) => <th key={i} scope="col">{column}</th>)}</tr></thead><tbody>{block.table.rows.map((row,i) => <tr key={i}>{row.map((cell,j) => <td key={j}>{cell}</td>)}</tr>)}</tbody></table></div>}
             <BlockReferences block={block} references={draft.references} hideCalculations={!!view?.rfp || view?.report.kind === "monthly"} />
             {block.edited && !block.source_missing && block.generated_text === undefined && <p>Refresh this draft before restoring its saved source wording.</p>}{block.edited && (block.source_missing || block.generated_text !== undefined) && <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => setResetTarget({ id: block.id, missing: block.source_missing, version: draft.version })}>{block.source_missing ? "Remove orphaned wording" : "Restore saved source wording"}</button>}
           </article>;
@@ -252,23 +280,28 @@ export function Reports({ reportId, tick, onBack, onSignedOut, transmittal, back
   </form>;
   return <section className={`reports report-view${view?.report.kind === "monthly" ? " report-monthly" : ""}`} aria-label="Report" aria-busy={busy}>
     <div className="report-reader" ref={reader}>
-      {onBack && <PagePrimaryAction surface={surface}><BackButton to={backTo} here={view?.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ")} className="report-back" disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} /></PagePrimaryAction>}
-      {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
-      {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
-      {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
-        <header className="report-toolbar" data-version={draft?.version}><div><h2>{view.rfp ? <>{view.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ")}</> : view.report.kind === "monthly" && draft ? `${view.report.title} No. ${draft.number}` : view.report.title}</h2>{!view.rfp && <><p className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</p>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}</div>
-          {/* Actions sit on the title's line, flush with the page's right edge (owner, 7 Nov 2026). */}
-          <div className="report-toolbar-actions">
-          <UpdateButton title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Rebuild this draft from the project" : "Assemble the draft"} busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()} />
-          <MoreMenu label="Report actions" items={[
+      {/* The heading every view wears (PanelHead): the breadcrumb when drilled
+          in, the title, Update as the one primary action, the three dots. */}
+      <div className="report-head" data-version={draft?.version}>
+        <PanelHead
+          crumbs={onBack && <BackButton to={backTo} here={view?.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ")} disabled={!!editor} title={editor ? "Save or cancel your wording first" : undefined} onClick={onBack} />}
+          title={!view ? "Report" : view.rfp ? view.report.title.replace(/^(RF[PT])\s*[—–-]\s*/, "$1 ") : view.report.kind === "monthly" && draft ? `${view.report.title} No. ${draft.number}` : view.report.title}
+          action={view && <UpdateButton title={busy ? "Saving…" : view.stale.includes("package_retired") ? "This package is retired" : draft ? "Rebuild this draft from the project" : "Assemble the draft"} busy={busy} disabled={busy || !!editor || view.stale.includes("package_retired")} onClick={() => void refresh()} />}
+          more={view && <MoreMenu label="Report actions" items={[
             // Word and PDF are laid out as the screen shows the draft (owner, 8 Nov 2026).
             ...(draft ? [{ label: "Download PDF", icon: <IconDownload />, href: reportApi.exportURL(view.report.id, "pdf"), download: true },
               { label: "Download Word", icon: <IconDownload />, href: reportApi.exportURL(view.report.id, "docx"), download: true }] : []),
             ...(view.rfp && draft ? [{ label: "Download Excel response form", icon: <IconResponseForm />, href: submissionApi.responseFormURL(view.report.id), download: true }] : []),
             { label: "Print", icon: <IconPrint />, onSelect: () => window.print() },
-          ]} />
-          </div>
-        </header>
+          ]} />}
+        >
+          {view && !view.rfp && <><span className="report-muted">Draft — not for issue · {draft ? `Version ${draft.version} · ${draft.reporting_date}` : "Not yet assembled"}</span>{view.page_fit && <PageFitNote fit={view.page_fit} />}</>}
+          {draft?.period_to && <PeriodEditor key={`${draft.period_from}:${draft.period_to}:${draft.period_label}`} from={draft.period_from ?? ""} to={draft.period_to} label={draft.period_label ?? ""} busy={busy || !!editor} onSave={p => void savePeriod(p)} />}
+        </PanelHead>
+      </div>
+      {error && <div className="banner" role="alert"><p>{error}</p>{editConflict && editor ? <button type="button" className="btn btn-small" disabled={busy} onClick={() => void reviewLatest()}>Review latest draft</button> : <button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => { setError(""); setReload(n => n + 1); }}>Retry loading</button>}</div>}
+      {latest && editor && <section className="report-notice" aria-label="Review concurrent edit"><h3>Latest saved wording</h3><p className="report-wording">{latestBlock?.text ?? "This source is no longer in the saved draft. Your unsaved text remains in the editor below."}</p><p>Compare this with your unsaved wording below before choosing which to keep.</p>{latestBlock && !latestBlock.source_missing && latest.draft && <button type="button" className="btn" disabled={busy} onClick={() => { setView(latest); setEditor({ ...editor, version: latest.draft!.version }); setLatest(null); setEditConflict(false); setError(""); }}>Keep my wording against this version</button>}</section>}
+      {!view ? !error && <p role="status"><Pending delayed>Opening report…</Pending></p> : <>
         {view.rfp_suggestion && <div className="report-notice" role="status"><strong>This package looks like {view.rfp_suggestion.title.toLowerCase()}</strong><p>Use the {view.rfp_suggestion.title.toLowerCase()} RFP, built from the reviewed golden set, instead of the generic one? This records the package's discipline; the package title alone never changes the scope.</p><div className="report-actions"><button type="button" className="btn btn-small" disabled={busy || !!editor} onClick={() => void confirmDiscipline()}>Use the {view.rfp_suggestion.title.toLowerCase()} RFP</button></div></div>}
         {group && group.left.length > 0 && <div className="report-notice" role="status"><strong>{group.left.join(", ")} {group.left.length === 1 ? "has" : "have"} left this engagement.</strong><p>{group.left.length === 1 ? "Its part is" : "Their parts are"} dropped when you refresh the draft.</p></div>}
         {/* Program stage sync is for consultant stages; a trade RFT prices parts of the building. */}
@@ -363,4 +396,19 @@ function BlockReferences({ block, references, hideCalculations }: { block: Repor
 }
 function Citation({ reference }: { reference: ReportReference }) {
   return <details className="report-citation" data-label={reference.label}><summary><span>{reference.citation_id}</span> {referenceNames[reference.label]}</summary><p>{reference.basis.text}</p></details>;
+}
+
+/** The period a project report's draft reports on: Go proposes it at the
+ * first Update; the PM types over any of the three. */
+function PeriodEditor({ from, to, label, busy, onSave }: { from: string; to: string; label: string; busy: boolean; onSave: (p: { from: string; to: string; label: string }) => void }) {
+  const [p, setP] = useState({ from, to, label });
+  const changed = p.from !== from || p.to !== to || p.label !== label;
+  return <form className="report-period" aria-label="Reporting period" onSubmit={e => { e.preventDefault(); if (changed) onSave(p); }}>
+    <span className="report-muted">Period</span>
+    <input type="date" aria-label="Period from" value={p.from} disabled={busy} onChange={e => setP({ ...p, from: e.target.value })} />
+    <span className="report-muted">to</span>
+    <input type="date" aria-label="Period to" required value={p.to} disabled={busy} onChange={e => setP({ ...p, to: e.target.value })} />
+    <input className="field-plain" aria-label="Period label" value={p.label} placeholder="Named from the dates" maxLength={80} disabled={busy} onChange={e => setP({ ...p, label: e.target.value })} />
+    {changed && <button type="submit" className="btn btn-small" disabled={busy || !p.to}>Save period</button>}
+  </form>;
 }

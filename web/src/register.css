@@ -54,36 +54,6 @@
 .panel-band { display: flex; flex: none; align-items: center; gap: 8px; min-height: 2.75rem; padding: 0.25rem 0.125rem; }
 .panel-band-tools { display: inline-flex; align-items: center; gap: 6px; }
 
-/* Documents | Register (| Messages): one pen-drawn box like Update, the
-   chosen side filled. Always the band's last item, so it stays put when the
-   side changes (owner, 20 November 2026). */
-.panel-switch {
-  --ground-pen: var(--sw-text-primary);
-  position: relative; isolation: isolate; order: 9; margin-left: auto; margin-right: 4px;
-  display: inline-flex; align-items: stretch; height: 30px; padding: 3px;
-  background: var(--sw-surface);
-}
-.panel-switch .ground-frame {
-  -webkit-mask:
-    url("./assets/marks/pen-edge-top.svg") left top / 100% 5px no-repeat,
-    url("./assets/marks/pen-edge-bottom.svg") left bottom / 100% 5px no-repeat,
-    url("./assets/marks/pen-edge-left.svg") left top / 5px 100% no-repeat,
-    url("./assets/marks/pen-edge-right.svg") right top / 5px 100% no-repeat;
-  mask:
-    url("./assets/marks/pen-edge-top.svg") left top / 100% 5px no-repeat,
-    url("./assets/marks/pen-edge-bottom.svg") left bottom / 100% 5px no-repeat,
-    url("./assets/marks/pen-edge-left.svg") left top / 5px 100% no-repeat,
-    url("./assets/marks/pen-edge-right.svg") right top / 5px 100% no-repeat;
-}
-.panel-switch button {
-  display: inline-flex; align-items: center; padding: 0 12px; border: 0; border-radius: 0;
-  background: transparent; color: var(--sw-text-secondary);
-  font: inherit; font-size: var(--fs-sm, 13px); font-weight: 500; white-space: nowrap; cursor: pointer;
-  transition: background-color 150ms ease-out, color 150ms ease-out;
-}
-.panel-switch button:hover:not([aria-selected="true"]) { background: var(--sw-hover-bg); color: var(--sw-text-primary); }
-.panel-switch button[aria-selected="true"] { background: var(--sw-text-primary); color: var(--sw-surface); font-weight: 600; cursor: default; }
-.panel-switch button:focus-visible { outline: 2px solid var(--azure, var(--sw-link)); outline-offset: 2px; }
 .project-side-panel .register-panel {
   display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 6px;
   overflow-x: hidden; overflow-y: auto; padding: 6px 0 8px;
@@ -91,8 +61,6 @@
   font-size: var(--fs-xs); line-height: 1.25;
 }
 .register-panel > :not(.register-scroll) { margin-inline: 8px; }
-.register-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-.register-filters select { max-width: 11rem; font: inherit; }
 .project-side-panel .register-table { table-layout: fixed; font-size: var(--fs-xs); }
 .register-table col.register-col-no { width: 4.75rem; }
 .register-table col.register-col-with { width: 20%; }
@@ -114,11 +82,7 @@
 /* The sheet: one header row, the Profile card's label|value grid, the
    question, then the Transmittal and History bands (reports.css). */
 .register-sheet { display: flex; flex-direction: column; gap: 10px; max-width: 60rem; padding-bottom: 24px; }
-.register-sheet-head { display: flex; align-items: flex-start; gap: 10px; }
-.register-sheet-title { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-width: 0; }
-.register-sheet-head h2 { margin: 0; font-size: var(--fs-lg, 1.125rem); font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .register-sheet-head .register-chip { font-size: var(--fs-sm); padding: 1px 8px; border: 1px solid var(--sw-border-subtle); border-radius: 999px; }
-.register-sheet-actions { display: inline-flex; flex: none; align-items: center; gap: 6px; margin-left: auto; }
 .register-sheet-head .register-chip[data-band="amber"] { box-shadow: none; border-color: var(--state-check-edge); }
 .register-rename { min-width: 18rem; font: inherit; }
 .register-send-what { margin: -4px 0 0; text-align: right; font-size: var(--fs-xs); color: var(--sw-text-secondary); }
@@ -155,8 +119,7 @@ li[data-tone="check"] .register-what { box-shadow: inset var(--state-check-width
 .register-line-actions:empty { display: none; }
 .register-add-answer { margin: 4px 0 0 calc(6.5rem + 34px); }
 .register-answer-form { margin: 4px 0 0 calc(6.5rem + 34px); }
-.panel-switch-held { color: var(--origin-check); font-weight: 400; }
-.panel-switch button[aria-selected="true"] .panel-switch-held { color: inherit; }
+.panel-switch-held { color: var(--origin-check); font-size: .6em; font-weight: 500; letter-spacing: 0; vertical-align: 4px; }
 
 /* Correspondence kinds (docs/plans/2026-11-23-correspondence-between-parties.md,
    section 18): the grey row's kind, the completion line, the terms form and
@@ -175,11 +138,8 @@ li[data-tone="check"] .register-what { box-shadow: inset var(--state-check-width
 
 /* Correspondence (owner, 25 November 2026): the register as one list in the
    middle panel, its columns sorted by a click and moved by a drag, and the
-   Register | Messages tabs on the band above it. */
+   Register | Messages tabs in the heading above it (PanelHead). */
 .correspondence { min-width: 0; }
-.correspondence-band { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 2.75rem; }
-.correspondence-band .correspondence-tabs { order: 0; margin: 0 4px 0 0; }
-.correspondence-band .register-filters { flex: 1; }
 .correspondence-messages { display: flex; flex-direction: column; gap: 8px; }
 .register-list .register-table { table-layout: fixed; min-width: 58rem; }
 .register-list col.register-col-type { width: 6rem; }

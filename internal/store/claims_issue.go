@@ -11,20 +11,27 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"sitewise/internal/export"
 	"sitewise/internal/files"
 	"sitewise/internal/invoices"
 	"sitewise/internal/reports"
-	"sitewise/internal/reports/render"
 )
 
-// PaymentScheduleTemplate names the schedule's fixed layout; it is Go's,
-// not a knowledge template.
-const PaymentScheduleTemplate = "tpl.payment-schedule"
+// PaymentScheduleTemplate names the schedule's first fixed layout (four
+// columns and a reasons paragraph); schedules issued before 27 November
+// 2026 carry it. PaymentScheduleSheetTemplate is the owner's format: the
+// sheet the screen shows. Both are Go's, not knowledge templates.
+const (
+	PaymentScheduleTemplate      = "tpl.payment-schedule"
+	PaymentScheduleSheetTemplate = "tpl.payment-schedule-sheet"
+)
 
 // IssuePaymentSchedule freezes a claim's payment schedule in one
 // transaction: the claim's report (made on its first issue), an issued
 // version with its snapshot, the PDF and its file row (as IssueReport
-// writes them). A later issue is a new version linked to the one before.
+// writes them). The snapshot is the sheet's own sections
+// (reports.ScheduleSheetSections) and the PDF is those sections in the
+// house table style (internal/export), so screen, record and page agree. A later issue is a new version linked to the one before.
 // Issue is refused while a row is unassessed, or below claimed with no
 // reason. It is allowed late, and the PDF says so. The claim then counts in
 // Claimed to Date at its scheduled amounts (worked out at read).
@@ -75,7 +82,14 @@ func (s *Store) IssuePaymentSchedule(ctx context.Context, org, project, actor, i
 	case f.Payable == nil:
 		return out, claimInvalid("the schedule's amounts are not known yet")
 	}
-	in, title, err := s.scheduleInput(ctx, tx, org, project, actor, v, *claim, pkg, today)
+	sheet, ok := ClaimSheet(v, invoiceID)
+	if !ok {
+		return out, claimInvalid("this claim is not on a live contract")
+	}
+	if sheet.Retention.Open {
+		return out, claimInvalid("say what retention this claim holds or returns first; no change this claim is one press")
+	}
+	head, title, err := s.scheduleHead(ctx, tx, org, project, actor, v, *claim, today)
 	if err != nil {
 		return out, err
 	}
@@ -97,19 +111,20 @@ FROM report_versions WHERE org_id=$1::uuid AND report_id=$2::uuid`, org, reportI
 		return out, err
 	}
 	versionID := newID()
-	sections := reports.PaymentScheduleSections(in)
+	sections := reports.ScheduleSheetSections(sheet, head)
 	snap := reports.IssueSnapshot{SchemaVersion: 1, ReportID: reportID, VersionID: versionID, Kind: reports.KindPaymentSchedule, Title: title, ReportingDate: today,
-		SourceRevisions: reports.SourceState{TemplateID: PaymentScheduleTemplate, Domains: map[string]int64{}}, Sections: sections, References: []reports.Reference{}, RendererVersion: render.Version}
+		SourceRevisions: reports.SourceState{TemplateID: PaymentScheduleSheetTemplate, Domains: map[string]int64{}}, Sections: sections, References: []reports.Reference{}, RendererVersion: export.Version}
 	raw, hash, err := reports.CanonicalSnapshot(snap)
 	if err != nil {
 		return out, err
 	}
-	// A claim of eighty rows may not fit one page; its rows are never cut.
-	pdf, err := render.PDFUnlimited(snap)
+	// A breakdown of eighty lines runs on to the next page; no row is cut.
+	subtitle := strings.Join(nonEmpty(head.Project, head.Contract, head.Contractor), " · ")
+	pdf, err := export.PDF(export.FromSections(title, subtitle, today, sections))
 	if err != nil {
 		return out, err
 	}
-	blob, err := blobs.Put(ctx, bytes.NewReader(pdf.PDF))
+	blob, err := blobs.Put(ctx, bytes.NewReader(pdf))
 	if err != nil {
 		return out, err
 	}
@@ -122,83 +137,94 @@ FROM report_versions WHERE org_id=$1::uuid AND report_id=$2::uuid`, org, reportI
 	if err := tx.QueryRow(ctx, `INSERT INTO report_versions (org_id, id, report_id, project_id, number, status, reporting_date, previous_issue_id, source_revisions, template_id, template_version,
  sections, snapshot, snapshot_sha256, export_file_sha256, issued_at, issued_by)
 VALUES ($1::uuid,$2::uuid,$3::uuid,$4::uuid,$5,'issued',$6::date,$7::uuid,$8::jsonb,$9,1,$10::jsonb,$11::jsonb,$12,$13,clock_timestamp(),$14::uuid) RETURNING issued_at`,
-		org, versionID, reportID, project, number, today, previous, string(sourceRaw), PaymentScheduleTemplate, string(sectionRaw), raw, hash, blob.SHA256, actor).Scan(&issuedAt); err != nil {
+		org, versionID, reportID, project, number, today, previous, string(sourceRaw), PaymentScheduleSheetTemplate, string(sectionRaw), raw, hash, blob.SHA256, actor).Scan(&issuedAt); err != nil {
 		return out, err
 	}
 	out = IssuedSchedule{ReportID: reportID, VersionID: versionID, Number: number, IssuedOn: today, IssuedAt: issuedAt, SHA256: hash}
 	return out, s.finishClaimsWrite(ctx, tx, org, project)
 }
 
-// scheduleInput is what the PDF prints, every amount from the claim's
-// figures in Go.
-func (s *Store) scheduleInput(ctx context.Context, tx pgx.Tx, org, project, actor string, v LedgerView, c ClaimView, pkg, today string) (reports.ScheduleInput, string, error) {
-	in := reports.ScheduleInput{Project: v.Project, ClaimNumber: c.Number, Served: c.Served, ReferenceDate: c.ReferenceDate, IssuedOn: today,
-		DueOn: c.Schedule.Date, Late: c.Schedule.Date != "" && today > c.Schedule.Date}
-	for _, ct := range v.Contracts {
-		if ct.PackageID == pkg {
-			in.Firm, in.Contract = ct.Firm, ct.Title
-		}
-	}
-	for _, inv := range v.Invoices {
-		if inv.ID == c.InvoiceID {
-			in.ClaimDate = inv.Date
-		}
-	}
-	client, err := wholeProfileValue(ctx, tx, org, project, "proj.client")
+// scheduleHead is what the schedule prints beside the sheet's figures: the
+// parties as the project's terms resolve them, the claim's own dates, and
+// who approved it. The title names the claim as the sheet does.
+func (s *Store) scheduleHead(ctx context.Context, tx pgx.Tx, org, project, actor string, v LedgerView, c ClaimView, today string) (reports.ScheduleHead, string, error) {
+	h, err := s.scheduleHeader(ctx, tx, org, project, actor, v, c.InvoiceID)
 	if err != nil {
-		return in, "", err
+		return reports.ScheduleHead{}, "", err
 	}
-	in.Client = client
-	if err := tx.QueryRow(ctx, `SELECT email FROM users WHERE org_id=$1::uuid AND id=$2::uuid`, org, actor).Scan(&in.IssuedBy); err != nil {
-		return in, "", err
-	}
-	state, err := projectState(ctx, tx, org, project)
-	if err != nil {
-		return in, "", err
-	}
-	if cat := s.workCatalog(); cat != nil && state != "" {
-		if a, ok := cat.SOPAct(state); ok {
-			in.Act = a.Act
-			// A section is printed only from a verified row.
-			if a.Verified && a.Schedule != nil {
-				in.Section = a.Schedule.Section
-			}
-		}
-	}
-	labels := map[string]string{}
+	print := ClaimPrints(v)[c.InvoiceID]
+	head := reports.ScheduleHead{Project: h.Project, Address: h.Address, Principal: h.Principal, PrincipalABN: h.PrincipalABN,
+		Contractor: h.Contractor, ContractorABN: h.ContractorABN, AssessorOrg: h.AssessorOrg, AssessorNo: h.AssessorCompanyNo, Approver: h.Approver,
+		Number: print.Number, Period: print.Period, Received: c.Served, ReferenceDate: c.ReferenceDate, ContractDate: h.ContractDate,
+		IssuedOn: today, DueOn: c.Schedule.Date, Late: c.Schedule.Date != "" && today > c.Schedule.Date, Act: h.Act, Note: c.Note}
 	for _, ct := range v.Contracts {
-		for _, l := range ct.Lines {
-			labels[l.ID] = l.Label
+		if ct.PackageID == c.PackageID {
+			head.Contract = ct.Title
 		}
-	}
-	for _, va := range v.Variations {
-		labels[va.ID] = va.Number + " " + va.Title
-	}
-	money := func(p *int64) string {
-		if p == nil {
-			return "unknown"
-		}
-		return "$" + invoices.DisplayCents(*p)
 	}
 	for i, r := range c.Rows {
-		label := r.Label
-		if l := labels[r.LineID]; l != "" && !strings.EqualFold(l, label) {
-			label = l + " (" + r.Label + ")"
+		if r.Kind == invoices.RowRetention && i < len(c.Figures.Rows) && c.Figures.Rows[i].BelowClaimed {
+			head.RetentionReason = r.Reason
 		}
-		if l := labels[r.VariationID]; l != "" {
-			label = l
-		}
-		row := reports.ScheduleRow{Label: label, Claimed: money(c.Figures.Rows[i].Claimed), Scheduled: money(c.Figures.Rows[i].Scheduled)}
-		if c.Figures.Rows[i].BelowClaimed {
-			row.Reason = r.Reason
-		}
-		in.Rows = append(in.Rows, row)
 	}
-	f := c.Figures
-	in.Gross, in.Retention, in.Net, in.GST, in.Payable = money(f.Gross), money(f.Retention), money(f.Net), money(f.GST), money(f.Payable)
 	title := "Payment schedule"
-	if c.Number != "" {
-		title = fmt.Sprintf("Payment schedule for claim %s", c.Number)
+	if print.Number != "" {
+		title = fmt.Sprintf("Payment schedule %s", print.Number)
 	}
-	return in, title, nil
+	return head, title, nil
+}
+
+func nonEmpty(parts ...string) []string {
+	out := []string{}
+	for _, p := range parts {
+		if strings.TrimSpace(p) != "" {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+// ClaimScheduleToSend is the latest issued version of a claim's payment
+// schedule, for Send. A claim with none issued is ErrClaimNotIssued; a
+// claim that is not this project's is ErrNotFound.
+func (s *Store) ClaimScheduleToSend(ctx context.Context, org, project, claim string) (string, error) {
+	if !validUUID(org) || !validUUID(project) || !validUUID(claim) {
+		return "", ErrNotFound
+	}
+	var version *string
+	err := s.pool.QueryRow(ctx, `SELECT (SELECT v.id::text FROM reports r JOIN report_versions v ON v.org_id=r.org_id AND v.report_id=r.id AND v.status='issued'
+  WHERE r.org_id=i.org_id AND r.invoice_id=i.id AND r.kind='payment_schedule' ORDER BY v.number DESC LIMIT 1)
+FROM invoices i WHERE i.org_id=$1::uuid AND i.project_id=$2::uuid AND i.id=$3::uuid AND i.kind='progress_claim' AND i.status NOT IN ('void','superseded')`, org, project, claim).Scan(&version)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", ErrNotFound
+	}
+	if err != nil {
+		return "", err
+	}
+	if version == nil {
+		return "", ErrClaimNotIssued
+	}
+	return *version, nil
+}
+
+// ErrClaimNotIssued: the claim's schedule has not been issued, so there is
+// nothing to send.
+var ErrClaimNotIssued = errors.New("the payment schedule is not issued")
+
+// LinkClaimMessage records the message a claim's issued schedule went out
+// on. When that message is sent, RecordSendAttempt sets the day served by
+// rule, for the PM to confirm.
+func (s *Store) LinkClaimMessage(ctx context.Context, org, project, claim, message string) error {
+	tag, err := s.pool.Exec(ctx, `INSERT INTO invoice_decisions (org_id, project_id, invoice_id, field, value, band, decided_by)
+SELECT m.org_id, m.project_id, $3::uuid, $5, m.id::text, 'green', 'rule' FROM mail_messages m
+WHERE m.org_id=$1::uuid AND m.project_id=$2::uuid AND m.id=$4::uuid AND m.direction='out'
+ON CONFLICT (org_id, invoice_id, field) DO UPDATE SET value=EXCLUDED.value, version=invoice_decisions.version+1, updated_at=now()`,
+		org, project, claim, message, invoices.FieldScheduleMessage)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() != 1 {
+		return ErrNotFound
+	}
+	return nil
 }

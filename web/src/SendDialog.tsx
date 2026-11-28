@@ -23,6 +23,8 @@ export interface SendFields {
   issue?: string;
   /** The register's RFI this message sends. */
   rfi?: string;
+  /** A progress claim whose issued payment schedule goes, as issued. */
+  claim?: string;
   /** Set by Go when chat filled this in after reading outside text. */
   warning?: string;
 }
@@ -77,6 +79,7 @@ export function SendDialog({ projectId, projectName, fields, documentOf, onSent,
       if (fields.reply_to) body.in_reply_to = fields.reply_to;
       if (fields.issue) body.issue = fields.issue;
       if (fields.rfi) body.rfi = fields.rfi;
+      if (fields.claim) body.claim = fields.claim;
       const m = await request<MailMessage>("POST", `/projects/${projectId}/transmittals`, body);
       onSent(m);
       onClose();
@@ -101,6 +104,7 @@ export function SendDialog({ projectId, projectName, fields, documentOf, onSent,
         <label htmlFor="send-note">Note</label>
         <textarea id="send-note" className="input" rows={4} maxLength={10000} value={note} onChange={e => setNote(e.target.value)} />
         {fields.issue && <p className="send-docs-head">The issued report goes as it was issued.</p>}
+        {fields.claim && <p className="send-docs-head">The payment schedule goes as it was issued, as a PDF. The day it is sent is entered as the day served, for you to confirm.</p>}
         {known.length > 0 && <>
           <p className="send-docs-head">{known.length} document{known.length === 1 ? "" : "s"}{total ? ` · ${sizeWords(total)}` : ""}</p>
           <ul className="send-docs">{known.map(d => <li key={d.id}>{d.name}

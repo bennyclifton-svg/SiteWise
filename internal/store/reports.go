@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -47,6 +48,10 @@ type ReportDraft struct {
 	References          []reports.Reference `json:"references"`
 	MaterialAssumptions []reports.Reference `json:"material_assumptions"`
 	Version             int64               `json:"version"`
+	// The period a project report's draft reports on.
+	PeriodFrom  *string `json:"period_from,omitempty"`
+	PeriodTo    *string `json:"period_to,omitempty"`
+	PeriodLabel *string `json:"period_label,omitempty"`
 }
 
 type ReportView struct {
@@ -83,7 +88,7 @@ func readReport(ctx context.Context, tx pgx.Tx, org, id string) (Report, error) 
 func readReportDraft(ctx context.Context, tx pgx.Tx, org, id string) (ReportDraft, error) {
 	var d ReportDraft
 	var raw []byte
-	err := tx.QueryRow(ctx, `SELECT to_jsonb(v) FROM report_versions v WHERE org_id=$1::uuid AND id=$2::uuid`, org, id).Scan(&raw)
+	err := tx.QueryRow(ctx, `SELECT to_jsonb(v) - 'generated' FROM report_versions v WHERE org_id=$1::uuid AND id=$2::uuid`, org, id).Scan(&raw)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return d, ErrNotFound
 	}
@@ -417,6 +422,14 @@ func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Re
 	if err := json.Unmarshal(raw, &d); err != nil {
 		return d, err
 	}
+	d.Sections = sections
+	if r.Kind == reports.KindMonthly && goldenSections(sections) {
+		period := s.draftPeriod(ctx, tx, org, r, d.ID)
+		if _, err := tx.Exec(ctx, `UPDATE report_versions SET generated=sections, period_from=COALESCE(period_from, NULLIF($3,'')::date), period_to=COALESCE(period_to, $4::date), period_label=COALESCE(period_label, $5) WHERE org_id=$1::uuid AND id=$2::uuid`,
+			org, d.ID, period.From, period.To, period.Label); err != nil {
+			return d, err
+		}
+	}
 	// A new RFP draft records the stage plan it is built from (program plan
 	// 7.6); a refresh leaves its rows to Update or Keep. A group's draft
 	// records the group's own stage lines (combined engagements slice 4).
@@ -443,7 +456,60 @@ func (s *Store) assembleDraftTx(ctx context.Context, tx pgx.Tx, org string, r Re
 	if _, err := tx.Exec(ctx, `UPDATE reports SET current_draft_version_id=$3::uuid,version=version+1,updated_at=now() WHERE org_id=$1::uuid AND id=$2::uuid`, org, r.ID, d.ID); err != nil {
 		return d, err
 	}
+	if r.Kind == reports.KindMonthly && goldenSections(d.Sections) {
+		refs := d.References
+		if d, err = s.layDraftRows(ctx, tx, org, r, d); err != nil {
+			return d, err
+		}
+		d.References, d.MaterialAssumptions = refs, reports.MaterialAssumptions(refs)
+	}
 	return d, nil
+}
+
+// goldenSections says a draft is the project report in the owner's format.
+func goldenSections(sections []reports.Section) bool {
+	for _, s := range sections {
+		if s.ID == "cover" {
+			return true
+		}
+	}
+	return false
+}
+
+// draftPeriod is the draft's period: as saved, or proposed from the day
+// after the prior period ends to today in Sydney (project report plan,
+// section 6.7). A first report runs "to date".
+func (s *Store) draftPeriod(ctx context.Context, tx pgx.Tx, org string, r Report, draft string) reports.Period {
+	var p reports.Period
+	var from, to, label *string
+	if draft != "" {
+		_ = tx.QueryRow(ctx, `SELECT period_from::text, period_to::text, period_label FROM report_versions WHERE org_id=$1::uuid AND id=$2::uuid`, org, draft).Scan(&from, &to, &label)
+	}
+	if to != nil {
+		p.To = *to
+		if from != nil {
+			p.From = *from
+		}
+		if label != nil {
+			p.Label = *label
+		}
+		return p
+	}
+	p.To = time.Now().In(sydneyZone()).Format("2006-01-02")
+	var end *string
+	_ = tx.QueryRow(ctx, `SELECT COALESCE(period_to, reporting_date)::text FROM report_versions WHERE org_id=$1::uuid AND report_id=$2::uuid AND status='issued' ORDER BY number DESC LIMIT 1`, org, r.ID).Scan(&end)
+	if end != nil {
+		if t, err := time.Parse("2006-01-02", *end); err == nil {
+			p.From = t.AddDate(0, 0, 1).Format("2006-01-02")
+			// A report issued for a period ending today: the next one starts
+			// tomorrow, and never ends before it starts.
+			if p.From > p.To {
+				p.To = p.From
+			}
+		}
+	}
+	p.Label = reports.PeriodLabel(p.From, p.To)
+	return p
 }
 
 // reportSectionsTx assembles one package's or the project's report from a

@@ -293,6 +293,9 @@ WHERE org_id=$1::uuid AND package_id::text=$2 AND (id=$3::uuid OR status IN ('re
 	if err := BumpRevision(ctx, tx, org, project, "packages"); err != nil {
 		return g.View, err
 	}
+	if err := seedBreakdown(ctx, tx, org, project, awardID, true); err != nil {
+		return g.View, err
+	}
 	if err := procurementEvent(ctx, tx, s, org, project, g.Sub.ID, "awarded"); err != nil {
 		return g.View, err
 	}

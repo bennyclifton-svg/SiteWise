@@ -64,6 +64,12 @@ func reportScripts() map[string]func(llm.Conversation, int) llm.Turn {
 		"Issue the project report":                                   steps(call("view", map[string]any{"do": "open", "dialog": "report", "fields": map[string]string{"issue": "yes"}, "final": true})),
 		"Draft the cost comment":                                     steps(read, apply("reports.comment", map[string]any{"section": "cost", "text": "The cost plan and the invoices are as the table shows."}, true)),
 		"What moved since the last report?":                          steps(read, say("This is the first report, so nothing is compared yet.")),
+		// The owner's format (draft cases pr9 to pr13).
+		"Fill safety and induction: inductions held for all new starters": steps(apply("reports.set_cell", map[string]any{"table": "site", "row": "Safety and induction", "column": "Summary", "text": "Inductions held for all new starters."}, true)),
+		"Add professional indemnity to the insurances table":              steps(apply("reports.add_row", map[string]any{"table": "insurances", "cells": []any{"Professional indemnity"}}, true)),
+		"Hide the energy distributor row in the approvals":                steps(apply("reports.remove_row", map[string]any{"table": "approvals", "row": "Energy distributor"}, true)),
+		"Set the report period to 1 November 2026 to 7 November 2026":     steps(apply("reports.period", map[string]any{"from": "2026-11-01", "to": "2026-11-07"}, true)),
+		"Fill safety and induction with how many inductions were held":    steps(apply("reports.set_cell", map[string]any{"table": "site", "row": "Safety and induction", "column": "Summary", "text": "37 inductions held."}, true)),
 	}
 }
 
@@ -219,6 +225,12 @@ func scripts(n *names) map[string]func(llm.Conversation, int) llm.Turn {
 		"Approve V01 at $11,000":                                    apply("variations", "variations.decide", map[string]any{"variation": "V01", "decision": "approve", "approved": "11000"}),
 		"Issue the schedule for claim 4":                            view(map[string]any{"do": "open", "dialog": "claim", "fields": map[string]string{"claim": "4"}}),
 		"On claim 4 assess the superstructure row at $8,000 to date because the frame is not complete": apply("claims", "claims.assess", map[string]any{"claim": "4", "row": "Superstructure", "assessed_to_date": "8000", "reason": "the frame is not complete"}),
+		// Payment schedules (draft cases cl9 to cl13).
+		"On claim 4 set the substructure to 80% complete":                   apply("claims", "claims.assess", map[string]any{"claim": "4", "row": "Substructure", "percent": "80"}),
+		"Add a provisional sum to Main Works for arborist fees, $30,000":    apply("claims", "claims.breakdown_add", map[string]any{"package": "Main Works", "section": "provisional", "label": "Arborist fees", "amount": "30000"}),
+		"Which claims are waiting for an invoice?":                          filter("only", "claims", "awaiting_invoice"),
+		"Send the payment schedule for claim 4 to the principal":            view(map[string]any{"do": "open", "dialog": "send", "fields": map[string]string{"claim": "4"}}),
+		"On claim 4 set the superstructure to what they claimed plus a bit": apply("claims", "claims.assess", map[string]any{"claim": "4", "row": "Superstructure", "assessed_to_date": "28600"}),
 		// The register group (plan 4).
 		"What is open on the facade?":                                                   read("envelope"),
 		"What is with the structural engineer and how late is it?":                      read(""),

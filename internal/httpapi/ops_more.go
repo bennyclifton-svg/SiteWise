@@ -335,8 +335,8 @@ var forwards = []forward{
 		Fields: `(none)`, Route: "POST /projects/{id}/cost-plan/prepare"},
 
 	// ---- Invoices
-	{Name: "invoices.edit", About: "Correct an invoice's fields, or void, restore or mark it as replacing another.",
-		Fields: `invoice (id from read invoices); fields (an object of field to value, null clears); action (void|restore|keep_both|replaces); target (the other invoice for replaces)`,
+	{Name: "invoices.edit", About: "Correct an invoice's fields, or void, restore or mark it as replacing another; say a tax invoice is for a progress claim (settles), not for a claim (not_claim), or put it back for SiteWise's rule (unsettle); say a progress claim is its own tax invoice (fields tax_invoice yes or no).",
+		Fields: `invoice (id from read invoices); fields (an object of field to value, null clears); action (void|restore|keep_both|replaces|settles|unsettle|not_claim); target (the other invoice for replaces; the progress claim's invoice id for settles)`,
 		Route:  "PATCH /projects/{id}/invoices/{inv}", Send: renamePath("invoice", "inv")},
 	{Name: "invoices.allocate", About: "Split an invoice across cost lines.",
 		Fields: `invoice (id); shares (the screen's list: a cost line and an amount each)`, Figures: map[string]string{"amount": "money"},
@@ -362,8 +362,8 @@ var forwards = []forward{
 		Fields: `item (the RFI's id or number); reading (the possible answer's id from read delivery)`, Route: "PATCH /projects/{id}/delivery/{item}",
 		Send: sendRegisterAccept, Card: registerAcceptCard,
 		Done: func(f map[string]any) string { return "Accepted the answer." }},
-	{Name: "delivery.settings", Undo: true, About: "Set the project's terms: the RFI and letter response time in working days, the EOT claim response time in calendar days, and the agreed completion date. Each is optional; null puts it back to SiteWise's default (or unknown for the date).",
-		Fields:  `any of: rfi_response_days (a whole number of working days, 1 to 60, as the PM said it); eot_response_days (calendar days, 1 to 120, as the PM said it); agreed_completion (only a date the PM gave)`,
+	{Name: "delivery.settings", Undo: true, About: "Set the project's terms: the RFI and letter response time in working days, the EOT claim response time in calendar days, the agreed completion date, and the parties a payment schedule names (the principal, its ABN and email, the principal's representative, its company number, and the approver's name). Each is optional; null puts it back to SiteWise's default (or unknown, or not entered).",
+		Fields:  `any of: rfi_response_days (a whole number of working days, 1 to 60, as the PM said it); eot_response_days (calendar days, 1 to 120, as the PM said it); agreed_completion (only a date the PM gave); principal_name; principal_abn (as the PM typed it); principal_email; assessor_org (the principal's representative); assessor_company_no (its ACN or ABN, as the PM typed it); assessor_name (who approves payment schedules)`,
 		Figures: map[string]string{"rfi_response_days": "number", "eot_response_days": "number", "agreed_completion": "date"},
 		Route:   "PUT /projects/{id}/delivery/settings",
 		Done:    termsDone},

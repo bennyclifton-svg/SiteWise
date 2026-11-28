@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
+import type { Page } from "@playwright/test";
+
+// Add item, Import and Preview / issue sit behind the heading's three dots
+// (PanelHead, owner 25 November 2026).
+async function specAction(page:Page,name:string){await page.getByRole("button",{name:"Specification actions",exact:true}).click();await page.getByRole("menuitem",{name,exact:true}).click();}
+async function specItem(page:Page,name:string){await page.getByRole("button",{name:"Specification actions",exact:true}).click();const item=page.getByRole("menuitem",{name,exact:true});return item;}
 
 test("a user authors, reviews and issues a standalone specification", async ({page}) => {
   const {token}=await(await page.request.post("/__e2e/invite?org=a")).json();
@@ -27,7 +33,7 @@ test("a user authors, reviews and issues a standalone specification", async ({pa
   await page.screenshot({path:"../tmp/specification-framework-mobile.png"});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
   await page.setViewportSize({width:1360,height:1000});
-  await page.getByRole("button",{name:"Add item",exact:true}).click();
+  await specAction(page,"Add item");
   await page.getByLabel("Item name",{exact:true}).fill("Bathroom tile");
   await page.getByLabel("Code",{exact:true}).fill("TIL1");
   await page.getByRole("combobox",{name:"Building system",exact:true}).selectOption("interiors.tiling");
@@ -60,7 +66,7 @@ test("a user authors, reviews and issues a standalone specification", async ({pa
   await page.screenshot({path:"../tmp/specification-filled-mobile.png"});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
   await page.setViewportSize({width:1360,height:1000});
-  await page.getByRole("button",{name:"Preview / issue",exact:true}).click();
+  await specAction(page,"Preview / issue");
   await expect(page.getByText("Ground floor bathroom · floor · selected · unknown",{exact:true})).toBeVisible();
   await expect(page.getByText("Upstairs bathroom · floor · selected · unknown",{exact:true})).toBeVisible();
   await expect(page.getByText("(selection): unknown",{exact:false})).toHaveCount(2);
@@ -77,13 +83,13 @@ test("a user authors, reviews and issues a standalone specification", async ({pa
   await page.setViewportSize({width:390,height:844});
   await page.screenshot({path:"../tmp/specifications-mobile.png",fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
-  await page.getByRole("button",{name:"Add item",exact:true}).click();
+  await specAction(page,"Add item");
   const heading=page.getByRole("heading",{name:"Add a specification item",exact:true});
   await expect(heading).toBeFocused();
   expect((await heading.boundingBox())!.y).toBeLessThan(250);
   await page.screenshot({path:"../tmp/specifications-mobile-form.png"});
   await page.getByRole("button",{name:"Cancel",exact:true}).click();
-  await page.getByRole("button",{name:"Preview / issue",exact:true}).click();
+  await specAction(page,"Preview / issue");
   await expect(page.getByRole("heading",{name:"Materials and finishes schedule",exact:true})).toBeVisible();
   await page.screenshot({path:"../tmp/specifications-mobile-reader.png"});
 });
@@ -94,9 +100,10 @@ test("specification load failures preserve recovery and do not look empty",async
   let broken=true;await page.route("**/api/projects/*/specifications",r=>broken?r.fulfill({status:500,body:"unavailable"}):r.continue());
   await page.waitForURL(/\/projects\/[0-9a-f-]{36}/);await page.goto(`${new URL(page.url()).pathname}?view=specifications`);
   await expect(page.getByRole("alert")).toContainText("Could not load specifications");
-  await expect(page.getByRole("button",{name:"Add item",exact:true})).toBeDisabled();
+  await expect(await specItem(page,"Add item")).toBeDisabled();
+  await page.keyboard.press("Escape");
   broken=false;await page.getByRole("button",{name:"Reload specifications",exact:true}).click();
-  await expect(page.getByRole("button",{name:"Add item",exact:true})).toBeEnabled();
+  await expect(await specItem(page,"Add item")).toBeEnabled();
 });
 
 test("a consultant reference can cover a section without copying its specification",async({page})=>{
@@ -123,7 +130,7 @@ test("a consultant reference can cover a section without copying its specificati
   await form.getByRole("button",{name:"Confirm coverage and revisions",exact:true}).click();
   await expect(section.getByRole("button",{name:"Covered by document",exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Specify floor tile",exact:true})).toHaveCount(0);
-  await page.getByRole("button",{name:"Preview / issue",exact:true}).click();
+  await specAction(page,"Preview / issue");
   await expect(page.getByRole("heading",{name:"Consultant references and coverage",exact:true})).toBeVisible();
   await expect(page.getByText("Maintained by: Architect · Review coordinated by: Project manager",{exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Issue schedule",exact:true}).click();

@@ -205,7 +205,6 @@
 .cockpit-scroll .procurement-table tr[aria-selected="true"] :is(th, td) { background: var(--ct-selected); }
 .procurement-table th.discipline-cell:focus { outline: none; }
 .procurement-table th.discipline-cell:focus-visible { box-shadow: inset 2px 0 0 var(--sw-text-tertiary); }
-.procurement-actions { display: flex; align-items: center; gap: 8px; }
 
 /* A firm on two lines: its name, then its price (and any status) below. */
 .cockpit-scroll .procurement-table .firm-card .firm-chip {

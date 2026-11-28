@@ -51,6 +51,14 @@ func (s *Store) monthlySectionsTx(ctx context.Context, tx pgx.Tx, org string, r 
 	if err != nil {
 		return nil, state, err
 	}
+	for _, section := range template.Sections {
+		if section.ID == "cover" {
+			if in.Golden, err = s.goldenInputTx(ctx, tx, org, r, history, in); err != nil {
+				return nil, state, err
+			}
+			break
+		}
+	}
 	titles := map[string]string{}
 	for _, section := range template.Sections {
 		titles[section.ID] = section.Title
@@ -352,7 +360,9 @@ func (s *Store) currentSourceState(ctx context.Context, tx pgx.Tx, org string, r
 func (s *Store) LastReportCompletion(ctx context.Context, org, project string) (*reports.AttentionCompletion, error) {
 	var number int
 	var raw []byte
-	err := s.pool.QueryRow(ctx, `SELECT v.number, v.sections FROM report_versions v JOIN reports r ON r.org_id=v.org_id AND r.id=v.report_id
+	// The owner's format issues without its review lists; the completion
+	// is read from the generated copy it was issued with.
+	err := s.pool.QueryRow(ctx, `SELECT v.number, COALESCE(v.generated, v.sections) FROM report_versions v JOIN reports r ON r.org_id=v.org_id AND r.id=v.report_id
 WHERE v.org_id=$1::uuid AND v.project_id=$2::uuid AND r.kind='monthly' AND v.status='issued' ORDER BY v.number DESC LIMIT 1`, org, project).Scan(&number, &raw)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
@@ -376,3 +386,69 @@ var sydneyZone = sync.OnceValue(func() *time.Location {
 	}
 	return loc
 })
+
+// goldenInputTx reads what the owner's sections print beyond the review
+// lists' input, on the same snapshot: the parties, the site, the consent,
+// the issues so far, each contract's rollup (store.ContractSummaries, the
+// one the Cost Plan's tabs read), the register's completion date and the
+// building's systems.
+func (s *Store) goldenInputTx(ctx context.Context, tx pgx.Tx, org string, r Report, history []ReportIssueSummary, in reports.MonthlyInput) (*reports.GoldenInput, error) {
+	g := &reports.GoldenInput{Title: r.Title, Packages: map[string]string{}}
+	project := r.ProjectID
+	if err := tx.QueryRow(ctx, `SELECT o.name, COALESCE(st.address,'') FROM projects p JOIN orgs o ON o.id=p.org_id LEFT JOIN sites st ON st.org_id=p.org_id AND st.id=p.site_id
+WHERE p.org_id=$1::uuid AND p.id=$2::uuid`, org, project).Scan(&g.OrgName, &g.Address); err != nil {
+		return nil, err
+	}
+	for key, into := range map[string]*string{"proj.client": &g.Client, "site.lot": &g.Lot, "proj.lga": &g.LGA} {
+		v, err := wholeProfileValue(ctx, tx, org, project, key)
+		if err != nil {
+			return nil, err
+		}
+		*into = v
+	}
+	if v, err := wholeProfileValue(ctx, tx, org, project, "site.address"); err == nil && v != "" {
+		g.Address = v
+	}
+	consent, err := consentFacts(ctx, tx, org, project)
+	if err != nil {
+		return nil, err
+	}
+	g.Consent, g.ConsentOn = consent.Number, consent.Date
+	for i := len(history) - 1; i >= 0; i-- {
+		h := history[i]
+		var by string
+		_ = tx.QueryRow(ctx, `SELECT COALESCE(u.email,'') FROM report_versions v LEFT JOIN users u ON u.org_id=v.org_id AND u.id=v.issued_by WHERE v.org_id=$1::uuid AND v.id=$2::uuid`, org, h.ID).Scan(&by)
+		g.Issues = append(g.Issues, reports.IssueRecord{Number: h.Number, Date: h.ReportingDate, By: by})
+	}
+	g.Period = s.draftPeriod(ctx, tx, org, r, r.CurrentDraftVersionID)
+	today := time.Now().In(sydneyZone()).Format("2006-01-02")
+	ledger, err := s.invoiceLedgerTx(ctx, tx, org, project, today)
+	if err != nil {
+		return nil, err
+	}
+	g.Contracts = ContractSummaries(ledger)
+	for _, c := range ledger.Contracts {
+		g.Packages[c.AwardID] = c.Title
+	}
+	for _, p := range in.Packages {
+		if p.Kind == "works" && p.AwardedTo == "" {
+			g.Unawarded = append(g.Unawarded, p.Title)
+		}
+	}
+	register, err := s.readRegisterTx(ctx, tx, org, project, RegisterQuery{}, RegisterView{Items: []delivery.Item{}, Kinds: []RegisterKind{}, Systems: []RegisterSystem{}, Today: today})
+	if err != nil {
+		return nil, err
+	}
+	if register.Completion.Agreed != nil {
+		g.Agreed = *register.Completion.Agreed
+	}
+	if register.Completion.Adjusted != nil {
+		g.Adjusted = *register.Completion.Adjusted
+	}
+	if cat := s.workCatalog(); cat != nil {
+		for _, sys := range cat.BuildingOrderSystems() {
+			g.Systems = append(g.Systems, reports.GoldenSystem{ID: sys.ID, Label: sys.Label})
+		}
+	}
+	return g, nil
+}

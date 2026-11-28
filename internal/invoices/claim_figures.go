@@ -2,6 +2,7 @@ package invoices
 
 import (
 	"fmt"
+	"maps"
 	"sort"
 	"time"
 )
@@ -24,7 +25,8 @@ type ClaimInput struct {
 	// certified history.
 	Issued   bool
 	IssuedAt time.Time
-	// Late: the schedule's due date passed with none served.
+	// Late: the Act's date for the schedule passed with none served, under
+	// a verified row (ScheduleLapsed).
 	Late          bool
 	ReferenceDate string
 	// The builder's printed GST and total, for the arithmetic checks.
@@ -54,16 +56,34 @@ type ClaimFigures struct {
 	Counts bool
 	Shares []Allocation
 	Ex     int64
+	// Order is the claim's place in certified order. Before and After are
+	// what was certified to date on its contract, by row key, going into
+	// the claim and coming out of it: a payment schedule prints every line,
+	// and a line the claim left out still has its prior.
+	Order         int
+	Before, After map[string]int64
 }
+
+// lineKey is a cost line's row key, BreakdownKey a breakdown line's and
+// variationKey a variation's.
+func lineKey(id string) string      { return "l:" + id }
+func variationKey(id string) string { return "v:" + id }
+
+// BreakdownKey is the ledger key of rows on a stored breakdown line.
+func BreakdownKey(id string) string { return "b:" + id }
+
+const retentionKey = "retention"
 
 func rowKey(r ClaimRow) string {
 	switch {
 	case r.Kind == RowRetention:
-		return "retention"
+		return retentionKey
 	case r.VariationID != "":
-		return "v:" + r.VariationID
+		return variationKey(r.VariationID)
+	case r.BreakdownID != "":
+		return BreakdownKey(r.BreakdownID)
 	case r.LineID != "":
-		return "l:" + r.LineID
+		return lineKey(r.LineID)
 	}
 	return ""
 }
@@ -95,12 +115,13 @@ func ClaimLedger(claims []ClaimInput, variationLine, variationStatus map[string]
 		}
 	}
 	out := map[string]ClaimFigures{}
-	for _, c := range ordered {
+	for order, c := range ordered {
 		if certified[c.PackageID] == nil {
 			certified[c.PackageID] = map[string]int64{}
 		}
 		before := certified[c.PackageID]
 		f := claimFigures(c, before, variationLine, variationStatus, lineToDate)
+		f.Order, f.Before = order, maps.Clone(before)
 		if c.ReferenceDate != "" && references[c.PackageID+"|"+c.ReferenceDate] > 1 {
 			f.Flags = append(f.Flags, Flag{Code: "same_reference", Reason: "Another claim on this contract names the same reference date"})
 		}
@@ -118,6 +139,7 @@ func ClaimLedger(claims []ClaimInput, variationLine, variationStatus map[string]
 				}
 			}
 		}
+		f.After = maps.Clone(before)
 		out[c.ID] = f
 	}
 	return out

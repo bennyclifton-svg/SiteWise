@@ -20,7 +20,8 @@ import { FirmNameEditor, type NamedFirm } from "./FirmNameEditor";
 import { fmt } from "./CostGrid";
 import { reportApi, type SavedReport } from "./reportApi";
 import { Reports } from "./Reports";
-import { MoreMenu, PageActions } from "./PageActions";
+import { MoreMenu } from "./PageActions";
+import { PanelHead, PrimaryButton } from "./PanelHead";
 import { InlineCellEditor } from "./table/InlineCellEditor";
 import { clickRow, emptySelection, prune, selectAll } from "./table/selection";
 import { dialogOf, showingLine, useChatTable } from "./chatView";
@@ -332,10 +333,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   }
 
   if (view.at === "report") return <Reports transmittal={transmittal} key={view.id} reportId={view.id} tick={tick} onBack={back} onSignedOut={onSignedOut} />;
-  // An open RFP has its own menu (Reports); prices print from the top right,
-  // the table from its own three dots beside New.
-  const print = <PageActions surface="procurement"><button type="button" onClick={() => window.print()}>Print procurement</button></PageActions>;
-  if (view.at === "prices") return <>{print}<Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} onOpenDocument={onOpenDocument} /></>;
+  if (view.at === "prices") return <Prices key={view.pkg} projectId={projectId} pkg={view.pkg} reportId={view.report} tick={tick} onBack={back} onSignedOut={onSignedOut} onOpenCostPlan={onOpenCostPlan} onOpenDocument={onOpenDocument} />;
   const label = (pkg: PackageRecord) => disciplines.find(d => d.id === pkg.discipline_id)?.label ?? pkg.title;
   const live = data?.overview.items.filter(p => !p.retired_at) ?? [];
   const reportOf = (pkg: PackageRecord) => data?.reports.find(r => r.package_id === pkg.id && r.kind !== "pmp");
@@ -455,21 +453,14 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
   }
 
   return <section className="procurement" aria-label="Procurement">
-    <header className="procurement-head">
-      <h1 className="sr-only">Procurement</h1>
-      <div className="costs-tabs" role="tablist" aria-label="Procurement views">
-        {TABS.map(([id, name]) => {
-          return <button key={id} type="button" role="tab" id={`procurement-tab-${id}`} aria-controls="procurement-panel" aria-selected={tab === id} tabIndex={tab === id ? 0 : -1} className="costs-tab"
-            onKeyDown={e => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); setTab(id === "consultants" ? "trades" : "consultants"); } }}
-            onClick={() => setTab(id)}>{name}</button>;
-        })}
-      </div>
-      <div className="procurement-actions">
+    <PanelHead<ProcurementTab>
+      title="Procurement"
+      tabs={{ label: "Procurement views", idPrefix: "procurement", value: tab, onChange: setTab, items: TABS.map(([id, label]) => ({ id, label })) }}
+      action={<PrimaryButton aria-label="New discipline" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+</span> New</PrimaryButton>}
+      more={<MoreMenu label="Procurement actions" items={[{ label: "Print procurement", icon: <IconPrint />, onSelect: () => window.print() }]} />}
+    >
       {tab === "consultants" && tickedRows.length >= 2 && <button type="button" className="btn btn-small" disabled={!!busyRow} onClick={() => void reviewCombine(tickedRows.map(r => r.pkg!), tickedRows.map(r => r.label))}>Combine {tickedRows.length}</button>}
-      <button type="button" className="btn btn-small" aria-label="New discipline" disabled={!data || draft !== null} onClick={() => { setDraft(""); setError(""); }}><span aria-hidden="true">+ </span>New</button>
-      <MoreMenu label="Procurement actions" items={[{ label: "Print procurement", icon: <IconPrint />, onSelect: () => window.print() }]} />
-      </div>
-    </header>
+    </PanelHead>
     {error && <div className="banner" role="alert"><p>{error}</p><button type="button" className="btn btn-small" onClick={() => { setError(""); setReload(n => n + 1); }}>Reload</button></div>}
     {data && tab === "consultants" && (data.overview.prompts ?? []).map(prompt => {
       // Members still live and combinable; the server ticked them all.
@@ -484,7 +475,7 @@ export function Procurement({ projectId, tick, onSignedOut, onOpenCostPlan, onOp
       </div>;
     })}
     {only && <p className="reg-filter">{showingLine("procurement", only.size, onlyShown)} · <button type="button" className="cell-link" onClick={() => setOnly(null)}>Clear</button></p>}
-    {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll" role="tabpanel" id="procurement-panel" aria-labelledby={`procurement-tab-${tab}`}>
+    {!data ? !error && <p role="status"><Pending delayed>Loading procurement…</Pending></p> : <div className="procurement-scroll" role="tabpanel" id={`procurement-panel-${tab}`} aria-labelledby={`procurement-tab-${tab}`}>
       <table className="procurement-table">
         <thead><tr><th scope="col">{tab === "consultants" ? "Consultant" : "Trade"}</th>{[1, 2, 3].map(n => <th key={n} scope="col" title="Drop a proposal on a row to add it to that package">Firm {n}</th>)}<th scope="col">{doc}</th><th scope="col">Prices</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
         {/* A proposal no row claims sits first, on both tabs, until the PM

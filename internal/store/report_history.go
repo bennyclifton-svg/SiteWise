@@ -16,7 +16,7 @@ type ReportIssueSummary struct {
 }
 
 func reportHistory(ctx context.Context, tx pgx.Tx, org, id string) ([]ReportIssueSummary, []reports.Section, error) {
-	rows, err := tx.Query(ctx, `SELECT id::text,number,reporting_date::text,snapshot_sha256,budget_disclosed,sections FROM report_versions WHERE org_id=$1::uuid AND report_id=$2::uuid AND status='issued' ORDER BY number DESC`, org, id)
+	rows, err := tx.Query(ctx, `SELECT id::text,number,reporting_date::text,snapshot_sha256,budget_disclosed,sections,generated FROM report_versions WHERE org_id=$1::uuid AND report_id=$2::uuid AND status='issued' ORDER BY number DESC`, org, id)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -25,13 +25,27 @@ func reportHistory(ctx context.Context, tx pgx.Tx, org, id string) ([]ReportIssu
 	var last []reports.Section
 	for rows.Next() {
 		var v ReportIssueSummary
-		var raw []byte
-		if err := rows.Scan(&v.ID, &v.Number, &v.ReportingDate, &v.SnapshotSHA256, &v.BudgetDisclosed, &raw); err != nil {
+		var raw, generated []byte
+		if err := rows.Scan(&v.ID, &v.Number, &v.ReportingDate, &v.SnapshotSHA256, &v.BudgetDisclosed, &raw, &generated); err != nil {
 			return nil, nil, err
 		}
 		if len(out) == 0 {
 			if err := json.Unmarshal(raw, &last); err != nil {
 				return nil, nil, err
+			}
+			// The project report in the owner's format issues without its
+			// review lists; the next report compares its own with the ones
+			// this issue was built with, kept in its generated copy.
+			if generated != nil {
+				var all []reports.Section
+				if err := json.Unmarshal(generated, &all); err != nil {
+					return nil, nil, err
+				}
+				for _, s := range all {
+					if s.Internal {
+						last = append(last, s)
+					}
+				}
 			}
 		}
 		out = append(out, v)

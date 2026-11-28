@@ -31,8 +31,7 @@
 .report-toolbar h2 { font-size: 22px; overflow-wrap: anywhere; }
 .report-toolbar > .btn { flex-shrink: 0; }
 .report-toolbar { align-items: center; }
-.report-toolbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; }
-@media print { .report-toolbar-actions { display: none; } }
+.panel-head-note .report-muted { margin: 0; }
 .report-notice { margin: 20px 0; padding: 16px; background: var(--warn-soft); color: var(--ink-body); }
 .report-notice h3 { margin: 0 0 10px; font-size: 16px; }
 .report-notice ul { padding-left: 20px; margin: 8px 0; }
@@ -244,8 +243,6 @@
 .reports.report-view { display: block; }
 /* Full width of the middle panel, as Project Profile is (owner, 8 Nov 2026). */
 .report-view .report-reader { max-width: none; padding-left: 8px; padding-right: 8px; }
-.report-back { margin-bottom: 16px; }
-.workspace-primary-actions .report-back { margin-bottom: 0; }
 .scope-back { padding: 24px 36px 0; }
 .scope-back .report-back { margin-bottom: 0; }
 .report-view .scope-back + .report-reader { padding-top: 16px; }
@@ -526,3 +523,34 @@ p.inline-text[data-editable]:hover { background: var(--sw-hover-bg); }
 .report-monthly .report-block h4 { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
 .report-monthly .report-table { font-size: var(--fs-md); }
 .report-monthly .report-table :is(th, td) { padding: 4px 10px; }
+
+/* In the workbench the heading starts where every view's does (PanelHead). */
+.cockpit-scroll .report-view .report-reader { padding: 0 0 64px; }
+
+/* The project report's tables in the owner's format: the app's origin rule
+   on screen (grey italic is SiteWise's typical row), the owner's fills for
+   done and the key date, the amber edge for a row waiting for the PM. */
+.rt td { padding: 0; vertical-align: top; }
+.rt .rt-cell { display: block; width: 100%; min-height: 32px; padding: 6px 8px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: text; }
+.rt .rt-cell:hover { background: var(--state-hover, rgba(0,0,0,.03)); }
+.rt .rt-line { display: block; }
+.rt .rt-bullets { margin: 0; padding-left: 1.1em; }
+.rt-edit { display: block; box-sizing: border-box; width: 100%; min-height: 32px; padding: 6px 8px; border: 0; outline: 2px solid var(--sw-border-strong); font: inherit; resize: vertical; }
+.rt tr[data-kind="placeholder"] .rt-cell { color: var(--origin-typical); font-style: italic; }
+.rt tr[data-kind="history"] .rt-cell { color: var(--sw-text-secondary); }
+.rt td[data-tone="done"] { background: #e8f3e5; }
+.rt td[data-tone="key"] { background: #fff6cf; }
+.rt tr[data-flag] > td:first-child { box-shadow: inset var(--state-check-width) 0 0 var(--state-check-edge); }
+.rt tr[data-new] > td:first-child .rt-cell::after { content: " new"; color: var(--sw-text-tertiary); font-size: var(--fs-xs); font-style: normal; }
+.rt-dot { float: left; width: 8px; height: 8px; margin: 7px 6px 0 0; background: var(--origin-user); }
+.rt .rt-act { width: 36px; text-align: center; vertical-align: middle; }
+.rt-flag-row td { padding: 4px 8px; }
+.rt-flag { margin: 0; color: var(--state-check-edge); font-size: var(--fs-sm); }
+.rt-ghost input { width: 100%; padding: 6px 8px; color: var(--sw-text-tertiary); }
+.rt-hidden { margin: 4px 0 0; color: var(--sw-text-secondary); font-size: var(--fs-sm); }
+.report-period { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 4px; }
+.report-period input[type="date"] { font: inherit; }
+.rt-figure { margin: 6px 0 2px; }
+.rt-figure img { display: block; max-width: 100%; max-height: 240px; border: 1px solid var(--sw-border-subtle); }
+.rt-figure figcaption { color: var(--sw-text-secondary); font-size: var(--fs-xs); }
+.rt-source { display: block; margin-top: 2px; color: var(--origin-doc); font-size: var(--fs-xs); }

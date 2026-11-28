@@ -7,9 +7,10 @@ import (
 
 	"sitewise/internal/costs"
 	"sitewise/internal/invoices"
+	"sitewise/internal/store"
 )
 
-// read(variations): the Variations and claims tab as text, every figure
+// read(variations): the Variations and Progress claims tabs as text, every figure
 // Go's and tagged for the model to quote (variations plan, "From chat").
 // For each date, the inputs it was worked out from.
 func readVariationsArea(ctx context.Context, d Deps, who opActor, project string, r *reader) error {
@@ -18,7 +19,7 @@ func readVariationsArea(ctx context.Context, d Deps, who opActor, project string
 		return err
 	}
 	if len(v.Contracts) == 0 {
-		r.line("Variations and claims: no live contract. Variations and progress claims sit on an awarded contract.")
+		r.line("Variations and progress claims: no live contract. Variations and progress claims sit on an awarded contract.")
 		return nil
 	}
 	money := func(p *int64, label string) string {
@@ -28,20 +29,17 @@ func readVariationsArea(ctx context.Context, d Deps, who opActor, project string
 		m := costs.Money(invoices.FormatCents(*p))
 		return r.fig(plainMoney(&m), dollars(m), label, "Variations and claims")
 	}
-	r.line("Variations and claims, ex GST. Every amount and date is SiteWise's.")
-	for _, c := range v.Contracts {
-		amounts := make([]*int64, 0, len(c.Lines))
-		for _, l := range c.Lines {
-			amounts = append(amounts, l.Amount)
-		}
+	r.line("Variations and progress claims, ex GST. Every amount and date is SiteWise's.")
+	summaries := store.ContractSummaries(v)
+	for i, c := range v.Contracts {
 		var vs []invoices.Variation
 		for _, va := range v.Variations {
 			if va.AwardID == c.AwardID {
 				vs = append(vs, va)
 			}
 		}
-		sum, approved, toDate := invoices.ContractTotals(amounts, vs)
-		certified, held := invoices.ContractClaims(claimFigures(v, c.PackageID))
+		s := summaries[i]
+		sum, approved, toDate, certified, held := s.Original, s.Variations, s.TotalLet, s.Certified, s.Retention
 		firm := ""
 		if c.Firm != "" {
 			firm = " (" + c.Firm + ")"
@@ -63,6 +61,26 @@ func readVariationsArea(ctx context.Context, d Deps, who opActor, project string
 			lines = append(lines, r.id(l.ID)+l.Label)
 		}
 		r.line(" lines: %s", strings.Join(lines, "; "))
+		// The breakdown, once it is more than the cost lines: what a payment
+		// schedule prints, with each provisional sum and its final mark.
+		var breakdown []string
+		for _, b := range c.Breakdown {
+			if !b.Stored || b.Retired {
+				continue
+			}
+			word := b.Label
+			if b.Section == invoices.SectionProvisional {
+				word += " (provisional sum"
+				if b.Final {
+					word += ", final"
+				}
+				word += ")"
+			}
+			breakdown = append(breakdown, r.id(b.ID)+word+" "+money(b.Amount, c.Title+", "+b.Label+", sum"))
+		}
+		if len(breakdown) > 0 {
+			r.line(" breakdown: %s", strings.Join(breakdown, "; "))
+		}
 		if len(vs) == 0 {
 			r.line(" variations: none recorded")
 		}
@@ -127,6 +145,7 @@ func readVariationsArea(ctx context.Context, d Deps, who opActor, project string
 					money(row.ToDate, "claim "+cl.Number+", "+row.Label+", claimed to date"), money(&rf.CertifiedBefore, "claim "+cl.Number+", "+row.Label+", certified before"),
 					money(row.Assessed, "claim "+cl.Number+", "+row.Label+", assessed"), money(rf.Scheduled, "claim "+cl.Number+", "+row.Label+", scheduled"), reasonOf(row.Reason))
 			}
+			readSheet(r, v, cl, money)
 		}
 	}
 	return nil
@@ -144,4 +163,42 @@ func reasonOf(s string) string {
 		return ""
 	}
 	return " · reason: " + s
+}
+
+// readSheet prints a claim's payment schedule as its sheet shows it: each
+// line's total let, percent and dollars complete, less prior and this
+// claim; retention; and the payment list. Every figure is the sheet's.
+func readSheet(r *reader, v store.LedgerView, cl store.ClaimView, money func(*int64, string) string) {
+	sheet, ok := store.ClaimSheet(v, cl.InvoiceID)
+	if !ok {
+		return
+	}
+	n := store.ClaimPrints(v)[cl.InvoiceID].Number
+	r.line("  schedule %s, as its sheet prints it:", n)
+	for _, sec := range sheet.Sections {
+		for _, l := range sec.Lines {
+			pct := "unknown"
+			if l.Percent != "" {
+				pct = l.Percent + "%"
+			}
+			prior := l.Prior
+			r.line("   %s %s · total let %s · complete %s, %s · less prior %s · this claim %s%s", sec.Kind, l.Label, money(l.TotalLet, "schedule "+n+", "+l.Label+", total let"), pct,
+				money(l.Completed, "schedule "+n+", "+l.Label+", completed"), money(&prior, "schedule "+n+", "+l.Label+", less prior"), money(l.ThisClaim, "schedule "+n+", "+l.Label+", this claim"), reasonOf(l.Reason))
+		}
+	}
+	ret := sheet.Retention
+	terms := "no retention terms entered"
+	if ret.RateBP != nil {
+		terms = fmt.Sprintf("retention %d.%02d%% of %s, limit %s", *ret.RateBP/100, *ret.RateBP%100, ret.BaseKind, money(ret.Limit, "schedule "+n+", retention limit"))
+	}
+	before := ret.HeldBefore
+	r.line("   %s; held before %s; this claim holds %s; held to date %s", terms, money(&before, "schedule "+n+", retention held before"), money(ret.Held, "schedule "+n+", retention this claim"), money(ret.HeldToDate, "schedule "+n+", retention held to date"))
+	r.line("   total claim inc retention %s; GST %s; payable %s", money(sheet.Net, "schedule "+n+", net"), money(sheet.GST, "schedule "+n+", GST"), money(sheet.Payable, "schedule "+n+", payable"))
+	for _, p := range sheet.Payments {
+		invoice := p.InvoiceNo
+		if invoice == "" {
+			invoice = "awaiting invoice"
+		}
+		r.line("   payment list %s claim %s · invoice %s · %s ex GST · %s inc GST", p.Period, p.Number, invoice, money(p.Ex, "payment "+p.Number+", ex GST"), money(p.Inc, "payment "+p.Number+", inc GST"))
+	}
 }

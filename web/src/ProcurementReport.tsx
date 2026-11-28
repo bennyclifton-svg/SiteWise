@@ -4,7 +4,9 @@ import { Pending } from "./Activity";
 // passages are what Jev picked from each proposal; nothing scores a firm.
 import { useCallback, useEffect, useState } from "react";
 import { ApiError } from "./api";
-import { BackButton } from "./PageActions";
+import { BackButton, MoreMenu } from "./PageActions";
+import { PanelHead } from "./PanelHead";
+import { IconPrint } from "./icons";
 import { fmt } from "./CostGrid";
 import { submissionApi, type ReportData, type PriceTable } from "./submissionApi";
 import { signed } from "./tender/words";
@@ -31,7 +33,7 @@ export function ProcurementReport({ projectId, table: initial, onBack, onProcure
     setBusy(true); setError("");
     try { const d = await action(); setData(d); } catch (e) { fail(e); } finally { setBusy(false); }
   }
-  if (!data) return <section className="prices"><BackButton to={initial.title || "Price table"} before={crumbs} here="Comparison report" onClick={onBack} />{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
+  if (!data) return <section className="prices"><PanelHead crumbs={<BackButton to={initial.title || "Price table"} before={crumbs} here="Comparison report" onClick={onBack} />} title="Comparison report" />{error ? <p role="alert">{error}</p> : <p role="status"><Pending delayed>Loading report…</Pending></p>}</section>;
   const { table, report } = data;
   const cols = table.columns;
   const quoted = !table.builder && cols.some(c => c.quote);
@@ -45,10 +47,12 @@ export function ProcurementReport({ projectId, table: initial, onBack, onProcure
   const applied = (table.tender?.adjustments ?? []).filter(a => Object.values(a.amounts).some(m => m.state === "applied"));
 
   return <section className="prices procurement-report" aria-label="Comparison report">
-    <header className="prices-head no-print">
-      <BackButton to={table.title || "Price table"} before={crumbs} here="Comparison report" onClick={onBack} />
-      <div className="prices-actions"><button type="button" className="btn btn-small" onClick={() => window.print()}>Print</button></div>
-    </header>
+    <PanelHead
+      className="no-print"
+      crumbs={<BackButton to={table.title || "Price table"} before={crumbs} here="Comparison report" onClick={onBack} />}
+      title="Comparison report"
+      more={<MoreMenu label="Report actions" items={[{ label: "Print", icon: <IconPrint />, onSelect: () => window.print() }]} />}
+    />
     {error && <div className="banner" role="alert"><p>{error}</p></div>}
     <div className="report-page">
       <header className="report-page-head">

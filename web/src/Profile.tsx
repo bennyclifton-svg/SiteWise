@@ -1,6 +1,7 @@
 import { Pending } from "./Activity";
 import { IconDownload, IconPlus } from "./icons";
 import { MoreMenu, UpdateButton } from "./PageActions";
+import { PanelHead } from "./PanelHead";
 // The project profile: what the filed documents say the project is, drafted
 // in the background by Jev and code, polished here by the user. Every value
 // says how it was decided; the user's word is final.
@@ -637,24 +638,23 @@ export function Profile({ projectId, tick, workTick = 0, onJump, onSignedOut, on
 
       {sourcesOpen && <ProfileSources projectId={projectId} data={data} system={sourceSystem} onSystem={setSourceSystem} onClose={() => setSourcesOpen(false)} />}
 
-      {/* Update sits at the panel's top right, beside the summary (owner, 20 Nov
-          2026; it left the title band). The button's own refresh mark turns
-          while busy, so no second spinner in the label. */}
-      <div className="pf-lede-row">
+      {/* The heading every view wears (PanelHead): Update is the one primary
+          action, at the right (owner, 25 Nov 2026). The button's own refresh
+          mark turns while busy, so no second spinner in the label. */}
+      <PanelHead
+        title="Project Profile"
+        action={<UpdateButton onClick={update} disabled={requesting} title={updateTitle(data)} busy={requesting || (data.failed_documents === 0 && data.unread_documents === 0 && data.active_documents > 0)}>
+            {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update"}
+            {!requesting && data.failed_documents === 0 && data.unread_documents > 0 && <span className="update-new" aria-hidden="true">{data.unread_documents} new</span>}
+          </UpdateButton>}
+        more={<MoreMenu label="Profile actions" items={[
+            { label: "Download project profile", icon: <IconDownload />, onSelect: () => window.print() },
+            { label: "Add part", icon: <IconPlus />, onSelect: () => setAddingPart(true) },
+          ]} />}
+      />
       <section className="pf-lede" aria-label="Summary">
         <ProjectSummary fields={cardFields} />
       </section>
-      <div className="pf-update">
-        <UpdateButton onClick={update} disabled={requesting} title={updateTitle(data)} busy={requesting || (data.failed_documents === 0 && data.unread_documents === 0 && data.active_documents > 0)}>
-          {requesting ? "Requesting profile update…" : data.failed_documents > 0 ? "Retry project profile" : data.unread_documents > 0 ? "Update" : data.active_documents > 0 ? "Updating project profile…" : data.pending_documents > 0 ? "Profile update queued" : "Update"}
-          {!requesting && data.failed_documents === 0 && data.unread_documents > 0 && <span className="update-new" aria-hidden="true">{data.unread_documents} new</span>}
-        </UpdateButton>
-        <MoreMenu label="Profile actions" items={[
-          { label: "Download project profile", icon: <IconDownload />, onSelect: () => window.print() },
-          { label: "Add part", icon: <IconPlus />, onSelect: () => setAddingPart(true) },
-        ]} />
-      </div>
-      </div>
 
       {/* No "Project" title (owner, 8 Nov 2026): the card's blue head row says it. */}
       <section className="pf-section" aria-label="Project">

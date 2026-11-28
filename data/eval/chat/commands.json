@@ -3015,6 +3015,121 @@
    ]
   },
   {
+   "id": "pr9",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Fill safety and induction: inductions held for all new starters",
+   "note": "reports.set_cell at once with Undo: the PM's words over the template's row; the text carries no figure.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Inductions held for all new starters",
+      "PM typed Summary"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pr10",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Add professional indemnity to the insurances table",
+   "note": "reports.add_row at once with Undo: a row of the PM's own that Update never changes.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Professional indemnity",
+      "PM's row"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pr11",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Hide the energy distributor row in the approvals",
+   "note": "reports.remove_row hides a row SiteWise made, with Undo; reports.restore_row brings it back.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "1 hidden by the PM"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pr12",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Set the report period to 1 November 2026 to 7 November 2026",
+   "money_or_date": true,
+   "note": "reports.period waits for the PM's click: the draft is rebuilt for the new window, and the period has no Undo.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "prepared"
+    },
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Project report draft 1"
+     ],
+     "lacks": [
+      "1 to 7 November 2026"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pr13",
+   "source": "report",
+   "group": "report",
+   "fixture": "house",
+   "message": "Fill safety and induction with how many inductions were held",
+   "note": "The stand-in writes a count the PM never gave: Go's figure check refuses the cell and nothing changes.",
+   "before": [
+    "Prepare this month's report"
+   ],
+   "expect": [
+    {
+     "kind": "refuses"
+    },
+    {
+     "kind": "state",
+     "area": "report",
+     "has": [
+      "Project report draft 1"
+     ],
+     "lacks": [
+      "37 inductions"
+     ]
+    }
+   ]
+  },
+  {
    "id": "cn1",
    "source": "conditions",
    "group": "conditions",
@@ -3492,6 +3607,112 @@
    "fixture": "house",
    "message": "Add a variation on the superstructure for the extra steel",
    "note": "The stand-in sends a claimed amount the PM never gave: Go's figure check refuses the operation and nothing changes.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "refuses"
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "cl9",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "On claim 4 set the substructure to 80% complete",
+   "money_or_date": true,
+   "note": "claims.assess with percent at once with Undo: the model sends the 80; Go works out the dollars of the line's 400,000.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "variations",
+     "has": [
+      "row 1 Substructure",
+      "assessed to date 320000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cl10",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Add a provisional sum to Main Works for arborist fees, $30,000",
+   "money_or_date": true,
+   "note": "claims.breakdown_add at once with Undo: the sum is the PM's.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "state",
+     "area": "variations",
+     "has": [
+      "Arborist fees (provisional sum)",
+      "30000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cl11",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Which claims are waiting for an invoice?",
+   "note": "Named filter awaiting_invoice on the claims.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "selects",
+     "table": "claims",
+     "do": "only",
+     "rows": [
+      "4"
+     ]
+    },
+    {
+     "kind": "no_change"
+    }
+   ]
+  },
+  {
+   "id": "cl12",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "Send the payment schedule for claim 4 to the principal",
+   "note": "Claim 4 has no issued schedule: chat says to issue it first and opens nothing. Chat never sends; once issued it opens Send filled in.",
+   "needs": [
+    "claims"
+   ],
+   "expect": [
+    {
+     "kind": "no_change"
+    },
+    {
+     "kind": "not_applied"
+    }
+   ]
+  },
+  {
+   "id": "cl13",
+   "source": "claims",
+   "group": "claims",
+   "fixture": "house",
+   "message": "On claim 4 set the superstructure to what they claimed plus a bit",
+   "note": "The stand-in sends an amount the PM never gave: Go's figure check refuses the operation and nothing changes.",
    "needs": [
     "claims"
    ],

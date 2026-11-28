@@ -3,6 +3,7 @@ import { Pending } from "./Activity";
 import type { Catalog, Doc } from "./api";
 import { IconCheck, IconDownload, IconOpen, IconPrint, IconRetry, IconTag } from "./icons";
 import { BackButton, MoreMenu, type MenuItem } from "./PageActions";
+import { PanelHead } from "./PanelHead";
 import { FIELDS, FieldCell, HeadState, notFiledReason, stateOf, type RowModel } from "./DocumentRow";
 import { OCRStatus } from "./OCRStatus";
 import { VisualIdentityReview } from "./VisualIdentityReview";
@@ -135,27 +136,29 @@ export function DocumentWorkspace({ row, catalog, backTo, priorLabel, onCorrect,
       window.open(viewURL, "_blank", "noopener");
     }
   };
-  const more: MenuItem[] = pdf ? [
-    { label: "Open in new tab", icon: <IconOpen />, href: viewURL, newTab: true },
-    { label: "Print", icon: <IconPrint />, onSelect: print },
-  ] : [];
+  const more: MenuItem[] = [
+    ...(doc ? [{ label: "Download original", icon: <IconDownload />, href: `/api/documents/${doc.id}/file`, download: true }] : []),
+    ...(pdf ? [{ label: "Open in new tab", icon: <IconOpen />, href: viewURL, newTab: true },
+      { label: "Print", icon: <IconPrint />, onSelect: print }] : []),
+  ];
 
   return <section ref={root} className="document-workspace" id="document-workspace" aria-label="Document viewer" data-filename={row.filename} data-layout={layout} data-filing={filing || undefined}>
-    <header className="document-head">
-      <BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} here={doc?.number || "Document"} />
-      <div className="document-title">
-        <h2 title={title || row.filename}>{title || row.filename}</h2>
-        {doc && <p className="document-meta">{identity(doc, catalog, !!title).map((part, i) => <span key={i}>{part}</span>)}</p>}
-      </div>
-      <div className="document-actions">
+    {/* The heading every view wears (PanelHead): the breadcrumb, the
+        document, then Filing (it opens a pane) and the three dots. */}
+    <PanelHead
+      className="document-head"
+      crumbs={<BackButton to={backTo} onClick={onClose} title={`Back to ${backTo} (Esc)`} here={doc?.number || "Document"} />}
+      title={<span title={title || row.filename}>{title || row.filename}</span>}
+      more={<>
         {preview && <button type="button" className="page-download document-filing-toggle" aria-expanded={filing} aria-controls={filingId} title={filing ? "Hide filing details" : "Show filing details"} onClick={toggleFiling}>
           <IconTag /><span>Filing</span>
           {toCheck > 0 && <span className="document-tocheck" title={`${toCheck} to check`}><IconCheck />{toCheck}<span className="sr-only"> to check</span></span>}
         </button>}
-        {doc && <a className="page-download document-download" href={`/api/documents/${doc.id}/file`} aria-label="Download original" title="Download original"><IconDownload /><span>Download</span></a>}
         {more.length > 0 && <MoreMenu label="Document actions" items={more} />}
-      </div>
-    </header>
+      </>}
+    >
+      {doc && <span className="document-meta">{identity(doc, catalog, !!title).map((part, i) => <span key={i}>{part}</span>)}</span>}
+    </PanelHead>
     <div className="document-body">
       {preview && <div className="document-page">
         {pdf ? <PdfPage key={`${doc.id}:${at.request}`} doc={doc} page={at.page} frame={frame} /> : <MarkdownPage key={doc.id} doc={doc} />}
